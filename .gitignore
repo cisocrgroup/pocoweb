@@ -2,3 +2,6 @@
 *.d
 *.a
 *~
+rest/main
+rest/config.ini
+config.mk
