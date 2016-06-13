@@ -8,3 +8,11 @@
 ./__/ /____/___/____/________/_____\_____/...
 .............................................
 ```
+
+# Dependencies
+ * g++-5 
+ * libbost-dev
+ * libmysqlcppconn-dev
+ * make
+
+```$ apt-get install g++-5 libbost-dev libmysqlcppconn-dev make```
