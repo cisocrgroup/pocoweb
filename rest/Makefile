@@ -3,7 +3,8 @@ include ../config.mk
 default: main config.ini
 
 CXXFLAGS ?= -Wall -Werror -std=gnu++14 -g -Og
-CXXFLAGS := $(CXXFLAGS) -MP -MD -I $(HOME)/local/include/mysql
+CXXFLAGS := $(CXXFLAGS) -MP -MD
+
 CXXFLAGS += -I src/util
 
 LDFLAGS ?=
