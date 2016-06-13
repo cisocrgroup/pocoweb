@@ -27,4 +27,7 @@ main(int argc, char** argv)
 	auto user = db.findUserByEmail("finkf@cis.lmu.de");
 	if (user)
 		std::cout << *user << "\n";
+	auto users = db.findUsers([](const auto&){return true;});
+	for (const auto& user: users)
+		std::cout << "user: " << *user << "\n";
 }

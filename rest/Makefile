@@ -23,10 +23,10 @@ OBJS += main.o
 DEPS = $(patsubst %.o,%.d,$(OBJS))
 -include $(DEPS)
 
-main: librest.a
+main: libpocoweb.a
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
 
-librest.a: $(OBJS)
+libpocoweb.a: $(OBJS)
 	$(AR) rcs $@ $^
 
 config.ini:
@@ -37,4 +37,4 @@ config.ini:
 
 .PHONY: clean
 clean:
-	$(RM) *.o *.d librest.a main config.ini
+	$(RM) *.o *.d libpocoweb.a main config.ini
