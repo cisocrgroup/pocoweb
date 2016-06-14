@@ -13,5 +13,8 @@ pcw::Config::load(const std::string& filename)
 	dbUser = tree.get<std::string>("db.user");
 	dbHost = tree.get<std::string>("db.host");
 	dbPass = tree.get<std::string>("db.pass");
+	daemonHost = tree.get<std::string>("daemon.host");
+	daemonPort = tree.get<int>("daemon.port");
+	daemonThreads = tree.get<int>("daemon.threads");
 	return *this;
 }
