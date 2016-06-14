@@ -3,6 +3,6 @@
 *.a
 *~
 .*
-rest/main
+rest/pocowebd
 rest/config.ini
 config.mk
