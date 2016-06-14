@@ -16,5 +16,6 @@ pcw::Config::load(const std::string& filename)
 	daemonHost = tree.get<std::string>("daemon.host");
 	daemonPort = tree.get<int>("daemon.port");
 	daemonThreads = tree.get<int>("daemon.threads");
+	logFile = tree.get<int>("log.file");
 	return *this;
 }

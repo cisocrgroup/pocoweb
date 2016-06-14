@@ -2,6 +2,8 @@
 #include <string>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/core.hpp>
 #include "util/Config.hpp"
 #include "server_http.hpp"
 #include "api.hpp"
@@ -12,14 +14,13 @@ namespace pt = boost::property_tree;
 void
 pcw::Login::operator()(Response& response, RequestPtr request) const noexcept
 {
-	//	auto content = request->content.string();
-	//	std::cerr << "CONTENT: " << content << "\n";
-	pt::ptree json;
-	pt::read_json(request->content, json);
-	std::cerr << "user = " << json.get<std::string>("user")
-		  << "\npass = " << json.get<std::string>("pass") << "\n";
-	//	std::cout << "CONTENT: " << content << "\n";
-	response << "HTTP/1.1 200 OK\r\nContent-Length: "
-		 << 2 << "\r\n\r\n"
-		 << "ok";
+	try {
+		BOOST_LOG_TRIVIAL(error) << "Logging";
+		pt::ptree json;
+		pt::read_json(request->content, json);
+		ok(response, "{\"status\": \"ok\"}");
+	} catch (const std::exception& e) {
+		BOOST_LOG_TRIVIAL(error) << e.what();
+		badRequest(response, e.what());
+	}
 }
