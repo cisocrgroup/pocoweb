@@ -10,9 +10,10 @@
 ```
 
 # Dependencies
- * g++-5 
+ * g++-5
  * libbost-dev
  * libmysqlcppconn-dev
  * make
+ * libssl-dev
 
-```$ apt-get install g++-5 libbost-dev libmysqlcppconn-dev make```
+```$ apt-get install g++-5 libbost-dev libmysqlcppconn-dev make libssl-dev```
