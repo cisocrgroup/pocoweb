@@ -3,27 +3,20 @@
 #include <cppconn/driver.h>
 #include <cppconn/statement.h>
 #include <boost/log/trivial.hpp>
-#include "server_http.hpp"
-#include "util/Config.hpp"
-#include "api/api.hpp"
-#include "db/db.hpp"
-#include "db/User.hpp"
-#include "db/DbTableUsers.hpp"
-
-#   include <boost/shared_ptr.hpp>
-#   include <boost/date_time/posix_time/posix_time_types.hpp>
-#   include <boost/log/trivial.hpp>
-#   include <boost/log/core.hpp>
-#   include <boost/log/expressions.hpp>
-#   include <boost/log/sources/logger.hpp>
-#   include <boost/log/utility/setup/file.hpp>
-#   include <boost/log/utility/setup/console.hpp>
-#   include <boost/log/utility/setup/common_attributes.hpp>
-#   include <boost/log/support/date_time.hpp>
-#   include <boost/log/sinks/sync_frontend.hpp>
-#   include <boost/log/sinks/text_file_backend.hpp>
-#   include <boost/log/sinks/text_ostream_backend.hpp>
-#   include <boost/log/attributes/named_scope.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/sources/logger.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/support/date_time.hpp>
+#include <boost/log/sinks/sync_frontend.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/sinks/text_ostream_backend.hpp>
+#include <boost/log/attributes/named_scope.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
@@ -33,6 +26,13 @@
 #include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/sources/severity_logger.hpp>
 #include <boost/log/sources/record_ostream.hpp>
+#include "server_http.hpp"
+#include "util/Config.hpp"
+#include "util/hash.hpp"
+#include "api/api.hpp"
+#include "db/db.hpp"
+#include "db/User.hpp"
+#include "db/DbTableUsers.hpp"
 
 using namespace pcw;
 static const char *def = "config.ini";
@@ -45,6 +45,8 @@ int
 main(int argc, char** argv)
 {
 	try {
+		std::cout << "salt: " << salt() << "\n";
+		std::cout << "hash: " << hash(salt(), "foobar") << "\n";
 		run(argc, argv);
 		return EXIT_SUCCESS;
 	} catch (const std::exception& e) {

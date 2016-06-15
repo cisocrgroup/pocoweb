@@ -9,7 +9,7 @@ CXXFLAGS += -DBOOST_LOG_DYN_LINK
 LDFLAGS ?=
 LDFLAGS := $(LDFLAGS)
 LDFLAGS += -l mysqlcppconn
-LDFLAGS += -l crypt
+LDFLAGS += -l openssl
 LDFLAGS += -l pthread
 LDFLAGS += -l boost_regex
 LDFLAGS += -l boost_system
@@ -20,12 +20,14 @@ LDFLAGS += -l boost_thread
 
 VPATH = src/db src/util src/api src
 
-OBJS += User.o
+OBJS += Api.o
 OBJS += Config.o
 OBJS += DbTableUsers.o
 OBJS += Login.o
-OBJS += Api.o
+OBJS += User.o
+OBJS += db.o
 OBJS += pocowebd.o
+OBJS += hash.o
 
 DEPS = $(patsubst %.o,%.d,$(OBJS))
 -include $(DEPS)

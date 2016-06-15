@@ -19,14 +19,14 @@ namespace pcw {
 	};
 
 	struct Login: public Api {
-		Login(const Config& c): config(c) {}
+		Login(const Config& config): config_(config) {}
 		void operator()(Response& response, RequestPtr request) const noexcept;
 
 	private:
 		Status doLogin(const std::string& username,
 			       const std::string& password,
 			       std::string& answer) const noexcept;
-		const Config& config;
+		const Config& config_;
 	};
 }
 

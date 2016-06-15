@@ -2,9 +2,8 @@
 #include <string>
 #include <regex>
 #include <boost/log/trivial.hpp>
-#include <mysql_connection.h>
-#include <mysql_driver.h>
 #include <cppconn/statement.h>
+#include <mysql_connection.h>
 #include "util/Config.hpp"
 #include "db/db.hpp"
 #include "db/User.hpp"
@@ -44,12 +43,9 @@ pcw::Login::doLogin(const std::string& username,
 		    std::string& answer) const noexcept
 {
 	try {
-		auto driver = sql::mysql::get_mysql_driver_instance();
-		ConnectionPtr conn{driver->connect(config.db.host,
-						   config.db.user,
-						   config.db.pass)};
+		auto conn = connect(config_);
 		DbTableUsers db{conn};
-		auto user = db.findUserByName(username);
+		auto user = db.findUserByName(username); // try name
 		if (not user) // try email ...
 			user = db.findUserByEmail(username);
 		if (not user) // invalid user / email

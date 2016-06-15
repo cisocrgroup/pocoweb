@@ -9,11 +9,13 @@ namespace sql {
 }
 
 namespace pcw {
-	using DriverPtr = std::shared_ptr<sql::Driver>;
 	using ConnectionPtr = std::shared_ptr<sql::Connection>;
 	using StatementPtr = std::unique_ptr<sql::Statement>;
 	using PreparedStatementPtr = std::unique_ptr<sql::PreparedStatement>;
 	using ResultSetPtr = std::unique_ptr<sql::ResultSet>;
+
+	class Config;
+	ConnectionPtr connect(const Config& config);
 }
 
 #endif // pcw_db_hpp__
