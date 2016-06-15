@@ -65,6 +65,7 @@ pcw::DbTableUsers::createUser(const std::string& name,
 	s->setString(2, email);
 	s->setString(3, institute);
 	s->setString(4, hash);
+	s->executeUpdate();
 	return findUserByName(name);
 }
 
