@@ -61,8 +61,8 @@ run(int argc, char** argv)
 {
 	const auto config = loadConfig(argc, argv);
 	initLogging(config);
-	if (daemon(0, 0) == -1)
-	 	throw std::system_error(errno, std::system_category(), "daemon");
+	//if (daemon(0, 0) == -1)
+	 	//throw std::system_error(errno, std::system_category(), "daemon");
 
 	auto server = Api::server(config);
 	BOOST_LOG_TRIVIAL(info) << "server starting (" << getpid() << ")";

@@ -4,7 +4,6 @@
 #include <boost/log/trivial.hpp>
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
-#include <crypt.h>
 #include "db.hpp"
 #include "User.hpp"
 #include "DbTableUsers.hpp"
@@ -67,10 +66,5 @@ pcw::DbTableUsers::authenticate(const std::string& hash,
 	// $1$salt$...
 	BOOST_LOG_TRIVIAL(info) << "hash: " << hash;
 	BOOST_LOG_TRIVIAL(info) << "pass: " << passwd;
-
-	struct crypt_data data;
-	data.initialized=0;
-	auto res = crypt_r(passwd.data(), passwd.data(), &data);
-	BOOST_LOG_TRIVIAL(info) << " res: " << res << "\n";
 	return true;
 }

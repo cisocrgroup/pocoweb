@@ -9,7 +9,7 @@ CXXFLAGS += -DBOOST_LOG_DYN_LINK
 LDFLAGS ?=
 LDFLAGS := $(LDFLAGS)
 LDFLAGS += -l mysqlcppconn
-LDFLAGS += -l openssl
+LDFLAGS += -l ssl
 LDFLAGS += -l pthread
 LDFLAGS += -l boost_regex
 LDFLAGS += -l boost_system
@@ -17,6 +17,7 @@ LDFLAGS += -l boost_coroutine
 LDFLAGS += -l boost_log
 LDFLAGS += -l boost_log_setup
 LDFLAGS += -l boost_thread
+LDFLAGS += -l crypto
 
 VPATH = src/db src/util src/api src
 

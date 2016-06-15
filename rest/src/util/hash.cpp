@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iostream>
 #include <iomanip>
 #include <string>
 #include <random>
@@ -13,6 +14,7 @@ pcw::salt()
 	std::mt19937 gen;
 	const auto n = d(gen);
 
+	std::cout << "n: " << n << "\n";
 	std::stringstream ios;
 	ios << std::setw(sizeof(unsigned int))
 	    << std::setfill('0')
@@ -34,11 +36,12 @@ dohash(const char *salt, size_t saltn, const char *str, size_t strn)
 	SHA256_Final(hash, &sha256);
 
 	std::stringstream ios;
-	for (auto i = 0; i < SHA256_DIGEST_LENGTH; ++i)
+	for (auto i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
 		ios << std::setw(2)
 		    << std::setfill('0')
 		    << std::hex
-		    << hash[i];
+		    << int(hash[i]);
+	}
 	return ios.str();
 }
 
