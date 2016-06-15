@@ -35,7 +35,6 @@
 #include "db/DbTableUsers.hpp"
 
 using namespace pcw;
-static const char *def = "config.ini";
 static void run(int argc, char **argv);
 static Config loadConfig(int argc, char **argv);
 static void initLogging(const Config& config);
@@ -73,11 +72,12 @@ run(int argc, char** argv)
 Config
 loadConfig(int argc, char **argv)
 {
-	const char *configfile = def;
-	if (argc > 1)
-		configfile = argv[1];
+	if (argc < 2)
+		throw std::runtime_error(std::string("Usage: ") +
+					 argv[0] +
+					 " config-file");
 	Config config;
-	config.load(configfile);
+	config.load(argv[1]);
 	return config;
 }
 
