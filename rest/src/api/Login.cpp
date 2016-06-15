@@ -78,7 +78,7 @@ pcw::Login::write(const User& user, std::string& answer) const noexcept
 		std::stringstream ios;
 		pt::write_json(ios, json);
 		answer = ios.str();
-		BOOST_LOG_TRIVIAL(info) << user << " successfully logged in";
+		BOOST_LOG_TRIVIAL(info) << user << ": " << id;
 		return Status::Ok;
 	} catch (const std::exception& e) {
 		BOOST_LOG_TRIVIAL(error) << e.what();
