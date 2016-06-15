@@ -3,14 +3,16 @@
 
 namespace pcw {
 	class User;
+
 	class DbTableUsers {
 	public:
 		DbTableUsers(ConnectionPtr conn);
-		UserPtr findUserByEmail(const std::string& name) const;
+		UserPtr findUserByEmail(const std::string& email) const;
+		UserPtr findUserByName(const std::string& name) const;
 		template<class F> std::vector<UserPtr> findUsers(F f) const;
+		bool authenticate(const User& user, const std::string& passwd) const;
 
 	private:
-		static UserPtr makeUser(const sql::ResultSet& res);
 		static bool authenticate(const std::string& hash,
 					 const std::string& passwd);
 		const ConnectionPtr conn_;
@@ -30,7 +32,7 @@ pcw::DbTableUsers::findUsers(F f) const
 	std::vector<UserPtr> users;
 	users.reserve(res->rowsCount());
 	while (res->next()) {
-		auto user = makeUser(*res);
+		auto user = User::create(*res);
 		if (user and f(*user))
 			users.push_back(std::move(user));
 	}

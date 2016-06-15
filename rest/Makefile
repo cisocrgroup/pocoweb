@@ -46,6 +46,7 @@ config.ini:
 	@sed -i -e "s/@PCW_DAEMON_HOST@/$(PCW_DAEMON_HOST)/g" $@
 	@sed -i -e "s/@PCW_DAEMON_PORT@/$(PCW_DAEMON_PORT)/g" $@
 	@sed -i -e "s/@PCW_DAEMON_THREADS@/$(PCW_DAEMON_THREADS)/g" $@
+	@sed -i -e "s/@PCW_LOG_FILE@/$(PCW_LOG_FILE)/g" $@
 
 .PHONY: clean
 clean:

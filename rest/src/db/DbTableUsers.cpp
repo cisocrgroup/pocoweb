@@ -1,6 +1,7 @@
 #include <cstring>
 #include <memory>
 #include <mysql_connection.h>
+#include <boost/log/trivial.hpp>
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
 #include <crypt.h>
@@ -27,40 +28,49 @@ pcw::DbTableUsers::findUserByEmail(const std::string& email) const
 	s->setString(1, email);
 	ResultSetPtr res(s->executeQuery());
 	assert(res);
-	return res->next() ? makeUser(*res) : nullptr;
+	return res->next() ? User::create(*res) : nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::UserPtr
-pcw::DbTableUsers::makeUser(const sql::ResultSet& res)
+pcw::DbTableUsers::findUserByName(const std::string& name) const
 {
-	auto user = std::make_shared<User>(res.getString("name"),
-					   res.getString("email"),
-					   res.getString("institute"),
-					   res.getInt("id"));
-	return res.getBoolean("active") ? user : nullptr;
+	assert(conn_);
+	PreparedStatementPtr s(conn_->prepareStatement("select * from users "
+						       "where name=?"));
+	assert(s);
+	s->setString(1, name);
+	ResultSetPtr res(s->executeQuery());
+	assert(res);
+	return res->next() ? User::create(*res) : nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool
+pcw::DbTableUsers::authenticate(const User& user, const std::string& passwd) const
+{
+	assert(conn_);
+	PreparedStatementPtr s(conn_->prepareStatement("select passwd from "
+						       "users where id=?"));
+	assert(s);
+	s->setInt(1, user.id);
+	ResultSetPtr res(s->executeQuery());
+	assert(res);
+	return res->next() ? authenticate(res->getString(1), passwd) : false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 bool
 pcw::DbTableUsers::authenticate(const std::string& hash,
-				    const std::string& passwd)
+				const std::string& passwd)
 {
 	// $1$salt$...
-	std::cout << "  hash: " << hash << "\n";
-	std::cout << "passwd: " << passwd << "\n";
+	BOOST_LOG_TRIVIAL(info) << "hash: " << hash;
+	BOOST_LOG_TRIVIAL(info) << "pass: " << passwd;
+
 	struct crypt_data data;
-	//crypt_data data;
 	data.initialized=0;
 	auto res = crypt_r(passwd.data(), passwd.data(), &data);
-	std::cout << "   res: " << res << "\n";
-
-	//data.initialized
-	// const auto *hhash = crypt(passwd.data(), "$6$salt$");
-	// if (not hhash) {
-	// 	std::cout << "ERRNO: " << errno << "\n";
-	// 	return false;
-	// }
-	// std::cout << "   hash: " << hhash << "\n";
+	BOOST_LOG_TRIVIAL(info) << " res: " << res << "\n";
 	return true;
 }

@@ -5,9 +5,16 @@ namespace pcw {
 	struct Config {
 		Config& load(const std::string& filename);
 
-		std::string dbUser, dbHost, dbPass,
-			daemonHost, logFile;
-		int daemonPort, daemonThreads;
+		struct Db {
+			std::string user, host, pass;
+		} db;
+		struct Daemon {
+			std::string host;
+			int port, threads;
+		} daemon;
+		struct Log {
+			std::string file;
+		} log;
 	};
 }
 

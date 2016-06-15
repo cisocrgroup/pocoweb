@@ -10,6 +10,21 @@
 #include "db/User.hpp"
 #include "db/DbTableUsers.hpp"
 
+#   include <boost/shared_ptr.hpp>
+#   include <boost/date_time/posix_time/posix_time_types.hpp>
+#   include <boost/log/trivial.hpp>
+#   include <boost/log/core.hpp>
+#   include <boost/log/expressions.hpp>
+#   include <boost/log/sources/logger.hpp>
+#   include <boost/log/utility/setup/file.hpp>
+#   include <boost/log/utility/setup/console.hpp>
+#   include <boost/log/utility/setup/common_attributes.hpp>
+#   include <boost/log/support/date_time.hpp>
+#   include <boost/log/sinks/sync_frontend.hpp>
+#   include <boost/log/sinks/text_file_backend.hpp>
+#   include <boost/log/sinks/text_ostream_backend.hpp>
+#   include <boost/log/attributes/named_scope.hpp>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
@@ -21,36 +36,37 @@
 
 using namespace pcw;
 static const char *def = "config.ini";
+static void run(int argc, char **argv);
 static Config loadConfig(int argc, char **argv);
-static void init(const Config& config);
+static void initLogging(const Config& config);
 
 ////////////////////////////////////////////////////////////////////////////////
 int
 main(int argc, char** argv)
 {
+	try {
+		run(argc, argv);
+		return EXIT_SUCCESS;
+	} catch (const std::exception& e) {
+		std::cerr << "[error] " << e.what() << "\n";
+	}
+	return EXIT_FAILURE;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+run(int argc, char** argv)
+{
 	const auto config = loadConfig(argc, argv);
-	init(config);
+	initLogging(config);
+	if (daemon(0, 0) == -1)
+	 	throw std::system_error(errno, std::system_category(), "daemon");
 
-	Api::Server server(config.daemonPort, config.daemonThreads);
-	server.resource["^/login$"]["GET"] = Login(config);
-	std::thread sthread([&server](){
-			BOOST_LOG_TRIVIAL(info) << "server starting";
-			server.start();
-			BOOST_LOG_TRIVIAL(info) << "server stopping";
-		});
+	auto server = Api::server(config);
+	BOOST_LOG_TRIVIAL(info) << "server starting (" << getpid() << ")";
+	std::thread sthread([&server](){server->start();});
 	sthread.join();
-	// std::string
-
-	// ConnectionPtr conn{get_driver_instance()->connect(config.dbHost,
-	// 						  config.dbUser,
-	// 						  config.dbPass)};
-	// DbTableUsers db(conn);
-	// auto user = db.findUserByEmail("finkf@cis.lmu.de");
-	// if (user)
-	// 	std::cout << *user << "\n";
-	// auto users = db.findUsers([](const auto&){return true;});
-	// for (const auto& user: users)
-	// 	std::cout << "user: " << *user << "\n";
+	BOOST_LOG_TRIVIAL(info) << "server stopping";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -67,10 +83,31 @@ loadConfig(int argc, char **argv)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-init(const Config& config)
+initLogging(const Config& config)
 {
-	boost::log::add_file_log(config.logFile);
+	boost::log::add_common_attributes();
+	auto fmtTimeStamp = boost::log::expressions::
+		format_date_time<boost::posix_time::ptime
+				 >("TimeStamp", "%Y-%m-%d %H:%M:%S.%f");
+	auto fmtThreadId = boost::log::expressions::
+		attr<boost::log::attributes::current_thread_id::value_type
+		     >("ThreadID");
+	auto fmtSeverity = boost::log::expressions::
+		attr<boost::log::trivial::severity_level
+		     >("Severity");
+	boost::log::formatter logFmt =
+		boost::log::expressions::format("[%1%] [%2%] [%3%] %4%")
+		% fmtTimeStamp
+		% fmtThreadId
+		% fmtSeverity
+		% boost::log::expressions::smessage;
+	auto fsink = boost::log::add_file_log(
+	         boost::log::keywords::file_name = config.log.file,
+		 boost::log::keywords::rotation_size = 10 * 1024 * 1024,
+		 boost::log::keywords::auto_flush = true,
+		 boost::log::keywords::open_mode = std::ios_base::app);
+	fsink->set_formatter(logFmt);
 	boost::log::core::get()->set_filter(
-	        boost::log::trivial::severity >= boost::log::trivial::info
+	         boost::log::trivial::severity >= boost::log::trivial::info
 	);
 }
