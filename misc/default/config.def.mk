@@ -1,8 +1,8 @@
 #
 
 # user, host and password for the database
-PCW_DB_USER="db-user"
-PCW_DB_HOST="db-host"
+PCW_DB_USER="user"
+PCW_DB_HOST="localhost"
 PCW_DB_PASS="password"
 
 # settings for pocowebd
