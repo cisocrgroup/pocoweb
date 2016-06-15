@@ -3,6 +3,8 @@
 *.a
 *~
 .*
+*.log
 rest/pocowebd
+rest/pocoweb_create_user
 rest/config.ini
 config.mk
