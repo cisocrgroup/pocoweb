@@ -89,7 +89,5 @@ pcw::DbTableUsers::authenticate(const std::string& hash,
 				const std::string& passwd)
 {
 	// $1$salt$...
-	BOOST_LOG_TRIVIAL(info) << "hash: " << hash;
-	BOOST_LOG_TRIVIAL(info) << "pass: " << passwd;
 	return pcw::check(hash, passwd);
 }
