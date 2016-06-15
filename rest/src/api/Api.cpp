@@ -5,8 +5,15 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 struct BadRequest: public pcw::Api {
-	void operator()(Response& response, RequestPtr) const noexcept {
-		badRequest(response, "Invalid rest uri");
+	void operator()(Response& response, RequestPtr req) const noexcept {
+		try {
+			BOOST_LOG_TRIVIAL(error) << "Invalid request: "
+						 << req->path;
+			badRequest(response, "Invalid rest uri");
+		} catch (const std::exception& e) {
+			BOOST_LOG_TRIVIAL(error) << e.what();
+			internalServerError(response);
+		}
 	}
 };
 
