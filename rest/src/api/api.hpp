@@ -2,6 +2,7 @@
 #define pcw_api_hpp__
 
 namespace pcw {
+	class User;
 	struct Config;
 
 	struct Api {
@@ -26,7 +27,7 @@ namespace pcw {
 		Status doLogin(const std::string& username,
 			       const std::string& password,
 			       std::string& answer) const noexcept;
-		Status session(std::string& answer) const noexcept;
+		Status write(const User& user, std::string& answer) const noexcept;
 
 		const Config& config_;
 	};

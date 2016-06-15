@@ -56,7 +56,8 @@ pcw::Login::doLogin(const std::string& username,
 			return Status::Forbidden;
 		if (not db.authenticate(*user, password))
 			return Status::Forbidden;
-		return session(answer);
+		assert(user);
+		return write(*user, answer);
 	} catch (const std::exception& e) {
 		BOOST_LOG_TRIVIAL(error) << e.what();
 	}
@@ -65,12 +66,15 @@ pcw::Login::doLogin(const std::string& username,
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Api::Status
-pcw::Login::session(std::string& answer) const noexcept
+pcw::Login::write(const User& user, std::string& answer) const noexcept
 {
 	try {
 		auto id = gensessionid(42);
 		pt::ptree json;
 		json.put("sessionid", id);
+		json.put("user.name", user.name);
+		json.put("user.email", user.email);
+		json.put("user.institute", user.institute);
 		std::stringstream ios;
 		pt::write_json(ios, json);
 		answer = ios.str();
