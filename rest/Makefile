@@ -27,16 +27,21 @@ OBJS += DbTableUsers.o
 OBJS += Login.o
 OBJS += User.o
 OBJS += db.o
-OBJS += pocowebd.o
 OBJS += hash.o
 
-DEPS = $(patsubst %.o,%.d,$(OBJS))
+MAINS += pocowebd.o
+MAINS += pocoweb_create_user.o
+
+DEPS = $(patsubst %.o,%.d,$(OBJS) $(MAINS))
 -include $(DEPS)
 
-default: pocowebd config.ini
+default: pocowebd pocoweb_create_user config.ini
 
-pocowebd: libpocoweb.a
-	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
+pocowebd: pocowebd.o libpocoweb.a
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+
+pocoweb_create_user: pocoweb_create_user.o libpocoweb.a
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 libpocoweb.a: $(OBJS)
 	$(AR) rcs $@ $^
@@ -53,4 +58,4 @@ config.ini:
 
 .PHONY: clean
 clean:
-	$(RM) *.o *.d libpocoweb.a main config.ini
+	$(RM) *.o *.d libpocoweb.a pocwebd pocweb_create_user config.ini

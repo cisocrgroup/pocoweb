@@ -9,8 +9,8 @@ export $(LDFLAGS)
 all: default
 
 default install clean uninstall: config.mk
-	$(MAKE) -C db $@
 	$(MAKE) -C rest $@
+	$(MAKE) -C db $@
 
 config.mk: misc/default/config.def.mk
 	cp $< $@
