@@ -4,6 +4,7 @@
 #include <boost/log/trivial.hpp>
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
+#include "util/hash.hpp"
 #include "db.hpp"
 #include "User.hpp"
 #include "DbTableUsers.hpp"
@@ -45,6 +46,29 @@ pcw::DbTableUsers::findUserByName(const std::string& name) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+pcw::UserPtr
+pcw::DbTableUsers::createUser(const std::string& name,
+			      const std::string& email,
+			      const std::string& institute,
+			      const std::string& password) const
+{
+	auto salt = pcw::gensalt();
+	auto ssum = pcw::genhash(salt, password);
+	auto hash = salt + '$' + ssum;
+
+	assert(conn_);
+	PreparedStatementPtr s(conn_->prepareStatement("insert into users "
+						       "(name, email, institute, passwd, active) "
+						       " values (?, ?, ?, ?, true)"));
+	assert(s);
+	s->setString(1, name);
+	s->setString(2, email);
+	s->setString(3, institute);
+	s->setString(4, hash);
+	return findUserByName(name);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 bool
 pcw::DbTableUsers::authenticate(const User& user, const std::string& passwd) const
 {
@@ -66,5 +90,5 @@ pcw::DbTableUsers::authenticate(const std::string& hash,
 	// $1$salt$...
 	BOOST_LOG_TRIVIAL(info) << "hash: " << hash;
 	BOOST_LOG_TRIVIAL(info) << "pass: " << passwd;
-	return true;
+	return pcw::check(hash, passwd);
 }

@@ -45,8 +45,6 @@ int
 main(int argc, char** argv)
 {
 	try {
-		std::cout << "salt: " << salt() << "\n";
-		std::cout << "hash: " << hash(salt(), "foobar") << "\n";
 		run(argc, argv);
 		return EXIT_SUCCESS;
 	} catch (const std::exception& e) {

@@ -1,12 +1,13 @@
+#include <cassert>
+#include <cstring>
+#include <algorithm>
 #include <sstream>
-#include <iostream>
 #include <iomanip>
 #include <string>
 #include <random>
 #include <unistd.h>
 #include <openssl/sha.h>
 #include "hash.hpp"
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // http://stackoverflow.com/a/323302
@@ -26,25 +27,6 @@ mix(unsigned long a, unsigned long b, unsigned long c)
     return c;
 }
 
-
-////////////////////////////////////////////////////////////////////////////////
-std::string
-pcw::salt()
-{
-	unsigned long seed = mix(clock(), time(NULL), getpid());
-	std::uniform_int_distribution<unsigned int> d;
-	std::mt19937 gen(seed);
-	const auto n = d(gen);
-
-	std::cout << "n: " << n << "\n";
-	std::stringstream ios;
-	ios << std::setw(sizeof(unsigned int))
-	    << std::setfill('0')
-	    << std::hex
-	    << n;
-	return ios.str();
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 static std::string
 dohash(const char *salt, size_t saltn, const char *str, size_t strn)
@@ -62,14 +44,56 @@ dohash(const char *salt, size_t saltn, const char *str, size_t strn)
 		ios << std::setw(2)
 		    << std::setfill('0')
 		    << std::hex
-		    << int(hash[i]);
+		    << static_cast<int>(hash[i]);
 	}
 	return ios.str();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string
-pcw::hash(const std::string& salt, const std::string& str)
+pcw::gensessionid(size_t n)
+{
+	unsigned long seed = mix(clock(), time(NULL), getpid());
+	std::string id(n, 0);
+
+	std::uniform_int_distribution<char> d('0', 'z');
+	std::mt19937 gen(seed);
+	for (size_t i = 0; i < n; ++i)
+		id[i] = d(gen);
+	return dohash(id.data(), id.size(), "", 0);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::string
+pcw::gensalt()
+{
+	unsigned long seed = mix(clock(), time(NULL), getpid());
+	std::uniform_int_distribution<unsigned int> d;
+	std::mt19937 gen(seed);
+	const auto n = d(gen);
+
+	std::stringstream ios;
+	ios << std::setw(sizeof(unsigned int))
+	    << std::setfill('0')
+	    << std::hex
+	    << n;
+	return ios.str();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::string
+pcw::genhash(const std::string& salt, const std::string& str)
 {
 	return dohash(salt.data(), salt.size(), str.data(), str.size());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool
+pcw::check(const std::string& comb, const std::string& passwd)
+{
+	auto ptr = std::find(comb.data(), comb.data() + comb.size(), '$');
+	assert(ptr != comb.data() + comb.size());
+	const auto n = std::distance(comb.data(), ptr);
+	auto hash = dohash(comb.data(), n, passwd.data(), passwd.size());
+	return strcmp(ptr + 1, hash.data()) == 0;
 }

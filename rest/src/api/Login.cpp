@@ -2,14 +2,19 @@
 #include <string>
 #include <regex>
 #include <boost/log/trivial.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 #include <cppconn/statement.h>
 #include <mysql_connection.h>
 #include "util/Config.hpp"
+#include "util/hash.hpp"
 #include "db/db.hpp"
 #include "db/User.hpp"
 #include "db/DbTableUsers.hpp"
 #include "server_http.hpp"
 #include "api.hpp"
+
+namespace pt = boost::property_tree;
 
 ////////////////////////////////////////////////////////////////////////////////
 void
@@ -35,7 +40,6 @@ pcw::Login::operator()(Response& response, RequestPtr request) const noexcept
 	reply(status, response, answer);
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Login::Status
 pcw::Login::doLogin(const std::string& username,
@@ -52,9 +56,27 @@ pcw::Login::doLogin(const std::string& username,
 			return Status::Forbidden;
 		if (not db.authenticate(*user, password))
 			return Status::Forbidden;
-		return Status::Ok;
+		return session(answer);
 	} catch (const std::exception& e) {
 		BOOST_LOG_TRIVIAL(error) << e.what();
 	}
 	return Status::InternalServerError;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Api::Status
+pcw::Login::session(std::string& answer) const noexcept
+{
+	try {
+		auto id = gensessionid(42);
+		pt::ptree json;
+		json.put("sessionid", id);
+		std::stringstream ios;
+		pt::write_json(ios, json);
+		answer = ios.str();
+		return Status::Ok;
+	} catch (const std::exception& e) {
+		BOOST_LOG_TRIVIAL(error) << e.what();
+		return Status::InternalServerError;
+	}
 }

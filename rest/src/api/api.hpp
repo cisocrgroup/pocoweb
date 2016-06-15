@@ -26,6 +26,8 @@ namespace pcw {
 		Status doLogin(const std::string& username,
 			       const std::string& password,
 			       std::string& answer) const noexcept;
+		Status session(std::string& answer) const noexcept;
+
 		const Config& config_;
 	};
 }
