@@ -80,7 +80,8 @@ void
 pcw::Api::internalServerError(Response& response) const noexcept
 {
 	try {
-		response << "HTTP/1.1 500 Internal Server Error\r\n\r\n"
+		response << "HTTP/1.1 500 Internal Server Error\r\n"
+			 << "Content-Length: 0\r\n\r\n"
 			 << std::flush;
 	} catch (const std::exception& e) {
 		BOOST_LOG_TRIVIAL(error) << e.what();
@@ -92,7 +93,8 @@ void
 pcw::Api::forbidden(Response& response) const noexcept
 {
 	try {
-		response << "HTTP/1.1 403 Forbidden\r\n\r\n"
+		response << "HTTP/1.1 403 Forbidden\r\n"
+			 << "Content-Length: 0\r\n\r\n"
 			 << std::flush;
 	} catch (const std::exception& e) {
 		BOOST_LOG_TRIVIAL(error) << e.what();

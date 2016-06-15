@@ -65,6 +65,7 @@ pcw::DbTableUsers::createUser(const std::string& name,
 	s->setString(2, email);
 	s->setString(3, institute);
 	s->setString(4, hash);
+	s->executeUpdate();
 	return findUserByName(name);
 }
 
@@ -88,7 +89,5 @@ pcw::DbTableUsers::authenticate(const std::string& hash,
 				const std::string& passwd)
 {
 	// $1$salt$...
-	BOOST_LOG_TRIVIAL(info) << "hash: " << hash;
-	BOOST_LOG_TRIVIAL(info) << "pass: " << passwd;
 	return pcw::check(hash, passwd);
 }

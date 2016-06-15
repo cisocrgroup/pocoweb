@@ -13,6 +13,6 @@ PCW_LOG_FILE="pocoweb.log"
 
 # default users
 # each entry: name,email,institute,passwd
-PCW_DEF_USERS += "flo,fake-email@example.org,CIS,flo"
-PCW_DEF_USERS += "uwe,fake-email@example.org,CIS,uwe"
-PCW_DEF_USERS += "klaus,fake-email@example.org,CIS,klaus"
+PCW_DEF_USERS += "flo,fake-email1@example.org,CIS,flo"
+PCW_DEF_USERS += "uwe,fake-email2@example.org,CIS,uwe"
+PCW_DEF_USERS += "klaus,fake-email3@example.org,CIS,klaus"
