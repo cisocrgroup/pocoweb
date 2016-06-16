@@ -1,5 +1,7 @@
+#include <mutex>
 #include <boost/log/trivial.hpp>
 #include "server_http.hpp"
+#include "db/Sessions.hpp"
 #include "util/Config.hpp"
 #include "api.hpp"
 
@@ -23,7 +25,8 @@ pcw::Api::server(const Config& config)
 {
 	auto server = std::make_unique<Server>(config.daemon.port,
 					       config.daemon.threads);
-	server->resource[R"(^/login\??(.+)$)"]["GET"] = Login(config);
+	auto sessions = std::make_shared<Sessions>();
+	server->resource[R"(^/login\??(.+)$)"]["GET"] = Login(sessions, config);
 	server->default_resource["POST"] = BadRequest();
 	server->default_resource["GET"] = BadRequest();
 	return std::move(server);

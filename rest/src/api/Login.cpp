@@ -1,3 +1,4 @@
+#include <mutex>
 #include <iostream>
 #include <string>
 #include <regex>
@@ -10,6 +11,7 @@
 #include "util/Json.hpp"
 #include "util/hash.hpp"
 #include "db/db.hpp"
+#include "db/Sessions.hpp"
 #include "db/User.hpp"
 #include "db/DbTableUsers.hpp"
 #include "server_http.hpp"
@@ -67,10 +69,13 @@ pcw::Login::doLogin(const std::string& username,
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Api::Status
-pcw::Login::write(const User& user, std::string& answer) const noexcept
+pcw::Login::write(User& user, std::string& answer) const noexcept
 {
 	try {
-		auto sid = gensessionid(42);
+		std::string sid;
+		do {
+			sid = gensessionid(42);
+		} while (not sessions->insert(sid, user.shared_from_this()));
 		Json json;
 		json.put("sessionid", sid);
 		json.put("user.name", user.name);
