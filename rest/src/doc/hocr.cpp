@@ -1,0 +1,140 @@
+#include <iostream>
+#include <regex>
+#include <memory>
+#include <vector>
+#include <boost/filesystem.hpp>
+#include <pugixml.hpp>
+#include "Document.hpp"
+#include "hocr.hpp"
+
+namespace fs = boost::filesystem;
+
+///////////////////////////////////////////////////////////////////////////////
+static bool
+is_hocr_file(const fs::path& p)
+{
+	return fs::is_regular_file(p) and (
+		p.extension().string() == ".xml" or
+		p.extension().string() == ".hocr" or
+		p.extension().string() == ".html" or
+		p.extension().string() == ".htm");
+}
+
+///////////////////////////////////////////////////////////////////////////////
+static std::string
+parse_image(pugi::xml_node node)
+{
+	static const std::regex imagere{R"(image\s+\"?([^\"]*)\"?)"};
+	std::cmatch m;
+	if (std::regex_search(node.attribute("title").value(), m, imagere))
+		return m[1];
+	throw std::runtime_error(
+		std::string("HOCR missing bbox in `") +
+		node.attribute("title").value() + "`");
+}
+
+///////////////////////////////////////////////////////////////////////////////
+static pcw::Box
+parse_box(pugi::xml_node node)
+{
+	static const std::regex bboxre{
+		R"(bbox\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+))"
+	};
+	std::cmatch m;
+	if (std::regex_search(node.attribute("title").value(), m, bboxre)) 
+		return {
+			std::stoi(m[1]),
+			std::stoi(m[2]),
+			std::stoi(m[3]),
+			std::stoi(m[4])
+		};
+	throw std::runtime_error(
+		std::string("HOCR missing bbox in `") + 
+		node.attribute("title").value() + "`");
+}
+
+///////////////////////////////////////////////////////////////////////////////
+static void
+append_token(pcw::Line& line, 
+	     const pcw::Box& tbox, 
+	     const pcw::Box& lbox, 
+	     const char *token)
+{
+	auto offset = tbox.x0 - lbox.x0;
+	const auto n = strlen(token);
+	const auto w = tbox.x1 - tbox.x0;
+	const auto d = n ? w / n : w;
+	
+	for (int i = 0; i < (int)n; ++i) {
+		line.cuts().push_back(offset);
+		offset += d;
+	}		
+	line.cuts().push_back(tbox.x1 + 1);
+	line.line().append(token);
+	line.line().append(1, ' ');
+}
+
+///////////////////////////////////////////////////////////////////////////////
+static pcw::LinePtr
+parse_hocr_line(pugi::xml_node node)
+{
+	auto tokens = node.select_nodes(".//span[@class='ocrx_word']");
+	auto line = std::make_shared<pcw::Line>();
+	line->box = parse_box(node);
+	for (const auto& t: tokens) {
+		const char *token = t.node().text().get();
+		const auto box = parse_box(t.node());
+		append_token(*line, box, line->box, token);
+	}
+	assert(line->line().size() == line->cuts().size());
+	return line;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+static pcw::PagePtr
+parse_hocr_page(pugi::xml_node node)
+{
+	auto page = std::make_shared<pcw::Page>();
+	auto lines = node.select_nodes(".//span[@class='ocr_line']");
+	int linen = 0;
+	for (const auto& l: lines) {
+		page->push_back(parse_hocr_line(l.node()));
+		page->back()->id = ++linen;
+	}
+	page->box = parse_box(node);
+	page->image = parse_image(node);
+	return page;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+static void
+parse_hocr_pages(const fs::path& p, pcw::Book& book)
+{
+	pugi::xml_document doc;
+	auto ok = doc.load_file(p.string().data());
+	if (not ok)
+		throw std::runtime_error(
+			"XML error: " + std::string(ok.description()));
+	
+	auto pages = doc.select_nodes("//div[@class='ocr_page']");
+	int pagen = 0;
+	for (const auto& p: pages) {
+		book.push_back(parse_hocr_page(p.node()));
+		book.back()->id = ++pagen;
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+pcw::BookPtr
+pcw::parse_hocr(const std::string& dir)
+{
+	BookPtr book = std::make_shared<Book>();
+	for (auto i = fs::directory_iterator(dir); i != fs::directory_iterator(); ++i) {
+		if (is_hocr_file(*i)) {
+			parse_hocr_pages(*i, *book);
+		}
+	}
+	return book;
+}
+
+
