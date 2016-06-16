@@ -7,6 +7,7 @@
 #include "db/db.hpp"
 #include "db/User.hpp"
 #include "db/DbTableUsers.hpp"
+#include "db/DbTableBooks.hpp"
 #include "doc/hocr.hpp"
 #include "doc/Document.hpp"
 #include "util/Config.hpp"
@@ -29,14 +30,21 @@ main(int argc, char** argv)
 		
 		for (const auto& page: *book) {
 			for (const auto& line: *page) {
-				std::cout << page->id << " " << line->id << " " << line->line();
-				std::cout << "\n";
+				std::cerr << page->id << " " << line->id << " " << line->line();
+				std::cerr << "\n";
 			}
 		}
-		//auto conn = connect(config);
-		//DbTableUsers db(conn);
-		//auto user = db.createUser(argv[2], argv[3], argv[4], argv[5]);
-		return EXIT_SUCCESS; 
+	
+		const auto conn = connect(config);
+		DbTableUsers users(conn);
+		const auto owner = users.findUserByNameOrEmail(argv[3]);
+		if (not owner)
+			throw std::runtime_error("invalid book owner" + 
+						 std::string(argv[3]));
+		DbTableBooks books(conn);
+		auto res = books.insertBook(*owner, *book);
+		std::cerr << "book id: " << book->id << "\n";
+		return res ? EXIT_SUCCESS : EXIT_FAILURE;
 	} catch (const std::exception& e) {
 		std::cerr << "[error] " << e.what() << "\n";
 	}

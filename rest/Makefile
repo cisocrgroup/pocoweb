@@ -27,6 +27,7 @@ VPATH = src/db src/util src/api src/doc gsm/pugixml/src src
 OBJS += Api.o
 OBJS += Config.o
 OBJS += DbTableUsers.o
+OBJS += DbTableBooks.o
 OBJS += Login.o
 OBJS += User.o
 OBJS += Sessions.o

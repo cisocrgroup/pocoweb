@@ -3,6 +3,7 @@
 
 namespace pcw {
 	class User;
+	using UserPtr = std::shared_ptr<User>;
 
 	class DbTableUsers {
 	public:
