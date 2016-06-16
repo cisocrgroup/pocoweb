@@ -1,5 +1,5 @@
 CXXFLAGS ?= -Wall -Werror -std=gnu++14 -g -Og
-SHELL ?= /bin/bash
+SHELL = /bin/bash
 
 PCW_API_VERSION_MAJOR = 0
 PCW_API_VERSION_MINOR = 1
