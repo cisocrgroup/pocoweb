@@ -72,7 +72,7 @@ pcw::Login::write(const User& user, std::string& answer) const noexcept
 	try {
 		auto sid = gensessionid(42);
 		Json json;
-		json.put("sessionid", id);
+		json.put("sessionid", sid);
 		json.put("user.name", user.name);
 		json.put("user.email", user.email);
 		json.put("user.institute", user.institute);
