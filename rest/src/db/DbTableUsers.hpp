@@ -9,6 +9,7 @@ namespace pcw {
 		DbTableUsers(ConnectionPtr conn);
 		UserPtr findUserByEmail(const std::string& email) const;
 		UserPtr findUserByName(const std::string& name) const;
+		UserPtr findUserByNameOrEmail(const std::string& what) const;
 		UserPtr createUser(const std::string& name,
 				   const std::string& email,
 				   const std::string& institute,

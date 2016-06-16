@@ -46,6 +46,14 @@ pcw::DbTableUsers::findUserByName(const std::string& name) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+pcw::UserPtr 
+pcw::DbTableUsers::findUserByNameOrEmail(const std::string& what) const
+{
+	auto user = findUserByName(what);
+	return user? user : findUserByEmail(what);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 pcw::UserPtr
 pcw::DbTableUsers::createUser(const std::string& name,
 			      const std::string& email,

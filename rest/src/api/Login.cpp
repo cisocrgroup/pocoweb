@@ -52,9 +52,8 @@ pcw::Login::doLogin(const std::string& username,
 	try {
 		auto conn = connect(config_);
 		DbTableUsers db{conn};
-		auto user = db.findUserByName(username); // try name
-		if (not user) // try email ...
-			user = db.findUserByEmail(username);
+		auto user = db.findUserByNameOrEmail(username); 
+	
 		if (not user) // invalid user / email
 			return Status::Forbidden;
 		if (not db.authenticate(*user, password))
