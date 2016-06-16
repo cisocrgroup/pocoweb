@@ -27,6 +27,7 @@ OBJS += Config.o
 OBJS += DbTableUsers.o
 OBJS += Login.o
 OBJS += User.o
+OBJS += Sessions.o
 OBJS += db.o
 OBJS += hash.o
 
