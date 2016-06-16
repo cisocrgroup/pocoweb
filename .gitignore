@@ -6,5 +6,6 @@
 *.log
 rest/pocowebd
 rest/pocoweb_create_user
+rest/pocoweb_insert_book
 rest/config.ini
 config.mk
