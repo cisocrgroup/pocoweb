@@ -46,3 +46,9 @@ pcw::DbTableBooks::insertBook(const User& owner, Book& book) const
 	return book.shared_from_this();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+pcw::PagePtr
+pcw::DbTableBooks::insertBook(const Book& book, Page& page) const
+{
+	return page.shared_from_this();	
+}
