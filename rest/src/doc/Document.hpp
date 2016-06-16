@@ -9,6 +9,10 @@ namespace pcw {
 	using PagePtr = std::shared_ptr<Page>;
 	using BookPtr = std::shared_ptr<Book>;
 
+	struct Box {
+		int x0, y0, x1, y1;
+	};
+
 	template<class T>
 	class Container {
 	public:
@@ -36,13 +40,14 @@ namespace pcw {
 	class Book: public enable_shared_from_this<Book>,
 		    public Container<Page> {
 	public:
-		virtual ~Book() noexcept override = default;
+		virtual ~Book() noexcept override = default;	
 	};
 
 	class Page: public enable_shared_from_this<Page>,
 		    public Container<Line> {
 	public:
 		virtual ~Page() noexcept override = default;
+		Box box;
 	};
 
 	class Line: public enable_shared_from_this<Line> {
@@ -54,6 +59,7 @@ namespace pcw {
 		std::string& line() noexcept {return line_;}
 		const Cuts& cuts() const noexcept {return cuts_;}
 		Cuts& cuts() noexcept {return cuts_;}
+		Box box;
 
 	private:
 		std::string line_;
