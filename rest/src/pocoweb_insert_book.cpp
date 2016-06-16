@@ -30,8 +30,6 @@ main(int argc, char** argv)
 		for (const auto& page: *book) {
 			for (const auto& line: *page) {
 				std::cout << page->id << " " << line->id << " " << line->line();
-				for (int c: line->cuts()) 
-					std::cout << " " << c;
 				std::cout << "\n";
 			}
 		}

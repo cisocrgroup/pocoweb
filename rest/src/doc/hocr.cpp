@@ -108,7 +108,7 @@ parse_hocr_page(pugi::xml_node node)
 
 ///////////////////////////////////////////////////////////////////////////////
 static void
-parse_hocr_pages(const fs::path& p, pcw::Book& book)
+parse_hocr_pages(const fs::path& p, pcw::Book& book, int& pagen)
 {
 	pugi::xml_document doc;
 	auto ok = doc.load_file(p.string().data());
@@ -117,7 +117,6 @@ parse_hocr_pages(const fs::path& p, pcw::Book& book)
 			"XML error: " + std::string(ok.description()));
 	
 	auto pages = doc.select_nodes("//div[@class='ocr_page']");
-	int pagen = 0;
 	for (const auto& p: pages) {
 		book.push_back(parse_hocr_page(p.node()));
 		book.back()->id = ++pagen;
@@ -129,9 +128,10 @@ pcw::BookPtr
 pcw::parse_hocr(const std::string& dir)
 {
 	BookPtr book = std::make_shared<Book>();
+	int pagen = 0;
 	for (auto i = fs::directory_iterator(dir); i != fs::directory_iterator(); ++i) {
 		if (is_hocr_file(*i)) {
-			parse_hocr_pages(*i, *book);
+			parse_hocr_pages(*i, *book, pagen);
 		}
 	}
 	return book;
