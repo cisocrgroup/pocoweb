@@ -7,6 +7,7 @@
 #include <cppconn/statement.h>
 #include <mysql_connection.h>
 #include "util/Config.hpp"
+#include "util/Json.hpp"
 #include "util/hash.hpp"
 #include "db/db.hpp"
 #include "db/User.hpp"
@@ -69,16 +70,14 @@ pcw::Api::Status
 pcw::Login::write(const User& user, std::string& answer) const noexcept
 {
 	try {
-		auto id = gensessionid(42);
-		pt::ptree json;
+		auto sid = gensessionid(42);
+		Json json;
 		json.put("sessionid", id);
 		json.put("user.name", user.name);
 		json.put("user.email", user.email);
 		json.put("user.institute", user.institute);
-		std::stringstream ios;
-		pt::write_json(ios, json);
-		answer = ios.str();
-		BOOST_LOG_TRIVIAL(info) << user << ": " << id;
+		answer = json.string();
+		BOOST_LOG_TRIVIAL(info) << user << ": " << sid;
 		return Status::Ok;
 	} catch (const std::exception& e) {
 		BOOST_LOG_TRIVIAL(error) << e.what();
