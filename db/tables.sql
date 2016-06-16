@@ -27,6 +27,11 @@ create table pages (
 	bookid int references books(id),
 	pagenumber int,
 	nlines int,
+	imagepath varchar(255) not null,
+	x0 int,
+	x1 int,
+	y0 int,
+	y1 int,
 	primary key (bookid, pagenumber)
 );
 
@@ -37,6 +42,10 @@ create table linesx (
 	linenumber int,
 	string varchar(255),
 	cuts varchar(255),
+	x0 int,
+	x1 int,
+	y0 int,
+	y1 int,
 	primary key (bookid, pagenumber, linenumber)
 );
 	

@@ -4,6 +4,7 @@ CXXFLAGS ?= -Wall -Werror -std=gnu++14 -g -Og
 CXXFLAGS := $(CXXFLAGS) -MP -MD
 CXXFLAGS += -I src
 CXXFLAGS += -I gsm/Simple-Web-Server
+CXXFLAGS += -I gsm/pugixml/src
 CXXFLAGS += -DBOOST_LOG_DYN_LINK
 CXXFLAGS += -DPCW_API_VERSION=\"$(PCW_API_VERSION)\"
 
@@ -15,12 +16,13 @@ LDFLAGS += -l pthread
 LDFLAGS += -l boost_regex
 LDFLAGS += -l boost_system
 LDFLAGS += -l boost_coroutine
+LDFLAGS += -l boost_filesystem
 LDFLAGS += -l boost_log
 LDFLAGS += -l boost_log_setup
 LDFLAGS += -l boost_thread
 LDFLAGS += -l crypto
 
-VPATH = src/db src/util src/api src
+VPATH = src/db src/util src/api src/doc gsm/pugixml/src src
 
 OBJS += Api.o
 OBJS += Config.o
@@ -30,14 +32,17 @@ OBJS += User.o
 OBJS += Sessions.o
 OBJS += db.o
 OBJS += hash.o
+OBJS += hocr.o
+OBJS += pugixml.o
 
 MAINS += pocowebd.o
 MAINS += pocoweb_create_user.o
+MAINS += pocoweb_insert_book.o
 
 DEPS = $(patsubst %.o,%.d,$(OBJS) $(MAINS))
 -include $(DEPS)
 
-default: pocowebd pocoweb_create_user config.ini
+default: pocowebd pocoweb_insert_book pocoweb_create_user config.ini
 
 pocowebd: pocowebd.o libpocoweb.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
@@ -45,6 +50,8 @@ pocowebd: pocowebd.o libpocoweb.a
 pocoweb_create_user: pocoweb_create_user.o libpocoweb.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
+pocoweb_insert_book: pocoweb_insert_book.o libpocoweb.a
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 libpocoweb.a: $(OBJS)
 	$(AR) rcs $@ $^
 

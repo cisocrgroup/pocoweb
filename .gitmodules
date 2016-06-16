@@ -1,3 +1,6 @@
 [submodule "rest/gsm/Simple-Web-Server"]
 	path = rest/gsm/Simple-Web-Server
 	url = https://github.com/eidheim/Simple-Web-Server.git
+[submodule "rest/gsm/pugixml"]
+	path = rest/gsm/pugixml
+	url = https://github.com/zeux/pugixml.git
