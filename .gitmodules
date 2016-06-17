@@ -4,3 +4,6 @@
 [submodule "rest/gsm/pugixml"]
 	path = rest/gsm/pugixml
 	url = https://github.com/zeux/pugixml.git
+[submodule "rest/gsm/json"]
+	path = rest/gsm/json
+	url = https://github.com/nlohmann/json.git
