@@ -25,6 +25,18 @@ namespace pcw {
 		const SessionsPtr sessions;
 	};
 
+	/*
+	 * call: .../rest-api/login?username=...&password=password
+	 * json: {
+	 * 	"api-version": "0.1.0",
+	 *	"sessionid": "session-id",
+	 *	"user": {
+	 *		"name": "username",
+	 *		"email": "email",
+	 *		"institute": "Institute"
+	 *	}
+	 * }
+         */
 	struct Login: public Api {
 		Login(SessionsPtr s, const Config& config)
 			: Api(std::move(s))
@@ -38,6 +50,24 @@ namespace pcw {
 			       std::string& answer) const noexcept;
 		Status write(User& user, std::string& answer) const noexcept;
 
+		const Config& config_;
+	};
+
+	/*
+	 * call: .../rest-api/getPage?sessionid=...&pageid=...&bookid=...
+         * json: {
+	 *         ...
+	 */
+	struct GetPage: public Api {
+		GetPage(SessionsPtr s, const Config& config)
+			: Api(std::move(s))
+			, config_(config)
+		{}
+		void operator()(Response& response, RequestPtr request) const noexcept;
+
+	private:
+		Status doGetPage(const std::string& sid,
+				 int bookid, int pageid, std::string& answer) const;
 		const Config& config_;
 	};
 }

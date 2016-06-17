@@ -20,6 +20,41 @@ pcw::DbTableBooks::DbTableBooks(ConnectionPtr conn)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+pcw::PagePtr
+pcw::DbTableBooks::getPage(const User& user, int bookid, int pageid) const
+{
+	assert(conn_);
+	static const char *sql = "select * from linesx "
+				 "where bookid = ? and pageid = ? "
+				 "order by lineid";
+	conn_->setAutoCommit(true);
+	PreparedStatementPtr s{conn_->prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, bookid);
+	s->setInt(2, pageid);	
+	auto res = s->executeQuery();
+
+	assert(res);
+	auto page = std::make_shared<Page>();
+	while (res->next()) {
+		page->push_back(std::make_shared<Line>());
+		page->back()->id = res->getInt("lineid");
+		page->back()->line() = res->getString("line");
+		page->back()->box.x0 = res->getInt("x0");
+		page->back()->box.y0 = res->getInt("y0");
+		page->back()->box.x1 = res->getInt("x1");
+		page->back()->box.y1 = res->getInt("y1");
+		std::stringstream ios(res->getString("cuts"));
+		std::copy(std::istream_iterator<int>(ios),
+			  std::istream_iterator<int>(),
+			  std::back_inserter(page->back()->cuts()));
+	}	
+	return page;
+
+}
+	
+
+////////////////////////////////////////////////////////////////////////////////
 pcw::BookPtr
 pcw::DbTableBooks::insertBook(const User& owner, Book& book) const
 {

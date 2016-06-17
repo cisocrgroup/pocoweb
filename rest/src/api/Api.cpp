@@ -27,6 +27,7 @@ pcw::Api::server(const Config& config)
 					       config.daemon.threads);
 	auto sessions = std::make_shared<Sessions>();
 	server->resource[R"(^/login\??(.+)$)"]["GET"] = Login(sessions, config);
+	server->resource[R"(^/getPage\??(.+)$)"]["GET"] = GetPage(sessions, config);
 	server->default_resource["POST"] = BadRequest();
 	server->default_resource["GET"] = BadRequest();
 	return std::move(server);
