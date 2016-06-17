@@ -65,6 +65,7 @@ pcw::DbTableUsers::createUser(const std::string& name,
 	auto hash = salt + '$' + ssum;
 
 	assert(conn_);
+	conn_->setAutoCommit(true);
 	PreparedStatementPtr s(conn_->prepareStatement("insert into users "
 						       "(name, email, institute, passwd, active) "
 						       " values (?, ?, ?, ?, true)"));
