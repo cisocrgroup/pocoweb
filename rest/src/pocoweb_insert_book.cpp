@@ -39,7 +39,7 @@ main(int argc, char** argv)
 		DbTableUsers users(conn);
 		const auto owner = users.findUserByNameOrEmail(argv[3]);
 		if (not owner)
-			throw std::runtime_error("invalid book owner" + 
+			throw std::runtime_error("invalid book owner: " + 
 						 std::string(argv[3]));
 		DbTableBooks books(conn);
 		auto res = books.insertBook(owner->id, *book);
