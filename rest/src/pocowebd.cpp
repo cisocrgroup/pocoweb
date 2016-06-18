@@ -62,10 +62,10 @@ run(int argc, char** argv)
 	 	throw std::system_error(errno, std::system_category(), "daemon");
 
 	auto server = Api::server(config);
-	BOOST_LOG_TRIVIAL(info) << "server starting (" << getpid() << ")";
+	BOOST_LOG_TRIVIAL(info) << "daemon[" << getpid() << "] starting ";
 	std::thread sthread([&server](){server->start();});
 	sthread.join();
-	BOOST_LOG_TRIVIAL(info) << "server stopping";
+	BOOST_LOG_TRIVIAL(info) << "daemon[" << getpid() << "] stopping";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
