@@ -28,12 +28,12 @@ main(int argc, char** argv)
 		book->desc = argv[7];
 		book->uri = argv[8];
 		
-		for (const auto& page: *book) {
-			for (const auto& line: *page) {
-				std::cerr << page->id << " " << line->id << " " << line->line();
-				std::cerr << "\n";
-			}
-		}
+		// for (const auto& page: *book) {
+			// for (const auto& line: *page) {
+				// std::cerr << page->id << " " << line->id << " " << line->line();
+				// std::cerr << "\n";
+			// }
+		// }
 	
 		const auto conn = connect(config);
 		DbTableUsers users(conn);
