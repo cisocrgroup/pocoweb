@@ -5,14 +5,16 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <server_http.hpp>
+#include <json.hpp>
 #include "doc/Document.hpp"
 #include "db/db.hpp"
 #include "db/Sessions.hpp"
 #include "db/User.hpp"
 #include "db/DbTableBooks.hpp"
 #include "util/Config.hpp"
-#include "util/Json.hpp"
 #include "api.hpp"
+
+using json = nlohmann::json;
 
 ///////////////////////////////////////////////////////////////////////////////
 void
@@ -57,34 +59,21 @@ pcw::GetPage::doGetPage(const std::string& sid, int bookid, int pageid, std::str
 		return Status::InternalServerError;
 	BOOST_LOG_TRIVIAL(info) << "after page";
 
-	Json json, lines;
-	json.put("bookid", bookid);
-	json.put("pageid", pageid);
-	BOOST_LOG_TRIVIAL(info) << "put ids";
+	json j;
+	j["bookid"] = bookid;
+	j["pageid"] = pageid;
 	
 	for (const auto& l: *page) {
-		BOOST_LOG_TRIVIAL(info) << "page";
-		Json line, cuts;
-		line.put("lineid", l->id);
-		line.put("line", l->line());
-		for (int cut: l->cuts()) {
-			
-			BOOST_LOG_TRIVIAL(info) << "cut";
-			Json tmp;
-			tmp.put("", cut);
-			cuts.push_back(std::make_pair("", tmp));
-		}
-		BOOST_LOG_TRIVIAL(info) << "put cuts";
-		line.add_child("cuts", cuts);
-		BOOST_LOG_TRIVIAL(info) << "put line";
-		lines.push_back(std::make_pair("", line));
-		
+		json jj;
+		jj["box"]["x0"] = l->box.x0;
+		jj["box"]["y0"] = l->box.y0;
+		jj["box"]["x1"] = l->box.x1;
+		jj["box"]["y1"] = l->box.y1;
+		jj["lineid"] = l->id;
+		jj["line"] = l->line();
+		jj["cuts"] = l->cuts();
+		j["lines"].push_back(jj);
 	}
-	BOOST_LOG_TRIVIAL(info) << "put lines";
-	json.add_child("lines", lines);
-	BOOST_LOG_TRIVIAL(info) << "to string";
-	answer = json.string();
-	BOOST_LOG_TRIVIAL(info) << "answer: " << answer;
-	
+	answer = j.dump();
 	return Status::Ok;
 }

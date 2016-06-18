@@ -5,6 +5,7 @@ CXXFLAGS := $(CXXFLAGS) -MP -MD
 CXXFLAGS += -I src
 CXXFLAGS += -I gsm/Simple-Web-Server
 CXXFLAGS += -I gsm/pugixml/src
+CXXFLAGS += -I gsm/json/src
 CXXFLAGS += -DBOOST_LOG_DYN_LINK
 CXXFLAGS += -DPCW_API_VERSION=\"$(PCW_API_VERSION)\"
 

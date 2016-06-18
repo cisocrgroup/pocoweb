@@ -47,8 +47,8 @@ namespace pcw {
 	private:
 		Status doLogin(const std::string& username,
 			       const std::string& password,
-			       std::string& answer) const noexcept;
-		Status write(User& user, std::string& answer) const noexcept;
+			       std::string& answer) const;
+		void createSessionAndWrite(User& user, std::string& answer) const;
 
 		const Config& config_;
 	};

@@ -7,8 +7,8 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <cppconn/statement.h>
 #include <mysql_connection.h>
+#include <json.hpp>
 #include "util/Config.hpp"
-#include "util/Json.hpp"
 #include "util/hash.hpp"
 #include "db/db.hpp"
 #include "db/Sessions.hpp"
@@ -17,7 +17,7 @@
 #include "server_http.hpp"
 #include "api.hpp"
 
-namespace pt = boost::property_tree;
+using json = nlohmann::json;
 
 ////////////////////////////////////////////////////////////////////////////////
 void
@@ -47,44 +47,34 @@ pcw::Login::operator()(Response& response, RequestPtr request) const noexcept
 pcw::Login::Status
 pcw::Login::doLogin(const std::string& username,
 		    const std::string& password,
-		    std::string& answer) const noexcept
+		    std::string& answer) const
 {
-	try {
-		auto conn = connect(config_);
-		DbTableUsers db{conn};
-		auto user = db.findUserByNameOrEmail(username); 
-	
-		if (not user) // invalid user / email
-			return Status::Forbidden;
-		if (not db.authenticate(*user, password))
-			return Status::Forbidden;
-		assert(user);
-		return write(*user, answer);
-	} catch (const std::exception& e) {
-		BOOST_LOG_TRIVIAL(error) << e.what();
-	}
-	return Status::InternalServerError;
+	auto conn = connect(config_);
+	DbTableUsers db{conn};
+	auto user = db.findUserByNameOrEmail(username); 
+
+	if (not user) // invalid user / email
+		return Status::Forbidden;
+	if (not db.authenticate(*user, password))
+		return Status::Forbidden;
+	assert(user);
+	createSessionAndWrite(*user, answer);
+	return Status::Ok;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Api::Status
-pcw::Login::write(User& user, std::string& answer) const noexcept
+void
+pcw::Login::createSessionAndWrite(User& user, std::string& answer) const
 {
-	try {
-		std::string sid;
-		do {
-			sid = gensessionid(42);
-		} while (not sessions->insert(sid, user.shared_from_this()));
-		Json json;
-		json.put("sessionid", sid);
-		json.put("user.name", user.name);
-		json.put("user.email", user.email);
-		json.put("user.institute", user.institute);
-		answer = json.string();
-		BOOST_LOG_TRIVIAL(info) << user << ": " << sid;
-		return Status::Ok;
-	} catch (const std::exception& e) {
-		BOOST_LOG_TRIVIAL(error) << e.what();
-		return Status::InternalServerError;
-	}
+	std::string sid;
+	do {
+		sid = gensessionid(42);
+	} while (not sessions->insert(sid, user.shared_from_this()));
+	json j;
+	j["sessionid"] = sid;
+	j["user"]["name"] = user.name;
+	j["user"]["email"] = user.email;
+	j["user"]["institute"] = user.institute;
+	BOOST_LOG_TRIVIAL(info) << user << ": " << sid << " logged on";
+	answer = j.dump();
 }
