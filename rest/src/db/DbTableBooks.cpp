@@ -21,7 +21,7 @@ pcw::DbTableBooks::DbTableBooks(ConnectionPtr conn)
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::PagePtr
-pcw::DbTableBooks::getPage(const User& user, int bookid, int pageid) const
+pcw::DbTableBooks::getPage(int userid, int bookid, int pageid) const
 {
 	assert(conn_);
 	static const char *sql = "select * from linesx "
@@ -52,11 +52,10 @@ pcw::DbTableBooks::getPage(const User& user, int bookid, int pageid) const
 	return page;
 
 }
-	
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::BookPtr
-pcw::DbTableBooks::insertBook(const User& owner, Book& book) const
+pcw::DbTableBooks::insertBook(int userid, Book& book) const
 {
 	assert(conn_);
 	static const char *sql = "insert into books "
@@ -69,7 +68,7 @@ pcw::DbTableBooks::insertBook(const User& owner, Book& book) const
 
 	PreparedStatementPtr s{conn_->prepareStatement(sql)};
 	assert(s);
-	s->setInt(1, owner.id);
+	s->setInt(1, userid);
 	s->setString(2, book.title);
 	s->setString(3, book.author);
 	s->setInt(4, book.year);

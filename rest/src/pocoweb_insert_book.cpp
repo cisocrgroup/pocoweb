@@ -42,7 +42,7 @@ main(int argc, char** argv)
 			throw std::runtime_error("invalid book owner" + 
 						 std::string(argv[3]));
 		DbTableBooks books(conn);
-		auto res = books.insertBook(*owner, *book);
+		auto res = books.insertBook(owner->id, *book);
 		std::cerr << "book id: " << book->id << "\n";
 		return res ? EXIT_SUCCESS : EXIT_FAILURE;
 	} catch (const std::exception& e) {

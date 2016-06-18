@@ -54,7 +54,7 @@ pcw::GetPage::doGetPage(const std::string& sid, int bookid, int pageid, std::str
 	
 	auto conn = connect(config_);
 	DbTableBooks db(conn);
-	auto page = db.getPage(*user, bookid, pageid);
+	auto page = db.getPage(user->id, bookid, pageid);
 	if (not page)
 		return Status::InternalServerError;
 	BOOST_LOG_TRIVIAL(info) << "after page";

@@ -57,7 +57,7 @@ create table packages (
 	packageid int not null primary key auto_increment,
 	bookid int references books(bookid),
 	firstpage int,
-	len int
+	lastpage int
 );
 
 drop table if exists bookperms;

@@ -13,8 +13,14 @@ namespace pcw {
 	class DbTableBooks {
 	public:
 		DbTableBooks(ConnectionPtr conn);
-		BookPtr insertBook(const User& owner, Book& book) const;
-		PagePtr getPage(const User& user, int bookid, int pageid) const;
+		BookPtr insertBook(int userid, Book& book) const;
+		PagePtr getPage(int userid, int bookid, int pageid) const;
+		int addPackage(int bookid, int firstpage, int lastpage) const;
+		int getPackageId(int bookid) const;
+		void allowPakcage(int userid, int packageid) const;
+		void denyPackage(int userid, int packageid) const;
+		bool hasPermission(int userid, int bookid) const;
+		
 
 	private:
 		void insertPage(const Book& book, const Page& page) const;
