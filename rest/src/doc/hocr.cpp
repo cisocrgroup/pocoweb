@@ -69,7 +69,7 @@ append_token(pcw::Line& line,
 		line.cuts().push_back(offset);
 		offset += d;
 	}		
-	line.cuts().push_back(tbox.x1 + 1);
+	line.cuts().push_back(tbox.x1 - lbox.x0 + 1);
 	line.line().append(token);
 	line.line().append(1, ' ');
 }
