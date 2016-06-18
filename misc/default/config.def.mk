@@ -13,6 +13,11 @@ PCW_LOG_FILE="pocoweb.log"
 
 # default users
 # each entry: name,email,institute,passwd
-PCW_DEF_USERS += "flo,fake-email1@example.org,CIS,flo"
-PCW_DEF_USERS += "uwe,fake-email2@example.org,CIS,uwe"
-PCW_DEF_USERS += "klaus,fake-email3@example.org,CIS,klaus"
+PCW_DEF_USERS += "pocoweb,pocoweb@example.org,CIS,pocoweb"
+PCW_DEF_USERS += "flo,email1@example.org,CIS,flo"
+PCW_DEF_USERS += "uwe,email2@example.org,CIS,uwe"
+PCW_DEF_USERS += "klaus,email3@example.org,CIS,klaus"
+
+# default books
+# each entry: type,owner,author,title,year,desc,path[,users]*
+PCW_DEF_BOOKS += "hocr,pocoweb,Hobbes,Leviathan,1668,example-document,../misc/ocr/hobbes,flo,uwe,klaus"
