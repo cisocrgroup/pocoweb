@@ -25,7 +25,6 @@ pcw::GetPage::operator()(Response& res, RequestPtr req) const noexcept
 	static const std::regex pageid{R"(pageid=(\d+))"};
 	std::string answer;
 	Status status = Status::BadRequest;
-	BOOST_LOG_TRIVIAL(info) << "HERE";
 
 	try {
 		const auto m = req->path_match[1];
@@ -50,14 +49,13 @@ pcw::GetPage::doGetPage(const std::string& sid, int bookid, int pageid, std::str
 	auto user = sessions->find(sid);
 	if (not user)
 		return Status::Forbidden;
-	BOOST_LOG_TRIVIAL(info) << "after user";
+	BOOST_LOG_TRIVIAL(info) << "getPage: " << *user << ":" << sid;
 	
 	auto conn = connect(config_);
 	DbTableBooks db(conn);
 	auto page = db.getPage(user->id, bookid, pageid);
 	if (not page)
 		return Status::InternalServerError;
-	BOOST_LOG_TRIVIAL(info) << "after page";
 
 	json j;
 	j["bookid"] = bookid;

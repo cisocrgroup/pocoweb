@@ -22,7 +22,8 @@ create table books (
 	title varchar(100) not null,
 	author varchar(100) not null,
 	description varchar(255),
-	uri varchar(255)
+	uri varchar(255),
+	npages int
 );
 
 drop table if exists pages;

@@ -59,8 +59,9 @@ pcw::DbTableBooks::insertBook(int userid, Book& book) const
 {
 	assert(conn_);
 	static const char *sql = "insert into books "
-				 "(owner, title, author, year, description, uri) "
-				 "values (?,?,?,?,?,?)";
+				 "(owner, title, author, year,"
+				 " description, uri, npages) "
+				 "values (?,?,?,?,?,?,?)";
 
 	// insert all or nothing using scope guard
 	conn_->setAutoCommit(false);
@@ -74,6 +75,7 @@ pcw::DbTableBooks::insertBook(int userid, Book& book) const
 	s->setInt(4, book.year);
 	s->setString(5, book.desc);
 	s->setString(6, book.uri);	
+	s->setInt(7, static_cast<int>(book.size()));
 	s->executeUpdate();
 
 	StatementPtr liid{conn_->createStatement()};
