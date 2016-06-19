@@ -1,0 +1,9 @@
+[Unit]
+Description=pocowebd the pocoweb rest daemon
+
+[Service]
+PIDFile=/var/run/pocowebd.pid
+ExecStart=/usr/bin/powowebd /etc/pocowebd.d/config.ini
+
+[Install]
+WantedBy=?
