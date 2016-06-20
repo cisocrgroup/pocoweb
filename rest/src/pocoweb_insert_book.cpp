@@ -22,12 +22,12 @@ main(int argc, char** argv)
 	try {
 		auto config = loadConfig(argc, argv);
 		auto book = parse_hocr(argv[9]);
-		book->author = argv[4];
-		book->title = argv[5];
-		book->year = std::stoi(argv[6]);
-		book->desc = argv[7];
-		book->uri = argv[8];
-		book->path = argv[9];
+		book->data.author = argv[4];
+		book->data.title = argv[5];
+		book->data.year = std::stoi(argv[6]);
+		book->data.desc = argv[7];
+		book->data.uri = argv[8];
+		book->data.path = argv[9];
 		
 		// for (const auto& page: *book) {
 			// for (const auto& line: *page) {

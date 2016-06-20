@@ -4,6 +4,7 @@
 namespace pcw {
 	class User;
 	class Book;
+	class BookData;
 	class Page;
 	class Line;
 	using BookPtr = std::shared_ptr<Book>;
@@ -28,6 +29,8 @@ namespace pcw {
 				const Page& page, 
 				const Line& line) const;
 		static std::string cutsToString(const Line& line);
+		int insertBookData(int owner, const BookData& book) const;
+		int insertBook(const Book& book) const;
 		const ConnectionPtr conn_;
 	};
 }

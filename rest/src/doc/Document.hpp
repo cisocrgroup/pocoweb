@@ -39,13 +39,18 @@ namespace pcw {
 	private:
 		Ts ts_;
 	};
+	
+	struct BookData {
+		std::string title, author, desc, uri, path;
+		int id, year;
+	};
 
 	class Book: public std::enable_shared_from_this<Book>,
 		    public Container<Page> {
 	public:
 		virtual ~Book() noexcept override = default;	
-		std::string title, author, desc, uri, path;
-		int dataid, id, year;
+		BookData data;
+		int id;
 	};
 
 	class Page: public std::enable_shared_from_this<Page>,
