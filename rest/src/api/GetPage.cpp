@@ -25,6 +25,9 @@ pcw::GetPage::operator()(Response& res, RequestPtr req) const noexcept
 
 	try {
 		const auto sid = getSid(req);
+		BOOST_LOG_TRIVIAL(info) << " sid: " << sid;
+		BOOST_LOG_TRIVIAL(info) << "book: " << req->path_match[3];
+		BOOST_LOG_TRIVIAL(info) << "page: " << req->path_match[4];
 		if (not sid.empty()) 
 			status = doGetPage(
 				sid,

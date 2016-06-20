@@ -70,6 +70,7 @@ loadConfig(int argc, char **argv)
 {
 	const char *file = nullptr;
 	Config config;
+	config.daemon.detach = false;
 
 	switch (argc) {
 	case 2:
@@ -92,7 +93,7 @@ loadConfig(int argc, char **argv)
 	}
 		
 	config.load(file);
-	if (config.daemon.detach) 
+	if (not config.daemon.detach)
 		config.log.file = "/dev/stderr";
 	return config;
 }
