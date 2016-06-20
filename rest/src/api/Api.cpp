@@ -1,3 +1,4 @@
+#include <regex>
 #include <mutex>
 #include <boost/log/trivial.hpp>
 #include "server_http.hpp"
@@ -31,6 +32,23 @@ pcw::Api::server(const Config& config)
 	server->default_resource["POST"] = BadRequest();
 	server->default_resource["GET"] = BadRequest();
 	return std::move(server);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::string
+pcw::Api::getSid(RequestPtr req) const 
+{
+	static const std::regex sid{R"(sessionid=([0-9a-fA-F]+))"};
+	std::smatch m;
+	auto cookie = req->header.find("cookie");
+	if (cookie != end(req->header) and std::regex_search(cookie->second, m, sid))
+		return m[1];
+	
+	auto pm = req->path_match[1];
+	if (std::regex_search(pm.first, pm.second, m, sid))
+		return m[1];
+	
+	return {};
 }
 
 ////////////////////////////////////////////////////////////////////////////////

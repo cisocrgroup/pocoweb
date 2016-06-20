@@ -20,7 +20,6 @@ using json = nlohmann::json;
 void
 pcw::GetPage::operator()(Response& res, RequestPtr req) const noexcept
 {
-	static const std::regex session{R"(sessionid=([a-fA-F0-9]+))"};
 	static const std::regex bookid{R"(bookid=(\d+))"};
 	static const std::regex pageid{R"(pageid=(\d+))"};
 	std::string answer;
@@ -28,12 +27,13 @@ pcw::GetPage::operator()(Response& res, RequestPtr req) const noexcept
 
 	try {
 		const auto m = req->path_match[1];
-		std::smatch m1, m2, m3;
+		std::smatch m1, m2;
 	
-		if (std::regex_search(m.first, m.second, m1, session) and
-		    std::regex_search(m.first, m.second, m2, bookid) and
-		    std::regex_search(m.first, m.second, m3, pageid)) 
-			status = doGetPage(m1[1], std::stoi(m2[1]), std::stoi(m3[1]), answer);
+		const auto sid = getSid(req);
+		if (not sid.empty() and
+		    std::regex_search(m.first, m.second, m1, bookid) and
+		    std::regex_search(m.first, m.second, m2, pageid)) 
+			status = doGetPage(sid, std::stoi(m1[1]), std::stoi(m2[1]), answer);
 	} catch (const std::exception& e) {
 		BOOST_LOG_TRIVIAL(error) << e.what();
 		status = Status::InternalServerError;

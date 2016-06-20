@@ -15,6 +15,7 @@ namespace pcw {
 
 		Api(): Api(nullptr) {}
 		Api(SessionsPtr s): sessions(std::move(s)) {}
+		std::string getSid(RequestPtr req) const;
 		void ok(Response& response, const std::string& content) const noexcept;
 		void badRequest(Response& response, const std::string& content) const noexcept;
 		void internalServerError(Response& response) const noexcept;
