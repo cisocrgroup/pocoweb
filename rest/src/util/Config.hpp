@@ -11,6 +11,7 @@ namespace pcw {
 		struct Daemon {
 			std::string host;
 			int port, threads;
+			bool detach;
 		} daemon;
 		struct Log {
 			std::string file;

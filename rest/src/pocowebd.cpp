@@ -58,9 +58,9 @@ run(int argc, char** argv)
 {
 	const auto config = loadConfig(argc, argv);
 	initLogging(config);
-	if (daemon(0, 0) == -1)
-	 	throw std::system_error(errno, std::system_category(), "daemon");
-
+	
+	if (config.daemon.detach and daemon(0, 0) == -1)
+		throw std::system_error(errno, std::system_category(), "daemon");
 	Api::run(config);
 }
 
@@ -68,12 +68,32 @@ run(int argc, char** argv)
 Config
 loadConfig(int argc, char **argv)
 {
-	if (argc < 2)
-		throw std::runtime_error(std::string("Usage: ") +
-					 argv[0] +
-					 " config-file");
+	const char *file = nullptr;
 	Config config;
-	config.load(argv[1]);
+
+	switch (argc) {
+	case 2:
+		file = argv[1];
+		break;
+	case 3:
+		if (strcmp("--daemon", argv[1]) == 0 or 
+		    strcmp("-d", argv[1]) == 0) {
+			config.daemon.detach = true;
+			file = argv[2];
+			break;
+		}
+		// fall through
+	default:
+		throw std::runtime_error(
+			std::string("Usage: ") +
+			 argv[0] +
+			 " [-d|--daemon] config-file"
+		);
+	}
+		
+	config.load(file);
+	if (config.daemon.detach) 
+		config.log.file = "/dev/stderr";
 	return config;
 }
 
