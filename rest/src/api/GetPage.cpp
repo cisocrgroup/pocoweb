@@ -58,6 +58,7 @@ pcw::GetPage::doGetPage(const std::string& sid, int bookid, int pageid, std::str
 		return Status::InternalServerError;
 
 	json j;
+	j["api"] = PCW_API_VERSION;
 	j["bookid"] = bookid;
 	j["pageid"] = pageid;
 	

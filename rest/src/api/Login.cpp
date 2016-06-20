@@ -71,6 +71,7 @@ pcw::Login::createSessionAndWrite(User& user, std::string& answer) const
 		sid = gensessionid(42);
 	} while (not sessions->insert(sid, user.shared_from_this()));
 	json j;
+	j["api"] = PCW_API_VERSION;
 	j["sessionid"] = sid;
 	j["user"]["name"] = user.name;
 	j["user"]["email"] = user.email;
