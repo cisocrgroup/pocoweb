@@ -10,9 +10,8 @@
 struct BadRequest: public pcw::Api {
 	void operator()(Response& response, RequestPtr req) const noexcept {
 		try {
-			BOOST_LOG_TRIVIAL(error) << "Invalid request: "
-						 << req->path;
-			badRequest(response, "Invalid rest uri");
+			BOOST_LOG_TRIVIAL(error) << "BAD REQUEST: " << req->path;
+			badRequest(response, "BAD REQUEST");
 		} catch (const std::exception& e) {
 			BOOST_LOG_TRIVIAL(error) << e.what();
 			internalServerError(response);
@@ -21,17 +20,22 @@ struct BadRequest: public pcw::Api {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-std::unique_ptr<pcw::Api::Server>
-pcw::Api::server(const Config& config)
+void
+pcw::Api::run(const Config& config)
 {
-	auto server = std::make_unique<Server>(config.daemon.port,
-					       config.daemon.threads);
+	Server server(config.daemon.port, config.daemon.threads);
 	auto sessions = std::make_shared<Sessions>();
-	server->resource[R"(^/login\??(.+)$)"]["GET"] = Login(sessions, config);
-	server->resource[R"(^/getPage\??(.+)$)"]["GET"] = GetPage(sessions, config);
-	server->default_resource["POST"] = BadRequest();
-	server->default_resource["GET"] = BadRequest();
-	return std::move(server);
+	server.resource[R"(^/login/username/(.+)/password/(.+)$)"]["GET"] = 
+		Login(sessions, config);
+	server.resource[R"(^(/([a-fA-f0-9]+))?/book/(\d+)/page/(\d+)$)"]["GET"] = 
+		GetPage(sessions, config);
+	server.default_resource["POST"] = BadRequest();
+	server.default_resource["GET"] = BadRequest();
+
+	BOOST_LOG_TRIVIAL(info) << "daemon[" << getpid() << "] starting ";
+	std::thread sthread([&server](){server.start();});
+	sthread.join();
+	BOOST_LOG_TRIVIAL(info) << "daemon[" << getpid() << "] stopping";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,13 +43,13 @@ std::string
 pcw::Api::getSid(RequestPtr req) const 
 {
 	static const std::regex sid{R"(sessionid=([0-9a-fA-F]+))"};
+	// check for /abc009.../ prefix
+	if (req->path_match[1].length())
+		return req->path_match[2];
+
 	std::smatch m;
 	auto cookie = req->header.find("cookie");
 	if (cookie != end(req->header) and std::regex_search(cookie->second, m, sid))
-		return m[1];
-	
-	auto pm = req->path_match[1];
-	if (std::regex_search(pm.first, pm.second, m, sid))
 		return m[1];
 	
 	return {};

@@ -21,7 +21,7 @@ namespace pcw {
 		void internalServerError(Response& response) const noexcept;
 		void forbidden(Response& response) const noexcept;
 		void reply(Status s, Response& r, const std::string& content) const noexcept;
-		static std::unique_ptr<Server> server(const Config& config);
+		static void run(const Config& config);
 
 		const SessionsPtr sessions;
 	};

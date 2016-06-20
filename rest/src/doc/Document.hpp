@@ -24,6 +24,7 @@ namespace pcw {
 
 		virtual ~Container() noexcept = default;
 		size_t size() const noexcept {return ts_.size();}
+		bool empty() const noexcept {return ts_.empty();}
 		const Ptr& operator[](size_t i) const {return ts_.at(i);}
 		Ptr& operator[](size_t i) {return ts_[i];}
 		const Ptr& back() const noexcept {return ts_.back();}
@@ -42,7 +43,7 @@ namespace pcw {
 	
 	struct BookData {
 		std::string title, author, desc, uri, path;
-		int id, year;
+		int id, year, firstpage, lastpage;
 	};
 
 	class Book: public std::enable_shared_from_this<Book>,

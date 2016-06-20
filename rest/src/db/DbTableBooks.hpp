@@ -16,11 +16,11 @@ namespace pcw {
 		DbTableBooks(ConnectionPtr conn);
 		BookPtr insertBook(int userid, Book& book) const;
 		PagePtr getPage(int userid, int bookid, int pageid) const;
-		int addPackage(int bookid, int firstpage, int lastpage) const;
-		int getPackageId(int bookid) const;
-		void allowPakcage(int userid, int packageid) const;
-		void denyPackage(int userid, int packageid) const;
-		bool hasPermission(int userid, int bookid) const;
+		std::vector<std::pair<int, BookData>> 
+			getAllowedBooks(int userid) const;
+		void allowBook(int userid, int bookid) const;
+		void denyBook(int userid, int bookid) const;
+		bool pageIsAllowed(int userid, int bookid, int pageid) const;
 		
 
 	private:

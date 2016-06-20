@@ -65,6 +65,7 @@ pcw::DbTableBooks::insertBook(int userid, Book& book) const
 	// insert book data and book
 	book.data.id = insertBookData(userid, book.data);
 	book.id = insertBook(book);
+	allowBook(userid, book.id);
 	
 	// insert pages
 	for (const auto& page: book) 
@@ -116,9 +117,10 @@ pcw::DbTableBooks::insertBook(const Book& book) const
 	PreparedStatementPtr s{conn_->prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, book.data.id);
-	s->setInt(2, book.size() ? 1 : 0);
-	s->setInt(3, static_cast<int>(book.size()));
-
+	s->setInt(2, book.data.firstpage);
+	s->setInt(3, book.data.lastpage);
+	s->executeUpdate();
+	
 	StatementPtr liid{conn_->createStatement()};
 	ResultSetPtr res{liid->executeQuery("select last_insert_id()")};
 	assert(res);
@@ -171,6 +173,92 @@ pcw::DbTableBooks::insertLine(const Book& book, const Page& page, const Line& li
 	s->setInt(8, line.box.y0);
 	s->setInt(9, line.box.y1);
 	s->executeUpdate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::vector<std::pair<int, pcw::BookData>> 
+pcw::DbTableBooks::getAllowedBooks(int userid) const
+{
+	assert(conn_);
+	conn_->setAutoCommit(true);
+	static const char *sql = "select * from bookpermissions left join "
+				 "(books, bookdata) "
+				 "on bookpermissions.bookid = books.bookid and "
+				 "books.bookdataid = bookdata.bookdataid "
+				 "where bookpermissions.userid=?";
+	PreparedStatementPtr s{conn_->prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, userid);
+	ResultSetPtr res{s->executeQuery()};
+	assert(res);
+	
+	std::vector<std::pair<int, BookData>> data;
+	//data.reserve(res->getRows());
+	while (res->next()) {
+		data.emplace_back();
+		data.back().first = res->getInt("bookid");
+		data.back().second.title = res->getString("title");
+		data.back().second.author = res->getString("author");
+		data.back().second.desc = res->getString("description");
+		data.back().second.year = res->getInt("year");
+		data.back().second.uri = res->getString("uri");
+	}
+	return data;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+pcw::DbTableBooks::allowBook(int userid, int bookid) const
+{
+	assert(conn_);
+	conn_->setAutoCommit(true);
+	static const char *sql = "insert into bookpermissions "
+				 "(userid, bookid) values (?,?)";
+	PreparedStatementPtr s{conn_->prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, userid);
+	s->setInt(2, bookid);
+	s->executeUpdate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+pcw::DbTableBooks::denyBook(int userid, int bookid) const
+{
+	assert(conn_);
+	conn_->setAutoCommit(true);
+	static const char *sql = "delete from bookpermissions where "
+				 "userid=? and bookid=?";
+	PreparedStatementPtr s{conn_->prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, userid);
+	s->setInt(2, bookid);
+	s->executeUpdate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool 
+pcw::DbTableBooks::pageIsAllowed(int userid, int bookid, int pageid) const
+{
+	assert(conn_);
+	conn_->setAutoCommit(true);
+	static const char *sql = "select * from bookpermissions left join books "
+				 "on bookpermissions.bookid = books.bookid "
+				 "where userid=? and bookid=?";
+	
+	PreparedStatementPtr s{conn_->prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, userid);
+	s->setInt(2, bookid);
+	ResultSetPtr res{s->executeQuery()};
+	assert(res);
+	while (res->next()) {
+		const auto firstpage = res->getInt("firstpage");
+		const auto lastpage = res->getInt("lastpage");
+		if (firstpage <= pageid and pageid <= lastpage)
+			return true;
+	}
+	return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

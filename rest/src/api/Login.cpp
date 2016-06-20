@@ -10,10 +10,12 @@
 #include <json.hpp>
 #include "util/Config.hpp"
 #include "util/hash.hpp"
+#include "doc/Document.hpp"
 #include "db/db.hpp"
 #include "db/Sessions.hpp"
 #include "db/User.hpp"
 #include "db/DbTableUsers.hpp"
+#include "db/DbTableBooks.hpp"
 #include "server_http.hpp"
 #include "api.hpp"
 
@@ -23,19 +25,15 @@ using json = nlohmann::json;
 void
 pcw::Login::operator()(Response& response, RequestPtr request) const noexcept
 {
-	static const std::regex username{R"(username=([^&]+))"};
-	static const std::regex password{R"(password=([^&]+))"};
 	std::string answer;
 	Status status = Status::BadRequest;
 
 	try {
-		const auto m = request->path_match[1];
-		std::smatch m1, m2;
-
-		if (std::regex_search(m.first, m.second, m1, username) and
-		    std::regex_search(m.first, m.second, m2, password)) {
-			status = doLogin(m1[1], m2[1], answer);
-		}
+		status = doLogin(
+			request->path_match[1], 
+			request->path_match[2], 
+			answer
+		);
 	} catch (const std::exception& e) {
 		BOOST_LOG_TRIVIAL(error) << e.what();
 		answer = e.what();
@@ -50,32 +48,41 @@ pcw::Login::doLogin(const std::string& username,
 		    std::string& answer) const
 {
 	auto conn = connect(config_);
-	DbTableUsers db{conn};
-	auto user = db.findUserByNameOrEmail(username); 
+	DbTableUsers users{conn};
+	auto user = users.findUserByNameOrEmail(username); 
 
 	if (not user) // invalid user / email
 		return Status::Forbidden;
-	if (not db.authenticate(*user, password))
+	if (not users.authenticate(*user, password))
 		return Status::Forbidden;
 	assert(user);
-	createSessionAndWrite(*user, answer);
-	return Status::Ok;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void
-pcw::Login::createSessionAndWrite(User& user, std::string& answer) const
-{
+	
 	std::string sid;
 	do {
-		sid = gensessionid(42);
-	} while (not sessions->insert(sid, user.shared_from_this()));
+		sid = gensessionid(42);	
+	} while (not sessions->insert(sid, user));
+	
 	json j;
 	j["api"] = PCW_API_VERSION;
 	j["sessionid"] = sid;
-	j["user"]["name"] = user.name;
-	j["user"]["email"] = user.email;
-	j["user"]["institute"] = user.institute;
-	BOOST_LOG_TRIVIAL(info) << user << ": " << sid << " logged on";
+	j["user"]["name"] = user->name;
+	j["user"]["email"] = user->email;
+	j["user"]["institute"] = user->institute;
+	
+	DbTableBooks books{conn};
+	const auto data = books.getAllowedBooks(user->id);
+	for (const auto& d: data) {
+		json jj;
+		jj["title"] = d.second.title;
+		jj["author"] = d.second.author;
+		jj["description"] = d.second.desc;
+		jj["uri"] = d.second.uri;
+		jj["year"] = d.second.year;
+		jj["bookdataid"] = d.second.id;
+		jj["bookid"] = d.first;
+		j["books"].push_back(jj);
+	}
+	BOOST_LOG_TRIVIAL(info) << *user << ": " << sid << " logged on";
 	answer = j.dump();
+	return Status::Ok;
 }

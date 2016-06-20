@@ -20,20 +20,18 @@ using json = nlohmann::json;
 void
 pcw::GetPage::operator()(Response& res, RequestPtr req) const noexcept
 {
-	static const std::regex bookid{R"(bookid=(\d+))"};
-	static const std::regex pageid{R"(pageid=(\d+))"};
 	std::string answer;
 	Status status = Status::BadRequest;
 
 	try {
-		const auto m = req->path_match[1];
-		std::smatch m1, m2;
-	
 		const auto sid = getSid(req);
-		if (not sid.empty() and
-		    std::regex_search(m.first, m.second, m1, bookid) and
-		    std::regex_search(m.first, m.second, m2, pageid)) 
-			status = doGetPage(sid, std::stoi(m1[1]), std::stoi(m2[1]), answer);
+		if (not sid.empty()) 
+			status = doGetPage(
+				sid,
+				std::stoi(req->path_match[3]),
+				std::stoi(req->path_match[4]),
+				answer
+			);
 	} catch (const std::exception& e) {
 		BOOST_LOG_TRIVIAL(error) << e.what();
 		status = Status::InternalServerError;

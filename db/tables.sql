@@ -16,7 +16,7 @@ create table users (
 
 drop table if exists bookdata;
 create table bookdata (
-	bookdataid int primary key auto_increment,
+	bookdataid int not null primary key auto_increment,
 	owner int references users(userid),
 	year int,
 	title varchar(100) not null,
