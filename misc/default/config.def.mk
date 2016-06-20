@@ -19,5 +19,5 @@ PCW_DEF_USERS += "uwe,email2@example.org,CIS,uwe"
 PCW_DEF_USERS += "klaus,email3@example.org,CIS,klaus"
 
 # default books
-# each entry: type,owner,author,title,year,desc,path[,users]*
-PCW_DEF_BOOKS += "hocr,pocoweb,Hobbes,Leviathan,1668,example-document,../misc/ocr/hobbes,flo,uwe,klaus"
+# each entry: type,owner,author,title,year,desc,uri,path[,users]*
+PCW_DEF_BOOKS += "hocr,pocoweb,Hobbes,Leviathan,1668,example-document,uri,../misc/ocr/hobbes,flo,uwe,klaus"

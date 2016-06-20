@@ -58,16 +58,19 @@ pcw::BookPtr
 pcw::DbTableBooks::insertBook(int userid, Book& book) const
 {
 	assert(conn_);
-	static const char *sql = "insert into books "
-				 "(owner, title, author, year,"
-				 " description, uri, npages) "
-				 "values (?,?,?,?,?,?,?)";
+	static const char *sql1 = "insert into bookdata "
+	  			  "(owner, title, author, year, "
+				  "description, uri, directory) "
+				  "values(?,?,?,?,?,?,?)";
+	static const char *sql2 = "insert into books "
+				  "(bookdataid, firstpage, lastpage) "
+				  "values(?,?,?)";
 
 	// insert all or nothing using scope guard
 	conn_->setAutoCommit(false);
 	ScopeGuard sc([this]{conn_->rollback();});
 
-	PreparedStatementPtr s{conn_->prepareStatement(sql)};
+	PreparedStatementPtr s{conn_->prepareStatement(sql1)};
 	assert(s);
 	s->setInt(1, userid);
 	s->setString(2, book.title);
@@ -75,15 +78,30 @@ pcw::DbTableBooks::insertBook(int userid, Book& book) const
 	s->setInt(4, book.year);
 	s->setString(5, book.desc);
 	s->setString(6, book.uri);	
-	s->setInt(7, static_cast<int>(book.size()));
+	s->setString(7, book.path);
 	s->executeUpdate();
 
 	StatementPtr liid{conn_->createStatement()};
-	auto res = liid->executeQuery("select last_insert_id()");
+	ResultSetPtr res{liid->executeQuery("select last_insert_id()")};
+	assert(res);
+	if (not res->next())
+		throw std::runtime_error("Cannot determine data id of book");
+	book.dataid = res->getInt(1);
+
+	PreparedStatementPtr t{conn_->prepareStatement(sql2)};
+	assert(t);
+	t->setInt(1, book.dataid);
+	t->setInt(2, book.size() ? 1 : 0);
+	t->setInt(3, static_cast<int>(book.size()));
+
+	liid.reset(conn_->createStatement());
+	res.reset(liid->executeQuery("select last_insert_id()"));
 	assert(res);
 	if (not res->next())
 		throw std::runtime_error("Cannot determine id of book");
 	book.id = res->getInt(1);
+	
+	// insert pages
 	for (const auto& page: book) 
 		insertPage(book, *page);
 	

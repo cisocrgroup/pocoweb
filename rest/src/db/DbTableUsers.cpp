@@ -19,6 +19,20 @@ pcw::DbTableUsers::DbTableUsers(ConnectionPtr conn)
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::UserPtr
+pcw::DbTableUsers::findUserById(int id) const
+{
+	assert(conn_);
+	PreparedStatementPtr s{conn_->prepareStatement("select * from users "
+						       "where userid=?")};
+	assert(s);
+	s->setInt(1, id);
+	ResultSetPtr res{s->executeQuery()};
+	assert(res);
+	return res->next() ? User::create(*res) : nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::UserPtr
 pcw::DbTableUsers::findUserByEmail(const std::string& email) const
 {
 	assert(conn_);
@@ -75,7 +89,13 @@ pcw::DbTableUsers::createUser(const std::string& name,
 	s->setString(3, institute);
 	s->setString(4, hash);
 	s->executeUpdate();
-	return findUserByName(name);
+
+	StatementPtr liid{conn_->createStatement()};
+	ResultSetPtr res{liid->executeQuery("select last_insert_id()")};
+	assert(res);
+	if (not res->next())
+		throw std::runtime_error("Could not determine user id");
+	return findUserById(res->getInt(1));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -84,7 +104,7 @@ pcw::DbTableUsers::authenticate(const User& user, const std::string& passwd) con
 {
 	assert(conn_);
 	PreparedStatementPtr s(conn_->prepareStatement("select passwd from "
-						       "users where id=?"));
+						       "users where userid=?"));
 	assert(s);
 	s->setInt(1, user.id);
 	ResultSetPtr res(s->executeQuery());

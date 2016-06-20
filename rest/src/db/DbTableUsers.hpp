@@ -8,6 +8,7 @@ namespace pcw {
 	class DbTableUsers {
 	public:
 		DbTableUsers(ConnectionPtr conn);
+		UserPtr findUserById(int id) const;
 		UserPtr findUserByEmail(const std::string& email) const;
 		UserPtr findUserByName(const std::string& name) const;
 		UserPtr findUserByNameOrEmail(const std::string& what) const;

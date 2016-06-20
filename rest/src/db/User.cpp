@@ -11,7 +11,7 @@ pcw::User::create(const sql::ResultSet& res)
 	auto user = std::make_shared<User>(res.getString("name"),
 					   res.getString("email"),
 					   res.getString("institute"),
-					   res.getInt("id"));
+					   res.getInt("userid"));
 	return res.getBoolean("active") ? user : nullptr;
 }
 

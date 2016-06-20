@@ -44,8 +44,8 @@ namespace pcw {
 		    public Container<Page> {
 	public:
 		virtual ~Book() noexcept override = default;	
-		std::string title, author, desc, uri;
-		int id, year;
+		std::string title, author, desc, uri, path;
+		int dataid, id, year;
 	};
 
 	class Page: public std::enable_shared_from_this<Page>,

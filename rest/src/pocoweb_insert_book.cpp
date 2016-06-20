@@ -21,12 +21,13 @@ main(int argc, char** argv)
 {
 	try {
 		auto config = loadConfig(argc, argv);
-		auto book = parse_hocr(argv[8]);
+		auto book = parse_hocr(argv[9]);
 		book->author = argv[4];
 		book->title = argv[5];
 		book->year = std::stoi(argv[6]);
 		book->desc = argv[7];
 		book->uri = argv[8];
+		book->path = argv[9];
 		
 		// for (const auto& page: *book) {
 			// for (const auto& line: *page) {
@@ -55,10 +56,10 @@ main(int argc, char** argv)
 Config
 loadConfig(int argc, char **argv)
 {
-	if (argc < 9)
+	if (argc < 10)
 		throw std::runtime_error(std::string("Usage: ") +
 					 argv[0] +
-					 " config-file type owner author title year desc path [users...]");
+					 " config-file type owner author title year desc uri path [users...]");
 
 	Config config;
 	config.load(argv[1]);
