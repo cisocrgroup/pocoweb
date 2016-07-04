@@ -5,6 +5,7 @@ namespace pcw {
 	struct BookData {
 		std::string title, author, desc, uri, path;
 		int id, year, firstpage, lastpage;
+		void store(nlohmann::json& json) const;
 	};
 }
 

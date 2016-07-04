@@ -3,16 +3,14 @@
 
 namespace pcw {
 
-	struct BookData {
-		std::string title, author, desc, uri, path;
-		int id, year, firstpage, lastpage;
-	};
-
 	class Page;
+	struct BookData;
+
 	class Book: public std::enable_shared_from_this<Book>,
 		    public Container<Page> {
 	public:
 		virtual ~Book() noexcept override = default;	
+		void store(nlohmann::json& json) const;
 		BookData data;
 		int id;
 	};

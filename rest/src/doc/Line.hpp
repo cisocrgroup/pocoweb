@@ -12,6 +12,7 @@ namespace pcw {
 		std::string& line() noexcept {return line_;}
 		const Cuts& cuts() const noexcept {return cuts_;}
 		Cuts& cuts() noexcept {return cuts_;}
+		void store(nlohmann::json& json) const;
 		Box box;
 		int id;
 

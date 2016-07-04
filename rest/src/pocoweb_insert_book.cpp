@@ -11,6 +11,7 @@
 #include "db/DbTableBooks.hpp"
 #include "doc/hocr.hpp"
 #include "doc/Box.hpp"
+#include "doc/BookData.hpp"
 #include "doc/Container.hpp"
 #include "doc/Line.hpp"
 #include "doc/Page.hpp"

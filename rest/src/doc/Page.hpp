@@ -9,6 +9,7 @@ namespace pcw {
 		    public Container<Line> {
 	public:
 		virtual ~Page() noexcept override = default;
+		void store(nlohmann::json& json) const;
 		Box box;
 		std::string image;
 		int id;

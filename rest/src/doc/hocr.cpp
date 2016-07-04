@@ -4,7 +4,9 @@
 #include <vector>
 #include <boost/filesystem.hpp>
 #include <pugixml.hpp>
+#include <json.hpp>
 #include "doc/Container.hpp"
+#include "doc/BookData.hpp"
 #include "doc/Box.hpp"
 #include "doc/Line.hpp"
 #include "doc/Page.hpp"

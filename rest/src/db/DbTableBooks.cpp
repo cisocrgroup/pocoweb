@@ -8,6 +8,7 @@
 #include <json.hpp>
 #include "util/ScopeGuard.hpp"
 #include "db.hpp"
+#include "doc/BookData.hpp"
 #include "doc/Container.hpp"
 #include "doc/Box.hpp"
 #include "doc/Line.hpp"
