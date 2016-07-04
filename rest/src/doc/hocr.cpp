@@ -4,7 +4,11 @@
 #include <vector>
 #include <boost/filesystem.hpp>
 #include <pugixml.hpp>
-#include "Document.hpp"
+#include "doc/Container.hpp"
+#include "doc/Box.hpp"
+#include "doc/Line.hpp"
+#include "doc/Page.hpp"
+#include "doc/Book.hpp"
 #include "hocr.hpp"
 
 namespace fs = boost::filesystem;

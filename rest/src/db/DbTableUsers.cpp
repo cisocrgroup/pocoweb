@@ -4,6 +4,7 @@
 #include <boost/log/trivial.hpp>
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
+#include <json.hpp>
 #include "util/hash.hpp"
 #include "db.hpp"
 #include "User.hpp"

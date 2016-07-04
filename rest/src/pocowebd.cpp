@@ -26,6 +26,7 @@
 #include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/sources/severity_logger.hpp>
 #include <boost/log/sources/record_ostream.hpp>
+#include <json.hpp>
 #include "server_http.hpp"
 #include "util/Config.hpp"
 #include "util/hash.hpp"

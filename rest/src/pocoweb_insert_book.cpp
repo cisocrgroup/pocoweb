@@ -4,12 +4,17 @@
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
+#include <json.hpp>
 #include "db/db.hpp"
 #include "db/User.hpp"
 #include "db/DbTableUsers.hpp"
 #include "db/DbTableBooks.hpp"
 #include "doc/hocr.hpp"
-#include "doc/Document.hpp"
+#include "doc/Box.hpp"
+#include "doc/Container.hpp"
+#include "doc/Line.hpp"
+#include "doc/Page.hpp"
+#include "doc/Book.hpp"
 #include "util/Config.hpp"
 
 using namespace pcw;

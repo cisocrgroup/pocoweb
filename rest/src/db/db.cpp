@@ -9,7 +9,10 @@ pcw::ConnectionPtr
 pcw::connect(const Config& config)
 {
 	const auto driver = sql::mysql::get_mysql_driver_instance();
-	return ConnectionPtr{driver->connect(config.db.host,
-					     config.db.user,
-					     config.db.pass)};
+	ConnectionPtr conn{driver->connect(config.db.host,
+				     	   config.db.user,
+					   config.db.pass)};
+	assert(conn);
+	conn->setSchema("pocoweb");
+	return conn;
 }

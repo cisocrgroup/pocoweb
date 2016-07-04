@@ -2,15 +2,16 @@
 #include <mutex>
 #include <regex>
 #include <boost/log/trivial.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
 #include <server_http.hpp>
 #include <json.hpp>
-#include "doc/Document.hpp"
 #include "db/db.hpp"
 #include "db/Sessions.hpp"
 #include "db/User.hpp"
 #include "db/DbTableBooks.hpp"
+#include "doc/Container.hpp"
+#include "doc/Box.hpp"
+#include "doc/Line.hpp"
+#include "doc/Page.hpp"
 #include "util/Config.hpp"
 #include "api.hpp"
 

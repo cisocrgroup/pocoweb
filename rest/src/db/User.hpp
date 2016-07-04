@@ -3,9 +3,11 @@
 
 namespace sql {
 	class ResultSet;
+	class Connection;
 }
 
 namespace pcw {
+	class Json;
 	class User;
 	using UserPtr = std::shared_ptr<User>;
 
@@ -15,8 +17,12 @@ namespace pcw {
 		     std::string e,
 		     std::string i,
 		     int iid);
+		static UserPtr create(sql::Connection& conn, const std::string& n);
 		static UserPtr create(const sql::ResultSet& res);
-		bool auth(const std::string& passwd);
+		void store(sql::Connection& conn, const std::string& passwd, bool active) const;
+		bool authenticate(sql::Connection& conn, const std::string& passwd) const;
+		nlohmann::json json() const;
+		
 
 		const std::string name, email, institute;
 		const int id;

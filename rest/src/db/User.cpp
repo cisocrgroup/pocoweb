@@ -1,8 +1,29 @@
+#include <cassert>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <cppconn/resultset.h>
+#include <cppconn/connection.h>
+#include <cppconn/prepared_statement.h>
+#include <json.hpp>
+#include "util/hash.hpp"
+#include "db/db.hpp"
 #include "User.hpp"
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::UserPtr 
+pcw::User::create(sql::Connection& conn, const std::string& n)
+{
+	static const char *sql = "SELECT name, email, institute, userid, active "
+				 "FROM users WHERE name=? or email=?";
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	s->setString(1, n);
+	s->setString(2, n);
+	ResultSetPtr res{s->executeQuery()};
+	assert(res);
+	return res->next() ? create(*res) : nullptr;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::UserPtr
@@ -25,6 +46,52 @@ pcw::User::User(std::string n,
 	, institute(std::move(i))
 	, id(iid)
 {
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+pcw::User::store(sql::Connection& conn, const std::string& passwd, bool active) const
+{
+	static const char *sql = "INSERT INTO users "
+				 "(name, email, insititute, userid, passwd, active) "
+				 "values (?,?,?,?,?,?)";
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	s->setString(1, name);
+	s->setString(2, email);
+	s->setString(3, institute);
+	s->setInt(4, id);
+	auto salt = pcw::gensalt();
+	auto ssum = pcw::genhash(salt, passwd);
+	auto hash = salt + '$' + ssum;
+	s->setString(5, hash);
+	s->setBoolean(6, active);	
+	s->executeUpdate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool 
+pcw::User::authenticate(sql::Connection& conn, const std::string& passwd) const
+{
+	static const char *sql = "SELECT passwd FROM users WHERE userid=?";
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, id);
+	ResultSetPtr res{s->executeQuery()};
+	assert(res);
+	return res->next() ? check(res->getString(1), passwd) : false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+nlohmann::json
+pcw::User::json() const
+{
+	nlohmann::json j;
+	j["name"] = name;
+	j["email"] = email;
+	j["institute"] = institute;
+	j["id"] = id;
+	return j;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

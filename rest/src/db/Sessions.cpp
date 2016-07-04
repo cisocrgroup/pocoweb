@@ -4,6 +4,7 @@
 #include <memory>
 #include <mutex>
 #include <vector>
+#include <json.hpp>
 #include "User.hpp"
 #include "Sessions.hpp"
 

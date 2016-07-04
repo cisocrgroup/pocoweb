@@ -5,9 +5,14 @@
 #include <boost/log/trivial.hpp>
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
+#include <json.hpp>
 #include "util/ScopeGuard.hpp"
 #include "db.hpp"
-#include "doc/Document.hpp"
+#include "doc/Container.hpp"
+#include "doc/Box.hpp"
+#include "doc/Line.hpp"
+#include "doc/Page.hpp"
+#include "doc/Book.hpp"
 #include "User.hpp"
 #include "DbTableBooks.hpp"
 

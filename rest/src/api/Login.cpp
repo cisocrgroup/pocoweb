@@ -10,12 +10,12 @@
 #include <json.hpp>
 #include "util/Config.hpp"
 #include "util/hash.hpp"
-#include "doc/Document.hpp"
 #include "db/db.hpp"
 #include "db/Sessions.hpp"
 #include "db/User.hpp"
 #include "db/DbTableUsers.hpp"
 #include "db/DbTableBooks.hpp"
+#include "doc/BookData.hpp"
 #include "server_http.hpp"
 #include "api.hpp"
 
@@ -48,30 +48,27 @@ pcw::Login::doLogin(const std::string& username,
 		    std::string& answer) const
 {
 	auto conn = connect(config_);
-	DbTableUsers users{conn};
-	auto user = users.findUserByNameOrEmail(username); 
+	const auto user = User::create(*conn, username);
 
 	if (not user) // invalid user / email
 		return Status::Forbidden;
-	if (not users.authenticate(*user, password))
+	if (not user->authenticate(*conn, password))
 		return Status::Forbidden;
 	assert(user);
 	
 	std::string sid;
 	do {
-		sid = gensessionid(42);	
+		sid = gensessionid(16);	
 	} while (not sessions->insert(sid, user));
 	
 	json j;
 	j["api"] = PCW_API_VERSION;
-	j["sessionid"] = sid;
-	j["user"]["name"] = user->name;
-	j["user"]["email"] = user->email;
-	j["user"]["institute"] = user->institute;
+	j["user"] = user->json();
 	
 	DbTableBooks books{conn};
 	const auto data = books.getAllowedBooks(user->id);
 	for (const auto& d: data) {
+		// j["books"].push_back(data.json());
 		json jj;
 		jj["title"] = d.second.title;
 		jj["author"] = d.second.author;

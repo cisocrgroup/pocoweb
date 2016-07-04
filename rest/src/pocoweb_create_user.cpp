@@ -4,6 +4,7 @@
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
+#include <json.hpp>
 #include "db/db.hpp"
 #include "db/User.hpp"
 #include "db/DbTableUsers.hpp"
