@@ -23,13 +23,14 @@ LDFLAGS += -l boost_log_setup
 LDFLAGS += -l boost_thread
 LDFLAGS += -l crypto
 
-VPATH = src/db src/util src/api src/doc gsm/pugixml/src src
+VPATH = src/db src/util src/api src/doc gsm/pugixml/src src/ex src
 
 OBJS += Api.o
 OBJS += Config.o
 OBJS += DbTableUsers.o
 OBJS += DbTableBooks.o
 OBJS += Login.o
+OBJS += Ex.o
 OBJS += GetPage.o
 OBJS += User.o
 OBJS += Page.o
@@ -46,11 +47,12 @@ OBJS += pugixml.o
 MAINS += pocowebd.o
 MAINS += pocoweb_create_user.o
 MAINS += pocoweb_insert_book.o
+MAINS += pcw_ex.o
 
 DEPS = $(patsubst %.o,%.d,$(OBJS) $(MAINS))
 -include $(DEPS)
 
-default: pocowebd pocoweb_insert_book pocoweb_create_user config.ini
+default: pocowebd pocoweb_insert_book pocoweb_create_user pcw_ex config.ini
 
 pocowebd: pocowebd.o libpocoweb.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
@@ -60,6 +62,10 @@ pocoweb_create_user: pocoweb_create_user.o libpocoweb.a
 
 pocoweb_insert_book: pocoweb_insert_book.o libpocoweb.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+
+pcw_ex: pcw_ex.o libpocoweb.a
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+
 libpocoweb.a: $(OBJS)
 	$(AR) rcs $@ $^
 
@@ -75,4 +81,4 @@ config.ini:
 
 .PHONY: clean
 clean:
-	$(RM) *.o *.d libpocoweb.a pocwebd pocweb_create_user config.ini
+	$(RM) *.o *.d libpocoweb.a pocwebd pocweb_create_user pocoweb_insert_book pcw_ex config.ini

@@ -21,33 +21,34 @@ using json = nlohmann::json;
 void
 pcw::GetPage::operator()(Response& res, RequestPtr req) const noexcept
 {
-	std::string answer;
+	std::string answer, sid;
 	Status status = Status::BadRequest;
 
 	try {
-		const auto sid = getSid(req);
+		sid = getSid(req);
 		BOOST_LOG_TRIVIAL(info) << " sid: " << sid;
-		BOOST_LOG_TRIVIAL(info) << "book: " << req->path_match[3];
-		BOOST_LOG_TRIVIAL(info) << "page: " << req->path_match[4];
+		BOOST_LOG_TRIVIAL(info) << "book: " << req->path_match[1];
+		BOOST_LOG_TRIVIAL(info) << "page: " << req->path_match[2];
 		if (not sid.empty()) 
 			status = doGetPage(
 				sid,
-				std::stoi(req->path_match[3]),
-				std::stoi(req->path_match[4]),
+				std::stoi(req->path_match[1]),
+				std::stoi(req->path_match[2]),
 				answer
 			);
+		else
+			status = Status::Forbidden;
 	} catch (const std::exception& e) {
 		BOOST_LOG_TRIVIAL(error) << e.what();
 		status = Status::InternalServerError;
 	}
-	reply(status, res, answer);
+	reply(status, res, answer, sid);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 pcw::Api::Status
 pcw::GetPage::doGetPage(const std::string& sid, int bookid, int pageid, std::string& answer) const
 {
-	BOOST_LOG_TRIVIAL(info) << "sid: " << sid << "bookid: " << bookid << " pageid: " << pageid;
 	auto user = sessions->find(sid);
 	if (not user)
 		return Status::Forbidden;
@@ -61,20 +62,7 @@ pcw::GetPage::doGetPage(const std::string& sid, int bookid, int pageid, std::str
 
 	json j;
 	j["api"] = PCW_API_VERSION;
-	j["bookid"] = bookid;
-	j["pageid"] = pageid;
-	
-	for (const auto& l: *page) {
-		json jj;
-		jj["box"]["x0"] = l->box.x0;
-		jj["box"]["y0"] = l->box.y0;
-		jj["box"]["x1"] = l->box.x1;
-		jj["box"]["y1"] = l->box.y1;
-		jj["lineid"] = l->id;
-		jj["line"] = l->line();
-		jj["cuts"] = l->cuts();
-		j["lines"].push_back(jj);
-	}
+	page->store(j);
 	answer = j.dump();
 	return Status::Ok;
 }

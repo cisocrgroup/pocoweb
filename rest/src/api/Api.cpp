@@ -27,7 +27,7 @@ pcw::Api::run(const Config& config)
 	auto sessions = std::make_shared<Sessions>();
 	server.resource[R"(^/login/username/(.+)/password/(.+)$)"]["GET"] = 
 		Login(sessions, config);
-	server.resource[R"(^(/([a-fA-f0-9]+))?/book/(\d+)/page/(\d+)$)"]["GET"] = 
+	server.resource[R"(^/books/(\d+)/pages/(\d+)$)"]["GET"] = 
 		GetPage(sessions, config);
 	server.default_resource["POST"] = BadRequest();
 	server.default_resource["GET"] = BadRequest();
@@ -42,13 +42,9 @@ pcw::Api::run(const Config& config)
 std::string
 pcw::Api::getSid(RequestPtr req) const 
 {
-	static const std::regex sid{R"(sessionid=([0-9a-fA-F]+))"};
-	// check for /abc009.../ prefix
-	if (req->path_match[1].length())
-		return req->path_match[2];
-
+	static const std::regex sid{R"(sessionid=([0-9a-fA-F]+);?)"};
 	std::smatch m;
-	auto cookie = req->header.find("cookie");
+	auto cookie = req->header.find("Cookie");
 	if (cookie != end(req->header) and std::regex_search(cookie->second, m, sid))
 		return m[1];
 	
@@ -59,11 +55,12 @@ pcw::Api::getSid(RequestPtr req) const
 void
 pcw::Api::reply(Status status,
 		Response& response,
-		const std::string& content) const noexcept
+		const std::string& content,
+		const std::string& sid) const noexcept
 {
 	switch (status) {
 	case Status::Ok:
-		ok(response, content);
+		ok(response, sid, content);
 		break;
 	case Status::BadRequest:
 		badRequest(response, content);
@@ -81,11 +78,12 @@ pcw::Api::reply(Status status,
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcw::Api::ok(Response& response, const std::string& content) const noexcept
+pcw::Api::ok(Response& response, const std::string& sid, const std::string& content) const noexcept
 {
 	try {
 		response << "HTTP/1.1 200 OK\r\n"
 			 << "Content-Type: application/json; charset=UTF-8\r\n"
+			 << "Set-Cookie: sessionid=" << sid << "; path=*;\r\n"
 			 << "Content-Length: " << content.size() << "\r\n\r\n"
 			 << content << std::flush;
 	} catch (const std::exception& e) {

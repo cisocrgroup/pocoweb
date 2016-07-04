@@ -25,26 +25,28 @@ using json = nlohmann::json;
 void
 pcw::Login::operator()(Response& response, RequestPtr request) const noexcept
 {
-	std::string answer;
+	std::string answer, sid;
 	Status status = Status::BadRequest;
 
 	try {
 		status = doLogin(
 			request->path_match[1], 
 			request->path_match[2], 
+			sid,
 			answer
 		);
 	} catch (const std::exception& e) {
 		BOOST_LOG_TRIVIAL(error) << e.what();
-		answer = e.what();
+		status = Status::InternalServerError;
 	}
-	reply(status, response, answer);
+	reply(status, response, answer, sid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Login::Status
 pcw::Login::doLogin(const std::string& username,
 		    const std::string& password,
+		    std::string& sid,
 		    std::string& answer) const
 {
 	auto conn = connect(config_);
@@ -56,7 +58,6 @@ pcw::Login::doLogin(const std::string& username,
 		return Status::Forbidden;
 	assert(user);
 	
-	std::string sid;
 	do {
 		sid = gensessionid(16);	
 	} while (not sessions->insert(sid, user));
@@ -70,13 +71,7 @@ pcw::Login::doLogin(const std::string& username,
 	for (const auto& d: data) {
 		// j["books"].push_back(data.json());
 		json jj;
-		jj["title"] = d.second.title;
-		jj["author"] = d.second.author;
-		jj["description"] = d.second.desc;
-		jj["uri"] = d.second.uri;
-		jj["year"] = d.second.year;
-		jj["bookdataid"] = d.second.id;
-		jj["bookid"] = d.first;
+		d.second.store(jj);
 		j["books"].push_back(jj);
 	}
 	BOOST_LOG_TRIVIAL(info) << *user << ": " << sid << " logged on";

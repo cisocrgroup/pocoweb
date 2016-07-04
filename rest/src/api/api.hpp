@@ -16,11 +16,20 @@ namespace pcw {
 		Api(): Api(nullptr) {}
 		Api(SessionsPtr s): sessions(std::move(s)) {}
 		std::string getSid(RequestPtr req) const;
-		void ok(Response& response, const std::string& content) const noexcept;
+		void ok(
+			Response& response, 
+			const std::string& sid, 
+			const std::string& content
+		) const noexcept;
 		void badRequest(Response& response, const std::string& content) const noexcept;
 		void internalServerError(Response& response) const noexcept;
 		void forbidden(Response& response) const noexcept;
-		void reply(Status s, Response& r, const std::string& content) const noexcept;
+		void reply(
+			Status s, 
+			Response& r, 
+			const std::string& content, 
+			const std::string& sid = {}
+		) const noexcept;
 		static void run(const Config& config);
 
 		const SessionsPtr sessions;
@@ -48,6 +57,7 @@ namespace pcw {
 	private:
 		Status doLogin(const std::string& username,
 			       const std::string& password,
+			       std::string& sid,
 			       std::string& answer) const;
 		void createSessionAndWrite(User& user, std::string& answer) const;
 
