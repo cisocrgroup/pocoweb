@@ -8,6 +8,16 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 void 
+pcw::Book::load(nlohmann::json& json) 
+{
+	id = json["bookid"];
+	data.load(json["data"]);
+	for (auto& page: json["pages"])
+		push_back(std::make_shared<Page>(page));
+}
+		
+///////////////////////////////////////////////////////////////////////////////
+void 
 pcw::Book::store(nlohmann::json& json) const
 {
 	json["bookid"] = id;

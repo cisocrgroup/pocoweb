@@ -20,6 +20,7 @@ namespace pcw {
 		Ptr& back() noexcept {return ts_.back();}
 		void push_back(Ptr p) {ts_.push_back(std::move(p));}
 		void resize(size_t n) {ts_.resize(n);}
+		void clear() {ts_.clear();}
 
 		auto begin() const noexcept {return ts_.begin();}
 		auto end() const noexcept {return ts_.end();}

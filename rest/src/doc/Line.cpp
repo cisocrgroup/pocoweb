@@ -5,6 +5,18 @@
 #include "Line.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
+void
+pcw::Line::load(nlohmann::json& json)
+{
+	id = json["lineid"];
+	line_ = json["line"];
+	cuts_.clear();
+	for (const auto& cut: json["cuts"])
+		cuts_.push_back(cut);
+	box.load(json["box"]);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 void 
 pcw::Line::store(nlohmann::json& json) const
 {

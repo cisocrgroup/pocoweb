@@ -3,8 +3,11 @@
 
 namespace pcw {
 	struct BookData {
+		BookData() = default;
+		BookData(nlohmann::json& json): BookData() {load(json);}
 		std::string title, author, desc, uri, path;
 		int id, year, firstpage, lastpage;
+		void load(nlohmann::json& json);
 		void store(nlohmann::json& json) const;
 	};
 }
