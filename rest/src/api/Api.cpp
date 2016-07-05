@@ -27,7 +27,7 @@ pcw::Api::run(const Config& config)
 	auto sessions = std::make_shared<Sessions>();
 	server.resource[R"(^/login/username/(.+)/password/(.+)$)"]["GET"] = 
 		Login(sessions, config);
-	server.resource[R"(^/books/(\d+)(/pages/(\d+)(/lines/(\d+))?)?$)"]["GET"] = 
+	server.resource[R"(^/books(/(\d+)(/pages/(\d+)(/lines/(\d+))?)?)?$)"]["GET"] = 
 		GetPage(sessions, config);
 	server.default_resource["POST"] = BadRequest();
 	server.default_resource["GET"] = BadRequest();

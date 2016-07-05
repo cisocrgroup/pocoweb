@@ -80,6 +80,7 @@ namespace pcw {
 	private:
 		Status doGetPage(const std::string& sid,
 				 int bookid, int pageid, int lineid, std::string& answer) const;
+		Status doGetBooks(const std::string& sid, std::string& answer) const;
 		const Config& config_;
 	};
 }
