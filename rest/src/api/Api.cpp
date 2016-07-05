@@ -27,7 +27,7 @@ pcw::Api::run(const Config& config)
 	auto sessions = std::make_shared<Sessions>();
 	server.resource[R"(^/login/username/(.+)/password/(.+)$)"]["GET"] = 
 		Login(sessions, config);
-	server.resource[R"(^/books/(\d+)/pages/(\d+)$)"]["GET"] = 
+	server.resource[R"(^/books/(\d+)(/pages/(\d+)(/lines/(\d+))?)?$)"]["GET"] = 
 		GetPage(sessions, config);
 	server.default_resource["POST"] = BadRequest();
 	server.default_resource["GET"] = BadRequest();
@@ -70,6 +70,9 @@ pcw::Api::reply(Status status,
 		break;
 	case Status::Forbidden:
 		forbidden(response);
+		break;
+	case Status::NotFound:
+		notFound(response);
 		break;
 	default:
 		assert(false and "Invalid status");
@@ -125,6 +128,20 @@ pcw::Api::forbidden(Response& response) const noexcept
 {
 	try {
 		response << "HTTP/1.1 403 Forbidden\r\n"
+			 << "Content-Length: 0\r\n\r\n"
+			 << std::flush;
+	} catch (const std::exception& e) {
+		BOOST_LOG_TRIVIAL(error) << e.what();
+		internalServerError(response);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+pcw::Api::notFound(Response& response) const noexcept
+{
+	try {
+		response << "HTTP/1.1 404 Not Found\r\n"
 			 << "Content-Length: 0\r\n\r\n"
 			 << std::flush;
 	} catch (const std::exception& e) {

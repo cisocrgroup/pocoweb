@@ -66,16 +66,16 @@ append_token(pcw::Line& line,
 	     const pcw::Box& lbox, 
 	     const char *token)
 {
-	auto offset = tbox.x0 - lbox.x0;
+	auto offset = tbox.left - lbox.left;
 	const auto n = strlen(token);
-	const auto w = tbox.x1 - tbox.x0;
+	const auto w = tbox.right - tbox.left;
 	const auto d = n ? w / n : w;
 	
 	for (int i = 0; i < (int)n; ++i) {
 		line.cuts().push_back(offset);
 		offset += d;
 	}		
-	line.cuts().push_back(tbox.x1 - lbox.x0 + 1);
+	line.cuts().push_back(tbox.right - lbox.left + 1);
 	line.line().append(token);
 	line.line().append(1, ' ');
 }

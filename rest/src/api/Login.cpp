@@ -16,6 +16,11 @@
 #include "db/DbTableUsers.hpp"
 #include "db/DbTableBooks.hpp"
 #include "doc/BookData.hpp"
+#include "doc/Box.hpp"
+#include "doc/Container.hpp"
+#include "doc/Book.hpp"
+#include "doc/Line.hpp"
+#include "doc/Page.hpp"
 #include "server_http.hpp"
 #include "api.hpp"
 
@@ -67,11 +72,10 @@ pcw::Login::doLogin(const std::string& username,
 	j["user"] = user->json();
 	
 	DbTableBooks books{conn};
-	const auto data = books.getAllowedBooks(user->id);
-	for (const auto& d: data) {
-		// j["books"].push_back(data.json());
+	const auto allowedBooks = books.getAllowedBooks(user->id);
+	for (const auto& book: allowedBooks) {
 		json jj;
-		d.second.store(jj);
+		book->store(jj);
 		j["books"].push_back(jj);
 	}
 	BOOST_LOG_TRIVIAL(info) << *user << ": " << sid << " logged on";

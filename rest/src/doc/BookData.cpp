@@ -10,11 +10,13 @@ pcw::BookData::load(nlohmann::json& json)
 	desc = 	json["description"];
 	uri = json["uri"];
 	path = 	json["path"];
-	id = json["bookid"];
+	id = json["id"];
 	year = 	json["year"];
 	firstpage = json["firstpage"];
 	lastpage = json["lastpage"];
+	owner = json["ownerid"];
 }
+
 ///////////////////////////////////////////////////////////////////////////////
 void 
 pcw::BookData::store(nlohmann::json& json) const
@@ -24,8 +26,9 @@ pcw::BookData::store(nlohmann::json& json) const
 	json["description"] = desc;
 	json["uri"] = uri;
 	json["path"] = path;
-	json["bookid"] = id;
+	json["id"] = id;
 	json["year"] = year;
 	json["firstpage"] = firstpage;
 	json["lastpage"] = lastpage;
+	json["ownerid"] = owner;
 }

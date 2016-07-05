@@ -11,7 +11,7 @@ namespace pcw {
 		using Server = SimpleWeb::Server<SimpleWeb::HTTP>;
 		using RequestPtr = std::shared_ptr<Server::Request>;
 		using Response = Server::Response;
-		enum class Status {Ok, BadRequest, InternalServerError, Forbidden};
+		enum class Status {Ok, BadRequest, InternalServerError, Forbidden, NotFound};
 
 		Api(): Api(nullptr) {}
 		Api(SessionsPtr s): sessions(std::move(s)) {}
@@ -24,6 +24,7 @@ namespace pcw {
 		void badRequest(Response& response, const std::string& content) const noexcept;
 		void internalServerError(Response& response) const noexcept;
 		void forbidden(Response& response) const noexcept;
+		void notFound(Response& response) const noexcept;
 		void reply(
 			Status s, 
 			Response& r, 
@@ -78,7 +79,7 @@ namespace pcw {
 
 	private:
 		Status doGetPage(const std::string& sid,
-				 int bookid, int pageid, std::string& answer) const;
+				 int bookid, int pageid, int lineid, std::string& answer) const;
 		const Config& config_;
 	};
 }
