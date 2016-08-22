@@ -22,6 +22,10 @@ namespace pcw {
 
 		void do_reg(Server& server) const noexcept;
 		Status run(Content& content) const noexcept;
+
+	private:
+		SessionPtr make_session(Content& content) const noexcept;
+		void write_response(const Session& session, Content& content) const;
 	};
 }
 
@@ -40,32 +44,63 @@ template<class S>
 typename pcw::Login<S>::Status
 pcw::Login<S>::run(Content& content) const noexcept
 {
+	// make session (nullptr means invalid user)
+	auto session = make_session(content);
+	if (not session)
+		return Status::Forbidden;
+
+	// write result
+	write_response(*session, content);
+	return Status::Ok;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class S>
+pcw::SessionPtr 
+pcw::Login<S>::make_session(Content& content) const noexcept
+{
 	const auto username = content.req->path_match[1];
 	const auto password = content.req->path_match[2];
-	auto conn = connect(this->config());
-	const auto user = User::create(*conn, username);
+	const auto connection = connect(this->config());
+	const auto user = User::create(*connection, username);
+	if (not user or not user->authenticate(*connection, password))
+		return nullptr;
+
+	while (true) { // must create unique session
+		auto sid = gensessionid(16);
+		auto session = this->sessions().new_session(sid);
+		if (session) {
+			session->user = user;
+			session->connection = connection;
+			session->sid = sid;
+			content.sid = sid;
+			return session;
+		}
+	}
+	assert(false);
+	return nullptr;
+}
 	
-	if (not user or not user->authenticate(*conn, password))
-		return Status::Forbidden;
-	do {
-		content.sid = gensessionid(16);
-	} while (not this->sessions().insert(content.sid.get(), user));
-	
+////////////////////////////////////////////////////////////////////////////////
+template<class S>
+void
+pcw::Login<S>::write_response(const Session& session, Content& content) const
+{
 	using json = nlohmann::json;
 	json j;
 	j["api"] = PCW_API_VERSION;
-	j["user"] = user->json();
+	j["user"] = session.user->json();
 	
-	DbTableBooks books{conn};
-	const auto allowedBooks = books.getAllowedBooks(user->id);
+	DbTableBooks books{session.connection};
+	const auto allowedBooks = books.getAllowedBooks(session.user->id);
 	for (const auto& book: allowedBooks) {
 		json jj;
 		book->store(jj);
 		j["books"].push_back(jj);
 	}
-	BOOST_LOG_TRIVIAL(info) << *user << ": " << content.sid.get() << " logged on";
+	BOOST_LOG_TRIVIAL(info) << *session.user 
+				<< ": " << session.sid << " logged on";
 	content.os << j;
-	return Status::Ok;
 }
 
 #endif // api_Login_hpp__
