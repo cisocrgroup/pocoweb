@@ -24,8 +24,8 @@ namespace pcw {
 		Status run(Content& content) const noexcept;
 
 	private:
-		SessionPtr make_session(Content& content) const noexcept;
-		void write_response(const Session& session, Content& content) const;
+		SessionPtr make_session(const Content& content) const noexcept;
+		void write_response(Content& content) const;
 	};
 }
 
@@ -45,19 +45,21 @@ typename pcw::Login<S>::Status
 pcw::Login<S>::run(Content& content) const noexcept
 {
 	// make session (nullptr means invalid user)
-	auto session = make_session(content);
-	if (not session)
+	content.session = make_session(content);
+
+	// auto session = make_session(content);
+	if (not content.session)
 		return Status::Forbidden;
 
 	// write result
-	write_response(*session, content);
+	write_response(content);
 	return Status::Ok;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class S>
 pcw::SessionPtr 
-pcw::Login<S>::make_session(Content& content) const noexcept
+pcw::Login<S>::make_session(const Content& content) const noexcept
 {
 	const auto username = content.req->path_match[1];
 	const auto password = content.req->path_match[2];
@@ -73,7 +75,6 @@ pcw::Login<S>::make_session(Content& content) const noexcept
 			session->user = user;
 			session->connection = connection;
 			session->sid = sid;
-			content.sid = sid;
 			return session;
 		}
 	}
@@ -84,23 +85,24 @@ pcw::Login<S>::make_session(Content& content) const noexcept
 ////////////////////////////////////////////////////////////////////////////////
 template<class S>
 void
-pcw::Login<S>::write_response(const Session& session, Content& content) const
+pcw::Login<S>::write_response(Content& content) const
 {
 	using json = nlohmann::json;
 	json j;
 	j["api"] = PCW_API_VERSION;
-	j["user"] = session.user->json();
+	j["user"] = content.session->user->json();
 	
-	DbTableBooks books{session.connection};
-	const auto allowedBooks = books.getAllowedBooks(session.user->id);
+	DbTableBooks books{content.session->connection};
+	const auto allowedBooks = books.getAllowedBooks(content.session->user->id);
 	for (const auto& book: allowedBooks) {
 		json jj;
 		book->store(jj);
 		j["books"].push_back(jj);
 	}
-	BOOST_LOG_TRIVIAL(info) << *session.user 
-				<< ": " << session.sid << " logged on";
 	content.os << j;
+	BOOST_LOG_TRIVIAL(info) << *content.session->user 
+				<< ": " << content.session->sid 
+				<< " logged on";
 }
 
 #endif // api_Login_hpp__

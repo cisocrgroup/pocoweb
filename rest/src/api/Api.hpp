@@ -8,14 +8,17 @@
 
 namespace pcw {
 	class Config;
+	using ConfigPtr = std::shared_ptr<Config>;
 	class Sessions;
+	using SessionPtr = std::shared_ptr<Session>;
+	struct Session;
+	using SessionsPtr = std::shared_ptr<Sessions>;
 
 	template<class S>
 	struct Server {
 		using Response = typename S::Response;
 		using Request = typename S::Request;
-		using SessionsPtr = std::shared_ptr<Sessions>;
-		using ConfigPtr = std::shared_ptr<Config>;
+
 		Server(ConfigPtr c)
 			: server(
 				config->daemon.port, 
@@ -38,21 +41,17 @@ namespace pcw {
 		using Response = typename Server::Response;
 		using Request = typename Server::Request;
 		using RequestPtr = std::shared_ptr<Request>;
-		using SessionsPtr = typename Server::SessionsPtr;
-		using ConfigPtr = typename Server::ConfigPtr;
 		
 		struct Content {
-			Content(RequestPtr r)
+			Content(RequestPtr r, SessionPtr s)
 				: os()
-				, sid(get_sid(*req))
-				, req(r)
+				, session(std::move(s))
+				, req(std::move(r))
 			{}
 			std::stringstream os;
-			boost::optional<std::string> sid;
+			SessionPtr session;
 			RequestPtr req;
 
-			static boost::optional<std::string> 
-				get_sid(const Request& req) noexcept;
 		};
 
 		enum class Status: int {
@@ -80,6 +79,7 @@ namespace pcw {
 			const Content& content
 		) const noexcept;
 		void fail(Response& res) const noexcept;
+		SessionPtr session(const Request& req) const noexcept;
 		
 		ConfigPtr config_;
 		SessionsPtr sessions_;
@@ -103,7 +103,7 @@ pcw::Api<S, T>::operator()(Response& res, RequestPtr req) const noexcept
 {
 	assert(req);
 	try {
-		Content content(req);
+		Content content(req, this->session(*req));
 		const auto status = static_cast<const T&>(*this).run(content);
 		reply(res, status, content);
 	} catch (const std::exception& e) {
@@ -125,8 +125,8 @@ pcw::Api<S, T>::reply(
 		res << "HTTP/1.1 " << static_cast<int>(status) 
 		    << " " << get_status_string(status) << "\r\n" 
 		    << "Content-Type: application/json; charset=UTF-8\r\n";
-		if (content.sid) 
-		    res << "Set-Cookie: sessionid=" << content.sid.get() << "; path=*\r\n";
+		if (content.session) 
+		    res << "Set-Cookie: sessionid=" << content.session->sid << "; path=*\r\n";
 		res << "Content-Length: " << str.size() << "\r\n\r\n"
 		    << str << std::flush;
 	} catch (const std::exception& e) {
@@ -176,17 +176,17 @@ pcw::Api<S, T>::get_status_string(Status status) const noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class S, class T>
-boost::optional<std::string>
-pcw::Api<S, T>::Content::get_sid(const Request& req) noexcept
+pcw::SessionPtr
+pcw::Api<S, T>::session(const Request& req) const noexcept
 {
 	static const std::regex sidre{R"(sessionid=([0-9a-fA-F]+);?)"};
 	auto r = req.header.equal_range("Cookie");
 	std::smatch m;
 	for (auto i = r.first; i != r.second; ++i) {
-		if (std::regex_search(i->second, m, sidre))
-			return std::string(m[1]);
+		if (std::regex_search(i->second, m, sidre)) 
+			return this->sessions().session(m[1]);
 	}
-	return {};
+	return nullptr;
 }
 
 #endif // pcw_Api_hpp__
