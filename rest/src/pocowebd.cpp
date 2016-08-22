@@ -62,7 +62,7 @@ run(const std::string& configfile)
 	init_log(*config); 
 	if (config->daemon.detach and daemon(0, 0) == -1)
 		throw std::system_error(errno, std::system_category(), "daemon");
-	pcw::run(config);
+	run(config);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

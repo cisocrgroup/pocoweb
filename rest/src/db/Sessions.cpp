@@ -5,15 +5,17 @@
 #include <mutex>
 #include <vector>
 #include <json.hpp>
+#include "Config.hpp"
 #include "User.hpp"
 #include "Sessions.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Sessions::Sessions()
+pcw::Sessions::Sessions(const Config& config)
 	: sessions_()
 	, mutex_()
+	, n_(config.sessions.n)
 {
-	sessions_.reserve(100);
+	sessions_.reserve(n_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -30,16 +32,16 @@ pcw::Sessions::insert(const std::string& sid, const UserPtr& user)
 		return false;
 
 	// buffer is not full yet
-	if (sessions_.size() < 100)
-		sessions_.emplace_back(sid, user);
+	if (sessions_.size() < n_)
+		sessions_.emplace_back(sid, std::make_shared<Session>(user));
 	// buffer is full -> discard last entry;
 	else
-		sessions_.back() = std::make_pair(sid, user);
+		sessions_.back() = std::make_pair(sid, std::make_shared<Session>(user));
 	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-boost::optional<pcw::UserPtr>
+pcw::SessionPtr
 pcw::Sessions::find(const std::string& sid) const
 {
 	std::lock_guard<std::mutex> lock(mutex_);
@@ -54,6 +56,6 @@ pcw::Sessions::find(const std::string& sid) const
 		assert(j->first == sid);
 		return j->second;
 	} else {
-		return {};
+		return nullptr;
 	}
 }

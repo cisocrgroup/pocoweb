@@ -22,7 +22,7 @@ namespace pcw {
 				config->daemon.threads
 			)
 			, config(c)
-			, sessions(std::make_shared<Sessions>())
+			, sessions(std::make_shared<Sessions>(*config))
 		{}
 		void start() {server.start();}
 		S server;

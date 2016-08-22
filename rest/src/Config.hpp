@@ -17,6 +17,10 @@ namespace pcw {
 			const bool detach;
 		} daemon;
 
+		const struct Sessions {
+			const size_t n;
+		} sessions;
+
 		const struct Log {
 			const std::string file;
 		} log;
