@@ -20,7 +20,7 @@ pcw::Books::Books(SessionPtr session)
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::BookPtr 
-pcw::Books::create_new_book(const std::string& title, const std::string& dir) const
+pcw::Books::new_book(const std::string& title, const std::string& dir) const
 {
 	static const char *sql1 = "insert into bookdata "
 			 	  "(owner, title, directory) values(?,?,?)";

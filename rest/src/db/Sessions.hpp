@@ -12,12 +12,15 @@ namespace sql {
 namespace pcw {
 	class Config;
 	class User;
+	class Book;
 	using UserPtr = std::shared_ptr<User>;
 	using ConnectionPtr = std::shared_ptr<sql::Connection>;
+	using BookPtr = std::shared_ptr<Book>;
 	
 	struct Session {
 		UserPtr user;
 		ConnectionPtr connection;
+		BookPtr current_book;
 		std::string sid;
 		std::mutex mutex;
 	};

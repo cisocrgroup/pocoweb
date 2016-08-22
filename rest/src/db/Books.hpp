@@ -16,7 +16,7 @@ namespace pcw {
 	class Books {
 	public:
 		Books(SessionPtr session);
-		BookPtr create_new_book(
+		BookPtr new_book(
 			const std::string& title,
 			const std::string& dir
 		) const;	
