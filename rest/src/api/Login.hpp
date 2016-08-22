@@ -36,7 +36,7 @@ pcw::Login<S>::do_reg(Server& server) const noexcept
 {
 	static const char *uri = "^/login/username/([^/]+)/password/([^/]+)$";
 	server.server.resource[uri]["GET"] = *this;
-	server.server.resource[uri]["PUSH"] = *this;
+	server.server.resource[uri]["POST"] = *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
