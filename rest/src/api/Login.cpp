@@ -8,7 +8,7 @@
 #include <cppconn/statement.h>
 #include <mysql_connection.h>
 #include <json.hpp>
-#include "util/Config.hpp"
+#include "Config.hpp"
 #include "util/hash.hpp"
 #include "db/db.hpp"
 #include "db/Sessions.hpp"

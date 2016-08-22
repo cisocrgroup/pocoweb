@@ -16,7 +16,7 @@
 #include "doc/Line.hpp"
 #include "doc/Page.hpp"
 #include "doc/Book.hpp"
-#include "util/Config.hpp"
+#include "Config.hpp"
 
 using namespace pcw;
 static Config loadConfig(int argc, char **argv);
@@ -75,7 +75,5 @@ loadConfig(int argc, char **argv)
 					 " config-file type owner author title "
 					 "year desc uri path [users...]");
 
-	Config config;
-	config.load(argv[1]);
-	return config;
+	return Config::load(argv[1]);
 }

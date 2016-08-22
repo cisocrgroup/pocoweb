@@ -28,7 +28,7 @@
 #include <boost/log/sources/record_ostream.hpp>
 #include <json.hpp>
 #include "server_http.hpp"
-#include "util/Config.hpp"
+#include "Config.hpp"
 #include "util/hash.hpp"
 #include "api/api.hpp"
 #include "db/db.hpp"
@@ -36,16 +36,17 @@
 #include "db/DbTableUsers.hpp"
 
 using namespace pcw;
-static void run(int argc, char **argv);
-static Config loadConfig(int argc, char **argv);
-static void initLogging(const Config& config);
+static void run(const std::string& configfile);
+static void init_log(const Config& config);
 
 ////////////////////////////////////////////////////////////////////////////////
 int
 main(int argc, char** argv)
 {
 	try {
-		run(argc, argv);
+		if (argc != 2) 
+			throw std::runtime_error("Usage: " + std::string(argv[0]) + " config-file");
+		run(argv[1]);
 		return EXIT_SUCCESS;
 	} catch (const std::exception& e) {
 		std::cerr << "[error] " << e.what() << "\n";
@@ -55,53 +56,18 @@ main(int argc, char** argv)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-run(int argc, char** argv)
+run(const std::string& configfile)
 {
-	const auto config = loadConfig(argc, argv);
-	initLogging(config);
-	
-	if (config.daemon.detach and daemon(0, 0) == -1)
+	const auto config = std::make_shared<Config>(Config::load(configfile));
+	init_log(*config); 
+	if (config->daemon.detach and daemon(0, 0) == -1)
 		throw std::system_error(errno, std::system_category(), "daemon");
-	Api::run(config);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Config
-loadConfig(int argc, char **argv)
-{
-	const char *file = nullptr;
-	Config config;
-	config.daemon.detach = false;
-
-	switch (argc) {
-	case 2:
-		file = argv[1];
-		break;
-	case 3:
-		if (strcmp("--daemon", argv[1]) == 0 or 
-		    strcmp("-d", argv[1]) == 0) {
-			config.daemon.detach = true;
-			file = argv[2];
-			break;
-		}
-		// fall through
-	default:
-		throw std::runtime_error(
-			std::string("Usage: ") +
-			 argv[0] +
-			 " [-d|--daemon] config-file"
-		);
-	}
-		
-	config.load(file);
-	if (not config.daemon.detach)
-		config.log.file = "/dev/stderr";
-	return config;
+	pcw::run(config);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-initLogging(const Config& config)
+init_log(const Config& config)
 {
 	boost::log::add_common_attributes();
 	auto fmtTimeStamp = boost::log::expressions::

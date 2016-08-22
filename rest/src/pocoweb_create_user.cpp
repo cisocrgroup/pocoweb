@@ -8,7 +8,7 @@
 #include "db/db.hpp"
 #include "db/User.hpp"
 #include "db/DbTableUsers.hpp"
-#include "util/Config.hpp"
+#include "Config.hpp"
 
 using namespace pcw;
 static Config loadConfig(int argc, char **argv);
@@ -37,7 +37,5 @@ loadConfig(int argc, char **argv)
 		throw std::runtime_error(std::string("Usage: ") +
 					 argv[0] +
 					 " config-file name email institute passwd");
-	Config config;
-	config.load(argv[1]);
-	return config;
+	return Config::load(argv[1]);
 }

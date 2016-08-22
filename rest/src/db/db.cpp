@@ -1,7 +1,7 @@
 #include <memory>
 #include <mysql_connection.h>
 #include <mysql_driver.h>
-#include "util/Config.hpp"
+#include "Config.hpp"
 #include "db.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////

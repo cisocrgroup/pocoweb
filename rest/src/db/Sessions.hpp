@@ -1,6 +1,9 @@
 #ifndef pcw_Sessions_hpp__
 #define pcw_Sessions_hpp__
 
+#include <vector>
+#include <mutex>
+
 namespace pcw {
 	class User;
 	using UserPtr = std::shared_ptr<User>;
