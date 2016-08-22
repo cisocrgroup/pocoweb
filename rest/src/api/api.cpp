@@ -3,6 +3,7 @@
 #include "db/Sessions.hpp"
 #include "Config.hpp"
 #include "Login.hpp"
+#include "Post.hpp"
 #include "api.hpp"
 #include "Api.hpp"
 
@@ -33,9 +34,11 @@ pcw::run(std::shared_ptr<Config> config)
 	Server<S> server(config);
 	
 	Login<Server<S>> login;
+	PostBook<Server<S>> pbook;
 	Default<Server<S>> def;
 	
 	login.reg(server);
+	pbook.reg(server);
 	def.reg(server);
 
 	BOOST_LOG_TRIVIAL(info) << "daemon[" << getpid() << "] starting ";
