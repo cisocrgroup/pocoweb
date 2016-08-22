@@ -19,8 +19,8 @@ pcw::Sessions::Sessions(const Config& config)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool
-pcw::Sessions::insert(const std::string& sid, const UserPtr& user)
+pcw::SessionPtr
+pcw::Sessions::new_session(const std::string& sid)
 {
 	std::lock_guard<std::mutex> lock(mutex_);
 	auto i = std::find_if(begin(sessions_), end(sessions_), [&sid](const auto& p) {
@@ -29,20 +29,20 @@ pcw::Sessions::insert(const std::string& sid, const UserPtr& user)
 
 	// non unique session id
 	if (i != end(sessions_))
-		return false;
+		return nullptr;
 
 	// buffer is not full yet
 	if (sessions_.size() < n_)
-		sessions_.emplace_back(sid, std::make_shared<Session>(user));
+		sessions_.emplace_back(sid, std::make_shared<Session>());
 	// buffer is full -> discard last entry;
 	else
-		sessions_.back() = std::make_pair(sid, std::make_shared<Session>(user));
-	return true;
+		sessions_.back() = std::make_pair(sid, std::make_shared<Session>());
+	return sessions_.back().second;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::SessionPtr
-pcw::Sessions::find(const std::string& sid) const
+pcw::Sessions::session(const std::string& sid) const
 {
 	std::lock_guard<std::mutex> lock(mutex_);
 	auto i = std::find_if(begin(sessions_), end(sessions_), [&sid](const auto& p) {
