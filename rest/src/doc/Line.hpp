@@ -1,8 +1,9 @@
 #ifndef pcw_Line_hpp__
 #define pcw_Line_hpp__
 
+#include "Box.hpp"
+
 namespace pcw {
-	struct Box;
 	class Line: public std::enable_shared_from_this<Line> {
 	public:
 		using Cuts = std::vector<int>;

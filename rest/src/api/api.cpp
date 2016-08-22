@@ -2,6 +2,7 @@
 #include "server_http.hpp"
 #include "db/Sessions.hpp"
 #include "Config.hpp"
+#include "Login.hpp"
 #include "api.hpp"
 #include "Api.hpp"
 
@@ -15,6 +16,7 @@ public:
 
 	void do_reg(Server& server) const noexcept {
 		server.server.default_resource["POST"] = *this;
+		server.server.default_resource["PUT"] = *this;
 		server.server.default_resource["GET"] = *this;
 	}
 	Status run(const Content&) const noexcept {
@@ -26,12 +28,14 @@ public:
 void
 pcw::run(std::shared_ptr<Config> config)
 {
-	// const auto config = std::make_shared<Config>(Config::load(cfile));
 	assert(config);
 	using S = SimpleWeb::Server<SimpleWeb::HTTP>;
 	Server<S> server(config);
 	
+	Login<Server<S>> login;
 	Default<Server<S>> def;
+	
+	login.reg(server);
 	def.reg(server);
 
 	BOOST_LOG_TRIVIAL(info) << "daemon[" << getpid() << "] starting ";

@@ -23,7 +23,7 @@ LDFLAGS += -l boost_log_setup
 LDFLAGS += -l boost_thread
 LDFLAGS += -l crypto
 
-VPATH = src/db src/util src/api src/doc gsm/pugixml/src src/ex src
+VPATH = src/db src/util src/api src/doc gsm/pugixml/src src/ex src 
 
 OBJS += api.o
 OBJS += Config.o

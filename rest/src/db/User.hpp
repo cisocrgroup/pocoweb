@@ -1,6 +1,9 @@
 #ifndef pcw_User_hpp__
 #define pcw_User_hpp__
 
+#include <memory>
+#include "json.hpp"
+
 namespace sql {
 	class ResultSet;
 	class Connection;

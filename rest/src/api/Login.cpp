@@ -9,22 +9,14 @@
 #include <mysql_connection.h>
 #include <json.hpp>
 #include "Config.hpp"
-#include "util/hash.hpp"
-#include "db/db.hpp"
 #include "db/Sessions.hpp"
 #include "db/User.hpp"
 #include "db/DbTableUsers.hpp"
-#include "db/DbTableBooks.hpp"
-#include "doc/BookData.hpp"
 #include "doc/Box.hpp"
 #include "doc/Container.hpp"
-#include "doc/Book.hpp"
-#include "doc/Line.hpp"
-#include "doc/Page.hpp"
 #include "server_http.hpp"
 #include "api.hpp"
 
-using json = nlohmann::json;
 
 ////////////////////////////////////////////////////////////////////////////////
 void

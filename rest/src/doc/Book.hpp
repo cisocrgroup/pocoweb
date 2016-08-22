@@ -1,11 +1,10 @@
 #ifndef pcw_Book_hpp__
 #define pcw_Book_hpp__
 
+#include "Page.hpp"
+#include "BookData.hpp"
+
 namespace pcw {
-
-	class Page;
-	struct BookData;
-
 	class Book: public std::enable_shared_from_this<Book>,
 		    public Container<Page> {
 	public:

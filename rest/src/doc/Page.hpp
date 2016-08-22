@@ -1,10 +1,11 @@
 #ifndef pcw_Page_hpp__
 #define pcw_Page_hpp__
 
-namespace pcw {
-	class Line;
-	struct Box;
+#include "Container.hpp"
+#include "Line.hpp"
+#include "Box.hpp"
 
+namespace pcw {
 	class Page: public std::enable_shared_from_this<Page>,
 		    public Container<Line> {
 	public:
