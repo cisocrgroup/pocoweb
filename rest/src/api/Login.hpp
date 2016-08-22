@@ -13,7 +13,6 @@
 #include "Api.hpp"
 
 namespace pcw {
-	
 	template<class S> class Login: public Api<S, Login<S>> {
 	public:
 		using Base = typename pcw::Api<S, Login<S>>::Base;
@@ -25,6 +24,7 @@ namespace pcw {
 		Status run(Content& content) const noexcept;
 	};
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 template<class S>
 void 
