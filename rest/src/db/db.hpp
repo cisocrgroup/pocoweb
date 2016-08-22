@@ -1,6 +1,8 @@
 #ifndef pcw_db_hpp__
 #define pcw_db_hpp__
 
+#include <memory>
+
 namespace sql {
 	class Connection;
 	class Statement;

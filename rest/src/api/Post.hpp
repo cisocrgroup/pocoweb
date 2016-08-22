@@ -42,6 +42,7 @@ pcw::PostBook<S>::run(Content& content) const noexcept
 {
 	if (not content.session)
 		return Status::Forbidden;
+	Book book;
 	return Status::InternalServerError;
 }
 

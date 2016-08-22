@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <mutex>
+#include <memory>
 
 namespace sql {
 	class Connection;
@@ -18,6 +19,7 @@ namespace pcw {
 		UserPtr user;
 		ConnectionPtr connection;
 		std::string sid;
+		std::mutex mutex;
 	};
 	using SessionPtr = std::shared_ptr<Session>;
 
