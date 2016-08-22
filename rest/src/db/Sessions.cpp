@@ -39,7 +39,7 @@ pcw::Sessions::insert(const std::string& sid, const UserPtr& user)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::UserPtr
+boost::optional<pcw::UserPtr>
 pcw::Sessions::find(const std::string& sid) const
 {
 	std::lock_guard<std::mutex> lock(mutex_);
@@ -54,6 +54,6 @@ pcw::Sessions::find(const std::string& sid) const
 		assert(j->first == sid);
 		return j->second;
 	} else {
-		return nullptr;
+		return {};
 	}
 }
