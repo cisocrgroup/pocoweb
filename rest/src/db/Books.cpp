@@ -14,7 +14,6 @@ pcw::Books::Books(SessionPtr session)
 	: session_(std::move(session))
 {
 	assert(session_);
-	std::lock_guard<std::mutex> lock(session_->mutex);
 	if (not session_->connection->isValid())
 		session_->connection->reconnect();
 }
@@ -31,7 +30,6 @@ pcw::Books::new_book(
 	static const char *sql2 = "insert into books "
 			 	  "(bookdataid, firstpage, lastpage) VALUES(?,0,0)";
 
-	std::lock_guard<std::mutex> lock(session_->mutex);
 	session_->connection->setAutoCommit(false);
 	ScopeGuard sc([this]{
 		session_->connection->rollback();

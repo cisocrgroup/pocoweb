@@ -103,9 +103,19 @@ pcw::Api<S, T>::operator()(Response& res, RequestPtr req) const noexcept
 {
 	assert(req);
 	try {
-		Content content(req, this->session(*req));
-		const auto status = static_cast<const T&>(*this).run(content);
-		reply(res, status, content);
+		auto session = this->session(*req);
+		Content content(req, session);
+		Status status;
+
+		// lock session if it exits
+		if (session) {
+			std::lock_guard<std::mutex> lock(session->mutex);
+			status = static_cast<const T&>(*this).run(content);
+			reply(res, status, content);
+		} else {
+			status = static_cast<const T&>(*this).run(content);
+			reply(res, status, content);
+		}
 	} catch (const std::exception& e) {
 		BOOST_LOG_TRIVIAL(error) << e.what();
 		fail(res); 
