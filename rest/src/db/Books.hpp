@@ -18,11 +18,12 @@ namespace pcw {
 		Books(SessionPtr session);
 		BookPtr new_book(
 			const std::string& title,
+			const std::string& author,
 			const std::string& dir
 		) const;	
 		BookPtr find_book(int bookid) const;
-		bool is_allowed(const Book& book, int userid) const;
-		bool is_owner(const Book& book, int userid) const;
+		bool is_allowed(const Book& book) const;
+		bool is_owner(const Book& book) const;
 
 	private:
 		static int last_insert_id(sql::Statement& s);

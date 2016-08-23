@@ -21,23 +21,29 @@ pcw::Books::Books(SessionPtr session)
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::BookPtr 
-pcw::Books::new_book(const std::string& title, const std::string& dir) const
-{
+pcw::Books::new_book(
+	const std::string& title, 
+	const std::string& author,
+	const std::string& dir
+) const {
 	static const char *sql1 = "INSERT INTO bookdata "
-			 	  "(owner, title, directory) VALUES(?,?,?)";
+			 	  "(owner, title, author, directory) VALUES(?,?,?,?)";
 	static const char *sql2 = "insert into books "
 			 	  "(bookdataid, firstpage, lastpage) VALUES(?,0,0)";
 
 	std::lock_guard<std::mutex> lock(session_->mutex);
 	session_->connection->setAutoCommit(false);
-	ScopeGuard sc([this]{session_->connection->rollback();});
+	ScopeGuard sc([this]{
+		session_->connection->rollback();
+	});
 
 	// insert book data id
 	PreparedStatementPtr s{session_->connection->prepareStatement(sql1)};
 	assert(s);
 	s->setInt(1, session_->user->id);
 	s->setString(2, title);
-	s->setString(3, dir);
+	s->setString(3, author);
+	s->setString(4, dir);
 	s->executeUpdate();
 	const auto dataid = last_insert_id(*s);
 
@@ -79,6 +85,7 @@ pcw::Books::find_book(int bookid) const
 	auto book = std::make_shared<Book>();
 	book->id = bookid; 
 	book->id = res->getInt("bookid");
+
 	// bookdata
 	book->data.firstpage = res->getInt("firstpage");
 	book->data.lastpage = res->getInt("lastpage");
@@ -94,9 +101,9 @@ pcw::Books::find_book(int bookid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 bool 
-pcw::Books::is_allowed(const Book& book, int userid) const
+pcw::Books::is_allowed(const Book& book) const
 {
-	if (is_owner(book, userid))
+	if (is_owner(book))
 		return true;
 	// TODO: implement this
 	return true;
@@ -104,9 +111,9 @@ pcw::Books::is_allowed(const Book& book, int userid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 bool 
-pcw::Books::is_owner(const Book& book, int userid) const
+pcw::Books::is_owner(const Book& book) const
 {
-	return book.data.id == userid;
+	return book.data.id == session_->user->id;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

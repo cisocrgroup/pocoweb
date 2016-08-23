@@ -36,7 +36,7 @@ template<class S>
 void 
 pcw::PostBook<S>::do_reg(Server& server) const noexcept 
 {
-	server.server.resource["^/new-book/title/([^/]+)$"]["POST"] = *this;
+	server.server.resource["^/new-book/title/([^/]+)/author/([^/]+)$"]["POST"] = *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -49,7 +49,11 @@ pcw::PostBook<S>::run(Content& content) const noexcept
 	
 	// get new book	
 	Books books(content.session);
-	auto book = books.new_book(content.req->path_match[1], generate_book_dir());
+	auto book = books.new_book(
+		content.req->path_match[1], 
+		content.req->path_match[2],
+		generate_book_dir()
+	);
 
 	// write book
 	using json = nlohmann::json;
