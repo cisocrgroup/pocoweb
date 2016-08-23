@@ -12,6 +12,8 @@ namespace pcw {
 	using SessionPtr = std::shared_ptr<Session>;
 	class Book;
 	using BookPtr = std::shared_ptr<Book>;
+	class Page;
+	using PagePtr = std::shared_ptr<Page>;
 
 	class Books {
 	public:
@@ -24,6 +26,7 @@ namespace pcw {
 		BookPtr find_book(int bookid) const;
 		bool is_allowed(const Book& book) const;
 		bool is_owner(const Book& book) const;
+		void insert_page(const Page& page) const;
 
 	private:
 		static int last_insert_id(sql::Statement& s);

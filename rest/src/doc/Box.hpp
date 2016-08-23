@@ -12,9 +12,12 @@ namespace pcw {
 			, bottom(d)
 		{}
 		Box(nlohmann::json& json): Box() {load(json);}
-		int left, top, right, bottom;
+		int width() const noexcept {return right - left;}
+		int height() const noexcept {return bottom - top;}
 		void load(nlohmann::json& json);
 		void store(nlohmann::json& json) const;
+
+		int left, top, right, bottom;
 	};
 }
 

@@ -13,6 +13,7 @@ LDFLAGS ?=
 LDFLAGS := $(LDFLAGS)
 LDFLAGS += -l mysqlcppconn
 LDFLAGS += -l ssl
+LDFLAGS += -l lept
 LDFLAGS += -l pthread
 LDFLAGS += -l boost_regex
 LDFLAGS += -l boost_system

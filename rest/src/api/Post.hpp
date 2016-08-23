@@ -186,6 +186,16 @@ pcw::PostPageXml<S>::run(Content& content) const noexcept
 	// we have a valid book
 	BookDir book_dir(*book);
 	book_dir.add_page_xml(pageid, content.req->content);
+	auto page = book_dir.parse_page_xml(pageid);
+	if (not page)
+		return Status::BadRequest;
+
+	// update all
+	book_dir.add_line_images(*page);
+	books.insert_page(*page);
+	if (book->size() <= pageid) 
+		book->resize(pageid);
+	(*book)[pageid] = page;
 	content.session->current_book = book;
 	return Status::Created;
 }

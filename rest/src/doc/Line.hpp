@@ -19,6 +19,7 @@ namespace pcw {
 		void store(nlohmann::json& json) const;
 
 		Box box;
+		std::string image;
 		int id;
 
 	private:
