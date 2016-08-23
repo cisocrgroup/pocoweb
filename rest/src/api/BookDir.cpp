@@ -17,17 +17,7 @@ pcw::BookDir::add_page_image(int id, std::istream& is)
 {
 	auto ofile = get_page(id);
 	ofile.replace_extension("img");
-	std::ofstream os(ofile.string());
-	if (not os.good())
-		throw std::system_error(errno, std::system_category(), ofile.string());
-
-	is >> std::noskipws;
-	std::copy(
-		std::istream_iterator<char>(is), 
-		std::istream_iterator<char>(), 
-		std::ostream_iterator<char>(os)
-	);
-	os.close();
+	copy(is, ofile);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,6 +25,22 @@ pcw::BookDir::Path
 pcw::BookDir::get_page(int id) const
 {
 	return path_ / ("page-" + get_hex_str(id));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+pcw::BookDir::copy(std::istream& is, const Path& o)
+{
+	std::ofstream os(o.string());
+	if (not os.good())
+		throw std::system_error(errno, std::system_category(), o.string());
+	is >> std::noskipws;
+	std::copy(
+		std::istream_iterator<char>(is), 
+		std::istream_iterator<char>(), 
+		std::ostream_iterator<char>(os)
+	);
+	os.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

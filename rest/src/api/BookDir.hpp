@@ -14,6 +14,7 @@ namespace pcw {
 	private:
 		using Path = boost::filesystem::path;
 		Path get_page(int id) const;
+		static void copy(std::istream& is, const Path& o);
 		static std::string get_hex_str(int id);
 		const Path path_;
 	};
