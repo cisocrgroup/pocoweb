@@ -12,14 +12,10 @@ namespace pcw {
 		} db;
 
 		const struct Daemon {
-			const std::string host;
-			const int port, threads;
+			const std::string host, user;
+			const int port, threads, sessions;
 			const bool detach;
 		} daemon;
-
-		const struct Sessions {
-			const size_t n;
-		} sessions;
 
 		const struct Log {
 			const std::string file;
