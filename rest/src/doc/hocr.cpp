@@ -2,6 +2,7 @@
 #include <regex>
 #include <memory>
 #include <vector>
+#include <boost/log/trivial.hpp>
 #include <boost/filesystem.hpp>
 #include <pugixml.hpp>
 #include <json.hpp>
@@ -113,31 +114,45 @@ parse_hocr_page(pugi::xml_node node)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-static void
-parse_hocr_pages(const fs::path& p, pcw::Book& book, int& pagen)
+pcw::PagePtr
+pcw::parse_hocr_page(const Path& p)
 {
 	pugi::xml_document doc;
 	auto ok = doc.load_file(p.string().data());
-	if (not ok)
-		throw std::runtime_error(
-			"XML error: " + std::string(ok.description()));
+	if (not ok) {
+		BOOST_LOG_TRIVIAL(error) << "XML error: " << ok.description();
+		return nullptr;
+	}
 	
-	auto pages = doc.select_nodes("//div[@class='ocr_page']");
-	for (const auto& p: pages) {
-		book.push_back(parse_hocr_page(p.node()));
-		book.back()->id = ++pagen;
+	try {
+		auto pages = doc.select_nodes("//div[@class='ocr_page']");
+		int n = 0;
+		pcw::PagePtr page = nullptr;
+		for (const auto& p: pages) {
+			++n;
+			page = ::parse_hocr_page(p.node());
+		}
+		if (n != 1)
+			return nullptr;
+		return page;
+	} catch (const std::exception& e) {
+		BOOST_LOG_TRIVIAL(error) << "XML error: " << e.what();
+		return nullptr;
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 pcw::BookPtr
-pcw::parse_hocr(const std::string& dir)
+pcw::parse_hocr_book(const Path& dir)
 {
 	BookPtr book = std::make_shared<Book>();
-	int pagen = 0;
+	int n = 0;
 	for (auto i = fs::directory_iterator(dir); i != fs::directory_iterator(); ++i) {
 		if (is_hocr_file(*i)) {
-			parse_hocr_pages(*i, *book, pagen);
+			book->push_back(parse_hocr_page(*i));
+			if (not book->back())
+				return nullptr;
+			book->back()->id = ++n;
 		}
 	}
 	return book;

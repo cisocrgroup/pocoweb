@@ -27,7 +27,7 @@ main(int argc, char** argv)
 {
 	try {
 		auto config = loadConfig(argc, argv);
-		auto book = parse_hocr(argv[9]);
+		auto book = parse_hocr_book(argv[9]);
 		book->data.author = argv[4];
 		book->data.title = argv[5];
 		book->data.year = std::stoi(argv[6]);

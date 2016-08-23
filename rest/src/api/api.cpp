@@ -35,10 +35,12 @@ pcw::run(std::shared_ptr<Config> config)
 	
 	Login<Server<S>> login;
 	PostBook<Server<S>> pbook;
+	PostPageImage<Server<S>> ppimg;
 	Default<Server<S>> def;
 	
 	login.reg(server);
 	pbook.reg(server);
+	ppimg.reg(server);
 	def.reg(server);
 
 	BOOST_LOG_TRIVIAL(info) << "daemon[" << getpid() << "] starting ";

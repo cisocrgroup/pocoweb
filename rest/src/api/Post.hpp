@@ -15,6 +15,9 @@
 #include "Config.hpp"
 #include "Api.hpp"
 
+//
+// PostBook
+//
 namespace pcw {
 	template<class S> class PostBook: public Api<S, PostBook<S>> {
 	public:
@@ -85,6 +88,9 @@ pcw::PostBook<S>::generate_book_dir() const
 			       "could not generate unique book directory");
 }
 
+//
+// PostPageImage
+//
 namespace pcw {
 	template<class S> class PostPageImage: public Api<S, PostPageImage<S>> {
 	public:
@@ -97,7 +103,6 @@ namespace pcw {
 		Status run(Content& content) const noexcept;
 
 	private:
-		std::string generate_book_dir() const;
 	};
 }
 
@@ -106,7 +111,7 @@ template<class S>
 void 
 pcw::PostPageImage<S>::do_reg(Server& server) const noexcept 
 {
-	server.server.resource["^/books/(\\d+)/pages/(\\d+)/image/([^/]+)$"]["POST"] = *this;
+	server.server.resource["^/books/(\\d+)/pages/(\\d+)/image$"]["POST"] = *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -129,11 +134,59 @@ pcw::PostPageImage<S>::run(Content& content) const noexcept
 	
 	// we have a valid book
 	BookDir book_dir(*book);
-	book_dir.add_page_image(
-		pageid, 
-		content.req->path_match[3], 
-		content.req->content
-	);
+	book_dir.add_page_image(pageid, content.req->content);
+	content.session->current_book = book;
+	return Status::Created;
+}
+
+//
+// PostPageXml
+//
+namespace pcw {
+	template<class S> class PostPageXml: public Api<S, PostPageXml<S>> {
+	public:
+		using Base = typename pcw::Api<S, PostPageXml<S>>::Base;
+		using Server = typename Base::Server;
+		using Status = typename Base::Status;
+		using Content = typename Base::Content;
+
+		void do_reg(Server& server) const noexcept;
+		Status run(Content& content) const noexcept;
+
+	private:
+	};
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class S>
+void 
+pcw::PostPageXml<S>::do_reg(Server& server) const noexcept 
+{
+	server.server.resource["^/books/(\\d+)/pages/(\\d+)/xml$"]["POST"] = *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class S>
+typename pcw::PostPageXml<S>::Status
+pcw::PostPageXml<S>::run(Content& content) const noexcept
+{
+	if (not content.session)
+		return Status::Forbidden;
+
+	const auto bookid = std::stoi(content.req->path_match[1]);
+	const auto pageid = std::stoi(content.req->path_match[2]);
+	auto book = content.session->current_book;
+	Books books(content.session);
+	
+	if (not book or book->data.id != bookid) 
+		book = books.find_book(bookid);
+	if (not book or not books.is_allowed(*book))
+		return Status::Forbidden;
+	
+	// we have a valid book
+	BookDir book_dir(*book);
+	book_dir.add_page_xml(pageid, content.req->content);
+	content.session->current_book = book;
 	return Status::Created;
 }
 

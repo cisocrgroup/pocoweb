@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include "doc/Book.hpp"
+#include "doc/hocr.hpp"
 #include "BookDir.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -13,26 +14,28 @@ pcw::BookDir::BookDir(const Book& book)
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::PagePtr
-pcw::BookDir::get_page_xml(int id) const
+pcw::BookDir::parse_page_xml(int id) const
 {
-	return nullptr;
+	auto file = get_page(id);
+	file.replace_extension("xml");
+	return parse_hocr_page(file);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-pcw::BookDir::add_page_xml(int id, const std::string& ext, std::istream& is) const 
+pcw::BookDir::add_page_xml(int id, std::istream& is) const 
 {
 	auto ofile = get_page(id);
-	ofile.replace_extension(ext);
+	ofile.replace_extension("xml");
 	copy(is, ofile);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-pcw::BookDir::add_page_image(int id, const std::string& ext, std::istream& is) const 
+pcw::BookDir::add_page_image(int id, std::istream& is) const 
 {
 	auto ofile = get_page(id);
-	ofile.replace_extension(ext);
+	ofile.replace_extension("png");
 	copy(is, ofile);
 }
 

@@ -29,6 +29,7 @@ OBJS += api.o
 OBJS += Config.o
 OBJS += DbTableUsers.o
 OBJS += DbTableBooks.o
+OBJS += BookDir.o
 OBJS += Books.o
 OBJS += Ex.o
 ## OBJS += GetPage.o
