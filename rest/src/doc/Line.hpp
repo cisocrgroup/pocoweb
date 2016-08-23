@@ -15,6 +15,7 @@ namespace pcw {
 		std::string& line() noexcept {return line_;}
 		const Cuts& cuts() const noexcept {return cuts_;}
 		Cuts& cuts() noexcept {return cuts_;}
+		std::string cuts_str() const noexcept;
 		void load(nlohmann::json& json);
 		void store(nlohmann::json& json) const;
 
