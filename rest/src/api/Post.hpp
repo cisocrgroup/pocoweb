@@ -80,4 +80,50 @@ pcw::PostBook<S>::generate_book_dir() const
 			       "could not generate unique book directory");
 }
 
+namespace pcw {
+	template<class S> class PostPageImage: public Api<S, PostPageImage<S>> {
+	public:
+		using Base = typename pcw::Api<S, PostPageImage<S>>::Base;
+		using Server = typename Base::Server;
+		using Status = typename Base::Status;
+		using Content = typename Base::Content;
+
+		void do_reg(Server& server) const noexcept;
+		Status run(Content& content) const noexcept;
+
+	private:
+		std::string generate_book_dir() const;
+	};
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class S>
+void 
+pcw::PostPageImage<S>::do_reg(Server& server) const noexcept 
+{
+	server.server.resource["^/books/(\\d+)/pages/(\\d+)/image$"]["POST"] = *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class S>
+typename pcw::PostPageImage<S>::Status
+pcw::PostPageImage<S>::run(Content& content) const noexcept
+{
+	if (not content.session)
+		return Status::Forbidden;
+
+	const auto bookid = std::stoi(content.req->path_match[1]);
+	// const auto pageid = std::stoi(content.req->path_match[2]);
+	auto book = content.session->current_book;
+	Books books(content.session);
+	
+	if (not book or book->data.id != bookid) 
+		book = books.find_book(bookid);
+	if (not book or not books.is_allowed(*book))
+		return Status::Forbidden;
+	
+	// we have a valid book
+	return Status::Created;
+}
+
 #endif // api_Post_hpp__
