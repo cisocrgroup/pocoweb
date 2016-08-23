@@ -13,7 +13,7 @@
 pcw::Sessions::Sessions(const Config& config)
 	: sessions_()
 	, mutex_()
-	, n_(config.sessions.n)
+	, n_(config.daemon.sessions)
 {
 	sessions_.reserve(n_);
 }
