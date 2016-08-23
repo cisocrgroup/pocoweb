@@ -66,13 +66,16 @@ pcw_ex: pcw_ex.o libpocoweb.a
 libpocoweb.a: $(OBJS)
 	$(AR) rcs $@ $^
 
-config.ini:
-	@cp ../misc/default/config.def.ini $@
+monfig.ini: ../misc/default/config.def.ini
+	@cp $^ $@
 	@sed -i -e "s/@PCW_DB_USER@/$(PCW_DB_USER)/g" $@
 	@sed -i -e "s/@PCW_DB_HOST@/$(PCW_DB_HOST)/g" $@
 	@sed -i -e "s/@PCW_DB_PASS@/$(PCW_DB_PASS)/g" $@
 	@sed -i -e "s/@PCW_DAEMON_HOST@/$(PCW_DAEMON_HOST)/g" $@
 	@sed -i -e "s/@PCW_DAEMON_PORT@/$(PCW_DAEMON_PORT)/g" $@
+	@sed -i -e "s/@PCW_DAEMON_PORT@/$(PCW_DAEMON_USER)/g" $@
+	@sed -i -e "s/@PCW_DAEMON_PORT@/$(PCW_DAEMON_GROUP)/g" $@
+	@sed -i -e "s/@PCW_DAEMON_PORT@/$(PCW_DAEMON_SESSIONS)/g" $@
 	@sed -i -e "s/@PCW_DAEMON_THREADS@/$(PCW_DAEMON_THREADS)/g" $@
 	@sed -i -e "s/@PCW_LOG_FILE@/$(PCW_LOG_FILE)/g" $@
 
