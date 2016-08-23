@@ -31,9 +31,6 @@ pcw::Config::load(const std::string& filename)
 				detach
 			},
 			{
-				tree.get<size_t>("sessions.n")
-			},
-			{
 				logfile
 			}
 	};
