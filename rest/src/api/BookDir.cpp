@@ -12,11 +12,27 @@ pcw::BookDir::BookDir(const Book& book)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+pcw::PagePtr
+pcw::BookDir::get_page_xml(int id) const
+{
+	return nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void 
-pcw::BookDir::add_page_image(int id, std::istream& is)
+pcw::BookDir::add_page_xml(int id, const std::string& ext, std::istream& is) const 
 {
 	auto ofile = get_page(id);
-	ofile.replace_extension("img");
+	ofile.replace_extension(ext);
+	copy(is, ofile);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+pcw::BookDir::add_page_image(int id, const std::string& ext, std::istream& is) const 
+{
+	auto ofile = get_page(id);
+	ofile.replace_extension(ext);
 	copy(is, ofile);
 }
 

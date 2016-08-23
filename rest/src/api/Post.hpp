@@ -106,7 +106,7 @@ template<class S>
 void 
 pcw::PostPageImage<S>::do_reg(Server& server) const noexcept 
 {
-	server.server.resource["^/books/(\\d+)/pages/(\\d+)/image$"]["POST"] = *this;
+	server.server.resource["^/books/(\\d+)/pages/(\\d+)/image/([^/]+)$"]["POST"] = *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -129,7 +129,11 @@ pcw::PostPageImage<S>::run(Content& content) const noexcept
 	
 	// we have a valid book
 	BookDir book_dir(*book);
-	book_dir.add_page_image(pageid, content.req->content);
+	book_dir.add_page_image(
+		pageid, 
+		content.req->path_match[3], 
+		content.req->content
+	);
 	return Status::Created;
 }
 
