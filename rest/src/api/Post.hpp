@@ -1,6 +1,8 @@
 #ifndef api_Post_hpp__
 #define api_Post_hpp__
 
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
 #include "util/hash.hpp"
 #include "db/db.hpp"
 #include "db/User.hpp"
@@ -66,7 +68,16 @@ template<class S>
 std::string 
 pcw::PostBook<S>::generate_book_dir() const
 {
-	return "unique-dir";
+	// TODO: What happens if two threads generate the same dir? FIX THIS!
+	boost::filesystem::path bdir{this->config().daemon.basedir};
+	while (true) {
+		const auto book_dir = "book-" + gensessionid(16);
+		auto dir = bdir / book_dir;
+		if (not boost::filesystem::exists(dir))
+			return dir.string();
+	}
+	throw std::logic_error("(PostBook::generate_book_dir) "
+			       "could not generate unique book directory");
 }
 
 #endif // api_Post_hpp__
