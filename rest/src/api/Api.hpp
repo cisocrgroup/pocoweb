@@ -21,11 +21,11 @@ namespace pcw {
 
 		Server(ConfigPtr c)
 			: server(
-				config->daemon.port, 
-				config->daemon.threads
+				c->daemon.port, 
+				c->daemon.threads
 			)
 			, config(c)
-			, sessions(std::make_shared<Sessions>(*config))
+			, sessions(std::make_shared<Sessions>(*c))
 		{}
 		void start() {server.start();}
 		S server;
@@ -152,7 +152,7 @@ pcw::Api<S, T>::fail(Response& res) const noexcept
 {
 	try {
 		res << "HTTP/1.1 " 
-		    << static_cast<int>(Status::InternalServerError)
+		    << static_cast<int>(Status::InternalServerError) << " "
 		    << get_status_string(Status::InternalServerError)
 		    << "\r\n\r\n" << std::flush;
 	} catch (const std::exception& e) {
