@@ -9,6 +9,8 @@ PCW_DB_PASS="password"
 PCW_DAEMON_HOST="localhost"
 PCW_DAEMON_PORT=8080
 PCW_DAEMON_THREADS=4
+PCW_DAEMON_USER="pocoweb"
+PCW_DAEMON_SESSIONS=100
 PCW_LOG_FILE="pocoweb.log"
 
 # default users
