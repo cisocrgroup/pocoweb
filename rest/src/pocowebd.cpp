@@ -1,3 +1,5 @@
+#include <grp.h>
+#include <pwd.h>
 #include <cassert>
 #include <memory>
 #include <cppconn/driver.h>
@@ -37,7 +39,8 @@
 
 using namespace pcw;
 static void run(const std::string& configfile);
-static void init_log(const Config& config);
+static void change_user_and_group(const Config& config);
+static void init_logging(const Config& config);
 
 ////////////////////////////////////////////////////////////////////////////////
 int
@@ -59,15 +62,33 @@ void
 run(const std::string& configfile)
 {
 	const auto config = std::make_shared<Config>(Config::load(configfile));
-	init_log(*config); 
-	if (config->daemon.detach and daemon(0, 0) == -1)
-		throw std::system_error(errno, std::system_category(), "daemon");
+	init_logging(*config); 
+	if (config->daemon.detach) {
+		change_user_and_group(*config);		
+		if (daemon(0, 0) == -1)
+			throw std::system_error(errno, std::system_category(), "daemon");
+	}
 	run(config);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-init_log(const Config& config)
+change_user_and_group(const Config& config)
+{
+	const auto user = config.daemon.user.data();
+	const auto upw = getpwnam(user);
+	if (not upw) 
+		throw std::system_error(errno, std::system_category(), user);
+	const auto group = config.daemon.group.data();
+	const auto gpw = getgrnam(group);
+	if (not gpw)
+		throw std::system_error(errno, std::system_category(), group);
+	// change user and group (not implemented)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+init_logging(const Config& config)
 {
 	boost::log::add_common_attributes();
 	auto fmtTimeStamp = boost::log::expressions::
