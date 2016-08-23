@@ -1,6 +1,7 @@
 #include <cassert>
 #include <mysql_connection.h>
 #include <cppconn/prepared_statement.h>
+#include <cppconn/resultset.h>
 #include "util/ScopeGuard.hpp"
 #include "User.hpp"
 #include "doc/Book.hpp"
@@ -22,10 +23,10 @@ pcw::Books::Books(SessionPtr session)
 pcw::BookPtr 
 pcw::Books::new_book(const std::string& title, const std::string& dir) const
 {
-	static const char *sql1 = "insert into bookdata "
-			 	  "(owner, title, directory) values(?,?,?)";
+	static const char *sql1 = "INSERT INTO bookdata "
+			 	  "(owner, title, directory) VALUES(?,?,?)";
 	static const char *sql2 = "insert into books "
-			 	  "(bookdataid, firstpage, lastpage) values(?,0,0)";
+			 	  "(bookdataid, firstpage, lastpage) VALUES(?,0,0)";
 
 	std::lock_guard<std::mutex> lock(session_->mutex);
 	session_->connection->setAutoCommit(false);
@@ -61,10 +62,58 @@ pcw::Books::new_book(const std::string& title, const std::string& dir) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+pcw::BookPtr 
+pcw::Books::find_book(int bookid) const
+{
+	static const auto* sql = "SELECT * FROM books NATURAL JOIN bookdata WHERE bookid=?";
+	
+	// query data;
+	PreparedStatementPtr s{session_->connection->prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, bookid);
+	ResultSetPtr res{s->executeQuery()};
+	if (not res or not res->next())
+		return nullptr;
+	
+	// we have (at least) one result for the book
+	auto book = std::make_shared<Book>();
+	book->id = bookid; 
+	book->id = res->getInt("bookid");
+	// bookdata
+	book->data.firstpage = res->getInt("firstpage");
+	book->data.lastpage = res->getInt("lastpage");
+	book->data.id = res->getInt("bookdataid");
+	book->data.owner = res->getInt("owner");
+	book->data.year = res->getInt("year");
+	book->data.title = res->getString("title");
+	book->data.desc = res->getString("description");
+	book->data.uri = res->getString("uri");
+	book->data.path = res->getString("directory");
+	return book;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool 
+pcw::Books::is_allowed(const Book& book, int userid) const
+{
+	if (is_owner(book, userid))
+		return true;
+	// TODO: implement this
+	return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool 
+pcw::Books::is_owner(const Book& book, int userid) const
+{
+	return book.data.id == userid;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 int 
 pcw::Books::last_insert_id(sql::Statement& s)
 {
-	ResultSetPtr res{s.executeQuery("select last_insert_id()")};
+	ResultSetPtr res{s.executeQuery("SELECT last_insert_id()")};
 	if (not res or not res->next())
 		throw std::runtime_error("(Books) cannot determine id");
 	return res->getInt(1);
