@@ -25,6 +25,7 @@ pcw::Config::load(const std::string& filename)
 				tree.get<std::string>("daemon.host"),
 				tree.get<std::string>("daemon.user"),
 				tree.get<std::string>("daemon.group"),
+				tree.get<std::string>("daemon.basedir"),
 				tree.get<int>("daemon.port"),
 				tree.get<int>("daemon.threads"),
 				tree.get<int>("daemon.sessions"),
