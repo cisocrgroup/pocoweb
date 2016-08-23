@@ -11,6 +11,7 @@
 #include "doc/Book.hpp"
 #include "doc/Line.hpp"
 #include "doc/Page.hpp"
+#include "BookDir.hpp"
 #include "Config.hpp"
 #include "Api.hpp"
 
@@ -113,7 +114,7 @@ pcw::PostPageImage<S>::run(Content& content) const noexcept
 		return Status::Forbidden;
 
 	const auto bookid = std::stoi(content.req->path_match[1]);
-	// const auto pageid = std::stoi(content.req->path_match[2]);
+	const auto pageid = std::stoi(content.req->path_match[2]);
 	auto book = content.session->current_book;
 	Books books(content.session);
 	
@@ -123,6 +124,8 @@ pcw::PostPageImage<S>::run(Content& content) const noexcept
 		return Status::Forbidden;
 	
 	// we have a valid book
+	BookDir book_dir(*book);
+	book_dir.add_page_image(pageid, content.req->content);
 	return Status::Created;
 }
 
