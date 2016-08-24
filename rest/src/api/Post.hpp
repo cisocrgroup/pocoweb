@@ -202,7 +202,7 @@ pcw::PostPageXml<S>::run(Content& content) const noexcept
 	// update all
 	book_dir.add_line_images(*page);
 	books.insert_page(*book, *page);
-	if (book->size() <= pageid) 
+	if (book->size() <= static_cast<size_t>(pageid)) 
 		book->resize(pageid);
 	(*book)[pageid] = page;
 	content.session->current_book = book;
