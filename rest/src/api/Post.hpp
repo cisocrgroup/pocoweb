@@ -66,7 +66,7 @@ pcw::PostBook<S>::run(Content& content) const
 	j["book"] = jj;
 
 	// update content
-	content.os << j;
+	content.os << j << "\n";
 	content.session->current_book = book;
 	return Status::Ok;
 }
