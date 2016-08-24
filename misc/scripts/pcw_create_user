@@ -1,4 +1,6 @@
 #!/bin/sh
+# pcw_create_user
+set -e
 
 if [ $# -ne 5 ]; then
 	echo "Usage: $0 config name email instititute password"
