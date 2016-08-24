@@ -4,6 +4,7 @@
 PCW_DB_USER="user"
 PCW_DB_HOST="localhost"
 PCW_DB_PASS="password"
+PCW_DB_DB="pocoweb"
 
 # settings for pocowebd
 PCW_DAEMON_HOST="localhost"
