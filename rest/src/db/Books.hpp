@@ -29,7 +29,7 @@ namespace pcw {
 		void insert_page(const Book& book, const Page& page) const;
 
 	private:
-		static int last_insert_id(sql::Statement& s);
+		int last_insert_id() const;
 
 		SessionPtr session_;
 	};

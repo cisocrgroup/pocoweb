@@ -38,19 +38,20 @@ pcw::Books::new_book(
 	// insert book data id
 	PreparedStatementPtr s{session_->connection->prepareStatement(sql1)};
 	assert(s);
-	s->setInt(1, session_->user->id);
+	const auto ownerid = session_->user->id;
+	s->setInt(1, ownerid);
 	s->setString(2, title);
 	s->setString(3, author);
 	s->setString(4, dir);
 	s->executeUpdate();
-	const auto dataid = last_insert_id(*s);
+	const auto dataid = last_insert_id();
 
 	// insert book
 	s.reset(session_->connection->prepareStatement(sql2));
 	assert(s);
 	s->setInt(1, dataid);
 	s->executeUpdate();
-	const auto bookid = last_insert_id(*s);	
+	const auto bookid = last_insert_id();	
 
 	// commit results
 	session_->connection->commit();
@@ -61,7 +62,9 @@ pcw::Books::new_book(
 	book->id = bookid;
 	book->data.id = dataid;
 	book->data.title = title;
+	book->data.author = author;
 	book->data.path = dir;
+	book->data.owner = ownerid;
 	return book;
 }
 
@@ -164,9 +167,12 @@ pcw::Books::is_owner(const Book& book) const
 
 ////////////////////////////////////////////////////////////////////////////////
 int 
-pcw::Books::last_insert_id(sql::Statement& s)
+pcw::Books::last_insert_id() const
 {
-	ResultSetPtr res{s.executeQuery("SELECT last_insert_id()")};
+	static const char *sql = "SELECT last_insert_id()";
+	StatementPtr s{session_->connection->createStatement()};
+	assert(s);
+	ResultSetPtr res{s->executeQuery(sql)};
 	if (not res or not res->next())
 		throw std::runtime_error("(Books) cannot determine id");
 	return res->getInt(1);
