@@ -1,12 +1,19 @@
 #ifndef pcw_DbTableBooks_hpp__
 #define pcw_DbTableBooks_hpp__
 
+#include <memory>
+
+namespace sql {
+	class Connection;
+}
+
 namespace pcw {
 	class User;
 	class Book;
 	class BookData;
 	class Page;
 	class Line;
+	using ConnectionPtr = std::unique_ptr<sql::Connection>;
 	using BookPtr = std::shared_ptr<Book>;
 	using PagePtr = std::shared_ptr<Page>;
 	using LinePtr = std::shared_ptr<Line>;

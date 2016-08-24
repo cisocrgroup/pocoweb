@@ -20,7 +20,7 @@ main(int argc, char** argv)
 	try {
 		auto config = loadConfig(argc, argv);
 		auto conn = connect(config);
-		DbTableUsers db(conn);
+		DbTableUsers db(std::move(conn));
 		auto user = db.createUser(argv[2], argv[3], argv[4], argv[5]);
 		return user ? EXIT_SUCCESS : EXIT_FAILURE;
 	} catch (const std::exception& e) {

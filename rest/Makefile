@@ -73,6 +73,7 @@ config.ini: ../misc/default/config.def.ini
 	@sed -i -e "s/@PCW_DB_USER@/$(PCW_DB_USER)/g" $@
 	@sed -i -e "s/@PCW_DB_HOST@/$(PCW_DB_HOST)/g" $@
 	@sed -i -e "s/@PCW_DB_PASS@/$(PCW_DB_PASS)/g" $@
+	@sed -i -e "s/@PCW_DB_DB@/$(PCW_DB_DB)/g" $@
 	@sed -i -e "s/@PCW_DAEMON_HOST@/$(PCW_DAEMON_HOST)/g" $@
 	@sed -i -e "s/@PCW_DAEMON_PORT@/$(PCW_DAEMON_PORT)/g" $@
 	@sed -i -e "s/@PCW_DAEMON_USER@/$(PCW_DAEMON_USER)/g" $@

@@ -1,5 +1,7 @@
 #include <boost/log/trivial.hpp>
+#include <mysql_connection.h>
 #include "server_http.hpp"
+#include "db/db.hpp"
 #include "db/Sessions.hpp"
 #include "Config.hpp"
 #include "Login.hpp"

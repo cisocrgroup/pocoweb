@@ -35,7 +35,6 @@ void
 pcw::Login<S>::do_reg(Server& server) const noexcept 
 {
 	static const char *uri = "^/login/username/([^/]+)/password/([^/]+)$";
-	server.server.resource[uri]["GET"] = *this;
 	server.server.resource[uri]["POST"] = *this;
 }
 
@@ -63,7 +62,7 @@ pcw::Login<S>::make_session(const Content& content) const noexcept
 {
 	const auto username = content.req->path_match[1];
 	const auto password = content.req->path_match[2];
-	const auto connection = connect(this->config());
+	auto connection = connect(this->config());
 	const auto user = User::create(*connection, username);
 	if (not user or not user->authenticate(*connection, password))
 		return nullptr;
@@ -73,7 +72,7 @@ pcw::Login<S>::make_session(const Content& content) const noexcept
 		auto session = this->sessions().new_session(sid);
 		if (session) {
 			session->user = user;
-			session->connection = connection;
+			session->connection = std::move(connection);
 			session->sid = sid;
 			return session;
 		}
@@ -92,7 +91,8 @@ pcw::Login<S>::write_response(Content& content) const
 	j["api"] = PCW_API_VERSION;
 	j["user"] = content.session->user->json();
 	
-	DbTableBooks books{content.session->connection};
+	// TODO: change this
+	DbTableBooks books{connect(this->config())};
 	const auto allowedBooks = books.getAllowedBooks(content.session->user->id);
 	for (const auto& book: allowedBooks) {
 		json jj;

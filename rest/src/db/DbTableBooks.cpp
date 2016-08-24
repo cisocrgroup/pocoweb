@@ -8,6 +8,7 @@
 #include <json.hpp>
 #include "util/ScopeGuard.hpp"
 #include "db.hpp"
+#include "db/Sessions.hpp"
 #include "doc/BookData.hpp"
 #include "doc/Container.hpp"
 #include "doc/Box.hpp"
@@ -31,7 +32,6 @@ pcw::DbTableBooks::DbTableBooks(ConnectionPtr conn)
 	: conn_(std::move(conn))
 {
 	assert(conn_);
-	conn_->setSchema("pocoweb");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,6 @@ pcw::BookPtr
 pcw::DbTableBooks::getLine(int bookid, int pageid, int lineid) const
 {
 	assert(bookid > 0 and pageid > 0 and lineid > 0);
-	assert(conn_);
 	static const char *sql = JOIN
 		"where bookid=? and pageid=? and lineid=?";
 	conn_->setAutoCommit(true);	

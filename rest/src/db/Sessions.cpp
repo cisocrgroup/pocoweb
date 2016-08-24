@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <mysql_connection.h>
 #include <cassert>
 #include <thread>
 #include <memory>

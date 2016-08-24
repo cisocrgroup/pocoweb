@@ -13,6 +13,6 @@ pcw::connect(const Config& config)
 				     	   config.db.user,
 					   config.db.pass)};
 	assert(conn);
-	conn->setSchema("pocoweb");
+	conn->setSchema(config.db.db);
 	return conn;
 }
