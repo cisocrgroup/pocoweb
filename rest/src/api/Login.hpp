@@ -68,18 +68,7 @@ pcw::Login<S>::make_session(const Content& content) const noexcept
 	const auto user = User::create(*connection, username);
 	if (not user or not user->authenticate(*connection, password))
 		return nullptr;
-	while (true) { // must create unique session
-		auto sid = gensessionid(16);
-		auto session = this->sessions().new_session(sid);
-		if (session) {
-			session->user = user;
-			session->connection = std::move(connection);
-			session->sid = sid;
-			return session;
-		}
-	}
-	assert(false);
-	return nullptr;
+	return this->sessions().new_session(*user, std::move(connection));	
 }
 	
 ////////////////////////////////////////////////////////////////////////////////
@@ -100,7 +89,7 @@ pcw::Login<S>::write_response(Content& content) const
 		book->store(jj);
 		j["books"].push_back(jj);
 	}
-	content.os << j;
+	content.os << j << "\n";
 	BOOST_LOG_TRIVIAL(info) << *content.session->user 
 				<< ": " << content.session->sid 
 				<< " logged on";
