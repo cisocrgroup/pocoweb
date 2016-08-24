@@ -22,7 +22,9 @@ public:
 		server.server.default_resource["PUT"] = *this;
 		server.server.default_resource["GET"] = *this;
 	}
-	Status run(const Content&) const noexcept {
+	Status run(const Content& content) const noexcept {
+		BOOST_LOG_TRIVIAL(info) << "(Default) BadRequest: " 
+					<< content.req->path_match[0];
 		return Status::BadRequest;
 	}
 };
