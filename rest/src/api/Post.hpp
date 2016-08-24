@@ -27,7 +27,7 @@ namespace pcw {
 		using Content = typename Base::Content;
 
 		void do_reg(Server& server) const noexcept;
-		Status run(Content& content) const noexcept;
+		Status run(Content& content) const;
 
 	private:
 		std::string generate_book_dir() const;
@@ -45,7 +45,7 @@ pcw::PostBook<S>::do_reg(Server& server) const noexcept
 ////////////////////////////////////////////////////////////////////////////////
 template<class S>
 typename pcw::PostBook<S>::Status
-pcw::PostBook<S>::run(Content& content) const noexcept
+pcw::PostBook<S>::run(Content& content) const 
 {
 	if (not content.session)
 		return Status::Forbidden;
@@ -192,7 +192,7 @@ pcw::PostPageXml<S>::run(Content& content) const noexcept
 
 	// update all
 	book_dir.add_line_images(*page);
-	books.insert_page(*page);
+	books.insert_page(*book, *page);
 	if (book->size() <= pageid) 
 		book->resize(pageid);
 	(*book)[pageid] = page;
