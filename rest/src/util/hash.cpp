@@ -56,11 +56,11 @@ pcw::gensessionid(size_t n)
 	unsigned long seed = mix(clock(), time(NULL), getpid());
 	std::string id(n, 0);
 
-	std::uniform_int_distribution<char> d('0', 'z');
+	std::uniform_int_distribution<char> d('a', 'z');
 	std::mt19937 gen(seed);
-	for (size_t i = 0; i < n; ++i)
-		id[i] = d(gen);
-	return dohash(id.data(), id.size(), "", 0);
+	for (auto& c: id)
+		c = d(gen);
+	return id;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
