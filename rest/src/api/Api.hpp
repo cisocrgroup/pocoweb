@@ -107,6 +107,10 @@ pcw::Api<S, T>::operator()(Response& res, RequestPtr req) const noexcept
 		Content content(req, session);
 		Status status;
 
+		for (const auto& r: req->header) {
+			BOOST_LOG_TRIVIAL(info) << "(Api) " << r.first << ": " << r.second;
+		}
+	
 		// lock session if it exits
 		if (session) {
 			std::lock_guard<std::mutex> lock(session->mutex);
