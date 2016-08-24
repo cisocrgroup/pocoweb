@@ -1,6 +1,4 @@
-include ../config.mk
-
-CXXFLAGS ?= -Wall -Werror -std=gnu++14 -g -Og
+#CXXFLAGS ?= -Wall -Werror -std=gnu++14 -g -Og
 CXXFLAGS := $(CXXFLAGS) -MP -MD
 CXXFLAGS += -I src
 CXXFLAGS += -I gsm/Simple-Web-Server
@@ -46,14 +44,14 @@ OBJS += hash.o
 OBJS += hocr.o
 OBJS += pugixml.o
 
-MAINS += pocowebd.o
+MAINS += pcwd.o
 MAINS += pocoweb_create_user.o
 MAINS += pocoweb_insert_book.o
 MAINS += pcw_ex.o
 
-default: pocowebd pocoweb_insert_book pocoweb_create_user pcw_ex config.ini
+default: pcwd pocoweb_insert_book pocoweb_create_user pcw_ex 
 
-pocowebd: pocowebd.o libpocoweb.a
+pcwd: pcwd.o libpocoweb.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 pocoweb_create_user: pocoweb_create_user.o libpocoweb.a
@@ -68,24 +66,9 @@ pcw_ex: pcw_ex.o libpocoweb.a
 libpocoweb.a: $(OBJS)
 	$(AR) rcs $@ $^
 
-config.ini: ../misc/default/config.def.ini
-	@cp $^ $@
-	@sed -i -e "s/@PCW_DB_USER@/$(PCW_DB_USER)/g" $@
-	@sed -i -e "s/@PCW_DB_HOST@/$(PCW_DB_HOST)/g" $@
-	@sed -i -e "s/@PCW_DB_PASS@/$(PCW_DB_PASS)/g" $@
-	@sed -i -e "s/@PCW_DAEMON_HOST@/$(PCW_DAEMON_HOST)/g" $@
-	@sed -i -e "s/@PCW_DAEMON_PORT@/$(PCW_DAEMON_PORT)/g" $@
-	@sed -i -e "s/@PCW_DAEMON_USER@/$(PCW_DAEMON_USER)/g" $@
-	@sed -i -e "s/@PCW_DAEMON_GROUP@/$(PCW_DAEMON_GROUP)/g" $@
-	@sed -i -e "s/@PCW_DAEMON_SESSIONS@/$(PCW_DAEMON_SESSIONS)/g" $@
-	@sed -i -e "s/@PCW_DAEMON_BASEDIR@/$(PCW_DAEMON_BASEDIR)/g" $@
-	@sed -i -e "s/@PCW_DAEMON_THREADS@/$(PCW_DAEMON_THREADS)/g" $@
-	@sed -i -e "s/@PCW_DAEMON_DETACH@/$(PCW_DAEMON_DETACH)/g" $@
-	@sed -i -e "s/@PCW_LOG_FILE@/$(PCW_LOG_FILE)/g" $@
-
 .PHONY: clean
 clean:
-	$(RM) *.o *.d libpocoweb.a pocwebd pocweb_create_user pocoweb_insert_book pcw_ex config.ini
+	$(RM) *.o *.d libpocoweb.a pcwd pocweb_create_user pocoweb_insert_book pcw_ex
 
 DEPS = $(patsubst %.o,%.d,$(OBJS) $(MAINS))
 -include $(DEPS)

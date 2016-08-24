@@ -1,5 +1,7 @@
 #include <boost/log/trivial.hpp>
+#include <mysql_connection.h>
 #include "server_http.hpp"
+#include "db/db.hpp"
 #include "db/Sessions.hpp"
 #include "Config.hpp"
 #include "Login.hpp"
@@ -20,7 +22,9 @@ public:
 		server.server.default_resource["PUT"] = *this;
 		server.server.default_resource["GET"] = *this;
 	}
-	Status run(const Content&) const noexcept {
+	Status run(const Content& content) const noexcept {
+		BOOST_LOG_TRIVIAL(info) << "(Default) BadRequest: " 
+					<< content.req->path_match[0];
 		return Status::BadRequest;
 	}
 };
@@ -36,11 +40,13 @@ pcw::run(std::shared_ptr<Config> config)
 	Login<Server<S>> login;
 	PostBook<Server<S>> pbook;
 	PostPageImage<Server<S>> ppimg;
+	PostPageXml<Server<S>> ppxml;
 	Default<Server<S>> def;
 	
 	login.reg(server);
 	pbook.reg(server);
 	ppimg.reg(server);
+	ppxml.reg(server);
 	def.reg(server);
 
 	BOOST_LOG_TRIVIAL(info) << "daemon[" << getpid() << "] starting ";

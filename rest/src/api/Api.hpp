@@ -107,9 +107,15 @@ pcw::Api<S, T>::operator()(Response& res, RequestPtr req) const noexcept
 		Content content(req, session);
 		Status status;
 
+		for (const auto& r: req->header) {
+			BOOST_LOG_TRIVIAL(info) << "(Api) " << r.first << ": " << r.second;
+		}
+	
 		// lock session if it exits
 		if (session) {
 			std::lock_guard<std::mutex> lock(session->mutex);
+			BOOST_LOG_TRIVIAL(info) << "(Api) " << *session->user 
+						<< " [" << session->sid << "]";
 			status = static_cast<const T&>(*this).run(content);
 			reply(res, status, content);
 		} else {
@@ -189,12 +195,14 @@ template<class S, class T>
 pcw::SessionPtr
 pcw::Api<S, T>::session(const Request& req) const noexcept
 {
-	static const std::regex sidre{R"(sessionid=([0-9a-fA-F]+);?)"};
+	static const std::regex sidre{R"(sessionid=([a-z]+);?)"};
 	auto r = req.header.equal_range("Cookie");
 	std::smatch m;
 	for (auto i = r.first; i != r.second; ++i) {
-		if (std::regex_search(i->second, m, sidre)) 
+		if (std::regex_search(i->second, m, sidre)) {
+			BOOST_LOG_TRIVIAL(debug) << "sid: " << m[1];
 			return this->sessions().session(m[1]);
+		}
 	}
 	return nullptr;
 }

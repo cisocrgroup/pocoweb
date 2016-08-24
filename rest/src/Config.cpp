@@ -19,7 +19,8 @@ pcw::Config::load(const std::string& filename)
 			{
 				tree.get<std::string>("db.user"),
 				tree.get<std::string>("db.host"),
-				tree.get<std::string>("db.pass")
+				tree.get<std::string>("db.pass"),
+				tree.get<std::string>("db.db")
 			},
 			{
 				tree.get<std::string>("daemon.host"),

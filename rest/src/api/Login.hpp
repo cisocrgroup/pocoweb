@@ -35,8 +35,9 @@ void
 pcw::Login<S>::do_reg(Server& server) const noexcept 
 {
 	static const char *uri = "^/login/username/([^/]+)/password/([^/]+)$";
-	server.server.resource[uri]["GET"] = *this;
 	server.server.resource[uri]["POST"] = *this;
+	// is this really needed?
+	server.server.resource[uri]["GET"] = *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,6 +45,7 @@ template<class S>
 typename pcw::Login<S>::Status
 pcw::Login<S>::run(Content& content) const noexcept
 {
+	BOOST_LOG_TRIVIAL(info) << "(Login) name: " << content.req->path_match[1];
 	// make session (nullptr means invalid user)
 	content.session = make_session(content);
 
@@ -63,23 +65,11 @@ pcw::Login<S>::make_session(const Content& content) const noexcept
 {
 	const auto username = content.req->path_match[1];
 	const auto password = content.req->path_match[2];
-	const auto connection = connect(this->config());
+	auto connection = connect(this->config());
 	const auto user = User::create(*connection, username);
 	if (not user or not user->authenticate(*connection, password))
 		return nullptr;
-
-	while (true) { // must create unique session
-		auto sid = gensessionid(16);
-		auto session = this->sessions().new_session(sid);
-		if (session) {
-			session->user = user;
-			session->connection = connection;
-			session->sid = sid;
-			return session;
-		}
-	}
-	assert(false);
-	return nullptr;
+	return this->sessions().new_session(*user, std::move(connection));	
 }
 	
 ////////////////////////////////////////////////////////////////////////////////
@@ -92,17 +82,18 @@ pcw::Login<S>::write_response(Content& content) const
 	j["api"] = PCW_API_VERSION;
 	j["user"] = content.session->user->json();
 	
-	DbTableBooks books{content.session->connection};
+	// TODO: change this
+	DbTableBooks books{connect(this->config())};
 	const auto allowedBooks = books.getAllowedBooks(content.session->user->id);
 	for (const auto& book: allowedBooks) {
 		json jj;
 		book->store(jj);
 		j["books"].push_back(jj);
 	}
-	content.os << j;
+	content.os << j << "\n";
 	BOOST_LOG_TRIVIAL(info) << *content.session->user 
-				<< ": " << content.session->sid 
-				<< " logged on";
+				<< " [" << content.session->sid 
+				<< "] logged on";
 }
 
 #endif // api_Login_hpp__

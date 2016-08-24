@@ -37,15 +37,16 @@ main(int argc, char** argv)
 		book->data.firstpage = book->empty() ? 0 : 1;
 		book->data.lastpage = static_cast<int>(book->size());
 		
-		const auto conn = connect(config);
-		DbTableUsers users(conn);
+		auto conn = connect(config);
+		DbTableUsers users(std::move(conn));
 		const auto owner = users.findUserByNameOrEmail(argv[3]);
 		if (not owner)
 			throw std::runtime_error(
 				"invalid book owner: " + 
 				std::string(argv[3])
 			);
-		DbTableBooks books(conn);
+		conn = std::move(connect(config));
+		DbTableBooks books(std::move(conn));
 		auto res = books.insertBook(owner->id, *book);
 		if (res) {
 			for (int i = 10; i < argc; ++i) {

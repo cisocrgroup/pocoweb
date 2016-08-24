@@ -47,6 +47,9 @@ template<class S>
 typename pcw::PostBook<S>::Status
 pcw::PostBook<S>::run(Content& content) const 
 {
+	BOOST_LOG_TRIVIAL(info) << "(PostBook) title: " 
+				<< content.req->path_match[1] 
+				<< " author: " << content.req->path_match[2];
 	if (not content.session)
 		return Status::Forbidden;
 	
@@ -66,7 +69,7 @@ pcw::PostBook<S>::run(Content& content) const
 	j["book"] = jj;
 
 	// update content
-	content.os << j;
+	content.os << j << "\n";
 	content.session->current_book = book;
 	return Status::Ok;
 }
@@ -119,6 +122,9 @@ template<class S>
 typename pcw::PostPageImage<S>::Status
 pcw::PostPageImage<S>::run(Content& content) const noexcept
 {
+	BOOST_LOG_TRIVIAL(info) << "(PostPageImage) book: " 
+				<< content.req->path_match[1] 
+				<< " page: " << content.req->path_match[2];
 	if (not content.session)
 		return Status::Forbidden;
 
@@ -170,6 +176,9 @@ template<class S>
 typename pcw::PostPageXml<S>::Status
 pcw::PostPageXml<S>::run(Content& content) const noexcept
 {
+	BOOST_LOG_TRIVIAL(info) << "(PostPageXml) book: " 
+				<< content.req->path_match[1] 
+				<< " page: " << content.req->path_match[2];
 	if (not content.session)
 		return Status::Forbidden;
 
@@ -193,7 +202,7 @@ pcw::PostPageXml<S>::run(Content& content) const noexcept
 	// update all
 	book_dir.add_line_images(*page);
 	books.insert_page(*book, *page);
-	if (book->size() <= pageid) 
+	if (book->size() <= static_cast<size_t>(pageid)) 
 		book->resize(pageid);
 	(*book)[pageid] = page;
 	content.session->current_book = book;

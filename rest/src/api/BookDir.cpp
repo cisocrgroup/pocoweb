@@ -1,4 +1,5 @@
 #include <boost/filesystem/operations.hpp>
+#include <boost/log/trivial.hpp>
 #include <fstream>
 #include <sstream>
 #include "doc/Book.hpp"
@@ -20,8 +21,10 @@ pcw::BookDir::parse_page_xml(int id) const
 	auto file = get_page(id);
 	file.replace_extension("xml");
 	auto page = parse_hocr_page(file);
-	if (page)
+	if (page) {
 		page->image = file.string();
+		page->id = id;
+	}
 	return page;
 }
 
@@ -42,6 +45,8 @@ pcw::BookDir::add_page_image(int id, std::istream& is) const
 	ofile.replace_extension("png");
 	copy(is, ofile);
 }
+
+// #define VAR(x) #x << "=" << x
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
@@ -70,7 +75,7 @@ pcw::BookDir::add_line_image(Line& line, const Path& dir, void *ppix) const
 	
 	auto pix = static_cast<PIX*>(ppix);
 	if (pix) {
-		// only works iff the same order of definition is used;
+		// only works iff the same order of the struct's definition is used
 		BOX box {
 			.x = line.box.left,
 			.y = line.box.top,
@@ -79,7 +84,8 @@ pcw::BookDir::add_line_image(Line& line, const Path& dir, void *ppix) const
 			.refcount = 0 
 		};
 		PixPtr tmp{pixClipRectangle(pix, &box, nullptr)};
-		pixWrite(line.image.data(), tmp.get(), IFF_PNG);
+		if (tmp) 
+			pixWrite(line.image.data(), tmp.get(), IFF_PNG);
 	}
 }
 
@@ -94,15 +100,12 @@ pcw::BookDir::get_page(int id) const
 void 
 pcw::BookDir::copy(std::istream& is, const Path& o)
 {
-	std::ofstream os(o.string());
+	// really?! binary!
+	std::ofstream os(o.string(), std::ios::binary);
 	if (not os.good())
 		throw std::system_error(errno, std::system_category(), o.string());
-	is >> std::noskipws;
-	std::copy(
-		std::istream_iterator<char>(is), 
-		std::istream_iterator<char>(), 
-		std::ostream_iterator<char>(os)
-	);
+	os << is.rdbuf();
+	BOOST_LOG_TRIVIAL(info) << "(copy) wrote " << os.tellp(); 
 	os.close();
 }
 

@@ -8,7 +8,7 @@ namespace pcw {
 		static Config load(const std::string& filename);
 
 		const struct Db {
-			const std::string user, host, pass;
+			const std::string user, host, pass, db;
 		} db;
 
 		const struct Daemon {

@@ -7,10 +7,10 @@ use pocoweb;
 drop table if exists users;
 create table users (
        userid int not null primary key auto_increment,
-       name varchar(255) not null,
-       email varchar(255) not null unique,
-       institute varchar(255) not null,
-       passwd varchar(255) not null,
+       name varchar(50) not null,
+       email varchar(50) not null unique,
+       institute varchar(50) not null,
+       passwd varchar(50) not null,
        active boolean not null default true
 );
 
