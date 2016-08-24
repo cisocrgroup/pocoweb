@@ -26,7 +26,7 @@ namespace pcw {
 		BookPtr find_book(int bookid) const;
 		bool is_allowed(const Book& book) const;
 		bool is_owner(const Book& book) const;
-		void insert_page(const Page& page) const;
+		void insert_page(const Book& book, const Page& page) const;
 
 	private:
 		static int last_insert_id(sql::Statement& s);

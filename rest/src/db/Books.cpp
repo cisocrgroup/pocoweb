@@ -99,9 +99,50 @@ pcw::Books::find_book(int bookid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-pcw::Books::insert_page(const Page& page) const
+pcw::Books::insert_page(const Book& book, const Page& page) const
 {
+	static const char *sql = 
+		"INSERT INTO linesx ("
+		" bookid,"
+		" pageid,"
+		" lineid,"
+		" imagepath,"
+		" lstr,"
+		" cuts,"
+		" lleft,"
+		" ltop,"
+		" lright,"
+		" lbottom)"
+		" VALUES(?,?,?,?,?,?,?,?,?,?)";
+	session_->connection->setAutoCommit(false);
+	ScopeGuard sc([this]{
+		session_->connection->rollback();
+	});
 
+	// insert lines
+	PreparedStatementPtr s;
+	for (const auto& line: page) {
+		if (not line)
+			continue;
+		s.reset(session_->connection->prepareStatement(sql));
+		assert(s);
+
+		s->setInt(1, book.id);
+		s->setInt(2, page.id);
+		s->setInt(3, line->id);
+		s->setString(4, line->image);
+		s->setString(5, line->line());
+		s->setString(6, line->cuts_str());
+		s->setInt(7, line->box.left);
+		s->setInt(8, line->box.top);
+		s->setInt(9, line->box.right);
+		s->setInt(10, line->box.bottom);
+		s->executeUpdate();		
+	}
+
+	// commit results
+	session_->connection->commit();
+	sc.dismiss();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
