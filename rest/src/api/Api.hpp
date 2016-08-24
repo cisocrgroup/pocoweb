@@ -110,6 +110,7 @@ pcw::Api<S, T>::operator()(Response& res, RequestPtr req) const noexcept
 		// lock session if it exits
 		if (session) {
 			std::lock_guard<std::mutex> lock(session->mutex);
+			BOOST_LOG_TRIVIAL(info) << "User: " << *session->user;
 			status = static_cast<const T&>(*this).run(content);
 			reply(res, status, content);
 		} else {
