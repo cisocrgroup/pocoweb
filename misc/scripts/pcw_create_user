@@ -1,0 +1,23 @@
+#!/bin/sh
+
+if [ $# -ne 5 ]; then
+	echo "Usage: $0 config name email instititute password"
+	exit 1;
+fi;
+
+config=$1
+name=$2
+email=$3
+inst=$4
+pass=$5
+dbuser=$(git config -f $config --get db.user)
+dbhost=$(git config -f $config --get db.host)
+dbpass=$(git config -f $config --get db.pass)
+dbdb=$(git config -f $config --get db.db)
+
+mysql -h$dbhost -u$dbuser --password=$dbpass $dbdb <<EOF
+INSERT INTO 
+	users (name,email,institute,passwd) 
+	VALUES ('$name','$email','$inst',PASSWORD('$pass'));
+EOF
+
