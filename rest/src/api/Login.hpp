@@ -91,8 +91,8 @@ pcw::Login<S>::write_response(Content& content) const
 	}
 	content.os << j << "\n";
 	BOOST_LOG_TRIVIAL(info) << *content.session->user 
-				<< ": " << content.session->sid 
-				<< " logged on";
+				<< " [" << content.session->sid 
+				<< "] logged on";
 }
 
 #endif // api_Login_hpp__
