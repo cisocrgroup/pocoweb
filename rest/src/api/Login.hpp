@@ -45,6 +45,7 @@ template<class S>
 typename pcw::Login<S>::Status
 pcw::Login<S>::run(Content& content) const noexcept
 {
+	BOOST_LOG_TRIVIAL(info) << "(Login) name: " << m[1];
 	// make session (nullptr means invalid user)
 	content.session = make_session(content);
 

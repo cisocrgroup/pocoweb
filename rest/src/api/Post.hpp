@@ -47,6 +47,9 @@ template<class S>
 typename pcw::PostBook<S>::Status
 pcw::PostBook<S>::run(Content& content) const 
 {
+	BOOST_LOG_TRIVIAL(info) << "(PostBook) title: " 
+				<< content.req->path_match[1] 
+				<< " author: " << content.req->path_match[2];
 	if (not content.session)
 		return Status::Forbidden;
 	
@@ -119,6 +122,9 @@ template<class S>
 typename pcw::PostPageImage<S>::Status
 pcw::PostPageImage<S>::run(Content& content) const noexcept
 {
+	BOOST_LOG_TRIVIAL(info) << "(PostPageImage) book: " 
+				<< content.req->path_match[1] 
+				<< " page: " << content.req->path_match[2];
 	if (not content.session)
 		return Status::Forbidden;
 
@@ -170,6 +176,9 @@ template<class S>
 typename pcw::PostPageXml<S>::Status
 pcw::PostPageXml<S>::run(Content& content) const noexcept
 {
+	BOOST_LOG_TRIVIAL(info) << "(PostPageXml) book: " 
+				<< content.req->path_match[1] 
+				<< " page: " << content.req->path_match[2];
 	if (not content.session)
 		return Status::Forbidden;
 
