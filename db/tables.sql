@@ -53,6 +53,7 @@ create table linesx (
 	bookid int references books(bookid),
 	pageid int references pages(pageid),
 	lineid int,
+	imagepath varchar(255),
 	lstr varchar(255),
 	cuts varchar(1024),
 	lleft int,
