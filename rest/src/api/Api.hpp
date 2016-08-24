@@ -111,7 +111,7 @@ pcw::Api<S, T>::operator()(Response& res, RequestPtr req) const noexcept
 		if (session) {
 			std::lock_guard<std::mutex> lock(session->mutex);
 			BOOST_LOG_TRIVIAL(info) << "(Api) " << *session->user 
-						<< " [ " << session->sid << "]";
+						<< " [" << session->sid << "]";
 			status = static_cast<const T&>(*this).run(content);
 			reply(res, status, content);
 		} else {
