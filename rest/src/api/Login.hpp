@@ -36,6 +36,8 @@ pcw::Login<S>::do_reg(Server& server) const noexcept
 {
 	static const char *uri = "^/login/username/([^/]+)/password/([^/]+)$";
 	server.server.resource[uri]["POST"] = *this;
+	// is this really needed?
+	server.server.resource[uri]["GET"] = *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,7 +68,6 @@ pcw::Login<S>::make_session(const Content& content) const noexcept
 	const auto user = User::create(*connection, username);
 	if (not user or not user->authenticate(*connection, password))
 		return nullptr;
-
 	while (true) { // must create unique session
 		auto sid = gensessionid(16);
 		auto session = this->sessions().new_session(sid);

@@ -16,6 +16,7 @@ namespace pcw {
 	using UserPtr = std::shared_ptr<User>;
 	using ConnectionPtr = std::unique_ptr<sql::Connection>;
 	using BookPtr = std::shared_ptr<Book>;
+	class Sessions;
 	
 	struct Session {
 		UserPtr user;
