@@ -44,14 +44,14 @@ OBJS += hash.o
 OBJS += hocr.o
 OBJS += pugixml.o
 
-MAINS += pocowebd.o
+MAINS += pcwd.o
 MAINS += pocoweb_create_user.o
 MAINS += pocoweb_insert_book.o
 MAINS += pcw_ex.o
 
-default: pocowebd pocoweb_insert_book pocoweb_create_user pcw_ex 
+default: pcwd pocoweb_insert_book pocoweb_create_user pcw_ex 
 
-pocowebd: pocowebd.o libpocoweb.a
+pcwd: pcwd.o libpocoweb.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 pocoweb_create_user: pocoweb_create_user.o libpocoweb.a
@@ -68,7 +68,7 @@ libpocoweb.a: $(OBJS)
 
 .PHONY: clean
 clean:
-	$(RM) *.o *.d libpocoweb.a pocwebd pocweb_create_user pocoweb_insert_book pcw_ex
+	$(RM) *.o *.d libpocoweb.a pcwd pocweb_create_user pocoweb_insert_book pcw_ex
 
 DEPS = $(patsubst %.o,%.d,$(OBJS) $(MAINS))
 -include $(DEPS)
