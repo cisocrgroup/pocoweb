@@ -19,6 +19,7 @@ namespace pcw {
 
 		const struct Log {
 			const std::string file;
+			const int level;
 		} log;
 	};
 }

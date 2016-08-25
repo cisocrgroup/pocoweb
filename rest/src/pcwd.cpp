@@ -113,6 +113,6 @@ init_logging(const Config& config)
 		 boost::log::keywords::open_mode = std::ios_base::app);
 	fsink->set_formatter(logFmt);
 	boost::log::core::get()->set_filter(
-	         boost::log::trivial::severity >= boost::log::trivial::info
+	         boost::log::trivial::severity >= config.log.level
 	);
 }
