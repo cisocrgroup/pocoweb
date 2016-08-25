@@ -40,12 +40,12 @@ namespace pcw {
 	public:
 		Sessions(const Config& config);
 		SessionPtr new_session(const User& user, ConnectionPtr connection);
-		SessionPtr session(const std::string& sid) const;
+		SessionPtr find_session(const std::string& sid) const;
 
 	private:
 		SessionPtr insert(SessionPtr session);
 
-		mutable std::vector<std::pair<std::string, SessionPtr>> sessions_;
+		mutable std::vector<SessionPtr> sessions_;
 		mutable std::mutex mutex_;
 		const size_t n_;
 	};

@@ -43,8 +43,8 @@ pcw::Sessions::insert(SessionPtr session)
 {
 	assert(session);
 	std::lock_guard<std::mutex> lock(mutex_);
-	auto i = std::find_if(begin(sessions_), end(sessions_), [&session](const auto& p) {
-		return p.first == session->sid;
+	auto i = std::find_if(begin(sessions_), end(sessions_), [&session](const auto& s) {
+		return s->sid == session->sid;
 	});
 
 	// non unique session id
@@ -53,30 +53,32 @@ pcw::Sessions::insert(SessionPtr session)
 
 	// buffer is not full yet
 	if (sessions_.size() < n_)
-		sessions_.emplace_back(session->sid, session);
+		sessions_.emplace_back(session);
+
 	// buffer is full -> discard last entry;
 	else
-		sessions_.back() = std::make_pair(session->sid, session);
-	return sessions_.back().second;
+		sessions_.back() = session;
+	return sessions_.back();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::SessionPtr
-pcw::Sessions::session(const std::string& sid) const
+pcw::Sessions::find_session(const std::string& sid) const
 {
 	std::lock_guard<std::mutex> lock(mutex_);
-	auto i = std::find_if(begin(sessions_), end(sessions_), [&sid](const auto& p) {
-		return p.first == sid;
+	auto i = std::find_if(begin(sessions_), end(sessions_), [&sid](const auto& s) {
+		return s->sid == sid;
 	});
-	if (i == begin(sessions_)) {
-		return i->second;
-	} else if (i != end(sessions_)) {
+	if (i == end(sessions_)) {
+		return nullptr;
+	} else if (i == begin(sessions_)) {
+		assert((*i)->sid == sid);
+		return *i;
+	} else {
 		auto j = std::prev(i);
 		std::swap(*j, *i);
-		assert(j->first == sid);
-		return j->second;
-	} else {
-		return nullptr;
+		assert((*j)->sid == sid);
+		return *j;
 	}
 }
 	
