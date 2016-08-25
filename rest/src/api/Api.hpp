@@ -108,7 +108,8 @@ pcw::Api<S, T>::operator()(Response& res, RequestPtr req) const noexcept
 		Status status;
 
 		for (const auto& r: req->header) {
-			BOOST_LOG_TRIVIAL(info) << "(Api) " << r.first << ": " << r.second;
+			BOOST_LOG_TRIVIAL(debug) << "(Api) Header: " 
+						 << r.first << ": " << r.second;
 		}
 	
 		// lock session if it exits
