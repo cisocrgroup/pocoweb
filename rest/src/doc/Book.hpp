@@ -11,6 +11,8 @@ namespace pcw {
 		Book() = default;
 		Book(nlohmann::json& json): Book() {load(json);}
 		virtual ~Book() noexcept override = default;	
+		PagePtr add_page(PagePtr page);
+		PagePtr get_page(int id) const noexcept;
 		void load(nlohmann::json& json);
 		void store(nlohmann::json& json) const;
 		BookData data;

@@ -48,6 +48,9 @@ namespace pcw {
 				, session(std::move(s))
 				, req(std::move(r))
 			{}
+			bool has_valid_session() const noexcept {
+				return session.get();
+			}
 			std::stringstream os;
 			SessionPtr session;
 			RequestPtr req;
@@ -113,7 +116,7 @@ pcw::Api<S, T>::operator()(Response& res, RequestPtr req) const noexcept
 		}
 	
 		// lock session if it exits
-		if (session) {
+		if (content.has_valid_session()) {
 			std::lock_guard<std::mutex> lock(session->mutex);
 			BOOST_LOG_TRIVIAL(info) << "(Api) " << *session->user 
 						<< " [" << session->sid << "]";
@@ -202,7 +205,7 @@ pcw::Api<S, T>::session(const Request& req) const noexcept
 	for (auto i = r.first; i != r.second; ++i) {
 		if (std::regex_search(i->second, m, sidre)) {
 			BOOST_LOG_TRIVIAL(debug) << "(Api) sid: " << m[1];
-			return this->sessions().session(m[1]);
+			return this->sessions().find_session(m[1]);
 		}
 	}
 	return nullptr;

@@ -47,12 +47,12 @@ template<class S>
 typename pcw::PostBook<S>::Status
 pcw::PostBook<S>::run(Content& content) const 
 {
+	if (not content.has_valid_session())
+		return Status::Forbidden;
+	
 	BOOST_LOG_TRIVIAL(info) << "(PostBook) title: " 
 				<< content.req->path_match[1] 
 				<< " author: " << content.req->path_match[2];
-	if (not content.session)
-		return Status::Forbidden;
-	
 	// get new book	
 	Books books(content.session);
 	auto book = books.new_book(
@@ -103,7 +103,7 @@ namespace pcw {
 		using Content = typename Base::Content;
 
 		void do_reg(Server& server) const noexcept;
-		Status run(Content& content) const noexcept;
+		Status run(Content& content) const;
 
 	private:
 	};
@@ -114,20 +114,20 @@ template<class S>
 void 
 pcw::PostPageImage<S>::do_reg(Server& server) const noexcept 
 {
-	server.server.resource["^/books/(\\d+)/pages/(\\d+)/([^/]+)$"]["POST"] = *this;
+	server.server.resource["^/books/(\\d+)/pages/(\\d+)/(png)$"]["POST"] = *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class S>
 typename pcw::PostPageImage<S>::Status
-pcw::PostPageImage<S>::run(Content& content) const noexcept
+pcw::PostPageImage<S>::run(Content& content) const
 {
+	if (not content.has_valid_session())
+		return Status::Forbidden;
 	BOOST_LOG_TRIVIAL(info) << "(PostPageImage) book: " 
 				<< content.req->path_match[1] 
 				<< " page: " << content.req->path_match[2]
 				<< " ext: " << content.req->path_match[3];
-	if (not content.session)
-		return Status::Forbidden;
 
 	const auto bookid = std::stoi(content.req->path_match[1]);
 	const auto pageid = std::stoi(content.req->path_match[2]);
@@ -140,34 +140,30 @@ pcw::PostPageImage<S>::run(Content& content) const noexcept
 	if (not book or not books.is_allowed(*book))
 		return Status::Forbidden;
 	
-	// we have a valid book
+	// we have a valid book -> add page
 	BookDir book_dir(*book);
-	auto page = book_dir.add_page_image(pageid, ext, content.req->content);
-
-	// invalid page id
-	if (not page or page->id < 1)
+	auto page = book->add_page(
+		book_dir.add_page_image(pageid, ext, content.req->content)
+	);
+	if  (not page)
 		return Status::BadRequest;
-	// add page to book
-	if (book->size() <= static_cast<size_t>(page->id))
-		book->resize(page->id);
-	(*book)[page->id] = page;	
 	content.session->current_book = book;
 	return Status::Created;
 }
 
 //
-// PostPageXml
+// PostPageOcr
 //
 namespace pcw {
-	template<class S> class PostPageXml: public Api<S, PostPageXml<S>> {
+	template<class S> class PostPageOcr: public Api<S, PostPageOcr<S>> {
 	public:
-		using Base = typename pcw::Api<S, PostPageXml<S>>::Base;
+		using Base = typename pcw::Api<S, PostPageOcr<S>>::Base;
 		using Server = typename Base::Server;
 		using Status = typename Base::Status;
 		using Content = typename Base::Content;
 
 		void do_reg(Server& server) const noexcept;
-		Status run(Content& content) const noexcept;
+		Status run(Content& content) const;
 
 	private:
 	};
@@ -176,21 +172,21 @@ namespace pcw {
 ////////////////////////////////////////////////////////////////////////////////
 template<class S>
 void 
-pcw::PostPageXml<S>::do_reg(Server& server) const noexcept 
+pcw::PostPageOcr<S>::do_reg(Server& server) const noexcept 
 {
 	server.server.resource["^/books/(\\d+)/pages/(\\d+)/xml$"]["POST"] = *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class S>
-typename pcw::PostPageXml<S>::Status
-pcw::PostPageXml<S>::run(Content& content) const noexcept
+typename pcw::PostPageOcr<S>::Status
+pcw::PostPageOcr<S>::run(Content& content) const
 {
-	BOOST_LOG_TRIVIAL(info) << "(PostPageXml) book: " 
+	if (not content.has_valid_session())
+		return Status::Forbidden;
+	BOOST_LOG_TRIVIAL(info) << "(PostPageOcr) book: " 
 				<< content.req->path_match[1] 
 				<< " page: " << content.req->path_match[2];
-	if (not content.session)
-		return Status::Forbidden;
 
 	const auto bookid = std::stoi(content.req->path_match[1]);
 	const auto pageid = std::stoi(content.req->path_match[2]);
@@ -203,13 +199,11 @@ pcw::PostPageXml<S>::run(Content& content) const noexcept
 	if (not book or not books.is_allowed(*book))
 		return Status::Forbidden;
 	
-	// check pageid
-	if (pageid < 1 or 
-	    book->size() <= static_cast<size_t>(pageid) or 
-	    not (*book)[pageid])
+	// get page
+	auto page = book->get_page(pageid);
+	if (not page)
 		return Status::BadRequest;
-	auto page = (*book)[pageid];
-	assert(page and page->id == pageid);
+	assert(page->id == pageid);
 
 	// parse ocr (xml)
 	BookDir book_dir(*book);

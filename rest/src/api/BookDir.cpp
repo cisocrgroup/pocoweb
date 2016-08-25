@@ -95,7 +95,8 @@ pcw::BookDir::copy(std::istream& is, const Path& o)
 	if (not os.good())
 		throw std::system_error(errno, std::system_category(), o.string());
 	os << is.rdbuf();
-	BOOST_LOG_TRIVIAL(info) << "(BookDir::copy) wrote " << os.tellp(); 
+	BOOST_LOG_TRIVIAL(info) << "(BookDir::copy) wrote " << os.tellp() 
+				<< " to " << o;
 	os.close();
 }
 

@@ -14,10 +14,14 @@ dir=$4
 host=$(git config -f $config --get daemon.host)
 port=$(git config -f $config --get daemon.port)
 
-curl -XPOST -b /tmp/cookies.txt -v $host:$port/new-book/title/$title/author/$author > /tmp/book.txt
+curl -v -XPOST -b /tmp/cookies.txt $host:$port/new-book/title/$title/author/$author > /tmp/book.txt
 bid=$(sed /tmp/book.txt -e 's/.*"bookid":\([[:digit:]]*\).*/\1/')
 
 echo bid $bid
+if [ -z ${bid+x} ]; then
+	echo "$0: could not create new book"
+	exit 1;
+fi
 
 for xml in $dir/*.xml; do
 	tmp=$(basename $xml)
@@ -26,7 +30,7 @@ for xml in $dir/*.xml; do
 	echo pnum $pnum
 	echo img $img
 	echo $xml
-	curl -XPOST -b /tmp/cookies.txt --data-binary @$img $host:$port/books/$bid/pages/$pnum/image 
-	curl -XPOST -b /tmp/cookies.txt -d @$xml $host:$port/books/$bid/pages/$pnum/xml
+	curl -v -b /tmp/cookies.txt --data-binary @$img $host:$port/books/$bid/pages/$pnum/png
+	curl -v -b /tmp/cookies.txt --data-binary @$xml $host:$port/books/$bid/pages/$pnum/xml
 done
 	
