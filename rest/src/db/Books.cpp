@@ -1,4 +1,5 @@
 #include <cassert>
+#include <boost/log/trivial.hpp>
 #include <mysql_connection.h>
 #include <cppconn/prepared_statement.h>
 #include <cppconn/resultset.h>
@@ -19,24 +20,18 @@ pcw::Books::Books(SessionPtr session)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::BookPtr 
-pcw::Books::new_book(
+pcw::BookData 
+pcw::Books::new_book_data(
 	const std::string& title, 
 	const std::string& author,
 	const std::string& dir
 ) const {
-	static const char *sql1 = "INSERT INTO bookdata "
+	static const char *sql = "INSERT INTO bookdata "
 			 	  "(owner, title, author, directory) VALUES(?,?,?,?)";
-	static const char *sql2 = "insert into books "
-			 	  "(bookdataid, firstpage, lastpage) VALUES(?,0,0)";
 
-	session_->connection->setAutoCommit(false);
-	ScopeGuard sc([this]{
-		session_->connection->rollback();
-	});
+	session_->connection->setAutoCommit(true);
 
-	// insert book data id
-	PreparedStatementPtr s{session_->connection->prepareStatement(sql1)};
+	PreparedStatementPtr s{session_->connection->prepareStatement(sql)};
 	assert(s);
 	const auto ownerid = session_->user->id;
 	s->setInt(1, ownerid);
@@ -46,24 +41,29 @@ pcw::Books::new_book(
 	s->executeUpdate();
 	const auto dataid = last_insert_id();
 
-	// insert book
-	s.reset(session_->connection->prepareStatement(sql2));
-	assert(s);
-	s->setInt(1, dataid);
-	s->executeUpdate();
-	const auto bookid = last_insert_id();	
+	BookData data;
+	data.id = dataid;
+	data.owner = ownerid;
+	data.title = title;
+	data.author = author;
+	data.path = dir;
+	return data;
+}
 
-	// commit results
-	session_->connection->commit();
-	sc.dismiss();
-	
-	// build book
-	const auto book = std::make_shared<Book>(bookid);
-	book->data.id = dataid;
-	book->data.title = title;
-	book->data.author = author;
-	book->data.path = dir;
-	book->data.owner = ownerid;
+////////////////////////////////////////////////////////////////////////////////
+pcw::BookPtr 
+pcw::Books::new_book(BookData data) const 
+{
+	static const char *sql = "INSERT INTO book "
+			 	  "(bookdataid,firstpage,lastpage) VALUES(?,0,0)";
+	session_->connection->setAutoCommit(true);
+	PreparedStatementPtr s{session_->connection->prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, data.id);
+	s->executeUpdate();
+	const auto bookid = last_insert_id();
+	auto book = std::make_shared<Book>(bookid);
+	book->data = std::move(data);
 	return book;
 }
 
@@ -71,32 +71,30 @@ pcw::Books::new_book(
 pcw::BookPtr 
 pcw::Books::find_book(int bookid) const
 {
-	static const auto* sql = "SELECT * FROM books NATURAL JOIN bookdata WHERE bookid=?";
-	
-	// query data;
-	PreparedStatementPtr s{session_->connection->prepareStatement(sql)};
-	assert(s);
-	s->setInt(1, bookid);
-	ResultSetPtr res{s->executeQuery()};
-	if (not res or not res->next())
+	try {
+		auto book = std::make_shared<Book>(bookid);
+		book->dbload(*session_->connection);
+		return book;
+	} catch (const std::exception& e) {
+		BOOST_LOG_TRIVIAL(error) << e.what();
 		return nullptr;
-	
-	// we have (at least) one result for the book
-	auto book = std::make_shared<Book>(bookid);
-	book->id = bookid; 
-	book->id = res->getInt("bookid");
+	}
+}
 
-	// bookdata
-	book->data.firstpage = res->getInt("firstpage");
-	book->data.lastpage = res->getInt("lastpage");
-	book->data.id = res->getInt("bookdataid");
-	book->data.owner = res->getInt("owner");
-	book->data.year = res->getInt("year");
-	book->data.title = res->getString("title");
-	book->data.desc = res->getString("description");
-	book->data.uri = res->getString("uri");
-	book->data.path = res->getString("directory");
-	return book;
+////////////////////////////////////////////////////////////////////////////////
+void
+pcw::Books::insert_book(const Book& book) const
+{
+	session_->connection->setAutoCommit(false);
+	ScopeGuard sc([this]{
+		session_->connection->rollback();
+	});
+	
+	book.dbstore(*session_->connection);
+
+	// commit results
+	session_->connection->commit();
+	sc.dismiss();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

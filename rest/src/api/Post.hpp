@@ -55,11 +55,13 @@ pcw::PostBook<S>::run(Content& content) const
 				<< " author: " << content.req->path_match[2];
 	// get new book	
 	Books books(content.session);
-	auto book = books.new_book(
+	BookData book_data = books.new_book_data(
 		content.req->path_match[1], 
 		content.req->path_match[2],
 		generate_book_dir()
 	);
+	auto book = books.new_book(std::move(book_data));
+	books.insert_book(*book);
 
 	// write book
 	using json = nlohmann::json;
@@ -104,6 +106,7 @@ namespace pcw {
 
 		void do_reg(Server& server) const noexcept;
 		Status run(Content& content) const;
+		BookPtr get_book(const Content& content) const;
 
 	private:
 	};
@@ -192,7 +195,9 @@ pcw::PostPageOcr<S>::run(Content& content) const
 	const auto pageid = std::stoi(content.req->path_match[2]);
 	auto book = content.session->current_book;
 	Books books(content.session);
-	
+
+	// TODO: fix DRY	
+	// maybe make a Session::get_book(id) or Session::get_page(id)
 	// do we have a valid book?
 	if (not book or book->data.id != bookid) 
 		book = books.find_book(bookid);
