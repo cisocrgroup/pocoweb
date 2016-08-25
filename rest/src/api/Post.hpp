@@ -114,7 +114,7 @@ template<class S>
 void 
 pcw::PostPageImage<S>::do_reg(Server& server) const noexcept 
 {
-	server.server.resource["^/books/(\\d+)/pages/(\\d+)/image$"]["POST"] = *this;
+	server.server.resource["^/books/(\\d+)/pages/(\\d+)/([^/]+)$"]["POST"] = *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,12 +124,14 @@ pcw::PostPageImage<S>::run(Content& content) const noexcept
 {
 	BOOST_LOG_TRIVIAL(info) << "(PostPageImage) book: " 
 				<< content.req->path_match[1] 
-				<< " page: " << content.req->path_match[2];
+				<< " page: " << content.req->path_match[2]
+				<< " ext: " << content.req->path_match[3];
 	if (not content.session)
 		return Status::Forbidden;
 
 	const auto bookid = std::stoi(content.req->path_match[1]);
 	const auto pageid = std::stoi(content.req->path_match[2]);
+	const auto ext = content.req->path_match[3];
 	auto book = content.session->current_book;
 	Books books(content.session);
 	
@@ -140,7 +142,15 @@ pcw::PostPageImage<S>::run(Content& content) const noexcept
 	
 	// we have a valid book
 	BookDir book_dir(*book);
-	book_dir.add_page_image(pageid, content.req->content);
+	auto page = book_dir.add_page_image(pageid, ext, content.req->content);
+
+	// invalid page id
+	if (not page or page->id < 1)
+		return Status::BadRequest;
+	// add page to book
+	if (book->size() <= static_cast<size_t>(page->id))
+		book->resize(page->id);
+	(*book)[page->id] = page;	
 	content.session->current_book = book;
 	return Status::Created;
 }
@@ -187,24 +197,26 @@ pcw::PostPageXml<S>::run(Content& content) const noexcept
 	auto book = content.session->current_book;
 	Books books(content.session);
 	
+	// do we have a valid book?
 	if (not book or book->data.id != bookid) 
 		book = books.find_book(bookid);
 	if (not book or not books.is_allowed(*book))
 		return Status::Forbidden;
 	
-	// we have a valid book
-	BookDir book_dir(*book);
-	book_dir.add_page_xml(pageid, content.req->content);
-	auto page = book_dir.parse_page_xml(pageid);
-	if (not page)
+	// check pageid
+	if (pageid < 1 or 
+	    book->size() <= static_cast<size_t>(pageid) or 
+	    not (*book)[pageid])
 		return Status::BadRequest;
+	auto page = (*book)[pageid];
+	assert(page and page->id == pageid);
 
-	// update all
-	book_dir.add_line_images(*page);
+	// parse ocr (xml)
+	BookDir book_dir(*book);
+	book_dir.add_page_ocr(*page, content.req->content);
+
+	// update database
 	books.insert_page(*book, *page);
-	if (book->size() <= static_cast<size_t>(pageid)) 
-		book->resize(pageid);
-	(*book)[pageid] = page;
 	content.session->current_book = book;
 	return Status::Created;
 }

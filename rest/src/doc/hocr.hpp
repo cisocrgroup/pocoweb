@@ -12,6 +12,7 @@ namespace pcw {
 
 	BookPtr parse_hocr_book(const Path& dir);
 	PagePtr parse_hocr_page(const Path& file);
+	void parse_hocr_page(Page& page);
 }
 
 #endif // pcw_hocr_hpp__

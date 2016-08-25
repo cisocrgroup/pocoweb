@@ -201,7 +201,7 @@ pcw::Api<S, T>::session(const Request& req) const noexcept
 	std::smatch m;
 	for (auto i = r.first; i != r.second; ++i) {
 		if (std::regex_search(i->second, m, sidre)) {
-			BOOST_LOG_TRIVIAL(debug) << "sid: " << m[1];
+			BOOST_LOG_TRIVIAL(debug) << "(Api) sid: " << m[1];
 			return this->sessions().session(m[1]);
 		}
 	}

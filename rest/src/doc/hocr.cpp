@@ -27,18 +27,18 @@ is_hocr_file(const fs::path& p)
 		p.extension().string() == ".htm");
 }
 
-///////////////////////////////////////////////////////////////////////////////
-static std::string
-parse_image(pugi::xml_node node)
-{
-	static const std::regex imagere{R"(image\s+\"?([^\"]*)\"?)"};
-	std::cmatch m;
-	if (std::regex_search(node.attribute("title").value(), m, imagere))
-		return m[1];
-	throw std::runtime_error(
-		std::string("HOCR missing bbox in `") +
-		node.attribute("title").value() + "`");
-}
+// ///////////////////////////////////////////////////////////////////////////////
+// static std::string
+// parse_image(pugi::xml_node node)
+// {
+// 	static const std::regex imagere{R"(image\s+\"?([^\"]*)\"?)"};
+// 	std::cmatch m;
+// 	if (std::regex_search(node.attribute("title").value(), m, imagere))
+// 		return m[1];
+// 	throw std::runtime_error(
+// 		std::string("HOCR missing bbox in `") +
+// 		node.attribute("title").value() + "`");
+// }
 
 ///////////////////////////////////////////////////////////////////////////////
 static pcw::Box
@@ -98,19 +98,38 @@ parse_hocr_line(pugi::xml_node node)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-static pcw::PagePtr
-parse_hocr_page(pugi::xml_node node)
+static void
+parse_hocr_page(pugi::xml_node node, pcw::Page& page)
 {
-	auto page = std::make_shared<pcw::Page>();
 	auto lines = node.select_nodes(".//span[@class='ocr_line']");
 	int linen = 0;
 	for (const auto& l: lines) {
-		page->push_back(parse_hocr_line(l.node()));
-		page->back()->id = ++linen;
+		page.push_back(parse_hocr_line(l.node()));
+		page.back()->id = ++linen;
 	}
-	page->box = parse_box(node);
-	page->image = parse_image(node);
-	return page;
+	page.box = parse_box(node);
+	// page.imageimage= parse_image(node);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void
+pcw::parse_hocr_page(Page& page)
+{
+	pugi::xml_document doc;
+	auto ok = doc.load_file(page.ocrfile.string().data());
+	if (not ok) {
+		BOOST_LOG_TRIVIAL(error) << "XML error: " << ok.description();
+		throw std::runtime_error(ok.description());
+	}
+	
+	auto page_nodes = doc.select_nodes("//div[@class='ocr_page']");
+	int n = 0;
+	for (const auto& page_node: page_nodes) {
+		++n;
+		::parse_hocr_page(page_node.node(), page);
+	}
+	if (n != 1)
+		throw std::runtime_error("Cannot handle multiple pages per file");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -127,10 +146,10 @@ pcw::parse_hocr_page(const Path& p)
 	try {
 		auto pages = doc.select_nodes("//div[@class='ocr_page']");
 		int n = 0;
-		pcw::PagePtr page = nullptr;
+		pcw::PagePtr page = std::make_shared<Page>();
 		for (const auto& p: pages) {
 			++n;
-			page = ::parse_hocr_page(p.node());
+			::parse_hocr_page(p.node(), *page);
 		}
 		if (n != 1)
 			return nullptr;

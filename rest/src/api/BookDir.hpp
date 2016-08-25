@@ -12,10 +12,12 @@ namespace pcw {
 	class BookDir {
 	public:
 		BookDir(const Book& book);
-		void add_page_image(int id, std::istream& is) const;
-		void add_page_xml(int id, std::istream& is) const;
+
+		// first create the image...
+		PagePtr add_page_image(int id, const std::string& ext, std::istream& is) const;
+		// ... then add the ocr (xml) file
+		void add_page_ocr(Page& page, std::istream& is) const;
 		void add_line_images(Page& page) const;
-		PagePtr parse_page_xml(int id) const;
 
 	private:
 		using Path = boost::filesystem::path;

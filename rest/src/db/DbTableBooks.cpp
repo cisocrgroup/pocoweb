@@ -148,7 +148,8 @@ pcw::DbTableBooks::doMakePage(sql::ResultSet& res)
 {
 	auto page = std::make_shared<Page>();
 	page->id = res.getInt("pageid");
-	page->image = res.getString("imagepath");
+	page->imagefile = res.getString("imagepath");
+	page->ocrfile = res.getString("ocrpath");
 	page->box.top = res.getInt("ptop");
 	page->box.left = res.getInt("pleft");
 	page->box.bottom = res.getInt("pbottom");
@@ -263,7 +264,7 @@ pcw::DbTableBooks::insertPage(const Book& book, const Page& page) const
 	s->setInt(1, book.id);
 	s->setInt(2, page.id);
 	s->setInt(3, static_cast<int>(page.size()));
-	s->setString(4, page.image);
+	s->setString(4, page.imagefile.string());
 	s->setInt(5, page.box.left);
 	s->setInt(6, page.box.right);
 	s->setInt(7, page.box.top);

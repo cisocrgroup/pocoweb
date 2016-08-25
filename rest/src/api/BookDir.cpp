@@ -3,7 +3,6 @@
 #include <fstream>
 #include <sstream>
 #include "doc/Book.hpp"
-#include "doc/hocr.hpp"
 #include "util/Pix.hpp"
 #include "BookDir.hpp"
 
@@ -15,35 +14,28 @@ pcw::BookDir::BookDir(const Book& book)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::PagePtr
-pcw::BookDir::parse_page_xml(int id) const
+void 
+pcw::BookDir::add_page_ocr(Page& page, std::istream& is) const 
 {
-	auto file = get_page(id);
-	file.replace_extension("xml");
-	auto page = parse_hocr_page(file);
-	if (page) {
-		page->image = file.string();
-		page->id = id;
-	}
+	page.ocrfile = get_page(page.id);
+	page.ocrfile.replace_extension("xml");
+	BOOST_LOG_TRIVIAL(debug) << "(BookDir::add_page_ocr) ofile: " << page.ocrfile;
+	copy(is, page.ocrfile);
+	page.parse();
+	add_line_images(page);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::PagePtr 
+pcw::BookDir::add_page_image(int id, const std::string& ext, std::istream& is) const 
+{
+	auto page = std::make_shared<Page>();
+	page->id = id;
+	page->imagefile = get_page(id);
+	page->imagefile.replace_extension(ext);
+	BOOST_LOG_TRIVIAL(debug) << "(BookDir::add_page_image) ofile: " << page->imagefile;
+	copy(is, page->imagefile);
 	return page;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void 
-pcw::BookDir::add_page_xml(int id, std::istream& is) const 
-{
-	auto ofile = get_page(id);
-	ofile.replace_extension("xml");
-	copy(is, ofile);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void 
-pcw::BookDir::add_page_image(int id, std::istream& is) const 
-{
-	auto ofile = get_page(id);
-	ofile.replace_extension("png");
-	copy(is, ofile);
 }
 
 // #define VAR(x) #x << "=" << x
@@ -54,9 +46,7 @@ pcw::BookDir::add_line_images(Page& page) const
 {
 	auto dir = get_page(page.id);
 	boost::filesystem::create_directory(dir);
-	auto image = dir;
-	image.replace_extension("png");
-	PixPtr pix{pixRead(image.string().data())};
+	PixPtr pix{pixRead(page.imagefile.string().data())};
 	
 	for (auto& line: page) {
 		if (line)
@@ -105,7 +95,7 @@ pcw::BookDir::copy(std::istream& is, const Path& o)
 	if (not os.good())
 		throw std::system_error(errno, std::system_category(), o.string());
 	os << is.rdbuf();
-	BOOST_LOG_TRIVIAL(info) << "(copy) wrote " << os.tellp(); 
+	BOOST_LOG_TRIVIAL(info) << "(BookDir::copy) wrote " << os.tellp(); 
 	os.close();
 }
 
