@@ -41,7 +41,7 @@ create table pages (
 	pageid int,
 	nlines int,
 	imagepath varchar(255) not null,
-	corpath varchar(255) not null,
+	ocrpath varchar(255) not null,
 	pleft int,
 	ptop int,
 	pright int,
