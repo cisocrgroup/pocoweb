@@ -1,6 +1,8 @@
 #ifndef pcw_db_hpp__
 #define pcw_db_hpp__
 
+#include <memory>
+
 namespace sql {
 	class Connection;
 	class Statement;
@@ -9,7 +11,7 @@ namespace sql {
 }
 
 namespace pcw {
-	using ConnectionPtr = std::shared_ptr<sql::Connection>;
+	using ConnectionPtr = std::unique_ptr<sql::Connection>;
 	using StatementPtr = std::unique_ptr<sql::Statement>;
 	using PreparedStatementPtr = std::unique_ptr<sql::PreparedStatement>;
 	using ResultSetPtr = std::unique_ptr<sql::ResultSet>;

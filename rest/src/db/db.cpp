@@ -1,7 +1,7 @@
 #include <memory>
 #include <mysql_connection.h>
 #include <mysql_driver.h>
-#include "util/Config.hpp"
+#include "Config.hpp"
 #include "db.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -13,6 +13,6 @@ pcw::connect(const Config& config)
 				     	   config.db.user,
 					   config.db.pass)};
 	assert(conn);
-	conn->setSchema("pocoweb");
+	conn->setSchema(config.db.db);
 	return conn;
 }

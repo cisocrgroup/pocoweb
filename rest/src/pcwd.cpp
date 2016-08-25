@@ -1,3 +1,5 @@
+#include <grp.h>
+#include <pwd.h>
 #include <cassert>
 #include <memory>
 #include <cppconn/driver.h>
@@ -28,7 +30,7 @@
 #include <boost/log/sources/record_ostream.hpp>
 #include <json.hpp>
 #include "server_http.hpp"
-#include "util/Config.hpp"
+#include "Config.hpp"
 #include "util/hash.hpp"
 #include "api/api.hpp"
 #include "db/db.hpp"
@@ -36,16 +38,18 @@
 #include "db/DbTableUsers.hpp"
 
 using namespace pcw;
-static void run(int argc, char **argv);
-static Config loadConfig(int argc, char **argv);
-static void initLogging(const Config& config);
+static void run(const std::string& configfile);
+static void change_user_and_group(const Config& config);
+static void init_logging(const Config& config);
 
 ////////////////////////////////////////////////////////////////////////////////
 int
 main(int argc, char** argv)
 {
 	try {
-		run(argc, argv);
+		if (argc != 2) 
+			throw std::runtime_error("Usage: " + std::string(argv[0]) + " config-file");
+		run(argv[1]);
 		return EXIT_SUCCESS;
 	} catch (const std::exception& e) {
 		std::cerr << "[error] " << e.what() << "\n";
@@ -55,53 +59,36 @@ main(int argc, char** argv)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-run(int argc, char** argv)
+run(const std::string& configfile)
 {
-	const auto config = loadConfig(argc, argv);
-	initLogging(config);
-	
-	if (config.daemon.detach and daemon(0, 0) == -1)
-		throw std::system_error(errno, std::system_category(), "daemon");
-	Api::run(config);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Config
-loadConfig(int argc, char **argv)
-{
-	const char *file = nullptr;
-	Config config;
-	config.daemon.detach = false;
-
-	switch (argc) {
-	case 2:
-		file = argv[1];
-		break;
-	case 3:
-		if (strcmp("--daemon", argv[1]) == 0 or 
-		    strcmp("-d", argv[1]) == 0) {
-			config.daemon.detach = true;
-			file = argv[2];
-			break;
-		}
-		// fall through
-	default:
-		throw std::runtime_error(
-			std::string("Usage: ") +
-			 argv[0] +
-			 " [-d|--daemon] config-file"
-		);
+	const auto config = std::make_shared<Config>(Config::load(configfile));
+	init_logging(*config); 
+	if (config->daemon.detach) {
+		change_user_and_group(*config);		
+		if (daemon(0, 0) == -1)
+			throw std::system_error(errno, std::system_category(), "daemon");
 	}
-		
-	config.load(file);
-	if (not config.daemon.detach)
-		config.log.file = "/dev/stderr";
-	return config;
+	run(config);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-initLogging(const Config& config)
+change_user_and_group(const Config& config)
+{
+	const auto user = config.daemon.user.data();
+	const auto upw = getpwnam(user);
+	if (not upw) 
+		throw std::system_error(errno, std::system_category(), user);
+	const auto group = config.daemon.group.data();
+	const auto gpw = getgrnam(group);
+	if (not gpw)
+		throw std::system_error(errno, std::system_category(), group);
+	// change user and group (not implemented)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+init_logging(const Config& config)
 {
 	boost::log::add_common_attributes();
 	auto fmtTimeStamp = boost::log::expressions::
@@ -126,6 +113,6 @@ initLogging(const Config& config)
 		 boost::log::keywords::open_mode = std::ios_base::app);
 	fsink->set_formatter(logFmt);
 	boost::log::core::get()->set_filter(
-	         boost::log::trivial::severity >= boost::log::trivial::info
+	         boost::log::trivial::severity >= config.log.level
 	);
 }

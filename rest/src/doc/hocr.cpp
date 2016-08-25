@@ -2,6 +2,7 @@
 #include <regex>
 #include <memory>
 #include <vector>
+#include <boost/log/trivial.hpp>
 #include <boost/filesystem.hpp>
 #include <pugixml.hpp>
 #include <json.hpp>
@@ -26,18 +27,18 @@ is_hocr_file(const fs::path& p)
 		p.extension().string() == ".htm");
 }
 
-///////////////////////////////////////////////////////////////////////////////
-static std::string
-parse_image(pugi::xml_node node)
-{
-	static const std::regex imagere{R"(image\s+\"?([^\"]*)\"?)"};
-	std::cmatch m;
-	if (std::regex_search(node.attribute("title").value(), m, imagere))
-		return m[1];
-	throw std::runtime_error(
-		std::string("HOCR missing bbox in `") +
-		node.attribute("title").value() + "`");
-}
+// ///////////////////////////////////////////////////////////////////////////////
+// static std::string
+// parse_image(pugi::xml_node node)
+// {
+// 	static const std::regex imagere{R"(image\s+\"?([^\"]*)\"?)"};
+// 	std::cmatch m;
+// 	if (std::regex_search(node.attribute("title").value(), m, imagere))
+// 		return m[1];
+// 	throw std::runtime_error(
+// 		std::string("HOCR missing bbox in `") +
+// 		node.attribute("title").value() + "`");
+// }
 
 ///////////////////////////////////////////////////////////////////////////////
 static pcw::Box
@@ -97,47 +98,80 @@ parse_hocr_line(pugi::xml_node node)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-static pcw::PagePtr
-parse_hocr_page(pugi::xml_node node)
+static void
+parse_hocr_page(pugi::xml_node node, pcw::Page& page)
 {
-	auto page = std::make_shared<pcw::Page>();
 	auto lines = node.select_nodes(".//span[@class='ocr_line']");
 	int linen = 0;
 	for (const auto& l: lines) {
-		page->push_back(parse_hocr_line(l.node()));
-		page->back()->id = ++linen;
+		page.push_back(parse_hocr_line(l.node()));
+		page.back()->id = ++linen;
 	}
-	page->box = parse_box(node);
-	page->image = parse_image(node);
-	return page;
+	page.box = parse_box(node);
+	// page.imageimage= parse_image(node);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-static void
-parse_hocr_pages(const fs::path& p, pcw::Book& book, int& pagen)
+void
+pcw::parse_hocr_page(Page& page)
+{
+	pugi::xml_document doc;
+	auto ok = doc.load_file(page.ocrfile.string().data());
+	if (not ok) {
+		BOOST_LOG_TRIVIAL(error) << "XML error: " << ok.description();
+		throw std::runtime_error(ok.description());
+	}
+	
+	auto page_nodes = doc.select_nodes("//div[@class='ocr_page']");
+	int n = 0;
+	for (const auto& page_node: page_nodes) {
+		++n;
+		::parse_hocr_page(page_node.node(), page);
+	}
+	if (n != 1)
+		throw std::runtime_error("Cannot handle multiple pages per file");
+}
+
+///////////////////////////////////////////////////////////////////////////////
+pcw::PagePtr
+pcw::parse_hocr_page(const Path& p)
 {
 	pugi::xml_document doc;
 	auto ok = doc.load_file(p.string().data());
-	if (not ok)
-		throw std::runtime_error(
-			"XML error: " + std::string(ok.description()));
+	if (not ok) {
+		BOOST_LOG_TRIVIAL(error) << "XML error: " << ok.description();
+		return nullptr;
+	}
 	
-	auto pages = doc.select_nodes("//div[@class='ocr_page']");
-	for (const auto& p: pages) {
-		book.push_back(parse_hocr_page(p.node()));
-		book.back()->id = ++pagen;
+	try {
+		auto pages = doc.select_nodes("//div[@class='ocr_page']");
+		int n = 0;
+		pcw::PagePtr page = std::make_shared<Page>();
+		for (const auto& p: pages) {
+			++n;
+			::parse_hocr_page(p.node(), *page);
+		}
+		if (n != 1)
+			return nullptr;
+		return page;
+	} catch (const std::exception& e) {
+		BOOST_LOG_TRIVIAL(error) << "XML error: " << e.what();
+		return nullptr;
 	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 pcw::BookPtr
-pcw::parse_hocr(const std::string& dir)
+pcw::parse_hocr_book(const Path& dir)
 {
 	BookPtr book = std::make_shared<Book>();
-	int pagen = 0;
+	int n = 0;
 	for (auto i = fs::directory_iterator(dir); i != fs::directory_iterator(); ++i) {
 		if (is_hocr_file(*i)) {
-			parse_hocr_pages(*i, *book, pagen);
+			book->push_back(parse_hocr_page(*i));
+			if (not book->back())
+				return nullptr;
+			book->back()->id = ++n;
 		}
 	}
 	return book;

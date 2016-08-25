@@ -73,13 +73,15 @@ pcw::User::store(sql::Connection& conn, const std::string& passwd, bool active) 
 bool 
 pcw::User::authenticate(sql::Connection& conn, const std::string& passwd) const
 {
-	static const char *sql = "SELECT passwd FROM users WHERE userid=?";
+	static const char *sql = "SELECT userid FROM users "
+				 "WHERE userid=? AND passwd=PASSWORD(?)";
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, id);
+	s->setString(2, passwd);
 	ResultSetPtr res{s->executeQuery()};
-	assert(res);
-	return res->next() ? check(res->getString(1), passwd) : false;
+	return res and res->next();
+	// return res and res->next() ? true : false;check(res->getString(1), passwd) : false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

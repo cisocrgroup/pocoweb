@@ -1,8 +1,9 @@
 #ifndef pcw_Line_hpp__
 #define pcw_Line_hpp__
 
+#include "Box.hpp"
+
 namespace pcw {
-	struct Box;
 	class Line: public std::enable_shared_from_this<Line> {
 	public:
 		using Cuts = std::vector<int>;
@@ -14,10 +15,12 @@ namespace pcw {
 		std::string& line() noexcept {return line_;}
 		const Cuts& cuts() const noexcept {return cuts_;}
 		Cuts& cuts() noexcept {return cuts_;}
+		std::string cuts_str() const noexcept;
 		void load(nlohmann::json& json);
 		void store(nlohmann::json& json) const;
 
 		Box box;
+		std::string image;
 		int id;
 
 	private:

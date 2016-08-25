@@ -8,6 +8,7 @@
 #include <json.hpp>
 #include "util/ScopeGuard.hpp"
 #include "db.hpp"
+#include "db/Sessions.hpp"
 #include "doc/BookData.hpp"
 #include "doc/Container.hpp"
 #include "doc/Box.hpp"
@@ -31,7 +32,6 @@ pcw::DbTableBooks::DbTableBooks(ConnectionPtr conn)
 	: conn_(std::move(conn))
 {
 	assert(conn_);
-	conn_->setSchema("pocoweb");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,6 @@ pcw::BookPtr
 pcw::DbTableBooks::getLine(int bookid, int pageid, int lineid) const
 {
 	assert(bookid > 0 and pageid > 0 and lineid > 0);
-	assert(conn_);
 	static const char *sql = JOIN
 		"where bookid=? and pageid=? and lineid=?";
 	conn_->setAutoCommit(true);	
@@ -149,7 +148,8 @@ pcw::DbTableBooks::doMakePage(sql::ResultSet& res)
 {
 	auto page = std::make_shared<Page>();
 	page->id = res.getInt("pageid");
-	page->image = res.getString("imagepath");
+	page->imagefile = res.getString("imagepath");
+	page->ocrfile = res.getString("ocrpath");
 	page->box.top = res.getInt("ptop");
 	page->box.left = res.getInt("pleft");
 	page->box.bottom = res.getInt("pbottom");
@@ -264,7 +264,7 @@ pcw::DbTableBooks::insertPage(const Book& book, const Page& page) const
 	s->setInt(1, book.id);
 	s->setInt(2, page.id);
 	s->setInt(3, static_cast<int>(page.size()));
-	s->setString(4, page.image);
+	s->setString(4, page.imagefile.string());
 	s->setInt(5, page.box.left);
 	s->setInt(6, page.box.right);
 	s->setInt(7, page.box.top);

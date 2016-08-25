@@ -16,7 +16,7 @@
 #include "doc/Line.hpp"
 #include "doc/Page.hpp"
 #include "doc/Book.hpp"
-#include "util/Config.hpp"
+#include "Config.hpp"
 
 using namespace pcw;
 static Config loadConfig(int argc, char **argv);
@@ -27,7 +27,7 @@ main(int argc, char** argv)
 {
 	try {
 		auto config = loadConfig(argc, argv);
-		auto book = parse_hocr(argv[9]);
+		auto book = parse_hocr_book(argv[9]);
 		book->data.author = argv[4];
 		book->data.title = argv[5];
 		book->data.year = std::stoi(argv[6]);
@@ -37,15 +37,16 @@ main(int argc, char** argv)
 		book->data.firstpage = book->empty() ? 0 : 1;
 		book->data.lastpage = static_cast<int>(book->size());
 		
-		const auto conn = connect(config);
-		DbTableUsers users(conn);
+		auto conn = connect(config);
+		DbTableUsers users(std::move(conn));
 		const auto owner = users.findUserByNameOrEmail(argv[3]);
 		if (not owner)
 			throw std::runtime_error(
 				"invalid book owner: " + 
 				std::string(argv[3])
 			);
-		DbTableBooks books(conn);
+		conn = std::move(connect(config));
+		DbTableBooks books(std::move(conn));
 		auto res = books.insertBook(owner->id, *book);
 		if (res) {
 			for (int i = 10; i < argc; ++i) {
@@ -75,7 +76,5 @@ loadConfig(int argc, char **argv)
 					 " config-file type owner author title "
 					 "year desc uri path [users...]");
 
-	Config config;
-	config.load(argv[1]);
-	return config;
+	return Config::load(argv[1]);
 }

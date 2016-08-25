@@ -1,0 +1,16 @@
+#!/bin/sh
+# pcw_create_book
+set -e
+
+if [ $# -ne 3 ]; then
+	echo "Usage $0 config name password"
+	exit 1;
+fi
+
+config=$1
+name=$2
+pass=$3
+host=$(git config -f $config --get daemon.host)
+port=$(git config -f $config --get daemon.port)
+
+curl -XPOST -c /tmp/cookies.txt -v $host:$port/login/username/$name/password/$pass

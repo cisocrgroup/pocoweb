@@ -25,3 +25,14 @@ pcw::Line::store(nlohmann::json& json) const
 	json["cuts"] = cuts_;
 	box.store(json["box"]);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+std::string 
+pcw::Line::cuts_str() const noexcept
+{
+	// using std::begin;
+	// using std::end;
+	std::stringstream os;
+	std::copy(begin(cuts_), end(cuts_), std::ostream_iterator<int>(os, " "));
+	return os.str();
+}

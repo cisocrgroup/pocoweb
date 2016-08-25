@@ -7,6 +7,28 @@
 #include "Book.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
+pcw::PagePtr 
+pcw::Book::add_page(PagePtr page)
+{
+	if (not page or page->id < 1) // invalid page or invalid page id
+		return nullptr;
+	if (size() < static_cast<size_t>(page->id))
+		resize(page->id);
+	(*this)[page->id - 1] = page;
+	return (*this)[page->id - 1];
+}
+
+///////////////////////////////////////////////////////////////////////////////
+pcw::PagePtr 
+pcw::Book::get_page(int id) const noexcept
+{
+	if (id > 0 and static_cast<size_t>(id) <= size()) {
+		return (*this)[id - 1];
+	}
+	return nullptr;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 void 
 pcw::Book::load(nlohmann::json& json) 
 {

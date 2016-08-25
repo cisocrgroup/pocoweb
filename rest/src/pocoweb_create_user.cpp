@@ -8,7 +8,7 @@
 #include "db/db.hpp"
 #include "db/User.hpp"
 #include "db/DbTableUsers.hpp"
-#include "util/Config.hpp"
+#include "Config.hpp"
 
 using namespace pcw;
 static Config loadConfig(int argc, char **argv);
@@ -20,7 +20,7 @@ main(int argc, char** argv)
 	try {
 		auto config = loadConfig(argc, argv);
 		auto conn = connect(config);
-		DbTableUsers db(conn);
+		DbTableUsers db(std::move(conn));
 		auto user = db.createUser(argv[2], argv[3], argv[4], argv[5]);
 		return user ? EXIT_SUCCESS : EXIT_FAILURE;
 	} catch (const std::exception& e) {
@@ -37,7 +37,5 @@ loadConfig(int argc, char **argv)
 		throw std::runtime_error(std::string("Usage: ") +
 					 argv[0] +
 					 " config-file name email institute passwd");
-	Config config;
-	config.load(argv[1]);
-	return config;
+	return Config::load(argv[1]);
 }

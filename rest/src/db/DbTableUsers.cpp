@@ -103,14 +103,15 @@ pcw::DbTableUsers::createUser(const std::string& name,
 bool
 pcw::DbTableUsers::authenticate(const User& user, const std::string& passwd) const
 {
+	static const char *sql = "SELECT userid FROM users "
+				 "WHERE userid=? AND PASSWORD(?)=passwd";
 	assert(conn_);
-	PreparedStatementPtr s(conn_->prepareStatement("select passwd from "
-						       "users where userid=?"));
+	PreparedStatementPtr s(conn_->prepareStatement(sql));
 	assert(s);
 	s->setInt(1, user.id);
+	s->setString(2, passwd);
 	ResultSetPtr res(s->executeQuery());
-	assert(res);
-	return res->next() ? authenticate(res->getString(1), passwd) : false;
+	return res and res->next() ?  res->getInt("userid") == user.id : false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
