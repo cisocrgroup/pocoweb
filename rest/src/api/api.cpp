@@ -23,8 +23,10 @@ public:
 		server.server.default_resource["GET"] = *this;
 	}
 	Status run(const Content& content) const noexcept {
-		BOOST_LOG_TRIVIAL(debug) << "(Default) BadRequest: " 
-					<< content.req->path_match[0];
+		BOOST_LOG_TRIVIAL(info) << "(Default) BadRequest ["
+					<< content.req->method << "] "
+					<< content.req->path << " HTTP "
+					<< content.req->http_version;
 		return Status::BadRequest;
 	}
 };
