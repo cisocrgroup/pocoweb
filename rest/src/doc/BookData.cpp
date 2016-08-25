@@ -1,21 +1,25 @@
 #include <json.hpp>
+#include <cppconn/connection.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/resultset.h>
+#include "db/db.hpp"
 #include "BookData.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 void
-pcw::BookData::store(sql::Connection& c) const
+pcw::BookData::dbstore(sql::Connection& c) const
 {
 	static const char *sql = "UPDATE bookdata "
 				 "SET owner=?,year=?,title=?,author=?,"
 				 "description=?,uri=?,directory=? "
 				 "WHERE bookdataid=?";
-	StatementPtr s{c.prepareStatement(sql)};
+	PreparedStatementPtr s{c.prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, owner);
 	s->setInt(2, year);
 	s->setString(3, title);
 	s->setString(4, author);
-	s->setString(5, description);
+	s->setString(5, desc);
 	s->setString(6, uri);
 	s->setString(7, path.string());
 	s->setInt(8, id);
@@ -24,22 +28,15 @@ pcw::BookData::store(sql::Connection& c) const
 
 ///////////////////////////////////////////////////////////////////////////////
 void
-pcw::BookData::load(sql::Connection& c) 
+pcw::BookData::dbload(sql::Connection& c) 
 {
 	static const char *sql = "SELECT * FROM bookdata WHERE bookdataid=?";
-	StatementPtr s{c.prepareStatement(sql)};
+	PreparedStatementPtr s{c.prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, id);
-	ResultPtr res{s->executeQuery()};
+	ResultSetPtr res{s->executeQuery()};
 	if (not res or not res->next()) 
 		throw std::runtime_error("(BookData) No such book data id " + std::to_string(id));
-	owner = s->getInt("owner");
-	year = s->getInt("year");
-	title = s->getString("title");
-	author = s->getString("author");
-	description = s->getString("description");
-	uri = s->getString("uri");
-	path = s->getString("directory");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -50,7 +47,8 @@ pcw::BookData::load(nlohmann::json& json)
 	author = json["author"];
 	desc = 	json["description"];
 	uri = json["uri"];
-	path = 	json["path"];
+	const std::string a = json["path"];
+	path = a;
 	id = json["id"];
 	year = 	json["year"];
 	firstpage = json["firstpage"];

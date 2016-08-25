@@ -86,7 +86,8 @@ static pcw::LinePtr
 parse_hocr_line(pugi::xml_node node)
 {
 	auto tokens = node.select_nodes(".//span[@class='ocrx_word']");
-	auto line = std::make_shared<pcw::Line>();
+	// TODO: FIX id=1
+	auto line = std::make_shared<pcw::Line>(1);
 	line->box = parse_box(node);
 	for (const auto& t: tokens) {
 		const char *token = t.node().text().get();
@@ -146,9 +147,9 @@ pcw::parse_hocr_page(const Path& p)
 	try {
 		auto pages = doc.select_nodes("//div[@class='ocr_page']");
 		int n = 0;
-		pcw::PagePtr page = std::make_shared<Page>();
+		PagePtr page = nullptr;
 		for (const auto& p: pages) {
-			++n;
+			page = std::make_shared<Page>(++n);
 			::parse_hocr_page(p.node(), *page);
 		}
 		if (n != 1)
@@ -164,7 +165,8 @@ pcw::parse_hocr_page(const Path& p)
 pcw::BookPtr
 pcw::parse_hocr_book(const Path& dir)
 {
-	BookPtr book = std::make_shared<Book>();
+	// TODO: fix id=1 hack
+	BookPtr book = std::make_shared<Book>(1);
 	int n = 0;
 	for (auto i = fs::directory_iterator(dir); i != fs::directory_iterator(); ++i) {
 		if (is_hocr_file(*i)) {

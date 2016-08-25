@@ -29,8 +29,7 @@ pcw::BookDir::add_page_ocr(Page& page, std::istream& is) const
 pcw::PagePtr 
 pcw::BookDir::add_page_image(int id, const std::string& ext, std::istream& is) const 
 {
-	auto page = std::make_shared<Page>();
-	page->id = id;
+	auto page = std::make_shared<Page>(id);
 	page->imagefile = get_page(id);
 	page->imagefile.replace_extension(ext);
 	BOOST_LOG_TRIVIAL(debug) << "(BookDir::add_page_image) ofile: " << page->imagefile;
@@ -61,7 +60,7 @@ pcw::BookDir::add_line_image(Line& line, const Path& dir, void *ppix) const
 	// TODO: remove void*
 	auto file = dir / ("line-" + get_hex_str(line.id));
 	file.replace_extension("png");	
-	line.image = file.string();
+	line.imagefile = file.string();
 	
 	auto pix = static_cast<PIX*>(ppix);
 	if (pix) {
@@ -75,7 +74,7 @@ pcw::BookDir::add_line_image(Line& line, const Path& dir, void *ppix) const
 		};
 		PixPtr tmp{pixClipRectangle(pix, &box, nullptr)};
 		if (tmp) 
-			pixWrite(line.image.data(), tmp.get(), IFF_PNG);
+			pixWrite(line.imagefile.string().data(), tmp.get(), IFF_PNG);
 	}
 }
 

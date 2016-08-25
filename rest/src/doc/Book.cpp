@@ -1,5 +1,8 @@
 #include <memory>
 #include <json.hpp>
+#include "cppconn/connection.h"
+#include <cppconn/prepared_statement.h>
+#include "db/db.hpp"
 #include "Box.hpp"
 #include "BookData.hpp"
 #include "Container.hpp"
@@ -7,7 +10,7 @@
 #include "Book.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
-pcw::Book::Book(int iid): id(id) {assert(id > 0);}
+pcw::Book::Book(int iid): id(iid) {assert(id > 0);}
 
 ///////////////////////////////////////////////////////////////////////////////
 pcw::PagePtr 
@@ -33,35 +36,32 @@ pcw::Book::get_page(int id) const noexcept
 
 ///////////////////////////////////////////////////////////////////////////////
 void
-pcw::Book::store(sql::Connection& c) const
+pcw::Book::dbstore(sql::Connection& c) const
 {
 	static const auto *sql = "UPDATE books "
 				 "SET firstpage=?, lastpage=?,bookdataid=?"
 				 "WHERE bookid=?";
-	StatementPtr s{c.prepareStatement(sql)};
+	PreparedStatementPtr s{c.prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, first_page_id());
 	s->setInt(2, last_page_id());
 	s->setInt(3, data.id);
 	s->setInt(3, id);
 	s->executeUpdate();	
+	data.dbstore(c);
 
-	data.store(c);
-	for (const auto& page: *this) {
-		if (page)
-			page->store(c, id);
-	}
+	// do not store pages (they have to be created serparately)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void
-pcw::Book::load(sql::Connection& c)
+pcw::Book::dbload(sql::Connection& c)
 {
-	static const auto *sql = "SELECT * FROM books WHERE bookid=?";
-	StatementPtr s{c.prepareStatement(sql)};
+	static const auto* sql = "SELECT * FROM books NATURAL JOIN bookdata WHERE bookid=?";
+	PreparedStatementPtr s{c.prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, id);
-	ResultPtr res{s->executeQuery()};
+	ResultSetPtr res{s->executeQuery()};
 	if (not res or not res->next())
 		throw std::runtime_error("(Book) No such book id " + std::to_string(id));
 	
@@ -69,11 +69,20 @@ pcw::Book::load(sql::Connection& c)
 	auto lastpage = res->getInt("lastpage");
 	data.id = res->getInt("dataid");
 	
-	data.load(c);
+	// load bookdata
+	data.owner = res->getInt("owner");
+	data.year = res->getInt("year");
+	data.title = res->getString("title");
+	data.author = res->getString("author");
+	data.desc = res->getString("description");
+	data.uri = res->getString("uri");
+	data.path = res->getString("directory");
+
 	resize(lastpage);
 	for (int i = firstpage; i > 0 and i <= lastpage; ++i) {
-		(*this)[i - 1] = std::make_shared<Page>(i);
-		(*this)[i - 1]->load(c, id);
+		auto page = std::make_shared<Page>(i);
+		if (page->dbload(c, id))
+			(*this)[i - 1] = page;
 	}
 }
 
@@ -105,18 +114,21 @@ pcw::Book::store(nlohmann::json& json) const
 int 
 pcw::Book::first_page_id() const noexcept
 {
-	auto i = std::find_if(begin(*this), end(*this), [](const auto& p) {return p});
-	return i != end(*this) ? i->operator*().id : 0;
+	using std::begin;
+	using std::end;
+	const auto e = end(*this);
+	auto i = std::find_if(begin(*this), e, [](const auto& p) {return p;});
+	return i != e ? i->operator*().id : 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int 
 pcw::Book::last_page_id() const noexcept
 {
-	auto i = std::find_if(
-		std::reverse_iterator(end(*this)),
-		std::reverse_iterator(begin(*this)),
-		[](const auto& page) {return page;}
-	);
-	return i != std::reverse_iterator(begin(*this)) ? i->operator*().id : 0;
+	using std::begin;
+	using std::end;
+	const auto b = std::make_reverse_iterator(end(*this));
+	const auto e = std::make_reverse_iterator(begin(*this));
+	auto i = std::find_if(b, e, [](const auto& page) {return page;});
+	return i != e ? i->operator*().id : 0;
 }

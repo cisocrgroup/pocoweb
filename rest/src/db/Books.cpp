@@ -58,8 +58,7 @@ pcw::Books::new_book(
 	sc.dismiss();
 	
 	// build book
-	const auto book = std::make_shared<Book>();
-	book->id = bookid;
+	const auto book = std::make_shared<Book>(bookid);
 	book->data.id = dataid;
 	book->data.title = title;
 	book->data.author = author;
@@ -83,7 +82,7 @@ pcw::Books::find_book(int bookid) const
 		return nullptr;
 	
 	// we have (at least) one result for the book
-	auto book = std::make_shared<Book>();
+	auto book = std::make_shared<Book>(bookid);
 	book->id = bookid; 
 	book->id = res->getInt("bookid");
 
@@ -104,44 +103,12 @@ pcw::Books::find_book(int bookid) const
 void 
 pcw::Books::insert_page(const Book& book, const Page& page) const
 {
-	static const char *sql = 
-		"INSERT INTO linesx ("
-		" bookid,"
-		" pageid,"
-		" lineid,"
-		" imagepath,"
-		" lstr,"
-		" cuts,"
-		" lleft,"
-		" ltop,"
-		" lright,"
-		" lbottom)"
-		" VALUES(?,?,?,?,?,?,?,?,?,?)";
 	session_->connection->setAutoCommit(false);
 	ScopeGuard sc([this]{
 		session_->connection->rollback();
 	});
-
-	// insert lines
-	PreparedStatementPtr s;
-	for (const auto& line: page) {
-		if (not line)
-			continue;
-		s.reset(session_->connection->prepareStatement(sql));
-		assert(s);
-
-		s->setInt(1, book.id);
-		s->setInt(2, page.id);
-		s->setInt(3, line->id);
-		s->setString(4, line->image);
-		s->setString(5, line->line());
-		s->setString(6, line->cuts_str());
-		s->setInt(7, line->box.left);
-		s->setInt(8, line->box.top);
-		s->setInt(9, line->box.right);
-		s->setInt(10, line->box.bottom);
-		s->executeUpdate();		
-	}
+	
+	page.dbstore(*session_->connection, book.id);
 
 	// commit results
 	session_->connection->commit();
