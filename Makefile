@@ -14,10 +14,11 @@ PCW_API_VERSION = "$(PCW_API_VERSION_MAJOR).$(PCW_API_VERSION_MINOR).$(PCW_API_V
 
 export # export all
 
-all: default
+default: all
 
-default install clean uninstall: 
-	$(MAKE) -C misc $@
-	$(MAKE) -C rest $@ SHELL=$(SHELL) PCW_API_VERSION=$(PCW_API_VERSION)
-	$(MAKE) -C db $@ SHELL=$(SHELL)
+all install clean uninstall:
+	$(MAKE) -C modules $@
+	#$(MAKE) -C misc $@
+	#$(MAKE) -C rest $@ SHELL=$(SHELL) PCW_API_VERSION=$(PCW_API_VERSION)
+	#$(MAKE) -C db $@ SHELL=$(SHELL)
 

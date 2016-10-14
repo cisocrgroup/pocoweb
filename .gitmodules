@@ -1,9 +1,9 @@
-[submodule "rest/gsm/Simple-Web-Server"]
-	path = rest/gsm/Simple-Web-Server
-	url = https://github.com/eidheim/Simple-Web-Server.git
-[submodule "rest/gsm/pugixml"]
-	path = rest/gsm/pugixml
-	url = https://github.com/zeux/pugixml.git
-[submodule "rest/gsm/json"]
-	path = rest/gsm/json
-	url = https://github.com/nlohmann/json.git
+[submodule "modules/crow"]
+	path = modules/crow
+	url = https://github.com/ipkn/crow
+[submodule "modules/pugixml"]
+	path = modules/pugixml
+	url = https://github.com/zeux/pugixml
+[submodule "modules/utfcpp"]
+	path = modules/utfcpp
+	url = https://github.com/nemtrif/utfcpp
