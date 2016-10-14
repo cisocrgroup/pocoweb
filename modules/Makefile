@@ -1,16 +1,15 @@
-MODS += crow.xy
-MODS += pugixml.xy
-MODS += utfcpp.xy
+MODS += crow.mod
+MODS += pugixml.mod
+MODS += utfcpp.mod
 
 all: $(MODS)
 install:
 uninstall:
 clean:
-	$(RM) *.xy
+	$(RM) *.mod
 
-#.SECONDEXPANSION:
-#%.xy: .git/modules/modules/$$*/HEAD
-%.xy:
+.SECONDEXPANSION:
+%.mod: ../.git/modules/modules/$$*/HEAD
+	git submodule update --init $*
 	touch $@
-	git submodule update --init modules/$*
 
