@@ -32,6 +32,7 @@ VPATH = src src/core
 OBJS += Config.o
 OBJS += ApiVersion.o
 OBJS += util.o
+OBJS += User.o
 
 ## OBJS += api.o
 ## OBJS += Config.o
