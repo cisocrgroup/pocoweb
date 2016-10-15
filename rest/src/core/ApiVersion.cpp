@@ -1,23 +1,24 @@
 #include "crow.h"
 #include "ApiVersion.hpp"
 
+#define ROUTE "/api-version"
+
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* ApiVersion::NAME = "ApiVersion";
-const char* ApiVersion::ROUTE = "/api-version";
+const char* ApiVersion::route_ = ROUTE;
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 ApiVersion::Register(App& app)
 {
-	CROW_ROUTE(app, "/api-version")(*this);
+	CROW_ROUTE(app, ROUTE)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 crow::response
 ApiVersion::operator()() const noexcept
 {
-	CROW_LOG_INFO << name() << ": " << PCW_API_VERSION;
-	return crow::response(200);
+	CROW_LOG_INFO << route() << ": " << PCW_API_VERSION;
+	return crow::response(PCW_API_VERSION);
 }

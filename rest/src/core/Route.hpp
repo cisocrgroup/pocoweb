@@ -18,7 +18,6 @@ namespace pcw {
 		using App = crow::Crow<>;
 		virtual ~Route() noexcept = default;
 		virtual void Register(App&) = 0;
-		virtual const char* name() const noexcept = 0;
 		virtual const char* route() const noexcept = 0;
 		virtual void Deregister(App&) {}
 	};

@@ -83,8 +83,7 @@ log(const pcw::App& app)
 	for (const auto& route: app.routes) {
 		if (not route)
 			continue;
-		CROW_LOG_INFO << "Route " << route->name()
-			      << ": " << route->route();
+		CROW_LOG_INFO << "Route " << route->route();
 	}
 }
 
@@ -99,7 +98,7 @@ reg(pcw::App& app) noexcept
 			route->Register(app.app);
 		} catch (const std::exception& e) {
 			CROW_LOG_ERROR << "Could not register "
-				       << route->name() << ": "
+				       << route->route() << ": "
 				       << e.what();
 		}
 	}
@@ -116,7 +115,7 @@ dereg(pcw::App& app) noexcept
 			route->Deregister(app.app);
 		} catch (const std::exception& e) {
 			CROW_LOG_ERROR << "Could not de register "
-				       << route->name() << ": "
+				       << route->route() << ": "
 				       << e.what();
 		}
 	}
