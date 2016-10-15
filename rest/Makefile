@@ -1,74 +1,79 @@
-#CXXFLAGS ?= -Wall -Werror -std=gnu++14 -g -Og
+CXXFLAGS ?= -Wall -Werror -std=gnu++14 -g -Og
 CXXFLAGS := $(CXXFLAGS) -MP -MD
-CXXFLAGS += -I src
-CXXFLAGS += -I gsm/Simple-Web-Server
-CXXFLAGS += -I gsm/pugixml/src
-CXXFLAGS += -I gsm/json/src
-CXXFLAGS += -DBOOST_LOG_DYN_LINK
+CXXFLAGS += -fpic
+CXXFLAGS += -I src/core
+CXXFLAGS += -I ../modules/crow/include
+CXXFLAGS += -I ../modules/pugixml/src
 CXXFLAGS += -DPCW_API_VERSION=\"$(PCW_API_VERSION)\"
+CXXFLAGS += -DBOOST_LOG_DYN_LINK
 
 LDFLAGS ?=
 LDFLAGS := $(LDFLAGS)
-LDFLAGS += -l mysqlcppconn
-LDFLAGS += -l ssl
-LDFLAGS += -l lept
-LDFLAGS += -l pthread
-LDFLAGS += -l boost_regex
-LDFLAGS += -l boost_system
-LDFLAGS += -l boost_coroutine
-LDFLAGS += -l boost_filesystem
-LDFLAGS += -l boost_log
-LDFLAGS += -l boost_log_setup
-LDFLAGS += -l boost_thread
-LDFLAGS += -l crypto
+LDFLAGS += -L.
+LDFLAGS += -ldl
+LDFLAGS += -lconfig++
+# LDFLAGS += -l mysqlcppconn
+LDFLAGS += -lssl
+# LDFLAGS += -l lept
+LDFLAGS += -lpthread
+LDFLAGS += -lboost_log
+# LDFLAGS += -lboost_regex
+LDFLAGS += -lboost_system
+# LDFLAGS += -lboost_coroutine
+# LDFLAGS += -lboost_filesystem
+# LDFLAGS += -lboost_log
+# LDFLAGS += -lboost_log_setup
+# LDFLAGS += -lboost_thread
+# LDFLAGS += -lcrypto
 
-VPATH = src/db src/util src/api src/doc gsm/pugixml/src src/ex src 
+#VPATH = src/db src/util src/api src/doc gsm/pugixml/src src/ex src
+VPATH = src src/core
 
-OBJS += api.o
 OBJS += Config.o
-OBJS += DbTableUsers.o
-OBJS += BookDir.o
-OBJS += Books.o
-OBJS += Ex.o
-## OBJS += GetPage.o
-OBJS += User.o
-OBJS += Page.o
-OBJS += Book.o
-OBJS += BookData.o
-OBJS += Line.o
-OBJS += Box.o
-OBJS += Sessions.o
-OBJS += db.o
-OBJS += hash.o
-OBJS += hocr.o
-OBJS += pugixml.o
+OBJS += ApiVersion.o
+OBJS += util.o
 
-MAINS += pcwd.o
-MAINS += pocoweb_create_user.o
-MAINS += pocoweb_insert_book.o
-MAINS += pcw_ex.o
+## OBJS += api.o
+## OBJS += Config.o
+## OBJS += DbTableUsers.o
+## OBJS += BookDir.o
+## OBJS += Books.o
+## OBJS += Ex.o
+## ## OBJS += GetPage.o
+## OBJS += User.o
+## OBJS += Page.o
+## OBJS += Book.o
+## OBJS += BookData.o
+## OBJS += Line.o
+## OBJS += Box.o
+## OBJS += Sessions.o
+## OBJS += db.o
+## OBJS += hash.o
+## OBJS += hocr.o
+## OBJS += pugixml.o
 
-default: pcwd pocoweb_insert_book pocoweb_create_user pcw_ex 
+## MAINS += pcwd.o
+## MAINS += pocoweb_create_user.o
+## MAINS += pocoweb_insert_book.o
+## MAINS += pcw_ex.o
 
-pcwd: pcwd.o libpocoweb.a
+
+default: all
+all: pcwd
+
+pcwd: pcwd.o libpcwcore.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-pocoweb_create_user: pocoweb_create_user.o libpocoweb.a
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
-
-pocoweb_insert_book: pocoweb_insert_book.o libpocoweb.a
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
-
-pcw_ex: pcw_ex.o libpocoweb.a
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
-
-libpocoweb.a: $(OBJS)
+libpcwcore.a: $(OBJS)
 	$(AR) rcs $@ $^
+
+## libpcwcore.so: $(OBJS)
+## 	$(CXX) $(CXXFLAGS) -shared -o $@ $^
 
 .PHONY: clean
 clean:
-	$(RM) *.o *.d libpocoweb.a pcwd pocweb_create_user pocoweb_insert_book pcw_ex
+	$(RM) *.o *.d *.so *.a pcwd
 
-DEPS = $(patsubst %.o,%.d,$(OBJS) $(MAINS))
+DEPS = $(patsubst %.o,%.d,$(OBJS) pcwd.o)
 -include $(DEPS)
 

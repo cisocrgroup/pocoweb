@@ -1,9 +1,13 @@
 #ifndef pcw_Config_hpp__
 #define pcw_Config_hpp__
 
+#include <boost/property_tree/ptree.hpp>
 #include <string>
+#include <map>
 
 namespace pcw {
+	using Ptree = boost::property_tree::ptree;
+
 	struct Config {
 		static Config load(const std::string& filename);
 
@@ -21,6 +25,11 @@ namespace pcw {
 			const std::string file;
 			const int level;
 		} log;
+
+		const struct Plugins {
+			const std::map<std::string, Ptree> configs;
+			const Ptree& operator[](const std::string& p) const noexcept;
+		} plugins;
 	};
 }
 

@@ -5,6 +5,7 @@
 .*
 *.log
 *.mod
+*.so
 rest/pocowebd
 rest/pocoweb_create_user
 rest/pocoweb_insert_book

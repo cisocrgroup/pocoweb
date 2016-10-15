@@ -19,6 +19,7 @@ default: all
 all install clean uninstall:
 	$(MAKE) -C modules $@
 	#$(MAKE) -C misc $@
-	#$(MAKE) -C rest $@ SHELL=$(SHELL) PCW_API_VERSION=$(PCW_API_VERSION)
+	$(MAKE) -C rest $@
+	$(MAKE) -C plugins $@
 	#$(MAKE) -C db $@ SHELL=$(SHELL)
 
