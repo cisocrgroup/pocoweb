@@ -1,8 +1,8 @@
 // #include <boost/log/trivial.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <regex>
+#include <thread>
 #include "Config.hpp"
-
 
 ////////////////////////////////////////////////////////////////////////////////
 static std::map<std::string, pcw::Ptree>
@@ -50,6 +50,8 @@ pcw::Config::load(const std::string& filename)
 	const std::string logfile = detach ?
 		ptree.get<std::string>("log.file") :
 		"/dev/stderr";
+	auto threads = ptree.get<int>("daemon.threads");
+	threads = threads < 1 ? std::thread::hardware_concurrency() : threads;
 
 	return {
 			{
@@ -64,7 +66,7 @@ pcw::Config::load(const std::string& filename)
 				ptree.get<std::string>("daemon.group"),
 				ptree.get<std::string>("daemon.basedir"),
 				ptree.get<int>("daemon.port"),
-				ptree.get<int>("daemon.threads"),
+				threads,
 				ptree.get<int>("daemon.sessions"),
 				detach
 			},
@@ -86,4 +88,34 @@ pcw::Config::Plugins::operator[](const std::string& p) const noexcept
 	static const Ptree nothing;
 	auto i = configs.find(p);
 	return i == end(configs) ? nothing : i->second;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::ostream&
+pcw::operator<<(std::ostream& os, const Config& config)
+{
+	os << "db.user: " << config.db.user << "\n";
+	os << "db.host: " << config.db.host << "\n";
+	os << "db.pass: " << config.db.pass << "\n";
+	os << "db.db: " << config.db.db << "\n";
+
+	os << "daemon.host: " << config.daemon.host << "\n";
+	os << "daemon.user: " << config.daemon.user << "\n";
+	os << "daemon.group: " << config.daemon.group << "\n";
+	os << "daemon.basedir: " << config.daemon.basedir << "\n";
+	os << "daemon.port: " << config.daemon.port << "\n";
+	os << "daemon.threads: " << config.daemon.threads << "\n";
+	os << "daemon.sessions: " << config.daemon.sessions << "\n";
+	os << "daemon.detach: " << config.daemon.detach << "\n";
+
+	os << "log.file: " << config.log.file << "\n";
+	os << "log.level: " << config.log.level;
+
+	for (const auto& p: config.plugins.configs) {
+		for (const auto& q: p.second) {
+			os << "\nplugins." << p.first << "." << q.first << ": ";
+			os << q.second.data();
+		}
+	}
+	return os;
 }

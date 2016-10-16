@@ -56,6 +56,7 @@ get_app(int argc, char** argv)
 	pcw::App app{pcw::Config::load(argv[1]), {}, {}};
 	app.routes.push_back(std::make_unique<pcw::ApiVersion>());
 	plugin(app);
+	CROW_LOG_INFO << "Config:\n" << app.config;
 	return app;
 }
 

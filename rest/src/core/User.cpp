@@ -11,7 +11,7 @@
 #include "User.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::UserPtr 
+pcw::UserPtr
 pcw::User::create(sql::Connection& conn, const std::string& n)
 {
 	static const char *sql = "SELECT name, email, institute, userid, active "
@@ -65,12 +65,12 @@ pcw::User::store(sql::Connection& conn, const std::string& passwd, bool active) 
 	auto ssum = pcw::genhash(salt, passwd);
 	auto hash = salt + '$' + ssum;
 	s->setString(5, hash);
-	s->setBoolean(6, active);	
+	s->setBoolean(6, active);
 	s->executeUpdate();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 pcw::User::authenticate(sql::Connection& conn, const std::string& passwd) const
 {
 	static const char *sql = "SELECT userid FROM users "

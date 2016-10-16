@@ -31,6 +31,7 @@ namespace pcw {
 			const Ptree& operator[](const std::string& p) const noexcept;
 		} plugins;
 	};
+	std::ostream& operator<<(std::ostream& os, const Config& config);
 }
 
 #endif // pcw_Config_hpp__
