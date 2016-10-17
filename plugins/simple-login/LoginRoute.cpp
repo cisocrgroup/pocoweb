@@ -1,0 +1,26 @@
+#include <crow.h>
+#include "LoginRoute.hpp"
+
+using namespace pcw;
+
+#define LOGIN_ROUTE_ROUTE "/login/user/<string>/pass/<string>"
+
+////////////////////////////////////////////////////////////////////////////////
+const char* LoginRoute::route_ = LOGIN_ROUTE_ROUTE;
+
+////////////////////////////////////////////////////////////////////////////////
+const char* LoginRoute::name_ = "LoginRoute";
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+LoginRoute::Register(App& app) 
+{
+	CROW_ROUTE(app, LOGIN_ROUTE_ROUTE)(*this);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+crow::response 
+LoginRoute::operator()(const std::string& user, const std::string& pass) const
+{
+	return crow::response(404);
+}
