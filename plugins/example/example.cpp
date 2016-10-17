@@ -2,14 +2,15 @@
 #include "util.hpp"
 #include "App.hpp"
 
-#define ROUTE "/example/<int>/<int>"
+#define EXAMPLE_ROUTE_ROUTE "/example/<int>/<int>"
 
 ////////////////////////////////////////////////////////////////////////////////
 class ExampleRoute: public pcw::Route {
 public:
 	virtual ~ExampleRoute() noexcept override = default;
 	virtual void Register(App& app) override;
-	virtual const char* route() const noexcept override {return ROUTE;}
+	virtual const char* route() const noexcept override {return EXAMPLE_ROUTE_ROUTE;}
+	virtual const char* name() const noexcept override {return "ExampleRoute";}
 	crow::response operator()(int a, int b) const;
 
 };
@@ -26,7 +27,7 @@ ExampleRoute::operator()(int a, int b) const
 void
 ExampleRoute::Register(App& app)
 {
-	CROW_ROUTE(app, ROUTE)(*this);
+	CROW_ROUTE(app, EXAMPLE_ROUTE_ROUTE)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

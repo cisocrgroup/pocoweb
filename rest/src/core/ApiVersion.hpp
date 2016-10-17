@@ -9,10 +9,12 @@ namespace pcw {
 		virtual ~ApiVersion() noexcept override = default;
 		virtual void Register(App& app) override;
 		virtual const char* route() const noexcept override {return route_;}
+		virtual const char* name() const noexcept override {return name_;}
 		crow::response operator()() const noexcept;
 
 	private:
 		static const char* route_;
+		static const char* name_;
 	};
 }
 

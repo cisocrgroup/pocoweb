@@ -84,7 +84,7 @@ log(const pcw::App& app)
 	for (const auto& route: app.routes) {
 		if (not route)
 			continue;
-		CROW_LOG_INFO << "Route " << route->route();
+		CROW_LOG_INFO << "Route " << route->name() << ": " << route->route();
 	}
 }
 

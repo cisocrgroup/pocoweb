@@ -1,18 +1,19 @@
 #include "crow.h"
 #include "ApiVersion.hpp"
 
-#define ROUTE "/api-version"
+#define API_VERSION_ROUTE "/api-version"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* ApiVersion::route_ = ROUTE;
+const char* ApiVersion::route_ = API_VERSION_ROUTE;
+const char* ApiVersion::name_ = "ApiVersion";
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 ApiVersion::Register(App& app)
 {
-	CROW_ROUTE(app, ROUTE)(*this);
+	CROW_ROUTE(app, API_VERSION_ROUTE)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
