@@ -11,7 +11,6 @@ LDFLAGS ?=
 LDFLAGS := $(LDFLAGS)
 LDFLAGS += -L.
 LDFLAGS += -ldl
-LDFLAGS += -lconfig++
 # LDFLAGS += -lmysqlcppconn
 LDFLAGS += -lssl
 # LDFLAGS += -l lept
