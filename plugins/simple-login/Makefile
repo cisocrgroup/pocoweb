@@ -9,6 +9,7 @@ OBJS += CreateUser.o
 OBJS += UpdateUser.o
 OBJS += DeleteUser.o
 OBJS += Login.o
+OBJS += LoggedIn.o
 
 simple-login.so: $(OBJS) ../../rest/libpcwcore.a
 	$(CXX) $(CXXFLAGS) -shared -o $@ $^ $(LDFLAGS) 

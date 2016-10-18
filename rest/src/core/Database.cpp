@@ -52,14 +52,13 @@ Database::insert_user(const std::string& name, const std::string& pass) const
 UserPtr 
 Database::authenticate(const std::string& name, const std::string& pass) const
 {
-
 	static const char *sql = "SELECT name,email,institute,userid "
 				 "FROM users "
-				 "WHERE name = ? and SHA2(?,?) = passwd"
+				 "WHERE name = ? and passwd = SHA2(?,?)"
 				 ";";
-	
 	auto conn = connection();
 	assert(conn);
+	
 	PreparedStatementPtr s(conn->prepareStatement(sql));
 	assert(s);
 	s->setString(1, name);

@@ -10,7 +10,7 @@ create table users (
        name varchar(50) not null unique,
        email varchar(50) not null,
        institute varchar(50) not null,
-       passwd varchar(50) not null,
+       passwd varchar(100) not null,
        active boolean not null default true
 );
 

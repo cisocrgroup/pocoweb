@@ -9,6 +9,7 @@
 #include "CreateUser.hpp"
 #include "UpdateUser.hpp"
 #include "DeleteUser.hpp"
+#include "LoggedIn.hpp"
 #include "User.hpp"
 
 using namespace pcw;
@@ -48,11 +49,13 @@ do_plugin(const std::string& p, App& app) noexcept
 		auto create_user = std::make_unique<CreateUser>();
 		auto update_user = std::make_unique<UpdateUser>();
 		auto delete_user = std::make_unique<DeleteUser>();
+		auto logged_in = std::make_unique<LoggedIn>();
 
 		app.Register(std::move(login));
 		app.Register(std::move(create_user));
 		app.Register(std::move(update_user));
 		app.Register(std::move(delete_user));
+		app.Register(std::move(logged_in));
 		
 		return nullptr;
 	} catch (const std::exception& e) {

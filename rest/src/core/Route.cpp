@@ -7,14 +7,12 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-static const std::string COOKIE{"Cookie"};
-
-////////////////////////////////////////////////////////////////////////////////
 std::string
-get_session_id(const crow::request& request) noexcept
+pcw::get_session_id(const crow::request& request) noexcept
 {
+	static const std::string Cookie{"Cookie"};
 	static const std::regex sid{R"(pcwsid=([0-9a-zA-Z]+);?)"};
-	auto range = request.headers.equal_range(COOKIE);
+	auto range = request.headers.equal_range(Cookie);
 	std::smatch m;
 	for (auto i = range.first; i != range.second; ++i) {
 		if (std::regex_match(i->second, m, sid))
@@ -25,9 +23,10 @@ get_session_id(const crow::request& request) noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-set_session_id(crow::response& response, const std::string& sid) noexcept
+pcw::set_session_id(crow::response& response, const std::string& sid) noexcept
 {
-	response.add_header(COOKIE, "pcwsid=" + sid);
+	static const std::string SetCookie{"Set-Cookie"};
+	response.add_header(SetCookie, "pcwsid=" + sid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
