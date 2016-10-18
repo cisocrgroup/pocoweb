@@ -26,16 +26,18 @@ CreateUser::operator()(
 	const std::string& name, 
 	const std::string& pass
 ) const {
-
+	auto db = database(request);
+	if (not db)
+		return forbidden();
+	
+	// try to insert new (unique) user
 	try {
-		auto db = database(request);
-		if (not db)
-			return forbidden();
 		auto user = db.get().insert_user(name, pass);
 		if (user)
 			return created();
 	} catch (const std::exception& e) {
 		CROW_LOG_ERROR << "(CreateUser) Error: " << e.what();
 	}
+	// no user could be created (invalid request (non unique username)
 	return bad_request();
 }
