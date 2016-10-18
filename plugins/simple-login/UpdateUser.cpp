@@ -51,6 +51,6 @@ UpdateUser::operator()(
 	if (not db) // this should not be possible
 		return internal_server_error();
 
-	db.get().update(*session->user);
+	db.get().update_user(*session->user);
 	return ok();
 }

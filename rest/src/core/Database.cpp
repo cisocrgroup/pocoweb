@@ -80,7 +80,7 @@ Database::authenticate(const std::string& name, const std::string& pass) const
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-Database::update(const User& user) const
+Database::update_user(const User& user) const
 {
 	// just update email and institute; not name or userid
 	static const char *sql = "UPDATE users "
@@ -95,6 +95,23 @@ Database::update(const User& user) const
 	s->setString(1, user.institute);
 	s->setString(2, user.email);
 	s->setInt(3, user.id);
+	s->execute();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Database::delete_user(const std::string& name) const
+{
+	// just update email and institute; not name or userid
+	static const char *sql = "UPDATE FROM users "
+				 "WHERE name = ?"
+				 ";";
+	auto conn = connection();
+	assert(conn);
+	conn->setAutoCommit(true);
+	PreparedStatementPtr s(conn->prepareStatement(sql));
+	assert(s);
+	s->setString(1, name);
 	s->execute();
 }
 
