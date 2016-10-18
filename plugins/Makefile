@@ -4,3 +4,4 @@ export MAKEFLAGS
 
 all clean:
 	$(MAKE) -C example $@
+	$(MAKE) -C simple-login $@

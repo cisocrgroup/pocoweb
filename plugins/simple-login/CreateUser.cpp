@@ -1,0 +1,26 @@
+#include <crow.h>
+#include "CreateUser.hpp"
+
+using namespace pcw;
+
+#define CREATE_USER_ROUTE "/create-user/user<string>/email/<string>"
+
+////////////////////////////////////////////////////////////////////////////////
+const char* CreateUser::route_ = CREATE_USER_ROUTE;
+
+////////////////////////////////////////////////////////////////////////////////
+const char* CreateUser::name_ = "CreateUser";
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+CreateUser::Register(App& app) 
+{
+	CROW_ROUTE(app, CREATE_USER_ROUTE)(*this);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+crow::response 
+CreateUser::operator()(const std::string& user, const std::string& email) const
+{
+	return crow::response(404);
+}

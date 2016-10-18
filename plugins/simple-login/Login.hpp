@@ -1,12 +1,12 @@
-#ifndef pcw_LoginRoute_hpp__
-#define pcw_LoginRoute_hpp__
+#ifndef pcw_Login_hpp__
+#define pcw_Login_hpp__
 
 #include "Route.hpp"
 
 namespace pcw {
-	class LoginRoute: public Route {
+	class Login: public Route {
 	public:
-		virtual ~LoginRoute() noexcept override = default;
+		virtual ~Login() noexcept override = default;
 		virtual const char *route() const noexcept override {return route_;}
 		virtual const char *name() const noexcept override {return name_;}
 		virtual void Register(App&) override;
@@ -18,5 +18,5 @@ namespace pcw {
 	};
 }
 
-#endif // pcw_LoginRoute_hpp__
+#endif // pcw_Login_hpp__
 

@@ -1,26 +1,26 @@
 #include <crow.h>
-#include "LoginRoute.hpp"
+#include "UpdateUser.hpp"
 
 using namespace pcw;
 
-#define LOGIN_ROUTE_ROUTE "/login/user/<string>/pass/<string>"
+#define UPDATE_USER_ROUTE "/update-user/<string>/<string>"
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* LoginRoute::route_ = LOGIN_ROUTE_ROUTE;
+const char* UpdateUser::route_ = UPDATE_USER_ROUTE;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* LoginRoute::name_ = "LoginRoute";
+const char* UpdateUser::name_ = "UpdateUser";
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-LoginRoute::Register(App& app) 
+UpdateUser::Register(App& app) 
 {
-	CROW_ROUTE(app, LOGIN_ROUTE_ROUTE)(*this);
+	CROW_ROUTE(app, UPDATE_USER_ROUTE)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 crow::response 
-LoginRoute::operator()(const std::string& user, const std::string& pass) const
+UpdateUser::operator()(const std::string& what, const std::string& val) const
 {
 	return crow::response(404);
 }
