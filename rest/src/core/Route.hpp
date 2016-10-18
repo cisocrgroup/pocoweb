@@ -21,10 +21,14 @@ namespace pcw {
 	class Route;
 	using RoutePtr = std::unique_ptr<Route>;
 
+	std::string get_session_id(const crow::request& request) noexcept;
+	void set_session_id(crow::response& response, const std::string& sid) noexcept;
+
 	class Route {
 	public:
 		static crow::response ok() noexcept {return crow::response(200);}
-		static crow::response accepted() noexcept {return crow::response(201);}
+		static crow::response created() noexcept {return crow::response(201);}
+		static crow::response accepted() noexcept {return crow::response(202);}
 		static crow::response bad_request() noexcept {return crow::response(400);}
 		static crow::response forbidden() noexcept {return crow::response(403);}
 		static crow::response not_found() noexcept {return crow::response(404);}
@@ -38,12 +42,12 @@ namespace pcw {
 		virtual const char* name() const noexcept = 0;
 		virtual void Deregister(App&) {}
 		
-		SessionPtr session() const noexcept;
+		SessionPtr session(const crow::request& request) const noexcept;
 		Sessions& sessions() const noexcept {return *sessions_;}
 		void set_sessions(SessionsPtr s) noexcept {sessions_ = std::move(s);}
 		const Config& config() const noexcept {return *config_;}
 		void set_config(ConfigPtr c) noexcept {config_ = std::move(c);}
-		boost::optional<Database> database() const noexcept;
+		boost::optional<Database> database(const crow::request& request) const noexcept;
 		boost::optional<Database> database(SessionPtr session) const noexcept;
 	
 	private:

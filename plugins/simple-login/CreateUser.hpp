@@ -10,7 +10,11 @@ namespace pcw {
 		virtual const char *route() const noexcept override {return route_;}
 		virtual const char *name() const noexcept override {return name_;}
 		virtual void Register(App&) override;
-		crow::response operator()(const std::string& user, const std::string& email) const;
+		crow::response operator()(
+			const crow::request& request, 
+			const std::string& name, 
+			const std::string& pass
+		) const;
 
 	private:
 		static const char* route_;
