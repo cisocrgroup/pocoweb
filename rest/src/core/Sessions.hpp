@@ -27,7 +27,7 @@ namespace pcw {
 			, mutex()
 		{}
 		const ConstUserPtr user;
-		const ConnectionPtr connection;
+		ConnectionPtr connection;
 		const std::string sid;
 
 		BookPtr current_book;

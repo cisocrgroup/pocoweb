@@ -29,6 +29,7 @@ LDFLAGS += -lcrypto
 VPATH = src src/core
 
 OBJS += Config.o
+OBJS += Database.o
 OBJS += App.o
 OBJS += ApiVersion.o
 OBJS += User.o
