@@ -20,7 +20,7 @@ public:
 crow::response
 ExampleRoute::operator()(int a, int b) const
 {
-	return crow::response(200);
+	return not_implemented();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
