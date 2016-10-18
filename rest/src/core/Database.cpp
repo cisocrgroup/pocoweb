@@ -79,6 +79,26 @@ Database::authenticate(const std::string& name, const std::string& pass) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void 
+Database::update(const User& user) const
+{
+	// just update email and institute; not name or userid
+	static const char *sql = "UPDATE users "
+				 "SET instute=?,email=?SELECT "
+				 "WHERE userid = ?"
+				 ";";
+	auto conn = connection();
+	assert(conn);
+	conn->setAutoCommit(true);
+	PreparedStatementPtr s(conn->prepareStatement(sql));
+	assert(s);
+	s->setString(1, user.institute);
+	s->setString(2, user.email);
+	s->setInt(3, user.id);
+	s->execute();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 sql::Connection* 
 Database::connection() const
 {

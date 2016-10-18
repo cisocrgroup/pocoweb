@@ -24,7 +24,8 @@ namespace pcw {
 		bool authenticate(sql::Connection& conn, const std::string& passwd) const;
 		
 
-		const std::string name, email, institute;
+		const std::string name;
+		std::string email, institute;
 		const int id;
 	};
 	std::ostream& operator<<(std::ostream& os, const User& user);

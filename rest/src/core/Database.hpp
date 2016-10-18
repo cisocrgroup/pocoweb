@@ -21,6 +21,7 @@ namespace pcw {
 		
 		UserPtr insert_user(const std::string& name, const std::string& pass) const;
 		UserPtr authenticate(const std::string& name, const std::string& pass) const;
+		void update(const User& user) const;
 
 	private:
 		sql::Connection* connection() const;

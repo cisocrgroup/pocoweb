@@ -13,7 +13,7 @@ namespace pcw {
 	class Config;
 	class User;
 	class Book;
-	using ConstUserPtr = std::shared_ptr<const User>;
+	using UserPtr = std::shared_ptr<User>;
 	using ConnectionPtr = std::unique_ptr<sql::Connection>;
 	using BookPtr = std::shared_ptr<Book>;
 	class Sessions;
@@ -27,7 +27,7 @@ namespace pcw {
 			, mutex()
 		{}
 		const std::string sid;
-		ConstUserPtr user;
+		UserPtr user;
 		ConnectionPtr connection;
 		BookPtr current_book;
 		std::mutex mutex;
