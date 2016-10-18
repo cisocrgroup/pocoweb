@@ -2,6 +2,7 @@
 #define pcw_Plugin_hpp__
 
 #include <dlfcn.h>
+#include <stdexcept>
 #include "Route.hpp"
 
 namespace pcw {
@@ -16,12 +17,30 @@ namespace pcw {
 		{
 			dl_ = dlopen(lib.data(), RTLD_LAZY);
 			if (not dl_)
-				throw std::runtime_error(dlerror());
+				error(dlerror()); // noreturn
 		}
+
 		~Plugin() noexcept
 		{
-			dlclose(dl_);
+			try {
+				close();
+			} catch (const std::exception& e) {
+				std::cerr << "[error] Could not close plugin: " 
+					  << e.what() << "\n";
+			}
 		}
+
+		Plugin(const Plugin&) = delete;
+		Plugin& operator=(const Plugin&) = delete;
+		Plugin(Plugin&& o): dl_(o.dl_) {o.dl_ = nullptr;}
+		Plugin& operator=(Plugin&& o)
+		{
+			close();
+			dl_ = o.dl_;
+			o.dl_ = nullptr;
+			return *this;
+		}
+
 		void operator()(const std::string& p, App& app) const
 		{
 			dlerror(); // clear all errors
@@ -33,7 +52,23 @@ namespace pcw {
 			if (error)
 				throw std::runtime_error(error);
 		}
+
 	private:
+		void close() const 
+		{
+			if (dl_) { // it is an error to close a null handle
+				if (dlclose(dl_))
+					error(dlerror());
+			}
+		}
+		[[noreturn]] void error(const char* e) const
+		{
+			if (e)
+				throw std::runtime_error(e);
+			else
+				throw std::runtime_error("??");
+		}
+
 		void* dl_;
 	};
 }
