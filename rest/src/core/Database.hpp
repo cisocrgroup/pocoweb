@@ -5,6 +5,7 @@
 
 namespace sql {
 	class Connection;
+	class ResultSet;
 }
 
 namespace pcw {
@@ -14,6 +15,7 @@ namespace pcw {
 	using ConfigPtr = std::shared_ptr<Config>;
 	class User;
 	using UserPtr = std::shared_ptr<User>;
+	using ResultSetPtr = std::unique_ptr<sql::ResultSet>;
 
 	class Database {
 	public:
@@ -21,10 +23,12 @@ namespace pcw {
 		
 		UserPtr insert_user(const std::string& name, const std::string& pass) const;
 		UserPtr authenticate(const std::string& name, const std::string& pass) const;
+		UserPtr select_user(const std::string& name) const;
 		void update_user(const User& user) const;
 		void delete_user(const std::string& name) const;
 
 	private:
+		static UserPtr get_user_from_result_set(ResultSetPtr res);
 		sql::Connection* connection() const;
 
 		const SessionPtr session_;

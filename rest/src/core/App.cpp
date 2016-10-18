@@ -35,7 +35,10 @@ App::run()
 {
 	assert(config_);
 	CROW_LOG_INFO << "(App) Starting server";
-	app_.port(config_->daemon.port).concurrency(config_->daemon.threads).run();
+	app_.port(config_->daemon.port)
+		.concurrency(config_->daemon.threads)
+		.bindaddr(config_->daemon.host)
+		.run();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -53,29 +53,35 @@ UserPtr
 Database::authenticate(const std::string& name, const std::string& pass) const
 {
 
-	static const char *sql = "SELECT name,email,instutute,userid "
+	static const char *sql = "SELECT name,email,institute,userid "
 				 "FROM users "
 				 "WHERE name = ? and SHA2(?,?) = passwd"
 				 ";";
 	
 	auto conn = connection();
 	assert(conn);
-	conn->setAutoCommit(true);
 	PreparedStatementPtr s(conn->prepareStatement(sql));
 	assert(s);
 	s->setString(1, name);
 	s->setString(2, pass);
 	s->setInt(3, SHA2_HASH_SIZE);
+	return get_user_from_result_set(ResultSetPtr{s->executeQuery()});
+}
 
-	ResultSetPtr res{s->executeQuery()};
-	assert(res);
-	return res->next() ?
-		std::make_shared<User>(
-			res->getString(1), 
-			res->getString(2), 
-			res->getString(3), 
-			res->getInt(4)
-		) : nullptr;
+////////////////////////////////////////////////////////////////////////////////
+UserPtr 
+Database::select_user(const std::string& name) const
+{
+	static const char *sql = "SELECT name,email,institute,userid "
+				 "FROM users "
+				 "WHERE name = ?"
+				 ";";
+	auto conn = connection();
+	assert(conn);
+	PreparedStatementPtr s(conn->prepareStatement(sql));
+	assert(s);
+	s->setString(1, name);
+	return get_user_from_result_set(ResultSetPtr{s->executeQuery()});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -84,8 +90,8 @@ Database::update_user(const User& user) const
 {
 	// just update email and institute; not name or userid
 	static const char *sql = "UPDATE users "
-				 "SET instute=?,email=?SELECT "
-				 "WHERE userid = ?"
+				 "SET institute=?,email=? "
+				 "WHERE userid = ? "
 				 ";";
 	auto conn = connection();
 	assert(conn);
@@ -102,7 +108,6 @@ Database::update_user(const User& user) const
 void 
 Database::delete_user(const std::string& name) const
 {
-	// just update email and institute; not name or userid
 	static const char *sql = "UPDATE FROM users "
 				 "WHERE name = ?"
 				 ";";
@@ -113,6 +118,20 @@ Database::delete_user(const std::string& name) const
 	assert(s);
 	s->setString(1, name);
 	s->execute();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+UserPtr 
+Database::get_user_from_result_set(ResultSetPtr res) 
+{
+	if (not res or not res->next())
+		return nullptr;
+	return std::make_shared<User>(
+		res->getString("name"),
+		res->getString("email"),
+		res->getString("institute"),
+		res->getInt("userid")
+	);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -25,6 +25,7 @@ namespace pcw {
 		void register_plugins();
 		const Routes& routes() const noexcept {return routes_;}
 		const Config& config() const noexcept {return *config_;}
+		const ConfigPtr& config_ptr() const noexcept {return config_;}
 		void run();
 
 	private:
