@@ -9,10 +9,6 @@
 
 static int run(int argc, char** argv);
 static pcw::App get_app(int argc, char** argv);
-static void plugin(pcw::App& app);
-static void log(const pcw::App& app);
-static void reg(pcw::App& app) noexcept;
-static void dereg(pcw::App& app) noexcept;
 
 ////////////////////////////////////////////////////////////////////////////////
 int
@@ -21,7 +17,7 @@ main(int argc, char** argv)
 	try {
 		return run(argc, argv);
 	} catch (const std::exception& e) {
-		std::cerr << "[error] " << e.what() << "\n";
+		CROW_LOG_ERROR << e.what();
 	}
 	return 1;
 }
@@ -31,19 +27,10 @@ int
 run(int argc, char** argv)
 {
 	auto app = get_app(argc, argv);
-	log(app);
-	reg(app);
-	int res = 0;
-	try {
-		app.app.port(app.config.daemon.port).
-			concurrency(app.config.daemon.threads).
-			run();
-	} catch (const std::exception& e) {
-		CROW_LOG_ERROR << e.what();
-		res = 1;
-	}
-	dereg(app);
-	return res;
+	app.register_plugins();
+	app.Register(std::make_unique<pcw::ApiVersion>());
+	app.run();
+	return 1;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -53,73 +40,9 @@ get_app(int argc, char** argv)
 	if (argc != 2)
 		throw std::runtime_error("Usage: " + std::string(argv[0]) + " <config>");
 
-	pcw::App app{pcw::Config::load(argv[1]), {}, {}};
-	app.routes.push_back(std::make_unique<pcw::ApiVersion>());
-	plugin(app);
-	CROW_LOG_INFO << "Config:\n" << app.config;
+	pcw::App app{argv[1]};
+	CROW_LOG_INFO << "Config:\n" << app.config();
 	return app;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void
-plugin(pcw::App& app)
-{
-	for (const auto& p: app.config.plugins.configs) {
-		try {
-			auto path = p.second.get<std::string>("path");
-			CROW_LOG_INFO << "Registering plugin " << p.first << ": " << path;
-			pcw::Plugin plugin(path);
-			plugin(p.first, app);
-		} catch (const std::exception& e) {
-			// exception includes path of the plugin in its error message
-			CROW_LOG_ERROR << "Unable to register plugin: " << e.what();
-		}
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void
-log(const pcw::App& app)
-{
-	for (const auto& route: app.routes) {
-		if (not route)
-			continue;
-		CROW_LOG_INFO << "Route " << route->name() << ": " << route->route();
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void
-reg(pcw::App& app) noexcept
-{
-	for (const auto& route: app.routes) {
-		if (not route)
-			continue;
-		try {
-			route->Register(app.app);
-		} catch (const std::exception& e) {
-			CROW_LOG_ERROR << "Could not register "
-				       << route->route() << ": "
-				       << e.what();
-		}
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void
-dereg(pcw::App& app) noexcept
-{
-	for (const auto& route: app.routes) {
-		if (not route)
-			continue;
-		try {
-			route->Deregister(app.app);
-		} catch (const std::exception& e) {
-			CROW_LOG_ERROR << "Could not de register "
-				       << route->route() << ": "
-				       << e.what();
-		}
-	}
 }
 
 // #include <grp.h>

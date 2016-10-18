@@ -1,4 +1,5 @@
-CXXFLAGS ?= -Wall -Werror -std=gnu++14 -g -Og
+CXXFLAGS ?= -Wall -Werror -std=gnu++14 -g -Og 
+CXXFLAGS := $(CXXFLAGS) -MD -MP
 SHELL ?= /bin/bash
 
 PCW_API_VERSION_MAJOR = 0

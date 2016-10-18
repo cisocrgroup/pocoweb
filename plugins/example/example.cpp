@@ -1,6 +1,7 @@
 #include "crow.h"
 #include "util.hpp"
 #include "App.hpp"
+#include "Config.hpp"
 
 #define EXAMPLE_ROUTE_ROUTE "/example/<int>/<int>"
 
@@ -19,7 +20,6 @@ public:
 crow::response
 ExampleRoute::operator()(int a, int b) const
 {
-	CROW_LOG_INFO << route() << " got a = " << a << ", b = " << b;
 	return crow::response(200);
 }
 
@@ -36,8 +36,8 @@ do_plugin(const std::string& p, pcw::App& app) noexcept
 {
 	try {
 		CROW_LOG_INFO << "(" << p << ") setting: "
-			      << app.config.plugins[p].get<std::string>("setting");
-		app.routes.push_back(std::make_unique<ExampleRoute>());
+			      << app.config().plugins[p].get<std::string>("setting");
+		app.Register(std::make_unique<ExampleRoute>());
 		return nullptr;
 	} catch (const std::exception& e) {
 		return pcw::what(e);

@@ -2,7 +2,6 @@
 #define pcw_User_hpp__
 
 #include <memory>
-#include "json.hpp"
 
 namespace sql {
 	class ResultSet;
@@ -10,7 +9,6 @@ namespace sql {
 }
 
 namespace pcw {
-	class Json;
 	class User;
 	using UserPtr = std::shared_ptr<User>;
 
@@ -24,7 +22,6 @@ namespace pcw {
 		static UserPtr create(const sql::ResultSet& res);
 		void store(sql::Connection& conn, const std::string& passwd, bool active) const;
 		bool authenticate(sql::Connection& conn, const std::string& passwd) const;
-		nlohmann::json json() const;
 		
 
 		const std::string name, email, institute;

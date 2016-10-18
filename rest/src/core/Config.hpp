@@ -3,7 +3,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 #include <string>
-#include <map>
+#include <unordered_map>
 
 namespace pcw {
 	using Ptree = boost::property_tree::ptree;
@@ -27,7 +27,7 @@ namespace pcw {
 		} log;
 
 		const struct Plugins {
-			const std::map<std::string, Ptree> configs;
+			const std::unordered_map<std::string, Ptree> configs;
 			const Ptree& operator[](const std::string& p) const noexcept;
 		} plugins;
 	};

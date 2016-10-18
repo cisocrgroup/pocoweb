@@ -5,11 +5,11 @@
 #include "Config.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
-static std::map<std::string, pcw::Ptree>
+static std::unordered_map<std::string, pcw::Ptree>
 get_plugins(const pcw::Ptree& ptree)
 {
 	static const std::regex plugin{R"(^plugin[-_](.*)$)", std::regex_constants::icase};
-	std::map<std::string, pcw::Ptree> plugins;
+	std::unordered_map<std::string, pcw::Ptree> plugins;
 	std::smatch m;
 	for (const auto& config: ptree) {
 		if (std::regex_search(config.first, m, plugin)) {

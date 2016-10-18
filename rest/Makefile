@@ -1,4 +1,4 @@
-CXXFLAGS ?= -Wall -Werror -std=gnu++14 -g -Og
+CXXFLAGS ?= -Wall -Werror -std=gnu++14 -g
 CXXFLAGS := $(CXXFLAGS) -MP -MD
 CXXFLAGS += -fpic
 CXXFLAGS += -I src/core
@@ -23,15 +23,18 @@ LDFLAGS += -lboost_system
 # LDFLAGS += -lboost_log
 # LDFLAGS += -lboost_log_setup
 # LDFLAGS += -lboost_thread
-# LDFLAGS += -lcrypto
+LDFLAGS += -lcrypto
 
 #VPATH = src/db src/util src/api src/doc gsm/pugixml/src src/ex src
 VPATH = src src/core
 
 OBJS += Config.o
+OBJS += App.o
 OBJS += ApiVersion.o
+OBJS += User.o
+OBJS += Sessions.o
 OBJS += util.o
-## OBJS += User.o
+OBJS += db.o
 
 ## OBJS += api.o
 ## OBJS += Config.o

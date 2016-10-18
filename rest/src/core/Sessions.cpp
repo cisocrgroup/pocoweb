@@ -5,8 +5,7 @@
 #include <memory>
 #include <mutex>
 #include <vector>
-#include <json.hpp>
-#include "util/hash.hpp"
+#include "util.hpp"
 #include "Config.hpp"
 #include "User.hpp"
 #include "Sessions.hpp"
