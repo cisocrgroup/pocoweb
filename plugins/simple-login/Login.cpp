@@ -1,4 +1,7 @@
+#include <cppconn/connection.h>
 #include <crow.h>
+#include "Database.hpp"
+#include "Sessions.hpp"
 #include "Login.hpp"
 
 using namespace pcw;
@@ -20,7 +23,17 @@ Login::Register(App& app)
 
 ////////////////////////////////////////////////////////////////////////////////
 crow::response 
-Login::operator()(const std::string& user, const std::string& pass) const
+Login::operator()(const std::string& name, const std::string& pass) const
 {
-	return crow::response(404);
+	auto session = sessions().new_session();
+	if (not session)
+		return internal_server_error();
+	auto db = database(session);
+	if (not db)
+		return internal_server_error();
+	auto user = db.get().authenticate(name, pass);	
+	if (not user)
+		return forbidden();
+	session->user = user;
+	return ok();
 }

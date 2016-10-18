@@ -22,5 +22,5 @@ UpdateUser::Register(App& app)
 crow::response 
 UpdateUser::operator()(const std::string& what, const std::string& val) const
 {
-	return crow::response(404);
+	return not_implemented();
 }

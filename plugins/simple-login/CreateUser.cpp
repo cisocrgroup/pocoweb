@@ -22,5 +22,5 @@ CreateUser::Register(App& app)
 crow::response 
 CreateUser::operator()(const std::string& user, const std::string& email) const
 {
-	return crow::response(404);
+	return not_implemented();
 }

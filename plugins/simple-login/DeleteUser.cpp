@@ -22,5 +22,5 @@ DeleteUser::Register(App& app)
 crow::response 
 DeleteUser::operator()(const std::string& user) const
 {
-	return crow::response(404);
+	return not_implemented();
 }

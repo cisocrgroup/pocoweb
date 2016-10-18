@@ -21,16 +21,12 @@ pcw::Sessions::Sessions(const Config& config)
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::SessionPtr
-pcw::Sessions::new_session(const User& user, ConnectionPtr connection)
+pcw::Sessions::new_session()
 {
 	SessionPtr session = nullptr;
 	while (not session) {
 		auto sid = gensessionid(16);
-		session = std::make_shared<Session>(
-			user.shared_from_this(),
-			std::move(connection),
-			std::move(sid)
-		);
+		session = std::make_shared<Session>(std::move(sid));
 		session = insert(session);
 	}
 	return session;

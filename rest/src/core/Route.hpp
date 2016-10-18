@@ -4,10 +4,10 @@
 #include <memory>
 #include <boost/optional.hpp>
 #include <vector>
+#include <crow/http_response.h>
 
 namespace crow {
 	template<typename... Middleware> class Crow;
-	struct response;
 }
 
 namespace pcw {
@@ -23,6 +23,14 @@ namespace pcw {
 
 	class Route {
 	public:
+		static crow::response ok() noexcept {return crow::response(200);}
+		static crow::response accepted() noexcept {return crow::response(201);}
+		static crow::response bad_request() noexcept {return crow::response(400);}
+		static crow::response forbidden() noexcept {return crow::response(403);}
+		static crow::response not_found() noexcept {return crow::response(404);}
+		static crow::response internal_server_error() noexcept {return crow::response(500);}
+		static crow::response not_implemented() noexcept {return crow::response(501);}
+
 		using App = crow::Crow<>;
 		virtual ~Route() noexcept = default;
 		virtual void Register(App&) = 0;
@@ -31,12 +39,12 @@ namespace pcw {
 		virtual void Deregister(App&) {}
 		
 		SessionPtr session() const noexcept;
-		const Sessions& sessions() const noexcept {return *sessions_;}
-		Sessions& sessions() noexcept {return *sessions_;}
+		Sessions& sessions() const noexcept {return *sessions_;}
 		void set_sessions(SessionsPtr s) noexcept {sessions_ = std::move(s);}
 		const Config& config() const noexcept {return *config_;}
 		void set_config(ConfigPtr c) noexcept {config_ = std::move(c);}
 		boost::optional<Database> database() const noexcept;
+		boost::optional<Database> database(SessionPtr session) const noexcept;
 	
 	private:
 		SessionsPtr sessions_;	

@@ -18,7 +18,6 @@ Database::Database(SessionPtr session, ConfigPtr config)
 {
 	assert(session_);
 	assert(config_);
-	assert(session_->user);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

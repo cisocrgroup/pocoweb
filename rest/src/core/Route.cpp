@@ -15,6 +15,13 @@ boost::optional<Database>
 Route::database() const noexcept
 {
 	assert(config_);
-	auto s = session();
-	return s ? Database(s, config_) : boost::optional<Database>{};
+	return database(session());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+boost::optional<Database> 
+Route::database(SessionPtr session) const noexcept
+{
+	assert(config_);
+	return session ? Database(session, config_) : boost::optional<Database>{};
 }
