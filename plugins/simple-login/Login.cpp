@@ -35,5 +35,7 @@ Login::operator()(const std::string& name, const std::string& pass) const
 	if (not user)
 		return forbidden();
 	session->user = user;
-	return ok();
+	auto response = ok();
+	set_session_id(response, session->sid);
+	return response;
 }

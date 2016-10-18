@@ -24,10 +24,10 @@ get_session_id(const crow::request& request) noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 set_session_id(crow::response& response, const std::string& sid) noexcept
 {
-	response.add_header(COOKIE, sid);
+	response.add_header(COOKIE, "pcwsid=" + sid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
