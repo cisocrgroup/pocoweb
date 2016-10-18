@@ -2,6 +2,7 @@
 #define pcw_Route_hpp__
 
 #include <memory>
+#include <boost/optional.hpp>
 #include <vector>
 
 namespace crow {
@@ -35,6 +36,7 @@ namespace pcw {
 		void set_sessions(SessionsPtr s) noexcept {sessions_ = std::move(s);}
 		const Config& config() const noexcept {return *config_;}
 		void set_config(ConfigPtr c) noexcept {config_ = std::move(c);}
+		boost::optional<Database> database() const noexcept;
 	
 	private:
 		SessionsPtr sessions_;	
