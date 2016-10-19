@@ -41,7 +41,11 @@ echo "/create/user/test?" 1>&2
 test/curl.sh $cookies 201 [$host]:$port/create/user/test/pass/test123
 echo "/login/user/test?" 1>&2
 test/curl.sh $cookies 200 [$host]:$port/login/user/test/pass/test123
-echo "logged-in?" 1>&2
+echo "/logged-in?" 1>&2
 test/curl.sh $cookies 200 [$host]:$port/logged-in
+echo "/update/user/test/set/email?" 1>&2
+test/curl.sh $cookies 200 [$host]:$port/update/user/test/set/email/foo@bar
+echo "/update/user/test/set/institute?" 1>&2
+test/curl.sh $cookies 200 [$host]:$port/update/user/test/set/institute/test
 echo "delete/user/test?" 1>&2
 test/curl.sh $cookies 200 [$host]:$port/delete/user/test
