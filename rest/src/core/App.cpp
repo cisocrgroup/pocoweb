@@ -1,6 +1,7 @@
 #include <crow.h>
 #include <cppconn/connection.h>
 #include "db.hpp"
+#include "Cache.hpp"
 #include "Config.hpp"
 #include "Sessions.hpp"
 #include "App.hpp"
@@ -12,6 +13,7 @@ App::App(const char *config)
 	: routes_()
 	, plugins_()
 	, app_(std::make_unique<pcw::Route::App>())
+	, user_cache_(std::make_shared<UserCache>(100))
 	, config_(std::make_shared<Config>(Config::load(config)))
 	, sessions_(std::make_shared<Sessions>(*config_))
 {
@@ -61,8 +63,10 @@ App::Register(RoutePtr route)
 		try {
 			assert(sessions_);
 			assert(config_);
+			assert(user_cache_);
 			route->set_sessions(sessions_);
 			route->set_config(config_);
+			route->set_user_cache(user_cache_);
 			route->Register(*app_);
 			routes_.push_back(std::move(route));
 			CROW_LOG_INFO << "(App) Registered route " << routes_.back()->name() 
