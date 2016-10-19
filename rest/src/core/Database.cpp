@@ -13,8 +13,9 @@ static const int SHA2_HASH_SIZE = 256;
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-Database::Database(SessionPtr session, ConfigPtr config)
+Database::Database(SessionPtr session, ConfigPtr config, UserCachePtr uc)
 	: scope_guard_()
+	, user_cache_(std::move(uc))
 	, session_(std::move(session))
 	, config_(std::move(config))
 {

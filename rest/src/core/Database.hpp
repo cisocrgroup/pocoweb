@@ -3,6 +3,7 @@
 
 #include <boost/optional.hpp>
 #include <memory>
+#include "CacheFwd.hpp"
 #include "ScopeGuard.hpp"
 
 namespace sql {
@@ -21,7 +22,7 @@ namespace pcw {
 
 	class Database {
 	public:
-		Database(SessionPtr session, ConfigPtr config);
+		Database(SessionPtr session, ConfigPtr config, UserCachePtr uc);
 		
 		void set_autocommit(bool ac = true);
 		void commit();
@@ -37,6 +38,7 @@ namespace pcw {
 		sql::Connection* connection() const;
 
 		boost::optional<ScopeGuard> scope_guard_;
+		const UserCachePtr user_cache_;
 		const SessionPtr session_;
 		const ConfigPtr config_;
 	};
