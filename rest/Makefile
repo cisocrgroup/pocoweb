@@ -35,6 +35,7 @@ OBJS += App.o
 OBJS += ApiVersion.o
 OBJS += User.o
 OBJS += Sessions.o
+OBJS += XmlPageParsing.o
 OBJS += util.o
 OBJS += db.o
 
