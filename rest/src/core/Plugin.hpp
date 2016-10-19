@@ -18,6 +18,7 @@ namespace pcw {
 			dl_ = dlopen(lib.data(), RTLD_LAZY);
 			if (not dl_)
 				error(dlerror()); // noreturn
+			// std::cerr << "Opened dl: " << dl_ << "\n";
 		}
 
 		~Plugin() noexcept
@@ -56,10 +57,12 @@ namespace pcw {
 	private:
 		void close() const 
 		{
+			// std::cerr << "Closing dl: " << dl_ << "\n";
 			if (dl_) { // it is an error to close a null handle
 				if (dlclose(dl_))
 					error(dlerror());
 			}
+			// std::cerr << "Closed dl: " << dl_ << "\n";
 		}
 		[[noreturn]] void error(const char* e) const
 		{

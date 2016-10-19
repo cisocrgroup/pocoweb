@@ -7,8 +7,9 @@
 #include "Route.hpp"
 #include "ApiVersion.hpp"
 
+using AppPtr = std::unique_ptr<pcw::App>;
 static int run(int argc, char** argv);
-static pcw::App get_app(int argc, char** argv);
+static AppPtr get_app(int argc, char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 int
@@ -27,21 +28,21 @@ int
 run(int argc, char** argv)
 {
 	auto app = get_app(argc, argv);
-	app.register_plugins();
-	app.Register(std::make_unique<pcw::ApiVersion>());
-	app.run();
-	return 1;
+	app->register_plugins();
+	app->Register(std::make_unique<pcw::ApiVersion>());
+	app->run();
+	return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::App
+AppPtr
 get_app(int argc, char** argv)
 {
 	if (argc != 2)
 		throw std::runtime_error("Usage: " + std::string(argv[0]) + " <config>");
 
-	pcw::App app{argv[1]};
-	CROW_LOG_INFO << "Config:\n" << app.config();
+	auto app = std::make_unique<pcw::App>(argv[1]);
+	CROW_LOG_INFO << "Config:\n" << app->config();
 	return app;
 }
 

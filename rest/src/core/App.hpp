@@ -18,8 +18,8 @@ namespace pcw {
 		~App() noexcept;
 		App(const App&) = delete;
 		App& operator=(const App&) = delete;
-		App(App&&) = default;
-		App& operator=(App&&) = default;
+		App(App&&) = delete;
+		App& operator=(App&&) = delete;
 
 		void Register(RoutePtr route);
 		void register_plugins();
@@ -27,11 +27,12 @@ namespace pcw {
 		const Config& config() const noexcept {return *config_;}
 		const ConfigPtr& config_ptr() const noexcept {return config_;}
 		void run();
+		void stop() noexcept;
 
 	private:
-		pcw::Route::App app_;
 		pcw::Routes routes_;
 		std::vector<Plugin> plugins_;
+		std::unique_ptr<pcw::Route::App> app_;
 		const std::shared_ptr<Config> config_;
 		const std::shared_ptr<Sessions> sessions_;
 	};

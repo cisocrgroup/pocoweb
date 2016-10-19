@@ -9,8 +9,9 @@ using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 App::App(const char *config)
-	: app_()
-	, routes_()
+	: routes_()
+	, plugins_()
+	, app_(std::make_unique<pcw::Route::App>())
 	, config_(std::make_shared<Config>(Config::load(config)))
 	, sessions_(std::make_shared<Sessions>(*config_))
 {
@@ -19,9 +20,31 @@ App::App(const char *config)
 ////////////////////////////////////////////////////////////////////////////////
 App::~App() noexcept
 {
+	stop();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+App::run()
+{
+	assert(config_);
+	assert(app_);
+	CROW_LOG_INFO << "(App) Starting server";
+	app_->port(config_->daemon.port)
+		.concurrency(config_->daemon.threads)
+		.bindaddr(config_->daemon.host)
+		.run();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+App::stop() noexcept
+{
 	try {
-		app_.stop();
-		// order matters here; first delete all routes, then close the plugins
+		// order matters here: first delete the server, 
+		// then delete all routes and then close the plugins
+		app_->stop();
+		app_.release();
 		routes_.clear();
 		plugins_.clear();
 	} catch (const std::exception& e) {
@@ -30,28 +53,17 @@ App::~App() noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-App::run()
-{
-	assert(config_);
-	CROW_LOG_INFO << "(App) Starting server";
-	app_.port(config_->daemon.port)
-		.concurrency(config_->daemon.threads)
-		.bindaddr(config_->daemon.host)
-		.run();
-}
-
-////////////////////////////////////////////////////////////////////////////////
 void 
 App::Register(RoutePtr route)
 {
+	assert(app_);
 	if (route) {
 		try {
 			assert(sessions_);
 			assert(config_);
 			route->set_sessions(sessions_);
 			route->set_config(config_);
-			route->Register(app_);
+			route->Register(*app_);
 			routes_.push_back(std::move(route));
 			CROW_LOG_INFO << "(App) Registered route " << routes_.back()->name() 
 				      << ": " << routes_.back()->route() 	
