@@ -138,7 +138,9 @@ Database::set_autocommit(bool ac)
 	if (ac) {
 		scope_guard_ = boost::none;
 	} else {
-		scope_guard_.emplace([](){});
+		scope_guard_.emplace([this](){
+
+		});
 	}
 }
 
@@ -172,6 +174,9 @@ Database::connection() const
 	
 	assert(conn);
 	// if scope_guard is not set, use autocommit mode
-	conn->setAutoCommit(not scope_guard_); 
+	if (not scope_guard_)
+		conn->setAutoCommit(true);
+	else 
+		conn->setAutoCommit(false);
 	return conn;
 }
