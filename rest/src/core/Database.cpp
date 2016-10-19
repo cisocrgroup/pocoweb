@@ -13,7 +13,8 @@ using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 Database::Database(SessionPtr session, ConfigPtr config)
-	: session_(std::move(session))
+	: scope_guard_()
+	, session_(std::move(session))
 	, config_(std::move(config))
 {
 	assert(session_);
@@ -30,7 +31,6 @@ Database::insert_user(const std::string& name, const std::string& pass) const
 	
 	auto conn = connection();
 	assert(conn);
-	conn->setAutoCommit(true);
 	PreparedStatementPtr s(conn->prepareStatement(sql));
 	assert(s);
 	s->setString(1, name);
@@ -94,7 +94,6 @@ Database::update_user(const User& user) const
 				 ";";
 	auto conn = connection();
 	assert(conn);
-	conn->setAutoCommit(true);
 	PreparedStatementPtr s(conn->prepareStatement(sql));
 	assert(s);
 	s->setString(1, user.institute);
@@ -112,7 +111,6 @@ Database::delete_user(const std::string& name) const
 				 ";";
 	auto conn = connection();
 	assert(conn);
-	conn->setAutoCommit(true);
 	PreparedStatementPtr s(conn->prepareStatement(sql));
 	assert(s);
 	s->setString(1, name);
@@ -134,21 +132,46 @@ Database::get_user_from_result_set(ResultSetPtr res)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void 
+Database::set_autocommit(bool ac)
+{
+	if (ac) {
+		scope_guard_ = boost::none;
+	} else {
+		scope_guard_.emplace([](){});
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Database::commit()
+{
+	if (scope_guard_) {
+		scope_guard_->dismiss();
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
 sql::Connection* 
 Database::connection() const
 {
+	assert(config_);
 	assert(session_);
 	std::lock_guard<std::mutex> lock(session_->mutex);
+	sql::Connection* conn = nullptr;
+
 	if (session_->connection and session_->connection->isValid()) {
-		return session_->connection.get();
-	} 
-	if (session_->connection) { // not session_->connection->isValid()
-		if (session_->connection->reconnect())
-			return session_->connection.get();
+		conn = session_->connection.get();
+	} else if (session_->connection and session_->connection->reconnect()) { 
+		conn = session_->connection.get();
+	} else { // new connection or could not reconnect
+		session_->connection = connect(*config_);
+		assert(session_->connection);
+		conn = session_->connection.get();
 	}
-	// new connection
-	assert(config_);
-	session_->connection = connect(*config_);
-	assert(session_->connection);
-	return session_->connection.get();
+	
+	assert(conn);
+	// if scope_guard is not set, use autocommit mode
+	conn->setAutoCommit(not scope_guard_); 
+	return conn;
 }
