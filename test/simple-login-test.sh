@@ -31,17 +31,17 @@ sleep 1
 # -XGET is automatically inferred
 echo "/api-version?" 1>&2
 test/curl.sh $cookies 200 [$host]:$port/api-version
-echo "/login?" 1>&2
+echo "/login/user/pocoweb?" 1>&2
 test/curl.sh $cookies 200 [$host]:$port/login/user/$user/pass/$pass
 echo "/logged-in?" 1>&2
 test/curl.sh $cookies 200 [$host]:$port/logged-in
-echo "/create/user?" 1>&2
+echo "/create/user/test?" 1>&2
 test/curl.sh $cookies 200 [$host]:$port/create/user/user/test/pass/test123
-echo "/login?" 1>&2
+echo "/login/user/test?" 1>&2
 test/curl.sh $cookies 200 [$host]:$port/login/user/test/pass test123
 echo "logged-in?" 1>&2
 test/curl.sh $cookies 200 [$host]:$port/logged-in
-echo "delete/user" 1>&2
+echo "delete/user/test?" 1>&2
 test/curl.sh $cookies 200 [$host]:$port/delete/user/test
 #curl -XPOST -c /tmp/cookies.txt -v $host:$port/login/username/$name/password/$pass
 
