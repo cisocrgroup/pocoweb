@@ -4,7 +4,9 @@
 *~
 .*
 *.log
-rest/pocowebd
+*.mod
+*.so
+rest/pcwd
 rest/pocoweb_create_user
 rest/pocoweb_insert_book
 rest/config.ini

@@ -13,23 +13,22 @@ namespace pcw {
 	class Config;
 	class User;
 	class Book;
-	using ConstUserPtr = std::shared_ptr<const User>;
+	using UserPtr = std::shared_ptr<User>;
 	using ConnectionPtr = std::unique_ptr<sql::Connection>;
 	using BookPtr = std::shared_ptr<Book>;
 	class Sessions;
 	
 	struct Session {
-		Session(ConstUserPtr u, ConnectionPtr c, std::string s)
-			: user(std::move(u))
-			, connection(std::move(c))
-			, sid(std::move(s))
+		Session(std::string s)
+			: sid(std::move(s))
+			, user()
+			, connection()
 			, current_book()
 			, mutex()
 		{}
-		const ConstUserPtr user;
-		const ConnectionPtr connection;
 		const std::string sid;
-
+		UserPtr user;
+		ConnectionPtr connection;
 		BookPtr current_book;
 		std::mutex mutex;
 	};
@@ -39,7 +38,7 @@ namespace pcw {
 	class Sessions {
 	public:
 		Sessions(const Config& config);
-		SessionPtr new_session(const User& user, ConnectionPtr connection);
+		SessionPtr new_session();
 		SessionPtr find_session(const std::string& sid) const;
 
 	private:

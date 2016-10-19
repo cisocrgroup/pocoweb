@@ -5,13 +5,12 @@
 #include <cppconn/resultset.h>
 #include <cppconn/connection.h>
 #include <cppconn/prepared_statement.h>
-#include <json.hpp>
-#include "util/hash.hpp"
-#include "db/db.hpp"
+#include "util.hpp"
+#include "db.hpp"
 #include "User.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::UserPtr 
+pcw::UserPtr
 pcw::User::create(sql::Connection& conn, const std::string& n)
 {
 	static const char *sql = "SELECT name, email, institute, userid, active "
@@ -65,16 +64,17 @@ pcw::User::store(sql::Connection& conn, const std::string& passwd, bool active) 
 	auto ssum = pcw::genhash(salt, passwd);
 	auto hash = salt + '$' + ssum;
 	s->setString(5, hash);
-	s->setBoolean(6, active);	
+	s->setBoolean(6, active);
 	s->executeUpdate();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 pcw::User::authenticate(sql::Connection& conn, const std::string& passwd) const
 {
-	static const char *sql = "SELECT userid FROM users "
-				 "WHERE userid=? AND passwd=PASSWORD(?)";
+	static const char *sql = "SELECT userid FROM users"
+				 "       WHERE userid=? AND"
+				 "             passwd=PASSWORD(?)";
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, id);
@@ -84,17 +84,17 @@ pcw::User::authenticate(sql::Connection& conn, const std::string& passwd) const
 	// return res and res->next() ? true : false;check(res->getString(1), passwd) : false;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-nlohmann::json
-pcw::User::json() const
-{
-	nlohmann::json j;
-	j["name"] = name;
-	j["email"] = email;
-	j["institute"] = institute;
-	j["id"] = id;
-	return j;
-}
+// ////////////////////////////////////////////////////////////////////////////////
+// nlohmann::json
+// pcw::User::json() const
+// {
+// 	nlohmann::json j;
+// 	j["name"] = name;
+// 	j["email"] = email;
+// 	j["institute"] = institute;
+// 	j["id"] = id;
+// 	return j;
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 std::ostream&
