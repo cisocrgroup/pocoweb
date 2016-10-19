@@ -6,26 +6,26 @@ namespace pcw {
 	public: 
 		template<class Callable> 
 		ScopeGuard(Callable && undo_func) 
-			: f(std::forward<Callable>(undo_func)) {}
+			: f_(std::forward<Callable>(undo_func)) {}
 
 		ScopeGuard(ScopeGuard && other) 
-			: f(std::move(other.f)) {
-				other.f = nullptr;
+			: f_(std::move(other.f_)) {
+				other.f_ = nullptr;
 			}
 
 		~ScopeGuard() noexcept {
-			if(f) f(); // must not throw
+			if(f_) f_(); // must not throw
 		}
 
 		void dismiss() noexcept {
-			f = nullptr;
+			f_ = nullptr;
 		}
 
 		ScopeGuard(const ScopeGuard&) = delete;
 		ScopeGuard& operator=(const ScopeGuard&) = delete;
 
 	private:
-		std::function<void()> f;
+		std::function<void()> f_;
 	};
 }
 #endif // pcw_ScopeGuard_hpp__
