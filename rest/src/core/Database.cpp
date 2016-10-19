@@ -107,7 +107,7 @@ Database::update_user(const User& user) const
 void 
 Database::delete_user(const std::string& name) const
 {
-	static const char *sql = "UPDATE FROM users "
+	static const char *sql = "DELETE FROM users "
 				 "WHERE name = ?"
 				 ";";
 	auto conn = connection();
