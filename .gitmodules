@@ -1,0 +1,9 @@
+[submodule "modules/crow"]
+	path = modules/crow
+	url = https://github.com/ipkn/crow
+[submodule "modules/pugixml"]
+	path = modules/pugixml
+	url = https://github.com/zeux/pugixml
+[submodule "modules/utfcpp"]
+	path = modules/utfcpp
+	url = https://github.com/nemtrif/utfcpp

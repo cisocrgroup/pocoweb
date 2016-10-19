@@ -1,0 +1,36 @@
+#!/bin/sh
+# pcw_create_book
+set -e
+
+if [ $# -ne 4 ]; then
+	echo "Usage $0 config title author ocr-xml-dir"
+	exit 1;
+fi
+
+config=$1
+title=$2
+author=$3
+dir=$4
+host=$(git config -f $config --get daemon.host)
+port=$(git config -f $config --get daemon.port)
+
+curl -v -XPOST -b /tmp/cookies.txt $host:$port/new-book/title/$title/author/$author > /tmp/book.txt
+bid=$(sed /tmp/book.txt -e 's/.*"bookid":\([[:digit:]]*\).*/\1/')
+
+echo bid $bid
+if [ -z ${bid+x} ]; then
+	echo "$0: could not create new book"
+	exit 1;
+fi
+
+for xml in $dir/*.xml; do
+	tmp=$(basename $xml)
+	pnum=${tmp%.*}
+	img=$dir/../tif/$pnum.png
+	echo pnum $pnum
+	echo img $img
+	echo $xml
+	curl -v -b /tmp/cookies.txt --data-binary @$img $host:$port/books/$bid/pages/$pnum/png
+	curl -v -b /tmp/cookies.txt --data-binary @$xml $host:$port/books/$bid/pages/$pnum/xml
+done
+	
