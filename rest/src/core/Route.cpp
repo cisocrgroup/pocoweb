@@ -26,7 +26,7 @@ void
 pcw::set_session_id(crow::response& response, const std::string& sid) noexcept
 {
 	static const std::string SetCookie{"Set-Cookie"};
-	response.add_header(SetCookie, "pcwsid=" + sid);
+	response.add_header(SetCookie, "pcwsid=" + sid + "; path=*");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
