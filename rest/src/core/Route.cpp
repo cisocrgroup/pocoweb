@@ -34,7 +34,7 @@ pcw::set_session_id(crow::response& response, const std::string& sid) noexcept
 	system_clock::time_point now(system_clock::now());
 	auto expires = system_clock::to_time_t(now + 23h);
 	std::ostringstream os;
-	os << "pcwsid=" << sid << "; path=*; Expires=" << std::ctime(&expires);
+	os << "pcwsid=" << sid << "; path=*; Expires=" << std::ctime(&expires) << ";";
 	response.add_header(SetCookie, os.str());
 }
 
