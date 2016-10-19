@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cppconn/connection.h>
 #include <cppconn/prepared_statement.h>
+#include "Cache.hpp"
 #include "Config.hpp"
 #include "Sessions.hpp"
 #include "Database.hpp"
@@ -70,19 +71,10 @@ Database::authenticate(const std::string& name, const std::string& pass) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-UserPtr 
+UserPtr
 Database::select_user(const std::string& name) const
 {
-	static const char *sql = "SELECT name,email,institute,userid "
-				 "FROM users "
-				 "WHERE name = ?"
-				 ";";
-	auto conn = connection();
-	assert(conn);
-	PreparedStatementPtr s(conn->prepareStatement(sql));
-	assert(s);
-	s->setString(1, name);
-	return get_user_from_result_set(ResultSetPtr{s->executeQuery()});
+	return select_user_cached(name);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -156,6 +148,35 @@ Database::commit()
 		scope_guard_->dismiss();
 	} else {
 		CROW_LOG_ERROR << "(Database) call to commit() in auto commit mode";
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+UserPtr 
+Database::select_user_not_cached(const std::string& name) const
+{
+	static const char *sql = "SELECT name,email,institute,userid "
+				 "FROM users "
+				 "WHERE name = ?"
+				 ";";
+	auto conn = connection();
+	assert(conn);
+	PreparedStatementPtr s(conn->prepareStatement(sql));
+	assert(s);
+	s->setString(1, name);
+	return get_user_from_result_set(ResultSetPtr{s->executeQuery()});
+}
+
+////////////////////////////////////////////////////////////////////////////////
+UserPtr 
+Database::select_user_cached(const std::string& name) const
+{
+	if (user_cache_) {
+		return user_cache_->get(name, [this](const auto& name) {
+			return this->select_user_not_cached(name);
+		});
+	} else {
+		return select_user_not_cached(name);
 	}
 }
 

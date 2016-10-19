@@ -35,6 +35,8 @@ namespace pcw {
 
 	private:
 		static UserPtr get_user_from_result_set(ResultSetPtr res);
+		UserPtr select_user_not_cached(const std::string& name) const;
+		UserPtr select_user_cached(const std::string& name) const;
 		sql::Connection* connection() const;
 
 		boost::optional<ScopeGuard> scope_guard_;
