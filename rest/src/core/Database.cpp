@@ -1,3 +1,4 @@
+#include <crow.h>
 #include <cassert>
 #include <cppconn/connection.h>
 #include <cppconn/prepared_statement.h>
@@ -139,7 +140,9 @@ Database::set_autocommit(bool ac)
 		scope_guard_ = boost::none;
 	} else {
 		scope_guard_.emplace([this](){
-
+			assert(session_);
+			std::lock_guard<std::mutex> lock(session_->mutex);
+			session_->connection->rollback();
 		});
 	}
 }
@@ -150,6 +153,8 @@ Database::commit()
 {
 	if (scope_guard_) {
 		scope_guard_->dismiss();
+	} else {
+		CROW_LOG_ERROR << "(Database) call to commit() in auto commit mode";
 	}
 }
 
