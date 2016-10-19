@@ -4,7 +4,7 @@
 
 using namespace pcw;
 
-#define CREATE_USER_ROUTE "/create/user/user/<string>/pass/<string>"
+#define CREATE_USER_ROUTE "/create/user/<string>/pass/<string>"
 
 ////////////////////////////////////////////////////////////////////////////////
 const char* CreateUser::route_ = CREATE_USER_ROUTE;
