@@ -8,7 +8,7 @@
 
 using namespace pcw;
 
-#define UPDATE_USER_ROUTE "/update-user/<string>/<string>"
+#define UPDATE_USER_ROUTE "/update/user/<string>/set/<string>/<string>"
 
 ////////////////////////////////////////////////////////////////////////////////
 const char* UpdateUser::route_ = UPDATE_USER_ROUTE;
@@ -27,30 +27,43 @@ UpdateUser::Register(App& app)
 crow::response 
 UpdateUser::operator()(
 	const crow::request& request, 
-	const std::string& what, 
+	const std::string& name,
+	const std::string& key, 
 	const std::string& val
 ) const {
+	// get user
+	auto db = database(request);
+	if (not db)
+		return forbidden();
+	auto user = db->select_user(name);
+	if (not user)
+		return not_found();
+
+	// update given field
+	if (not update(*user, key, val))
+		return bad_request(); 
+	
+	// update user information
+	db->update_user(*user);
+	return ok();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool 
+UpdateUser::update(User& user, const std::string& key, const std::string& val) const noexcept
+{
 	static const std::string institute = "institute";
 	static const std::string email = "email";
 
-	// get session and user
-	auto session = this->session(request);
-	if (not session or not session->user)
-		return forbidden();
-
+	CROW_LOG_INFO << "(UpdateUser) setting " << key << " = " << val;
 	// check which field to set 
-	if (boost::iequals(what, institute)) 
-		session->user->institute = val;
-	else if (boost::iequals(what, email))
-		session->user->email = val;
-	else
-		return bad_request();		
-	
-	// update user information
-	auto db = database(request);
-	if (not db) // this should not be possible
-		return internal_server_error();
-
-	db.get().update_user(*session->user);
-	return ok();
+	if (boost::iequals(key, institute)) {
+		user.institute = val;
+		return true;
+	} else if (boost::iequals(key, email)) {
+		user.email = val;
+		return true;
+	} else {
+		return false;
+	}
 }
