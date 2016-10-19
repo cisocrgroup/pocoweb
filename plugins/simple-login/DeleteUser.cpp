@@ -7,7 +7,7 @@
 
 using namespace pcw;
 
-#define DELETE_USER_ROUTE "/delete-user/<string>"
+#define DELETE_USER_ROUTE "/delete/user/<string>"
 
 ////////////////////////////////////////////////////////////////////////////////
 const char* DeleteUser::route_ = DELETE_USER_ROUTE;

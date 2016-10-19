@@ -12,11 +12,14 @@ namespace pcw {
 		virtual void Register(App&) override;
 		crow::response operator()(
 			const crow::request& request, 
-			const std::string& what, 
+			const std::string& name,
+			const std::string& key, 
 			const std::string& val
 		) const;
 
 	private:
+		bool update(User& user, const std::string& key, const std::string& val) const noexcept;
+
 		static const char* route_;
 		static const char* name_;
 	};
