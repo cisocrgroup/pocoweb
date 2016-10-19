@@ -35,13 +35,13 @@ echo "/login?" 1>&2
 test/curl.sh $cookies 200 [$host]:$port/login/user/$user/pass/$pass
 echo "/logged-in?" 1>&2
 test/curl.sh $cookies 200 [$host]:$port/logged-in
-echo "/create-user?" 1>&2
-test/curl.sh $cookies 200 [$host]:$port/create-user/user/test/pass/test123
+echo "/create/user?" 1>&2
+test/curl.sh $cookies 200 [$host]:$port/create/user/user/test/pass/test123
 echo "/login?" 1>&2
 test/curl.sh $cookies 200 [$host]:$port/login/user/test/pass test123
 echo "logged-in?" 1>&2
 test/curl.sh $cookies 200 [$host]:$port/logged-in
-echo "delete-user" 1>&2
-test/curl.sh $cookies 200 [$host]:$port/delete-user/test
+echo "delete/user" 1>&2
+test/curl.sh $cookies 200 [$host]:$port/delete/user/test
 #curl -XPOST -c /tmp/cookies.txt -v $host:$port/login/username/$name/password/$pass
 
