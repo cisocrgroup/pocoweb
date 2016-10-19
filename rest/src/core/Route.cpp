@@ -1,3 +1,6 @@
+#include <chrono>
+#include <ctime>
+#include <sstream>
 #include <regex>
 #include <cppconn/connection.h>
 #include "Database.hpp"
@@ -26,7 +29,13 @@ void
 pcw::set_session_id(crow::response& response, const std::string& sid) noexcept
 {
 	static const std::string SetCookie{"Set-Cookie"};
-	response.add_header(SetCookie, "pcwsid=" + sid + "; path=*");
+	using namespace std::chrono;
+	using namespace std::chrono_literals;
+	system_clock::time_point now(system_clock::now());
+	auto expires = system_clock::to_time_t(now + 23h);
+	std::ostringstream os;
+	os << "pcwsid=" << sid << "; path=*; Expires=" << std::ctime(&expires);
+	response.add_header(SetCookie, os.str());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
