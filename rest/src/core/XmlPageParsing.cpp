@@ -59,12 +59,18 @@ alto_add_page(Book& book, const xml_node& page_node)
 void 
 alto_add_lines(Page& page, const xml_node& text_line)
 {
-	std::string line;
+	const auto id = static_cast<int>(page.size() + 1);
+	const auto box = alto_get_box(text_line);
+	Line line(page, id, box);
+
 	for (const auto& node: text_line.children()) {
-		if (strcmp(node.name(), "String") == 0) 
-			line.append(node.attribute("CONTENT").value());
-		else if (strcmp(node.name(), "SP") == 0)
-			line.push_back(' ');
+		if (strcmp(node.name(), "String") == 0) {
+			const auto box = alto_get_box(node);
+			line.append(node.attribute("CONTENT").value(), box);
+		} else if (strcmp(node.name(), "SP") == 0) {
+			const auto box = alto_get_box(node);
+			line.append(' ', box);
+		}
 	}
 	page.push_back(std::move(line));
 }

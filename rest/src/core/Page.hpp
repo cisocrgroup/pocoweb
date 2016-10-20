@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include "Box.hpp"
+#include "Line.hpp"
 
 namespace pcw {
 	class Book;
@@ -11,12 +12,13 @@ namespace pcw {
 	class Page;
 	using PagePtr = std::shared_ptr<Page>;
 
-	class Page: private std::vector<std::string> {
+	class Page: private std::vector<Line>,
+		    public std::enable_shared_from_this<Page> {
 	public:
-		using Base = std::vector<std::string>;
+		using Base = std::vector<Line>;
 		using value_type = Base::value_type;
 	
-		Page(const Book& book, int i, Box b = {})
+		Page(Book& book, int i, Box b = {})
 			: book(book.shared_from_this())
 			, box(b)
 			, id(i) 
@@ -28,7 +30,7 @@ namespace pcw {
 		using Base::empty;
 		using Base::size;
 		
-		const std::weak_ptr<const Book> book;
+		const std::weak_ptr<Book> book;
 		const Box box;
 		const int id;
 	};
