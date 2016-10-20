@@ -29,6 +29,7 @@ namespace pcw {
 		Database(SessionPtr session, ConfigPtr config);
 		
 		void set_autocommit(bool ac = true);
+		bool autocommit() const noexcept;
 		void commit();
 		Session& session() const noexcept {return *session_;}
 

@@ -23,6 +23,7 @@ insert_default_user(const std::string& p, const App& app)
 	auto session = std::make_shared<Session>("simple-login-sid");
 
 	Database db(session, app.config_ptr());
+	std::lock_guard<std::mutex> lock(db.session().mutex);
 	auto name = app.config().plugins[p].get<std::string>("default-user");	
 	auto pass = app.config().plugins[p].get<std::string>("default-pass");	
 	auto email = app.config().plugins[p].get<std::string>("default-email");	

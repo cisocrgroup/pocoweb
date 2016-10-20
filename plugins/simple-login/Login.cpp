@@ -31,6 +31,7 @@ Login::operator()(const std::string& name, const std::string& pass) const
 	auto db = database(session);
 	if (not db)
 		return internal_server_error();
+	std::lock_guard<std::mutex> lock(db->session().mutex);
 	auto user = db.get().authenticate(name, pass);	
 	if (not user)
 		return forbidden();

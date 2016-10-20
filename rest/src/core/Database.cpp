@@ -189,17 +189,23 @@ Database::update_line(const Line& line) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+bool 
+Database::autocommit() const noexcept
+{
+	return not scope_guard_;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void 
 Database::set_autocommit(bool ac)
 {
+	check_session_lock();
 	if (ac) {
 		scope_guard_ = boost::none;
 	} else {
 		scope_guard_.emplace([this](){
 			assert(session_);
 			assert(session_->connection);
-			// session has to be locked already
-			assert(not session_->mutex.try_lock());
 			session_->connection->rollback();
 		});
 	}
@@ -209,6 +215,7 @@ Database::set_autocommit(bool ac)
 void 
 Database::commit()
 {
+	check_session_lock();
 	if (scope_guard_) {
 		scope_guard_->dismiss();
 	} else {
@@ -223,7 +230,7 @@ Database::check_session_lock() const
 	assert(session_);
 	if (session_->mutex.try_lock()) {
 		session_->mutex.unlock(); // unlock
-		throw std::logic_error("(Database) Unlocked session");
+		throw std::logic_error("(Database) Current session is not locked");
 	}
 }
 
