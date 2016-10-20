@@ -1,7 +1,6 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/log/trivial.hpp>
 #include <iostream>
-#include <libtar.h>
 #include <fstream>
 #include <sstream>
 #include "util.hpp"
@@ -55,10 +54,10 @@ BookDir::add(const std::string& str) const
 {
 	auto tdir = tmp_dir();
 	boost::filesystem::create_directory(tdir);
-	auto tar = tdir / "book.tar.gz";
-	std::ofstream os(tar.string());
+	auto zip = zip_file();
+	std::ofstream os(zip.string());
 	if (not os.good())
-		throw std::system_error(errno, std::system_category(), tar.string());
+		throw std::system_error(errno, std::system_category(), zip.string());
 	os << str;
 	os.close();
 }

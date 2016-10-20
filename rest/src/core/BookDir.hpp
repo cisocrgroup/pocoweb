@@ -28,6 +28,9 @@ namespace pcw {
 		void add_line_images(Page& page) const;
 		const Path& path() const noexcept {return path_;}
 		Path tmp_dir() const noexcept {return path_ / ".tmp";}
+		Path zip_file() const noexcept {return tmp_dir() / "book.zip";}
+		Path img_dir() const noexcept {return path_ / "img";}
+		Path ocr_dir() const noexcept {return path_ / "ocr";}
 
 		void remove() const;
 		void add(const std::string& str) const;
