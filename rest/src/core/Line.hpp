@@ -29,6 +29,9 @@ namespace pcw {
 		const int id;
 
 	private:
+		void append(const wchar_t* str, const Box& box);
+		void append(wchar_t c, int l, int r);
+
 		String string_;
 		Cuts cuts_;
 	};

@@ -4,6 +4,7 @@ CXXFLAGS += -fpic
 CXXFLAGS += -I src/core
 CXXFLAGS += -I ../modules/crow/include
 CXXFLAGS += -I ../modules/pugixml/src
+CXXFLAGS += -I ../modules/utfcpp/source
 CXXFLAGS += -DPCW_API_VERSION=\"$(PCW_API_VERSION)\"
 CXXFLAGS += -DBOOST_LOG_DYN_LINK
 

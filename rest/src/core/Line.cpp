@@ -1,3 +1,5 @@
+#include <cwchar>
+#include <utf8.h>
 #include <cassert>
 #include <cstring>
 #include "Book.hpp"
@@ -23,16 +25,10 @@ Line::append(const char* str, const Box& box)
 	if (not str or not *str)
 		return;
 
-	if (empty())
-		cuts_.push_back(box.left());
+	std::wstring wstr;
 	const int n = strlen(str);
-	const int d = box.width() / n;
-
-	while (*str) {
-		string_.push_back(*str++);
-		cuts_.push_back(cuts_.back() + d);
-	}
-	cuts_.back() = box.right(); // fix last pos of string due to error in d
+	utf8::utf8to32(str, str + n, std::back_inserter(wstr));
+	append(wstr.data(), box);
 	assert(string_.size() == cuts_.size() + 1);
 }
 
@@ -44,5 +40,37 @@ Line::append(char c, const Box& box)
 		cuts_.push_back(box.left());
 	string_.push_back(c);
 	cuts_.push_back(box.right());
+	assert(string_.size() == cuts_.size() + 1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Line::append(const wchar_t* str, const Box& box)
+{
+	if (not str or not *str)
+		return;
+	const auto n = wcslen(str);
+	const auto d = box.width() / n;
+	while (*str) {
+		const auto l = cuts_.back();
+		const auto r = cuts_.back() + d;
+		append(*str++, l, r);
+	}
+	cuts_.back() = box.right(); // fix last pos of string due to error in d
+	assert(string_.size() == cuts_.size() + 1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Line::append(wchar_t c, int l, int r)
+{
+	if (empty())
+		cuts_.push_back(l);
+	unsigned char buf[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};	
+	utf8::utf32to8(&c, &c + 1, buf);
+	for (auto i = buf; *i; ++i) {
+		string_.push_back(*i);
+		cuts_.push_back(r);
+	}
 	assert(string_.size() == cuts_.size() + 1);
 }
