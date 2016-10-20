@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include "BookDir.hpp"
 
 namespace pcw {
 	class User;
@@ -18,7 +19,16 @@ namespace pcw {
 		using Base = std::vector<PagePtr>;
 		using value_type = Base::value_type;
 	
-		Book(UserPtr o, int i): owner(std::move(o)), id(i) {}
+		Book(const std::string& a, const std::string& t, UserPtr o, int i, BookDir dir)
+			: owner(std::move(o))
+			, author(a)
+			, title(t)
+			, description()
+			, uri()
+			, directory(std::move(dir))
+			, id(i) 
+			, year()
+		{}
 
 		using Base::begin;
 		using Base::end;
@@ -27,7 +37,9 @@ namespace pcw {
 		using Base::size;
 		
 		const UserPtr owner;
-		std::string author, title;
+		const std::string author, title;
+		std::string description, uri;
+		const BookDir directory;
 		const int id;
 		int year;
 	};

@@ -3,6 +3,7 @@
 #include <cppconn/connection.h>
 #include <cppconn/prepared_statement.h>
 #include "Book.hpp"
+#include "BookDir.hpp"
 #include "Config.hpp"
 #include "Sessions.hpp"
 #include "Database.hpp"
@@ -139,23 +140,26 @@ Database::get_user_from_result_set(ResultSetPtr res)
 BookPtr 
 Database::insert_book(const std::string& author, const std::string& title)
 {
-	static const char *sql = "INSERT INTO book (owner, author, title) "
-				  "VALUES (?, ?, ?)"
+	static const char *sql = "INSERT INTO book (owner, author, title, directory) "
+				  "VALUES (?, ?, ?, ?)"
 				  ";";
 
 	check_session_lock();
 	auto conn = connection();
+	assert(conn);
+	BookDir dir(*config_);
 
-	PreparedStatementPtr s{conn->prepareStatement(sql1)};
+	PreparedStatementPtr s{conn->prepareStatement(sql)};
 	s->setInt(1, session_->user->id);
 	s->setString(2, author);
 	s->setString(3, title);
+	s->setString(4, dir.path().string());
 	s->executeUpdate();
 	const auto book_id = last_insert_id(*conn);
 	if (not book_id)
 		return nullptr;
 	
-	return std::make_shared<Book>(session_->user, book_id);
+	return std::make_shared<Book>(author, title, session_->user, book_id, std::move(dir));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
