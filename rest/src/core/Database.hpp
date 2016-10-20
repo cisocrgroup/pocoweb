@@ -18,6 +18,8 @@ namespace pcw {
 	class User;
 	using UserPtr = std::shared_ptr<User>;
 	using ResultSetPtr = std::unique_ptr<sql::ResultSet>;
+	class Book;
+	using BookPtr = std::shared_ptr<Book>;
 
 	class Database {
 	public:
@@ -25,6 +27,7 @@ namespace pcw {
 		
 		void set_autocommit(bool ac = true);
 		void commit();
+		Session& session() const noexcept {return *session_;}
 
 		UserPtr insert_user(const std::string& name, const std::string& pass) const;
 		UserPtr authenticate(const std::string& name, const std::string& pass) const;
@@ -32,8 +35,12 @@ namespace pcw {
 		void update_user(const User& user) const;
 		void delete_user(const std::string& name) const;
 
+		BookPtr insert_book(const std::string& author, const std::string& title);
+
 	private:
 		static UserPtr get_user_from_result_set(ResultSetPtr res);
+		void check_session_lock() const;
+		int last_insert_id(sql::Connection& conn) const;
 		sql::Connection* connection() const;
 
 		boost::optional<ScopeGuard> scope_guard_;

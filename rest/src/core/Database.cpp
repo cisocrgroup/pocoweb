@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cppconn/connection.h>
 #include <cppconn/prepared_statement.h>
+#include "Book.hpp"
 #include "Config.hpp"
 #include "Sessions.hpp"
 #include "Database.hpp"
@@ -30,6 +31,7 @@ Database::insert_user(const std::string& name, const std::string& pass) const
 				 "VALUES (?, SHA2(?, ?), ?)"
 				 ";";
 	
+	check_session_lock();
 	auto conn = connection();
 	assert(conn);
 	PreparedStatementPtr s(conn->prepareStatement(sql));
@@ -40,12 +42,9 @@ Database::insert_user(const std::string& name, const std::string& pass) const
 	s->setBoolean(4, true);
 	s->executeUpdate();
 
-	StatementPtr llid{conn->createStatement()};
-	assert(llid);
-	ResultSetPtr res{llid->executeQuery("select last_insert_id()")};
-	assert(res);
-	return res->next() ? 
-		std::make_shared<User>(name, "", "", res->getInt(1)) :
+	const int user_id = last_insert_id(*conn);
+	return user_id ?
+		std::make_shared<User>(name, "", "", user_id) :
 		nullptr;
 }
 
@@ -57,6 +56,7 @@ Database::authenticate(const std::string& name, const std::string& pass) const
 				 "FROM users "
 				 "WHERE name = ? and passwd = SHA2(?,?)"
 				 ";";
+	check_session_lock();
 	auto conn = connection();
 	assert(conn);
 	
@@ -76,6 +76,7 @@ Database::select_user(const std::string& name) const
 				 "FROM users "
 				 "WHERE name = ?"
 				 ";";
+	check_session_lock();
 	auto conn = connection();
 	assert(conn);
 	PreparedStatementPtr s(conn->prepareStatement(sql));
@@ -93,6 +94,7 @@ Database::update_user(const User& user) const
 				 "SET institute=?,email=? "
 				 "WHERE userid = ? "
 				 ";";
+	check_session_lock();
 	auto conn = connection();
 	assert(conn);
 	PreparedStatementPtr s(conn->prepareStatement(sql));
@@ -110,6 +112,7 @@ Database::delete_user(const std::string& name) const
 	static const char *sql = "DELETE FROM users "
 				 "WHERE name = ?"
 				 ";";
+	check_session_lock();
 	auto conn = connection();
 	assert(conn);
 	PreparedStatementPtr s(conn->prepareStatement(sql));
@@ -133,6 +136,41 @@ Database::get_user_from_result_set(ResultSetPtr res)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BookPtr 
+Database::insert_book(const std::string& author, const std::string& title)
+{
+	static const char *sql1 = "INSERT INTO bookdata (owner, author, title) "
+				  "VALUES (?, ?, ?)"
+				  ";";
+	static const char *sql2 = "INSERT INTO book (bookdataid, firstpage, lastpage) "
+				  "VALUES (?, 0, 0);";
+
+	check_session_lock();
+	set_autocommit(false); // insert all or nothing
+	auto conn = connection();
+
+	PreparedStatementPtr s{conn->prepareStatement(sql1)};
+	s->setInt(1, session_->user->id);
+	s->setString(2, author);
+	s->setString(3, title);
+	s->executeUpdate();
+	const auto bookdata_id = last_insert_id(*conn);
+	if (not bookdata_id)
+		return nullptr;
+	
+	s.reset(conn->prepareStatement(sql2));	
+	s->setInt(1, bookdata_id);
+	s->executeUpdate();
+	const auto book_id = last_insert_id(*conn);
+	if (not book_id)
+		return nullptr;
+	
+	commit(); // commit changes to database
+	set_autocommit(true);
+	return std::make_shared<Book>(session_->user, book_id);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void 
 Database::set_autocommit(bool ac)
 {
@@ -141,7 +179,9 @@ Database::set_autocommit(bool ac)
 	} else {
 		scope_guard_.emplace([this](){
 			assert(session_);
-			std::lock_guard<std::mutex> lock(session_->mutex);
+			assert(session_->connection);
+			// session has to be locked already
+			assert(not session_->mutex.try_lock());
 			session_->connection->rollback();
 		});
 	}
@@ -159,13 +199,35 @@ Database::commit()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void 
+Database::check_session_lock() const
+{
+	assert(session_);
+	if (session_->mutex.try_lock()) {
+		session_->mutex.unlock(); // unlock
+		throw std::logic_error("(Database) Unlocked session");
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int
+Database::last_insert_id(sql::Connection& conn) const
+{
+	StatementPtr s{conn.createStatement()};
+	assert(s);
+	ResultSetPtr res{s->executeQuery("select last_insert_id()")};
+	assert(res);
+	return res->next() ? res->getInt(1) : 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 sql::Connection* 
 Database::connection() const
 {
 	assert(config_);
 	assert(session_);
-	std::lock_guard<std::mutex> lock(session_->mutex);
 	sql::Connection* conn = nullptr;
+	assert(not session_->mutex.try_lock()); // session has to be locked already
 
 	if (session_->connection and session_->connection->isValid()) {
 		conn = session_->connection.get();
