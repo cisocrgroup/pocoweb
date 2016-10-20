@@ -1,23 +1,24 @@
 #ifndef pcw_Box_hpp__
 #define pcw_Box_hpp__
 
-#include "json.hpp"
-
 namespace pcw {
 	struct Box {
-		Box(int a = 0, int b = 0, int c = 0, int d = 0)
-			: left(a)
-			, top(b)
-			, right(c)
-			, bottom(d)
-		{}
-		Box(nlohmann::json& json): Box() {load(json);}
-		int width() const noexcept {return right - left;}
-		int height() const noexcept {return bottom - top;}
-		void load(nlohmann::json& json);
-		void store(nlohmann::json& json) const;
+		Box(int l = 0, int t = 0, int r = 0, int b = 0);
+		int left() const noexcept {return left_;}
+		int right() const noexcept {return right_;}
+		int top() const noexcept {return top_;}
+		int bottom() const noexcept {return bottom_;}
+		int width() const noexcept {return right_ - left_;}
+		int height() const noexcept {return bottom_ - top_;}
+		
+		Box& increase_left(int d) noexcept;
+		Box& increase_right(int d) noexcept;
+		Box& increase_top(int d) noexcept;
+		Box& increase_bottom(int d) noexcept;
+		Box& increase(int d) noexcept;
 
-		int left, top, right, bottom;
+	private:
+		int left_, top_, right_, bottom_;
 	};
 }
 

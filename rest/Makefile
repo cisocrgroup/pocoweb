@@ -28,6 +28,7 @@ LDFLAGS += -lcrypto
 #VPATH = src/db src/util src/api src/doc gsm/pugixml/src src/ex src
 VPATH = src src/core
 
+OBJS += Box.o
 OBJS += Config.o
 OBJS += Database.o
 OBJS += Route.o
