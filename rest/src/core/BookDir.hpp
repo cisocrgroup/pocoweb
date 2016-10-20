@@ -37,9 +37,13 @@ namespace pcw {
 		void setup(const std::string& str, Book& book) const;
 
 	private:
+		using Paths = std::vector<Path>;
+
 		void setup(const Path& dir, Book& book) const;
 		void add_pages(const Path& path, Book& book) const;
+		void add_image_path(const Paths& img, Page& page) const;
 		static bool is_ocr_file(const Path& dir);
+		static bool is_img_file(const Path& dir);
 
 		void add_line_image(Line& line, const Path& dir, void *pix) const;
 		Path get_page(int id) const;

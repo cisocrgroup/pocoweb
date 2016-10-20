@@ -1,6 +1,7 @@
 #ifndef pcw_Page_hpp__
 #define pcw_Page_hpp__
 
+#include <boost/filesystem/path.hpp>
 #include <memory>
 #include <vector>
 #include "Box.hpp"
@@ -15,6 +16,7 @@ namespace pcw {
 	class Page: private std::vector<Line>,
 		    public std::enable_shared_from_this<Page> {
 	public:
+		using Path = boost::filesystem::path;
 		using Base = std::vector<Line>;
 		using value_type = Base::value_type;
 	
@@ -27,12 +29,15 @@ namespace pcw {
 		using Base::begin;
 		using Base::end;
 		using Base::push_back;
+		using Base::back;
+		using Base::front;
 		using Base::empty;
 		using Base::size;
 		
 		const std::weak_ptr<Book> book;
 		const Box box;
 		const int id;
+		Path ocr, img;
 	};
 }
 

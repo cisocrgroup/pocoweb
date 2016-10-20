@@ -6,7 +6,9 @@
 #include <sstream>
 #include "util.hpp"
 #include "Config.hpp"
+#include "BadRequest.hpp"
 #include "Book.hpp"
+#include "Page.hpp"
 #include "Pix.hpp"
 #include "BookDir.hpp"
 #include "XmlPageParsing.hpp"
@@ -84,20 +86,40 @@ BookDir::setup(const Path& dir, Book& book) const
 {
 	assert(fs::is_directory(dir));
 	fs::recursive_directory_iterator i(dir), e;
+	Paths imgs;
 	for (; i != e; ++i) {
 		std::cerr << "CHECKING PATH: " << *i << "\n";
 		if (is_ocr_file(*i)) {
 			add_pages(*i, book);
+		} else if (is_img_file(*i)) {
+			imgs.push_back(*i);
+		}
+	}
+	for (const auto& page: book) {
+		if (page) {
+			add_image_path(imgs, *page);
 		}
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookDir::add_pages(const Path& path, Book& book) const
+BookDir::add_pages(const Path& ocr, Book& book) const
 {
-	std::cerr << "OCR FILE: " << path << "\n";
-	pcw::add_pages(path, book);
+	std::cerr << "OCR FILE: " << ocr << "\n";
+	pcw::add_pages(ocr, book);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+BookDir::add_image_path(const Paths& imgs, Page& page) const
+{
+	auto i = std::find_if(begin(imgs), end(imgs), [&page](const auto& path) {
+		return path.filename() == page.img.filename();
+	});
+	if (i == end(imgs)) 
+		throw BadRequest("(BookDir) Missing image: " + page.img.string());
+	page.img = *i;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -105,6 +127,19 @@ bool
 BookDir::is_ocr_file(const Path& path)
 {
 	return fs::is_regular_file(path) and path.extension() == ".xml";
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool
+BookDir::is_img_file(const Path& path)
+{
+	return fs::is_regular_file(path) and (
+		path.extension() == ".jpg" or 
+		path.extension() == ".jpeg" or
+		path.extension() == ".tif" or
+		path.extension() == ".tiff" or
+		path.extension() == ".png"
+	);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

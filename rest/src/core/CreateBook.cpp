@@ -29,27 +29,34 @@ CreateBook::operator()(
 	const std::string& author,
 	const std::string& title
 ) const {
-	auto db = database(request);
-	if (not db)
-		return forbidden();
-
-	std::lock_guard<std::mutex> lock(db->session().mutex);
-	db->set_autocommit(false);
-
-	auto book = db->insert_book(author, title);
-	if (not book) // should not happen
-		return internal_server_error();
+	BookPtr book = nullptr;
 	try {
+		auto db = database(request);
+		if (not db)
+			return forbidden();
+
+		std::lock_guard<std::mutex> lock(db->session().mutex);
+		db->set_autocommit(false);
+		book = db->insert_book(author, title);
+		if (not book) // should not happen
+			return internal_server_error();
+
 		CROW_LOG_INFO << "(CreateBook) BookDir: " << book->directory.path();
 		book->directory.setup(extract_content(request), *book);
+		book->directory.clean_up();
+		db->update_book_pages(*book);
+		db->session().current_book = book;
+		db->commit();
+		return ok();
 	} catch (const BadRequest& e) {
 		CROW_LOG_ERROR << "(CreateBook) Error: " << e.what();
-		book->directory.remove();
+		if (book) 
+			book->directory.remove();
 		return bad_request();
+	} catch (const std::exception& e) {
+		CROW_LOG_ERROR << "(CreateBook) Error: " << e.what();
+		if (book)
+			book->directory.remove();
+		return internal_server_error();
 	}
-		
-	db->update_book_pages(*book);
-	db->session().current_book = book;
-	db->commit();
-	return ok();
 }

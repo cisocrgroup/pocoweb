@@ -33,6 +33,8 @@ namespace pcw {
 		using Base::begin;
 		using Base::end;
 		using Base::push_back;
+		using Base::back;
+		using Base::front;
 		using Base::empty;
 		using Base::size;
 		
