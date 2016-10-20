@@ -20,6 +20,9 @@ namespace pcw {
 	using ResultSetPtr = std::unique_ptr<sql::ResultSet>;
 	class Book;
 	using BookPtr = std::shared_ptr<Book>;
+	class Page;
+	using PagePtr = std::shared_ptr<Page>;
+	class Line;
 
 	class Database {
 	public:
@@ -36,6 +39,9 @@ namespace pcw {
 		void delete_user(const std::string& name) const;
 
 		BookPtr insert_book(const std::string& author, const std::string& title) const;
+		void update_book_pages(const Book& book) const;
+		void update_page(const Page& page) const;
+		void update_line(const Line& line) const;
 
 	private:
 		static UserPtr get_user_from_result_set(ResultSetPtr res);

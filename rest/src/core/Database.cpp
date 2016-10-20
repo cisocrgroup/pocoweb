@@ -3,6 +3,8 @@
 #include <cppconn/connection.h>
 #include <cppconn/prepared_statement.h>
 #include "Book.hpp"
+#include "Page.hpp"
+#include "Line.hpp"
 #include "BookDir.hpp"
 #include "Config.hpp"
 #include "Sessions.hpp"
@@ -160,6 +162,30 @@ Database::insert_book(const std::string& author, const std::string& title) const
 		return nullptr;
 	
 	return std::make_shared<Book>(author, title, session_->user, book_id, std::move(dir));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Database::update_book_pages(const Book& book) const
+{
+	for (const auto& page: book) {
+		if (page)
+			update_page(*page);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Database::update_page(const Page& page) const
+{
+	for (const auto& line: page) 
+		update_line(line);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Database::update_line(const Line& line) const
+{
 }
 
 ////////////////////////////////////////////////////////////////////////////////

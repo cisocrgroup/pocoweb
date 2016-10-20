@@ -31,9 +31,14 @@ CreateBook::operator()(
 		return forbidden();
 
 	std::lock_guard<std::mutex> lock(db->session().mutex);
+	db->set_autocommit(false);
+
 	auto book = db->insert_book(author, title);
 	if (not book) // should not happen
 		return internal_server_error();
+	// book->directory.add(request.body());
+	db->update_book_pages(*book);
 	db->session().current_book = book;
+	db->commit();
 	return ok();
 }
