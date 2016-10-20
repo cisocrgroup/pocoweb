@@ -1,6 +1,7 @@
 #include <cstring>
 #include <pugixml.hpp>
 #include "Book.hpp"
+#include "Box.hpp"
 #include "Page.hpp"
 #include "XmlPageParsing.hpp"
 
@@ -11,6 +12,7 @@ using namespace pcw;
 static size_t alto_add_pages(Book& book, const xml_document& xml);
 static void alto_add_page(Book& book, const xml_node& page_node);
 static void alto_add_lines(Page& page, const xml_node& text_line);
+static Box alto_get_box(const xml_node& node);
 
 ////////////////////////////////////////////////////////////////////////////////
 size_t
@@ -44,7 +46,9 @@ alto_add_page(Book& book, const xml_node& page_node)
 {
 
 	auto text_lines = page_node.select_nodes(".//TextLine");
-	auto page = std::make_shared<Page>(book, static_cast<int>(book.size() + 1));
+	auto box = alto_get_box(page_node);
+	auto id = static_cast<int>(book.size() + 1);
+	auto page = std::make_shared<Page>(book, id, box);
 	book.push_back(page);
 	for (const auto& n: text_lines) {
 		alto_add_lines(*page, n.node());
@@ -55,27 +59,23 @@ alto_add_page(Book& book, const xml_node& page_node)
 void 
 alto_add_lines(Page& page, const xml_node& text_line)
 {
-	auto strings = text_line.select_nodes(".//String");
 	std::string line;
-	for (const auto& n: strings) {
-		line.append(n.node().attribute("CONTENT").value());
-		line.append(" ");
+	for (const auto& node: text_line.children()) {
+		if (strcmp(node.name(), "String") == 0) 
+			line.append(node.attribute("CONTENT").value());
+		else if (strcmp(node.name(), "SP") == 0)
+			line.push_back(' ');
 	}
-	if (not line.empty())
-		line.pop_back(); // discard last ' '
 	page.push_back(std::move(line));
 }
 
-// static const std::string string{"String"};
-//         static const std::string content{"CONTENT"};
-//         static const std::string space{"SP"};
-//         if (strcmp(node.name(), "String") == 0) {
-//                 auto content = node.attribute("CONTENT");
-//                 if (content)
-//                         buffer().append(content.value());
-//         } else if (strcmp(node.name(), "TextLine") == 0 or
-//                    strcmp(node.name(), "SP") == 0) {
-//                 buffer().push_back(' ');
-//         }
-//         return true;
-// 
+////////////////////////////////////////////////////////////////////////////////
+Box 
+alto_get_box(const xml_node& node)
+{
+	const auto l = node.attribute("VPOS").as_int();
+	const auto t = node.attribute("HPOS").as_int();
+	const auto w = node.attribute("WIDTH").as_int();
+	const auto h = node.attribute("HEIGHT").as_int();
+	return Box{l, t, l + w, t + h};
+}

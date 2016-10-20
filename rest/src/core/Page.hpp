@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include "Box.hpp"
 
 namespace pcw {
 	class Book;
@@ -15,7 +16,11 @@ namespace pcw {
 		using Base = std::vector<std::string>;
 		using value_type = Base::value_type;
 	
-		Page(const Book& book, int i): book(book.shared_from_this()), id(i) {}
+		Page(const Book& book, int i, Box b = {})
+			: book(book.shared_from_this())
+			, box(b)
+			, id(i) 
+		{}
 
 		using Base::begin;
 		using Base::end;
@@ -24,6 +29,7 @@ namespace pcw {
 		using Base::size;
 		
 		const std::weak_ptr<const Book> book;
+		const Box box;
 		const int id;
 	};
 }
