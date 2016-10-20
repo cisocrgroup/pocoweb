@@ -1,5 +1,6 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/log/trivial.hpp>
+#include <libtar.h>
 #include <fstream>
 #include <sstream>
 #include "util.hpp"
@@ -38,6 +39,23 @@ BookDir::BookDir(const std::string& path)
 {
 	if (not boost::filesystem::is_directory(path_))
 		throw std::logic_error("(BookDir) Not a directory: " + path_.string());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+BookDir::remove() const
+{
+	boost::filesystem::remove_all(path_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+BookDir::add(const std::string& str) const
+{
+	TAR tar;
+	auto err = tar_block_read(&tar, str.data());
+	if (err)
+		throw std::runtime_error("(BookDir) Could not read tar archive");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -27,6 +27,9 @@ namespace pcw {
 		void add_line_images(Page& page) const;
 		const Path& path() const noexcept {return path_;}
 
+		void remove() const;
+		void add(const std::string& str) const;
+
 	private:
 		void add_line_image(Line& line, const Path& dir, void *pix) const;
 		Path get_page(int id) const;

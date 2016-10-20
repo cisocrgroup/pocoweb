@@ -1,5 +1,6 @@
 #include <cppconn/connection.h>
 #include <crow.h>
+#include "Book.hpp"
 #include "Database.hpp"
 #include "CreateBook.hpp"
 #include "Sessions.hpp"
@@ -36,7 +37,7 @@ CreateBook::operator()(
 	auto book = db->insert_book(author, title);
 	if (not book) // should not happen
 		return internal_server_error();
-	// book->directory.add(request.body());
+	book->directory.add(request.body);
 	db->update_book_pages(*book);
 	db->session().current_book = book;
 	db->commit();

@@ -6,6 +6,7 @@
 #include "Plugin.hpp"
 #include "Route.hpp"
 #include "ApiVersion.hpp"
+#include "CreateBook.hpp"
 
 using AppPtr = std::unique_ptr<pcw::App>;
 static int run(int argc, char** argv);
@@ -30,6 +31,7 @@ run(int argc, char** argv)
 	auto app = get_app(argc, argv);
 	app->register_plugins();
 	app->Register(std::make_unique<pcw::ApiVersion>());
+	app->Register(std::make_unique<pcw::CreateBook>());
 	app->run();
 	return 0;
 }
