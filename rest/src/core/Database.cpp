@@ -139,14 +139,11 @@ Database::get_user_from_result_set(ResultSetPtr res)
 BookPtr 
 Database::insert_book(const std::string& author, const std::string& title)
 {
-	static const char *sql1 = "INSERT INTO bookdata (owner, author, title) "
+	static const char *sql = "INSERT INTO book (owner, author, title) "
 				  "VALUES (?, ?, ?)"
 				  ";";
-	static const char *sql2 = "INSERT INTO book (bookdataid, firstpage, lastpage) "
-				  "VALUES (?, 0, 0);";
 
 	check_session_lock();
-	set_autocommit(false); // insert all or nothing
 	auto conn = connection();
 
 	PreparedStatementPtr s{conn->prepareStatement(sql1)};
@@ -154,19 +151,10 @@ Database::insert_book(const std::string& author, const std::string& title)
 	s->setString(2, author);
 	s->setString(3, title);
 	s->executeUpdate();
-	const auto bookdata_id = last_insert_id(*conn);
-	if (not bookdata_id)
-		return nullptr;
-	
-	s.reset(conn->prepareStatement(sql2));	
-	s->setInt(1, bookdata_id);
-	s->executeUpdate();
 	const auto book_id = last_insert_id(*conn);
 	if (not book_id)
 		return nullptr;
 	
-	commit(); // commit changes to database
-	set_autocommit(true);
 	return std::make_shared<Book>(session_->user, book_id);
 }
 

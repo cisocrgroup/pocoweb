@@ -15,25 +15,19 @@ create table users (
 );
 
 drop table if exists bookdata;
-create table bookdata (
-	bookdataid int not null primary key auto_increment,
+drop table if exists books;
+create table books (
+	bookid int primary key auto_increment,
 	owner int references users(userid),
 	year int,
 	title varchar(100) not null,
 	author varchar(100) not null,
 	description varchar(255),
 	uri varchar(255),
-	directory varchar(255)
-);
-
-drop table if exists books;
-create table books (
-	bookid int primary key auto_increment,
-	bookdataid int references bokdata(bookdataid),
+	directory varchar(255) not null,
 	firstpage int,
 	lastpage int 
 );
-	
 
 drop table if exists pages;
 create table pages (
