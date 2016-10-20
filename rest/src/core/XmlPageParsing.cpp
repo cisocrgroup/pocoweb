@@ -1,12 +1,16 @@
 #include <cstring>
+#include <fstream>
 #include <pugixml.hpp>
 #include "Book.hpp"
 #include "Box.hpp"
 #include "Page.hpp"
 #include "XmlPageParsing.hpp"
 
+namespace fs = boost::filesystem;
 using namespace pugi;
 using namespace pcw;
+
+static size_t add_pages(Book& book, std::istream& is);
 
 // ALTO
 static size_t alto_add_pages(Book& book, const xml_document& xml);
@@ -16,7 +20,17 @@ static Box alto_get_box(const xml_node& node);
 
 ////////////////////////////////////////////////////////////////////////////////
 size_t
-pcw::add_pages(Book& book, std::istream& is)
+pcw::add_pages(const fs::path& path, Book& book)
+{
+	std::ifstream is(path.string());
+	if (not is.good())
+		throw std::system_error(errno, std::system_category(), path.string());
+	return ::add_pages(book, is);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+size_t
+add_pages(Book& book, std::istream& is)
 {
 	xml_document xml;
 	auto ok = xml.load(is);

@@ -1,5 +1,6 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/log/trivial.hpp>
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -8,7 +9,9 @@
 #include "Book.hpp"
 #include "Pix.hpp"
 #include "BookDir.hpp"
+#include "XmlPageParsing.hpp"
 
+namespace fs = boost::filesystem;
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -19,8 +22,8 @@ create_unique_bookdir_path(const Config& config)
 	while (true) {
 		auto id = gensessionid(16);
 		auto dir = path / id;
-		if (not boost::filesystem::is_directory(dir)) {
-			boost::filesystem::create_directory(dir);
+		if (not fs::is_directory(dir)) {
+			fs::create_directory(dir);
 			return dir;
 		}
 	}
@@ -30,14 +33,14 @@ create_unique_bookdir_path(const Config& config)
 BookDir::BookDir(const Config& config)
 	: path_(create_unique_bookdir_path(config))
 {
-	assert(boost::filesystem::is_directory(path_));
+	assert(fs::is_directory(path_));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BookDir::BookDir(const std::string& path)
 	: path_(path)
 {
-	if (not boost::filesystem::is_directory(path_))
+	if (not fs::is_directory(path_))
 		throw std::logic_error("(BookDir) Not a directory: " + path_.string());
 }
 
@@ -45,21 +48,63 @@ BookDir::BookDir(const std::string& path)
 void 
 BookDir::remove() const
 {
-	boost::filesystem::remove_all(path_);
+	fs::remove_all(path_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-BookDir::add(const std::string& str) const
+BookDir::clean_up() const
+{
+	fs::remove_all(tmp_dir());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+BookDir::setup(const std::string& str, Book& book) const
 {
 	auto tdir = tmp_dir();
-	boost::filesystem::create_directory(tdir);
+	fs::create_directory(tdir);
 	auto zip = zip_file();
 	std::ofstream os(zip.string());
 	if (not os.good())
 		throw std::system_error(errno, std::system_category(), zip.string());
 	os << str;
 	os.close();
+	std::string command = "unzip -qq -d " + tdir.string() + " " + zip.string();
+	// std::cerr << "COMMAND: " << command << "\n";
+	auto err = system(command.data());
+	if (err)
+		throw std::runtime_error(command + " returned: " + std::to_string(err));
+	setup(tdir, book);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+BookDir::setup(const Path& dir, Book& book) const
+{
+	assert(fs::is_directory(dir));
+	fs::recursive_directory_iterator i(dir), e;
+	for (; i != e; ++i) {
+		std::cerr << "CHECKING PATH: " << *i << "\n";
+		if (is_ocr_file(*i)) {
+			add_pages(*i, book);
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+BookDir::add_pages(const Path& path, Book& book) const
+{
+	std::cerr << "OCR FILE: " << path << "\n";
+	pcw::add_pages(path, book);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool
+BookDir::is_ocr_file(const Path& path)
+{
+	return fs::is_regular_file(path) and path.extension() == ".xml";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -94,7 +139,7 @@ void
 BookDir::add_line_images(Page& page) const
 {
 	// auto dir = get_page(page.id);
-	// boost::filesystem::create_directory(dir);
+	// fs::create_directory(dir);
 	// PixPtr pix{pixRead(page.imagefile.string().data())};
 	// 
 	// for (auto& line: page) {

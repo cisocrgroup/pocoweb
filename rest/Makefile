@@ -27,7 +27,7 @@ LDFLAGS += -lboost_filesystem
 LDFLAGS += -lcrypto
 
 #VPATH = src/db src/util src/api src/doc gsm/pugixml/src src/ex src
-VPATH = src src/core
+VPATH = src src/core ../modules/pugixml/src
 
 OBJS += BookDir.o
 OBJS += Box.o
@@ -42,6 +42,7 @@ OBJS += CreateBook.o
 OBJS += User.o
 OBJS += Sessions.o
 OBJS += XmlPageParsing.o
+OBJS += pugixml.o
 OBJS += util.o
 OBJS += db.o
 

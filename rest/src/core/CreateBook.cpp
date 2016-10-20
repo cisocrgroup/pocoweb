@@ -41,7 +41,7 @@ CreateBook::operator()(
 		return internal_server_error();
 	try {
 		CROW_LOG_INFO << "(CreateBook) BookDir: " << book->directory.path();
-		book->directory.add(extract_content(request));
+		book->directory.setup(extract_content(request), *book);
 	} catch (const BadRequest& e) {
 		CROW_LOG_ERROR << "(CreateBook) Error: " << e.what();
 		book->directory.remove();

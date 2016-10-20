@@ -33,9 +33,14 @@ namespace pcw {
 		Path ocr_dir() const noexcept {return path_ / "ocr";}
 
 		void remove() const;
-		void add(const std::string& str) const;
+		void clean_up() const;
+		void setup(const std::string& str, Book& book) const;
 
 	private:
+		void setup(const Path& dir, Book& book) const;
+		void add_pages(const Path& path, Book& book) const;
+		static bool is_ocr_file(const Path& dir);
+
 		void add_line_image(Line& line, const Path& dir, void *pix) const;
 		Path get_page(int id) const;
 		static void copy(std::istream& is, const Path& o);
