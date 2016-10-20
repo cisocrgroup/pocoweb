@@ -12,13 +12,6 @@ namespace pcw {
 	struct Config;
 	using PagePtr = std::shared_ptr<Page>;
 	
-	class BookDirError: public std::runtime_error {
-	public:
-		BookDirError(const char *what): std::runtime_error(what) {}
-		BookDirError(const std::string& what): std::runtime_error(what) {}
-		virtual ~BookDirError() noexcept override = default;
-	};
-
 	class BookDir {
 	public:
 		using Path = boost::filesystem::path;

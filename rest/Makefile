@@ -34,6 +34,7 @@ OBJS += Box.o
 OBJS += Config.o
 OBJS += Database.o
 OBJS += Route.o
+OBJS += PostRoute.o
 OBJS += App.o
 OBJS += Line.o
 OBJS += ApiVersion.o

@@ -1,10 +1,10 @@
 #ifndef pcw_CreateBook_hpp__
 #define pcw_CreateBook_hpp__
 
-#include "Route.hpp"
+#include "PostRoute.hpp"
 
 namespace pcw {
-	class CreateBook: public Route {
+	class CreateBook: public PostRoute {
 	public:
 		virtual ~CreateBook() noexcept override = default;
 		virtual void Register(App& app) override;
@@ -17,11 +17,6 @@ namespace pcw {
 		) const;
 
 	private:
-		static std::string raw_content(const crow::request& request);
-		static std::string multipart(const crow::request& request, const std::string& boundary);
-		static std::string raw(const crow::request& request);
-	
-
 		static const char* route_;
 		static const char* name_;
 	};

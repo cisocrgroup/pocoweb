@@ -1,6 +1,7 @@
 #include <cppconn/connection.h>
 #include <regex>
 #include <crow.h>
+#include "BadRequest.hpp"
 #include "Book.hpp"
 #include "Database.hpp"
 #include "CreateBook.hpp"
@@ -40,8 +41,8 @@ CreateBook::operator()(
 		return internal_server_error();
 	try {
 		CROW_LOG_INFO << "(CreateBook) BookDir: " << book->directory.path();
-		book->directory.add(raw_content(request));
-	} catch (const BookDirError& e) {
+		book->directory.add(extract_content(request));
+	} catch (const BadRequest& e) {
 		CROW_LOG_ERROR << "(CreateBook) Error: " << e.what();
 		book->directory.remove();
 		return bad_request();
@@ -52,45 +53,3 @@ CreateBook::operator()(
 	db->commit();
 	return ok();
 }
-
-////////////////////////////////////////////////////////////////////////////////
-std::string 
-CreateBook::raw_content(const crow::request& request)
-{
-	static const std::string ContentType{"Content-Type"};
-	static const std::regex BoundaryRegex{R"(boundary=(.*);?$)"};
-	CROW_LOG_INFO << "### BODY ###\n" << request.body;
-
-	std::smatch m;
-	if (std::regex_search(request.get_header_value(ContentType), m, BoundaryRegex))
-		return multipart(request, m[1]);
-	else 
-		return raw(request);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-std::string 
-CreateBook::multipart(const crow::request& request, const std::string& boundary)
-{
-	CROW_LOG_INFO << "(CreateBook) Boundary in multipart data: " << boundary;
-	auto b = request.body.find("\r\n\r\n");
-	if (b == std::string::npos)
-		throw BookDirError("(CreateBook) Missing '\\r\\n\\r\\n' in multipart data");
-	b += 4;
-	auto e = request.body.rfind(boundary);
-	if (b == std::string::npos)
-		throw BookDirError("(CreateBook) Boundary in multipart data" + boundary);
-	if (e < b)
-		throw BookDirError("(CreateBook) Invalid Boundary in multipart data" + boundary);
-	CROW_LOG_INFO << "(CreateBook) b = " << b << ", e = " << e;
-	
-	return request.body.substr(b, e - b);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-std::string 
-CreateBook::raw(const crow::request& request)
-{
-	return request.body;
-}
-
