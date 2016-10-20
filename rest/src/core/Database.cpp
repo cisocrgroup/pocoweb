@@ -138,7 +138,7 @@ Database::get_user_from_result_set(ResultSetPtr res)
 
 ////////////////////////////////////////////////////////////////////////////////
 BookPtr 
-Database::insert_book(const std::string& author, const std::string& title)
+Database::insert_book(const std::string& author, const std::string& title) const
 {
 	static const char *sql = "INSERT INTO book (owner, author, title, directory) "
 				  "VALUES (?, ?, ?, ?)"
