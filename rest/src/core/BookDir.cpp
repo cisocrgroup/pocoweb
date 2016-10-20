@@ -1,5 +1,6 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/log/trivial.hpp>
+#include <iostream>
 #include <libtar.h>
 #include <fstream>
 #include <sstream>
@@ -52,10 +53,14 @@ BookDir::remove() const
 void 
 BookDir::add(const std::string& str) const
 {
-	TAR tar;
-	auto err = tar_block_read(&tar, str.data());
-	if (err)
-		throw std::runtime_error("(BookDir) Could not read tar archive");
+	auto tdir = tmp_dir();
+	boost::filesystem::create_directory(tdir);
+	auto tar = tdir / "book.tar.gz";
+	std::ofstream os(tar.string());
+	if (not os.good())
+		throw std::system_error(errno, std::system_category(), tar.string());
+	os << str;
+	os.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

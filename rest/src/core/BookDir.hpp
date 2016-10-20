@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <boost/filesystem/path.hpp>
+#include <stdexcept>
 
 namespace pcw {
 	class Book;
@@ -10,6 +11,13 @@ namespace pcw {
 	class Line;
 	struct Config;
 	using PagePtr = std::shared_ptr<Page>;
+	
+	class BookDirError: public std::runtime_error {
+	public:
+		BookDirError(const char *what): std::runtime_error(what) {}
+		BookDirError(const std::string& what): std::runtime_error(what) {}
+		virtual ~BookDirError() noexcept override = default;
+	};
 
 	class BookDir {
 	public:
@@ -26,6 +34,7 @@ namespace pcw {
 		void add_page_ocr(Page& page, std::istream& is) const;
 		void add_line_images(Page& page) const;
 		const Path& path() const noexcept {return path_;}
+		Path tmp_dir() const noexcept {return path_ / ".tmp";}
 
 		void remove() const;
 		void add(const std::string& str) const;
