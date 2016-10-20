@@ -11,7 +11,7 @@ PostRoute::extract_content(const crow::request& request)
 {
 	static const std::string ContentType{"Content-Type"};
 	static const std::regex BoundaryRegex{R"(boundary=(.*);?$)"};
-	CROW_LOG_INFO << "### BODY ###\n" << request.body;
+	// CROW_LOG_INFO << "### BODY ###\n" << request.body;
 
 	std::smatch m;
 	if (std::regex_search(request.get_header_value(ContentType), m, BoundaryRegex))
