@@ -47,14 +47,26 @@ BookFixer::fix_page_and_line_ordering(Book& book) const
 				return a->ocr.stem() < b->ocr.stem();
 			}
 		});
+		update_indizes(book);
 	} else {
 		// sort by path stem
 		std::sort(b, e, [](const auto& a, const auto& b) {
 			return a->ocr.stem() < b->ocr.stem();
 		});
+		update_indizes(book);
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
+void
+BookFixer::update_indizes(Book& book) const
+{
+	int id = 0;
+	for (const auto& page: book) {
+		page->id = ++id;
+	}
+}
+		
 ////////////////////////////////////////////////////////////////////////////////
 void
 BookFixer::fix_image_paths(Book& book) const
