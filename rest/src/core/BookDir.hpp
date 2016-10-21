@@ -41,7 +41,6 @@ namespace pcw {
 
 		void setup(const Path& dir, Book& book) const;
 		void add_pages(const Path& path, Book& book) const;
-		void add_image_path(const Paths& img, Page& page) const;
 		static bool is_ocr_file(const Path& dir);
 		static bool is_img_file(const Path& dir);
 

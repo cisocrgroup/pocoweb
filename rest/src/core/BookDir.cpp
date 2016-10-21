@@ -7,6 +7,7 @@
 #include "util.hpp"
 #include "Config.hpp"
 #include "BadRequest.hpp"
+#include "BookFixer.hpp"
 #include "Book.hpp"
 #include "Page.hpp"
 #include "Pix.hpp"
@@ -95,11 +96,8 @@ BookDir::setup(const Path& dir, Book& book) const
 			imgs.push_back(*i);
 		}
 	}
-	for (const auto& page: book) {
-		if (page) {
-			add_image_path(imgs, *page);
-		}
-	}
+	BookFixer book_fixer(std::move(imgs));
+	book_fixer.fix(book);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -108,18 +106,6 @@ BookDir::add_pages(const Path& ocr, Book& book) const
 {
 	std::cerr << "OCR FILE: " << ocr << "\n";
 	pcw::add_pages(ocr, book);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void
-BookDir::add_image_path(const Paths& imgs, Page& page) const
-{
-	auto i = std::find_if(begin(imgs), end(imgs), [&page](const auto& path) {
-		return path.filename() == page.img.filename();
-	});
-	if (i == end(imgs)) 
-		throw BadRequest("(BookDir) Missing image: " + page.img.string());
-	page.img = *i;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
