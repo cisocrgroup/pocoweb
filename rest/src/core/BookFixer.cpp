@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include "BadRequest.hpp"
 #include "Book.hpp"
@@ -17,6 +18,10 @@ BookFixer::BookFixer(Paths imgs)
 void
 BookFixer::fix(Book& book) const
 {
+	// remove all null pages
+	std::remove_if(begin(book), end(book), [](const auto& page) {
+		return not page;
+	});
 	fix_page_and_line_ordering(book);
 	fix_image_paths(book);
 }
@@ -25,10 +30,60 @@ BookFixer::fix(Book& book) const
 void
 BookFixer::fix_page_and_line_ordering(Book& book) const
 {
+	const auto b = begin(book);
+	const auto e = end(book);
+
+	if (std::any_of(b, e, [](const auto& page) {return page->id > 0;})) {
+		// sort by page index of ocr source file
+		std::sort(b, e, [](const auto& a, const auto& b) {
+			return a->id < b->id;
+		});
+	} else {
+		// sort by filename
+		std::sort(b, e, [](const auto& a, const auto& b) {
+			return a->ocr < b->ocr;
+		});
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 BookFixer::fix_image_paths(Book& book) const
 {
+	for (const auto& page: book) {
+		fix_image_paths(*page);
+	}
 }
+
+////////////////////////////////////////////////////////////////////////////////
+void
+BookFixer::fix_image_paths(Page& page) const
+{
+	const auto b = begin(imgs_);
+	const auto e = end(imgs_);
+
+	// find by the reference in the ocr source file
+	auto i = std::find_if(b, e, [&page](const auto& path) {
+		return path.filename() == page.img.filename();
+	});
+	if (i != e) {
+		page.img = *i;
+		return;
+	}
+
+	// find by matching file names
+	i = std::find_if(b, e, [&page](const auto& path) {
+		return path.stem() == page.ocr.stem();
+	});	
+	if (i != e) {
+		page.img = *i;
+		return;
+	}
+
+	// cannot find the image file
+	throw BadRequest(
+		"(BookFixer) Cannot find image file for " +
+		page.ocr.string() + " (" + page.img.string() + ")"
+	);
+}
+

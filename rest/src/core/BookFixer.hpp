@@ -24,6 +24,7 @@ namespace pcw {
 	private:
 		void fix_page_and_line_ordering(Book& book) const;
 		void fix_image_paths(Book& book) const;
+		void fix_image_paths(Page& page) const;
 
 		const Paths imgs_;
 	};
