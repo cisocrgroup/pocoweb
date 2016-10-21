@@ -2,6 +2,7 @@
 #include <regex>
 #include <crow.h>
 #include "BadRequest.hpp"
+#include "Page.hpp"
 #include "Book.hpp"
 #include "Database.hpp"
 #include "CreateBook.hpp"
@@ -47,6 +48,11 @@ CreateBook::operator()(
 		db->update_book_pages(*book);
 		db->session().current_book = book;
 		db->commit();
+		for (const auto& page: *book) {
+			for (const auto& line: *page) {
+				CROW_LOG_INFO << "(CreateBook) Line: " << line.string();
+			}
+		}
 		return ok();
 	} catch (const BadRequest& e) {
 		CROW_LOG_ERROR << "(CreateBook) Error: " << e.what();

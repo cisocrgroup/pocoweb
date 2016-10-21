@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include "Box.hpp"
+#include "Book.hpp"
 #include "Line.hpp"
 
 namespace pcw {
