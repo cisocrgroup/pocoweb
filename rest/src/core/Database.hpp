@@ -40,9 +40,9 @@ namespace pcw {
 		void delete_user(const std::string& name) const;
 
 		BookPtr insert_book(const std::string& author, const std::string& title) const;
-		void update_book_pages(const Book& book) const;
-		void update_page(const Page& page) const;
-		void update_line(const Line& line) const;
+		void insert_book_pages(const Book& book) const;
+		void insert_page(const Page& page) const;
+		void insert_line(const Line& line) const;
 
 	private:
 		static UserPtr get_user_from_result_set(ResultSetPtr res);

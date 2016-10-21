@@ -166,26 +166,58 @@ Database::insert_book(const std::string& author, const std::string& title) const
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-Database::update_book_pages(const Book& book) const
+Database::insert_book_pages(const Book& book) const
 {
 	for (const auto& page: book) {
 		if (page)
-			update_page(*page);
+			insert_page(*page);
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-Database::update_page(const Page& page) const
+Database::insert_page(const Page& page) const
 {
+	const char* sql = "INSERT INTO pages "
+			  "(bookid, pageid, imagepath, ocrpath, pleft, ptop, pright, pbottom) "
+			  "VALUES (?,?,?,?,?,?,?,?);";
+	
+	auto conn = connection();
+	assert(conn);
+	PreparedStatementPtr s{conn->prepareStatement(sql)};
+	s->setInt(1, page.book.lock()->id);
+	s->setInt(2, page.id);
+	s->setString(3, page.img.string());
+	s->setString(4, page.ocr.string());
+	s->setInt(5, page.box.left());
+	s->setInt(6, page.box.top());
+	s->setInt(7, page.box.right());
+	s->setInt(8, page.box.bottom());
+	s->executeUpdate();
 	for (const auto& line: page) 
-		update_line(line);
+		insert_line(line);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-Database::update_line(const Line& line) const
+Database::insert_line(const Line& line) const
 {
+	const char* sql = "INSERT INTO linesx "
+			  "(bookid, pageid, lineid, imagepath, lstr, lleft, ltop, lright, lbottom) "
+			  "VALUES (?,?,?,?,?,?,?,?,?);";
+	auto conn = connection();
+	assert(conn);
+	PreparedStatementPtr s{conn->prepareStatement(sql)};
+	s->setInt(1, line.page.lock()->book.lock()->id);
+	s->setInt(2, line.page.lock()->id);
+	s->setInt(3, line.id);
+	s->setString(4, line.img.string());
+	s->setString(5, line.string());
+	s->setInt(6, line.box.left());
+	s->setInt(7, line.box.top());
+	s->setInt(8, line.box.right());
+	s->setInt(9, line.box.bottom());
+	s->executeUpdate();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -218,6 +250,9 @@ Database::commit()
 	check_session_lock();
 	if (scope_guard_) {
 		scope_guard_->dismiss();
+		assert(session_);
+		assert(session_->connection);
+		session_->connection->commit();
 	} else {
 		CROW_LOG_ERROR << "(Database) call to commit() in auto commit mode";
 	}
