@@ -45,15 +45,10 @@ CreateBook::operator()(
 		CROW_LOG_INFO << "(CreateBook) BookDir: " << book->directory.path();
 		book->directory.setup(extract_content(request), *book);
 		book->directory.clean_up();
-		db->update_book_pages(*book);
+		db->insert_book_pages(*book);
 		db->session().current_book = book;
 		db->commit();
-		for (const auto& page: *book) {
-			for (const auto& line: *page) {
-				CROW_LOG_INFO << "(CreateBook) Line: " << line.string();
-			}
-		}
-		return ok();
+		return created();
 	} catch (const BadRequest& e) {
 		CROW_LOG_ERROR << "(CreateBook) Error: " << e.what();
 		if (book) 
