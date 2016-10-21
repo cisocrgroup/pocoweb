@@ -1,0 +1,34 @@
+#include <iostream>
+#include "BadRequest.hpp"
+#include "Book.hpp"
+#include "Page.hpp"
+#include "BookFixer.hpp"
+
+namespace fs = boost::filesystem;
+using namespace pcw;
+
+////////////////////////////////////////////////////////////////////////////////
+BookFixer::BookFixer(Paths imgs)
+	: imgs_(std::move(imgs))
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+BookFixer::fix(Book& book) const
+{
+	fix_page_and_line_ordering(book);
+	fix_image_paths(book);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+BookFixer::fix_page_and_line_ordering(Book& book) const
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+BookFixer::fix_image_paths(Book& book) const
+{
+}

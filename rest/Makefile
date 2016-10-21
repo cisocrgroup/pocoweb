@@ -30,6 +30,7 @@ LDFLAGS += -lcrypto
 VPATH = src src/core ../modules/pugixml/src
 
 OBJS += BookDir.o
+OBJS += BookFixer.o
 OBJS += Box.o
 OBJS += Config.o
 OBJS += Database.o
