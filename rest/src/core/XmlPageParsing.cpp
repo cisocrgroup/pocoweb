@@ -19,6 +19,7 @@ static void alto_add_page(Book& book, const xml_node& page_node);
 static void alto_add_lines(Page& page, const xml_node& text_line);
 static Box alto_get_box(const xml_node& node);
 static double alto_get_confidence(const xml_node& node);
+static int alto_get_physical_img_nr(const xml_node& node);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +76,7 @@ alto_add_page(Book& book, const xml_node& page_node)
 {
 	auto text_lines = page_node.select_nodes(".//TextLine");
 	auto box = alto_get_box(page_node);
-	auto id = static_cast<int>(book.size() + 1);
+	auto id = alto_get_physical_img_nr(page_node);
 	auto page = std::make_shared<Page>(book, id, box);
 	book.push_back(page);
 	for (const auto& n: text_lines) {
@@ -123,3 +124,9 @@ alto_get_confidence(const xml_node& node)
 	return node.attribute("WC").as_double();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+int 
+alto_get_physical_img_nr(const xml_node& node)
+{
+	return node.attribute("PHYSICAL_IMG_NR").as_int();
+}

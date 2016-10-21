@@ -21,11 +21,6 @@ namespace pcw {
 		// opens an existing Bookdir
 		BookDir(const std::string& path);
 
-		// first create the image...
-		PagePtr add_page_image(int id, const std::string& ext, std::istream& is) const;
-		// ... then add the ocr (xml) file
-		void add_page_ocr(Page& page, std::istream& is) const;
-		void add_line_images(Page& page) const;
 		const Path& path() const noexcept {return path_;}
 		Path tmp_dir() const noexcept {return path_ / ".tmp";}
 		Path zip_file() const noexcept {return tmp_dir() / "book.zip";}
@@ -40,14 +35,16 @@ namespace pcw {
 		using Paths = std::vector<Path>;
 
 		void setup(const Path& dir, Book& book) const;
-		void add_pages(const Path& path, Book& book) const;
+		void setup_directory_structure(Book& book) const;
+		Path make_page_directory(const Page& page) const;
+		void copy_img_and_ocr_files(const Path& pagedir, Page& page) const;
+		void make_line_img_files(const Path& pagedir, Page& page) const;
+
+		static uint32_t get_img_format(const Path& path) noexcept;
+		static void write_line_img_file(void* pix, const Line& line, uint32_t format);
 		static bool is_ocr_file(const Path& dir);
 		static bool is_img_file(const Path& dir);
-
-		void add_line_image(Line& line, const Path& dir, void *pix) const;
-		Path get_page(int id) const;
-		static void copy(std::istream& is, const Path& o);
-		static std::string get_hex_str(int id);
+		static Path path_from_id(int id);
 
 		const Path path_;
 	};

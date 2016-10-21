@@ -37,7 +37,7 @@ namespace pcw {
 		
 		const std::weak_ptr<Book> book;
 		const Box box;
-		const int id;
+		int id;
 		Path ocr, img;
 	};
 }

@@ -17,7 +17,7 @@ namespace pcw {
 		using Cuts = std::vector<int>;
 		using Confidences = std::vector<double>;
 	
-		Line(Page& page, int i, Box b);
+		Line(Page& page, int i, Box box);
 	
 		bool empty() const noexcept {return string_.empty();}
 		size_t size() const noexcept {return string_.size();}

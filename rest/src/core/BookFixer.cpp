@@ -62,7 +62,7 @@ void
 BookFixer::update_indizes(Book& book) const
 {
 	int id = 0;
-	for (const auto& page: book) {
+	for (auto& page: book) {
 		page->id = ++id;
 	}
 }
