@@ -1,6 +1,7 @@
 #include <cstring>
 #include <fstream>
 #include <pugixml.hpp>
+#include <regex>
 #include "Book.hpp"
 #include "Box.hpp"
 #include "Page.hpp"
@@ -47,9 +48,11 @@ add_pages(const fs::path& p, Book& book, std::istream& is)
 size_t 
 alto_add_pages(const fs::path& p, Book& book, const xml_document& xml)
 {
+	const std::regex drive{R"(^[a-zA-Z]:\\+)"};
 	std::string tmp = xml.select_node(
 		"/alto/Description/sourceImageInformation/fileName"
 	).node().child_value();
+	tmp = std::regex_replace(tmp, drive, "/");
 	std::replace(begin(tmp), end(tmp), '\\', '/'); // fix windows paths?
 	fs::path img(tmp);
 	auto pages = xml.select_nodes(".//Page");
