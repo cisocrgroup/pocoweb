@@ -78,7 +78,7 @@ AltoXmlPageParser::add_line(Page& page, const XmlNode& linenode)
 		} else if (strcmp(node.name(), "SP") == 0) {
 			auto wc = node.attribute("WC").as_double();
 			auto box = get_box(node);
-			line.append(' ', box.left(), box.right(), wc);
+			line.append(' ', box.right(), wc);
 		}
 	}
 	page.push_back(std::move(line));

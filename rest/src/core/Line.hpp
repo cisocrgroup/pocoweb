@@ -29,9 +29,9 @@ namespace pcw {
 		void append(const std::string& str, int l, int r, double c);
 		void append(const std::wstring& str, int l, int r, double c);
 		void append(const char* str, int l, int r, double c);
-		void append(char c, int l, int r, double conf);
 		void append(const wchar_t* str, int l, int r, double c);
-		void append(wchar_t c, int l, int r, double conf);
+		void append(char c, int r, double conf);
+		void append(wchar_t c, int r, double conf);
 
 		const Box box;
 		const int id;
