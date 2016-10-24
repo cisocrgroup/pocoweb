@@ -35,7 +35,7 @@ namespace pcw {
 		void append(const wchar_t* str, size_t n, int l, int r, double c);
 		void append(wchar_t c, int r, double conf);
 
-		const Box box;
+		Box box;
 		const int id;
 		Path img, ocr;
 

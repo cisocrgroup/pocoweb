@@ -46,7 +46,7 @@ namespace pcw {
 			this->back().page_ = shared_from_this();
 		}
 		
-		const Box box;
+		Box box;
 		int id;
 		Path ocr, img;
 
