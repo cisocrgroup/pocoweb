@@ -201,7 +201,7 @@ void
 Database::insert_line(const Line& line) const
 {
 	static const char* sql = 
-		"INSERT INTO linesx "
+		"INSERT INTO textlines "
 		"(bookid, pageid, lineid, imagepath, lleft, ltop, lright, lbottom) "
 		"VALUES (?,?,?,?,?,?,?,?);";
 	static const char* tql = 

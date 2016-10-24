@@ -33,7 +33,6 @@ drop table if exists pages;
 create table pages (
 	bookid int references books(bookid),
 	pageid int,
-	nlines int,
 	imagepath varchar(255) not null,
 	ocrpath varchar(255) not null,
 	pleft int,
@@ -43,8 +42,8 @@ create table pages (
 	primary key (bookid, pageid)
 );
 
-drop table if exists linesx;
-create table linesx (
+drop table if exists textlines;
+create table textlines (
 	bookid int references books(bookid),
 	pageid int references pages(pageid),
 	lineid int,
@@ -60,7 +59,7 @@ drop table if exists contents;
 create table contents (
 	bookid int references books(bookid),
 	pageid int references pages(pageid),
-	lineid int references linesx(lineid),
+	lineid int references textlines(lineid),
 	seq int,
 	letter int not null,
 	cut int,

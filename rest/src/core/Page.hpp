@@ -38,11 +38,11 @@ namespace pcw {
 		BookPtr book() const noexcept {return book_.lock();}
 			
 		void push_back(const Line& line) {
-			this->push_back(line);
+			Base::push_back(line);
 			this->back().page_ = shared_from_this();
 		}
 		void push_back(Line&& line) {
-			this->push_back(line);
+			Base::push_back(std::forward<Line>(line));
 			this->back().page_ = shared_from_this();
 		}
 		

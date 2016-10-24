@@ -8,6 +8,7 @@
 #include <fstream>
 #include <regex>
 #include <sstream>
+#include <crow/logging.h>
 #include "util.hpp"
 #include "Config.hpp"
 #include "BadRequest.hpp"
@@ -86,7 +87,6 @@ BookDir::add_zip_file(const std::string& content)
 		throw std::runtime_error(command + " returned: " + std::to_string(err));
 	fs::recursive_directory_iterator i(tdir), e;
 	for (; i != e; ++i) {
-		std::cerr << "CHECKING PATH: " << *i << "\n";
 		add_file(*i);
 	}
 }
@@ -99,17 +99,21 @@ BookDir::add_file(const Path& path)
 
 	switch (type) {
 	case Type::Llocs:
+		CROW_LOG_INFO << "Llocs file: " << path;
 		ocrs_[path.parent_path()] = type;
 		break;
 	case Type::Img:
+		CROW_LOG_INFO << "Image file: " << path;
 		imgs_.push_back(path);
 		break;
 	case Type::AbbyyXml: // fall through
 	case Type::Hocr: // fall through
 	case Type::AltoXml:
+		CROW_LOG_INFO << "Xml file: " << path;
 		ocrs_[path] = type; 
 		break;
 	case Type::Other: // do nothing
+		CROW_LOG_INFO << "Ignoring file: " << path;
 		break;
 	}
 }
@@ -133,8 +137,9 @@ BookDir::make_book() const
 	for (const auto& ocr: ocrs_) {
 		auto parser = get_page_parser(ocr);
 		assert(parser);
-		while (parser->has_next())
+		while (parser->has_next()) {
 			book->push_back(parser->next());
+		}
 	}
 	return book;
 }
@@ -327,7 +332,6 @@ BookDir::copy_img_and_ocr_files(const Path& pagedir, Page& page) const
 	copy(page.ocr, tocr);
 	auto timg = pagedir/ page.img.filename();
 	copy(page.img, timg);
-	fs::create_hard_link(page.img, timg);
 	page.ocr = tocr;
 	page.img = timg;
 }
@@ -379,7 +383,7 @@ BookDir::write_line_img_file(void *vpix, const Line& line)
 		if (not tmp or pixWrite(line.img.string().data(), tmp.get(), format))
 			throw std::runtime_error("(BookDir) Cannot write img " + line.img.string());
 	} else {
-		std::cerr << "[WARNING] cannot write line image for " << line.string() << "\n";
+		CROW_LOG_WARNING << "Cannot write line image for " << line.string();
 	}
 }
 
@@ -391,6 +395,9 @@ BookDir::copy(const Path& from, const Path& to)
 	boost::system::error_code ec;
 	fs::create_hard_link(from, to);
 	if (ec) { // could not create hard link; try copy
+		CROW_LOG_WARNING << "Could not create hardlink from " 
+				 << from << " to " << to << ": " 
+				 << ec.message();
 		fs::copy_file(from, to);
 	}
 }
