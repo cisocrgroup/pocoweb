@@ -202,8 +202,8 @@ Database::insert_line(const Line& line) const
 {
 	static const char* sql = 
 		"INSERT INTO linesx "
-		"(bookid, pageid, lineid, imagepath, lstr, lleft, ltop, lright, lbottom) "
-		"VALUES (?,?,?,?,?,?,?,?,?);";
+		"(bookid, pageid, lineid, imagepath, lleft, ltop, lright, lbottom) "
+		"VALUES (?,?,?,?,?,?,?,?);";
 	static const char* tql = 
 		"INSERT INTO contents "
 		"(bookid, pageid, lineid, seq, letter, cut, conf) "
@@ -221,11 +221,10 @@ Database::insert_line(const Line& line) const
 	s->setInt(2, pageid);
 	s->setInt(3, line.id);
 	s->setString(4, line.img.string());
-	s->setString(5, line.string());
-	s->setInt(6, line.box.left());
-	s->setInt(7, line.box.top());
-	s->setInt(8, line.box.right());
-	s->setInt(9, line.box.bottom());
+	s->setInt(5, line.box.left());
+	s->setInt(6, line.box.top());
+	s->setInt(7, line.box.right());
+	s->setInt(8, line.box.bottom());
 	s->executeUpdate();
 
 	PreparedStatementPtr t{conn->prepareStatement(tql)};
