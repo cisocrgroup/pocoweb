@@ -49,13 +49,23 @@ create table linesx (
 	pageid int references pages(pageid),
 	lineid int,
 	imagepath varchar(255),
-	lstr varchar(255),
-	cuts varchar(1024),
 	lleft int,
 	ltop int,
 	lright int,
 	lbottom int,
 	primary key (bookid, pageid, lineid)
+);
+	
+drop table if exists contents;
+create table contents (
+	bookid int references books(bookid),
+	pageid int references pages(pageid),
+	lineid int references linesx(lineid),
+	seq int,
+	letter int not null,
+	cut int,
+	conf double,	
+	primary key (bookid, pageid, lineid, seq)
 );
 	
 drop table if exists bookpermissions;
