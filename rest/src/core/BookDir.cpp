@@ -81,7 +81,7 @@ BookDir::add_zip_file(const std::string& content)
 	os << content;
 	os.close();
 	std::string command = "unzip -qq -d " + tdir.string() + " " + zip.string();
-	// std::cerr << "COMMAND: " << command << "\n";
+	CROW_LOG_DEBUG << "(BookDir) Unzip command: " << command;
 	auto err = system(command.data());
 	if (err)
 		throw std::runtime_error(command + " returned: " + std::to_string(err));
@@ -99,21 +99,21 @@ BookDir::add_file(const Path& path)
 
 	switch (type) {
 	case Type::Llocs:
-		CROW_LOG_INFO << "Llocs file: " << path;
+		CROW_LOG_DEBUG << "(BookDir) Llocs file: " << path;
 		ocrs_[path.parent_path()] = type;
 		break;
 	case Type::Img:
-		CROW_LOG_INFO << "Image file: " << path;
+		CROW_LOG_DEBUG << "(BookDir) Image file: " << path;
 		imgs_.push_back(path);
 		break;
 	case Type::AbbyyXml: // fall through
 	case Type::Hocr: // fall through
 	case Type::AltoXml:
-		CROW_LOG_INFO << "Xml file: " << path;
+		CROW_LOG_DEBUG << "(BookDir) Xml file: " << path;
 		ocrs_[path] = type; 
 		break;
 	case Type::Other: // do nothing
-		CROW_LOG_INFO << "Ignoring file: " << path;
+		CROW_LOG_DEBUG << "(BookDir) Ignoring file: " << path;
 		break;
 	}
 }
@@ -175,6 +175,7 @@ BookDir::fix_image_paths(Book& book) const
 void
 BookDir::fix_image_paths(Page& page) const
 {
+	// skip pages with no files (ocropus for example)
 	if (page.ocr.empty())
 		return;
 
@@ -190,9 +191,11 @@ BookDir::fix_image_paths(Page& page) const
 		return;
 	}
 
-	// find by matching file names
-	i = std::find_if(b, e, [&page](const auto& path) {
-		return path.stem() == page.ocr.stem();
+	// find by matching file names (remove all extensions for the comparison)
+	auto stem = page.ocr.filename();
+	stem = stem.string().substr(0, stem.string().find_first_of("."));
+	i = std::find_if(b, e, [&stem](const auto& path) {
+		return path.stem() == stem;
 	});	
 	if (i != e) {
 		page.img = *i;
@@ -200,10 +203,8 @@ BookDir::fix_image_paths(Page& page) const
 	}
 
 	// cannot find the image file
-	throw BadRequest(
-		"(BookDir) Cannot find image file for " +
-		page.ocr.string() + " (" + page.img.string() + ")"
-	);
+	CROW_LOG_WARNING << "(BookDir) Cannot find image file for " << page.ocr;
+	page.img = "";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -344,14 +345,15 @@ BookDir::make_line_img_files(const Path& pagedir, Page& page) const
 	if (not page.img.empty()) {
 		pix.reset(pixRead(page.img.string().data()));
 		if (not pix)
-			throw std::runtime_error("(BookDir) Cannot read image " + page.img.string());
+			throw std::runtime_error(
+				"(BookDir) Cannot read image " + 
+				page.img.string()
+			);
 	}
 	for (auto& line: page) {
 		if (line.img.empty() and not pix) {
-			throw std::runtime_error(
-				"(BookDir) Missing line image for line: " + 
-				line.string()
-			);
+			CROW_LOG_WARNING << "(BookDir) Missing image file for: "
+					 << page.ocr;
 		} else if (line.img.empty() and pix) {
 			line.img = pagedir / path_from_id(line.id);
 			line.img.replace_extension(page.img.extension());
