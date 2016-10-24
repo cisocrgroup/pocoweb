@@ -179,6 +179,7 @@ Database::insert_page(const Page& page) const
 		"(bookid, pageid, imagepath, ocrpath, pleft, ptop, pright, pbottom) "
 		"VALUES (?,?,?,?,?,?,?,?);";
 	
+	check_session_lock();
 	auto conn = connection();
 	assert(conn);
 	PreparedStatementPtr s{conn->prepareStatement(sql)};
@@ -208,6 +209,7 @@ Database::insert_line(const Line& line) const
 		"(bookid, pageid, lineid, seq, letter, cut, conf) "
 		"VALUES (?,?,?,?,?,?,?);";
 
+	check_session_lock();
 	auto conn = connection();
 	assert(conn);
 	const auto pageid = line.page()->id;
