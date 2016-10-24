@@ -32,11 +32,11 @@ namespace pcw {
 
 		using Base::begin;
 		using Base::end;
-		using Base::push_back;
 		using Base::back;
 		using Base::front;
 		using Base::empty;
 		using Base::size;
+		void push_back(PagePtr page);
 		
 		const UserPtr owner;
 		const std::string author, title;

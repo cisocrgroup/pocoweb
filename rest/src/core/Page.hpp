@@ -20,22 +20,32 @@ namespace pcw {
 		using Path = boost::filesystem::path;
 		using Base = std::vector<Line>;
 		using value_type = Base::value_type;
-	
-		Page(Book& book, int i, Box b = {})
-			: book(book.shared_from_this())
+
+		Page(int i, Box b = {})
+			: book()
 			, box(b)
 			, id(i) 
+			, ocr()
+			, img()
 		{}
-
+	
 		using Base::begin;
 		using Base::end;
-		using Base::push_back;
 		using Base::back;
 		using Base::front;
 		using Base::empty;
 		using Base::size;
+		void push_back(const Line& line) {
+			this->push_back(line);
+			this->back().page = shared_from_this();
+		}
+		void push_back(Line&& line) {
+			this->push_back(line);
+			this->back().page = shared_from_this();
+		}
 		
-		const std::weak_ptr<Book> book;
+		
+		std::weak_ptr<Book> book;
 		const Box box;
 		int id;
 		Path ocr, img;

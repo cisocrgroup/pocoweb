@@ -14,7 +14,6 @@
 #include "Page.hpp"
 #include "Pix.hpp"
 #include "BookDir.hpp"
-#include "XmlPageParsing.hpp"
 
 namespace fs = boost::filesystem;
 using namespace pcw;
@@ -94,7 +93,7 @@ BookDir::setup(const Path& dir, Book& book) const
 		std::cerr << "CHECKING PATH: " << *i << "\n";
 		if (is_ocr_file(*i)) {
 			std::cerr << "OCR FILE: " << *i << "\n";
-			pcw::add_pages(*i, book);
+			//pcw::add_pages(*i, book);
 		} else if (is_img_file(*i)) {
 			imgs.push_back(*i);
 		}

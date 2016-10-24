@@ -7,6 +7,7 @@
 #include <string>
 #include <random>
 #include <unistd.h>
+#include <regex>
 #include <openssl/sha.h>
 #include "util.hpp"
 
@@ -111,4 +112,14 @@ pcw::check(const std::string& comb, const std::string& passwd)
 	const auto n = std::distance(comb.data(), ptr);
 	auto hash = dohash(comb.data(), n, passwd.data(), passwd.size());
 	return strcmp(ptr + 1, hash.data()) == 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::string 
+pcw::fix_windows_path(std::string path)
+{
+	const std::regex drive{R"(^[a-zA-Z]:\\+)"};
+	path = std::regex_replace(path, drive, "/");
+	std::replace(begin(path), end(path),  '\\', '/');
+	return path;
 }

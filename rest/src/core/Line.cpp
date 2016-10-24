@@ -14,8 +14,8 @@ using namespace pcw;
 	       string_.size() == confs_.size())
 
 ////////////////////////////////////////////////////////////////////////////////
-Line::Line(Page& page, int i, Box b)
-	: page(page.shared_from_this())
+Line::Line(int i, Box b)
+	: page()
 	, box(b)
 	, id(i)
 	, img()
@@ -24,6 +24,20 @@ Line::Line(Page& page, int i, Box b)
 	, cuts_()
 	, confs_()
 {
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Line::append(const std::string& str, int l, int r, double conf)
+{
+	append(str.data(), l, r, conf);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Line::append(const std::wstring& wstr, int l, int r, double conf)
+{
+	append(wstr.data(), l, r, conf);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

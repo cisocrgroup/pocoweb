@@ -26,12 +26,16 @@ LDFLAGS += -lboost_filesystem
 # LDFLAGS += -lboost_thread
 LDFLAGS += -lcrypto
 
-#VPATH = src/db src/util src/api src/doc gsm/pugixml/src src/ex src
 VPATH = src src/core ../modules/pugixml/src
 
+OBJS += AltoXmlPageParser.o
+OBJS += AbbyyXmlPageParser.o
+OBJS += HocrPageParser.o
+OBJS += LlocsPageParser.o
 OBJS += BookDir.o
 OBJS += BookFixer.o
 OBJS += Box.o
+OBJS += Book.o
 OBJS += Config.o
 OBJS += Database.o
 OBJS += Route.o
@@ -42,7 +46,6 @@ OBJS += ApiVersion.o
 OBJS += CreateBook.o
 OBJS += User.o
 OBJS += Sessions.o
-OBJS += XmlPageParsing.o
 OBJS += pugixml.o
 OBJS += util.o
 OBJS += db.o
