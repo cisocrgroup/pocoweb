@@ -142,8 +142,9 @@ Database::get_user_from_result_set(ResultSetPtr res)
 BookPtr 
 Database::insert_book(Book& book) const
 {
-	static const char *sql = "INSERT INTO books (owner, author, title, directory) "
-				  "VALUES (?, ?, ?, ?)"
+	static const char *sql = "INSERT INTO books "
+				 "(owner, author, title, directory, year, uri) "
+				  "VALUES (?, ?, ?, ?, ?, ?)"
 				  ";";
 
 	check_session_lock();
@@ -155,10 +156,13 @@ Database::insert_book(Book& book) const
 	s->setString(2, book.author);
 	s->setString(3, book.title);
 	s->setString(4, book.dir.string());
+	s->setInt(5, book.year);
+	s->setString(6, book.uri);
 	s->executeUpdate();
 	book.id = last_insert_id(*conn);
 	if (not book.id)
 		return nullptr;
+	book.owner = session_->user;
 	for (const auto& page: book) {
 		assert(page);
 		insert_page(*page);
@@ -170,9 +174,10 @@ Database::insert_book(Book& book) const
 void 
 Database::insert_page(const Page& page) const
 {
-	const char* sql = "INSERT INTO pages "
-			  "(bookid, pageid, imagepath, ocrpath, pleft, ptop, pright, pbottom) "
-			  "VALUES (?,?,?,?,?,?,?,?);";
+	static const char* sql = 
+		"INSERT INTO pages "
+		"(bookid, pageid, imagepath, ocrpath, pleft, ptop, pright, pbottom) "
+		"VALUES (?,?,?,?,?,?,?,?);";
 	
 	auto conn = connection();
 	assert(conn);
@@ -194,14 +199,24 @@ Database::insert_page(const Page& page) const
 void 
 Database::insert_line(const Line& line) const
 {
-	const char* sql = "INSERT INTO linesx "
-			  "(bookid, pageid, lineid, imagepath, lstr, lleft, ltop, lright, lbottom) "
-			  "VALUES (?,?,?,?,?,?,?,?,?);";
+	static const char* sql = 
+		"INSERT INTO linesx "
+		"(bookid, pageid, lineid, imagepath, lstr, lleft, ltop, lright, lbottom) "
+		"VALUES (?,?,?,?,?,?,?,?,?);";
+	static const char* tql = 
+		"INSERT INTO contents "
+		"(bookid, pageid, lineid, seq, letter, cut, conf) "
+		"VALUES (?,?,?,?,?,?,?);";
+
 	auto conn = connection();
 	assert(conn);
+	const auto pageid = line.page()->id;
+	const auto bookid = line.page()->book()->id;
+
 	PreparedStatementPtr s{conn->prepareStatement(sql)};
-	s->setInt(1, line.page()->book()->id);
-	s->setInt(2, line.page()->id);
+	assert(s);
+	s->setInt(1, bookid);
+	s->setInt(2, pageid);
 	s->setInt(3, line.id);
 	s->setString(4, line.img.string());
 	s->setString(5, line.string());
@@ -210,6 +225,19 @@ Database::insert_line(const Line& line) const
 	s->setInt(8, line.box.right());
 	s->setInt(9, line.box.bottom());
 	s->executeUpdate();
+
+	PreparedStatementPtr t{conn->prepareStatement(tql)};
+	assert(t);
+	for (auto i = 0U; i < line.wstring().size(); ++i) {
+		t->setInt(1, bookid);
+		t->setInt(2, pageid);
+		t->setInt(3, line.id);
+		t->setInt(4, static_cast<int>(i));
+		t->setInt(5, line.wstring().at(i));
+		t->setInt(6, line.cuts().at(i));
+		t->setDouble(7, line.confidences().at(i));
+		t->executeUpdate();
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
