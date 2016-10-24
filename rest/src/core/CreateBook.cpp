@@ -8,6 +8,7 @@
 #include "CreateBook.hpp"
 #include "Sessions.hpp"
 #include "ScopeGuard.hpp"
+#include "BookDir.hpp"
 
 #define CREATE_BOOK_ROUTE "/create/book/author/<string>/title/<string>"
 
@@ -32,23 +33,29 @@ CreateBook::operator()(
 	const std::string& title
 ) const {
 	try {
+		// session
 		auto db = database(request);
 		if (not db)
 			return forbidden();
 
+		// create new bookdir
+		BookDir dir(config()); 
+		ScopeGuard sg([&dir](){dir.remove();});
+		CROW_LOG_INFO << "(CreateBook) BookDir: " << dir.dir();
+		dir.add_zip_file(extract_content(request));
+		auto book = dir.build();
+		if (not book)
+			return internal_server_error();
+		
+		// insert book into database
 		std::lock_guard<std::mutex> lock(db->session().mutex);
 		db->set_autocommit(false);
-		auto book = db->insert_book(author, title);
-		if (not book) // should not happen
-			return internal_server_error();
-
-		ScopeGuard sg([&book](){assert(book); book->directory.remove();});
-		CROW_LOG_INFO << "(CreateBook) BookDir: " << book->directory.path();
-		book->directory.setup(extract_content(request), *book);
-		book->directory.clean_up();
-		db->insert_book_pages(*book);
-		db->session().current_book = book;
+		db->insert_book(*book);
 		db->commit();
+
+		// update and clean up
+		db->session().current_book = book;
+		dir.clean_up_tmp_dir();
 		sg.dismiss();
 		return created();
 	} catch (const BadRequest& e) {

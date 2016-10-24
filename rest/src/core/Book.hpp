@@ -1,9 +1,9 @@
 #ifndef pcw_Book_hpp__
 #define pcw_Book_hpp__
 
+#include <boost/filesystem/path.hpp>
 #include <memory>
 #include <vector>
-#include "BookDir.hpp"
 
 namespace pcw {
 	class User;
@@ -12,6 +12,7 @@ namespace pcw {
 	using BookPtr = std::shared_ptr<Book>;
 	class Page;
 	using PagePtr = std::shared_ptr<Page>;
+	using Path = boost::filesystem::path;
 
 	class Book: private std::vector<PagePtr>,
 		    public std::enable_shared_from_this<Book> {
@@ -19,14 +20,14 @@ namespace pcw {
 		using Base = std::vector<PagePtr>;
 		using value_type = Base::value_type;
 	
-		Book(const std::string& a, const std::string& t, UserPtr o, int i, BookDir dir)
-			: owner(std::move(o))
-			, author(a)
-			, title(t)
+		Book()
+			: owner()
+			, author()
+			, title()
 			, description()
 			, uri()
-			, directory(std::move(dir))
-			, id(i) 
+			, dir()
+			, id() 
 			, year()
 		{}
 
@@ -38,11 +39,11 @@ namespace pcw {
 		using Base::size;
 		void push_back(PagePtr page);
 		
-		const UserPtr owner;
-		const std::string author, title;
+		UserPtr owner;
+		std::string author, title;
 		std::string description, uri;
-		const BookDir directory;
-		const int id;
+		Path dir;
+		int id;
 		int year;
 	};
 }

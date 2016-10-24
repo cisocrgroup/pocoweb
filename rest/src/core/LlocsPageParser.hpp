@@ -10,7 +10,7 @@ namespace pcw {
 	class Line;
 	using Path = boost::filesystem::path;
 
-	class LlocsPageParser: virtual PageParser {
+	class LlocsPageParser: public PageParser {
 	public:
 		LlocsPageParser(Path path);
 		virtual ~LlocsPageParser() noexcept override = default;

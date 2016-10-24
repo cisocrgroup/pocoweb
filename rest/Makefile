@@ -46,6 +46,7 @@ OBJS += ApiVersion.o
 OBJS += CreateBook.o
 OBJS += User.o
 OBJS += Sessions.o
+OBJS += XmlFile.o
 OBJS += pugixml.o
 OBJS += util.o
 OBJS += db.o

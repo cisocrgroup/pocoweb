@@ -9,19 +9,10 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
-AbbyyXmlPageParser::is_alto_document(const XmlDocument& xml)
-{
-	return strcmp(xml.document_element().name(), "alto") == 0;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-AbbyyXmlPageParser::AbbyyXmlPageParser(XmlDocumentPtr xml, Path path)
-	: path_(std::move(path))
-	, xml_(std::move(xml))
+AbbyyXmlPageParser::AbbyyXmlPageParser(const Path& path)
+	: XmlFile(path)
 	, done_(false)
 {
-	assert(xml_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,11 +27,11 @@ AbbyyXmlPageParser::next()
 PagePtr
 AbbyyXmlPageParser::parse() const
 {
-	const auto filename = xml_->select_node(	
+	const auto filename = xml_.select_node(	
 		"/alto/Description/sourceImageInformation/fileName"
 	).node().child_value();
 	Path img = fix_windows_path(filename);
-	auto p = xml_->select_node(".//Page");
+	auto p = xml_.select_node(".//Page");
 	auto page = parse(p.node());
 	page->img = img;
 	page->ocr = path_;

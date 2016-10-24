@@ -39,8 +39,7 @@ namespace pcw {
 		void update_user(const User& user) const;
 		void delete_user(const std::string& name) const;
 
-		BookPtr insert_book(const std::string& author, const std::string& title) const;
-		void insert_book_pages(const Book& book) const;
+		BookPtr insert_book(Book& book) const;
 		void insert_page(const Page& page) const;
 		void insert_line(const Line& line) const;
 
