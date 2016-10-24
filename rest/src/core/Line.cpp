@@ -29,14 +29,27 @@ Line::Line(int i, Box b)
 void
 Line::append(const std::string& str, int l, int r, double conf)
 {
-	append(str.data(), l, r, conf);
+	append(str.data(), str.size(), l, r, conf);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 Line::append(const std::wstring& wstr, int l, int r, double conf)
 {
-	append(wstr.data(), l, r, conf);
+	append(wstr.data(), wstr.size(), l, r, conf);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Line::append(const char* str, size_t n, int l, int r, double conf)
+{
+	PRAECONDITION;
+	if (not str or not *str)
+		return;
+	std::wstring wstr;
+	utf8::utf8to32(str, str + n, std::back_inserter(wstr));
+	append(wstr.data(), wstr.size(), l, r, conf);
+	POSTCONDITION;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,33 +59,17 @@ Line::append(const char* str, int l, int r, double conf)
 	PRAECONDITION;
 	if (not str or not *str)
 		return;
-	std::wstring wstr;
-	const int n = strlen(str);
-	utf8::utf8to32(str, str + n, std::back_inserter(wstr));
-	append(wstr.data(), l, r, conf);
-	POSTCONDITION;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void
-Line::append(char c, int r, double conf)
-{
-	PRAECONDITION;
-	string_.push_back(c);
-	cuts_.push_back(r);
-	confs_.push_back(conf);
+	append(str, strlen(str), l, r, conf);
 	POSTCONDITION;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-Line::append(const wchar_t* str, int l, int r, double conf)
+Line::append(const wchar_t* str, size_t n, int l, int r, double conf)
 {
 	PRAECONDITION;
 	if (not str or not *str)
 		return;
-
-	const auto n = wcslen(str);
 	const auto d = box.width() / n;
 	int cut = l;
 	while (*str) {
@@ -85,15 +82,32 @@ Line::append(const wchar_t* str, int l, int r, double conf)
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
+Line::append(const wchar_t* str, int l, int r, double conf)
+{
+	PRAECONDITION;
+	if (not str or not *str)
+		return;
+	append(str, wcslen(str), l, r, conf);
+	POSTCONDITION;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
 Line::append(wchar_t c, int r, double conf)
 {
 	PRAECONDITION;
-	unsigned char buf[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};	
-	utf8::utf32to8(&c, &c + 1, buf);
-	for (auto i = buf; *i; ++i) {
-		string_.push_back(*i);
-		cuts_.push_back(r);
-		confs_.push_back(conf);
-	}
+	string_.push_back(c);
+	cuts_.push_back(r);
+	confs_.push_back(conf);
 	POSTCONDITION;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::string 
+Line::string() const
+{
+	std::string res;	
+	res.reserve(string_.size());
+	utf8::utf32to8(begin(string_), end(string_), std::back_inserter(res));
+	return res;
 }
