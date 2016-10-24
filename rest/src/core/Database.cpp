@@ -185,7 +185,7 @@ Database::insert_page(const Page& page) const
 	auto conn = connection();
 	assert(conn);
 	PreparedStatementPtr s{conn->prepareStatement(sql)};
-	s->setInt(1, page.book.lock()->id);
+	s->setInt(1, page.book()->id);
 	s->setInt(2, page.id);
 	s->setString(3, page.img.string());
 	s->setString(4, page.ocr.string());
@@ -208,8 +208,8 @@ Database::insert_line(const Line& line) const
 	auto conn = connection();
 	assert(conn);
 	PreparedStatementPtr s{conn->prepareStatement(sql)};
-	s->setInt(1, line.page.lock()->book.lock()->id);
-	s->setInt(2, line.page.lock()->id);
+	s->setInt(1, line.page()->book()->id);
+	s->setInt(2, line.page()->id);
 	s->setInt(3, line.id);
 	s->setString(4, line.img.string());
 	s->setString(5, line.string());

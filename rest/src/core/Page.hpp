@@ -22,11 +22,11 @@ namespace pcw {
 		using value_type = Base::value_type;
 
 		Page(int i, Box b = {})
-			: book()
-			, box(b)
+			: box(b)
 			, id(i) 
 			, ocr()
 			, img()
+			, book_()
 		{}
 	
 		using Base::begin;
@@ -35,20 +35,24 @@ namespace pcw {
 		using Base::front;
 		using Base::empty;
 		using Base::size;
+		BookPtr book() const noexcept {return book_.lock();}
+			
 		void push_back(const Line& line) {
 			this->push_back(line);
-			this->back().page = shared_from_this();
+			this->back().page_ = shared_from_this();
 		}
 		void push_back(Line&& line) {
 			this->push_back(line);
-			this->back().page = shared_from_this();
+			this->back().page_ = shared_from_this();
 		}
 		
-		
-		std::weak_ptr<Book> book;
 		const Box box;
 		int id;
 		Path ocr, img;
+
+	private:
+		std::weak_ptr<Book> book_;
+		friend class Book;
 	};
 }
 

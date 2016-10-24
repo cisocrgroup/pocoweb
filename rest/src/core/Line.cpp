@@ -15,14 +15,14 @@ using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 Line::Line(int i, Box b)
-	: page()
-	, box(b)
+	: box(b)
 	, id(i)
 	, img()
 	, ocr()
 	, string_()
 	, cuts_()
 	, confs_()
+	, page_()
 {
 }
 

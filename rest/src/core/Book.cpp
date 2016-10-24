@@ -7,6 +7,8 @@ using namespace pcw;
 void
 Book::push_back(PagePtr page)
 {
-	page->book = shared_from_this();
-	this->push_back(std::move(page));
+	if (page) {
+		this->push_back(std::move(page));
+		this->back()->book_ = shared_from_this();
+	}
 }

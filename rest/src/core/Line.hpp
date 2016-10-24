@@ -24,6 +24,7 @@ namespace pcw {
 		const String& string() const noexcept {return string_;}
 		const Cuts& cuts() const noexcept {return cuts_;}
 		const Confidences& confidences() const noexcept {return confs_;}
+		PagePtr page() const noexcept {return page_.lock();}
 
 		void append(const std::string& str, int l, int r, double c);
 		void append(const std::wstring& str, int l, int r, double c);
@@ -32,7 +33,6 @@ namespace pcw {
 		void append(const wchar_t* str, int l, int r, double c);
 		void append(wchar_t c, int l, int r, double conf);
 
-		std::weak_ptr<Page> page;
 		const Box box;
 		const int id;
 		Path img, ocr;
@@ -41,6 +41,8 @@ namespace pcw {
 		String string_;
 		Cuts cuts_;
 		Confidences confs_;
+		std::weak_ptr<Page> page_;
+		friend class Page;
 	};
 }
 
