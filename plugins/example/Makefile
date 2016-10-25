@@ -1,4 +1,4 @@
-CXXFLAGS := $(CXXFLAGS) -MP -MD
+CXXFLAGS := $(CXXFLAGS)
 CXXFLAGS += -I../../modules/crow/include -I../../rest/src/core -fpic
 
 all: example.so

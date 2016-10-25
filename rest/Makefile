@@ -1,5 +1,4 @@
-CXXFLAGS ?= -Wall -Werror -std=gnu++14 -g
-CXXFLAGS := $(CXXFLAGS) -MP -MD
+CXXFLAGS := $(CXXFLAGS)
 CXXFLAGS += -fpic
 CXXFLAGS += -I src/core
 CXXFLAGS += -I ../modules/crow/include
