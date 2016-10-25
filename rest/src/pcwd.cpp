@@ -29,6 +29,7 @@ int
 run(int argc, char** argv)
 {
 	auto app = get_app(argc, argv);
+	crow::logger::setLogLevel(crow::LogLevel(app->config().log.level));
 	app->register_plugins();
 	app->Register(std::make_unique<pcw::ApiVersion>());
 	app->Register(std::make_unique<pcw::CreateBook>());
