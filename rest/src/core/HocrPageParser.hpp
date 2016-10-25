@@ -10,21 +10,25 @@ namespace pcw {
 	class Box;
 
 	class HocrPageParser: public PageParser, 
-			      public XmlFile {
+			      public XmlFile,
+			      public pugi::xml_tree_walker {
 	public:
 		HocrPageParser(const Path& path);
 		virtual ~HocrPageParser() noexcept override = default;
-		virtual bool has_next() const noexcept override {return not done_;}
+		virtual bool has_next() const noexcept override {return page_node_;}
 		virtual PagePtr next() override;
+		virtual bool begin(XmlNode& node) override;
+		virtual bool for_each(XmlNode& node) override;
 
 	private:
-		PagePtr parse() const;
+		void next_page();
 
-		static PagePtr parse(const XmlNode& pagenode);
-		static void add_line(Page& page, const XmlNode& linenode);
+		static double get_conf(const XmlNode& node);
+		static std::string get_img(const XmlNode& node);
 		static Box get_box(const XmlNode& node);
 
-		bool done_;
+		XmlNode page_node_;
+		PagePtr page_;
 	};
 }
 

@@ -1,5 +1,7 @@
 #include <cstring>
 #include <pugixml.hpp>
+#include <regex>
+#include "BadRequest.hpp"
 #include "HocrPageParser.hpp"
 #include "Page.hpp"
 #include "Line.hpp"
@@ -11,79 +13,100 @@ using namespace pcw;
 ////////////////////////////////////////////////////////////////////////////////
 HocrPageParser::HocrPageParser(const Path& path)
 	: XmlFile(path)
-	, done_(false)
+	, page_node_()
+	, page_()
 {
-	assert(xml_);
+	page_node_ = xml_.select_node("/html/body/div[@class='ocr_page']").node();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 PagePtr 
 HocrPageParser::next() 
 {
-	done_ = true; // alto documents contain just one page
-	return parse();
+	assert(page_node_);
+	page_node_.traverse(*this);
+	assert(page_);
+	next_page();
+	return page_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-PagePtr
-HocrPageParser::parse() const
+bool
+HocrPageParser::begin(XmlNode& node)
 {
-	const auto filename = xml_.select_node(	
-		"/alto/Description/sourceImageInformation/fileName"
-	).node().child_value();
-	Path img = fix_windows_path(filename);
-	auto p = xml_.select_node(".//Page");
-	auto page = parse(p.node());
-	page->img = img;
-	page->ocr = path_;
-	return page;
+	auto box = get_box(node);
+	auto img = get_img(node);
+	page_ = std::make_shared<Page>(0, box);
+	page_->img = img;
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-PagePtr
-HocrPageParser::parse(const XmlNode& pagenode) 
+bool
+HocrPageParser::for_each(XmlNode& node)
 {
-	const auto textlines = pagenode.select_nodes(".//TextLine");
-	const auto box = get_box(pagenode);
-	const auto id = pagenode.attribute("PHYSICAL_IMG_NR").as_int();
-	auto page = std::make_shared<Page>(id, box);
-	for (const auto& l: textlines) {
-		add_line(*page, l.node());
+	if (strcasecmp(node.name(), "span")) {
+		if (strcmp(node.attribute("class").value(), "ocr_line") == 0) {
+			assert(page_);
+			auto box = get_box(node);
+			auto id = static_cast<int>(page_->size() + 1);
+			page_->push_back({id, box});
+		} else if (strcmp(node.attribute("class").value(), "ocrx_word") == 0) {
+			if (page_->empty())
+				throw std::runtime_error("(HocrPageParser) Missing class='ocr_line'");
+			auto box = get_box(node);
+			auto conf = get_conf(node);
+			if (not page_->back().empty()) {
+				page_->back().append(' ', box.left(), 0);
+			}
+			page_->back().append(node.child_value(), box.left(), box.right(), conf);
+		}
 	}
-	return page;
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-HocrPageParser::add_line(Page& page, const XmlNode& linenode)
+HocrPageParser::next_page()
 {
-	const auto id = static_cast<int>(page.size() + 1);
-	const auto box = get_box(linenode);
-	Line line(id, box);	
-
-	for (const auto& node: linenode.children()) {
-		if (strcmp(node.name(), "String") == 0) {
-			auto wc = node.attribute("WC").as_double();
-			auto box = get_box(node);
-			auto token = node.attribute("CONTENT").value();
-			line.append(token, box.left(), box.right(), wc);
-		} else if (strcmp(node.name(), "SP") == 0) {
-			auto wc = node.attribute("WC").as_double();
-			auto box = get_box(node);
-			line.append(' ', box.right(), wc);
-		}
+	bool done = false;
+	while (page_node_ and not done) {
+		page_node_ = page_node_.next_sibling("div");
+		if (strcmp(page_node_.attribute("class").value(), "ocr_page") == 0)
+			done = true;
 	}
-	page.push_back(std::move(line));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Box 
+double
+HocrPageParser::get_conf(const XmlNode& node)
+{
+	static const std::regex re{R"(x_wconf\s+(\d+))"};
+	std::cmatch m;
+	if (std::regex_search(node.attribute("title").value(), m, re))
+		return static_cast<double>(std::stoi(m[1])) / 100;
+	return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::string
+HocrPageParser::get_img(const XmlNode& node)
+{
+	static const std::regex re{R"xx(title\s+"(.*)")xx"};
+	std::cmatch m;
+	if (std::regex_search(node.attribute("title").value(), m, re))
+		return m[1];
+	return {};
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Box
 HocrPageParser::get_box(const XmlNode& node)
 {
-	const auto l = node.attribute("VPOS").as_int();
-	const auto t = node.attribute("HPOS").as_int();
-	const auto w = node.attribute("WIDTH").as_int();
-	const auto h = node.attribute("HEIGHT").as_int();
-	return Box{l, t, l + w, t + h};
+	static const std::regex re{R"(bbox\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+))"};
+	std::cmatch m;
+	if (not std::regex_search(node.attribute("title").value(), m, re))
+		throw BadRequest("(HocrPageParser) Missing bbox");
+	return Box {std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4])};
 }
 
