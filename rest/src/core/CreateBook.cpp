@@ -55,7 +55,6 @@ CreateBook::operator()(
 
 		// update and clean up
 		db->session().current_book = book;
-		dir.clean_up_tmp_dir();
 		sg.dismiss();
 		return created();
 	} catch (const BadRequest& e) {

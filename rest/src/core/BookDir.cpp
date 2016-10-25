@@ -41,17 +41,30 @@ create_unique_bookdir_path(const Config& config)
 
 ////////////////////////////////////////////////////////////////////////////////
 BookDir::BookDir(const Config& config)
-	: dir_(create_unique_bookdir_path(config))
+	: BookDir(create_unique_bookdir_path(config))
 {
 	assert(fs::is_directory(dir_));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BookDir::BookDir(Path path)
-	: dir_(std::move(path))
+	: dir_(path)
+	, tmp_dir_(path / ".tmp")
+	, line_img_dir_(path / "line-images")
 {
-	if (not fs::is_directory(dir_))
-		throw std::logic_error("(BookDir) Not a directory: " + dir_.string());
+	assert(fs::is_directory(dir_));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BookDir::~BookDir() noexcept
+{
+	// clean up tmp directory; do not throw
+	boost::system::error_code ec;
+	fs::remove_all(tmp_dir(), ec);
+	if (ec) {
+		CROW_LOG_WARNING << "(BookDir) Could not remove " 
+				 << tmp_dir() << ": " << ec.message();
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,13 +72,6 @@ void
 BookDir::remove() const
 {
 	fs::remove_all(dir_);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void 
-BookDir::clean_up_tmp_dir() const
-{
-	fs::remove_all(tmp_dir());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -175,7 +181,7 @@ BookDir::fix_image_paths(Book& book) const
 void
 BookDir::fix_image_paths(Page& page) const
 {
-	// skip pages with no files (ocropus for example)
+	// skip pages with no ocr and img files (ocropus for example)
 	if (page.ocr.empty())
 		return;
 
@@ -308,33 +314,28 @@ BookDir::setup(const Book& book) const
 {
 	for (const auto& page: book) {
 		assert(page);
-		auto pagedir = make_page_directory(*page);
-		copy_img_and_ocr_files(pagedir, *page);
+		setup_img_and_ocr_files(*page);
+		const auto pagedir = line_img_dir() / path_from_id(page->id);
 		make_line_img_files(pagedir, *page);
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookDir::Path
-BookDir::make_page_directory(const Page& page) const
-{
-	Path pagedir = dir_ / path_from_id(page.id);
-	fs::create_directory(pagedir);
-	return pagedir;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 void
-BookDir::copy_img_and_ocr_files(const Path& pagedir, Page& page) const
+BookDir::setup_img_and_ocr_files(Page& page) const
 {
-	if (page.ocr.empty())
-		return;
-	auto tocr = pagedir / page.ocr.filename();
-	copy(page.ocr, tocr);
-	auto timg = pagedir/ page.img.filename();
-	copy(page.img, timg);
-	page.ocr = tocr;
-	page.img = timg;
+	auto do_copy = [this](const auto& path) {
+		auto to = dir_ / remove_common_base_path(path, tmp_dir());
+		fs::create_directories(to.parent_path());
+		copy(path, to);
+		return to;
+	};
+	if (page.has_ocr_path()) {
+		page.ocr = do_copy(page.ocr);
+	}
+	if (page.has_img_path()) {
+		page.img = do_copy(page.img);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -342,7 +343,7 @@ void
 BookDir::make_line_img_files(const Path& pagedir, Page& page) const
 {
 	PixPtr pix; 
-	if (not page.img.empty()) {
+	if (page.has_img_path()) {
 		pix.reset(pixRead(page.img.string().data()));
 		if (not pix)
 			throw std::runtime_error(
@@ -351,17 +352,19 @@ BookDir::make_line_img_files(const Path& pagedir, Page& page) const
 			);
 	}
 	for (auto& line: page) {
-		if (line.img.empty() and not pix) {
+		if (not line.has_img_path() and not pix) {
 			CROW_LOG_WARNING << "(BookDir) Missing image file for: "
 					 << page.ocr;
-		} else if (line.img.empty() and pix) {
+		} else if (not line.has_img_path() and pix) {
 			line.img = pagedir / path_from_id(line.id);
 			line.img.replace_extension(page.img.extension());
+			fs::create_directories(pagedir);
 			write_line_img_file(pix.get(), line);
-		} else {
-			auto tfile = pagedir / line.img.filename();
-			copy(line.img, tfile);
-			line.img = tfile;
+		} else if (line.has_img_path()) {
+			auto to = dir_ / remove_common_base_path(line.img, tmp_dir());
+			fs::create_directories(to.parent_path());
+			copy(line.img, to);
+			line.img = to;
 		}
 	}
 }
@@ -393,9 +396,10 @@ BookDir::write_line_img_file(void *vpix, const Line& line)
 void
 BookDir::copy(const Path& from, const Path& to)
 {
+	CROW_LOG_DEBUG << "(BookDir) copying " << from << " to " << to;
 	// fs::create_hard_link(to, from); TODO: ??!!
 	boost::system::error_code ec;
-	fs::create_hard_link(from, to);
+	fs::create_hard_link(from, to, ec);
 	if (ec) { // could not create hard link; try copy
 		CROW_LOG_WARNING << "Could not create hardlink from " 
 				 << from << " to " << to << ": " 
@@ -411,4 +415,19 @@ BookDir::path_from_id(int id)
 	std::stringstream os;
 	os << std::hex << std::setw(10) << std::setfill('0') << id;
 	return os.str();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Path 
+BookDir::remove_common_base_path(const Path& p, const Path& base)
+{
+	auto i = std::mismatch(p.begin(), p.end(), base.begin(), base.end());
+	if (i.first != p.end()) {
+		Path res;
+		for (auto j = i.first; j != p.end(); ++j) {
+			res /= *j;
+		}
+		return res;
+	}
+	return p;
 }
