@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cppconn/connection.h>
 #include <cppconn/prepared_statement.h>
+#include <crow/logging.h>
 #include "Book.hpp"
 #include "Page.hpp"
 #include "Line.hpp"
@@ -151,94 +152,118 @@ Database::insert_book(Book& book) const
 	auto conn = connection();
 	assert(conn);
 
-	PreparedStatementPtr s{conn->prepareStatement(sql)};
-	s->setInt(1, session_->user->id);
-	s->setString(2, book.author);
-	s->setString(3, book.title);
-	s->setString(4, book.dir.string());
-	s->setInt(5, book.year);
-	s->setString(6, book.uri);
-	s->executeUpdate();
+	PreparedStatementPtr bs{conn->prepareStatement(sql)};
+	auto ps = make_insert_page_statement(*conn);
+	auto ls = make_insert_line_statement(*conn);
+	auto cs = make_insert_content_statement(*conn);
+	assert(bs);
+	assert(ps);
+	assert(ls);
+	assert(cs);
+
+	bs->setInt(1, session_->user->id);
+	bs->setString(2, book.author);
+	bs->setString(3, book.title);
+	bs->setString(4, book.dir.string());
+	bs->setInt(5, book.year);
+	bs->setString(6, book.uri);
+	bs->executeUpdate();
 	book.id = last_insert_id(*conn);
 	if (not book.id)
 		return nullptr;
-	book.owner = session_->user;
 	for (const auto& page: book) {
 		assert(page);
-		insert_page(*page);
+		insert_page(*page, *ps, *ls, *cs);
 	}
+
+	book.owner = session_->user;
 	return book.shared_from_this();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-Database::insert_page(const Page& page) const
+Database::insert_page(
+	const Page& page,
+	sql::PreparedStatement& ps,
+	sql::PreparedStatement& ls,
+	sql::PreparedStatement& cs
+) const {
+	ps.setInt(1, page.book()->id);
+	ps.setInt(2, page.id);
+	ps.setString(3, page.img.string());
+	ps.setString(4, page.ocr.string());
+	ps.setInt(5, page.box.left());
+	ps.setInt(6, page.box.top());
+	ps.setInt(7, page.box.right());
+	ps.setInt(8, page.box.bottom());
+	ps.executeUpdate();
+	for (const auto& line: page) 
+		insert_line(line, ls, cs);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Database::insert_line(
+	const Line& line, 
+	sql::PreparedStatement& ls,
+	sql::PreparedStatement& cs
+) const {
+	const auto pageid = line.page()->id;
+	const auto bookid = line.page()->book()->id;
+
+	ls.setInt(1, bookid);
+	ls.setInt(2, pageid);
+	ls.setInt(3, line.id);
+	ls.setString(4, line.img.string());
+	ls.setInt(5, line.box.left());
+	ls.setInt(6, line.box.top());
+	ls.setInt(7, line.box.right());
+	ls.setInt(8, line.box.bottom());
+	ls.executeUpdate();
+
+	for (auto i = 0U; i < line.wstring().size(); ++i) {
+		cs.setInt(1, bookid);
+		cs.setInt(2, pageid);
+		cs.setInt(3, line.id);
+		cs.setInt(4, static_cast<int>(i));
+		cs.setInt(5, line.wstring().at(i));
+		cs.setInt(6, line.cuts().at(i));
+		cs.setDouble(7, line.confidences().at(i));
+		cs.executeUpdate();
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+PreparedStatementPtr 
+Database::make_insert_page_statement(sql::Connection& conn)
 {
 	static const char* sql = 
 		"INSERT INTO pages "
 		"(bookid, pageid, imagepath, ocrpath, pleft, ptop, pright, pbottom) "
 		"VALUES (?,?,?,?,?,?,?,?);";
-	
-	check_session_lock();
-	auto conn = connection();
-	assert(conn);
-	PreparedStatementPtr s{conn->prepareStatement(sql)};
-	s->setInt(1, page.book()->id);
-	s->setInt(2, page.id);
-	s->setString(3, page.img.string());
-	s->setString(4, page.ocr.string());
-	s->setInt(5, page.box.left());
-	s->setInt(6, page.box.top());
-	s->setInt(7, page.box.right());
-	s->setInt(8, page.box.bottom());
-	s->executeUpdate();
-	for (const auto& line: page) 
-		insert_line(line);
+	return PreparedStatementPtr{conn.prepareStatement(sql)};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
-Database::insert_line(const Line& line) const
+PreparedStatementPtr 
+Database::make_insert_line_statement(sql::Connection& conn)
 {
 	static const char* sql = 
 		"INSERT INTO textlines "
 		"(bookid, pageid, lineid, imagepath, lleft, ltop, lright, lbottom) "
 		"VALUES (?,?,?,?,?,?,?,?);";
-	static const char* tql = 
+	return PreparedStatementPtr{conn.prepareStatement(sql)};
+}
+
+////////////////////////////////////////////////////////////////////////////////
+PreparedStatementPtr 
+Database::make_insert_content_statement(sql::Connection& conn)
+{
+	static const char* sql = 
 		"INSERT INTO contents "
 		"(bookid, pageid, lineid, seq, letter, cut, conf) "
 		"VALUES (?,?,?,?,?,?,?);";
-
-	check_session_lock();
-	auto conn = connection();
-	assert(conn);
-	const auto pageid = line.page()->id;
-	const auto bookid = line.page()->book()->id;
-
-	PreparedStatementPtr s{conn->prepareStatement(sql)};
-	assert(s);
-	s->setInt(1, bookid);
-	s->setInt(2, pageid);
-	s->setInt(3, line.id);
-	s->setString(4, line.img.string());
-	s->setInt(5, line.box.left());
-	s->setInt(6, line.box.top());
-	s->setInt(7, line.box.right());
-	s->setInt(8, line.box.bottom());
-	s->executeUpdate();
-
-	PreparedStatementPtr t{conn->prepareStatement(tql)};
-	assert(t);
-	for (auto i = 0U; i < line.wstring().size(); ++i) {
-		t->setInt(1, bookid);
-		t->setInt(2, pageid);
-		t->setInt(3, line.id);
-		t->setInt(4, static_cast<int>(i));
-		t->setInt(5, line.wstring().at(i));
-		t->setInt(6, line.cuts().at(i));
-		t->setDouble(7, line.confidences().at(i));
-		t->executeUpdate();
-	}
+	return PreparedStatementPtr{conn.prepareStatement(sql)};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -268,6 +293,7 @@ Database::set_autocommit(bool ac)
 void 
 Database::commit()
 {
+	CROW_LOG_INFO << "(Database) Committing data";
 	check_session_lock();
 	if (scope_guard_) {
 		scope_guard_->dismiss();

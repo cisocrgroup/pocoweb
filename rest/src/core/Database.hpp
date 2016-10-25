@@ -4,11 +4,7 @@
 #include <boost/optional.hpp>
 #include <memory>
 #include "ScopeGuard.hpp"
-
-namespace sql {
-	class Connection;
-	class ResultSet;
-}
+#include "db.hpp"
 
 namespace pcw {
 	class Session;
@@ -40,14 +36,27 @@ namespace pcw {
 		void delete_user(const std::string& name) const;
 
 		BookPtr insert_book(Book& book) const;
-		void insert_page(const Page& page) const;
-		void insert_line(const Line& line) const;
 
 	private:
-		static UserPtr get_user_from_result_set(ResultSetPtr res);
+		void insert_page(
+			const Page& page, 
+			sql::PreparedStatement& ps,
+			sql::PreparedStatement& ls,
+			sql::PreparedStatement& cs
+		) const;
+		void insert_line(
+			const Line& line, 
+			sql::PreparedStatement& ls,
+			sql::PreparedStatement& cs
+		) const;
 		void check_session_lock() const;
 		int last_insert_id(sql::Connection& conn) const;
 		sql::Connection* connection() const;
+
+		static UserPtr get_user_from_result_set(ResultSetPtr res);
+		static PreparedStatementPtr make_insert_line_statement(sql::Connection& conn);
+		static PreparedStatementPtr make_insert_page_statement(sql::Connection& conn);
+		static PreparedStatementPtr make_insert_content_statement(sql::Connection& conn);
 
 		boost::optional<ScopeGuard> scope_guard_;
 		const SessionPtr session_;
