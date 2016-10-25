@@ -58,6 +58,7 @@ BookDir::BookDir(Path path)
 ////////////////////////////////////////////////////////////////////////////////
 BookDir::~BookDir() noexcept
 {
+	CROW_LOG_INFO << "(BookDir) Removing tmp dir " << tmp_dir(); 
 	// clean up tmp directory; do not throw
 	boost::system::error_code ec;
 	fs::remove_all(tmp_dir(), ec);

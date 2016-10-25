@@ -48,12 +48,14 @@ CreateBook::operator()(
 			return internal_server_error();
 		
 		// insert book into database
+		CROW_LOG_INFO << "(CreateBook) Inserting new book into database";
 		std::lock_guard<std::mutex> lock(db->session().mutex);
 		db->set_autocommit(false);
 		db->insert_book(*book);
 		db->commit();
 
 		// update and clean up
+		CROW_LOG_INFO << "(CreateBook) Created new book id: " << book->id;
 		db->session().current_book = book;
 		sg.dismiss();
 		return created();
