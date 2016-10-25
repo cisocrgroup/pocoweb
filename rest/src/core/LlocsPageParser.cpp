@@ -1,4 +1,6 @@
 #include <boost/filesystem/operations.hpp>
+#include <boost/foreach.hpp>
+#include <iostream>
 #include <cstring>
 #include <fstream>
 #include <regex>
@@ -35,24 +37,27 @@ PagePtr
 LlocsPageParser::parse() const
 {
 	std::vector<std::pair<Path, Path>> llocs;
-	for (const auto& file: dir_) {
+	fs::directory_iterator b(dir_), e;
+	BOOST_FOREACH(const auto& file, std::make_pair(b, e)) {
+	// for (const auto& file: dir_) {
 		auto pair = get_path_pair(file);
-		if (pair)
+		if (pair) {
 			llocs.push_back(*pair);
+		}
 	}
 	std::sort(begin(llocs), end(llocs));
 	auto page = std::make_shared<Page>(id_);
 	for (int i = 0; i < static_cast<int>(llocs.size()); ++i) {
 		page->push_back(parse_line(i + 1, llocs[i]));
 	}
-	return nullptr;
+	return page;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Line 
 LlocsPageParser::parse_line(int i, const PathPair& p)
 {
-	static const std::regex linere{R"((.*)\t(\d*\.\d+)(\t(\d*\.\d+))?)"};
+	static const std::regex linere{R"((.*)\t(-?\d*\.\d+)(\t(\d*\.\d+))?)"};
 	std::ifstream is(p.first.string());
 	if (not is.good())
 		throw std::system_error(errno, std::system_category(), p.first.string());
@@ -64,12 +69,14 @@ LlocsPageParser::parse_line(int i, const PathPair& p)
 		if (not std::regex_match(tmp, m, linere))
 			throw BadRequest(
 				"(LLocsPageParser) Invalid llocs file: " +
-				p.first.string()
+				p.first.string() + " (" + tmp + ")"
 			);
 		double cut = std::stod(m[2]);
 		double conf = 0;
 		if (m[4].length())
 			conf = std::stod(m[4]);
+		if (cut < 0) // fix cuts smaller than 0 (does happen)
+			cut = 0;
 		line.append(m[1], 0, static_cast<int>(cut), conf);
 	}
 	return line;
@@ -79,20 +86,23 @@ LlocsPageParser::parse_line(int i, const PathPair& p)
 boost::optional<LlocsPageParser::PathPair> 
 LlocsPageParser::get_path_pair(const Path& file)
 {
-	if (fs::is_regular_file(file)) {
+	if (fs::is_regular_file(file) and file.extension() == ".llocs") {
 		auto img = file;
-		img.replace_extension(".png");
-		if (fs::is_regular_file(img)) 
-			return std::make_pair(file, img);
-		img.replace_extension(".dew");
-		img += ".png";
-		if (fs::is_regular_file(img))
-			return std::make_pair(file, img);
-		img.stem();
-		img.replace_extension(".bin");
-		img += ".png";
-		if (fs::is_regular_file(img))
-			return std::make_pair(file, img);
+		for (const auto ext: {".png", ".jpg", ".jpeg", ".tif", ".tiff"}) {
+			img.replace_extension(ext);
+			if (fs::is_regular_file(img)) 
+				return std::make_pair(file, img);
+			img.replace_extension(".dew");
+			img += ext;
+			if (fs::is_regular_file(img))
+				return std::make_pair(file, img);
+			img.replace_extension();
+			img.replace_extension(".bin");
+			img += ext;
+			if (fs::is_regular_file(img))
+				return std::make_pair(file, img);
+			img.replace_extension();
+		}
 	}
 	return {};
 }
