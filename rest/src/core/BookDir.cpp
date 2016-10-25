@@ -266,7 +266,7 @@ BookDir::get_page_parser(const Ocrs::value_type& ocr)
 BookDir::Type 
 BookDir::get_file_type(const Path& path)
 {
-	static const std::regex html{R"(\.html?$)", std::regex_constants::icase};
+	static const std::regex hocr{R"(\.((html?)|(hocr))$)", std::regex_constants::icase};
 	static const std::regex xml{R"(\.xml$)", std::regex_constants::icase};
 	static const std::regex llocs{R"(\.llocs$)"};
 	static const std::regex img{
@@ -280,7 +280,7 @@ BookDir::get_file_type(const Path& path)
 		return Type::Llocs;
 	if (std::regex_search(str, xml)) 
 		return get_xml_file_type(path);
-	if (std::regex_search(str, html))
+	if (std::regex_search(str, hocr))
 		return Type::Hocr;
 	return Type::Other;
 }

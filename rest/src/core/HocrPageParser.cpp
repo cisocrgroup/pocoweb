@@ -1,4 +1,5 @@
 #include <cstring>
+#include <iostream>
 #include <pugixml.hpp>
 #include <regex>
 #include "BadRequest.hpp"
@@ -37,6 +38,7 @@ HocrPageParser::begin(XmlNode& node)
 	auto box = get_box(node);
 	auto img = get_img(node);
 	page_ = std::make_shared<Page>(0, box);
+	page_->ocr = path_;
 	page_->img = img;
 	return true;
 }
@@ -45,7 +47,7 @@ HocrPageParser::begin(XmlNode& node)
 bool
 HocrPageParser::for_each(XmlNode& node)
 {
-	if (strcasecmp(node.name(), "span")) {
+	if (strcasecmp(node.name(), "span") == 0) {
 		if (strcmp(node.attribute("class").value(), "ocr_line") == 0) {
 			assert(page_);
 			auto box = get_box(node);
