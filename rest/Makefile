@@ -43,6 +43,7 @@ OBJS += App.o
 OBJS += Line.o
 OBJS += ApiVersion.o
 OBJS += CreateBook.o
+OBJS += GetBooks.o
 OBJS += User.o
 OBJS += Sessions.o
 OBJS += XmlFile.o

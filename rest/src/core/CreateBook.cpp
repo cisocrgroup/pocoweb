@@ -46,6 +46,8 @@ CreateBook::operator()(
 		auto book = dir.build();
 		if (not book)
 			return internal_server_error();
+		book->author = author;
+		book->title = title;
 		
 		// insert book into database
 		CROW_LOG_INFO << "(CreateBook) Inserting new book into database";

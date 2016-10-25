@@ -37,6 +37,7 @@ namespace pcw {
 		using Base::front;
 		using Base::empty;
 		using Base::size;
+		using Base::operator[];
 		void push_back(PagePtr page);
 		
 		UserPtr owner;
