@@ -26,6 +26,7 @@ namespace pcw {
 		const Cuts& cuts() const noexcept {return cuts_;}
 		const Confidences& confidences() const noexcept {return confs_;}
 		PagePtr page() const noexcept {return page_.lock();}
+		bool has_img_path() const noexcept {return not img.empty();}
 
 		void append(const std::string& str, int l, int r, double c);
 		void append(const std::wstring& str, int l, int r, double c);

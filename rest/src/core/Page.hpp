@@ -45,6 +45,8 @@ namespace pcw {
 			Base::push_back(std::forward<Line>(line));
 			this->back().page_ = shared_from_this();
 		}
+		bool has_ocr_path() const noexcept {return not ocr.empty();}
+		bool has_img_path() const noexcept {return not img.empty();}
 		
 		Box box;
 		int id;
