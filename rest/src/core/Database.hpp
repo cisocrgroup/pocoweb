@@ -42,6 +42,7 @@ namespace pcw {
 
 		BookPtr insert_book(Book& book) const;
 		ProjectPtr select_project(int projectid) const;
+		ProjectPtr insert_project(Project& project) const;
 
 	private:
 		UserPtr select_user(const std::string& name, sql::Connection& conn) const;

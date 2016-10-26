@@ -15,7 +15,7 @@ create table users (
 
 drop table if exists books;
 create table books (
-	bookid int not null unique references project(projectid),
+	bookid int not null unique references projects(projectid),
 	year int,
 	title varchar(100) not null,
 	author varchar(100) not null,
@@ -31,6 +31,13 @@ create table projects (
 	owner int references users(userid)
 );
 	
+drop table if exists project_pages;
+create table project_pages (
+	projectid int not null references projects(projectid),
+	bookid int not null references books(bookid),
+	pageid int not null references pages(pageid),
+	primary key (projectid, bookid, pageid)
+);	
 
 drop table if exists pages;
 create table pages (

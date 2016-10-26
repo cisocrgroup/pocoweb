@@ -177,6 +177,38 @@ Database::get_user_from_result_set(ResultSetPtr res)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+ProjectPtr 
+Database::insert_project(Project& project) const
+{
+	static const char *sql = "INSERT INTO projects "
+				 "(projectid,origin,owner) "
+				 "VALUES (?,?,?);";
+	static const char *tql = "INSERT INTO project_pages "
+				 "(projectid,bookid,pageid) "
+				 "VALUES (?,?,?);";
+	check_session_lock();
+	auto conn = connection();
+	assert(conn);
+
+	PreparedStatementPtr s{conn->prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, project.id());
+	s->setInt(2, project.origin().id());
+	s->setInt(3, project.owner().id());
+	s->executeUpdate();
+
+	PreparedStatementPtr t{conn->prepareStatement(tql)};
+	assert(t);
+	s->setInt(1, project.id());
+	project.each_page([&t](const Page& page) {
+		t->setInt(2, page.book()->id());
+		t->setInt(3, page.id);
+		t->executeUpdate();
+	});
+	return project.shared_from_this();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BookPtr 
 Database::insert_book(Book& book) const
 {
