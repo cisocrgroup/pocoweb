@@ -2,6 +2,11 @@
 #include <cassert>
 #include <cppconn/connection.h>
 #include <cppconn/prepared_statement.h>
+#include <crow/logging.h>
+#include "Book.hpp"
+#include "Page.hpp"
+#include "Line.hpp"
+#include "BookDir.hpp"
 #include "Config.hpp"
 #include "Sessions.hpp"
 #include "Database.hpp"
@@ -30,6 +35,7 @@ Database::insert_user(const std::string& name, const std::string& pass) const
 				 "VALUES (?, SHA2(?, ?), ?)"
 				 ";";
 	
+	check_session_lock();
 	auto conn = connection();
 	assert(conn);
 	PreparedStatementPtr s(conn->prepareStatement(sql));
@@ -40,12 +46,9 @@ Database::insert_user(const std::string& name, const std::string& pass) const
 	s->setBoolean(4, true);
 	s->executeUpdate();
 
-	StatementPtr llid{conn->createStatement()};
-	assert(llid);
-	ResultSetPtr res{llid->executeQuery("select last_insert_id()")};
-	assert(res);
-	return res->next() ? 
-		std::make_shared<User>(name, "", "", res->getInt(1)) :
+	const int user_id = last_insert_id(*conn);
+	return user_id ?
+		std::make_shared<User>(name, "", "", user_id) :
 		nullptr;
 }
 
@@ -57,6 +60,7 @@ Database::authenticate(const std::string& name, const std::string& pass) const
 				 "FROM users "
 				 "WHERE name = ? and passwd = SHA2(?,?)"
 				 ";";
+	check_session_lock();
 	auto conn = connection();
 	assert(conn);
 	
@@ -69,18 +73,36 @@ Database::authenticate(const std::string& name, const std::string& pass) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-UserPtr 
+UserPtr
 Database::select_user(const std::string& name) const
 {
 	static const char *sql = "SELECT name,email,institute,userid "
 				 "FROM users "
 				 "WHERE name = ?"
 				 ";";
+	check_session_lock();
 	auto conn = connection();
 	assert(conn);
 	PreparedStatementPtr s(conn->prepareStatement(sql));
 	assert(s);
 	s->setString(1, name);
+	return get_user_from_result_set(ResultSetPtr{s->executeQuery()});
+}
+
+////////////////////////////////////////////////////////////////////////////////
+UserPtr 
+Database::select_user(int userid) const
+{
+	static const char *sql = "SELECT name,email,institute,userid "
+				 "FROM users "
+				 "WHERE userid = ?"
+				 ";";
+	check_session_lock();
+	auto conn = connection();
+	assert(conn);
+	PreparedStatementPtr s(conn->prepareStatement(sql));
+	assert(s);
+	s->setInt(1, userid);
 	return get_user_from_result_set(ResultSetPtr{s->executeQuery()});
 }
 
@@ -93,6 +115,7 @@ Database::update_user(const User& user) const
 				 "SET institute=?,email=? "
 				 "WHERE userid = ? "
 				 ";";
+	check_session_lock();
 	auto conn = connection();
 	assert(conn);
 	PreparedStatementPtr s(conn->prepareStatement(sql));
@@ -110,6 +133,7 @@ Database::delete_user(const std::string& name) const
 	static const char *sql = "DELETE FROM users "
 				 "WHERE name = ?"
 				 ";";
+	check_session_lock();
 	auto conn = connection();
 	assert(conn);
 	PreparedStatementPtr s(conn->prepareStatement(sql));
@@ -133,15 +157,239 @@ Database::get_user_from_result_set(ResultSetPtr res)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BookPtr 
+Database::insert_book(Book& book) const
+{
+	static const char *sql = "INSERT INTO books "
+				 "(owner, author, title, directory, year, uri) "
+				  "VALUES (?, ?, ?, ?, ?, ?)"
+				  ";";
+
+	check_session_lock();
+	auto conn = connection();
+	assert(conn);
+
+	PreparedStatementPtr s{conn->prepareStatement(sql)};
+	assert(s);
+
+	s->setInt(1, session_->user->id);
+	s->setString(2, book.author);
+	s->setString(3, book.title);
+	s->setString(4, book.dir.string());
+	s->setInt(5, book.year);
+	s->setString(6, book.uri);
+	s->executeUpdate();
+	book.id = last_insert_id(*conn);
+	if (not book.id)
+		return nullptr;
+	for (const auto& page: book) {
+		assert(page);
+		insert_page(*page, *conn);
+	}
+	book.owner = session_->user;
+	return book.shared_from_this();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Database::insert_page(const Page& page, sql::Connection& conn) const
+{
+	static const char* sql = 
+		"INSERT INTO pages "
+		"(bookid, pageid, imagepath, ocrpath, pleft, ptop, pright, pbottom) "
+		"VALUES (?,?,?,?,?,?,?,?);";
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, page.book()->id);
+	s->setInt(2, page.id);
+	s->setString(3, page.img.string());
+	s->setString(4, page.ocr.string());
+	s->setInt(5, page.box.left());
+	s->setInt(6, page.box.top());
+	s->setInt(7, page.box.right());
+	s->setInt(8, page.box.bottom());
+	s->executeUpdate();
+	for (const auto& line: page) 
+		insert_line(line, conn);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Database::insert_line(const Line& line, sql::Connection& conn) const
+{
+	static const char* sql = 
+		"INSERT INTO textlines "
+		"(bookid, pageid, lineid, imagepath, lleft, ltop, lright, lbottom) "
+		"VALUES (?,?,?,?,?,?,?,?);";
+	static const char* tql = 
+		"INSERT INTO contents "
+		"(bookid, pageid, lineid, seq, letter, cut, conf) "
+		"VALUES (?,?,?,?,?,?,?);";
+
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	const auto pageid = line.page()->id;
+	const auto bookid = line.page()->book()->id;
+	s->setInt(1, bookid);
+	s->setInt(2, pageid);
+	s->setInt(3, line.id);
+	s->setString(4, line.img.string());
+	s->setInt(5, line.box.left());
+	s->setInt(6, line.box.top());
+	s->setInt(7, line.box.right());
+	s->setInt(8, line.box.bottom());
+	s->executeUpdate();
+
+	PreparedStatementPtr t{conn.prepareStatement(tql)};
+	assert(t);
+	for (auto i = 0U; i < line.wstring().size(); ++i) {
+		t->setInt(1, bookid);
+		t->setInt(2, pageid);
+		t->setInt(3, line.id);
+		t->setInt(4, static_cast<int>(i));
+		t->setInt(5, line.wstring().at(i));
+		t->setInt(6, line.cuts().at(i));
+		t->setDouble(7, line.confidences().at(i));
+		t->executeUpdate();
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BookPtr
+Database::select_book(int bookid) const
+{
+	static const char *sql = "SELECT * FROM books WHERE bookid = ?;";
+
+	check_session_lock();
+	auto conn = connection();
+	assert(conn);
+	PreparedStatementPtr s{conn->prepareStatement(sql)};
+	assert(s);
+
+	s->setInt(1, bookid);
+	ResultSetPtr res{s->executeQuery()};
+	assert(res);
+	if (not res->next())
+		return nullptr;
+
+	auto book = std::make_shared<Book>(bookid);
+	book->description = res->getString("description");
+	book->uri = res->getString("uri");
+	book->dir = res->getString("directory");
+	book->title = res->getString("title");
+	book->author = res->getString("author");
+	book->year = res->getInt("year");
+	book->owner = select_user(res->getInt("owner"));
+	if (not book->owner)
+		return nullptr;
+	select_all_pages(*book, *conn);
+	return book;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Database::select_all_pages(Book& book, sql::Connection& conn) const
+{
+	static const char *sql = "SELECT * FROM pages "
+				 "WHERE bookid = ? "
+				 "ORDER BY pageid;";
+
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, book.id);
+	ResultSetPtr res{s->executeQuery()};
+	assert(res);
+
+	while (res->next()) {
+		const int id = res->getInt("pageid");
+		const int l = res->getInt("pleft");
+		const int r = res->getInt("pright");
+		const int t = res->getInt("ptop");
+		const int b = res->getInt("pbottom");
+		auto page = std::make_shared<Page>(id, Box{l, t, r, b});
+		assert(res->getInt("bookid") == book.id);
+		page->img = res->getString("imagepath");
+		page->ocr = res->getString("ocrpath");
+		// first insert the page into books; then load lines 
+		// otherwise page->book() is not set!
+		book.push_back(page);
+		select_all_lines(*book.back(), conn);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Database::select_all_lines(Page& page, sql::Connection& conn) const
+{
+	static const char *sql = "SELECT * FROM textlines "
+				 "WHERE bookid = ? AND pageid = ? "
+				 "ORDER BY lineid;";
+	static const char *cql = "SELECT * FROM contents "
+				 "WHERE bookid = ? AND pageid = ? AND lineid = ? "
+				 "ORDER BY seq;";
+
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	const int bookid = page.book()->id;
+	const int pageid = page.id;
+	s->setInt(1, bookid);
+	s->setInt(2, pageid);
+	ResultSetPtr res{s->executeQuery()};
+	assert(res);
+
+	PreparedStatementPtr c{conn.prepareStatement(cql)};
+	assert(c);
+	c->setInt(1, bookid);
+	c->setInt(2, pageid);
+
+	while (res->next()) {
+		assert(res->getInt("bookid") == bookid);
+		assert(res->getInt("pageid") == pageid);
+
+		const int id = res->getInt("lineid");
+		const int l = res->getInt("lleft");
+		const int r = res->getInt("lright");
+		const int t = res->getInt("ltop");
+		const int b = res->getInt("lbottom");
+		Line line(id, {l, t, r, b});
+		line.img = res->getString("imagepath");
+
+		c->setInt(3, id);
+		ResultSetPtr contents{c->executeQuery()};
+		assert(contents);
+		
+		while (contents->next()) {
+			assert(contents->getInt("bookid") == bookid);
+			assert(contents->getInt("pageid") == pageid);
+			assert(contents->getInt("lineid") == line.id);
+			
+			const wchar_t l = contents->getInt("letter");	
+			const auto r = contents->getInt("cut");	
+			const auto c = contents->getDouble("conf");	
+			line.append(l, r, c);
+		}
+		page.push_back(std::move(line));
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool 
+Database::autocommit() const noexcept
+{
+	return not scope_guard_;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void 
 Database::set_autocommit(bool ac)
 {
+	check_session_lock();
 	if (ac) {
 		scope_guard_ = boost::none;
 	} else {
 		scope_guard_.emplace([this](){
 			assert(session_);
-			std::lock_guard<std::mutex> lock(session_->mutex);
+			assert(session_->connection);
 			session_->connection->rollback();
 		});
 	}
@@ -151,11 +399,38 @@ Database::set_autocommit(bool ac)
 void 
 Database::commit()
 {
+	CROW_LOG_INFO << "(Database) Committing data";
+	check_session_lock();
 	if (scope_guard_) {
 		scope_guard_->dismiss();
+		assert(session_);
+		assert(session_->connection);
+		session_->connection->commit();
 	} else {
 		CROW_LOG_ERROR << "(Database) call to commit() in auto commit mode";
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Database::check_session_lock() const
+{
+	assert(session_);
+	if (session_->mutex.try_lock()) {
+		session_->mutex.unlock(); // unlock
+		throw std::logic_error("(Database) Current session is not locked");
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int
+Database::last_insert_id(sql::Connection& conn) const
+{
+	StatementPtr s{conn.createStatement()};
+	assert(s);
+	ResultSetPtr res{s->executeQuery("select last_insert_id()")};
+	assert(res);
+	return res->next() ? res->getInt(1) : 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -164,8 +439,8 @@ Database::connection() const
 {
 	assert(config_);
 	assert(session_);
-	std::lock_guard<std::mutex> lock(session_->mutex);
 	sql::Connection* conn = nullptr;
+	assert(not session_->mutex.try_lock()); // session has to be locked already
 
 	if (session_->connection and session_->connection->isValid()) {
 		conn = session_->connection.get();

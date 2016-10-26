@@ -9,6 +9,7 @@ namespace pcw {
 	std::string gensalt();
 	std::string genhash(const std::string& salt, const std::string& str);
 	bool check(const std::string& comb, const std::string& passwd);
+	std::string fix_windows_path(std::string path);
 }
 
 #endif // pcw_util_hpp__

@@ -5,6 +5,7 @@
 #include <boost/optional.hpp>
 #include <vector>
 #include <crow/http_response.h>
+#include "CacheFwd.hpp"
 
 namespace crow {
 	template<typename... Middleware> class Crow;
@@ -36,7 +37,7 @@ namespace pcw {
 		static crow::response not_implemented() noexcept {return crow::response(501);}
 
 		using App = crow::Crow<>;
-		virtual ~Route() noexcept = default;
+		virtual ~Route() noexcept;
 		virtual void Register(App&) = 0;
 		virtual const char* route() const noexcept = 0;
 		virtual const char* name() const noexcept = 0;
@@ -49,8 +50,17 @@ namespace pcw {
 		void set_config(ConfigPtr c) noexcept {config_ = std::move(c);}
 		boost::optional<Database> database(const crow::request& request) const noexcept;
 		boost::optional<Database> database(SessionPtr session) const noexcept;
+
+		// cache
+		void set_user_cache(UserCachePtr uc) noexcept {user_cache_ = std::move(uc);}
+		void set_book_cache(BookCachePtr bc) noexcept {book_cache_ = std::move(bc);}
+		UserPtr cached_find_user(const Database& db, const std::string& name) const;
+		UserPtr cached_find_user(const Database& db, int userid) const;
+		BookPtr cached_find_book(const Database& db, int bookid) const;
 	
 	private:
+		BookCachePtr book_cache_;
+		UserCachePtr user_cache_;
 		SessionsPtr sessions_;	
 		ConfigPtr config_;
 	};

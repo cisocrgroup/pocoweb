@@ -6,6 +6,8 @@
 #include "Plugin.hpp"
 #include "Route.hpp"
 #include "ApiVersion.hpp"
+#include "CreateBook.hpp"
+#include "GetBooks.hpp"
 
 using AppPtr = std::unique_ptr<pcw::App>;
 static int run(int argc, char** argv);
@@ -28,8 +30,11 @@ int
 run(int argc, char** argv)
 {
 	auto app = get_app(argc, argv);
+	crow::logger::setLogLevel(crow::LogLevel(app->config().log.level));
 	app->register_plugins();
 	app->Register(std::make_unique<pcw::ApiVersion>());
+	app->Register(std::make_unique<pcw::CreateBook>());
+	app->Register(std::make_unique<pcw::GetBooks>());
 	app->run();
 	return 0;
 }

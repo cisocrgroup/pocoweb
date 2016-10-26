@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <memory>
+#include "CacheFwd.hpp"
 #include "Route.hpp"
 #include "Plugin.hpp"
 
@@ -33,6 +34,7 @@ namespace pcw {
 		pcw::Routes routes_;
 		std::vector<Plugin> plugins_;
 		std::unique_ptr<pcw::Route::App> app_;
+		const UserCachePtr user_cache_;
 		const std::shared_ptr<Config> config_;
 		const std::shared_ptr<Sessions> sessions_;
 	};

@@ -1,4 +1,6 @@
 // #include <boost/log/trivial.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <crow/logging.h>
 #include <boost/property_tree/ini_parser.hpp>
 #include <regex>
 #include <thread>
@@ -19,26 +21,24 @@ get_plugins(const pcw::Ptree& ptree)
 	return plugins;
 }
 
-// ////////////////////////////////////////////////////////////////////////////////
-// static int
-// get_log_level(const std::string& level)
-// {
-// 	if (level == "trace")
-// 		return boost::log::trivial::trace;
-// 	if (level == "debug")
-// 		return boost::log::trivial::debug;
-// 	if (level == "info")
-// 		return boost::log::trivial::info;
-// 	if (level == "warning")
-// 		return boost::log::trivial::warning;
-// 	if (level == "error")
-// 		return boost::log::trivial::error;
-// 	if (level == "fatal")
-// 		return boost::log::trivial::fatal;
-// 	BOOST_LOG_TRIVIAL(warning) << "Invalid log level `"
-// 				   << level << "` defaulting to `info`";
-// 	return boost::log::trivial::info;
-// }
+////////////////////////////////////////////////////////////////////////////////
+static int
+get_log_level(const std::string& level)
+{
+	if (boost::iequals(level, "debug"))
+		return static_cast<int>(crow::LogLevel::Debug);
+	if (boost::iequals(level, "info"))
+		return static_cast<int>(crow::LogLevel::Info);
+	if (boost::iequals(level, "warning"))
+		return static_cast<int>(crow::LogLevel::Warning);
+	if (boost::iequals(level, "error"))
+		return static_cast<int>(crow::LogLevel::Error);
+	if (boost::iequals(level, "critical"))
+		return static_cast<int>(crow::LogLevel::Critical);
+	CROW_LOG_WARNING << "(Config) Invalid log level: " << level << "; "
+			 << "defaulting to info";
+	return static_cast<int>(crow::LogLevel::Info);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Config
@@ -72,7 +72,7 @@ pcw::Config::load(const std::string& filename)
 			},
 			{
 				logfile,
-				// get_log_level(ptree.get<std::string>("log.level"))
+				get_log_level(ptree.get<std::string>("log.level"))
 			},
 			{
 				get_plugins(ptree),
