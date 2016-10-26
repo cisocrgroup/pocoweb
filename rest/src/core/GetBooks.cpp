@@ -20,7 +20,7 @@
 
 using namespace pcw;
 
-static crow::json::wvalue book_to_json(const Book& book);
+static crow::json::wvalue project_to_json(const Project& project);
 static crow::json::wvalue page_to_json(const Page& page);
 static crow::json::wvalue line_to_json(const Line& line);
 static crow::json::wvalue box_to_json(const Box& box);
@@ -47,64 +47,62 @@ GetBooks::Register(App& app)
 
 ////////////////////////////////////////////////////////////////////////////////
 crow::response
-GetBooks::operator()(const crow::request& req, int bookid) const
+GetBooks::operator()(const crow::request& req, int projectid) const
 {
 	auto db = this->database(req);
 	if (not db)
 		return forbidden();
-	auto book = std::dynamic_pointer_cast<Book>(db->session().current_project);
-	if (not book or bookid != book->id()) {
+	auto project = db->session().current_project;
+	if (not project or projectid != project->id()) {
 		std::lock_guard<std::mutex> lock(db->session().mutex);
-		book = db->select_book(bookid);
-		db->session().current_project = book;
+		project = db->select_project(projectid);
+		db->session().current_project = project;
 	}
 	// missing authentication
-	return book_to_json(*book);
+	return project_to_json(*project);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 crow::response
-GetBooks::operator()(const crow::request& req, int bookid, int pageid) const
+GetBooks::operator()(const crow::request& req, int projectid, int pageid) const
 {
 	auto db = this->database(req);
 	if (not db)
 		return forbidden();
-	auto book = std::dynamic_pointer_cast<Book>(db->session().current_project);
-	if (not book or bookid != book->id()) {
+	auto project = db->session().current_project;
+	if (not project or projectid != project->id()) {
 		std::lock_guard<std::mutex> lock(db->session().mutex);
-		book = db->select_book(bookid);
-		db->session().current_project = book;
+		project = db->select_project(projectid);
+		db->session().current_project = project;
 	}
 	// missing authentication
-	return page_to_json(*(*book)[pageid - 1]);
+	return page_to_json(*project->origin()[pageid - 1]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 crow::response
-GetBooks::operator()(const crow::request& req, int bookid, int pageid, int lineid) const
+GetBooks::operator()(const crow::request& req, int projectid, int pageid, int lineid) const
 {
 	return not_implemented();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 crow::json::wvalue 
-book_to_json(const Book& book)
+project_to_json(const Project& project)
 {
 	crow::json::wvalue j;
-	j["id"] = book.id();
-	j["uri"] = book.uri;
-	j["author"] = book.author;
-	j["title"] = book.title;
-	j["year"] = book.year;
-	j["description"] = book.description;
-	j["pages"] = book.size();
+	j["id"] = project.origin().id();
+	j["uri"] = project.origin().uri;
+	j["author"] = project.origin().author;
+	j["title"] = project.origin().title;
+	j["year"] = project.origin().year;
+	j["description"] = project.origin().description;
 	
 	std::vector<int> ids;
-	ids.resize(book.size());
-	std::transform(begin(book), end(book), begin(ids), [](const auto& p) {
-		assert(p);
-		return p->id;
+	project.each_page([&ids](const Page& page) {
+		ids.push_back(page.id);
 	});
+	j["pages"] = ids.size();
 	j["pageIds"] = ids;
 	return j;
 }

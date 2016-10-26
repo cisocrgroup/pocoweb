@@ -39,9 +39,10 @@ namespace pcw {
 		void delete_user(const std::string& name) const;
 
 		BookPtr insert_book(Book& book) const;
-		BookPtr select_book(int bookid) const;
+		ProjectPtr select_project(int projectid) const;
 
 	private:
+		BookPtr select_book(int bookid) const;
 		int insert_book_project(const Project& project, sql::Connection& conn) const;
 		void update_project_origin_id(int id, sql::Connection& conn) const;
 		void insert_page(const Page& page, sql::Connection& conn) const;

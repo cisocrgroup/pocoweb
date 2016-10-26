@@ -283,6 +283,14 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+ProjectPtr
+Database::select_project(int projectid) const
+{
+	// TODO Implement this
+	return select_book(projectid);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BookPtr
 Database::select_book(int bookid) const
 {

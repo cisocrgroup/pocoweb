@@ -99,13 +99,13 @@ Route::cached_find_user(const Database& db, int userid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 ProjectPtr 
-Route::cached_find_book(const Database& db, int bookid) const
+Route::cached_find_book(const Database& db, int projectid) const
 {
 	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto get_project_from_db = [&db](int bookid) {
-		return db.select_book(bookid);
+	auto get_project_from_db = [&db](int projectid) {
+		return db.select_project(projectid);
 	};
 	return project_cache_ ? 	
-		project_cache_->get(bookid, get_project_from_db) :
-		get_project_from_db(bookid);
+		project_cache_->get(projectid, get_project_from_db) :
+		get_project_from_db(projectid);
 }
