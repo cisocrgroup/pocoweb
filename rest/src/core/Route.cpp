@@ -73,7 +73,7 @@ Route::database(SessionPtr session) const noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 UserPtr 
-Route::find_user(const Database& db, const std::string& name) const
+Route::cached_find_user(const Database& db, const std::string& name) const
 {
 	std::lock_guard<std::mutex> lock(db.session().mutex);
 	auto get_user_from_db = [&db](const std::string& name) {
@@ -86,7 +86,7 @@ Route::find_user(const Database& db, const std::string& name) const
 
 ////////////////////////////////////////////////////////////////////////////////
 UserPtr 
-Route::find_user(const Database& db, int userid) const
+Route::cached_find_user(const Database& db, int userid) const
 {
 	std::lock_guard<std::mutex> lock(db.session().mutex);
 	auto get_user_from_db = [&db](int userid) {
@@ -99,7 +99,7 @@ Route::find_user(const Database& db, int userid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 BookPtr 
-Route::find_book(const Database& db, int bookid) const
+Route::cached_find_book(const Database& db, int bookid) const
 {
 	std::lock_guard<std::mutex> lock(db.session().mutex);
 	auto get_book_from_db = [&db](int bookid) {
