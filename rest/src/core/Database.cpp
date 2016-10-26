@@ -90,6 +90,23 @@ Database::select_user(const std::string& name) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+UserPtr 
+Database::select_user(int userid) const
+{
+	static const char *sql = "SELECT name,email,institute,userid "
+				 "FROM users "
+				 "WHERE userid = ?"
+				 ";";
+	check_session_lock();
+	auto conn = connection();
+	assert(conn);
+	PreparedStatementPtr s(conn->prepareStatement(sql));
+	assert(s);
+	s->setInt(1, userid);
+	return get_user_from_result_set(ResultSetPtr{s->executeQuery()});
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void 
 Database::update_user(const User& user) const
 {
@@ -234,6 +251,124 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 		t->setInt(6, line.cuts().at(i));
 		t->setDouble(7, line.confidences().at(i));
 		t->executeUpdate();
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BookPtr
+Database::select_book(int bookid) const
+{
+	static const char *sql = "SELECT * FROM books WHERE bookid = ?;";
+
+	check_session_lock();
+	auto conn = connection();
+	assert(conn);
+	PreparedStatementPtr s{conn->prepareStatement(sql)};
+	assert(s);
+
+	s->setInt(1, bookid);
+	ResultSetPtr res{s->executeQuery()};
+	assert(res);
+	if (not res->next())
+		return nullptr;
+
+	auto book = std::make_shared<Book>(bookid);
+	book->description = res->getString("description");
+	book->uri = res->getString("uri");
+	book->dir = res->getString("directory");
+	book->title = res->getString("title");
+	book->author = res->getString("author");
+	book->year = res->getInt("author");
+	book->owner = select_user(res->getInt("userid"));
+	if (not book->owner)
+		return nullptr;
+	select_all_pages(*book, *conn);
+	return book;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Database::select_all_pages(Book& book, sql::Connection& conn) const
+{
+	static const char *sql = "SELECT * FROM pages "
+				 "WHERE bookid = ? "
+				 "ORDER BY pageid;";
+
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, book.id);
+	ResultSetPtr res{s->executeQuery()};
+	assert(res);
+
+	while (res->next()) {
+		const int id = res->getInt("pageid");
+		const int l = res->getInt("pleft");
+		const int r = res->getInt("pright");
+		const int t = res->getInt("ptop");
+		const int b = res->getInt("pbottom");
+		auto page = std::make_shared<Page>(id, Box{l, t, r, b});
+		assert(res->getInt("bookid") == book.id);
+		page->img = res->getString("imagepath");
+		page->ocr = res->getString("ocrpath");
+		// first insert the page into books; then load lines 
+		// otherwise page->book() is not set!
+		book.push_back(page);
+		select_all_lines(*book.back(), conn);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Database::select_all_lines(Page& page, sql::Connection& conn) const
+{
+	static const char *sql = "SELECT * FROM textlines "
+				 "WHERE bookid = ? AND pageid = ? "
+				 "ORDER BY lineid;";
+	static const char *cql = "SELECT * FROM contents "
+				 "WHERE bookid = ? AND pageid = ? AND lineid = ? "
+				 "ORDER BY seq;";
+
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	const int bookid = page.book()->id;
+	const int pageid = page.id;
+	s->setInt(1, bookid);
+	s->setInt(1, pageid);
+	ResultSetPtr res{s->executeQuery()};
+	assert(res);
+
+	PreparedStatementPtr c{conn.prepareStatement(cql)};
+	assert(c);
+	c->setInt(1, bookid);
+	c->setInt(2, pageid);
+
+	while (res->next()) {
+		assert(res->getInt("bookid") == bookid);
+		assert(res->getInt("pageid") == pageid);
+
+		const int id = res->getInt("lineid");
+		const int l = res->getInt("lleft");
+		const int r = res->getInt("lright");
+		const int t = res->getInt("ltop");
+		const int b = res->getInt("lbottom");
+		Line line(id, {l, t, r, b});
+		line.img = res->getString("imagepath");
+
+		c->setInt(3, id);
+		ResultSetPtr contents{c->executeQuery()};
+		assert(contents);
+		
+		while (contents->next()) {
+			assert(contents->getInt("bookid") == bookid);
+			assert(contents->getInt("pageid") == pageid);
+			assert(contents->getInt("lineid") == line.id);
+			
+			const wchar_t l = contents->getInt("letter");	
+			const auto r = contents->getInt("cut");	
+			const auto c = contents->getDouble("conf");	
+			line.append(l, r, c);
+		}
+		page.push_back(std::move(line));
 	}
 }
 

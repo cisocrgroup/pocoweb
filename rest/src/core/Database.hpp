@@ -32,14 +32,18 @@ namespace pcw {
 		UserPtr insert_user(const std::string& name, const std::string& pass) const;
 		UserPtr authenticate(const std::string& name, const std::string& pass) const;
 		UserPtr select_user(const std::string& name) const;
+		UserPtr select_user(int userid) const;
 		void update_user(const User& user) const;
 		void delete_user(const std::string& name) const;
 
 		BookPtr insert_book(Book& book) const;
+		BookPtr select_book(int bookid) const;
 
 	private:
 		void insert_page(const Page& page, sql::Connection& conn) const;
 		void insert_line(const Line& line, sql::Connection& conn) const; 
+		void select_all_pages(Book& book, sql::Connection& conn) const;
+		void select_all_lines(Page& page, sql::Connection& conn) const;
 		void check_session_lock() const;
 		int last_insert_id(sql::Connection& conn) const;
 		sql::Connection* connection() const;

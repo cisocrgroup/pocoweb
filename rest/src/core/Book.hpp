@@ -20,14 +20,14 @@ namespace pcw {
 		using Base = std::vector<PagePtr>;
 		using value_type = Base::value_type;
 	
-		Book()
+		Book(int i = 0)
 			: owner()
 			, author()
 			, title()
 			, description()
 			, uri()
 			, dir()
-			, id() 
+			, id(i) 
 			, year()
 		{}
 
