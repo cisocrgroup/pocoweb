@@ -73,10 +73,5 @@ create table contents (
 );
 	
 drop table if exists bookpermissions;
-create table bookpermissions (
-	bookid int references books(bookid),
-	userid int references users(userid),
-	primary key (bookid, userid)
-);
 
 
