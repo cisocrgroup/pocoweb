@@ -4,6 +4,7 @@
 #include <boost/filesystem/path.hpp>
 #include <memory>
 #include <vector>
+#include "Project.hpp"
 
 namespace pcw {
 	class User;
@@ -15,7 +16,7 @@ namespace pcw {
 	using Path = boost::filesystem::path;
 
 	class Book: private std::vector<PagePtr>,
-		    public std::enable_shared_from_this<Book> {
+		    public Project {
 	public:
 		using Base = std::vector<PagePtr>;
 		using value_type = Base::value_type;
@@ -30,6 +31,13 @@ namespace pcw {
 			, id(i) 
 			, year()
 		{}
+		Book(const Book& other) = delete;
+		Book& operator=(const Book& other) = delete;
+		Book(Book&& other) = delete;
+		Book& operator=(Book&& other) = delete;
+		virtual ~Book() noexcept override = default;
+		virtual const Book& origin() const noexcept override {return *this;}
+		virtual void each_page(Callback f) const override;
 
 		using Base::begin;
 		using Base::end;

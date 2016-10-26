@@ -187,7 +187,7 @@ Database::insert_book(Book& book) const
 		insert_page(*page, *conn);
 	}
 	book.owner = session_->user;
-	return book.shared_from_this();
+	return std::static_pointer_cast<Book>(book.shared_from_this());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
