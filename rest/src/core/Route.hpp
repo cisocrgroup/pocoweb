@@ -58,9 +58,6 @@ namespace pcw {
 
 		// cache
 		void set_cache(CachePtr cache) noexcept {cache_ = std::move(cache);}
-		UserPtr cached_find_user(const Database& db, const std::string& name) const;
-		UserPtr cached_find_user(const Database& db, int userid) const;
-		ProjectPtr cached_find_book(const Database& db, int bookid) const;
 	
 	private:
 		SessionsPtr sessions_;

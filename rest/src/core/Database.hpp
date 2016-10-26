@@ -46,6 +46,8 @@ namespace pcw {
 	private:
 		UserPtr select_user(const std::string& name, sql::Connection& conn) const;
 		UserPtr select_user(int userid, sql::Connection& conn) const;
+		ProjectPtr select_project(int projectid, sql::Connection& conn) const;
+		ProjectPtr select_subproject(int projectid, int origin, sql::Connection& conn) const;
 		BookPtr select_book(int bookid, sql::Connection& conn) const;
 		int insert_book_project(const Project& project, sql::Connection& conn) const;
 		void update_project_origin_id(int id, sql::Connection& conn) const;

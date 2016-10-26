@@ -12,9 +12,9 @@ namespace pcw {
 	struct AppCache;
 	using CachePtr = std::shared_ptr<AppCache>;
 	struct AppCache {
-		AppCache(int us, int ps): user_cache(us), project_cache(ps) {}
-		UserCache user_cache;
-		ProjectCache project_cache;
+		AppCache(int us, int ps): user(us), project(ps) {}
+		UserCache user;
+		ProjectCache project;
 	};
 }
 

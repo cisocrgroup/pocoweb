@@ -78,9 +78,12 @@ UserPtr
 Database::select_user(const std::string& name) const
 {
 	check_session_lock();
-	auto conn = connection();
-	assert(conn);
-	return select_user(name, *conn);
+	auto get_user = [this](const std::string& name) {
+		auto conn = connection();
+		assert(conn);
+		return select_user(name, *conn);
+	};
+	return cache_ ? cache_->user.get(name, get_user) : get_user(name);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -89,8 +92,7 @@ Database::select_user(const std::string& name, sql::Connection& conn) const
 {
 	static const char *sql = "SELECT name,email,institute,userid "
 				 "FROM users "
-				 "WHERE name = ?"
-				 ";";
+				 "WHERE name = ?;";
 	PreparedStatementPtr s(conn.prepareStatement(sql));
 	assert(s);
 	s->setString(1, name);
@@ -102,9 +104,12 @@ UserPtr
 Database::select_user(int userid) const
 {
 	check_session_lock();
-	auto conn = connection();
-	assert(conn);
-	return select_user(userid, *conn);
+	auto get_user = [this](int userid) {
+		auto conn = connection();
+		assert(conn);
+		return select_user(userid, *conn);
+	};
+	return cache_ ? cache_->user.get(userid, get_user) : get_user(userid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -303,10 +308,41 @@ ProjectPtr
 Database::select_project(int projectid) const
 {
 	check_session_lock();
-	auto conn = connection();
-	assert(conn);
-	// TODO Implement this
-	return select_book(projectid, *conn);
+	auto get_project = [this](int projectid) {
+		auto conn = connection();
+		assert(conn);
+		return select_project(projectid, *conn);
+	};
+	return cache_ ? 
+		cache_->project.get(projectid, get_project) : 
+		get_project(projectid);	
+}
+
+////////////////////////////////////////////////////////////////////////////////
+ProjectPtr
+Database::select_project(int projectid, sql::Connection& conn) const
+{
+	static const char *sql = "SELECT origin FROM projects WHERE projectid = ?;";
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, projectid);
+	ResultSetPtr res{s->executeQuery()};
+	assert(res);
+	if (not res->next())
+		return nullptr;
+	auto orgin = res->getInt(1);
+	// return book or subproject
+	return orgin == projectid ? 
+		select_book(orgin, conn) : 
+		select_subproject(projectid, orgin, conn);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+ProjectPtr
+Database::select_subproject(int projectid, int origin, sql::Connection& conn) const
+{
+	// not implemented
+	return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
