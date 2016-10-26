@@ -195,7 +195,7 @@ Database::insert_book(Book& book) const
 int
 Database::insert_project(const Project& project, sql::Connection& conn) const
 {
-	static const char *sql = "INSERT INTO projects (origin, ownerid) "
+	static const char *sql = "INSERT INTO projects (origin, owner) "
 				 "VALUES (0,?);";
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
