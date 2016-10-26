@@ -31,8 +31,8 @@ Database::Database(SessionPtr session, ConfigPtr config)
 UserPtr 
 Database::insert_user(const std::string& name, const std::string& pass) const
 {
-	static const char *sql = "INSERT INTO users (name, passwd, active) "
-				 "VALUES (?, SHA2(?, ?), ?)"
+	static const char *sql = "INSERT INTO users (name, passwd) "
+				 "VALUES (?, SHA2(?, ?))"
 				 ";";
 	
 	check_session_lock();
@@ -43,7 +43,6 @@ Database::insert_user(const std::string& name, const std::string& pass) const
 	s->setString(1, name);
 	s->setString(2, pass);
 	s->setInt(3, SHA2_HASH_SIZE);
-	s->setBoolean(4, true);
 	s->executeUpdate();
 
 	const int user_id = last_insert_id(*conn);
