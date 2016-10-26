@@ -208,7 +208,7 @@ Database::insert_project(const Project& project, sql::Connection& conn) const
 void
 Database::update_project_origin_id(int id, sql::Connection& conn) const
 {
-	static const char *sql = "UPDATE project "
+	static const char *sql = "UPDATE projects "
 				 "SET origin = ? "
 				 "WHERE projectid = ?;";
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
