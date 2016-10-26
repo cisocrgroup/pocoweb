@@ -48,6 +48,7 @@ CreateBook::operator()(
 			return internal_server_error();
 		book->author = author;
 		book->title = title;
+		book->set_owner(*db->session().user);
 		
 		// insert book into database
 		CROW_LOG_INFO << "(CreateBook) Inserting new book into database";

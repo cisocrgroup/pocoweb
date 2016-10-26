@@ -187,7 +187,6 @@ Database::insert_book(Book& book) const
 	auto conn = connection();
 	assert(conn);
 
-	book.set_owner(*session_->user);
 	const auto projectid = insert_book_project(book, *conn);
 
 	PreparedStatementPtr s{conn->prepareStatement(sql)};
