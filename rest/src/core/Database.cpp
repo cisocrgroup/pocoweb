@@ -75,14 +75,21 @@ Database::authenticate(const std::string& name, const std::string& pass) const
 UserPtr
 Database::select_user(const std::string& name) const
 {
+	check_session_lock();
+	auto conn = connection();
+	assert(conn);
+	return select_user(name, *conn);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+UserPtr
+Database::select_user(const std::string& name, sql::Connection& conn) const
+{
 	static const char *sql = "SELECT name,email,institute,userid "
 				 "FROM users "
 				 "WHERE name = ?"
 				 ";";
-	check_session_lock();
-	auto conn = connection();
-	assert(conn);
-	PreparedStatementPtr s(conn->prepareStatement(sql));
+	PreparedStatementPtr s(conn.prepareStatement(sql));
 	assert(s);
 	s->setString(1, name);
 	return get_user_from_result_set(ResultSetPtr{s->executeQuery()});
@@ -92,14 +99,21 @@ Database::select_user(const std::string& name) const
 UserPtr 
 Database::select_user(int userid) const
 {
+	check_session_lock();
+	auto conn = connection();
+	assert(conn);
+	return select_user(userid, *conn);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+UserPtr 
+Database::select_user(int userid, sql::Connection& conn) const
+{
 	static const char *sql = "SELECT name,email,institute,userid "
 				 "FROM users "
 				 "WHERE userid = ?"
 				 ";";
-	check_session_lock();
-	auto conn = connection();
-	assert(conn);
-	PreparedStatementPtr s(conn->prepareStatement(sql));
+	PreparedStatementPtr s(conn.prepareStatement(sql));
 	assert(s);
 	s->setInt(1, userid);
 	return get_user_from_result_set(ResultSetPtr{s->executeQuery()});
@@ -286,22 +300,21 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 ProjectPtr
 Database::select_project(int projectid) const
 {
+	check_session_lock();
+	auto conn = connection();
+	assert(conn);
 	// TODO Implement this
-	return select_book(projectid);
+	return select_book(projectid, *conn);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BookPtr
-Database::select_book(int bookid) const
+Database::select_book(int bookid, sql::Connection& conn) const
 {
 	static const char *sql = "SELECT * FROM books WHERE bookid = ?;";
 
-	check_session_lock();
-	auto conn = connection();
-	assert(conn);
-	PreparedStatementPtr s{conn->prepareStatement(sql)};
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
-
 	s->setInt(1, bookid);
 	ResultSetPtr res{s->executeQuery()};
 	assert(res);
@@ -316,7 +329,7 @@ Database::select_book(int bookid) const
 	book->author = res->getString("author");
 	book->year = res->getInt("year");
 	book->set_owner(*select_user(res->getInt("owner")));
-	select_all_pages(*book, *conn);
+	select_all_pages(*book, conn);
 	return book;
 }
 
