@@ -186,7 +186,7 @@ Database::insert_book(Book& book) const
 		assert(page);
 		insert_page(*page, *conn);
 	}
-	book.owner = session_->user;
+	book.set_owner(*session_->user);
 	return std::static_pointer_cast<Book>(book.shared_from_this());
 }
 
@@ -279,9 +279,7 @@ Database::select_book(int bookid) const
 	book->title = res->getString("title");
 	book->author = res->getString("author");
 	book->year = res->getInt("year");
-	book->owner = select_user(res->getInt("owner"));
-	if (not book->owner)
-		return nullptr;
+	book->set_owner(*select_user(res->getInt("owner")));
 	select_all_pages(*book, *conn);
 	return book;
 }

@@ -14,12 +14,15 @@ using namespace pcw;
 bool
 User::has_permission(const Project& project) const noexcept
 {
-	return project.is_allowed_for(id);
+	return project.owner().id == id;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 std::ostream&
 pcw::operator<<(std::ostream& os, const User& user)
 {
-	return os << user.name << " <" << user.email << ">";
+	return os << user.name 
+		  << " <" << user.email << "> [" 
+		  << user.id << "] {"
+		  << user.institute << "}";
 }

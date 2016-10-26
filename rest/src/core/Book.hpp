@@ -8,7 +8,7 @@
 
 namespace pcw {
 	class User;
-	using UserPtr = std::shared_ptr<User>;
+	using ConstUserPtr = std::shared_ptr<const User>;
 	class Book;
 	using BookPtr = std::shared_ptr<Book>;
 	class Page;
@@ -22,14 +22,14 @@ namespace pcw {
 		using value_type = Base::value_type;
 	
 		Book(int i = 0)
-			: owner()
-			, author()
+			: author()
 			, title()
 			, description()
 			, uri()
 			, dir()
 			, id(i) 
 			, year()
+			, owner_()
 		{}
 		Book(const Book& other) = delete;
 		Book& operator=(const Book& other) = delete;
@@ -37,6 +37,8 @@ namespace pcw {
 		Book& operator=(Book&& other) = delete;
 		virtual ~Book() noexcept override = default;
 		virtual const Book& origin() const noexcept override {return *this;}
+		virtual const User& owner() const noexcept override {return *owner_;}
+		virtual void set_owner(const User& user) override;
 		virtual void each_page(Callback f) const override;
 
 		using Base::begin;
@@ -48,12 +50,14 @@ namespace pcw {
 		using Base::operator[];
 		void push_back(PagePtr page);
 		
-		UserPtr owner;
 		std::string author, title;
 		std::string description, uri;
 		Path dir;
 		int id;
 		int year;
+
+	private:
+		ConstUserPtr owner_;
 	};
 }
 
