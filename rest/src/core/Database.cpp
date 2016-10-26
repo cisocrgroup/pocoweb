@@ -322,7 +322,7 @@ Database::select_project(int projectid) const
 ProjectPtr
 Database::select_project(int projectid, sql::Connection& conn) const
 {
-	static const char *sql = "SELECT origin FROM projects WHERE projectid = ?;";
+	static const char *sql = "SELECT origin,owner FROM projects WHERE projectid = ?;";
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, projectid);
@@ -330,24 +330,52 @@ Database::select_project(int projectid, sql::Connection& conn) const
 	assert(res);
 	if (not res->next())
 		return nullptr;
-	auto orgin = res->getInt(1);
+	auto origin = res->getInt(1);
+	auto owner = res->getInt(2);
+	if (not origin or not owner) // TODO throw?
+		return nullptr;
+	
 	// return book or subproject
-	return orgin == projectid ? 
-		select_book(orgin, conn) : 
-		select_subproject(projectid, orgin, conn);
+	return origin == projectid ? 
+		select_book(origin, owner, conn) : 
+		select_subproject(projectid, origin, owner, conn);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 ProjectPtr
-Database::select_subproject(int projectid, int origin, sql::Connection& conn) const
+Database::select_subproject(int projectid, int origin, int owner, sql::Connection& conn) const
 {
+	auto get_project = [&conn,this,owner](int origin) {
+		return select_book(origin, owner, conn);
+	};
+	// it is save to use the cache here
+	auto book =  cache_ ? 
+		cache_->project.get(origin, get_project) :
+		get_project(origin);
+	if (not book) // TODO throw?
+		return nullptr;
+	assert(book->is_book()); // origin must be a book!
+	return select_subproject(projectid, owner, book->origin(), conn);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+ProjectPtr
+Database::select_subproject(int projectid, int owner, const Book& origin, sql::Connection& conn) const
+{
+	// it is save to use cache here
+	auto get_user = [this,&conn](int userid) {
+		return select_user(userid, conn);
+	};
+	auto ownerptr = cache_ ? cache_->user.get(owner, get_user) : get_user(owner);
+	if (not ownerptr) // TODO throw?
+		return nullptr;
 	// not implemented
 	return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BookPtr
-Database::select_book(int bookid, sql::Connection& conn) const
+Database::select_book(int bookid, int owner, sql::Connection& conn) const
 {
 	static const char *sql = "SELECT * FROM books WHERE bookid = ?;";
 
@@ -366,7 +394,15 @@ Database::select_book(int bookid, sql::Connection& conn) const
 	book->title = res->getString("title");
 	book->author = res->getString("author");
 	book->year = res->getInt("year");
-	book->set_owner(*select_user(res->getInt("owner")));
+
+	// it is save to use cache here
+	auto get_user = [this,&conn](int userid) {
+		return select_user(userid, conn);
+	};
+	auto ownerptr = cache_ ? cache_->user.get(owner, get_user) : get_user(owner);
+	if (not ownerptr) // TODO throw?
+		return nullptr;
+	book->set_owner(*ownerptr);
 	select_all_pages(*book, conn);
 	return book;
 }
