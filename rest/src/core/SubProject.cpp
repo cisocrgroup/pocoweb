@@ -1,6 +1,7 @@
 #include <cassert>
 #include "Book.hpp"
 #include "User.hpp"
+#include "Page.hpp"
 #include "SubProject.hpp"
 
 using namespace pcw;
@@ -46,3 +47,9 @@ SubProject::each_page(Callback f) const
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
+void 
+SubProject::push_back(Page& page)
+{
+	pages_.push_back(page.shared_from_this());
+}

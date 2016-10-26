@@ -15,6 +15,7 @@ namespace pcw {
 		virtual const User& owner() const noexcept override;
 		virtual int id() const noexcept override;
 		virtual void each_page(Callback f) const override;
+		void push_back(Page& page);
 	
 	private:
 		std::vector<PagePtr> pages_;

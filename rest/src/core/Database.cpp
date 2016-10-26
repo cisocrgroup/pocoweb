@@ -1,11 +1,13 @@
 #include <crow.h>
 #include <cassert>
+#include <unordered_set>
 #include <cppconn/connection.h>
 #include <cppconn/prepared_statement.h>
 #include <crow/logging.h>
 #include "Book.hpp"
 #include "AppCache.hpp"
 #include "Page.hpp"
+#include "SubProject.hpp"
 #include "Line.hpp"
 #include "BookDir.hpp"
 #include "Config.hpp"
@@ -184,8 +186,8 @@ Database::insert_project(Project& project) const
 				 "(projectid,origin,owner) "
 				 "VALUES (?,?,?);";
 	static const char *tql = "INSERT INTO project_pages "
-				 "(projectid,bookid,pageid) "
-				 "VALUES (?,?,?);";
+				 "(projectid,pageid) "
+				 "VALUES (?,?);";
 	check_session_lock();
 	auto conn = connection();
 	assert(conn);
@@ -201,8 +203,7 @@ Database::insert_project(Project& project) const
 	assert(t);
 	s->setInt(1, project.id());
 	project.each_page([&t](const Page& page) {
-		t->setInt(2, page.book()->id());
-		t->setInt(3, page.id);
+		t->setInt(2, page.id);
 		t->executeUpdate();
 	});
 	return project.shared_from_this();
@@ -393,6 +394,8 @@ Database::select_subproject(int projectid, int origin, int owner, sql::Connectio
 ProjectPtr
 Database::select_subproject(int projectid, int owner, const Book& origin, sql::Connection& conn) const
 {
+	static const char *sql = "SELECT pageid FROM project_pages "
+				 "WHERE projectid = ?;";
 	// it is save to use cache here
 	auto get_user = [this,&conn](int userid) {
 		return select_user(userid, conn);
@@ -400,8 +403,23 @@ Database::select_subproject(int projectid, int owner, const Book& origin, sql::C
 	auto ownerptr = cache_ ? cache_->user.get(owner, get_user) : get_user(owner);
 	if (not ownerptr) // TODO throw?
 		return nullptr;
-	// not implemented
-	return nullptr;
+
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, projectid);
+	ResultSetPtr res{s->executeQuery()};
+	assert(res);
+	std::unordered_set<int> ids; // pageids could be in sorted order
+	while (res->next()) {
+		ids.insert(res->getInt(1));
+	}
+
+	auto project = std::make_shared<SubProject>(projectid, *ownerptr, origin);
+	origin.each_page([&ids,&project](Page& page) {
+		if (ids.count(page.id))
+			project->push_back(page);
+	});
+	return project;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
