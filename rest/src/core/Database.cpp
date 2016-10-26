@@ -161,7 +161,7 @@ BookPtr
 Database::insert_book(Book& book) const
 {
 	static const char *sql = "INSERT INTO books "
-				 "(owner, author, title, directory, year, uri) "
+				 "(author, title, directory, year, uri, bookid) "
 				  "VALUES (?, ?, ?, ?, ?, ?)"
 				  ";";
 
@@ -169,15 +169,17 @@ Database::insert_book(Book& book) const
 	auto conn = connection();
 	assert(conn);
 
+	book.set_owner(*session_->user);
+	const auto projectid = insert_project(book, *conn);
+
 	PreparedStatementPtr s{conn->prepareStatement(sql)};
 	assert(s);
-
-	s->setInt(1, session_->user->id);
-	s->setString(2, book.author);
-	s->setString(3, book.title);
-	s->setString(4, book.dir.string());
-	s->setInt(5, book.year);
-	s->setString(6, book.uri);
+	s->setString(1, book.author);
+	s->setString(2, book.title);
+	s->setString(3, book.dir.string());
+	s->setInt(4, book.year);
+	s->setString(5, book.uri);
+	s->setInt(6, projectid);
 	s->executeUpdate();
 	book.id = last_insert_id(*conn);
 	if (not book.id)
@@ -186,8 +188,35 @@ Database::insert_book(Book& book) const
 		assert(page);
 		insert_page(*page, *conn);
 	}
-	book.set_owner(*session_->user);
+	update_project_origin_id(projectid, *conn);
 	return std::static_pointer_cast<Book>(book.shared_from_this());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int
+Database::insert_project(const Project& project, sql::Connection& conn) const
+{
+	static const char *sql = "INSERT INTO projects (origin, ownerid) "
+				 "VALUES (0,?);";
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, project.owner().id);
+	s->executeUpdate();
+	return last_insert_id(conn);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Database::update_project_origin_id(int id, sql::Connection& conn) const
+{
+	static const char *sql = "UPDATE project "
+				 "SET origin = ? "
+				 "WHERE projectid = ?;";
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, id);
+	s->setInt(2, id);
+	s->executeUpdate();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
