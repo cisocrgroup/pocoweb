@@ -35,6 +35,7 @@ OBJS += BookDir.o
 OBJS += BookFixer.o
 OBJS += Box.o
 OBJS += Book.o
+OBJS += SubProject.o
 OBJS += Config.o
 OBJS += Database.o
 OBJS += Route.o
