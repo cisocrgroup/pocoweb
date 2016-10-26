@@ -31,8 +31,8 @@ Database::Database(SessionPtr session, ConfigPtr config)
 UserPtr 
 Database::insert_user(const std::string& name, const std::string& pass) const
 {
-	static const char *sql = "INSERT INTO users (name, passwd, active) "
-				 "VALUES (?, SHA2(?, ?), ?)"
+	static const char *sql = "INSERT INTO users (name, passwd) "
+				 "VALUES (?, SHA2(?, ?))"
 				 ";";
 	
 	check_session_lock();
@@ -43,7 +43,6 @@ Database::insert_user(const std::string& name, const std::string& pass) const
 	s->setString(1, name);
 	s->setString(2, pass);
 	s->setInt(3, SHA2_HASH_SIZE);
-	s->setBoolean(4, true);
 	s->executeUpdate();
 
 	const int user_id = last_insert_id(*conn);
@@ -161,23 +160,24 @@ BookPtr
 Database::insert_book(Book& book) const
 {
 	static const char *sql = "INSERT INTO books "
-				 "(owner, author, title, directory, year, uri) "
-				  "VALUES (?, ?, ?, ?, ?, ?)"
-				  ";";
-
+				 "(author, title, directory, year, uri, bookid, description) "
+				  "VALUES (?,?,?,?,?,?,?);"; 
 	check_session_lock();
 	auto conn = connection();
 	assert(conn);
 
+	book.set_owner(*session_->user);
+	const auto projectid = insert_book_project(book, *conn);
+
 	PreparedStatementPtr s{conn->prepareStatement(sql)};
 	assert(s);
-
-	s->setInt(1, session_->user->id);
-	s->setString(2, book.author);
-	s->setString(3, book.title);
-	s->setString(4, book.dir.string());
-	s->setInt(5, book.year);
-	s->setString(6, book.uri);
+	s->setString(1, book.author);
+	s->setString(2, book.title);
+	s->setString(3, book.dir.string());
+	s->setInt(4, book.year);
+	s->setString(5, book.uri);
+	s->setInt(6, projectid);
+	s->setString(7, book.description);
 	s->executeUpdate();
 	book.id = last_insert_id(*conn);
 	if (not book.id)
@@ -186,8 +186,36 @@ Database::insert_book(Book& book) const
 		assert(page);
 		insert_page(*page, *conn);
 	}
-	book.owner = session_->user;
-	return book.shared_from_this();
+	update_project_origin_id(projectid, *conn);
+	return std::static_pointer_cast<Book>(book.shared_from_this());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int
+Database::insert_book_project(const Project& project, sql::Connection& conn) const
+{
+	static const char *sql = "INSERT INTO projects (origin, owner) "
+				 "VALUES (0,?);";
+	assert(project.is_book());
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, project.owner().id);
+	s->executeUpdate();
+	return last_insert_id(conn);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Database::update_project_origin_id(int id, sql::Connection& conn) const
+{
+	static const char *sql = "UPDATE projects "
+				 "SET origin = ? "
+				 "WHERE projectid = ?;";
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, id);
+	s->setInt(2, id);
+	s->executeUpdate();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -279,9 +307,7 @@ Database::select_book(int bookid) const
 	book->title = res->getString("title");
 	book->author = res->getString("author");
 	book->year = res->getInt("year");
-	book->owner = select_user(res->getInt("owner"));
-	if (not book->owner)
-		return nullptr;
+	book->set_owner(*select_user(res->getInt("owner")));
 	select_all_pages(*book, *conn);
 	return book;
 }

@@ -7,6 +7,8 @@
 #include "db.hpp"
 
 namespace pcw {
+	class Project;
+	using ProjectPtr = std::shared_ptr<Project>;
 	class Session;
 	using SessionPtr = std::shared_ptr<Session>;
 	class Config;
@@ -40,6 +42,8 @@ namespace pcw {
 		BookPtr select_book(int bookid) const;
 
 	private:
+		int insert_book_project(const Project& project, sql::Connection& conn) const;
+		void update_project_origin_id(int id, sql::Connection& conn) const;
 		void insert_page(const Page& page, sql::Connection& conn) const;
 		void insert_line(const Line& line, sql::Connection& conn) const; 
 		void select_all_pages(Book& book, sql::Connection& conn) const;

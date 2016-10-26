@@ -6,28 +6,31 @@ use pocoweb;
 
 drop table if exists users;
 create table users (
-       userid int not null primary key auto_increment,
+       userid int not null unique primary key auto_increment,
        name varchar(50) not null unique,
        email varchar(50) not null,
        institute varchar(50) not null,
-       passwd varchar(100) not null,
-       active boolean not null default true
+       passwd varchar(100) not null
 );
 
-drop table if exists bookdata;
 drop table if exists books;
 create table books (
-	bookid int primary key auto_increment,
-	owner int references users(userid),
+	bookid int not null unique references project(projectid),
 	year int,
 	title varchar(100) not null,
 	author varchar(100) not null,
 	description varchar(255),
 	uri varchar(255),
-	directory varchar(255) not null,
-	firstpage int,
-	lastpage int 
+	directory varchar(255) not null
 );
+
+drop table if exists projects;
+create table projects (
+	projectid int not null unique primary key auto_increment,
+	origin int,
+	owner int references users(userid)
+);
+	
 
 drop table if exists pages;
 create table pages (
@@ -68,10 +71,5 @@ create table contents (
 );
 	
 drop table if exists bookpermissions;
-create table bookpermissions (
-	bookid int references books(bookid),
-	userid int references users(userid),
-	primary key (bookid, userid)
-);
 
 

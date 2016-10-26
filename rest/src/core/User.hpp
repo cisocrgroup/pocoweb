@@ -3,12 +3,8 @@
 
 #include <memory>
 
-namespace sql {
-	class ResultSet;
-	class Connection;
-}
-
 namespace pcw {
+	class Project;
 	class User;
 	using UserPtr = std::shared_ptr<User>;
 
@@ -17,13 +13,14 @@ namespace pcw {
 		User(std::string n,
 		     std::string e,
 		     std::string i,
-		     int iid);
-		static UserPtr create(sql::Connection& conn, const std::string& n);
-		static UserPtr create(const sql::ResultSet& res);
-		void store(sql::Connection& conn, const std::string& passwd, bool active) const;
-		bool authenticate(sql::Connection& conn, const std::string& passwd) const;
+		     int iid)
+			: name(std::move(n))
+			, email(std::move(e))
+			, institute(std::move(i))
+			, id(iid)
+		{}
+		bool has_permission(const Project& project) const noexcept;
 		
-
 		const std::string name;
 		std::string email, institute;
 		const int id;
