@@ -6,6 +6,7 @@
 #include "Book.hpp"
 #include "User.hpp"
 #include "Cache.hpp"
+#include "AppCache.hpp"
 #include "Database.hpp"
 #include "Sessions.hpp"
 #include "Route.hpp"
@@ -79,8 +80,8 @@ Route::cached_find_user(const Database& db, const std::string& name) const
 	auto get_user_from_db = [&db](const std::string& name) {
 		return db.select_user(name);
 	};
-	return user_cache_ ? 	
-		user_cache_->get(name, get_user_from_db) :
+	return cache_ ? 	
+		cache_->user_cache.get(name, get_user_from_db) :
 		get_user_from_db(name);
 }
 
@@ -92,8 +93,8 @@ Route::cached_find_user(const Database& db, int userid) const
 	auto get_user_from_db = [&db](int userid) {
 		return db.select_user(userid);
 	};
-	return user_cache_ ? 	
-		user_cache_->get(userid, get_user_from_db) :
+	return cache_ ? 	
+		cache_->user_cache.get(userid, get_user_from_db) :
 		get_user_from_db(userid);
 }
 
@@ -105,7 +106,7 @@ Route::cached_find_book(const Database& db, int projectid) const
 	auto get_project_from_db = [&db](int projectid) {
 		return db.select_project(projectid);
 	};
-	return project_cache_ ? 	
-		project_cache_->get(projectid, get_project_from_db) :
+	return cache_ ? 	
+		cache_->project_cache.get(projectid, get_project_from_db) :
 		get_project_from_db(projectid);
 }
