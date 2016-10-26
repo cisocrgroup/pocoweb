@@ -20,10 +20,10 @@
 
 using namespace pcw;
 
-static crow::json::wvalue& add_book(crow::json::wvalue& j, const Book& book);
-static crow::json::wvalue& add_page(crow::json::wvalue& j, const Page& page);
-static crow::json::wvalue& add_line(crow::json::wvalue& j, const Line& line);
-static crow::json::wvalue& add_box(crow::json::wvalue& j, const Box& box);
+static crow::json::wvalue book_to_json(const Book& book);
+static crow::json::wvalue page_to_json(const Page& page);
+static crow::json::wvalue line_to_json(const Line& line);
+static crow::json::wvalue box_to_json(const Box& box);
 
 ////////////////////////////////////////////////////////////////////////////////
 const char* GetBooks::route_ = 
@@ -49,33 +49,28 @@ GetBooks::Register(App& app)
 crow::response
 GetBooks::operator()(const crow::request& req, int bookid) const
 {
-	auto session = this->session(req);
-	if (not session)
+	auto db = this->database(req);
+	if (not db)
 		return forbidden();
-	auto book = session->current_book;
-	if (not book or book->owner->id != session->user->id)
-		return not_implemented();
-
-	crow::json::wvalue j;
-	add_book(j, *book);
-	return j;
+	auto book = db->session().current_book;
+	if (not book or bookid != book->id)
+		book = db->select_book(bookid);
+	// missing authentication
+	return book_to_json(*book);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 crow::response
 GetBooks::operator()(const crow::request& req, int bookid, int pageid) const
 {
-	auto session = this->session(req);
-	if (not session)
+	auto db = this->database(req);
+	if (not db)
 		return forbidden();
-	auto book = session->current_book;
-	if (not book or book->owner->id != session->user->id)
-		return not_implemented();
-
-	crow::json::wvalue j;
-	return add_page(j, *(*book)[pageid - 1]);
-	add_book(j, *book);
-	return j;
+	auto book = db->session().current_book;
+	if (not book or bookid != book->id)
+		book = db->select_book(bookid);
+	// missing authentication
+	return page_to_json(*(*book)[pageid - 1]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -86,9 +81,10 @@ GetBooks::operator()(const crow::request& req, int bookid, int pageid, int linei
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::json::wvalue& 
-add_book(crow::json::wvalue& j, const Book& book)
+crow::json::wvalue 
+book_to_json(const Book& book)
 {
+	crow::json::wvalue j;
 	j["id"] = book.id;
 	j["uri"] = book.uri;
 	j["author"] = book.author;
@@ -98,7 +94,8 @@ add_book(crow::json::wvalue& j, const Book& book)
 	j["pages"] = book.size();
 	
 	std::vector<int> ids;
-	std::transform(begin(book), end(book), std::back_inserter(ids), [](const auto& p) {
+	ids.resize(book.size());
+	std::transform(begin(book), end(book), begin(ids), [](const auto& p) {
 		assert(p);
 		return p->id;
 	});
@@ -107,27 +104,32 @@ add_book(crow::json::wvalue& j, const Book& book)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::json::wvalue& 
-add_page(crow::json::wvalue& j, const Page& page)
+crow::json::wvalue 
+page_to_json(const Page& page)
 {
+	crow::json::wvalue j;
 	j["id"] = page.id;
-	add_box(j["box"], page.box);
+	j["box"] = box_to_json(page.box);
 	j["ocrFile"] = page.ocr.native();
 	j["imgFile"] = page.img.native();
 	
-	crow::json::wvalue lines(crow::json::type::List);
+	//std::vector<crow::json::wvalue> lines;
+	//lines.reserve(page.size());
+	//std::transform(begin(page), end(page), begin(lines), line_to_json);	
+	size_t i = 0;
 	for (const auto& line: page)
-		add_line(lines[line.id - 1], line);
-	j["lines"] = std::move(lines);
+		j["lines"][i++] = line_to_json(line);
+	// j["lines"] = lines;
 	return j;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::json::wvalue& 
-add_line(crow::json::wvalue& j, const Line& line)
+crow::json::wvalue 
+line_to_json(const Line& line)
 {
+	crow::json::wvalue j;
 	j["id"] = line.id;
-	add_box(j["box"], line.box);
+	j["box"] = box_to_json(line.box);
 	j["imgFile"] = line.img.native();
 	j["str"] = line.string();
 	j["cuts"] = line.cuts();
@@ -136,9 +138,10 @@ add_line(crow::json::wvalue& j, const Line& line)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::json::wvalue& 
-add_box(crow::json::wvalue& j, const Box& box)
+crow::json::wvalue 
+box_to_json(const Box& box)
 {
+	crow::json::wvalue j;
 	j["left"] = box.left();
 	j["right"] = box.right();
 	j["top"] = box.top();
