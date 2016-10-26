@@ -3,6 +3,8 @@
 #include <sstream>
 #include <regex>
 #include <cppconn/connection.h>
+#include "User.hpp"
+#include "Cache.hpp"
 #include "Database.hpp"
 #include "Sessions.hpp"
 #include "Route.hpp"
@@ -39,6 +41,12 @@ pcw::set_session_id(crow::response& response, const std::string& sid) noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+Route::~Route() noexcept
+{
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
 SessionPtr
 Route::session(const crow::request& request) const noexcept
 {
@@ -57,5 +65,19 @@ boost::optional<Database>
 Route::database(SessionPtr session) const noexcept
 {
 	assert(config_);
-	return session ? Database(session, config_) : boost::optional<Database>{};
+	return session ? 
+		Database(session, config_) : 
+		boost::optional<Database>{};
+}
+
+////////////////////////////////////////////////////////////////////////////////
+UserPtr 
+Route::get_user(const Database& db, const std::string& name) const
+{
+	auto get_user_from_db = [&db](const std::string& name) {
+		return db.select_user(name);
+	};
+	return user_cache_ ? 	
+		user_cache_->get(name, get_user_from_db) :
+		get_user_from_db(name);
 }

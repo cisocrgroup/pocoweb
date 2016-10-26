@@ -73,7 +73,7 @@ Database::authenticate(const std::string& name, const std::string& pass) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-UserPtr 
+UserPtr
 Database::select_user(const std::string& name) const
 {
 	static const char *sql = "SELECT name,email,institute,userid "
