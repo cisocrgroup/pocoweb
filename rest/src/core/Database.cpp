@@ -160,16 +160,14 @@ BookPtr
 Database::insert_book(Book& book) const
 {
 	static const char *sql = "INSERT INTO books "
-				 "(author, title, directory, year, uri, bookid) "
-				  "VALUES (?, ?, ?, ?, ?, ?)"
-				  ";";
-
+				 "(author, title, directory, year, uri, bookid, description) "
+				  "VALUES (?,?,?,?,?,?,?);"; 
 	check_session_lock();
 	auto conn = connection();
 	assert(conn);
 
 	book.set_owner(*session_->user);
-	const auto projectid = insert_project(book, *conn);
+	const auto projectid = insert_book_project(book, *conn);
 
 	PreparedStatementPtr s{conn->prepareStatement(sql)};
 	assert(s);
@@ -179,6 +177,7 @@ Database::insert_book(Book& book) const
 	s->setInt(4, book.year);
 	s->setString(5, book.uri);
 	s->setInt(6, projectid);
+	s->setString(7, book.description);
 	s->executeUpdate();
 	book.id = last_insert_id(*conn);
 	if (not book.id)
@@ -193,10 +192,11 @@ Database::insert_book(Book& book) const
 
 ////////////////////////////////////////////////////////////////////////////////
 int
-Database::insert_project(const Project& project, sql::Connection& conn) const
+Database::insert_book_project(const Project& project, sql::Connection& conn) const
 {
 	static const char *sql = "INSERT INTO projects (origin, owner) "
 				 "VALUES (0,?);";
+	assert(project.is_book());
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, project.owner().id);
