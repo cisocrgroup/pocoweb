@@ -72,6 +72,7 @@ BookDir::~BookDir() noexcept
 void 
 BookDir::remove() const
 {
+	CROW_LOG_INFO << "(BookDir) Removing directory " << dir_;
 	fs::remove_all(dir_);
 }
 
