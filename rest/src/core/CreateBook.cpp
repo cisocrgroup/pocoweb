@@ -58,7 +58,7 @@ CreateBook::operator()(
 
 		// update and clean up
 		CROW_LOG_INFO << "(CreateBook) Created new book id: " << book->id;
-		db->session().current_book = book;
+		db->session().current_project = book;
 		sg.dismiss();
 		return created();
 	} catch (const BadRequest& e) {
