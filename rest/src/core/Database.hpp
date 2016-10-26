@@ -38,25 +38,13 @@ namespace pcw {
 		BookPtr insert_book(Book& book) const;
 
 	private:
-		void insert_page(
-			const Page& page, 
-			sql::PreparedStatement& ps,
-			sql::PreparedStatement& ls,
-			sql::PreparedStatement& cs
-		) const;
-		void insert_line(
-			const Line& line, 
-			sql::PreparedStatement& ls,
-			sql::PreparedStatement& cs
-		) const;
+		void insert_page(const Page& page, sql::Connection& conn) const;
+		void insert_line(const Line& line, sql::Connection& conn) const; 
 		void check_session_lock() const;
 		int last_insert_id(sql::Connection& conn) const;
 		sql::Connection* connection() const;
 
 		static UserPtr get_user_from_result_set(ResultSetPtr res);
-		static PreparedStatementPtr make_insert_line_statement(sql::Connection& conn);
-		static PreparedStatementPtr make_insert_page_statement(sql::Connection& conn);
-		static PreparedStatementPtr make_insert_content_statement(sql::Connection& conn);
 
 		boost::optional<ScopeGuard> scope_guard_;
 		const SessionPtr session_;
