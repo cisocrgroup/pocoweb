@@ -3,7 +3,6 @@
 
 #include <boost/optional.hpp>
 #include <memory>
-#include "CacheFwd.hpp"
 #include "ScopeGuard.hpp"
 
 namespace sql {
@@ -22,7 +21,7 @@ namespace pcw {
 
 	class Database {
 	public:
-		Database(SessionPtr session, ConfigPtr config, UserCachePtr uc);
+		Database(SessionPtr session, ConfigPtr config);
 		
 		void set_autocommit(bool ac = true);
 		void commit();
@@ -34,13 +33,11 @@ namespace pcw {
 		void delete_user(const std::string& name) const;
 
 	private:
-		static UserPtr get_user_from_result_set(ResultSetPtr res);
-		UserPtr select_user_not_cached(const std::string& name) const;
-		UserPtr select_user_cached(const std::string& name) const;
 		sql::Connection* connection() const;
 
+		static UserPtr get_user_from_result_set(ResultSetPtr res);
+
 		boost::optional<ScopeGuard> scope_guard_;
-		const UserCachePtr user_cache_;
 		const SessionPtr session_;
 		const ConfigPtr config_;
 	};

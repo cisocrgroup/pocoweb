@@ -22,7 +22,7 @@ insert_default_user(const std::string& p, const App& app)
 	// but there is currently no other way to do this easily.
 	auto session = std::make_shared<Session>("simple-login-sid");
 
-	Database db(session, app.config_ptr(), nullptr);
+	Database db(session, app.config_ptr());
 	auto name = app.config().plugins[p].get<std::string>("default-user");	
 	auto pass = app.config().plugins[p].get<std::string>("default-pass");	
 	auto email = app.config().plugins[p].get<std::string>("default-email");	
