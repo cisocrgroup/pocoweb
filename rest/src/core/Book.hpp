@@ -40,7 +40,7 @@ namespace pcw {
 		virtual const User& owner() const noexcept override {return *owner_;}
 		virtual int id() const noexcept override {return id_;}
 		void set_id(int id) noexcept {assert(not id_); id_ = id;}
-		virtual void set_owner(const User& user) override;
+		virtual void set_owner(const User& user);
 		virtual void each_page(Callback f) const override;
 
 		using Base::begin;

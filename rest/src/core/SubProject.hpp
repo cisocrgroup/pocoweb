@@ -14,7 +14,6 @@ namespace pcw {
 		virtual const Book& origin() const noexcept override;
 		virtual const User& owner() const noexcept override;
 		virtual int id() const noexcept override;
-		virtual void set_owner(const User& user) override;
 		virtual void each_page(Callback f) const override;
 	
 	private:
