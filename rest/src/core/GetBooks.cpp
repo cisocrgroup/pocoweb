@@ -47,15 +47,15 @@ GetBooks::Register(App& app)
 
 ////////////////////////////////////////////////////////////////////////////////
 crow::response
-GetBooks::operator()(const crow::request& req, int projectid) const
+GetBooks::operator()(const crow::request& req, int prid) const
 {
 	auto db = this->database(req);
 	if (not db)
 		return forbidden();
 	auto project = db->session().current_project;
-	if (not project or projectid != project->id()) {
+	if (not project or prid != project->id()) {
 		std::lock_guard<std::mutex> lock(db->session().mutex);
-		project = db->select_project(projectid);
+		project = db->select_project(prid);
 		db->session().current_project = project;
 	}
 	// missing authentication
@@ -64,15 +64,15 @@ GetBooks::operator()(const crow::request& req, int projectid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 crow::response
-GetBooks::operator()(const crow::request& req, int projectid, int pageid) const
+GetBooks::operator()(const crow::request& req, int prid, int pageid) const
 {
 	auto db = this->database(req);
 	if (not db)
 		return forbidden();
 	auto project = db->session().current_project;
-	if (not project or projectid != project->id()) {
+	if (not project or prid != project->id()) {
 		std::lock_guard<std::mutex> lock(db->session().mutex);
-		project = db->select_project(projectid);
+		project = db->select_project(prid);
 		db->session().current_project = project;
 	}
 	// missing authentication
@@ -81,7 +81,7 @@ GetBooks::operator()(const crow::request& req, int projectid, int pageid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 crow::response
-GetBooks::operator()(const crow::request& req, int projectid, int pageid, int lineid) const
+GetBooks::operator()(const crow::request& req, int prid, int pageid, int lineid) const
 {
 	return not_implemented();
 }
