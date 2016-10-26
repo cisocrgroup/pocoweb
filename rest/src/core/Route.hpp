@@ -50,10 +50,16 @@ namespace pcw {
 		void set_config(ConfigPtr c) noexcept {config_ = std::move(c);}
 		boost::optional<Database> database(const crow::request& request) const noexcept;
 		boost::optional<Database> database(SessionPtr session) const noexcept;
+
+		// cache
 		void set_user_cache(UserCachePtr uc) noexcept {user_cache_ = std::move(uc);}
-		UserPtr get_user(const Database& db, const std::string& name) const;
+		void set_book_cache(BookCachePtr bc) noexcept {book_cache_ = std::move(bc);}
+		UserPtr find_user(const Database& db, const std::string& name) const;
+		UserPtr find_user(const Database& db, int userid) const;
+		BookPtr find_book(const Database& db, int bookid) const;
 	
 	private:
+		BookCachePtr book_cache_;
 		UserCachePtr user_cache_;
 		SessionsPtr sessions_;	
 		ConfigPtr config_;
