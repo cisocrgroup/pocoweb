@@ -20,11 +20,13 @@ namespace pcw {
 	using BookPtr = std::shared_ptr<Book>;
 	class Page;
 	using PagePtr = std::shared_ptr<Page>;
+	struct AppCache;
+	using CachePtr = std::shared_ptr<AppCache>;
 	class Line;
 
 	class Database {
 	public:
-		Database(SessionPtr session, ConfigPtr config);
+		Database(SessionPtr session, ConfigPtr config, CachePtr cache = nullptr);
 		
 		void set_autocommit(bool ac = true);
 		bool autocommit() const noexcept;
@@ -60,6 +62,7 @@ namespace pcw {
 		boost::optional<ScopeGuard> scope_guard_;
 		const SessionPtr session_;
 		const ConfigPtr config_;
+		const CachePtr cache_;
 	};
 }
 

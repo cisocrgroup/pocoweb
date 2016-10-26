@@ -4,6 +4,7 @@
 #include <cppconn/prepared_statement.h>
 #include <crow/logging.h>
 #include "Book.hpp"
+#include "AppCache.hpp"
 #include "Page.hpp"
 #include "Line.hpp"
 #include "BookDir.hpp"
@@ -18,10 +19,11 @@ static const int SHA2_HASH_SIZE = 256;
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-Database::Database(SessionPtr session, ConfigPtr config)
+Database::Database(SessionPtr session, ConfigPtr config, CachePtr cache)
 	: scope_guard_()
 	, session_(std::move(session))
 	, config_(std::move(config))
+	, cache_(std::move(cache))
 {
 	assert(session_);
 	assert(config_);

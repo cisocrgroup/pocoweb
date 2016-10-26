@@ -68,7 +68,7 @@ Route::database(SessionPtr session) const noexcept
 {
 	assert(config_);
 	return session ? 
-		Database(session, config_) : 
+		Database(session, config_, cache_) : 
 		boost::optional<Database>{};
 }
 
