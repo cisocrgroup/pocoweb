@@ -121,7 +121,7 @@ Database::update_user(const User& user) const
 	assert(s);
 	s->setString(1, user.institute);
 	s->setString(2, user.email);
-	s->setInt(3, user.id);
+	s->setInt(3, user.id());
 	s->execute();
 }
 
@@ -179,8 +179,8 @@ Database::insert_book(Book& book) const
 	s->setInt(6, projectid);
 	s->setString(7, book.description);
 	s->executeUpdate();
-	book.id = last_insert_id(*conn);
-	if (not book.id)
+	book.set_id(last_insert_id(*conn));
+	if (not book.id())
 		return nullptr;
 	for (const auto& page: book) {
 		assert(page);
@@ -199,7 +199,7 @@ Database::insert_book_project(const Project& project, sql::Connection& conn) con
 	assert(project.is_book());
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
-	s->setInt(1, project.owner().id);
+	s->setInt(1, project.owner().id());
 	s->executeUpdate();
 	return last_insert_id(conn);
 }
@@ -228,7 +228,7 @@ Database::insert_page(const Page& page, sql::Connection& conn) const
 		"VALUES (?,?,?,?,?,?,?,?);";
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
-	s->setInt(1, page.book()->id);
+	s->setInt(1, page.book()->id());
 	s->setInt(2, page.id);
 	s->setString(3, page.img.string());
 	s->setString(4, page.ocr.string());
@@ -257,7 +257,7 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
 	const auto pageid = line.page()->id;
-	const auto bookid = line.page()->book()->id;
+	const auto bookid = line.page()->book()->id();
 	s->setInt(1, bookid);
 	s->setInt(2, pageid);
 	s->setInt(3, line.id);
@@ -322,7 +322,7 @@ Database::select_all_pages(Book& book, sql::Connection& conn) const
 
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
-	s->setInt(1, book.id);
+	s->setInt(1, book.id());
 	ResultSetPtr res{s->executeQuery()};
 	assert(res);
 
@@ -333,7 +333,7 @@ Database::select_all_pages(Book& book, sql::Connection& conn) const
 		const int t = res->getInt("ptop");
 		const int b = res->getInt("pbottom");
 		auto page = std::make_shared<Page>(id, Box{l, t, r, b});
-		assert(res->getInt("bookid") == book.id);
+		assert(res->getInt("bookid") == book.id());
 		page->img = res->getString("imagepath");
 		page->ocr = res->getString("ocrpath");
 		// first insert the page into books; then load lines 
@@ -356,7 +356,7 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
-	const int bookid = page.book()->id;
+	const int bookid = page.book()->id();
 	const int pageid = page.id;
 	s->setInt(1, bookid);
 	s->setInt(2, pageid);

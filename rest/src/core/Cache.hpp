@@ -38,7 +38,7 @@ typename pcw::Cache<T>::value_type
 pcw::Cache<T>::get(int id, G g) noexcept
 {
 	auto gg = [id,g](){return g(id);};
-	auto f = [id](const value_type& t) {return t ? t->id == id : false;};
+	auto f = [id](const value_type& t) {return t ? t->id() == id : false;};
 	return do_get(f, gg);
 }
 

@@ -18,6 +18,7 @@ namespace pcw {
 		virtual ~Project() noexcept = default;
 		virtual const Book& origin() const noexcept = 0;
 		virtual const User& owner() const noexcept = 0;
+		virtual int id() const noexcept = 0;
 		virtual void set_owner(const User& user) = 0;
 		virtual void each_page(Callback f) const = 0;
 		bool is_book() const noexcept {

@@ -11,10 +11,10 @@ namespace pcw {
 	using UserCache = Cache<User>;
 	using UserCachePtr = std::shared_ptr<UserCache>;
 
-	class Book;
-	using BookPtr = std::shared_ptr<Book>;
-	using BookCache = Cache<Book>;
-	using BookCachePtr = std::shared_ptr<BookCache>;
+	class Project;
+	using ProjectPtr = std::shared_ptr<Project>;
+	using ProjectCache = Cache<Project>;
+	using ProjectCachePtr = std::shared_ptr<ProjectCache>;
 }
 
 #endif // pcw_CacheFwd_hpp__

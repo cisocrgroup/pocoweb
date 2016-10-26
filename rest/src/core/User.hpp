@@ -13,17 +13,20 @@ namespace pcw {
 		User(std::string n,
 		     std::string e,
 		     std::string i,
-		     int iid)
+		     int id)
 			: name(std::move(n))
 			, email(std::move(e))
 			, institute(std::move(i))
-			, id(iid)
+			, id_(id)
 		{}
 		bool has_permission(const Project& project) const noexcept;
+		int id() const noexcept {return id_;}
 		
 		const std::string name;
 		std::string email, institute;
-		const int id;
+
+	private:
+		const int id_;
 	};
 	std::ostream& operator<<(std::ostream& os, const User& user);
 }

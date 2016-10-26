@@ -53,7 +53,7 @@ GetBooks::operator()(const crow::request& req, int bookid) const
 	if (not db)
 		return forbidden();
 	auto book = std::dynamic_pointer_cast<Book>(db->session().current_project);
-	if (not book or bookid != book->id) {
+	if (not book or bookid != book->id()) {
 		std::lock_guard<std::mutex> lock(db->session().mutex);
 		book = db->select_book(bookid);
 		db->session().current_project = book;
@@ -70,7 +70,7 @@ GetBooks::operator()(const crow::request& req, int bookid, int pageid) const
 	if (not db)
 		return forbidden();
 	auto book = std::dynamic_pointer_cast<Book>(db->session().current_project);
-	if (not book or bookid != book->id) {
+	if (not book or bookid != book->id()) {
 		std::lock_guard<std::mutex> lock(db->session().mutex);
 		book = db->select_book(bookid);
 		db->session().current_project = book;
@@ -91,7 +91,7 @@ crow::json::wvalue
 book_to_json(const Book& book)
 {
 	crow::json::wvalue j;
-	j["id"] = book.id;
+	j["id"] = book.id();
 	j["uri"] = book.uri;
 	j["author"] = book.author;
 	j["title"] = book.title;
