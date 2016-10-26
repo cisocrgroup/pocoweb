@@ -20,11 +20,13 @@ namespace pcw {
 	using BookPtr = std::shared_ptr<Book>;
 	class Page;
 	using PagePtr = std::shared_ptr<Page>;
+	struct AppCache;
+	using CachePtr = std::shared_ptr<AppCache>;
 	class Line;
 
 	class Database {
 	public:
-		Database(SessionPtr session, ConfigPtr config);
+		Database(SessionPtr session, ConfigPtr config, CachePtr cache = nullptr);
 		
 		void set_autocommit(bool ac = true);
 		bool autocommit() const noexcept;
@@ -39,9 +41,15 @@ namespace pcw {
 		void delete_user(const std::string& name) const;
 
 		BookPtr insert_book(Book& book) const;
-		BookPtr select_book(int bookid) const;
+		ProjectPtr select_project(int projectid) const;
 
 	private:
+		UserPtr select_user(const std::string& name, sql::Connection& conn) const;
+		UserPtr select_user(int userid, sql::Connection& conn) const;
+		ProjectPtr select_project(int projectid, sql::Connection& conn) const;
+		ProjectPtr select_subproject(int projectid, int origin, int owner, sql::Connection& conn) const;
+		ProjectPtr select_subproject(int projectid, int owner, const Book& book, sql::Connection& conn) const;
+		BookPtr select_book(int bookid, int owner, sql::Connection& conn) const;
 		int insert_book_project(const Project& project, sql::Connection& conn) const;
 		void update_project_origin_id(int id, sql::Connection& conn) const;
 		void insert_page(const Page& page, sql::Connection& conn) const;
@@ -57,6 +65,7 @@ namespace pcw {
 		boost::optional<ScopeGuard> scope_guard_;
 		const SessionPtr session_;
 		const ConfigPtr config_;
+		const CachePtr cache_;
 	};
 }
 

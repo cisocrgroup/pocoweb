@@ -6,6 +6,7 @@
 #include "Book.hpp"
 #include "User.hpp"
 #include "Cache.hpp"
+#include "AppCache.hpp"
 #include "Database.hpp"
 #include "Sessions.hpp"
 #include "Route.hpp"
@@ -67,45 +68,7 @@ Route::database(SessionPtr session) const noexcept
 {
 	assert(config_);
 	return session ? 
-		Database(session, config_) : 
+		Database(session, config_, cache_) : 
 		boost::optional<Database>{};
 }
 
-////////////////////////////////////////////////////////////////////////////////
-UserPtr 
-Route::cached_find_user(const Database& db, const std::string& name) const
-{
-	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto get_user_from_db = [&db](const std::string& name) {
-		return db.select_user(name);
-	};
-	return user_cache_ ? 	
-		user_cache_->get(name, get_user_from_db) :
-		get_user_from_db(name);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-UserPtr 
-Route::cached_find_user(const Database& db, int userid) const
-{
-	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto get_user_from_db = [&db](int userid) {
-		return db.select_user(userid);
-	};
-	return user_cache_ ? 	
-		user_cache_->get(userid, get_user_from_db) :
-		get_user_from_db(userid);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-BookPtr 
-Route::cached_find_book(const Database& db, int bookid) const
-{
-	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto get_book_from_db = [&db](int bookid) {
-		return db.select_book(bookid);
-	};
-	return book_cache_ ? 	
-		book_cache_->get(bookid, get_book_from_db) :
-		get_book_from_db(bookid);
-}

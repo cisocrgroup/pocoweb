@@ -21,15 +21,15 @@ namespace pcw {
 		using Base = std::vector<PagePtr>;
 		using value_type = Base::value_type;
 	
-		Book(int i = 0)
+		Book(int id = 0)
 			: author()
 			, title()
 			, description()
 			, uri()
 			, dir()
-			, id(i) 
 			, year()
 			, owner_()
+			, id_(id) 
 		{}
 		Book(const Book& other) = delete;
 		Book& operator=(const Book& other) = delete;
@@ -38,6 +38,8 @@ namespace pcw {
 		virtual ~Book() noexcept override = default;
 		virtual const Book& origin() const noexcept override {return *this;}
 		virtual const User& owner() const noexcept override {return *owner_;}
+		virtual int id() const noexcept override {return id_;}
+		void set_id(int id) noexcept {assert(not id_); id_ = id;}
 		virtual void set_owner(const User& user) override;
 		virtual void each_page(Callback f) const override;
 
@@ -53,11 +55,11 @@ namespace pcw {
 		std::string author, title;
 		std::string description, uri;
 		Path dir;
-		int id;
 		int year;
 
 	private:
 		ConstUserPtr owner_;
+		int id_;
 	};
 }
 

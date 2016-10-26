@@ -10,9 +10,9 @@ namespace pcw {
 		virtual void Register(App& app) override;
 		virtual const char* route() const noexcept override {return route_;}
 		virtual const char* name() const noexcept override {return name_;}
-		crow::response operator()(const crow::request& req, int bookid) const;
-		crow::response operator()(const crow::request& req, int bookid, int pageid) const;
-		crow::response operator()(const crow::request& req, int bookid, int pageid, int lineid) const;
+		crow::response operator()(const crow::request& req, int prid) const;
+		crow::response operator()(const crow::request& req, int prid, int pageid) const;
+		crow::response operator()(const crow::request& req, int prid, int pageid, int lineid) const;
 
 	private:
 		static const char* route_;

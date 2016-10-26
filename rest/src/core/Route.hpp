@@ -5,7 +5,6 @@
 #include <boost/optional.hpp>
 #include <vector>
 #include <crow/http_response.h>
-#include "CacheFwd.hpp"
 
 namespace crow {
 	template<typename... Middleware> class Crow;
@@ -21,6 +20,12 @@ namespace pcw {
 	using SessionsPtr = std::shared_ptr<Sessions>;
 	class Route;
 	using RoutePtr = std::unique_ptr<Route>;
+	class User;
+	using UserPtr = std::shared_ptr<User>;
+	class Project;
+	using ProjectPtr = std::shared_ptr<Project>;
+	class AppCache;
+	using CachePtr = std::shared_ptr<AppCache>;
 
 	std::string get_session_id(const crow::request& request) noexcept;
 	void set_session_id(crow::response& response, const std::string& sid) noexcept;
@@ -52,16 +57,11 @@ namespace pcw {
 		boost::optional<Database> database(SessionPtr session) const noexcept;
 
 		// cache
-		void set_user_cache(UserCachePtr uc) noexcept {user_cache_ = std::move(uc);}
-		void set_book_cache(BookCachePtr bc) noexcept {book_cache_ = std::move(bc);}
-		UserPtr cached_find_user(const Database& db, const std::string& name) const;
-		UserPtr cached_find_user(const Database& db, int userid) const;
-		BookPtr cached_find_book(const Database& db, int bookid) const;
+		void set_cache(CachePtr cache) noexcept {cache_ = std::move(cache);}
 	
 	private:
-		BookCachePtr book_cache_;
-		UserCachePtr user_cache_;
-		SessionsPtr sessions_;	
+		SessionsPtr sessions_;
+		CachePtr cache_;
 		ConfigPtr config_;
 	};
 
