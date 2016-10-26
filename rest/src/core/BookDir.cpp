@@ -134,6 +134,7 @@ BookDir::build() const
 	assert(book);
 	fix(*book);
 	setup(*book);
+	book->dir = dir_;
 	return book;
 }
 
