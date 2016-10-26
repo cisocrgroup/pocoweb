@@ -278,8 +278,8 @@ Database::select_book(int bookid) const
 	book->dir = res->getString("directory");
 	book->title = res->getString("title");
 	book->author = res->getString("author");
-	book->year = res->getInt("author");
-	book->owner = select_user(res->getInt("userid"));
+	book->year = res->getInt("year");
+	book->owner = select_user(res->getInt("owner"));
 	if (not book->owner)
 		return nullptr;
 	select_all_pages(*book, *conn);
@@ -333,7 +333,7 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 	const int bookid = page.book()->id;
 	const int pageid = page.id;
 	s->setInt(1, bookid);
-	s->setInt(1, pageid);
+	s->setInt(2, pageid);
 	ResultSetPtr res{s->executeQuery()};
 	assert(res);
 

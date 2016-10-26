@@ -53,8 +53,11 @@ GetBooks::operator()(const crow::request& req, int bookid) const
 	if (not db)
 		return forbidden();
 	auto book = db->session().current_book;
-	if (not book or bookid != book->id)
+	if (not book or bookid != book->id) {
+		std::lock_guard<std::mutex> lock(db->session().mutex);
 		book = db->select_book(bookid);
+		db->session().current_book = book;
+	}
 	// missing authentication
 	return book_to_json(*book);
 }
@@ -67,8 +70,11 @@ GetBooks::operator()(const crow::request& req, int bookid, int pageid) const
 	if (not db)
 		return forbidden();
 	auto book = db->session().current_book;
-	if (not book or bookid != book->id)
+	if (not book or bookid != book->id) {
+		std::lock_guard<std::mutex> lock(db->session().mutex);
 		book = db->select_book(bookid);
+		db->session().current_book = book;
+	}
 	// missing authentication
 	return page_to_json(*(*book)[pageid - 1]);
 }
