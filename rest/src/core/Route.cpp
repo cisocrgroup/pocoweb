@@ -3,6 +3,8 @@
 #include <sstream>
 #include <regex>
 #include <cppconn/connection.h>
+#include "User.hpp"
+#include "Cache.hpp"
 #include "Database.hpp"
 #include "Sessions.hpp"
 #include "Route.hpp"
@@ -63,6 +65,19 @@ boost::optional<Database>
 Route::database(SessionPtr session) const noexcept
 {
 	assert(config_);
-	assert(user_cache_);
-	return session ? Database(session, config_) : boost::optional<Database>{};
+	return session ? 
+		Database(session, config_) : 
+		boost::optional<Database>{};
+}
+
+////////////////////////////////////////////////////////////////////////////////
+UserPtr 
+Route::get_user(const Database& db, const std::string& name) const
+{
+	auto get_user_from_db = [&db](const std::string& name) {
+		return db.select_user(name);
+	};
+	return user_cache_ ? 	
+		user_cache_->get(name, get_user_from_db) :
+		get_user_from_db(name);
 }

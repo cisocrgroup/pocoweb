@@ -45,12 +45,13 @@ namespace pcw {
 		
 		SessionPtr session(const crow::request& request) const noexcept;
 		Sessions& sessions() const noexcept {return *sessions_;}
-		void set_user_cache(UserCachePtr uc) noexcept {user_cache_ = std::move(uc);}
 		void set_sessions(SessionsPtr s) noexcept {sessions_ = std::move(s);}
 		const Config& config() const noexcept {return *config_;}
 		void set_config(ConfigPtr c) noexcept {config_ = std::move(c);}
 		boost::optional<Database> database(const crow::request& request) const noexcept;
 		boost::optional<Database> database(SessionPtr session) const noexcept;
+		void set_user_cache(UserCachePtr uc) noexcept {user_cache_ = std::move(uc);}
+		UserPtr get_user(const Database& db, const std::string& name) const;
 	
 	private:
 		UserCachePtr user_cache_;
