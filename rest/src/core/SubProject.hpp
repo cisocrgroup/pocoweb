@@ -18,8 +18,8 @@ namespace pcw {
 	
 	private:
 		std::vector<PagePtr> pages_;
-		std::shared_ptr<const User> owner_;
-		std::shared_ptr<const Book> origin_;
+		const std::shared_ptr<const User> owner_;
+		const std::shared_ptr<const Book> origin_;
 		const int id_;
 	};
 }
