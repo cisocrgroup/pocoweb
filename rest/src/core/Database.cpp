@@ -49,10 +49,13 @@ Database::insert_user(const std::string& name, const std::string& pass) const
 	s->setInt(3, SHA2_HASH_SIZE);
 	s->executeUpdate();
 
-	const int user_id = last_insert_id(*conn);
-	return user_id ?
-		std::make_shared<User>(name, "", "", user_id) :
-		nullptr;
+	const int userid = last_insert_id(*conn);
+	if (not userid)
+		return nullptr;
+	auto user = std::make_shared<User>(name, "", "", userid);
+	if (cache_)
+		cache_->user.put(user);
+	return user;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -183,30 +186,34 @@ ProjectPtr
 Database::insert_project(Project& project) const
 {
 	static const char *sql = "INSERT INTO projects "
-				 "(projectid,origin,owner) "
+				 "(origin,owner) "
 				 "VALUES (?,?,?);";
 	static const char *tql = "INSERT INTO project_pages "
-				 "(projectid,pageid) "
-				 "VALUES (?,?);";
+				 "(projectid,pageid,bookid) "
+				 "VALUES (?,?,?);";
 	check_session_lock();
 	auto conn = connection();
 	assert(conn);
 
 	PreparedStatementPtr s{conn->prepareStatement(sql)};
 	assert(s);
-	s->setInt(1, project.id());
-	s->setInt(2, project.origin().id());
-	s->setInt(3, project.owner().id());
+	s->setInt(1, project.origin().id());
+	s->setInt(2, project.owner().id());
 	s->executeUpdate();
+	const auto projectid = last_insert_id(*conn);
+	project.set_id(projectid);
 
 	PreparedStatementPtr t{conn->prepareStatement(tql)};
 	assert(t);
-	s->setInt(1, project.id());
+	t->setInt(1, project.id());
 	std::for_each(begin(project), end(project), [&t](const auto& page) {
 		assert(page);
 		t->setInt(2, page->id);
+		t->setInt(3, page->book()->id());
 		t->executeUpdate();
 	});
+	if (cache_)
+		cache_->project.put(project.shared_from_this());
 	return project.shared_from_this();
 }
 
@@ -241,6 +248,8 @@ Database::insert_book(Book& book) const
 		insert_page(*page, *conn);
 	}
 	update_project_origin_id(projectid, *conn);
+	if (cache_)
+		cache_->project.put(book.shared_from_this());
 	return std::static_pointer_cast<Book>(book.shared_from_this());
 }
 
