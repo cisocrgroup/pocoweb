@@ -18,6 +18,7 @@ namespace pcw {
 		using Base::size;
 		using Base::empty;
 		
+		void put(value_type t);
 		template<class G>
 		value_type get(int id, G g);
 		template<class G>
@@ -32,6 +33,18 @@ namespace pcw {
 		std::mutex mutex_;
 		const size_t n_;
 	};
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class T>
+void
+pcw::Cache<T>::put(value_type t)
+{
+	std::lock_guard<std::mutex> lock(mutex_);
+	// new elements are inserted at the front of the cache
+	Base::insert(Base::begin(), t);
+	if (Base::size() > n_)
+		Base::resize(n_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
