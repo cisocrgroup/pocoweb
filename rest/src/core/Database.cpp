@@ -72,7 +72,9 @@ Database::authenticate(const std::string& name, const std::string& pass) const
 	s->setString(1, name);
 	s->setString(2, pass);
 	s->setInt(3, SHA2_HASH_SIZE);
-	return get_user_from_result_set(ResultSetPtr{s->executeQuery()});
+	return put_cache(
+		get_user_from_result_set(ResultSetPtr{s->executeQuery()})
+	);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
