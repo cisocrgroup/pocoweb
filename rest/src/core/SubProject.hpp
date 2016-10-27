@@ -13,12 +13,10 @@ namespace pcw {
 		virtual ~SubProject() noexcept override = default;
 		virtual const Book& origin() const noexcept override;
 		virtual const User& owner() const noexcept override;
-		virtual int id() const noexcept override;
 	
 	private:
 		const std::shared_ptr<const User> owner_;
 		const std::shared_ptr<const Book> origin_;
-		const int id_;
 	};
 }
 

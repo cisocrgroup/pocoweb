@@ -19,10 +19,12 @@ namespace pcw {
 		using Base = std::vector<PagePtr>;
 		using value_type = Base::value_type;
 	
+		Project(int id = 0): id_(id) {}
 		virtual ~Project() noexcept = default;
 		virtual const Book& origin() const noexcept = 0;
 		virtual const User& owner() const noexcept = 0;
-		virtual int id() const noexcept = 0;
+		int id() const noexcept {return id_;}
+		void set_id(int id);
 		bool is_book() const noexcept {
 			return this == static_cast<const void*>(&origin());
 		}
@@ -34,6 +36,9 @@ namespace pcw {
 		using Base::end;
 		using Base::empty;
 		using Base::size;
+
+	private:
+		int id_;
 	};
 }
 

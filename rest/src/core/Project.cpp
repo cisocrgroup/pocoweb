@@ -17,6 +17,19 @@ do_find(It b, It e, int id)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void
+Project::set_id(int id)
+{
+	if (id_ > 0)
+		throw std::logic_error(
+			"(Project) Cannot reset id " +
+			std::to_string(id_) + " to id " +
+			std::to_string(id)
+		);
+	id_ = id;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 Project::value_type 
 Project::find(int pageid) const noexcept
 {
