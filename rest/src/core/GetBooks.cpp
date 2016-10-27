@@ -59,6 +59,8 @@ GetBooks::operator()(const crow::request& req) const
 	auto db = this->database(req);
 	if (not db)
 		return forbidden();
+
+	std::lock_guard<std::mutex> lock(db->session().mutex);
 	auto projects = db->select_all_projects(*db->session().user);
 
 	crow::json::wvalue j;
@@ -91,6 +93,7 @@ GetBooks::operator()(const crow::request& req, int prid, int pageid) const
 	auto db = this->database(req);
 	if (not db)
 		return forbidden();
+	std::lock_guard<std::mutex> lock(db->session().mutex);
 	auto project = db->session().current_project;
 	if (not project or prid != project->id()) {
 		std::lock_guard<std::mutex> lock(db->session().mutex);
@@ -118,6 +121,7 @@ GetBooks::get(const crow::request& req, int prid) const
 	auto db = this->database(req);
 	if (not db)
 		return forbidden();
+	std::lock_guard<std::mutex> lock(db->session().mutex);
 	auto project = db->session().current_project;
 	if (not project or prid != project->id()) {
 		std::lock_guard<std::mutex> lock(db->session().mutex);
@@ -135,6 +139,7 @@ GetBooks::post(const crow::request& req, int prid) const
 	auto db = database(req);
 	if (not db)
 		return forbidden();
+	std::lock_guard<std::mutex> lock(db->session().mutex);
 	auto proj = db->session().current_project->id() == prid ? 
 		db->session().current_project : db->select_project(prid);
 	if (not proj)
