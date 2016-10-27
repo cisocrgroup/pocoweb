@@ -5,10 +5,24 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
+template<class It>
+static PagePtr 
+do_find(It b, It e, int id)
+{
+	auto i = std::find_if(b, e, [id](const auto& page) {
+		assert(page);
+		return page->id == id;
+	});
+	return i != e ? *i : nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 Project::value_type 
 Project::find(int pageid) const noexcept
 {
-	return nullptr;
+	// just do a forward search
+	// this should be fast enough
+	return do_find(begin(), end(), pageid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
