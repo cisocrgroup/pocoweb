@@ -61,6 +61,12 @@ namespace pcw {
 		int last_insert_id(sql::Connection& conn) const;
 		sql::Connection* connection() const;
 
+		UserPtr cached_select_user(const std::string& name, sql::Connection& conn) const;
+		UserPtr cached_select_user(int userid, sql::Connection& conn) const;
+		ProjectPtr cached_select_project(int prid, sql::Connection& conn) const;
+		UserPtr put_cache(UserPtr user) const;
+		ProjectPtr put_cache(ProjectPtr proj) const;
+
 		static UserPtr get_user_from_result_set(ResultSetPtr res);
 
 		boost::optional<ScopeGuard> scope_guard_;

@@ -640,3 +640,55 @@ Database::connection() const
 		conn->setAutoCommit(false);
 	return conn;
 }
+////////////////////////////////////////////////////////////////////////////////
+UserPtr 
+Database::cached_select_user(const std::string& name, sql::Connection& conn) const
+{
+	auto get_user = [this,&conn](const std::string& name) {
+		CROW_LOG_INFO << "(Database) loading user from database: " << name;
+		return select_user(name, conn);
+	};
+	return cache_ ? cache_->user.get(name, get_user) : get_user(name);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+UserPtr 
+Database::cached_select_user(int userid, sql::Connection& conn) const
+{
+	auto get_user = [this,&conn](int userid) {
+		CROW_LOG_INFO << "(Database) loading user from database: " << userid;
+		return select_user(userid, conn);
+	};
+	return cache_ ? cache_->user.get(userid, get_user) : get_user(userid);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+ProjectPtr 
+Database::cached_select_project(int prid, sql::Connection& conn) const
+{
+	auto get_project = [this,&conn](int prid) {
+		CROW_LOG_INFO << "(Database) loading project from database: " << prid;
+		return select_project(prid, conn);
+	};
+	return cache_ ? 
+		cache_->project.get(prid, get_project) : 
+		get_project(prid);	
+}
+
+////////////////////////////////////////////////////////////////////////////////
+UserPtr 
+Database::put_cache(UserPtr user) const
+{
+	if (user and cache_) 
+		cache_->user.put(user);
+	return user;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+ProjectPtr 
+Database::put_cache(ProjectPtr proj) const
+{
+	if (proj and cache_)
+		cache_->project.put(proj);
+	return proj;
+}
