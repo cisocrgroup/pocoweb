@@ -52,10 +52,7 @@ Database::insert_user(const std::string& name, const std::string& pass) const
 	const int userid = last_insert_id(*conn);
 	if (not userid)
 		return nullptr;
-	auto user = std::make_shared<User>(name, "", "", userid);
-	if (cache_)
-		cache_->user.put(user);
-	return user;
+	return put_cache(std::make_shared<User>(name, "", "", userid));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -83,12 +80,9 @@ UserPtr
 Database::select_user(const std::string& name) const
 {
 	check_session_lock();
-	auto get_user = [this](const std::string& name) {
-		auto conn = connection();
-		assert(conn);
-		return select_user(name, *conn);
-	};
-	return cache_ ? cache_->user.get(name, get_user) : get_user(name);
+	auto conn = connection();
+	assert(conn);
+	return cached_select_user(name, *conn);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -109,12 +103,9 @@ UserPtr
 Database::select_user(int userid) const
 {
 	check_session_lock();
-	auto get_user = [this](int userid) {
-		auto conn = connection();
-		assert(conn);
-		return select_user(userid, *conn);
-	};
-	return cache_ ? cache_->user.get(userid, get_user) : get_user(userid);
+	auto conn = connection();
+	assert(conn);
+	return cached_select_user(userid, *conn);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -212,9 +203,7 @@ Database::insert_project(Project& project) const
 		t->setInt(3, page->book()->id());
 		t->executeUpdate();
 	});
-	if (cache_)
-		cache_->project.put(project.shared_from_this());
-	return project.shared_from_this();
+	return put_cache(project.shared_from_this());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -248,9 +237,9 @@ Database::insert_book(Book& book) const
 		insert_page(*page, *conn);
 	}
 	update_project_origin_id(projectid, *conn);
-	if (cache_)
-		cache_->project.put(book.shared_from_this());
-	return std::static_pointer_cast<Book>(book.shared_from_this());
+	return std::static_pointer_cast<Book>(
+		put_cache(book.shared_from_this())
+	);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -350,14 +339,9 @@ ProjectPtr
 Database::select_project(int projectid) const
 {
 	check_session_lock();
-	auto get_project = [this](int projectid) {
-		auto conn = connection();
-		assert(conn);
-		return select_project(projectid, *conn);
-	};
-	return cache_ ? 
-		cache_->project.get(projectid, get_project) : 
-		get_project(projectid);	
+	auto conn = connection();
+	assert(conn);
+	return cached_select_project(projectid, *conn);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -387,13 +371,8 @@ Database::select_project(int projectid, sql::Connection& conn) const
 ProjectPtr
 Database::select_subproject(int projectid, int origin, int owner, sql::Connection& conn) const
 {
-	auto get_project = [&conn,this,owner](int origin) {
-		return select_book(origin, owner, conn);
-	};
 	// it is save to use the cache here
-	auto book =  cache_ ? 
-		cache_->project.get(origin, get_project) :
-		get_project(origin);
+	auto book = cached_select_project(origin, conn);
 	if (not book) // TODO throw?
 		return nullptr;
 	assert(book->is_book()); // origin must be a book!
@@ -407,10 +386,7 @@ Database::select_subproject(int projectid, int owner, const Book& origin, sql::C
 	static const char *sql = "SELECT pageid FROM project_pages "
 				 "WHERE projectid = ?;";
 	// it is save to use cache here
-	auto get_user = [this,&conn](int userid) {
-		return select_user(userid, conn);
-	};
-	auto ownerptr = cache_ ? cache_->user.get(owner, get_user) : get_user(owner);
+	auto ownerptr = cached_select_user(owner, conn);
 	if (not ownerptr) // TODO throw?
 		return nullptr;
 
@@ -455,10 +431,7 @@ Database::select_book(int bookid, int owner, sql::Connection& conn) const
 	book->year = res->getInt("year");
 
 	// it is save to use cache here
-	auto get_user = [this,&conn](int userid) {
-		return select_user(userid, conn);
-	};
-	auto ownerptr = cache_ ? cache_->user.get(owner, get_user) : get_user(owner);
+	auto ownerptr = cached_select_user(owner, conn);
 	if (not ownerptr) // TODO throw?
 		return nullptr;
 	book->set_owner(*ownerptr);
@@ -645,7 +618,7 @@ UserPtr
 Database::cached_select_user(const std::string& name, sql::Connection& conn) const
 {
 	auto get_user = [this,&conn](const std::string& name) {
-		CROW_LOG_INFO << "(Database) loading user from database: " << name;
+		CROW_LOG_INFO << "(Database) Loading not cached user: " << name;
 		return select_user(name, conn);
 	};
 	return cache_ ? cache_->user.get(name, get_user) : get_user(name);
@@ -656,7 +629,7 @@ UserPtr
 Database::cached_select_user(int userid, sql::Connection& conn) const
 {
 	auto get_user = [this,&conn](int userid) {
-		CROW_LOG_INFO << "(Database) loading user from database: " << userid;
+		CROW_LOG_INFO << "(Database) Loading not cached user: " << userid;
 		return select_user(userid, conn);
 	};
 	return cache_ ? cache_->user.get(userid, get_user) : get_user(userid);
@@ -667,7 +640,7 @@ ProjectPtr
 Database::cached_select_project(int prid, sql::Connection& conn) const
 {
 	auto get_project = [this,&conn](int prid) {
-		CROW_LOG_INFO << "(Database) loading project from database: " << prid;
+		CROW_LOG_INFO << "(Database) Loading not cached project: " << prid;
 		return select_project(prid, conn);
 	};
 	return cache_ ? 
