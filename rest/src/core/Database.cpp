@@ -202,8 +202,9 @@ Database::insert_project(Project& project) const
 	PreparedStatementPtr t{conn->prepareStatement(tql)};
 	assert(t);
 	s->setInt(1, project.id());
-	project.each_page([&t](const Page& page) {
-		t->setInt(2, page.id);
+	std::for_each(begin(project), end(project), [&t](const auto& page) {
+		assert(page);
+		t->setInt(2, page->id);
 		t->executeUpdate();
 	});
 	return project.shared_from_this();
@@ -413,11 +414,11 @@ Database::select_subproject(int projectid, int owner, const Book& origin, sql::C
 	while (res->next()) {
 		ids.insert(res->getInt(1));
 	}
-
 	auto project = std::make_shared<SubProject>(projectid, *ownerptr, origin);
-	origin.each_page([&ids,&project](Page& page) {
-		if (ids.count(page.id))
-			project->push_back(page);
+	std::copy_if(begin(origin), end(origin), std::back_inserter(*project), 
+		[&ids](const auto& page) {
+			assert(page);
+			return ids.count(page->id);
 	});
 	return project;
 }

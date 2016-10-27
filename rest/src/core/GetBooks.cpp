@@ -76,7 +76,10 @@ GetBooks::operator()(const crow::request& req, int prid, int pageid) const
 		db->session().current_project = project;
 	}
 	// missing authentication
-	return page_to_json(*project->origin()[pageid - 1]);
+	auto page = project->find(pageid);
+	if (not page)
+		return not_found();
+	return page_to_json(*page);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,8 +102,10 @@ project_to_json(const Project& project)
 	j["description"] = project.origin().description;
 	
 	std::vector<int> ids;
-	project.each_page([&ids](const Page& page) {
-		ids.push_back(page.id);
+	ids.resize(project.size());
+	std::transform(begin(project), end(project), begin(ids), [](const auto& page) {
+		assert(page);
+		return page->id;
 	});
 	j["pages"] = ids.size();
 	j["pageIds"] = ids;

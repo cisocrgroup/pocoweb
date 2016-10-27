@@ -11,16 +11,10 @@ namespace pcw {
 	using ConstUserPtr = std::shared_ptr<const User>;
 	class Book;
 	using BookPtr = std::shared_ptr<Book>;
-	class Page;
-	using PagePtr = std::shared_ptr<Page>;
 	using Path = boost::filesystem::path;
 
-	class Book: private std::vector<PagePtr>,
-		    public Project {
+	class Book: public Project {
 	public:
-		using Base = std::vector<PagePtr>;
-		using value_type = Base::value_type;
-	
 		Book(int id = 0)
 			: author()
 			, title()
@@ -40,17 +34,9 @@ namespace pcw {
 		virtual const User& owner() const noexcept override {return *owner_;}
 		virtual int id() const noexcept override {return id_;}
 		void set_id(int id) noexcept {assert(not id_); id_ = id;}
-		virtual void set_owner(const User& user);
-		virtual void each_page(Callback f) const override;
-
-		using Base::begin;
-		using Base::end;
-		using Base::back;
-		using Base::front;
-		using Base::empty;
-		using Base::size;
-		using Base::operator[];
+		void set_owner(const User& user);
 		void push_back(PagePtr page);
+
 		
 		std::string author, title;
 		std::string description, uri;

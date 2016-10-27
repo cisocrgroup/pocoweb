@@ -14,11 +14,8 @@ namespace pcw {
 		virtual const Book& origin() const noexcept override;
 		virtual const User& owner() const noexcept override;
 		virtual int id() const noexcept override;
-		virtual void each_page(Callback f) const override;
-		void push_back(Page& page);
 	
 	private:
-		std::vector<PagePtr> pages_;
 		const std::shared_ptr<const User> owner_;
 		const std::shared_ptr<const Book> origin_;
 		const int id_;
