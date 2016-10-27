@@ -344,6 +344,29 @@ Database::select_project(int projectid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+std::vector<ProjectPtr> 
+Database::select_all_projects(const User& user) const
+{
+	static const char *sql = "SELECT projectid "
+				 "FROM projects "
+				 "WHERE owner = ? OR owner = 0;";
+	check_session_lock();
+	auto conn = connection();
+	assert(conn);
+	PreparedStatementPtr s{conn->prepareStatement(sql)};
+	assert(s);
+	s->setInt(1, user.id());	
+	ResultSetPtr res{s->executeQuery()};
+	assert(res);
+	std::vector<ProjectPtr> projects;
+	while (res->next()) {
+		const auto prid = res->getInt(1);
+		projects.push_back(select_project(prid, *conn));
+	}
+	return projects;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 ProjectPtr
 Database::select_project(int projectid, sql::Connection& conn) const
 {

@@ -8,9 +8,11 @@
 #include "Database.hpp"
 #include "GetBooks.hpp"
 #include "Sessions.hpp"
+#include "SubProject.hpp"
 #include "ScopeGuard.hpp"
 #include "BookDir.hpp"
 
+#define GET_BOOKS_ROUTE_0 "/books"
 #define GET_BOOKS_ROUTE_1 "/books/<int>"
 #define GET_BOOKS_ROUTE_2 "/books/<int>/pages"
 #define GET_BOOKS_ROUTE_3 "/books/<int>/pages/<int>"
@@ -27,6 +29,7 @@ static crow::json::wvalue box_to_json(const Box& box);
 
 ////////////////////////////////////////////////////////////////////////////////
 const char* GetBooks::route_ = 
+	GET_BOOKS_ROUTE_0 ","
 	GET_BOOKS_ROUTE_1 ","
 	GET_BOOKS_ROUTE_2 ","
 	GET_BOOKS_ROUTE_3 ","
@@ -38,7 +41,11 @@ const char* GetBooks::name_ = "GetBooks";
 void
 GetBooks::Register(App& app)
 {
-	CROW_ROUTE(app, GET_BOOKS_ROUTE_1).methods("GET"_method)(*this);
+	CROW_ROUTE(app, GET_BOOKS_ROUTE_0).methods("GET"_method)(*this);
+	CROW_ROUTE(app, GET_BOOKS_ROUTE_1)
+		.methods("GET"_method)
+		.methods("POST"_method)
+	(*this);
 	CROW_ROUTE(app, GET_BOOKS_ROUTE_2).methods("GET"_method)(*this);
 	CROW_ROUTE(app, GET_BOOKS_ROUTE_3).methods("GET"_method)(*this);
 	CROW_ROUTE(app, GET_BOOKS_ROUTE_4).methods("GET"_method)(*this);
@@ -47,19 +54,34 @@ GetBooks::Register(App& app)
 
 ////////////////////////////////////////////////////////////////////////////////
 crow::response
-GetBooks::operator()(const crow::request& req, int prid) const
+GetBooks::operator()(const crow::request& req) const
 {
 	auto db = this->database(req);
 	if (not db)
 		return forbidden();
-	auto project = db->session().current_project;
-	if (not project or prid != project->id()) {
-		std::lock_guard<std::mutex> lock(db->session().mutex);
-		project = db->select_project(prid);
-		db->session().current_project = project;
+	auto projects = db->select_all_projects(*db->session().user);
+
+	crow::json::wvalue j;
+	size_t i = 0;
+	for (const auto& p: projects) {
+		assert(p);
+		j["books"][i] = project_to_json(*p);
 	}
-	// missing authentication
-	return project_to_json(*project);
+	return j;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+crow::response
+GetBooks::operator()(const crow::request& req, int prid) const
+{
+	switch (req.method) {
+	case crow::HTTPMethod::Get:
+		return get(req, prid);
+	case crow::HTTPMethod::Post:
+		return post(req, prid);
+	default:
+		return not_found();
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +97,7 @@ GetBooks::operator()(const crow::request& req, int prid, int pageid) const
 		project = db->select_project(prid);
 		db->session().current_project = project;
 	}
-	// missing authentication
+	// TODO missing authentication
 	auto page = project->find(pageid);
 	if (not page)
 		return not_found();
@@ -87,6 +109,54 @@ crow::response
 GetBooks::operator()(const crow::request& req, int prid, int pageid, int lineid) const
 {
 	return not_implemented();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+crow::response
+GetBooks::get(const crow::request& req, int prid) const
+{
+	auto db = this->database(req);
+	if (not db)
+		return forbidden();
+	auto project = db->session().current_project;
+	if (not project or prid != project->id()) {
+		std::lock_guard<std::mutex> lock(db->session().mutex);
+		project = db->select_project(prid);
+		db->session().current_project = project;
+	}
+	// TODO missing authentication
+	return project_to_json(*project);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+crow::response
+GetBooks::post(const crow::request& req, int prid) const
+{
+	auto db = database(req);
+	if (not db)
+		return forbidden();
+	auto proj = db->session().current_project->id() == prid ? 
+		db->session().current_project : db->select_project(prid);
+	if (not proj)
+		return bad_request();
+	auto user = db->session().user;
+	if (not user)
+		return internal_server_error();	
+
+	const size_t n = 5;
+	std::vector<ProjectPtr> projs(n);
+	std::generate(begin(projs), end(projs), [&proj,&user]() {
+		return std::make_shared<SubProject>(0, *user, proj->origin());
+	});
+	size_t i = 0;
+	for (const auto& p: *proj) {
+		projs[i++ % n]->push_back(p);
+	}
+	for (const auto& p: projs) {
+		assert(p);
+		db->insert_project(*p);
+	}
+	return created();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
