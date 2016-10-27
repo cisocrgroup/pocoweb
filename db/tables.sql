@@ -35,8 +35,7 @@ drop table if exists project_pages;
 create table project_pages (
 	projectid int not null references projects(projectid),
 	pageid int not null references pages(pageid),
-	bookid int not null references books(bookid),
-	primary key (projectid, pageid, bookid)
+	primary key (projectid, pageid)
 );	
 
 drop table if exists pages;

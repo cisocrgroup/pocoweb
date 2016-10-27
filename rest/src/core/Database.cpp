@@ -180,7 +180,7 @@ Database::insert_project(Project& project) const
 				 "(origin,owner) "
 				 "VALUES (?,?,?);";
 	static const char *tql = "INSERT INTO project_pages "
-				 "(projectid,pageid,bookid) "
+				 "(projectid,pageid) "
 				 "VALUES (?,?,?);";
 	check_session_lock();
 	auto conn = connection();
@@ -200,7 +200,6 @@ Database::insert_project(Project& project) const
 	std::for_each(begin(project), end(project), [&t](const auto& page) {
 		assert(page);
 		t->setInt(2, page->id);
-		t->setInt(3, page->book()->id());
 		t->executeUpdate();
 	});
 	return put_cache(project.shared_from_this());
