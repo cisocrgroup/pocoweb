@@ -16,6 +16,7 @@ LDFLAGS += -lssl
 LDFLAGS += -l lept
 LDFLAGS += -lpthread
 LDFLAGS += -lboost_log
+LDFLAGS += -licuuc
 # LDFLAGS += -lboost_regex
 LDFLAGS += -lboost_system
 # LDFLAGS += -lboost_coroutine

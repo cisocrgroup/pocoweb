@@ -1,3 +1,4 @@
+#include <unicode/uchar.h>
 #include <cwchar>
 #include <utf8.h>
 #include <cassert>
@@ -184,3 +185,47 @@ Line::correct(const EditOps& edits, size_t offset)
 	POSTCONDITION;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+static bool
+isword(wchar_t c)
+{
+	switch (u_charType(c)) {     // all cases fall through
+	case U_UPPERCASE_LETTER:     // Lu
+	case U_LOWERCASE_LETTER:     // Al
+	case U_TITLECASE_LETTER:     // Lt
+	case U_MODIFIER_LETTER:      // Lm
+	case U_OTHER_LETTER:         // Lo
+	case U_DECIMAL_DIGIT_NUMBER: // Nd
+	case U_LETTER_NUMBER:        // Nl
+	case U_OTHER_NUMBER:         // No
+	case U_NON_SPACING_MARK:     // Mn
+		return true;
+	default:
+		return false;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Line::each_word(std::function<void(const std::string&,bool,double)> f) const
+{
+	std::string utf8;
+	utf8.reserve(string_.size() * 2);
+
+	auto e = end(string_);
+	auto b = begin(string_);
+	auto i = std::find_if(begin(string_), e, isword);
+	while (i != e) {
+		auto j = std::find_if_not(i, e, isword);
+		auto pi = std::distance(b, i);
+		auto pj = std::distance(b, j);
+		double n = std::distance(i, j);
+
+		auto corr = std::all_of(begin(corrs_) + pi, begin(corrs_) + pj, [](bool b) {return b;});
+		auto conf = std::accumulate(begin(confs_) + pi, begin(confs_) + pj, 0.0);
+		utf8::utf32to8(i, j, std::back_inserter(utf8));
+		f(utf8, corr, conf/n);
+		utf8.clear();
+		i = std::find_if(j, e, isword);
+	}
+}

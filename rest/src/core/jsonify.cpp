@@ -56,6 +56,13 @@ pcw::operator<<(Json& json, const Line& line)
 	size_t i = 0;
 	for (auto b: line.corrections()) 
 		json["corrections"][i++] = b;
+	i = 0;
+	line.each_word([&i,&json](const auto& word, auto corr, auto conf) {
+		json["words"][i]["corrected"] = corr;
+		json["words"][i]["word"] = word;
+		json["words"][i]["confidence"] = conf;
+		++i;
+	});
 	json["averageConfidence"] = line.calculate_average_confidence();
 	return json;
 }

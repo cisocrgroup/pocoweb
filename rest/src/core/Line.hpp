@@ -34,6 +34,7 @@ namespace pcw {
 		PagePtr page() const noexcept {return page_.lock();}
 		bool has_img_path() const noexcept {return not img.empty();}
 		void correct(const EditOps& edits, size_t offset);
+		void each_word(std::function<void(const std::string&,bool,double)> f) const;
 
 		void append(const std::string& str, int l, int r, double c, bool corr = false);
 		void append(const std::wstring& str, int l, int r, double c, bool corr = false);
