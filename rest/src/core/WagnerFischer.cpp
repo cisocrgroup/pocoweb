@@ -1,7 +1,9 @@
 #include <cwchar>
 #include <cassert>
 #include <algorithm>
+#include <iomanip>
 #include <utf8.h>
+#include <crow/logging.h>
 #include "WagnerFischer.hpp"
 #include "Line.hpp"
 
@@ -90,8 +92,12 @@ WagnerFischer::backtrack()
 {
         trace_.clear();
         trace_.reserve(std::max(truth_.size(), test_.size()));
-        for (size_t i = test_.size(), j = truth_.size(); i and j; ) {
+        for (size_t i = test_.size(), j = truth_.size(); i or j;) {
                 auto t = backtrack(i, j);
+		CROW_LOG_DEBUG << "from (" << i << "," << j << ") to ("
+			       << std::get<1>(t) << "," << std::get<2>(t)
+			       << " [" << static_cast<char>(std::get<0>(t).type)
+			       << "]";
                 i = std::get<1>(t);
                 j = std::get<2>(t);
                 trace_.push_back(std::get<0>(t));
@@ -108,18 +114,24 @@ WagnerFischer::backtrack()
                 case EditOp::Type::Ins:
                         truth_.insert(i, 1, L'_');
                         break;
-                default:
-                        assert(false);
                 }
         }
-        assert(trace_.size() == truth_.size());
-        assert(trace_.size() == test_.size());
+        // assert(trace_.size() == truth_.size());
+        // assert(trace_.size() == test_.size());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 std::tuple<EditOp, size_t, size_t>
 WagnerFischer::backtrack(size_t i, size_t j) const noexcept
 {
+	if (i == 0) {
+		assert(j != 0);
+		return std::make_tuple(EditOp{EditOp::Type::Del, truth_[j]}, i, j-1);
+	} else if (j == 0) {
+		assert(i != 0);
+                return std::make_tuple(EditOp{EditOp::Type::Ins, truth_[j]}, i-1, j);
+	}
+		
         assert(i > 0);
         assert(j > 0);
         const size_t x[] = {l_[i-1][j-1], l_[i][j-1], l_[i-1][j]};
@@ -138,22 +150,39 @@ WagnerFischer::backtrack(size_t i, size_t j) const noexcept
         }
 }
 
- ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 std::ostream& 
 pcw::operator<<(std::ostream& os, const WagnerFischer& wf)
 {
+	os << wf.table() << "\n";
+
 	char buf[] = {0,0,0,0,0}; // 5 are enough
 	for (size_t i = 0; i < wf.test().size(); ++i) {
-		os << utf8::append(wf.test()[i], buf);
+		utf8::append(wf.test()[i], buf);
+		os << buf;
 	}
 	os << "\n";
 	for (size_t i = 0; i < wf.trace().size(); ++i) {
-		os << wf.trace()[i].letter;
+		os << static_cast<char>(wf.trace()[i].type);
 	}
 	os << "\n";
 	for (size_t i = 0; i < wf.truth().size(); ++i) {
-		os << utf8::append(wf.truth()[i], buf);
+		utf8::append(wf.truth()[i], buf);
+		os << buf;
 	}	
+	return os;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::ostream& 
+pcw::operator<<(std::ostream& os, const WagnerFischer::Table& t)
+{
+	for (const auto& row: t) {
+		for (const auto i: row) {
+			os << std::setw(3) << std::setfill(' ') << i;
+		}
+		os << "\n";
+	}
 	return os;
 }
 
