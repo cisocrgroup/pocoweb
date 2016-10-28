@@ -6,6 +6,15 @@
 #include "Page.hpp"
 #include "Line.hpp"
 
+// TODO this should be part of the wagner-fisher impl
+namespace pcw {
+	struct EditOp {
+		enum class Type {Del, Ins, Sub, Nop};
+		Type type;
+		wchar_t letter;
+	};
+}
+			
 using namespace pcw;
 
 #define PRAECONDITION assert(r >= 0 and conf >= 0 and conf <= 1.0)
@@ -124,3 +133,54 @@ Line::calculate_average_confidence() const noexcept
 	auto sum = std::accumulate(begin(confs_), end(confs_), 0.0);
 	return sum / static_cast<double>(confs_.size());
 }
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Line::insert_at(size_t i, wchar_t c)
+{
+	assert(i < string_.size());
+	i += 1;
+	string_.insert(begin(string_) + i, c);
+	confs_.insert(begin(confs_) + i, 1.0);
+	corrs_.insert(begin(corrs_) + i, true);
+	POSTCONDITION;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Line::delete_at(size_t i)
+{
+	assert(i < string_.size());
+	string_.erase(begin(string_) + i);
+	confs_.erase(begin(confs_) + i);
+	corrs_.erase(begin(corrs_) + i);
+	POSTCONDITION;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Line::correct(const EditOps& edits, size_t offset)
+{
+	const auto n = edits.size();
+	for (size_t i = 0; i + offset < string_.size() and i < n; ++i) {
+		auto j = i + offset;
+		switch (edits[j].type) {
+		case EditOp::Type::Del:
+			insert_at(i, edits[j].letter);
+			break;	
+		case EditOp::Type::Ins:
+			delete_at(j);
+			++offset;
+			break;
+		case EditOp::Type::Sub:
+			string_[j] = edits[i].letter;
+			corrs_[j] = true;
+			break;
+		case EditOp::Type::Nop:
+			corrs_[j] = true;
+			break;
+		}
+	}
+	POSTCONDITION;
+}
+
