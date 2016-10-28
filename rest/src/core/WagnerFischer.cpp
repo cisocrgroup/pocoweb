@@ -151,37 +151,6 @@ WagnerFischer::backtrack(size_t i, size_t j) const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
-WagnerFischer::correct(Line& line) const
-{
-        assert(trace_.size() == truth_.size());
-        assert(trace_.size() == test_.size());
-
-	int o = 0;
-	for (size_t i = 0; i < trace_.size(); ++i) {
-		const auto ii = i + o;
-		switch (trace_[i]) {
-		// deletion means that the ocr did not recognize a character 
-		// where in reality there should be one; so insert it
-		case EditOp::Del: 
-			line.insert(ii, truth_[i]);
-			break;
-		// insertion means that the ocr recognized a character
-		// where in reality there should be none; delete it
-		case EditOp::Ins:
-			line.erase(ii);
-			--o;	
-			break;
-		case EditOp::Sub:
-			line.set(ii, truth_[i]);
-			break;
-		case EditOp::Nop:
-			break;
-		}
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
 std::ostream& 
 pcw::operator<<(std::ostream& os, const WagnerFischer& wf)
 {

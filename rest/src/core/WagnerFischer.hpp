@@ -21,8 +21,6 @@ namespace pcw {
                 size_t operator()(const char* truth, const Line& line);
                 size_t operator()(const char* truth, size_t n, const Line& line);
 	
-		void correct(Line& line) const;
-
                 const std::wstring& test() const noexcept {
                         return test_;
                 }
@@ -32,7 +30,7 @@ namespace pcw {
                 const Trace& trace() const noexcept {
                         return trace_;
                 }
-		const Table& table() const noexcept {
+		const Table& table() const noexcept { // just for debugging
 			return l_;
 		}
 

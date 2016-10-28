@@ -183,7 +183,7 @@ GetBooks::operator()(const crow::request& req, int prid, int pageid, int lineid,
 	auto lev = wf(foo, (*page)[lineid]);
 	CROW_LOG_DEBUG << "(GetBooks) lev: " << lev << "\n" << wf;
 	CROW_LOG_DEBUG << "(GetBooks) line: " << (*page)[lineid].string();
-	wf.correct((*page)[lineid]);
+	(*page)[lineid].correct(wf);
 	CROW_LOG_DEBUG << "(GetBooks) line: " << (*page)[lineid].string();
 	return ok();
 }
