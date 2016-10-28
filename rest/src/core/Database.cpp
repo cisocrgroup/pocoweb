@@ -467,7 +467,7 @@ Database::select_book(int bookid, int owner, sql::Connection& conn) const
 void 
 Database::select_all_pages(Book& book, sql::Connection& conn) const
 {	
-	CROW_LOG_DEBUG << __LINE__ << " (Database) Start: select all pages";
+	CROW_LOG_DEBUG << "(Database) Start: select all pages";
 	static const char *sql = "SELECT * FROM pages "
 				 "WHERE bookid = ? "
 				 "ORDER BY pageid;";
@@ -493,7 +493,7 @@ Database::select_all_pages(Book& book, sql::Connection& conn) const
 		book.push_back(page);
 		select_all_lines(*book.back(), conn);
 	}
-	CROW_LOG_DEBUG << __LINE__ << " (Database) End: select all pages";
+	CROW_LOG_DEBUG << "(Database) End: select all pages";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
