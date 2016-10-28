@@ -466,7 +466,8 @@ Database::select_book(int bookid, int owner, sql::Connection& conn) const
 ////////////////////////////////////////////////////////////////////////////////
 void 
 Database::select_all_pages(Book& book, sql::Connection& conn) const
-{
+{	
+	CROW_LOG_DEBUG << __LINE__ << " (Database) Start: select all pages";
 	static const char *sql = "SELECT * FROM pages "
 				 "WHERE bookid = ? "
 				 "ORDER BY pageid;";
@@ -492,12 +493,64 @@ Database::select_all_pages(Book& book, sql::Connection& conn) const
 		book.push_back(page);
 		select_all_lines(*book.back(), conn);
 	}
+	CROW_LOG_DEBUG << __LINE__ << " (Database) End: select all pages";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
 Database::select_all_lines(Page& page, sql::Connection& conn) const
 {
+	static const char *sql = "SELECT l.bookid,l.pageid,l.lineid,"
+				 "       l.lleft,l.lright,l.ltop,l.lbottom,"
+				 "       l.imagepath,"
+				 "       c.letter,c.cut,c.conf "
+			  	 "FROM textlines AS l JOIN contents AS c "
+				 "ON (l.bookid=c.bookid AND"
+				 "    l.pageid=c.pageid AND"
+				 "    l.lineid=c.lineid) "
+				 "WHERE l.bookid=? AND l.pageid=? "
+				 "ORDER BY l.lineid,seq;";
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	const int bookid = page.book()->id();
+	const int pageid = page.id;
+	s->setInt(1, bookid);
+	s->setInt(2, pageid);
+	ResultSetPtr res{s->executeQuery()};
+	assert(res);
+	Line line{-1};
+	while (res->next()) {
+		assert(res->getInt(1) == bookid);
+		assert(res->getInt(2) == pageid);
+
+		const int id = res->getInt(3);
+		const int l = res->getInt(4);
+		const int r = res->getInt(5);
+		const int t = res->getInt(6);
+		const int b = res->getInt(7);
+
+		// finished with current line
+		if (line.id != id) {
+			page.push_back(std::move(line));
+			line = Line(id, {l, t, r, b});
+			line.img = res->getString(8);
+		}
+		const wchar_t letter = res->getInt(9);	
+		const auto cut = res->getInt(10);	
+		const auto conf = res->getDouble(11);	
+		line.append(letter, cut, conf);
+	}
+	// insert last line
+	if (line.id != -1)
+		page.push_back(std::move(line));
+}
+
+#ifdef FOO
+////////////////////////////////////////////////////////////////////////////////
+void 
+Database::select_all_lines(Page& page, sql::Connection& conn) const
+{
+	CROW_LOG_DEBUG << __LINE__ << " (Database) Start: select all lines; pageid = " << page.id;
 	static const char *sql = "SELECT * FROM textlines "
 				 "WHERE bookid = ? AND pageid = ? "
 				 "ORDER BY lineid;";
@@ -547,7 +600,9 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 		}
 		page.push_back(std::move(line));
 	}
+	CROW_LOG_DEBUG << __LINE__ << " (Database) End: select all lines; pageid = " << page.id;
 }
+#endif // FOO
 
 ////////////////////////////////////////////////////////////////////////////////
 bool 
