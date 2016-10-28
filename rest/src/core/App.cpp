@@ -70,7 +70,8 @@ App::Register(RoutePtr route)
 			route->set_cache(cache_);
 			route->Register(*app_);
 			routes_.push_back(std::move(route));
-			CROW_LOG_INFO << "(App) Registered route " << routes_.back()->name() 
+			CROW_LOG_INFO << "(App) Registered route " 
+				      << routes_.back()->name() 
 				      << ": " << routes_.back()->route() 	
 				      << " [" << routes_.back().get() << "]";
 		} catch (const std::exception& e) {
@@ -87,7 +88,8 @@ App::register_plugins()
 	for (const auto& p: config_->plugins.configs) {
 		try {
 			auto path = p.second.get<std::string>("path");
-			CROW_LOG_INFO << "(App) Registering plugin " << p.first << ": " << path;
+			CROW_LOG_INFO << "(App) Registering plugin " 
+				      << p.first << ": " << path;
 			pcw::Plugin plugin(path);
 			plugin(p.first, *this);
 			plugins_.push_back(std::move(plugin));
