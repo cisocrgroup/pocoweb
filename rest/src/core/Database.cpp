@@ -304,8 +304,8 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 		"VALUES (?,?,?,?,?,?,?,?);";
 	static const char* tql = 
 		"INSERT INTO contents "
-		"(bookid, pageid, lineid, seq, letter, cut, conf) "
-		"VALUES (?,?,?,?,?,?,?);";
+		"(bookid, pageid, lineid, seq, letter, cut, conf, corrected) "
+		"VALUES (?,?,?,?,?,?,?,?);";
 
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
@@ -331,6 +331,7 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 		t->setInt(5, line.wstring().at(i));
 		t->setInt(6, line.cuts().at(i));
 		t->setDouble(7, line.confidences().at(i));
+		t->setBoolean(8, line.corrections().at(i));
 		t->executeUpdate();
 	}
 }
@@ -503,7 +504,7 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 	static const char *sql = "SELECT l.bookid,l.pageid,l.lineid,"
 				 "       l.lleft,l.lright,l.ltop,l.lbottom,"
 				 "       l.imagepath,"
-				 "       c.letter,c.cut,c.conf "
+				 "       c.letter,c.cut,c.conf,c.corrected "
 			  	 "FROM textlines AS l JOIN contents AS c "
 				 "ON (l.bookid=c.bookid AND"
 				 "    l.pageid=c.pageid AND"
@@ -538,7 +539,8 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 		const wchar_t letter = res->getInt(9);	
 		const auto cut = res->getInt(10);	
 		const auto conf = res->getDouble(11);	
-		line.append(letter, cut, conf);
+		const auto corr = res->getDouble(12);	
+		line.append(letter, cut, conf, corr);
 	}
 	// insert last line
 	if (line.id != -1)
