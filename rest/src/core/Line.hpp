@@ -7,6 +7,8 @@
 #include "Box.hpp"
 
 namespace pcw {
+	struct EditOp;
+	using EditOps = std::vector<EditOp>;
 	class Page;
 	using PagePtr = std::shared_ptr<Page>;
 
@@ -16,6 +18,8 @@ namespace pcw {
 		using String = std::wstring;
 		using Cuts = std::vector<int>;
 		using Confidences = std::vector<double>;
+		using Corrections = std::vector<bool>;
+		using EditOps = std::vector<EditOp>;
 	
 		Line(int i, Box box = {});
 	
@@ -25,17 +29,18 @@ namespace pcw {
 		std::string string() const;
 		const Cuts& cuts() const noexcept {return cuts_;}
 		const Confidences& confidences() const noexcept {return confs_;}
+		const Corrections& corrections() const noexcept {return corrs_;}
 		double calculate_average_confidence() const noexcept;
 		PagePtr page() const noexcept {return page_.lock();}
 		bool has_img_path() const noexcept {return not img.empty();}
 
-		void append(const std::string& str, int l, int r, double c);
-		void append(const std::wstring& str, int l, int r, double c);
-		void append(const char* str, int l, int r, double c);
-		void append(const wchar_t* str, int l, int r, double c);
-		void append(const char* str, size_t n, int l, int r, double c);
-		void append(const wchar_t* str, size_t n, int l, int r, double c);
-		void append(wchar_t c, int r, double conf);
+		void append(const std::string& str, int l, int r, double c, bool corr = false);
+		void append(const std::wstring& str, int l, int r, double c, bool corr = false);
+		void append(const char* str, int l, int r, double c, bool corr = false);
+		void append(const wchar_t* str, int l, int r, double c, bool corr = false);
+		void append(const char* str, size_t n, int l, int r, double c, bool corr = false);
+		void append(const wchar_t* str, size_t n, int l, int r, double c, bool corr = false);
+		void append(wchar_t c, int r, double conf, bool corr = false);
 
 		Box box;
 		int id;
@@ -45,6 +50,7 @@ namespace pcw {
 		String string_;
 		Cuts cuts_;
 		Confidences confs_;
+		Corrections corrs_;
 		std::weak_ptr<Page> page_;
 		friend class Page;
 	};

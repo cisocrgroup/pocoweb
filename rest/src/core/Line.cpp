@@ -10,7 +10,9 @@ using namespace pcw;
 
 #define PRAECONDITION assert(r >= 0 and conf >= 0 and conf <= 1.0)
 #define POSTCONDITION \
-	assert(string_.size() == cuts_.size() and string_.size() == confs_.size())
+	assert(string_.size() == cuts_.size() and \
+		string_.size() == confs_.size() and \
+		string_.size() == corrs_.size())
 
 ////////////////////////////////////////////////////////////////////////////////
 Line::Line(int i, Box b)
@@ -27,45 +29,47 @@ Line::Line(int i, Box b)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-Line::append(const std::string& str, int l, int r, double conf)
+Line::append(const std::string& str, int l, int r, double conf, bool corr)
 {
-	append(str.data(), str.size(), l, r, conf);
+	append(str.data(), str.size(), l, r, conf, corr);
+	POSTCONDITION;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-Line::append(const std::wstring& wstr, int l, int r, double conf)
+Line::append(const std::wstring& wstr, int l, int r, double conf, bool corr)
 {
-	append(wstr.data(), wstr.size(), l, r, conf);
+	append(wstr.data(), wstr.size(), l, r, conf, corr);
+	POSTCONDITION;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-Line::append(const char* str, size_t n, int l, int r, double conf)
+Line::append(const char* str, size_t n, int l, int r, double conf, bool corr)
 {
 	PRAECONDITION;
 	if (not str or not *str)
 		return;
 	std::wstring wstr;
 	utf8::utf8to32(str, str + n, std::back_inserter(wstr));
-	append(wstr.data(), wstr.size(), l, r, conf);
+	append(wstr.data(), wstr.size(), l, r, conf, corr);
 	POSTCONDITION;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-Line::append(const char* str, int l, int r, double conf)
+Line::append(const char* str, int l, int r, double conf, bool corr)
 {
 	PRAECONDITION;
 	if (not str or not *str)
 		return;
-	append(str, strlen(str), l, r, conf);
+	append(str, strlen(str), l, r, conf, corr);
 	POSTCONDITION;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-Line::append(const wchar_t* str, size_t n, int l, int r, double conf)
+Line::append(const wchar_t* str, size_t n, int l, int r, double conf, bool corr)
 {
 	PRAECONDITION;
 	if (not str or not *str)
@@ -73,7 +77,7 @@ Line::append(const wchar_t* str, size_t n, int l, int r, double conf)
 	const auto d = box.width() / n;
 	int cut = l;
 	while (*str) {
-		append(*str++, cut, conf);
+		append(*str++, cut, conf, corr);
 		cut += d;
 	}
 	cuts_.back() = r; // fix last pos of string due to error in d
@@ -82,23 +86,24 @@ Line::append(const wchar_t* str, size_t n, int l, int r, double conf)
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-Line::append(const wchar_t* str, int l, int r, double conf)
+Line::append(const wchar_t* str, int l, int r, double conf, bool corr)
 {
 	PRAECONDITION;
 	if (not str or not *str)
 		return;
-	append(str, wcslen(str), l, r, conf);
+	append(str, wcslen(str), l, r, conf, corr);
 	POSTCONDITION;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-Line::append(wchar_t c, int r, double conf)
+Line::append(wchar_t c, int r, double conf, bool corr)
 {
 	PRAECONDITION;
 	string_.push_back(c);
 	cuts_.push_back(r);
 	confs_.push_back(conf);
+	corrs_.push_back(corr);
 	POSTCONDITION;
 }
 
