@@ -359,7 +359,7 @@ BookDir::make_line_img_files(const Path& pagedir, Page& page) const
 			CROW_LOG_WARNING << "(BookDir) Missing image file for: "
 					 << page.ocr;
 		} else if (not line.has_img_path() and pix) {
-			line.img = pagedir / path_from_id(line.id);
+			line.img = pagedir / path_from_id(line.id());
 			line.img.replace_extension(page.img.extension());
 			fs::create_directories(pagedir);
 			write_line_img_file(pix.get(), line);

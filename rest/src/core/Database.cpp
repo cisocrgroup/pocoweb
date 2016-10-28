@@ -313,7 +313,7 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 	const auto bookid = line.page()->book()->id();
 	s->setInt(1, bookid);
 	s->setInt(2, pageid);
-	s->setInt(3, line.id);
+	s->setInt(3, line.id());
 	s->setString(4, line.img.string());
 	s->setInt(5, line.box.left());
 	s->setInt(6, line.box.top());
@@ -326,7 +326,7 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 	for (auto i = 0U; i < line.wstring().size(); ++i) {
 		t->setInt(1, bookid);
 		t->setInt(2, pageid);
-		t->setInt(3, line.id);
+		t->setInt(3, line.id());
 		t->setInt(4, static_cast<int>(i));
 		t->setInt(5, line.wstring().at(i));
 		t->setInt(6, line.cuts().at(i));
@@ -531,7 +531,7 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 		const int b = res->getInt(7);
 
 		// finished with current line
-		if (line.id != id) {
+		if (line.id() != id) {
 			page.push_back(std::move(line));
 			line = Line(id, {l, t, r, b});
 			line.img = res->getString(8);
@@ -543,7 +543,7 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 		line.append(letter, cut, conf, corr);
 	}
 	// insert last line
-	if (line.id != -1)
+	if (line.id() != -1)
 		page.push_back(std::move(line));
 }
 

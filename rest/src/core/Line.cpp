@@ -19,13 +19,13 @@ using namespace pcw;
 ////////////////////////////////////////////////////////////////////////////////
 Line::Line(int i, Box b)
 	: box(b)
-	, id(i)
 	, img()
 	, ocr()
 	, string_()
 	, cuts_()
 	, confs_()
 	, page_()
+	, id_(i)
 {
 }
 

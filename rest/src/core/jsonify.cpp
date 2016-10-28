@@ -47,7 +47,7 @@ pcw::operator<<(Json& json, const Page& page)
 pcw::Json& 
 pcw::operator<<(Json& json, const Line& line)
 {
-	json["id"] = line.id;
+	json["id"] = line.id();
 	json["box"] << line.box;
 	json["imgFile"] = line.img.native();
 	json["string"] = line.string();

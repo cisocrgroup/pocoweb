@@ -41,6 +41,7 @@ namespace pcw {
 		bool has_img_path() const noexcept {return not img.empty();}
 		void correct(const EditOps& edits, size_t offset);
 		void each_word(std::function<void(const Word&)> f) const;
+		int id() const noexcept {return id_;}
 
 		void append(const std::string& str, int l, int r, double c, bool corr = false);
 		void append(const std::wstring& str, int l, int r, double c, bool corr = false);
@@ -51,7 +52,6 @@ namespace pcw {
 		void append(wchar_t c, int r, double conf, bool corr = false);
 
 		Box box;
-		int id;
 		Path img, ocr;
 
 	private:
@@ -63,6 +63,7 @@ namespace pcw {
 		Confidences confs_;
 		Corrections corrs_;
 		std::weak_ptr<Page> page_;
+		int id_;
 		friend class Page;
 	};
 }
