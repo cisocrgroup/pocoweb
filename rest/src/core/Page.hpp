@@ -48,8 +48,11 @@ namespace pcw {
 			this->back().page_ = shared_from_this();
 			this->back().id_ = static_cast<int>(this->size());
 		}
+		Line& operator[](int id) noexcept {
+			return Base::operator[](id - 1);
+		}
 		const Line& operator[](int id) const noexcept {
-			return this->operator[](id - 1);
+			return Base::operator[](id - 1);
 		}
 		bool has_ocr_path() const noexcept {return not ocr.empty();}
 		bool has_img_path() const noexcept {return not img.empty();}

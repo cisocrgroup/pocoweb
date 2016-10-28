@@ -39,10 +39,12 @@ namespace pcw {
 		double calculate_average_confidence() const noexcept;
 		PagePtr page() const noexcept {return page_.lock();}
 		bool has_img_path() const noexcept {return not img.empty();}
-		void correct(const EditOps& edits, size_t offset);
 		void each_word(std::function<void(const Word&)> f) const;
 		int id() const noexcept {return id_;}
 
+		void insert(size_t i, wchar_t c);
+		void erase(size_t i);
+		void set(size_t i, wchar_t c);
 		void append(const std::string& str, int l, int r, double c, bool corr = false);
 		void append(const std::wstring& str, int l, int r, double c, bool corr = false);
 		void append(const char* str, int l, int r, double c, bool corr = false);
@@ -55,9 +57,6 @@ namespace pcw {
 		Path img, ocr;
 
 	private:
-		void delete_at(size_t i);
-		void insert_at(size_t i, wchar_t c);
-
 		String string_;
 		Cuts cuts_;
 		Confidences confs_;

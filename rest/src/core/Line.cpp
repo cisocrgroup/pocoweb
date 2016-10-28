@@ -128,52 +128,38 @@ Line::calculate_average_confidence() const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::insert_at(size_t i, wchar_t c)
+void 
+Line::set(size_t i, wchar_t c)
 {
 	assert(i < string_.size());
-	i += 1;
-	string_.insert(begin(string_) + i, c);
-	confs_.insert(begin(confs_) + i, 1.0);
-	corrs_.insert(begin(corrs_) + i, true);
-	POSTCONDITION;
+	string_[i] = c;
+	corrs_[i] = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::delete_at(size_t i)
+void 
+Line::insert(size_t i, wchar_t c)
 {
 	assert(i < string_.size());
-	string_.erase(begin(string_) + i);
-	confs_.erase(begin(confs_) + i);
-	corrs_.erase(begin(corrs_) + i);
+	string_.insert(i, 1, c);
+	corrs_.insert(begin(corrs_) + i, true);
+	confs_.insert(begin(confs_) + i, 1.0);
+	const int l = i > 0 ? cuts_[i - 1] : 0;
+	const int r = cuts_[i];
+	const int half = (r - l) / 2; // fuck the consequences!
+	cuts_.insert(begin(cuts_) + i, l + half);
 	POSTCONDITION;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-Line::correct(const EditOps& edits, size_t offset)
+Line::erase(size_t i)
 {
-	const auto n = edits.size();
-	for (size_t i = 0; i + offset < string_.size() and i < n; ++i) {
-		auto j = i + offset;
-		switch (edits[j].type) {
-		case EditOp::Type::Del:
-			insert_at(i, edits[j].letter);
-			break;	
-		case EditOp::Type::Ins:
-			delete_at(j);
-			++offset;
-			break;
-		case EditOp::Type::Sub:
-			string_[j] = edits[i].letter;
-			corrs_[j] = true;
-			break;
-		case EditOp::Type::Nop:
-			corrs_[j] = true;
-			break;
-		}
-	}
+	assert( i < string_.size());
+	string_.erase(begin(string_) + i);
+	corrs_.erase(begin(corrs_) + i);
+	confs_.erase(begin(confs_) + i);
+	cuts_.erase(begin(cuts_) + i);
 	POSTCONDITION;
 }
 

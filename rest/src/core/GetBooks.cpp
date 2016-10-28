@@ -169,6 +169,7 @@ GetBooks::operator()(const crow::request& req, int prid, int pageid, int lineid,
 	auto db = database(req);
 	if (not db)
 		return forbidden();
+	std::lock_guard<std::mutex> lock(db->session().mutex);
 	auto proj = db->select_project(prid);
 	if (not proj)
 		return not_found();
@@ -181,5 +182,8 @@ GetBooks::operator()(const crow::request& req, int prid, int pageid, int lineid,
 	WagnerFischer wf;
 	auto lev = wf(foo, (*page)[lineid]);
 	CROW_LOG_DEBUG << "(GetBooks) lev: " << lev << "\n" << wf;
+	CROW_LOG_DEBUG << "(GetBooks) line: " << (*page)[lineid].string();
+	wf.correct((*page)[lineid]);
+	CROW_LOG_DEBUG << "(GetBooks) line: " << (*page)[lineid].string();
 	return ok();
 }

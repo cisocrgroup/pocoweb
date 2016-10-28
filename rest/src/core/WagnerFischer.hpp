@@ -8,15 +8,11 @@
 namespace pcw {
         class Line;
 
-	struct EditOp {
-		enum class Type {Del='-', Ins='+', Sub='#', Nop='|'};
-		Type type;
-		wchar_t letter;
-	};
-
         class WagnerFischer {
         public:
+		enum class EditOp: char {Del='-', Ins='+', Sub='#', Nop='|'};
                 using Trace = std::vector<EditOp>;
+                using Table = std::vector<std::vector<size_t> >;
 
                 size_t operator()(const std::wstring& truth, const Line& line);
                 size_t operator()(const wchar_t* truth, const Line& line);
@@ -24,6 +20,8 @@ namespace pcw {
                 size_t operator()(const std::string& truth, const Line& line);
                 size_t operator()(const char* truth, const Line& line);
                 size_t operator()(const char* truth, size_t n, const Line& line);
+	
+		void correct(Line& line) const;
 
                 const std::wstring& test() const noexcept {
                         return test_;
@@ -34,6 +32,9 @@ namespace pcw {
                 const Trace& trace() const noexcept {
                         return trace_;
                 }
+		const Table& table() const noexcept {
+			return l_;
+		}
 
         private:
                 size_t getMin(size_t i, size_t j) const noexcept;
@@ -41,12 +42,12 @@ namespace pcw {
                 std::tuple<EditOp, size_t, size_t>
                 backtrack(size_t i, size_t j) const noexcept;
 
-                using Table = std::vector<std::vector<size_t> >;
                 std::wstring truth_, test_;
                 Trace trace_;
                 Table l_;
         };
 	std::ostream& operator<<(std::ostream& os, const WagnerFischer& wf);
+	std::ostream& operator<<(std::ostream& os, const WagnerFischer::Table& t);
 };
 
 #endif // pcw_WagnerFischer_hpp__
