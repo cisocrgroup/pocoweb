@@ -41,7 +41,9 @@ namespace pcw {
 		void delete_user(const std::string& name) const;
 
 		BookPtr insert_book(Book& book) const;
+		ProjectPtr insert_project(Project& project) const;
 		ProjectPtr select_project(int projectid) const;
+		std::vector<ProjectPtr> select_all_projects(const User& user) const;
 
 	private:
 		UserPtr select_user(const std::string& name, sql::Connection& conn) const;
@@ -59,6 +61,12 @@ namespace pcw {
 		void check_session_lock() const;
 		int last_insert_id(sql::Connection& conn) const;
 		sql::Connection* connection() const;
+
+		UserPtr cached_select_user(const std::string& name, sql::Connection& conn) const;
+		UserPtr cached_select_user(int userid, sql::Connection& conn) const;
+		ProjectPtr cached_select_project(int prid, sql::Connection& conn) const;
+		UserPtr put_cache(UserPtr user) const;
+		ProjectPtr put_cache(ProjectPtr proj) const;
 
 		static UserPtr get_user_from_result_set(ResultSetPtr res);
 

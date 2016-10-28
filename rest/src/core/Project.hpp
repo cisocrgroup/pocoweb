@@ -1,30 +1,46 @@
 #ifndef pcw_Project_hpp__
 #define pcw_Project_hpp__
 
-#include <functional>
+#include <iostream>
 #include <memory>
+#include <vector>
 
 namespace pcw {
 	class Book;
 	class Page;
+	using PagePtr = std::shared_ptr<Page>;
 	class User;
 	class Project;
 	using ProjectPtr = std::shared_ptr<Project>;
 
-	class Project: public std::enable_shared_from_this<Project> {
+	class Project: private std::vector<PagePtr>,
+		       public std::enable_shared_from_this<Project> {
 	public:
-		using Callback = std::function<void(Page& page)>;
-
+		using Base = std::vector<PagePtr>;
+		using value_type = Base::value_type;
+	
+		Project(int id = 0): id_(id) {}
 		virtual ~Project() noexcept = default;
 		virtual const Book& origin() const noexcept = 0;
 		virtual const User& owner() const noexcept = 0;
-		virtual int id() const noexcept = 0;
-		virtual void set_owner(const User& user) = 0;
-		virtual void each_page(Callback f) const = 0;
+		int id() const noexcept {return id_;}
+		void set_id(int id);
 		bool is_book() const noexcept {
 			return this == static_cast<const void*>(&origin());
 		}
+		value_type find(int pageid) const noexcept;
+		void push_back(PagePtr page);
+		using Base::back;
+		using Base::front;
+		using Base::begin;
+		using Base::end;
+		using Base::empty;
+		using Base::size;
+
+	private:
+		int id_;
 	};
+	std::ostream& operator<<(std::ostream& os, const Project& proj);
 }
 
 #endif // pcw_Project_hpp__

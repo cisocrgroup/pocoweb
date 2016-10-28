@@ -9,8 +9,9 @@
 #include "Line.hpp"
 
 namespace pcw {
+	class Project;
 	class Book;
-	using BookPtr = std::shared_ptr<Book>;
+	using ConstBookPtr = std::shared_ptr<const Book>;
 	class Page;
 	using PagePtr = std::shared_ptr<Page>;
 
@@ -35,7 +36,7 @@ namespace pcw {
 		using Base::front;
 		using Base::empty;
 		using Base::size;
-		BookPtr book() const noexcept {return book_.lock();}
+		ConstBookPtr book() const noexcept {return book_.lock();}
 			
 		void push_back(const Line& line) {
 			Base::push_back(line);
@@ -53,8 +54,8 @@ namespace pcw {
 		Path ocr, img;
 
 	private:
-		std::weak_ptr<Book> book_;
-		friend class Book;
+		std::weak_ptr<const Book> book_;
+		friend class Project;
 	};
 }
 

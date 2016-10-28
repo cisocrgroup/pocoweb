@@ -48,6 +48,7 @@ CreateBook::operator()(
 			return internal_server_error();
 		book->author = author;
 		book->title = title;
+		book->set_owner(*db->session().user);
 		
 		// insert book into database
 		CROW_LOG_INFO << "(CreateBook) Inserting new book into database";
@@ -58,7 +59,6 @@ CreateBook::operator()(
 
 		// update and clean up
 		CROW_LOG_INFO << "(CreateBook) Created new book id: " << book->id();
-		db->session().current_project = book;
 		sg.dismiss();
 		return created();
 	} catch (const BadRequest& e) {

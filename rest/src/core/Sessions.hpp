@@ -13,11 +13,9 @@ namespace pcw {
 	class Config;
 	class User;
 	class Book;
-	class Project;
 	using UserPtr = std::shared_ptr<User>;
 	using ConnectionPtr = std::unique_ptr<sql::Connection>;
 	using BookPtr = std::shared_ptr<Book>;
-	using ProjectPtr = std::shared_ptr<Project>;
 	class Sessions;
 	
 	struct Session {
@@ -25,13 +23,11 @@ namespace pcw {
 			: sid(std::move(s))
 			, user()
 			, connection()
-			, current_project()
 			, mutex()
 		{}
 		const std::string sid;
 		UserPtr user;
 		ConnectionPtr connection;
-		ProjectPtr current_project;
 		std::mutex mutex;
 	};
 
