@@ -49,3 +49,15 @@ Project::push_back(PagePtr page)
 		std::static_pointer_cast<const Book>(origin().shared_from_this());
 }
 
+////////////////////////////////////////////////////////////////////////////////
+std::ostream& 
+pcw::operator<<(std::ostream& os, const Project& proj)
+{
+	if (proj.is_book()) {
+		return os << proj.origin().author << " <" 
+			  << proj.origin().title << "> [" 
+			  << proj.origin().id() << "]";
+	} else {
+		return os << proj.origin() << " {" << proj.id() << "}";
+	}
+}

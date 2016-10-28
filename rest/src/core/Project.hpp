@@ -1,7 +1,7 @@
 #ifndef pcw_Project_hpp__
 #define pcw_Project_hpp__
 
-#include <functional>
+#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -40,6 +40,7 @@ namespace pcw {
 	private:
 		int id_;
 	};
+	std::ostream& operator<<(std::ostream& os, const Project& proj);
 }
 
 #endif // pcw_Project_hpp__
