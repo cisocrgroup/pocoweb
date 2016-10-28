@@ -150,30 +150,6 @@ WagnerFischer::backtrack(size_t i, size_t j) const noexcept
         }
 }
 
-// ////////////////////////////////////////////////////////////////////////////////
-// void
-// pcw::WagnerFischer::applyTo(Line& line) const
-// {
-//         assert(trace_.size() == truth_.size());
-//         assert(trace_.size() == test_.size());
-//         int o = 0;
-//         for (auto i = 0U; i < trace_.size(); ++i) {
-//                 switch (trace_[i]) {
-//                 case WagnerFischer::EditOp::S:
-//                         line[i + o].setChar(truth_[i]);
-//                         break;
-//                 case WagnerFischer::EditOp::I:
-//                         line.removeCharAt(i + o);
-//                         --o;
-//                         break;
-//                 case WagnerFischer::EditOp::D:
-//                         line.insertCharAt(i).setChar(truth_[i]);
-//                         break;
-//                 default:
-//                         break;
-//                 }
-//         }
-// }
 ////////////////////////////////////////////////////////////////////////////////
 void 
 WagnerFischer::correct(Line& line) const
