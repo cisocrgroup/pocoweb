@@ -3,19 +3,11 @@
 #include <utf8.h>
 #include <cassert>
 #include <cstring>
+#include "WagnerFischer.hpp"
 #include "Book.hpp"
 #include "Page.hpp"
 #include "Line.hpp"
 
-// TODO this should be part of the wagner-fisher impl
-namespace pcw {
-	struct EditOp {
-		enum class Type {Del, Ins, Sub, Nop};
-		Type type;
-		wchar_t letter;
-	};
-}
-			
 using namespace pcw;
 
 #define PRAECONDITION assert(r >= 0 and conf >= 0 and conf <= 1.0)

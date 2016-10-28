@@ -31,6 +31,7 @@ VPATH = src src/core ../modules/pugixml/src
 OBJS += AltoXmlPageParser.o
 OBJS += AbbyyXmlPageParser.o
 OBJS += HocrPageParser.o
+OBJS += WagnerFischer.o
 OBJS += LlocsPageParser.o
 OBJS += BookDir.o
 OBJS += BookFixer.o
