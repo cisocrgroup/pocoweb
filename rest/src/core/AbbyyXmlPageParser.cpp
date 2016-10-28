@@ -46,7 +46,7 @@ AbbyyXmlPageParser::next()
 			// char confidence is saved as integer <= 100
 			const double c = j.attribute("charConfidence").as_int(); 
 			const auto str = j.child_value();
-			line.append(str, 0, l, r, c/100.0);	
+			line.append(str, 0, l, r, c/100.0, false);	
 		}
 		page->push_back(std::move(line));
 	}

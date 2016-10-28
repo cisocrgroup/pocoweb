@@ -13,6 +13,7 @@ pcw::operator<<(Json& json, const Project& project)
 	json["title"] = project.origin().title;
 	json["year"] = project.origin().year;
 	json["description"] = project.origin().description;
+	json["isBook"] = project.is_book();
 	
 	std::vector<int> ids;
 	ids.resize(project.size());
@@ -31,7 +32,6 @@ pcw::operator<<(Json& json, const Page& page)
 {
 	json["id"] = page.id;
 	json["box"] << page.box;
-	//json["box"] = box_to_json(page.box);
 	json["ocrFile"] = page.ocr.native();
 	json["imgFile"] = page.img.native();
 	
@@ -47,12 +47,24 @@ pcw::operator<<(Json& json, const Page& page)
 pcw::Json& 
 pcw::operator<<(Json& json, const Line& line)
 {
-	json["id"] = line.id;
+	json["id"] = line.id();
 	json["box"] << line.box;
 	json["imgFile"] = line.img.native();
 	json["string"] = line.string();
 	json["cuts"] = line.cuts();
 	json["confidences"] = line.confidences();
+	size_t i = 0;
+	for (auto b: line.corrections()) 
+		json["corrections"][i++] = b;
+	i = 0;
+	line.each_word([&i,&json](const auto& word) {
+		json["words"][i]["corrected"] = word.corrected;
+		json["words"][i]["word"] = word.word;
+		json["words"][i]["confidence"] = word.confidence;
+		json["words"][i]["box"] << word.box;
+		++i;
+	});
+	json["averageConfidence"] = line.calculate_average_confidence();
 	return json;
 }
 

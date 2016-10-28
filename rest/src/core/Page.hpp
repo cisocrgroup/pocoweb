@@ -41,13 +41,24 @@ namespace pcw {
 		void push_back(const Line& line) {
 			Base::push_back(line);
 			this->back().page_ = shared_from_this();
+			this->back().id_ = static_cast<int>(this->size());
 		}
 		void push_back(Line&& line) {
 			Base::push_back(std::forward<Line>(line));
 			this->back().page_ = shared_from_this();
+			this->back().id_ = static_cast<int>(this->size());
+		}
+		Line& operator[](int id) noexcept {
+			return Base::operator[](id - 1);
+		}
+		const Line& operator[](int id) const noexcept {
+			return Base::operator[](id - 1);
 		}
 		bool has_ocr_path() const noexcept {return not ocr.empty();}
 		bool has_img_path() const noexcept {return not img.empty();}
+		bool contains(int id) const noexcept {
+			return id > 0 and static_cast<size_t>(id) < this->size();
+		}
 		
 		Box box;
 		int id;

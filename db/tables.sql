@@ -73,6 +73,7 @@ create table contents (
 	letter int not null,
 	cut int,
 	conf double,	
+	corrected bool,
 	primary key (bookid, pageid, lineid, seq)
 );
 	

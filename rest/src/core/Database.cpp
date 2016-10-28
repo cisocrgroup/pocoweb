@@ -304,8 +304,8 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 		"VALUES (?,?,?,?,?,?,?,?);";
 	static const char* tql = 
 		"INSERT INTO contents "
-		"(bookid, pageid, lineid, seq, letter, cut, conf) "
-		"VALUES (?,?,?,?,?,?,?);";
+		"(bookid, pageid, lineid, seq, letter, cut, conf, corrected) "
+		"VALUES (?,?,?,?,?,?,?,?);";
 
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
@@ -313,7 +313,7 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 	const auto bookid = line.page()->book()->id();
 	s->setInt(1, bookid);
 	s->setInt(2, pageid);
-	s->setInt(3, line.id);
+	s->setInt(3, line.id());
 	s->setString(4, line.img.string());
 	s->setInt(5, line.box.left());
 	s->setInt(6, line.box.top());
@@ -326,11 +326,12 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 	for (auto i = 0U; i < line.wstring().size(); ++i) {
 		t->setInt(1, bookid);
 		t->setInt(2, pageid);
-		t->setInt(3, line.id);
+		t->setInt(3, line.id());
 		t->setInt(4, static_cast<int>(i));
 		t->setInt(5, line.wstring().at(i));
 		t->setInt(6, line.cuts().at(i));
 		t->setDouble(7, line.confidences().at(i));
+		t->setBoolean(8, line.corrections().at(i));
 		t->executeUpdate();
 	}
 }
@@ -503,7 +504,7 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 	static const char *sql = "SELECT l.bookid,l.pageid,l.lineid,"
 				 "       l.lleft,l.lright,l.ltop,l.lbottom,"
 				 "       l.imagepath,"
-				 "       c.letter,c.cut,c.conf "
+				 "       c.letter,c.cut,c.conf,c.corrected "
 			  	 "FROM textlines AS l JOIN contents AS c "
 				 "ON (l.bookid=c.bookid AND"
 				 "    l.pageid=c.pageid AND"
@@ -530,7 +531,7 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 		const int b = res->getInt(7);
 
 		// finished with current line
-		if (line.id != id) {
+		if (line.id() != id) {
 			page.push_back(std::move(line));
 			line = Line(id, {l, t, r, b});
 			line.img = res->getString(8);
@@ -538,10 +539,11 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 		const wchar_t letter = res->getInt(9);	
 		const auto cut = res->getInt(10);	
 		const auto conf = res->getDouble(11);	
-		line.append(letter, cut, conf);
+		const auto corr = res->getDouble(12);	
+		line.append(letter, cut, conf, corr);
 	}
 	// insert last line
-	if (line.id != -1)
+	if (line.id() != -1)
 		page.push_back(std::move(line));
 }
 
