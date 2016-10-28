@@ -180,10 +180,10 @@ Database::insert_project(Project& project) const
 {
 	static const char *sql = "INSERT INTO projects "
 				 "(origin,owner) "
-				 "VALUES (?,?,?);";
+				 "VALUES (?,?);";
 	static const char *tql = "INSERT INTO project_pages "
 				 "(projectid,pageid) "
-				 "VALUES (?,?,?);";
+				 "VALUES (?,?);";
 	check_session_lock();
 	auto conn = connection();
 	assert(conn);
@@ -363,7 +363,7 @@ Database::select_all_projects(const User& user) const
 	std::vector<ProjectPtr> projects;
 	while (res->next()) {
 		const auto prid = res->getInt(1);
-		projects.push_back(select_project(prid, *conn));
+		projects.push_back(cached_select_project(prid, *conn));
 	}
 	return projects;
 }
@@ -654,7 +654,10 @@ Database::cached_select_user(int userid, sql::Connection& conn) const
 {
 	auto get_user = [this,&conn](int userid) {
 		CROW_LOG_INFO << "(Database) Loading not cached user: " << userid;
-		return select_user(userid, conn);
+		auto user = select_user(userid, conn);
+		if (user)
+			CROW_LOG_INFO << "(Database) Loaded user: " << *user;
+		return user;
 	};
 	return cache_ ? cache_->user.get(userid, get_user) : get_user(userid);
 }
@@ -665,7 +668,11 @@ Database::cached_select_project(int prid, sql::Connection& conn) const
 {
 	auto get_project = [this,&conn](int prid) {
 		CROW_LOG_INFO << "(Database) Loading not cached project: " << prid;
-		return select_project(prid, conn);
+		auto proj = select_project(prid, conn);
+		if (proj)
+			CROW_LOG_INFO << "(Database) Loaded project: " << *proj;
+		return proj;
+			
 	};
 	return cache_ ? 
 		cache_->project.get(prid, get_project) : 
@@ -676,8 +683,10 @@ Database::cached_select_project(int prid, sql::Connection& conn) const
 UserPtr 
 Database::put_cache(UserPtr user) const
 {
-	if (user and cache_) 
+	if (user and cache_) {
+		CROW_LOG_INFO << "(Database) Caching User " << *user;
 		cache_->user.put(user);
+	}
 	return user;
 }
 
@@ -685,7 +694,9 @@ Database::put_cache(UserPtr user) const
 ProjectPtr 
 Database::put_cache(ProjectPtr proj) const
 {
-	if (proj and cache_)
+	if (proj and cache_) {
+		CROW_LOG_INFO << "(Database) Caching Project " << *proj;
 		cache_->project.put(proj);
+	}
 	return proj;
 }

@@ -62,12 +62,13 @@ GetBooks::operator()(const crow::request& req) const
 
 	std::lock_guard<std::mutex> lock(db->session().mutex);
 	auto projects = db->select_all_projects(*db->session().user);
+	CROW_LOG_DEBUG << "Loaded " << projects.size() << " projects";
 
 	crow::json::wvalue j;
 	size_t i = 0;
 	for (const auto& p: projects) {
 		assert(p);
-		j["books"][i] = project_to_json(*p);
+		j["books"][i++] = project_to_json(*p);
 	}
 	return j;
 }
@@ -94,12 +95,9 @@ GetBooks::operator()(const crow::request& req, int prid, int pageid) const
 	if (not db)
 		return forbidden();
 	std::lock_guard<std::mutex> lock(db->session().mutex);
-	auto project = db->session().current_project;
-	if (not project or prid != project->id()) {
-		std::lock_guard<std::mutex> lock(db->session().mutex);
-		project = db->select_project(prid);
-		db->session().current_project = project;
-	}
+	auto project = db->select_project(prid);
+	if (not project)
+		return not_found();
 	// TODO missing authentication
 	auto page = project->find(pageid);
 	if (not page)
@@ -122,12 +120,9 @@ GetBooks::get(const crow::request& req, int prid) const
 	if (not db)
 		return forbidden();
 	std::lock_guard<std::mutex> lock(db->session().mutex);
-	auto project = db->session().current_project;
-	if (not project or prid != project->id()) {
-		std::lock_guard<std::mutex> lock(db->session().mutex);
-		project = db->select_project(prid);
-		db->session().current_project = project;
-	}
+	auto project = db->select_project(prid);
+	if (not project)
+		return not_found();
 	// TODO missing authentication
 	return project_to_json(*project);
 }
@@ -139,11 +134,9 @@ GetBooks::post(const crow::request& req, int prid) const
 	auto db = database(req);
 	if (not db)
 		return forbidden();
-	std::lock_guard<std::mutex> lock(db->session().mutex);
-	auto proj = db->session().current_project->id() == prid ? 
-		db->session().current_project : db->select_project(prid);
+	auto proj = db->select_project(prid);
 	if (not proj)
-		return bad_request();
+		return not_found();
 	auto user = db->session().user;
 	if (not user)
 		return internal_server_error();	
@@ -157,10 +150,12 @@ GetBooks::post(const crow::request& req, int prid) const
 	for (const auto& p: *proj) {
 		projs[i++ % n]->push_back(p);
 	}
+	db->set_autocommit(false);
 	for (const auto& p: projs) {
 		assert(p);
 		db->insert_project(*p);
 	}
+	db->commit();
 	return created();
 }
 

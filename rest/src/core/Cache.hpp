@@ -3,16 +3,16 @@
 
 #include <memory>
 #include <mutex>
-#include <vector>
+#include <list>
 
 namespace pcw {
 	template<class T>
-	class Cache: private std::vector<std::shared_ptr<T>> {
+	class Cache: private std::list<std::shared_ptr<T>> {
 	public:
-		using Base = std::vector<std::shared_ptr<T>>;
+		using Base = std::list<std::shared_ptr<T>>;
 		using value_type = typename Base::value_type;
 
-		Cache(size_t n): n_(n) {this->reserve(n);}
+		Cache(size_t n): n_(n) {}
 		using Base::begin;
 		using Base::end;
 		using Base::size;
@@ -41,10 +41,12 @@ void
 pcw::Cache<T>::put(value_type t)
 {
 	std::lock_guard<std::mutex> lock(mutex_);
-	// new elements are inserted at the front of the cache
-	Base::insert(Base::begin(), t);
-	if (Base::size() > n_)
-		Base::resize(n_);
+	// new elements are inserted at the back of the cache
+	if (Base::size() < n_) {
+		Base::push_back(std::move(t));
+	} else {
+		Base::back() = std::move(t);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +56,7 @@ typename pcw::Cache<T>::value_type
 pcw::Cache<T>::get(int id, G g)
 {
 	auto gg = [id,g](){return g(id);};
-	auto f = [id](const value_type& t) {return t ? t->id() == id : false;};
+	auto f = [id](const value_type& t) {return t->id() == id;};
 	return do_get(f, gg);
 }
 
@@ -65,7 +67,7 @@ typename pcw::Cache<T>::value_type
 pcw::Cache<T>::get(const std::string& name, G g)
 {
 	auto gg = [&name,g](){return g(name);};
-	auto f = [&name](const value_type& t) {return t ? t->name == name : false;};
+	auto f = [&name](const value_type& t) {return t->name == name;};
 	return do_get(f, gg);
 }
 
@@ -114,7 +116,7 @@ pcw::Cache<T>::update(Iterator i, G g)
 			std::swap(*i, *j);
 			return *j;
 		} else {
-			return this->front();
+			return *i;
 		}
 	}
 }

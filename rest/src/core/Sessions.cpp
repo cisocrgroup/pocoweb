@@ -7,6 +7,7 @@
 #include <vector>
 #include "util.hpp"
 #include "Config.hpp"
+#include "Project.hpp"
 #include "User.hpp"
 #include "Sessions.hpp"
 
