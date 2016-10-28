@@ -25,13 +25,13 @@ namespace pcw {
                 size_t operator()(const char* truth, const Line& line);
                 size_t operator()(const char* truth, size_t n, const Line& line);
 
-                const std::wstring& getTest() const noexcept {
+                const std::wstring& test() const noexcept {
                         return test_;
                 }
-                const std::wstring& getTruth() const noexcept {
+                const std::wstring& truth() const noexcept {
                         return truth_;
                 }
-                const Trace& getTrace() const noexcept {
+                const Trace& trace() const noexcept {
                         return trace_;
                 }
 
@@ -46,6 +46,7 @@ namespace pcw {
                 Trace trace_;
                 Table l_;
         };
+	std::ostream& operator<<(std::ostream& os, const WagnerFischer& wf);
 };
 
 #endif // pcw_WagnerFischer_hpp__

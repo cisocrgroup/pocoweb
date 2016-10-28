@@ -71,7 +71,7 @@ WagnerFischer::operator()(const wchar_t* truth, size_t n, const Line& line)
 
 ////////////////////////////////////////////////////////////////////////////////
 size_t
-pcw::WagnerFischer::getMin(size_t i, size_t j) const noexcept
+WagnerFischer::getMin(size_t i, size_t j) const noexcept
 {
         assert(i > 0);
         assert(j > 0);
@@ -86,7 +86,7 @@ pcw::WagnerFischer::getMin(size_t i, size_t j) const noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcw::WagnerFischer::backtrack()
+WagnerFischer::backtrack()
 {
         trace_.clear();
         trace_.reserve(std::max(truth_.size(), test_.size()));
@@ -118,7 +118,7 @@ pcw::WagnerFischer::backtrack()
 
 ////////////////////////////////////////////////////////////////////////////////
 std::tuple<EditOp, size_t, size_t>
-pcw::WagnerFischer::backtrack(size_t i, size_t j) const noexcept
+WagnerFischer::backtrack(size_t i, size_t j) const noexcept
 {
         assert(i > 0);
         assert(j > 0);
@@ -136,6 +136,25 @@ pcw::WagnerFischer::backtrack(size_t i, size_t j) const noexcept
         default:
                 assert(false);
         }
+}
+
+ ////////////////////////////////////////////////////////////////////////////////
+std::ostream& 
+pcw::operator<<(std::ostream& os, const WagnerFischer& wf)
+{
+	char buf[] = {0,0,0,0,0}; // 5 are enough
+	for (size_t i = 0; i < wf.test().size(); ++i) {
+		os << utf8::append(wf.test()[i], buf);
+	}
+	os << "\n";
+	for (size_t i = 0; i < wf.trace().size(); ++i) {
+		os << wf.trace()[i].letter;
+	}
+	os << "\n";
+	for (size_t i = 0; i < wf.truth().size(); ++i) {
+		os << utf8::append(wf.truth()[i], buf);
+	}	
+	return os;
 }
 
 // ////////////////////////////////////////////////////////////////////////////////

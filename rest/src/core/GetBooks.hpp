@@ -14,6 +14,7 @@ namespace pcw {
 		crow::response operator()(const crow::request& req, int prid) const;
 		crow::response operator()(const crow::request& req, int prid, int pageid) const;
 		crow::response operator()(const crow::request& req, int prid, int pageid, int lineid) const;
+		crow::response operator()(const crow::request& req, int prid, int pageid, int lineid, const std::string& foo) const;
 
 	private:
 		

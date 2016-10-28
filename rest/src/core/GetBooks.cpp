@@ -12,6 +12,7 @@
 #include "SubProject.hpp"
 #include "ScopeGuard.hpp"
 #include "BookDir.hpp"
+#include "WagnerFischer.hpp"
 
 #define GET_BOOKS_ROUTE_0 "/books"
 #define GET_BOOKS_ROUTE_1 "/books/<int>"
@@ -19,6 +20,7 @@
 #define GET_BOOKS_ROUTE_3 "/books/<int>/pages/<int>"
 #define GET_BOOKS_ROUTE_4 "/books/<int>/pages/<int>/lines"
 #define GET_BOOKS_ROUTE_5 "/books/<int>/pages/<int>/lines/<int>"
+#define GET_BOOKS_ROUTE_6 "/books/<int>/pages/<int>/lines/<int>/<string>"
 
 
 using namespace pcw;
@@ -46,6 +48,8 @@ GetBooks::Register(App& app)
 	CROW_ROUTE(app, GET_BOOKS_ROUTE_3).methods("GET"_method)(*this);
 	CROW_ROUTE(app, GET_BOOKS_ROUTE_4).methods("GET"_method)(*this);
 	CROW_ROUTE(app, GET_BOOKS_ROUTE_5).methods("GET"_method)(*this);
+	// test
+	CROW_ROUTE(app, GET_BOOKS_ROUTE_6).methods("GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -158,3 +162,24 @@ GetBooks::post(const crow::request& req, int prid) const
 	return created();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+crow::response 
+GetBooks::operator()(const crow::request& req, int prid, int pageid, int lineid, const std::string& foo) const
+{
+	auto db = database(req);
+	if (not db)
+		return forbidden();
+	auto proj = db->select_project(prid);
+	if (not proj)
+		return not_found();
+	auto page = proj->find(pageid);
+	if (not page)
+		return not_found();
+	if (not page->contains(lineid))
+		return bad_request();
+	
+	WagnerFischer wf;
+	auto lev = wf(foo, (*page)[lineid]);
+	CROW_LOG_DEBUG << "(GetBooks) lev: " << lev << "\n" << wf;
+	return ok();
+}
