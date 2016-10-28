@@ -8,6 +8,10 @@ namespace pcw {
 		int right() const noexcept {return right_;}
 		int top() const noexcept {return top_;}
 		int bottom() const noexcept {return bottom_;}
+		void set_left(int x) noexcept {left_ = x;}
+		void set_right(int x) noexcept {right_ = x;}
+		void set_top(int x) noexcept {top_ = x;}
+		void set_bottom(int x) noexcept {bottom_ = x;}
 		int width() const noexcept {return right_ - left_;}
 		int height() const noexcept {return bottom_ - top_;}
 		

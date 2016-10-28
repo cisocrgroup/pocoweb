@@ -57,10 +57,11 @@ pcw::operator<<(Json& json, const Line& line)
 	for (auto b: line.corrections()) 
 		json["corrections"][i++] = b;
 	i = 0;
-	line.each_word([&i,&json](const auto& word, auto corr, auto conf) {
-		json["words"][i]["corrected"] = corr;
-		json["words"][i]["word"] = word;
-		json["words"][i]["confidence"] = conf;
+	line.each_word([&i,&json](const auto& word) {
+		json["words"][i]["corrected"] = word.corrected;
+		json["words"][i]["word"] = word.word;
+		json["words"][i]["confidence"] = word.confidence;
+		json["words"][i]["box"] << word.box;
 		++i;
 	});
 	json["averageConfidence"] = line.calculate_average_confidence();

@@ -207,10 +207,12 @@ isword(wchar_t c)
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-Line::each_word(std::function<void(const std::string&,bool,double)> f) const
+Line::each_word(std::function<void(const Word&)> f) const
 {
-	std::string utf8;
-	utf8.reserve(string_.size() * 2);
+	Word word;
+	word.box.set_top(this->box.top());
+	word.box.set_bottom(this->box.bottom());
+	word.word.reserve(string_.size() * 2);
 
 	auto e = end(string_);
 	auto b = begin(string_);
@@ -223,9 +225,13 @@ Line::each_word(std::function<void(const std::string&,bool,double)> f) const
 
 		auto corr = std::all_of(begin(corrs_) + pi, begin(corrs_) + pj, [](bool b) {return b;});
 		auto conf = std::accumulate(begin(confs_) + pi, begin(confs_) + pj, 0.0);
-		utf8::utf32to8(i, j, std::back_inserter(utf8));
-		f(utf8, corr, conf/n);
-		utf8.clear();
+		word.box.set_left(pi > 0 ? cuts_[pi - 1] : 0);
+		word.box.set_right(pj > 0 ? cuts_[pj - 1] : cuts_[pj]);
+		word.confidence = conf / n;
+		word.corrected = corr;
+		utf8::utf32to8(i, j, std::back_inserter(word.word));
+		f(word);
+		word.word.clear();
 		i = std::find_if(j, e, isword);
 	}
 }
