@@ -51,6 +51,7 @@ OBJS += Sessions.o
 OBJS += XmlFile.o
 OBJS += pugixml.o
 OBJS += util.o
+OBJS += jsonify.o
 OBJS += db.o
 
 ## OBJS += api.o
