@@ -111,3 +111,11 @@ Line::string() const
 	utf8::utf32to8(begin(string_), end(string_), std::back_inserter(res));
 	return res;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+double 
+Line::calculate_average_confidence() const noexcept
+{
+	auto sum = std::accumulate(begin(confs_), end(confs_), 0.0);
+	return sum / static_cast<double>(confs_.size());
+}

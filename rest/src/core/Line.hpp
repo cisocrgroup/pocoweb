@@ -25,6 +25,7 @@ namespace pcw {
 		std::string string() const;
 		const Cuts& cuts() const noexcept {return cuts_;}
 		const Confidences& confidences() const noexcept {return confs_;}
+		double calculate_average_confidence() const noexcept;
 		PagePtr page() const noexcept {return page_.lock();}
 		bool has_img_path() const noexcept {return not img.empty();}
 

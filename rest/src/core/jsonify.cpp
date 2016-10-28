@@ -53,6 +53,7 @@ pcw::operator<<(Json& json, const Line& line)
 	json["string"] = line.string();
 	json["cuts"] = line.cuts();
 	json["confidences"] = line.confidences();
+	json["averageConfidence"] = line.calculate_average_confidence();
 	return json;
 }
 
