@@ -44,6 +44,7 @@ namespace pcw {
 		ProjectPtr insert_project(Project& project) const;
 		ProjectPtr select_project(int projectid) const;
 		std::vector<ProjectPtr> select_all_projects(const User& user) const;
+		void update_line(const Line& line) const;
 
 	private:
 		UserPtr select_user(const std::string& name, sql::Connection& conn) const;
@@ -58,6 +59,7 @@ namespace pcw {
 		void insert_line(const Line& line, sql::Connection& conn) const; 
 		void select_all_pages(Book& book, sql::Connection& conn) const;
 		void select_all_lines(Page& page, sql::Connection& conn) const;
+		void update_line(const Line& line, sql::Connection& conn) const;
 		void check_session_lock() const;
 		int last_insert_id(sql::Connection& conn) const;
 		sql::Connection* connection() const;
