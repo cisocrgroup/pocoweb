@@ -94,10 +94,6 @@ WagnerFischer::backtrack()
         trace_.reserve(std::max(truth_.size(), test_.size()));
         for (size_t i = test_.size(), j = truth_.size(); i or j;) {
                 auto t = backtrack(i, j);
-		CROW_LOG_DEBUG << "from (" << i << "," << j << ") to ("
-			       << std::get<1>(t) << "," << std::get<2>(t)
-			       << " [" << static_cast<char>(std::get<0>(t))
-			       << "]";
                 i = std::get<1>(t);
                 j = std::get<2>(t);
                 trace_.push_back(std::get<0>(t));
