@@ -175,6 +175,50 @@ Database::get_user_from_result_set(ResultSetPtr res)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void 
+Database::update_line(const Line& line) const
+{
+	check_session_lock();
+	auto conn = connection();
+	assert(conn);
+	update_line(line, *conn);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Database::update_line(const Line& line, sql::Connection& conn) const
+{
+	static const char* sql = "DELETE FROM contents "
+				 "WHERE bookid = ? AND pageid = ? AND lineid = ?;";
+	static const char* tql = "INSERT INTO contents "
+				 "(bookid, pageid, lineid, seq, letter, cut, conf, corrected) "
+				 "VALUES (?,?,?,?,?,?,?,?);";
+
+	PreparedStatementPtr s{conn.prepareStatement(sql)};
+	assert(s);
+	const auto lineid = line.id();
+	const auto pageid = line.page()->id;
+	const auto bookid = line.page()->book()->id();
+	s->setInt(1, bookid);
+	s->setInt(2, pageid);
+	s->setInt(3, lineid);
+	s->executeUpdate();
+
+	PreparedStatementPtr t{conn.prepareStatement(tql)};
+	t->setInt(1, bookid);
+	t->setInt(2, pageid);
+	t->setInt(3, lineid);
+	for (size_t i = 0; i < line.size(); ++i) {
+		t->setInt(4, static_cast<int>(i));
+		t->setInt(5, line.wstring()[i]);
+		t->setInt(6, line.cuts()[i]);
+		t->setDouble(7, line.confidences()[i]);
+		t->setBoolean(8, line.corrections()[i]);
+		t->executeUpdate();
+	}
+}
+	
+////////////////////////////////////////////////////////////////////////////////
 ProjectPtr 
 Database::insert_project(Project& project) const
 {

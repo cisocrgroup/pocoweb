@@ -94,10 +94,6 @@ WagnerFischer::backtrack()
         trace_.reserve(std::max(truth_.size(), test_.size()));
         for (size_t i = test_.size(), j = truth_.size(); i or j;) {
                 auto t = backtrack(i, j);
-		CROW_LOG_DEBUG << "from (" << i << "," << j << ") to ("
-			       << std::get<1>(t) << "," << std::get<2>(t)
-			       << " [" << static_cast<char>(std::get<0>(t))
-			       << "]";
                 i = std::get<1>(t);
                 j = std::get<2>(t);
                 trace_.push_back(std::get<0>(t));
@@ -148,37 +144,6 @@ WagnerFischer::backtrack(size_t i, size_t j) const noexcept
         default:
                 assert(false);
         }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void 
-WagnerFischer::correct(Line& line) const
-{
-        assert(trace_.size() == truth_.size());
-        assert(trace_.size() == test_.size());
-
-	int o = 0;
-	for (size_t i = 0; i < trace_.size(); ++i) {
-		const auto ii = i + o;
-		switch (trace_[i]) {
-		// deletion means that the ocr did not recognize a character 
-		// where in reality there should be one; so insert it
-		case EditOp::Del: 
-			line.insert(ii, truth_[i]);
-			break;
-		// insertion means that the ocr recognized a character
-		// where in reality there should be none; delete it
-		case EditOp::Ins:
-			line.erase(ii);
-			--o;	
-			break;
-		case EditOp::Sub:
-			line.set(ii, truth_[i]);
-			break;
-		case EditOp::Nop:
-			break;
-		}
-	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////

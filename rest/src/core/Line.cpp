@@ -164,6 +164,35 @@ Line::erase(size_t i)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void
+Line::correct(const WagnerFischer& wf)
+{
+	int o = 0;
+	const auto n = wf.trace().size();
+	for (size_t i = 0; i < n; ++i) {
+		const auto ii = i + o;
+		switch (wf.trace()[i]) {
+		// insertion means that the ocr recognized a character
+		// where in reality there should be none; delete it
+		case WagnerFischer::EditOp::Ins:
+			erase(ii);
+			--o;	
+			break;
+		// deletion means that the ocr did not recognize a character 
+		// where in reality there should be one; so insert it
+		case WagnerFischer::EditOp::Del: 
+			insert(ii, wf.truth()[i]);
+			break;
+		case WagnerFischer::EditOp::Sub:
+			set(ii, wf.truth()[i]);
+			break;
+		case WagnerFischer::EditOp::Nop:
+			break;
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
 static bool
 isword(wchar_t c)
 {

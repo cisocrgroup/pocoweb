@@ -11,6 +11,7 @@ namespace pcw {
 	using EditOps = std::vector<EditOp>;
 	class Page;
 	using PagePtr = std::shared_ptr<Page>;
+	class WagnerFischer;
 
 	class Line {
 	public:
@@ -42,9 +43,8 @@ namespace pcw {
 		void each_word(std::function<void(const Word&)> f) const;
 		int id() const noexcept {return id_;}
 
-		void insert(size_t i, wchar_t c);
-		void erase(size_t i);
-		void set(size_t i, wchar_t c);
+		void correct(const WagnerFischer& wf);
+
 		void append(const std::string& str, int l, int r, double c, bool corr = false);
 		void append(const std::wstring& str, int l, int r, double c, bool corr = false);
 		void append(const char* str, int l, int r, double c, bool corr = false);
@@ -57,6 +57,10 @@ namespace pcw {
 		Path img, ocr;
 
 	private:
+		void insert(size_t i, wchar_t c);
+		void erase(size_t i);
+		void set(size_t i, wchar_t c);
+
 		String string_;
 		Cuts cuts_;
 		Confidences confs_;

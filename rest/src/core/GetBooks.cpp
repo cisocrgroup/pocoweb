@@ -20,7 +20,6 @@
 #define GET_BOOKS_ROUTE_3 "/books/<int>/pages/<int>"
 #define GET_BOOKS_ROUTE_4 "/books/<int>/pages/<int>/lines"
 #define GET_BOOKS_ROUTE_5 "/books/<int>/pages/<int>/lines/<int>"
-#define GET_BOOKS_ROUTE_6 "/books/<int>/pages/<int>/lines/<int>/<string>"
 
 
 using namespace pcw;
@@ -39,7 +38,9 @@ const char* GetBooks::name_ = "GetBooks";
 void
 GetBooks::Register(App& app)
 {
-	CROW_ROUTE(app, GET_BOOKS_ROUTE_0).methods("GET"_method)(*this);
+	CROW_ROUTE(app, GET_BOOKS_ROUTE_0)
+		.methods("GET"_method)
+	(*this);
 	CROW_ROUTE(app, GET_BOOKS_ROUTE_1)
 		.methods("GET"_method)
 		.methods("POST"_method)
@@ -47,14 +48,15 @@ GetBooks::Register(App& app)
 	CROW_ROUTE(app, GET_BOOKS_ROUTE_2).methods("GET"_method)(*this);
 	CROW_ROUTE(app, GET_BOOKS_ROUTE_3).methods("GET"_method)(*this);
 	CROW_ROUTE(app, GET_BOOKS_ROUTE_4).methods("GET"_method)(*this);
-	CROW_ROUTE(app, GET_BOOKS_ROUTE_5).methods("GET"_method)(*this);
-	// test
-	CROW_ROUTE(app, GET_BOOKS_ROUTE_6).methods("GET"_method)(*this);
+	CROW_ROUTE(app, GET_BOOKS_ROUTE_5)
+		.methods("GET"_method)
+		.methods("PUT"_method)
+	(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::response
-GetBooks::operator()(const crow::request& req) const
+Route::Response
+GetBooks::operator()(const Request& req) const
 {
 	auto db = this->database(req);
 	if (not db)
@@ -74,54 +76,68 @@ GetBooks::operator()(const crow::request& req) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::response
-GetBooks::operator()(const crow::request& req, int prid) const
+Route::Response
+GetBooks::operator()(const Request& req, int bid) const
 {
 	switch (req.method) {
 	case crow::HTTPMethod::Get:
-		return get(req, prid);
+		return get(req, bid);
 	case crow::HTTPMethod::Post:
-		return post(req, prid);
+		return post(req, bid);
 	default:
 		return not_found();
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::response
-GetBooks::operator()(const crow::request& req, int prid, int pageid) const
+Route::Response
+GetBooks::operator()(const Request& req, int bid, int pid) const
 {
 	auto db = this->database(req);
 	if (not db)
 		return forbidden();
 	std::lock_guard<std::mutex> lock(db->session().mutex);
-	auto project = db->select_project(prid);
-	if (not project)
-		return not_found();
+	auto page = find(*db, bid, pid);
 	// TODO missing authentication
-	auto page = project->find(pageid);
-	if (not page)
-		return not_found();
 	Json j;
 	return j << *page;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::response
-GetBooks::operator()(const crow::request& req, int prid, int pageid, int lineid) const
+Route::Response
+GetBooks::operator()(const Request& req, int bid, int pid, int lid) const
 {
-	return not_implemented();
+	auto db = database(req);
+	if (not db)
+		return forbidden();
+	std::lock_guard<std::mutex> lock(db->session().mutex);
+	auto page = find(*db, bid, pid);
+	if (not page)
+		return not_found();
+	if (not page->contains(lid))
+		return not_found();
+
+	// TODO authentication 
+
+	switch (req.method) {
+	case crow::HTTPMethod::Get:
+		return get((*page)[lid]);
+	case crow::HTTPMethod::Put:
+		return put(req, *db, (*page)[lid]);
+	default:
+		return not_found();
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::response
-GetBooks::get(const crow::request& req, int prid) const
+Route::Response
+GetBooks::get(const Request& req, int bid) const
 {
 	auto db = this->database(req);
 	if (not db)
 		return forbidden();
 	std::lock_guard<std::mutex> lock(db->session().mutex);
-	auto project = db->select_project(prid);
+	auto project = db->select_project(bid);
 	if (not project)
 		return not_found();
 	// TODO missing authentication
@@ -130,13 +146,13 @@ GetBooks::get(const crow::request& req, int prid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::response
-GetBooks::post(const crow::request& req, int prid) const
+Route::Response
+GetBooks::post(const Request& req, int bid) const
 {
 	auto db = database(req);
 	if (not db)
 		return forbidden();
-	auto proj = db->select_project(prid);
+	auto proj = db->select_project(bid);
 	if (not proj)
 		return not_found();
 	auto user = db->session().user;
@@ -163,27 +179,44 @@ GetBooks::post(const crow::request& req, int prid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::response 
-GetBooks::operator()(const crow::request& req, int prid, int pageid, int lineid, const std::string& foo) const
+Route::Response 
+GetBooks::get(const Line& line) const
 {
-	auto db = database(req);
-	if (not db)
-		return forbidden();
-	std::lock_guard<std::mutex> lock(db->session().mutex);
-	auto proj = db->select_project(prid);
-	if (not proj)
-		return not_found();
-	auto page = proj->find(pageid);
-	if (not page)
-		return not_found();
-	if (not page->contains(lineid))
+	Json j;
+	return j << line;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response 
+GetBooks::put(const Request& req, Database& db, Line& line) const
+{
+	auto correction = req.url_params.get("correction");
+	if (not correction)
 		return bad_request();
-	
+	CROW_LOG_DEBUG << "(GetBooks) correction: " << req.url_params.get("correction");
 	WagnerFischer wf;
-	auto lev = wf(foo, (*page)[lineid]);
+	auto lev = wf(correction, line);
 	CROW_LOG_DEBUG << "(GetBooks) lev: " << lev << "\n" << wf;
-	CROW_LOG_DEBUG << "(GetBooks) line: " << (*page)[lineid].string();
-	wf.correct((*page)[lineid]);
-	CROW_LOG_DEBUG << "(GetBooks) line: " << (*page)[lineid].string();
+	CROW_LOG_DEBUG << "(GetBooks) line: " << line.string();
+	line.correct(wf);
+	CROW_LOG_DEBUG << "(GetBooks) line: " << line.string();
+	db.set_autocommit(false);
+	db.update_line(line);
+	db.commit();
 	return ok();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+ProjectPtr 
+GetBooks::find(const Database& db, int bid) const
+{
+	return db.select_project(bid);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+PagePtr 
+GetBooks::find(const Database& db, int bid, int pid) const
+{
+	auto book = find(db, bid);
+	return book ? book->find(pid) : nullptr;
 }
