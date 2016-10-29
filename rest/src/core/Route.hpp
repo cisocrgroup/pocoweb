@@ -5,6 +5,7 @@
 #include <boost/optional.hpp>
 #include <vector>
 #include <crow/http_response.h>
+#include <crow/http_request.h>
 
 namespace crow {
 	template<typename... Middleware> class Crow;
@@ -32,14 +33,17 @@ namespace pcw {
 
 	class Route {
 	public:
-		static crow::response ok() noexcept {return crow::response(200);}
-		static crow::response created() noexcept {return crow::response(201);}
-		static crow::response accepted() noexcept {return crow::response(202);}
-		static crow::response bad_request() noexcept {return crow::response(400);}
-		static crow::response forbidden() noexcept {return crow::response(403);}
-		static crow::response not_found() noexcept {return crow::response(404);}
-		static crow::response internal_server_error() noexcept {return crow::response(500);}
-		static crow::response not_implemented() noexcept {return crow::response(501);}
+		using Response = crow::response;
+		using Request = crow::request;
+
+		static Response ok() noexcept {return Response(200);}
+		static Response created() noexcept {return Response(201);}
+		static Response accepted() noexcept {return Response(202);}
+		static Response bad_request() noexcept {return Response(400);}
+		static Response forbidden() noexcept {return Response(403);}
+		static Response not_found() noexcept {return Response(404);}
+		static Response internal_server_error() noexcept {return Response(500);}
+		static Response not_implemented() noexcept {return Response(501);}
 
 		using App = crow::Crow<>;
 		virtual ~Route() noexcept;
@@ -48,12 +52,12 @@ namespace pcw {
 		virtual const char* name() const noexcept = 0;
 		virtual void Deregister(App&) {}
 		
-		SessionPtr session(const crow::request& request) const noexcept;
+		SessionPtr session(const Request& request) const noexcept;
 		Sessions& sessions() const noexcept {return *sessions_;}
 		void set_sessions(SessionsPtr s) noexcept {sessions_ = std::move(s);}
 		const Config& config() const noexcept {return *config_;}
 		void set_config(ConfigPtr c) noexcept {config_ = std::move(c);}
-		boost::optional<Database> database(const crow::request& request) const noexcept;
+		boost::optional<Database> database(const Request& request) const noexcept;
 		boost::optional<Database> database(SessionPtr session) const noexcept;
 
 		// cache
