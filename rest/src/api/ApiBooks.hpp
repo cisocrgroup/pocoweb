@@ -1,7 +1,7 @@
-#ifndef pcw_GetBooks_hpp__
-#define pcw_GetBooks_hpp__
+#ifndef pcw_ApiBooks_hpp__
+#define pcw_ApiBooks_hpp__
 
-#include "PostRoute.hpp"
+#include "core/Route.hpp"
 
 namespace pcw {
 	class Line;
@@ -10,9 +10,9 @@ namespace pcw {
 	using ProjectPtr = std::shared_ptr<Project>;
 	using PagePtr = std::shared_ptr<Page>;
 
-	class GetBooks: public PostRoute {
+	class ApiBooks: public Route {
 	public:
-		virtual ~GetBooks() noexcept override = default;
+		virtual ~ApiBooks() noexcept override = default;
 		virtual void Register(App& app) override;
 		virtual const char* route() const noexcept override {return route_;}
 		virtual const char* name() const noexcept override {return name_;}
@@ -22,6 +22,8 @@ namespace pcw {
 		Response operator()(const Request& req, int bid, int pid, int lid) const;
 
 	private:
+		Response post(const Request& req) const;
+		Response get(const Request& req) const;
 		Response get(const Request& req, int bid) const;
 		Response post(const Request& req, int bid) const;
 		Response put(const Request& req, Database& db, Line& line) const;
@@ -34,4 +36,4 @@ namespace pcw {
 	};
 }
 
-#endif // pcw_GetBooks_hpp__
+#endif // pcw_ApiBooks_hpp__

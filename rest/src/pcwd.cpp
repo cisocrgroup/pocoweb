@@ -1,13 +1,12 @@
 #include <iostream>
 #include <vector>
 #include "crow.h"
-#include "App.hpp"
-#include "Config.hpp"
-#include "Plugin.hpp"
-#include "Route.hpp"
-#include "ApiVersion.hpp"
-#include "CreateBook.hpp"
-#include "GetBooks.hpp"
+#include "core/App.hpp"
+#include "core/Config.hpp"
+#include "core/Plugin.hpp"
+#include "core/Route.hpp"
+#include "api/ApiVersion.hpp"
+#include "api/ApiBooks.hpp"
 
 using AppPtr = std::unique_ptr<pcw::App>;
 static int run(int argc, char** argv);
@@ -33,8 +32,7 @@ run(int argc, char** argv)
 	crow::logger::setLogLevel(crow::LogLevel(app->config().log.level));
 	app->register_plugins();
 	app->Register(std::make_unique<pcw::ApiVersion>());
-	app->Register(std::make_unique<pcw::CreateBook>());
-	app->Register(std::make_unique<pcw::GetBooks>());
+	app->Register(std::make_unique<pcw::ApiBooks>());
 	app->run();
 	return 0;
 }
