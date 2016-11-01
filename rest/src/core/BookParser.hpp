@@ -10,7 +10,7 @@ namespace pcw {
 	class BookParser {
 	public:
 		virtual ~BookParser() noexcept = default;
-		virtual BookPtr parse() const = 0;
+		virtual BookPtr parse() = 0;
 	};
 }
 

@@ -6,11 +6,16 @@
 
 namespace pcw {
 	class MetsXmlBookParser: public BookParser, 
-			      public XmlFile {
+				 public XmlFile,
+				 public pugi::xml_tree_walker {
 	public:
-		MetsXmlBookParser(const Path& path): XmlFile(path) {}
+		MetsXmlBookParser(const Path& path);
 		virtual ~MetsXmlBookParser() noexcept override = default;
-		virtual BookPtr parse() const override;
+		virtual BookPtr parse() override;
+		virtual bool for_each(XmlNode& node) override;
+
+	private:
+		BookPtr book_;
 	};
 }
 
