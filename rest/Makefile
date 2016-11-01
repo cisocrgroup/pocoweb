@@ -44,7 +44,6 @@ OBJS += SubProject.o
 OBJS += Config.o
 OBJS += Database.o
 OBJS += Route.o
-OBJS += PostRoute.o
 OBJS += App.o
 OBJS += Line.o
 OBJS += User.o
@@ -56,7 +55,6 @@ OBJS += jsonify.o
 OBJS += db.o
 
 API_OBJS += ApiVersion.o
-API_OBJS += CreateBook.o
 API_OBJS += GetBooks.o
 
 default: all

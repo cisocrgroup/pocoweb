@@ -51,19 +51,25 @@ namespace pcw {
 		virtual const char* route() const noexcept = 0;
 		virtual const char* name() const noexcept = 0;
 		virtual void Deregister(App&) {}
+		void set_cache(CachePtr cache) noexcept {cache_ = std::move(cache);}
+		void set_config(ConfigPtr c) noexcept {config_ = std::move(c);}
+		void set_sessions(SessionsPtr s) noexcept {sessions_ = std::move(s);}
 		
+	protected:
 		SessionPtr session(const Request& request) const noexcept;
 		Sessions& sessions() const noexcept {return *sessions_;}
-		void set_sessions(SessionsPtr s) noexcept {sessions_ = std::move(s);}
 		const Config& config() const noexcept {return *config_;}
-		void set_config(ConfigPtr c) noexcept {config_ = std::move(c);}
 		boost::optional<Database> database(const Request& request) const noexcept;
 		boost::optional<Database> database(SessionPtr session) const noexcept;
+		static std::string extract_content(const crow::request& request);
 
-		// cache
-		void set_cache(CachePtr cache) noexcept {cache_ = std::move(cache);}
-	
 	private:
+		static std::string extract_multipart(
+			const Request& req, 
+			const std::string& boundary
+		);
+		static std::string extract_raw(const Request& req);
+	
 		SessionsPtr sessions_;
 		CachePtr cache_;
 		ConfigPtr config_;

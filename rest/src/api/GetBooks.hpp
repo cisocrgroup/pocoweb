@@ -1,7 +1,7 @@
 #ifndef pcw_GetBooks_hpp__
 #define pcw_GetBooks_hpp__
 
-#include "core/PostRoute.hpp"
+#include "core/Route.hpp"
 
 namespace pcw {
 	class Line;
@@ -10,7 +10,7 @@ namespace pcw {
 	using ProjectPtr = std::shared_ptr<Project>;
 	using PagePtr = std::shared_ptr<Page>;
 
-	class GetBooks: public PostRoute {
+	class GetBooks: public Route {
 	public:
 		virtual ~GetBooks() noexcept override = default;
 		virtual void Register(App& app) override;
