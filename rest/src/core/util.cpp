@@ -1,6 +1,7 @@
 #include <cstring>
 #include <cassert>
 #include <cstring>
+#include <fstream>
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
@@ -10,6 +11,10 @@
 #include <regex>
 #include <openssl/sha.h>
 #include "util.hpp"
+#include "AltoXmlPageParser.hpp"
+#include "HocrPageParser.hpp"
+#include "LlocsPageParser.hpp"
+#include "AbbyyXmlPageParser.hpp"
 
 #ifndef PCW_WHAT_LEN
 #define PCW_WHAT_LEN 1024
@@ -123,3 +128,82 @@ pcw::fix_windows_path(std::string path)
 	std::replace(begin(path), end(path),  '\\', '/');
 	return path;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::FileType
+pcw::get_xml_file_type(const Path& path) 
+{
+	static const std::string abbyy{"http://www.abbyy.com"};
+	static const std::string alto{"<alto"};
+	static const std::string hocr{"<html"};
+	static const std::string mets{"METS"};
+
+	std::ifstream is(path.string());
+	if (not is.good())
+		throw std::system_error(errno, std::system_category(), path.string());
+	char buf[1024];
+	is.read(buf, 1024);
+	const auto n = is.gcount();
+	if (std::search(buf, buf + n, begin(abbyy), end(abbyy)) != buf + n)
+		return FileType::AbbyyXml;
+	if (std::search(buf, buf + n, begin(alto), end(alto)) != buf + n)
+		return FileType::AltoXml;
+	if (std::search(buf, buf + n, begin(hocr), end(hocr)) != buf + n)
+		return FileType::Hocr;
+	if (std::search(buf, buf + n, begin(mets), end(mets)) != buf + n)
+		return FileType::Mets;
+	return FileType::Other;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::FileType 
+pcw::get_file_type(const Path& path)
+{
+	static const std::regex hocr{
+		R"(\.((html?)|(hocr))$)", 
+		std::regex_constants::icase
+	};
+	static const std::regex xml{R"(\.xml$)", std::regex_constants::icase};
+	static const std::regex llocs{R"(\.llocs$)"};
+	static const std::regex img{
+		R"(\.((png)|(jpe?g)|(tiff?))$)",
+		std::regex_constants::icase
+	};
+	auto str = path.string();
+	if (std::regex_search(str, img))
+		return FileType::Img;
+	if (std::regex_search(str, llocs))
+		return FileType::Llocs;
+	if (std::regex_search(str, xml)) 
+		return get_xml_file_type(path);
+	if (std::regex_search(str, hocr))
+		return FileType::Hocr;
+	return FileType::Other;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::PageParserPtr 
+pcw::make_page_parser(const Path& ocr)
+{
+	auto type = get_file_type(ocr);
+	return make_page_parser(type, ocr);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::PageParserPtr 
+pcw::make_page_parser(FileType type, const Path& ocr)
+{
+	switch (type) {
+	case FileType::Hocr:
+		return std::make_unique<HocrPageParser>(ocr);
+	case FileType::AltoXml:
+		return std::make_unique<AltoXmlPageParser>(ocr);
+	case FileType::AbbyyXml:
+		return std::make_unique<AbbyyXmlPageParser>(ocr);
+	case FileType::Llocs:
+		return std::make_unique<LlocsPageParser>(ocr);
+	default:
+		throw std::logic_error("Cannot parse file: " + ocr.string());
+	}
+}
+

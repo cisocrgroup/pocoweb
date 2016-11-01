@@ -1,14 +1,12 @@
 #include <regex>
 #include <fstream>
+#include "util.hpp"
 #include "Page.hpp"
 #include "BadRequest.hpp"
 #include "BookBuilder.hpp"
 #include "Book.hpp"
 #include "MetsXmlBookParser.hpp"
-#include "AltoXmlPageParser.hpp"
-#include "LlocsPageParser.hpp"
-#include "AbbyyXmlPageParser.hpp"
-#include "HocrPageParser.hpp"
+#include "PageParser.hpp"
 
 using namespace pcw;
 
@@ -36,11 +34,14 @@ BookBuilder::add(const Path& file)
 	case FileType::Img:
 		img_.push_back(file);
 		break;
+	case FileType::Llocs:
+		ocr_[file.parent_path()] = type;
+		break;
 	case FileType::Other:
 		// do nothing
 		break;
 	default:
-		ocr_.emplace_back(file, type);
+		ocr_[file] = type;
 		break;
 	}
 }
@@ -51,11 +52,12 @@ BookBuilder::parse_book_data() const
 {
 	BookData data;
 	for (const auto& ocr: ocr_) {
-		auto pp = get_page_parser(ocr);
+		std::cerr << "OCR: " << ocr.first << "\n";
+		auto pp = make_page_parser(ocr.second, ocr.first);
 		assert(pp);
 		while (pp->has_next()) {
 			auto page = pp->parse();
-			if (not page->has_img_path()) {
+			if (page->has_ocr_path() and not page->has_img_path()) {
 				auto i = find_matching_img_file(page->ocr);
 				if (i == end(img_))
 					throw BadRequest(
@@ -94,76 +96,6 @@ BookBuilder::find_matching_img_file(const Path& ocr) const noexcept
 	return std::find_if(begin(img_), end(img_), [&stem](const Path& path) {
 		return path.stem() == stem;
 	});
-}
-
-////////////////////////////////////////////////////////////////////////////////
-PageParserPtr 
-BookBuilder::get_page_parser(const FilePair& ocr)
-{
-	switch (ocr.second) {
-	case FileType::Hocr:
-		return std::make_unique<HocrPageParser>(ocr.first);
-	case FileType::AltoXml:
-		return std::make_unique<AltoXmlPageParser>(ocr.first);
-	case FileType::AbbyyXml:
-		return std::make_unique<AbbyyXmlPageParser>(ocr.first);
-	case FileType::Llocs:
-		return std::make_unique<LlocsPageParser>(ocr.first);
-	default:
-		throw std::logic_error("(BookBuilder) Invalid file type");
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-BookBuilder::FileType
-BookBuilder::get_xml_file_type(const Path& path) 
-{
-	static const std::string abbyy{"http://www.abbyy.com"};
-	static const std::string alto{"<alto"};
-	static const std::string hocr{"<html"};
-	static const std::string mets{"METS"};
-
-	std::ifstream is(path.string());
-	if (not is.good())
-		throw std::system_error(errno, std::system_category(), path.string());
-	char buf[1024];
-	is.read(buf, 1024);
-	const auto n = is.gcount();
-	if (std::search(buf, buf + n, begin(abbyy), end(abbyy)) != buf + n)
-		return FileType::AbbyyXml;
-	if (std::search(buf, buf + n, begin(alto), end(alto)) != buf + n)
-		return FileType::AltoXml;
-	if (std::search(buf, buf + n, begin(hocr), end(hocr)) != buf + n)
-		return FileType::Hocr;
-	if (std::search(buf, buf + n, begin(mets), end(mets)) != buf + n)
-		return FileType::Mets;
-	return FileType::Other;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-BookBuilder::FileType 
-BookBuilder::get_file_type(const Path& path)
-{
-	static const std::regex hocr{
-		R"(\.((html?)|(hocr))$)", 
-		std::regex_constants::icase
-	};
-	static const std::regex xml{R"(\.xml$)", std::regex_constants::icase};
-	static const std::regex llocs{R"(\.llocs$)"};
-	static const std::regex img{
-		R"(\.((png)|(jpe?g)|(tiff?))$)",
-		std::regex_constants::icase
-	};
-	auto str = path.string();
-	if (std::regex_search(str, img))
-		return FileType::Img;
-	if (std::regex_search(str, llocs))
-		return FileType::Llocs;
-	if (std::regex_search(str, xml)) 
-		return get_xml_file_type(path);
-	if (std::regex_search(str, hocr))
-		return FileType::Hocr;
-	return FileType::Other;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

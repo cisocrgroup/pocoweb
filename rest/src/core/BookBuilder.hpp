@@ -2,8 +2,10 @@
 #define pcw_BookBuilder_hpp__
 
 #include <boost/filesystem/path.hpp>
+#include <map>
 #include <memory>
 #include <vector>
+#include "util.hpp"
 
 namespace pcw {
 	class Book;
@@ -20,11 +22,8 @@ namespace pcw {
 		BookPtr build() const;
 		
 	private:
-		enum class FileType {
-			Other, Img, AltoXml, AbbyyXml, Hocr, Llocs, Mets,
-		};
-		using FilePair = std::pair<Path, FileType>;
-		using OcrFiles = std::vector<FilePair>;
+		using OcrFiles = std::map<Path, FileType>;
+		using FilePair = OcrFiles::value_type;
 		using ImgFiles = std::vector<Path>;
 		struct BookData {
 			std::vector<PagePtr> pages;
@@ -35,9 +34,6 @@ namespace pcw {
 		BookData parse_book_data() const;
 		static BookPtr build(const BookData& data);
 		ImgFiles::const_iterator find_matching_img_file(const Path& ocr) const noexcept;
-		static PageParserPtr get_page_parser(const FilePair& type);
-		static FileType get_file_type(const Path& path);
-		static FileType get_xml_file_type(const Path& path);
 		static void order_pages(std::vector<PagePtr>& pages) noexcept;
 		static void fix_indizes(std::vector<PagePtr>& pages) noexcept;
 
