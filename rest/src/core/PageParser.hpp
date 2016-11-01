@@ -11,7 +11,7 @@ namespace pcw {
 	public:
 		virtual ~PageParser() noexcept = default;
 		virtual bool has_next() const noexcept = 0;
-		virtual PagePtr next() = 0;
+		virtual PagePtr parse() = 0;
 	};
 }
 

@@ -26,7 +26,7 @@ LlocsPageParser::LlocsPageParser(Path path)
 
 ////////////////////////////////////////////////////////////////////////////////
 PagePtr 
-LlocsPageParser::next() 
+LlocsPageParser::parse() 
 {
 	done_ = true; // one page per directory
 	return parse();

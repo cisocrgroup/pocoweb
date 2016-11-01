@@ -17,7 +17,7 @@ AltoXmlPageParser::AltoXmlPageParser(const Path& path)
 
 ////////////////////////////////////////////////////////////////////////////////
 PagePtr 
-AltoXmlPageParser::next() 
+AltoXmlPageParser::parse() 
 {
 	done_ = true; // alto documents contain just one page
 	return parse();

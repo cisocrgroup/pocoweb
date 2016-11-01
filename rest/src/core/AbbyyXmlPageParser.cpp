@@ -25,7 +25,7 @@ AbbyyXmlPageParser::has_next() const noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 PagePtr 
-AbbyyXmlPageParser::next() 
+AbbyyXmlPageParser::parse() 
 {
 	assert(page_);
 	auto page = std::make_shared<Page>(0);

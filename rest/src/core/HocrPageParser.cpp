@@ -22,7 +22,7 @@ HocrPageParser::HocrPageParser(const Path& path)
 
 ////////////////////////////////////////////////////////////////////////////////
 PagePtr 
-HocrPageParser::next() 
+HocrPageParser::parse() 
 {
 	assert(page_node_);
 	page_node_.traverse(*this);

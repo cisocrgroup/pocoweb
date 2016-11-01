@@ -16,7 +16,7 @@ namespace pcw {
 		HocrPageParser(const Path& path);
 		virtual ~HocrPageParser() noexcept override = default;
 		virtual bool has_next() const noexcept override {return page_node_;}
-		virtual PagePtr next() override;
+		virtual PagePtr parse() override;
 		virtual bool begin(XmlNode& node) override;
 		virtual bool for_each(XmlNode& node) override;
 

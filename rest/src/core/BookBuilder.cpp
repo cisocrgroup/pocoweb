@@ -147,7 +147,7 @@ BookBuilder::make_book() const
 		auto parser = get_page_parser(ocr);
 		assert(parser);
 		while (parser->has_next()) {
-			book->push_back(parser->next());
+			book->push_back(parser->parse());
 		}
 	}
 	return book;

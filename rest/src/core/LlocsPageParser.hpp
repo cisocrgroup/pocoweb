@@ -15,7 +15,7 @@ namespace pcw {
 		LlocsPageParser(Path path);
 		virtual ~LlocsPageParser() noexcept override = default;
 		virtual bool has_next() const noexcept override {return not done_;}
-		virtual PagePtr next() override;
+		virtual PagePtr parse() override;
 
 	private:
 		using PathPair = std::pair<Path, Path>;
