@@ -1,6 +1,6 @@
 CXXFLAGS := $(CXXFLAGS)
 CXXFLAGS += -fpic
-CXXFLAGS += -I src/core
+CXXFLAGS += -I src
 CXXFLAGS += -I ../modules/crow/include
 CXXFLAGS += -I ../modules/pugixml/src
 CXXFLAGS += -I ../modules/utfcpp/source
@@ -13,7 +13,7 @@ LDFLAGS += -L.
 LDFLAGS += -ldl
 LDFLAGS += -lmysqlcppconn
 LDFLAGS += -lssl
-LDFLAGS += -l lept
+LDFLAGS += -llept
 LDFLAGS += -lpthread
 LDFLAGS += -lboost_log
 LDFLAGS += -licuuc
@@ -26,7 +26,7 @@ LDFLAGS += -lboost_filesystem
 # LDFLAGS += -lboost_thread
 LDFLAGS += -lcrypto
 
-VPATH = src src/core ../modules/pugixml/src
+VPATH = src src/core ../modules/pugixml/src src/api
 
 OBJS += AltoXmlPageParser.o
 OBJS += AbbyyXmlPageParser.o
@@ -45,9 +45,6 @@ OBJS += Route.o
 OBJS += PostRoute.o
 OBJS += App.o
 OBJS += Line.o
-OBJS += ApiVersion.o
-OBJS += CreateBook.o
-OBJS += GetBooks.o
 OBJS += User.o
 OBJS += Sessions.o
 OBJS += XmlFile.o
@@ -55,6 +52,10 @@ OBJS += pugixml.o
 OBJS += util.o
 OBJS += jsonify.o
 OBJS += db.o
+
+API_OBJS += ApiVersion.o
+API_OBJS += CreateBook.o
+API_OBJS += GetBooks.o
 
 ## OBJS += api.o
 ## OBJS += Config.o
@@ -84,10 +85,12 @@ OBJS += db.o
 default: all
 all: pcwd
 
-pcwd: pcwd.o libpcwcore.a
+pcwd: pcwd.o libpcwapi.a libpcwcore.a 
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 libpcwcore.a: $(OBJS)
+	$(AR) rcs $@ $^
+libpcwapi.a: $(API_OBJS)
 	$(AR) rcs $@ $^
 
 ## libpcwcore.so: $(OBJS)
@@ -97,6 +100,6 @@ libpcwcore.a: $(OBJS)
 clean:
 	$(RM) *.o *.d *.so *.a pcwd
 
-DEPS = $(patsubst %.o,%.d,$(OBJS) pcwd.o)
+DEPS = $(patsubst %.o,%.d,$(OBJS) $(API_OBJS) pcwd.o)
 -include $(DEPS)
 

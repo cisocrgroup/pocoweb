@@ -1,14 +1,14 @@
 #include <cppconn/connection.h>
 #include <regex>
 #include <crow.h>
-#include "BadRequest.hpp"
-#include "Page.hpp"
-#include "Book.hpp"
-#include "Database.hpp"
+#include "core/BadRequest.hpp"
+#include "core/Page.hpp"
+#include "core/Book.hpp"
+#include "core/Database.hpp"
 #include "CreateBook.hpp"
-#include "Sessions.hpp"
-#include "ScopeGuard.hpp"
-#include "BookDir.hpp"
+#include "core/Sessions.hpp"
+#include "core/ScopeGuard.hpp"
+#include "core/BookDir.hpp"
 
 #define CREATE_BOOK_ROUTE "/create/book/author/<string>/title/<string>"
 

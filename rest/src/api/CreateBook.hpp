@@ -1,7 +1,7 @@
 #ifndef pcw_CreateBook_hpp__
 #define pcw_CreateBook_hpp__
 
-#include "PostRoute.hpp"
+#include "core/PostRoute.hpp"
 
 namespace pcw {
 	class CreateBook: public PostRoute {

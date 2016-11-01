@@ -1,13 +1,13 @@
 #include <iostream>
 #include <vector>
 #include "crow.h"
-#include "App.hpp"
-#include "Config.hpp"
-#include "Plugin.hpp"
-#include "Route.hpp"
-#include "ApiVersion.hpp"
-#include "CreateBook.hpp"
-#include "GetBooks.hpp"
+#include "core/App.hpp"
+#include "core/Config.hpp"
+#include "core/Plugin.hpp"
+#include "core/Route.hpp"
+#include "api/ApiVersion.hpp"
+#include "api/CreateBook.hpp"
+#include "api/GetBooks.hpp"
 
 using AppPtr = std::unique_ptr<pcw::App>;
 static int run(int argc, char** argv);
