@@ -19,7 +19,7 @@ namespace pcw {
 
 	private:
 		using PathPair = std::pair<Path, Path>;
-		PagePtr parse() const;
+		PagePtr parse_page() const;
 
 		static boost::optional<PathPair> get_path_pair(const Path& file);
 		static Line parse_line(int i, const PathPair& pair);
