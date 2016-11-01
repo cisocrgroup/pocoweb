@@ -1,5 +1,5 @@
-#ifndef pcw_GetBooks_hpp__
-#define pcw_GetBooks_hpp__
+#ifndef pcw_ApiBooks_hpp__
+#define pcw_ApiBooks_hpp__
 
 #include "core/Route.hpp"
 
@@ -10,9 +10,9 @@ namespace pcw {
 	using ProjectPtr = std::shared_ptr<Project>;
 	using PagePtr = std::shared_ptr<Page>;
 
-	class GetBooks: public Route {
+	class ApiBooks: public Route {
 	public:
-		virtual ~GetBooks() noexcept override = default;
+		virtual ~ApiBooks() noexcept override = default;
 		virtual void Register(App& app) override;
 		virtual const char* route() const noexcept override {return route_;}
 		virtual const char* name() const noexcept override {return name_;}
@@ -36,4 +36,4 @@ namespace pcw {
 	};
 }
 
-#endif // pcw_GetBooks_hpp__
+#endif // pcw_ApiBooks_hpp__

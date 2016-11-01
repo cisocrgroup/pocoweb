@@ -55,7 +55,7 @@ OBJS += jsonify.o
 OBJS += db.o
 
 API_OBJS += ApiVersion.o
-API_OBJS += GetBooks.o
+API_OBJS += ApiBooks.o
 
 default: all
 all: pcwd

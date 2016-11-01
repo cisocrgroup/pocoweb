@@ -7,7 +7,7 @@
 #include "core/Page.hpp"
 #include "core/Book.hpp"
 #include "core/Database.hpp"
-#include "GetBooks.hpp"
+#include "ApiBooks.hpp"
 #include "core/Sessions.hpp"
 #include "core/SubProject.hpp"
 #include "core/ScopeGuard.hpp"
@@ -25,18 +25,18 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* GetBooks::route_ = 
+const char* ApiBooks::route_ = 
 	GET_BOOKS_ROUTE_0 ","
 	GET_BOOKS_ROUTE_1 ","
 	GET_BOOKS_ROUTE_2 ","
 	GET_BOOKS_ROUTE_3 ","
 	GET_BOOKS_ROUTE_4 ","
 	GET_BOOKS_ROUTE_5;
-const char* GetBooks::name_ = "GetBooks";
+const char* ApiBooks::name_ = "ApiBooks";
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-GetBooks::Register(App& app)
+ApiBooks::Register(App& app)
 {
 	CROW_ROUTE(app, GET_BOOKS_ROUTE_0)
 		.methods("GET"_method)
@@ -57,7 +57,7 @@ GetBooks::Register(App& app)
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-GetBooks::operator()(const Request& req) const
+ApiBooks::operator()(const Request& req) const
 {
 	switch (req.method) {
 	case crow::HTTPMethod::Get:
@@ -71,7 +71,7 @@ GetBooks::operator()(const Request& req) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-GetBooks::operator()(const Request& req, int bid) const
+ApiBooks::operator()(const Request& req, int bid) const
 {
 	switch (req.method) {
 	case crow::HTTPMethod::Get:
@@ -85,7 +85,7 @@ GetBooks::operator()(const Request& req, int bid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-GetBooks::operator()(const Request& req, int bid, int pid) const
+ApiBooks::operator()(const Request& req, int bid, int pid) const
 {
 	auto db = this->database(req);
 	if (not db)
@@ -99,7 +99,7 @@ GetBooks::operator()(const Request& req, int bid, int pid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-GetBooks::operator()(const Request& req, int bid, int pid, int lid) const
+ApiBooks::operator()(const Request& req, int bid, int pid, int lid) const
 {
 	auto db = database(req);
 	if (not db)
@@ -125,7 +125,7 @@ GetBooks::operator()(const Request& req, int bid, int pid, int lid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 crow::response
-GetBooks::post(const Request& req) const
+ApiBooks::post(const Request& req) const
 {
 	assert(req.method == crow::HTTPMethod::Post);
 	try {
@@ -137,7 +137,7 @@ GetBooks::post(const Request& req) const
 		// create new bookdir
 		BookDir dir(config()); 
 		ScopeGuard sg([&dir](){dir.remove();});
-		CROW_LOG_INFO << "(GetBooks) BookDir: " << dir.dir();
+		CROW_LOG_INFO << "(ApiBooks) BookDir: " << dir.dir();
 		dir.add_zip_file(extract_content(req));
 		auto book = dir.build();
 		if (not book)
@@ -147,28 +147,28 @@ GetBooks::post(const Request& req) const
 		book->set_owner(*db->session().user);
 		
 		// insert book into database
-		CROW_LOG_INFO << "(GetBooks) Inserting new book into database";
+		CROW_LOG_INFO << "(ApiBooks) Inserting new book into database";
 		std::lock_guard<std::mutex> lock(db->session().mutex);
 		db->set_autocommit(false);
 		db->insert_book(*book);
 		db->commit();
 
 		// update and clean up
-		CROW_LOG_INFO << "(GetBooks) Created new book id: " << book->id();
+		CROW_LOG_INFO << "(ApiBooks) Created new book id: " << book->id();
 		sg.dismiss();
 		return created();
 	} catch (const BadRequest& e) {
-		CROW_LOG_ERROR << "(GetBooks) Error: " << e.what();
+		CROW_LOG_ERROR << "(ApiBooks) Error: " << e.what();
 		return bad_request();
 	} catch (const std::exception& e) {
-		CROW_LOG_ERROR << "(GetBooks) Error: " << e.what();
+		CROW_LOG_ERROR << "(ApiBooks) Error: " << e.what();
 		return internal_server_error();
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-GetBooks::get(const Request& req) const
+ApiBooks::get(const Request& req) const
 {
 	auto db = this->database(req);
 	if (not db)
@@ -189,7 +189,7 @@ GetBooks::get(const Request& req) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-GetBooks::get(const Request& req, int bid) const
+ApiBooks::get(const Request& req, int bid) const
 {
 	auto db = this->database(req);
 	if (not db)
@@ -205,7 +205,7 @@ GetBooks::get(const Request& req, int bid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-GetBooks::post(const Request& req, int bid) const
+ApiBooks::post(const Request& req, int bid) const
 {
 	auto db = database(req);
 	if (not db)
@@ -238,7 +238,7 @@ GetBooks::post(const Request& req, int bid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response 
-GetBooks::get(const Line& line) const
+ApiBooks::get(const Line& line) const
 {
 	Json j;
 	return j << line;
@@ -246,18 +246,18 @@ GetBooks::get(const Line& line) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response 
-GetBooks::put(const Request& req, Database& db, Line& line) const
+ApiBooks::put(const Request& req, Database& db, Line& line) const
 {
 	auto correction = req.url_params.get("correction");
 	if (not correction)
 		return bad_request();
-	CROW_LOG_DEBUG << "(GetBooks) correction: " << req.url_params.get("correction");
+	CROW_LOG_DEBUG << "(ApiBooks) correction: " << req.url_params.get("correction");
 	WagnerFischer wf;
 	auto lev = wf(correction, line);
-	CROW_LOG_DEBUG << "(GetBooks) lev: " << lev << "\n" << wf;
-	CROW_LOG_DEBUG << "(GetBooks) line: " << line.string();
+	CROW_LOG_DEBUG << "(ApiBooks) lev: " << lev << "\n" << wf;
+	CROW_LOG_DEBUG << "(ApiBooks) line: " << line.string();
 	line.correct(wf);
-	CROW_LOG_DEBUG << "(GetBooks) line: " << line.string();
+	CROW_LOG_DEBUG << "(ApiBooks) line: " << line.string();
 	db.set_autocommit(false);
 	db.update_line(line);
 	db.commit();
@@ -266,14 +266,14 @@ GetBooks::put(const Request& req, Database& db, Line& line) const
 
 ////////////////////////////////////////////////////////////////////////////////
 ProjectPtr 
-GetBooks::find(const Database& db, int bid) const
+ApiBooks::find(const Database& db, int bid) const
 {
 	return db.select_project(bid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 PagePtr 
-GetBooks::find(const Database& db, int bid, int pid) const
+ApiBooks::find(const Database& db, int bid, int pid) const
 {
 	auto book = find(db, bid);
 	return book ? book->find(pid) : nullptr;
