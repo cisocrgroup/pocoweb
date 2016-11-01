@@ -57,31 +57,6 @@ API_OBJS += ApiVersion.o
 API_OBJS += CreateBook.o
 API_OBJS += GetBooks.o
 
-## OBJS += api.o
-## OBJS += Config.o
-## OBJS += DbTableUsers.o
-## OBJS += BookDir.o
-## OBJS += Books.o
-## OBJS += Ex.o
-## ## OBJS += GetPage.o
-## OBJS += User.o
-## OBJS += Page.o
-## OBJS += Book.o
-## OBJS += BookData.o
-## OBJS += Line.o
-## OBJS += Box.o
-## OBJS += Sessions.o
-## OBJS += db.o
-## OBJS += hash.o
-## OBJS += hocr.o
-## OBJS += pugixml.o
-
-## MAINS += pcwd.o
-## MAINS += pocoweb_create_user.o
-## MAINS += pocoweb_insert_book.o
-## MAINS += pcw_ex.o
-
-
 default: all
 all: pcwd
 
