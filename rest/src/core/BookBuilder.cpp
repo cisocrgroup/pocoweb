@@ -2,7 +2,7 @@
 #include <fstream>
 #include "Page.hpp"
 #include "BadRequest.hpp"
-#include "BookParser.hpp"
+#include "BookBuilder.hpp"
 #include "Book.hpp"
 #include "AltoXmlPageParser.hpp"
 #include "LlocsPageParser.hpp"
@@ -13,14 +13,14 @@ using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 BookPtr
-BookParser::build() const
+BookBuilder::build() const
 {
 	return build(parse_book_data());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-BookParser::add(const Path& file)
+BookBuilder::add(const Path& file)
 {
 	auto type = get_file_type(file);
 	switch (type) {
@@ -37,8 +37,8 @@ BookParser::add(const Path& file)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookParser::BookData 
-BookParser::parse_book_data() const
+BookBuilder::BookData 
+BookBuilder::parse_book_data() const
 {
 	BookData data;
 	for (const auto& ocr: ocr_) {
@@ -50,7 +50,7 @@ BookParser::parse_book_data() const
 				auto i = find_matching_img_file(page->ocr);
 				if (i == end(img_))
 					throw BadRequest(
-						"(BookParser) Unable to find "
+						"(BookBuilder) Unable to find "
 						"matching image file for: " + 
 						page->ocr.string()
 					);
@@ -64,7 +64,7 @@ BookParser::parse_book_data() const
 
 ////////////////////////////////////////////////////////////////////////////////
 BookPtr 
-BookParser::build(const BookData& data)
+BookBuilder::build(const BookData& data)
 {
 	auto book = std::make_shared<Book>();
 	book->description = data.description;
@@ -78,8 +78,8 @@ BookParser::build(const BookData& data)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookParser::ImgFiles::const_iterator 
-BookParser::find_matching_img_file(const Path& ocr) const noexcept
+BookBuilder::ImgFiles::const_iterator 
+BookBuilder::find_matching_img_file(const Path& ocr) const noexcept
 {
 	auto stem = ocr.stem();
 	return std::find_if(begin(img_), end(img_), [&stem](const Path& path) {
@@ -89,7 +89,7 @@ BookParser::find_matching_img_file(const Path& ocr) const noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 PageParserPtr 
-BookParser::get_page_parser(const FilePair& ocr)
+BookBuilder::get_page_parser(const FilePair& ocr)
 {
 	switch (ocr.second) {
 	case FileType::Hocr:
@@ -106,8 +106,8 @@ BookParser::get_page_parser(const FilePair& ocr)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookParser::FileType
-BookParser::get_xml_file_type(const Path& path) 
+BookBuilder::FileType
+BookBuilder::get_xml_file_type(const Path& path) 
 {
 	static const std::string abbyy{"http://www.abbyy.com"};
 	static const std::string alto{"<alto"};
@@ -129,8 +129,8 @@ BookParser::get_xml_file_type(const Path& path)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookParser::FileType 
-BookParser::get_file_type(const Path& path)
+BookBuilder::FileType 
+BookBuilder::get_file_type(const Path& path)
 {
 	static const std::regex hocr{
 		R"(\.((html?)|(hocr))$)", 
@@ -156,7 +156,7 @@ BookParser::get_file_type(const Path& path)
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-BookParser::order_pages(std::vector<PagePtr>& pages) noexcept
+BookBuilder::order_pages(std::vector<PagePtr>& pages) noexcept
 {
 	const auto b = begin(pages);
 	const auto e = end(pages);
@@ -187,7 +187,7 @@ BookParser::order_pages(std::vector<PagePtr>& pages) noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-BookParser::fix_indizes(std::vector<PagePtr>& pages) noexcept
+BookBuilder::fix_indizes(std::vector<PagePtr>& pages) noexcept
 {
 	int id = 0;
 	for (auto& page: pages) {

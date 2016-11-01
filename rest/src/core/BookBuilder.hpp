@@ -1,5 +1,5 @@
-#ifndef pcw_BookParser_hpp__
-#define pcw_BookParser_hpp__
+#ifndef pcw_BookBuilder_hpp__
+#define pcw_BookBuilder_hpp__
 
 #include <boost/filesystem/path.hpp>
 #include <memory>
@@ -14,11 +14,11 @@ namespace pcw {
 	using PageParserPtr = std::unique_ptr<PageParser>;
 	using Path = boost::filesystem::path;
 
-	class BookParser {
+	class BookBuilder {
 	public:
 		
-		BookParser() = default;
-		virtual ~BookParser() noexcept = default;
+		BookBuilder() = default;
+		virtual ~BookBuilder() noexcept = default;
 		void add(const Path& file);
 		BookPtr build() const;
 		
@@ -49,4 +49,4 @@ namespace pcw {
 	};
 }
 
-#endif // pcw_BookParser_hpp__
+#endif // pcw_BookBuilder_hpp__
