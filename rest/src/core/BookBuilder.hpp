@@ -16,15 +16,12 @@ namespace pcw {
 
 	class BookBuilder {
 	public:
-		
-		BookBuilder() = default;
-		virtual ~BookBuilder() noexcept = default;
 		void add(const Path& file);
 		BookPtr build() const;
 		
 	private:
 		enum class FileType {
-			Other, Img, AltoXml, AbbyyXml, Hocr, Llocs
+			Other, Img, AltoXml, AbbyyXml, Hocr, Llocs, Mets,
 		};
 		using FilePair = std::pair<Path, FileType>;
 		using OcrFiles = std::vector<FilePair>;
@@ -35,7 +32,7 @@ namespace pcw {
 			Path dir;
 			int year;
 		};
-		virtual BookData parse_book_data() const;
+		BookData parse_book_data() const;
 		static BookPtr build(const BookData& data);
 		ImgFiles::const_iterator find_matching_img_file(const Path& ocr) const noexcept;
 		static PageParserPtr get_page_parser(const FilePair& type);

@@ -4,6 +4,7 @@
 #include "BadRequest.hpp"
 #include "BookBuilder.hpp"
 #include "Book.hpp"
+#include "MetsXmlBookParser.hpp"
 #include "AltoXmlPageParser.hpp"
 #include "LlocsPageParser.hpp"
 #include "AbbyyXmlPageParser.hpp"
@@ -15,7 +16,15 @@ using namespace pcw;
 BookPtr
 BookBuilder::build() const
 {
-	return build(parse_book_data());
+	auto i = std::find_if(begin(ocr_), end(ocr_), [](const auto& p) {
+		return p.second == FileType::Mets;
+	});
+	if (i == end(ocr_)) {
+		return build(parse_book_data());
+	} else {
+		MetsXmlBookParser p(i->first);
+		return p.parse();
+	}	
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -112,6 +121,7 @@ BookBuilder::get_xml_file_type(const Path& path)
 	static const std::string abbyy{"http://www.abbyy.com"};
 	static const std::string alto{"<alto"};
 	static const std::string hocr{"<html"};
+	static const std::string mets{"METS"};
 
 	std::ifstream is(path.string());
 	if (not is.good())
@@ -125,6 +135,8 @@ BookBuilder::get_xml_file_type(const Path& path)
 		return FileType::AltoXml;
 	if (std::search(buf, buf + n, begin(hocr), end(hocr)) != buf + n)
 		return FileType::Hocr;
+	if (std::search(buf, buf + n, begin(mets), end(mets)) != buf + n)
+		return FileType::Mets;
 	return FileType::Other;
 }
 

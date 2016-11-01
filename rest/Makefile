@@ -35,6 +35,7 @@ OBJS += AbbyyXmlPageParser.o
 OBJS += HocrPageParser.o
 OBJS += WagnerFischer.o
 OBJS += LlocsPageParser.o
+OBJS += MetsXmlBookParser.o
 OBJS += BookDirectoryBuilder.o
 OBJS += BookBuilder.o
 OBJS += BookFixer.o
