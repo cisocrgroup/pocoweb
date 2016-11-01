@@ -1,4 +1,6 @@
 #include "crow.h"
+#include "core/jsonify.hpp"
+#include "core/App.hpp"
 #include "ApiVersion.hpp"
 
 #define API_VERSION_ROUTE "/api-version"
@@ -20,6 +22,9 @@ ApiVersion::Register(App& app)
 crow::response
 ApiVersion::operator()() const noexcept
 {
-	CROW_LOG_INFO << route() << ": " << PCW_API_VERSION;
-	return crow::response(PCW_API_VERSION);
+	CROW_LOG_INFO << "foo: " << pcw::App::version_major();
+	CROW_LOG_INFO << route() << ": " << pcw::App::version_str();
+	Json j;
+	j["version"] = pcw::App::version_str();
+	return Response(j);
 }

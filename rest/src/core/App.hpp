@@ -30,6 +30,11 @@ namespace pcw {
 		const ConfigPtr& config_ptr() const noexcept {return config_;}
 		void run();
 		void stop() noexcept;
+		static int version() noexcept;
+		static int version_major() noexcept;
+		static int version_minor() noexcept;
+		static int version_patch() noexcept;
+		static const char* version_str() noexcept;
 
 	private:
 		pcw::Routes routes_;
