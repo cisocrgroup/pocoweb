@@ -11,7 +11,7 @@
 #include "core/Sessions.hpp"
 #include "core/SubProject.hpp"
 #include "core/ScopeGuard.hpp"
-#include "core/BookBuilder.hpp"
+#include "core/BookDirectoryBuilder.hpp"
 #include "core/WagnerFischer.hpp"
 
 #define GET_BOOKS_ROUTE_0 "/books"
@@ -135,9 +135,9 @@ ApiBooks::post(const Request& req) const
 			return forbidden();
 
 		// create new bookdir
-		BookBuilder dir(config()); 
+		BookDirectoryBuilder dir(config()); 
 		ScopeGuard sg([&dir](){dir.remove();});
-		CROW_LOG_INFO << "(ApiBooks) BookBuilder: " << dir.dir();
+		CROW_LOG_INFO << "(ApiBooks) BookDirectoryBuilder: " << dir.dir();
 		dir.add_zip_file(extract_content(req));
 		auto book = dir.build();
 		if (not book)

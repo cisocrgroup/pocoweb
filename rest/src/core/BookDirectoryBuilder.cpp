@@ -15,7 +15,7 @@
 #include "Book.hpp"
 #include "Page.hpp"
 #include "Pix.hpp"
-#include "BookBuilder.hpp"
+#include "BookDirectoryBuilder.hpp"
 #include "AltoXmlPageParser.hpp"
 #include "LlocsPageParser.hpp"
 #include "AbbyyXmlPageParser.hpp"
@@ -25,10 +25,10 @@ namespace fs = boost::filesystem;
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-static BookBuilder::Path
+static BookDirectoryBuilder::Path
 create_unique_bookdir_path(const Config& config)
 {
-	BookBuilder::Path path(config.daemon.basedir);
+	BookDirectoryBuilder::Path path(config.daemon.basedir);
 	while (true) {
 		auto id = gensessionid(16);
 		auto dir = path / id;
@@ -40,14 +40,14 @@ create_unique_bookdir_path(const Config& config)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookBuilder::BookBuilder(const Config& config)
-	: BookBuilder(create_unique_bookdir_path(config))
+BookDirectoryBuilder::BookDirectoryBuilder(const Config& config)
+	: BookDirectoryBuilder(create_unique_bookdir_path(config))
 {
 	assert(fs::is_directory(dir_));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookBuilder::BookBuilder(Path path)
+BookDirectoryBuilder::BookDirectoryBuilder(Path path)
 	: dir_(path)
 	, tmp_dir_(path / ".tmp")
 	, line_img_dir_(path / "line-images")
@@ -56,29 +56,29 @@ BookBuilder::BookBuilder(Path path)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookBuilder::~BookBuilder() noexcept
+BookDirectoryBuilder::~BookDirectoryBuilder() noexcept
 {
-	CROW_LOG_INFO << "(BookBuilder) Removing tmp dir " << tmp_dir(); 
+	CROW_LOG_INFO << "(BookDirectoryBuilder) Removing tmp dir " << tmp_dir(); 
 	// clean up tmp directory; do not throw
 	boost::system::error_code ec;
 	fs::remove_all(tmp_dir(), ec);
 	if (ec) {
-		CROW_LOG_WARNING << "(BookBuilder) Could not remove " 
+		CROW_LOG_WARNING << "(BookDirectoryBuilder) Could not remove " 
 				 << tmp_dir() << ": " << ec.message();
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-BookBuilder::remove() const
+BookDirectoryBuilder::remove() const
 {
-	CROW_LOG_INFO << "(BookBuilder) Removing directory " << dir_;
+	CROW_LOG_INFO << "(BookDirectoryBuilder) Removing directory " << dir_;
 	fs::remove_all(dir_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-BookBuilder::add_zip_file(const std::string& content)
+BookDirectoryBuilder::add_zip_file(const std::string& content)
 {
 	auto tdir = tmp_dir();
 	fs::create_directory(tdir);
@@ -89,7 +89,7 @@ BookBuilder::add_zip_file(const std::string& content)
 	os << content;
 	os.close();
 	std::string command = "unzip -qq -d " + tdir.string() + " " + zip.string();
-	CROW_LOG_DEBUG << "(BookBuilder) Unzip command: " << command;
+	CROW_LOG_DEBUG << "(BookDirectoryBuilder) Unzip command: " << command;
 	auto err = system(command.data());
 	if (err)
 		throw std::runtime_error(command + " returned: " + std::to_string(err));
@@ -101,7 +101,7 @@ BookBuilder::add_zip_file(const std::string& content)
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-BookBuilder::add_file(const Path& path)
+BookDirectoryBuilder::add_file(const Path& path)
 {
 	auto type = get_file_type(path);
 
@@ -111,24 +111,24 @@ BookBuilder::add_file(const Path& path)
 		ocrs_[path.parent_path()] = type;
 		break;
 	case Type::Img:
-		CROW_LOG_DEBUG << "(BookBuilder) Image file: " << path;
+		CROW_LOG_DEBUG << "(BookDirectoryBuilder) Image file: " << path;
 		imgs_.push_back(path);
 		break;
 	case Type::AbbyyXml: // fall through
 	case Type::Hocr: // fall through
 	case Type::AltoXml:
-		CROW_LOG_DEBUG << "(BookBuilder) Xml file: " << path;
+		CROW_LOG_DEBUG << "(BookDirectoryBuilder) Xml file: " << path;
 		ocrs_[path] = type; 
 		break;
 	case Type::Other: // do nothing
-		CROW_LOG_DEBUG << "(BookBuilder) Ignoring file: " << path;
+		CROW_LOG_DEBUG << "(BookDirectoryBuilder) Ignoring file: " << path;
 		break;
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BookPtr
-BookBuilder::build() const
+BookDirectoryBuilder::build() const
 {
 	const auto book = make_book();
 	assert(book);
@@ -140,7 +140,7 @@ BookBuilder::build() const
 
 ////////////////////////////////////////////////////////////////////////////////
 BookPtr
-BookBuilder::make_book() const
+BookDirectoryBuilder::make_book() const
 {
 	auto book = std::make_shared<Book>();
 	for (const auto& ocr: ocrs_) {
@@ -155,7 +155,7 @@ BookBuilder::make_book() const
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookBuilder::fix(Book& book) const
+BookDirectoryBuilder::fix(Book& book) const
 {
 	fix_page_ordering(book);
 	fix_image_paths(book);
@@ -163,7 +163,7 @@ BookBuilder::fix(Book& book) const
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookBuilder::fix_indizes(Book& book)
+BookDirectoryBuilder::fix_indizes(Book& book)
 {
 	int id = 0;
 	for (auto& page: book) {
@@ -173,7 +173,7 @@ BookBuilder::fix_indizes(Book& book)
 		
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookBuilder::fix_image_paths(Book& book) const
+BookDirectoryBuilder::fix_image_paths(Book& book) const
 {
 	for (const auto& page: book) {
 		fix_image_paths(*page);
@@ -182,7 +182,7 @@ BookBuilder::fix_image_paths(Book& book) const
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookBuilder::fix_image_paths(Page& page) const
+BookDirectoryBuilder::fix_image_paths(Page& page) const
 {
 	// skip pages with no ocr and img files (ocropus for example)
 	if (page.ocr.empty())
@@ -212,13 +212,13 @@ BookBuilder::fix_image_paths(Page& page) const
 	}
 
 	// cannot find the image file
-	CROW_LOG_WARNING << "(BookBuilder) Cannot find image file for " << page.ocr;
+	CROW_LOG_WARNING << "(BookDirectoryBuilder) Cannot find image file for " << page.ocr;
 	page.img = "";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookBuilder::fix_page_ordering(Book& book) 
+BookDirectoryBuilder::fix_page_ordering(Book& book) 
 {
 	const auto b = begin(book);
 	const auto e = end(book);
@@ -249,7 +249,7 @@ BookBuilder::fix_page_ordering(Book& book)
 
 ////////////////////////////////////////////////////////////////////////////////
 PageParserPtr
-BookBuilder::get_page_parser(const Ocrs::value_type& ocr) 
+BookDirectoryBuilder::get_page_parser(const Ocrs::value_type& ocr) 
 {
 	switch (ocr.second) {
 	case Type::Hocr:
@@ -261,13 +261,13 @@ BookBuilder::get_page_parser(const Ocrs::value_type& ocr)
 	case Type::Llocs:
 		return std::make_unique<LlocsPageParser>(ocr.first);
 	default:
-		throw std::logic_error("(BookBuilder) Invalid file type");
+		throw std::logic_error("(BookDirectoryBuilder) Invalid file type");
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookBuilder::Type 
-BookBuilder::get_file_type(const Path& path)
+BookDirectoryBuilder::Type 
+BookDirectoryBuilder::get_file_type(const Path& path)
 {
 	static const std::regex hocr{R"(\.((html?)|(hocr))$)", std::regex_constants::icase};
 	static const std::regex xml{R"(\.xml$)", std::regex_constants::icase};
@@ -289,8 +289,8 @@ BookBuilder::get_file_type(const Path& path)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookBuilder::Type 
-BookBuilder::get_xml_file_type(const Path& path)
+BookDirectoryBuilder::Type 
+BookDirectoryBuilder::get_xml_file_type(const Path& path)
 {
 	static const std::string abbyy{"http://www.abbyy.com"};
 	static const std::string alto{"<alto"};
@@ -313,7 +313,7 @@ BookBuilder::get_xml_file_type(const Path& path)
 	
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookBuilder::setup(const Book& book) const
+BookDirectoryBuilder::setup(const Book& book) const
 {
 	for (const auto& page: book) {
 		assert(page);
@@ -325,7 +325,7 @@ BookBuilder::setup(const Book& book) const
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookBuilder::setup_img_and_ocr_files(Page& page) const
+BookDirectoryBuilder::setup_img_and_ocr_files(Page& page) const
 {
 	auto do_copy = [this](const auto& path) {
 		auto to = dir_ / remove_common_base_path(path, tmp_dir());
@@ -343,20 +343,20 @@ BookBuilder::setup_img_and_ocr_files(Page& page) const
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookBuilder::make_line_img_files(const Path& pagedir, Page& page) const
+BookDirectoryBuilder::make_line_img_files(const Path& pagedir, Page& page) const
 {
 	PixPtr pix; 
 	if (page.has_img_path()) {
 		pix.reset(pixRead(page.img.string().data()));
 		if (not pix)
 			throw std::runtime_error(
-				"(BookBuilder) Cannot read image " + 
+				"(BookDirectoryBuilder) Cannot read image " + 
 				page.img.string()
 			);
 	}
 	for (auto& line: page) {
 		if (not line.has_img_path() and not pix) {
-			CROW_LOG_WARNING << "(BookBuilder) Missing image file for: "
+			CROW_LOG_WARNING << "(BookDirectoryBuilder) Missing image file for: "
 					 << page.ocr;
 		} else if (not line.has_img_path() and pix) {
 			line.img = pagedir / path_from_id(line.id());
@@ -374,7 +374,7 @@ BookBuilder::make_line_img_files(const Path& pagedir, Page& page) const
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookBuilder::write_line_img_file(void *vpix, const Line& line)
+BookDirectoryBuilder::write_line_img_file(void *vpix, const Line& line)
 {
 	auto pix = (PIX*)vpix;
 	assert(pix);
@@ -389,7 +389,7 @@ BookBuilder::write_line_img_file(void *vpix, const Line& line)
 	if (box.x + box.w <= (int) pix->w and box.y + box.h <= (int) pix->h) {
 		PixPtr tmp{pixClipRectangle(pix, &box, nullptr)};
 		if (not tmp or pixWrite(line.img.string().data(), tmp.get(), format))
-			throw std::runtime_error("(BookBuilder) Cannot write img " + line.img.string());
+			throw std::runtime_error("(BookDirectoryBuilder) Cannot write img " + line.img.string());
 	} else {
 		CROW_LOG_WARNING << "Cannot write line image for " << line.string();
 	}
@@ -397,9 +397,9 @@ BookBuilder::write_line_img_file(void *vpix, const Line& line)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookBuilder::copy(const Path& from, const Path& to)
+BookDirectoryBuilder::copy(const Path& from, const Path& to)
 {
-	CROW_LOG_DEBUG << "(BookBuilder) copying " << from << " to " << to;
+	CROW_LOG_DEBUG << "(BookDirectoryBuilder) copying " << from << " to " << to;
 	// fs::create_hard_link(to, from); TODO: ??!!
 	boost::system::error_code ec;
 	fs::create_hard_link(from, to, ec);
@@ -412,8 +412,8 @@ BookBuilder::copy(const Path& from, const Path& to)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookBuilder::Path
-BookBuilder::path_from_id(int id)
+BookDirectoryBuilder::Path
+BookDirectoryBuilder::path_from_id(int id)
 {
 	std::stringstream os;
 	os << std::hex << std::setw(10) << std::setfill('0') << id;
@@ -422,7 +422,7 @@ BookBuilder::path_from_id(int id)
 
 ////////////////////////////////////////////////////////////////////////////////
 Path 
-BookBuilder::remove_common_base_path(const Path& p, const Path& base)
+BookDirectoryBuilder::remove_common_base_path(const Path& p, const Path& base)
 {
 	auto i = std::mismatch(p.begin(), p.end(), base.begin(), base.end());
 	if (i.first != p.end()) {
