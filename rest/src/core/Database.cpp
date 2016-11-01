@@ -9,7 +9,6 @@
 #include "Page.hpp"
 #include "SubProject.hpp"
 #include "Line.hpp"
-#include "BookDir.hpp"
 #include "Config.hpp"
 #include "Sessions.hpp"
 #include "Database.hpp"

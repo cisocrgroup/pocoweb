@@ -1,5 +1,5 @@
-#ifndef pcw_BookDir_hpp__
-#define pcw_BookDir_hpp__
+#ifndef pcw_BookBuilder_hpp__
+#define pcw_BookBuilder_hpp__
 
 #include <memory>
 #include <boost/filesystem/path.hpp>
@@ -17,15 +17,15 @@ namespace pcw {
 	class PageParser;
 	using PageParserPtr = std::unique_ptr<PageParser>;
 	
-	class BookDir {
+	class BookBuilder {
 	public:
 		using Path = boost::filesystem::path;
 
 		// create a new Bookdir
-		BookDir(const Config& config);
+		BookBuilder(const Config& config);
 		// opens an existing Bookdir
-		BookDir(Path path);
-		~BookDir() noexcept;
+		BookBuilder(Path path);
+		~BookBuilder() noexcept;
 
 		const Path& dir() const noexcept {return dir_;}
 		const Path& tmp_dir() const noexcept {return tmp_dir_;}
@@ -73,5 +73,5 @@ namespace pcw {
 	};
 }
 
-#endif // pcw_BookDir_hpp__
+#endif // pcw_BookBuilder_hpp__
 
