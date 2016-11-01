@@ -40,6 +40,7 @@ GetBooks::Register(App& app)
 {
 	CROW_ROUTE(app, GET_BOOKS_ROUTE_0)
 		.methods("GET"_method)
+		.methods("POST"_method)
 	(*this);
 	CROW_ROUTE(app, GET_BOOKS_ROUTE_1)
 		.methods("GET"_method)
@@ -58,21 +59,14 @@ GetBooks::Register(App& app)
 Route::Response
 GetBooks::operator()(const Request& req) const
 {
-	auto db = this->database(req);
-	if (not db)
-		return forbidden();
-
-	std::lock_guard<std::mutex> lock(db->session().mutex);
-	auto projects = db->select_all_projects(*db->session().user);
-	CROW_LOG_DEBUG << "Loaded " << projects.size() << " projects";
-
-	Json j;
-	size_t i = 0;
-	for (const auto& p: projects) {
-		assert(p);
-		j["books"][i++] << *p;
+	switch (req.method) {
+	case crow::HTTPMethod::Get:
+		return get(req);
+	case crow::HTTPMethod::Post:
+		return post(req);
+	default:
+		return not_found();
 	}
-	return j;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -127,6 +121,70 @@ GetBooks::operator()(const Request& req, int bid, int pid, int lid) const
 	default:
 		return not_found();
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+crow::response
+GetBooks::post(const Request& req) const
+{
+	assert(req.method == crow::HTTPMethod::Post);
+	try {
+		// session
+		auto db = database(req);
+		if (not db)
+			return forbidden();
+
+		// create new bookdir
+		BookDir dir(config()); 
+		ScopeGuard sg([&dir](){dir.remove();});
+		CROW_LOG_INFO << "(GetBooks) BookDir: " << dir.dir();
+		dir.add_zip_file(extract_content(req));
+		auto book = dir.build();
+		if (not book)
+			return internal_server_error();
+		// book->author = author;
+		// book->title = title;
+		book->set_owner(*db->session().user);
+		
+		// insert book into database
+		CROW_LOG_INFO << "(GetBooks) Inserting new book into database";
+		std::lock_guard<std::mutex> lock(db->session().mutex);
+		db->set_autocommit(false);
+		db->insert_book(*book);
+		db->commit();
+
+		// update and clean up
+		CROW_LOG_INFO << "(GetBooks) Created new book id: " << book->id();
+		sg.dismiss();
+		return created();
+	} catch (const BadRequest& e) {
+		CROW_LOG_ERROR << "(GetBooks) Error: " << e.what();
+		return bad_request();
+	} catch (const std::exception& e) {
+		CROW_LOG_ERROR << "(GetBooks) Error: " << e.what();
+		return internal_server_error();
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response
+GetBooks::get(const Request& req) const
+{
+	auto db = this->database(req);
+	if (not db)
+		return forbidden();
+
+	std::lock_guard<std::mutex> lock(db->session().mutex);
+	auto projects = db->select_all_projects(*db->session().user);
+	CROW_LOG_DEBUG << "Loaded " << projects.size() << " projects";
+
+	Json j;
+	size_t i = 0;
+	for (const auto& p: projects) {
+		assert(p);
+		j["books"][i++] << *p;
+	}
+	return j;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

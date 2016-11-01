@@ -22,6 +22,8 @@ namespace pcw {
 		Response operator()(const Request& req, int bid, int pid, int lid) const;
 
 	private:
+		Response post(const Request& req) const;
+		Response get(const Request& req) const;
 		Response get(const Request& req, int bid) const;
 		Response post(const Request& req, int bid) const;
 		Response put(const Request& req, Database& db, Line& line) const;
