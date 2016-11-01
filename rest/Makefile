@@ -36,6 +36,7 @@ OBJS += HocrPageParser.o
 OBJS += WagnerFischer.o
 OBJS += LlocsPageParser.o
 OBJS += BookBuilder.o
+OBJS += BookParser.o
 OBJS += BookFixer.o
 OBJS += Box.o
 OBJS += Book.o
