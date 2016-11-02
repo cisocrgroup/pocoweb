@@ -15,10 +15,10 @@ namespace pcw {
 		AltoXmlPageParser(const Path& path);
 		virtual ~AltoXmlPageParser() noexcept override = default;
 		virtual bool has_next() const noexcept override {return not done_;}
-		virtual PagePtr next() override;
+		virtual PagePtr parse() override;
 
 	private:
-		PagePtr parse() const;
+		PagePtr do_parse() const;
 
 		static PagePtr parse(const XmlNode& pagenode);
 		static void add_line(Page& page, const XmlNode& linenode);

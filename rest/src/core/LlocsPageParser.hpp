@@ -15,11 +15,11 @@ namespace pcw {
 		LlocsPageParser(Path path);
 		virtual ~LlocsPageParser() noexcept override = default;
 		virtual bool has_next() const noexcept override {return not done_;}
-		virtual PagePtr next() override;
+		virtual PagePtr parse() override;
 
 	private:
 		using PathPair = std::pair<Path, Path>;
-		PagePtr parse() const;
+		PagePtr parse_page() const;
 
 		static boost::optional<PathPair> get_path_pair(const Path& file);
 		static Line parse_line(int i, const PathPair& pair);

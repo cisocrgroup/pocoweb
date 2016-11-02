@@ -26,15 +26,15 @@ LlocsPageParser::LlocsPageParser(Path path)
 
 ////////////////////////////////////////////////////////////////////////////////
 PagePtr 
-LlocsPageParser::next() 
+LlocsPageParser::parse() 
 {
 	done_ = true; // one page per directory
-	return parse();
+	return parse_page();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 PagePtr
-LlocsPageParser::parse() const
+LlocsPageParser::parse_page() const
 {
 	std::vector<std::pair<Path, Path>> llocs;
 	fs::directory_iterator b(dir_), e;
