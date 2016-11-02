@@ -79,8 +79,8 @@ AltoXmlPageParser::add_line(Page& page, const XmlNode& linenode)
 Box 
 AltoXmlPageParser::get_box(const XmlNode& node)
 {
-	const auto l = node.attribute("VPOS").as_int();
-	const auto t = node.attribute("HPOS").as_int();
+	const auto l = node.attribute("HPOS").as_int();
+	const auto t = node.attribute("VPOS").as_int();
 	const auto w = node.attribute("WIDTH").as_int();
 	const auto h = node.attribute("HEIGHT").as_int();
 	return Box{l, t, l + w, t + h};
