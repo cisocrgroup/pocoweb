@@ -179,6 +179,24 @@ BookDirectoryBuilder::make_line_img_files(const Path& pagedir, Page& page) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+static void
+clip(BOX& box, const PIX& pix)
+{
+	if (box.x + box.w > (int) pix.w) {
+		int width = pix.w - box.x;
+		CROW_LOG_WARNING << "(BookDirectoryBuilder) Clipping box width from "
+				 << box.w << " to " << width;
+		box.w = width;
+	}
+	if (box.y + box.h > (int) pix.h) {
+		int height = pix.h - box.y;
+		CROW_LOG_WARNING << "(BookDirectoryBuilder) Clipping box height from "
+				 << box.h << " to " << height;
+		box.h = height;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void
 BookDirectoryBuilder::write_line_img_file(void *vpix, const Line& line)
 {
@@ -191,7 +209,7 @@ BookDirectoryBuilder::write_line_img_file(void *vpix, const Line& line)
 		.w = line.box.width(), 
 		.h = line.box.height()
 	};
-
+	clip(box, *pix);
 	if (box.x + box.w <= (int) pix->w and box.y + box.h <= (int) pix->h) {
 		PixPtr tmp{pixClipRectangle(pix, &box, nullptr)};
 		if (not tmp or pixWrite(line.img.string().data(), tmp.get(), format))
