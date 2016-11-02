@@ -28,7 +28,7 @@ LDFLAGS += -lboost_filesystem
 # LDFLAGS += -lboost_thread
 LDFLAGS += -lcrypto
 
-VPATH = src src/core ../modules/pugixml/src src/api
+VPATH = src src/core ../modules/pugixml/src src/api src/parser
 
 OBJS += AltoXmlPageParser.o
 OBJS += AbbyyXmlPageParser.o
@@ -51,7 +51,6 @@ OBJS += Line.o
 OBJS += User.o
 OBJS += Sessions.o
 OBJS += XmlFile.o
-OBJS += pugixml.o
 OBJS += util.o
 OBJS += jsonify.o
 OBJS += db.o
@@ -59,15 +58,21 @@ OBJS += db.o
 API_OBJS += ApiVersion.o
 API_OBJS += ApiBooks.o
 
+PAR_OBJS += pugixml.o
+PAR_OBJS += AbbyyParserChar.o
+PAR_OBJS += ParserChar.o
+
 default: all
 all: pcwd
 
-pcwd: pcwd.o libpcwapi.a libpcwcore.a 
+pcwd: pcwd.o libpcwapi.a libpcwcore.a libpcwparser.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 libpcwcore.a: $(OBJS)
 	$(AR) rcs $@ $^
 libpcwapi.a: $(API_OBJS)
+	$(AR) rcs $@ $^
+libpcwparser.a: $(PAR_OBJS)
 	$(AR) rcs $@ $^
 
 ## libpcwcore.so: $(OBJS)
@@ -77,6 +82,6 @@ libpcwapi.a: $(API_OBJS)
 clean:
 	$(RM) *.o *.d *.so *.a pcwd
 
-DEPS = $(patsubst %.o,%.d,$(OBJS) $(API_OBJS) pcwd.o)
+DEPS = $(patsubst %.o,%.d,$(OBJS) $(API_OBJS) $(PAR_OBJS) pcwd.o)
 -include $(DEPS)
 
