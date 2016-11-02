@@ -14,42 +14,42 @@
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/WagnerFischer.hpp"
 
-#define GET_BOOKS_ROUTE_0 "/books"
-#define GET_BOOKS_ROUTE_1 "/books/<int>"
-#define GET_BOOKS_ROUTE_2 "/books/<int>/pages"
-#define GET_BOOKS_ROUTE_3 "/books/<int>/pages/<int>"
-#define GET_BOOKS_ROUTE_4 "/books/<int>/pages/<int>/lines"
-#define GET_BOOKS_ROUTE_5 "/books/<int>/pages/<int>/lines/<int>"
+#define API_BOOKS_ROUTE_0 "/books"
+#define API_BOOKS_ROUTE_1 "/books/<int>"
+#define API_BOOKS_ROUTE_2 "/books/<int>/pages"
+#define API_BOOKS_ROUTE_3 "/books/<int>/pages/<int>"
+#define API_BOOKS_ROUTE_4 "/books/<int>/pages/<int>/lines"
+#define API_BOOKS_ROUTE_5 "/books/<int>/pages/<int>/lines/<int>"
 
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 const char* ApiBooks::route_ = 
-	GET_BOOKS_ROUTE_0 ","
-	GET_BOOKS_ROUTE_1 ","
-	GET_BOOKS_ROUTE_2 ","
-	GET_BOOKS_ROUTE_3 ","
-	GET_BOOKS_ROUTE_4 ","
-	GET_BOOKS_ROUTE_5;
+	API_BOOKS_ROUTE_0 ","
+	API_BOOKS_ROUTE_1 ","
+	API_BOOKS_ROUTE_2 ","
+	API_BOOKS_ROUTE_3 ","
+	API_BOOKS_ROUTE_4 ","
+	API_BOOKS_ROUTE_5;
 const char* ApiBooks::name_ = "ApiBooks";
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 ApiBooks::Register(App& app)
 {
-	CROW_ROUTE(app, GET_BOOKS_ROUTE_0)
+	CROW_ROUTE(app, API_BOOKS_ROUTE_0)
 		.methods("GET"_method)
 		.methods("POST"_method)
 	(*this);
-	CROW_ROUTE(app, GET_BOOKS_ROUTE_1)
+	CROW_ROUTE(app, API_BOOKS_ROUTE_1)
 		.methods("GET"_method)
 		.methods("POST"_method)
 	(*this);
-	CROW_ROUTE(app, GET_BOOKS_ROUTE_2).methods("GET"_method)(*this);
-	CROW_ROUTE(app, GET_BOOKS_ROUTE_3).methods("GET"_method)(*this);
-	CROW_ROUTE(app, GET_BOOKS_ROUTE_4).methods("GET"_method)(*this);
-	CROW_ROUTE(app, GET_BOOKS_ROUTE_5)
+	CROW_ROUTE(app, API_BOOKS_ROUTE_2).methods("GET"_method)(*this);
+	CROW_ROUTE(app, API_BOOKS_ROUTE_3).methods("GET"_method)(*this);
+	CROW_ROUTE(app, API_BOOKS_ROUTE_4).methods("GET"_method)(*this);
+	CROW_ROUTE(app, API_BOOKS_ROUTE_5)
 		.methods("GET"_method)
 		.methods("PUT"_method)
 	(*this);
