@@ -38,21 +38,12 @@ const char* ApiBooks::name_ = "ApiBooks";
 void
 ApiBooks::Register(App& app)
 {
-	CROW_ROUTE(app, API_BOOKS_ROUTE_0)
-		.methods("GET"_method)
-		.methods("POST"_method)
-	(*this);
-	CROW_ROUTE(app, API_BOOKS_ROUTE_1)
-		.methods("GET"_method)
-		.methods("POST"_method)
-	(*this);
+	CROW_ROUTE(app, API_BOOKS_ROUTE_0).methods("GET"_method, "POST"_method)(*this);
+	CROW_ROUTE(app, API_BOOKS_ROUTE_1).methods("GET"_method, "POST"_method)(*this);
 	CROW_ROUTE(app, API_BOOKS_ROUTE_2).methods("GET"_method)(*this);
 	CROW_ROUTE(app, API_BOOKS_ROUTE_3).methods("GET"_method)(*this);
 	CROW_ROUTE(app, API_BOOKS_ROUTE_4).methods("GET"_method)(*this);
-	CROW_ROUTE(app, API_BOOKS_ROUTE_5)
-		.methods("GET"_method)
-		.methods("PUT"_method)
-	(*this);
+	CROW_ROUTE(app, API_BOOKS_ROUTE_5).methods("GET"_method, "PUT"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
