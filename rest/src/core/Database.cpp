@@ -575,7 +575,8 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 
 		// finished with current line
 		if (line.id() != id) {
-			page.push_back(std::move(line));
+			if (line.id() != -1)
+				page.push_back(std::move(line));
 			line = Line(id, {l, t, r, b});
 			line.img = res->getString(8);
 		}
