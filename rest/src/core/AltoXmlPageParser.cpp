@@ -20,12 +20,12 @@ PagePtr
 AltoXmlPageParser::parse() 
 {
 	done_ = true; // alto documents contain just one page
-	return parse();
+	return do_parse();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 PagePtr
-AltoXmlPageParser::parse() const
+AltoXmlPageParser::do_parse() const
 {
 	const auto filename = xml_.select_node(	
 		"/alto/Description/sourceImageInformation/fileName"

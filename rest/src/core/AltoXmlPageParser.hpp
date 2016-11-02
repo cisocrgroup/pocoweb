@@ -18,7 +18,7 @@ namespace pcw {
 		virtual PagePtr parse() override;
 
 	private:
-		PagePtr parse() const;
+		PagePtr do_parse() const;
 
 		static PagePtr parse(const XmlNode& pagenode);
 		static void add_line(Page& page, const XmlNode& linenode);
