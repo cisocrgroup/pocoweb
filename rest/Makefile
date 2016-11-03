@@ -61,6 +61,7 @@ API_OBJS += ApiBooks.o
 PAR_OBJS += pugixml.o
 PAR_OBJS += AbbyyParserChar.o
 PAR_OBJS += ParserChar.o
+PAR_OBJS += ParserWord.o
 
 default: all
 all: pcwd

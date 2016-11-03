@@ -4,8 +4,10 @@
 #include <memory>
 
 namespace pcw {
+	class ParserWord;
 	class ParserChar;
 	using ParserCharPtr = std::shared_ptr<ParserChar>;
+	using ParserWordPtr = std::shared_ptr<ParserWord>;
 
 	class ParserChar: public std::enable_shared_from_this<ParserChar> {
 	public:
@@ -30,6 +32,16 @@ namespace pcw {
 		double conf_;
 		int cut_;
 
+	};
+	
+	class ParserWordChar: public BasicParserChar {
+	public:
+		virtual ~ParserWordChar() noexcept override = default;
+		ParserWord& word() const {return *word_;}
+		void set_word(ParserWordPtr word) {word_ = std::move(word);}
+
+	private:
+		ParserWordPtr word_;
 	};
 }
 

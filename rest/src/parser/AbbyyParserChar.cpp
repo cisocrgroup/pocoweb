@@ -82,3 +82,5 @@ AbbyyParserChar::set_char_to_node(pugi::xml_node& node, wchar_t c)
 	node.first_child().set_value(buf);
 	assert(get_char_from_node(node) == c);
 }
+
+#undef streq
