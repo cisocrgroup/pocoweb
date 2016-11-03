@@ -62,6 +62,7 @@ PAR_OBJS += pugixml.o
 PAR_OBJS += AbbyyParserChar.o
 PAR_OBJS += ParserChar.o
 PAR_OBJS += ParserWord.o
+PAR_OBJS += AltoXmlParserWord.o
 
 default: all
 all: pcwd

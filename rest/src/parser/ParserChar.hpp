@@ -39,7 +39,9 @@ namespace pcw {
 			, word_(word)
 		{}
 		virtual ~ParserWordChar() noexcept override = default;
-		ParserWord& word() const noexcept {return *word_;}
+		virtual void set(wchar_t c) override;
+		virtual void remove() override;
+		virtual ParserCharPtr clone() override;
 		void set_word(ParserWordPtr word) noexcept {word_ = std::move(word);}
 
 	private:
