@@ -34,7 +34,6 @@ AltoXmlParserWord::update()
 void
 AltoXmlParserWord::remove()
 {
-	assert(chars_.empty());
 	assert(node_);
 	auto parent = node_.parent();
 	parent.remove_child(node_);
