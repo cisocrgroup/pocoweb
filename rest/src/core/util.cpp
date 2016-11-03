@@ -11,7 +11,7 @@
 #include <regex>
 #include <openssl/sha.h>
 #include "util.hpp"
-#include "AltoXmlPageParser.hpp"
+#include "parser/AltoXmlPageParser.hpp"
 #include "HocrPageParser.hpp"
 #include "LlocsPageParser.hpp"
 #include "AbbyyXmlPageParser.hpp"

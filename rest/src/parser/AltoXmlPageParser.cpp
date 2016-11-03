@@ -1,10 +1,10 @@
 #include <cstring>
 #include <pugixml.hpp>
 #include "AltoXmlPageParser.hpp"
-#include "Page.hpp"
-#include "Line.hpp"
-#include "Box.hpp"
-#include "util.hpp"
+#include "core/Page.hpp"
+#include "core/Line.hpp"
+#include "core/Box.hpp"
+#include "core/util.hpp"
 
 using namespace pcw;
 

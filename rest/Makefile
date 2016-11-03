@@ -30,7 +30,6 @@ LDFLAGS += -lcrypto
 
 VPATH = src src/core ../modules/pugixml/src src/api src/parser
 
-OBJS += AltoXmlPageParser.o
 OBJS += AbbyyXmlPageParser.o
 OBJS += HocrPageParser.o
 OBJS += WagnerFischer.o
@@ -63,6 +62,7 @@ PAR_OBJS += AbbyyParserChar.o
 PAR_OBJS += ParserChar.o
 PAR_OBJS += ParserWord.o
 PAR_OBJS += AltoXmlParserWord.o
+PAR_OBJS += AltoXmlPageParser.o
 
 default: all
 all: pcwd
