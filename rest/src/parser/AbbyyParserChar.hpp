@@ -5,15 +5,17 @@
 #include "ParserChar.hpp"
 
 namespace pcw {
-	class AbbyyParserChar: public BasicParserChar {
+	class AbbyyParserChar: public ParserChar {
 	public:
 		AbbyyParserChar(const pugi::xml_node& node);
 		virtual ~AbbyyParserChar() noexcept override = default;
-		virtual void set(wchar_t) override;
+		virtual void set(wchar_t c) override;
 		virtual void remove() override;
 		virtual ParserCharPtr clone() const override;
 
 	private:
+		static double get_conf_from_node(const pugi::xml_node& node);
+		static Box get_box_from_node(const pugi::xml_node& node);
 		static wchar_t get_char_from_node(const pugi::xml_node& node);
 		static void set_char_to_node(pugi::xml_node& node, wchar_t c);
 

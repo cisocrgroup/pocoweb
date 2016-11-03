@@ -9,16 +9,18 @@ using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 AbbyyParserChar::AbbyyParserChar(const pugi::xml_node& node)
-	: node_(node)
+	: ParserChar(
+		get_box_from_node(node),
+		get_char_from_node(node),
+		get_conf_from_node(node)
+	)
+	, node_(node)
 {
 	if (not streq(node_.name(), "charParams"))
 		throw std::logic_error(
 			"(AbbyyParserChar) Not a valid node: " + 
 			std::string(node_.name())
 		);
-	char_ = get_char_from_node(node_);
-	cut_ = node_.attribute("r").as_int();
-	conf_ = node_.attribute("charConfidence").as_double() / 100.0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,12 +50,31 @@ AbbyyParserChar::clone() const
 	auto parent = node_.parent();
 	auto copy = parent.insert_copy_before(node_, node_);
 	auto res = std::make_shared<AbbyyParserChar>(copy);
-	auto l = node_.attribute("l").as_int();
-	if (l >= 0 and l < cut_) {
-		res->cut_ = l + (l / 2);
-		res->node_.attribute("r").set_value(res->cut_);
-	}
+	// auto l = node_.attribute("l").as_int();
+	// if (l >= 0 and l < cut_) {
+	// 	res->cut_ = l + (l / 2);
+	// 	res->node_.attribute("r").set_value(res->cut_);
+	// }
 	return res;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+double 
+AbbyyParserChar::get_conf_from_node(const pugi::xml_node& node)
+{
+	return node.attribute("charConfidence").as_double() / 100.0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Box 
+AbbyyParserChar::get_box_from_node(const pugi::xml_node& node)
+{
+	return {
+		node.attribute("l").as_int(),
+		node.attribute("t").as_int(),
+		node.attribute("r").as_int(),
+		node.attribute("b").as_int()
+	};
 }
 
 ////////////////////////////////////////////////////////////////////////////////

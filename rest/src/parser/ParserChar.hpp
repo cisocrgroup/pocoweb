@@ -2,6 +2,7 @@
 #define pcw_ParserChar_hpp__
 
 #include <memory>
+#include "core/Box.hpp"
 
 namespace pcw {
 	class ParserWord;
@@ -11,34 +12,35 @@ namespace pcw {
 
 	class ParserChar: public std::enable_shared_from_this<ParserChar> {
 	public:
+		ParserChar(Box box = {}, wchar_t c = 0, double conf = 0)
+			: box_(box) 
+			, char_(c)
+			, conf_(conf)
+		{}
 		virtual ~ParserChar() noexcept = default;
-		virtual wchar_t get() const = 0;
-		virtual void set(wchar_t) = 0;
+		virtual void set(wchar_t c) = 0;
 		virtual void remove() = 0;
 		virtual ParserCharPtr clone() const = 0;
-	};
 
-	class BasicParserChar: public ParserChar {
-	public:
-		BasicParserChar(wchar_t c = 0, double conf = 0, int cut = 0);
-		virtual ~BasicParserChar() noexcept override = default;
-		virtual wchar_t get() const override {return char_;}
-		virtual void set(wchar_t c) override {char_ = c;}
-		virtual void remove() override {}
-		virtual ParserCharPtr clone() const override;
+		wchar_t get() const noexcept {return char_;}
+		const Box& box() const noexcept {return box_;}
+		double conf() const noexcept {return conf_;}
 
 	protected:
+		Box box_;
 		wchar_t char_;
 		double conf_;
-		int cut_;
-
 	};
-	
-	class ParserWordChar: public BasicParserChar {
+
+	class ParserWordChar: public ParserChar {
 	public:
+		ParserWordChar(Box box = {}, wchar_t c = 0, double conf = 0, ParserWordPtr word = nullptr)
+			: ParserChar(box, c, conf)
+			, word_(word)
+		{}
 		virtual ~ParserWordChar() noexcept override = default;
-		ParserWord& word() const {return *word_;}
-		void set_word(ParserWordPtr word) {word_ = std::move(word);}
+		ParserWord& word() const noexcept {return *word_;}
+		void set_word(ParserWordPtr word) noexcept {word_ = std::move(word);}
 
 	private:
 		ParserWordPtr word_;
