@@ -44,17 +44,17 @@ AbbyyParserChar::remove()
 
 ////////////////////////////////////////////////////////////////////////////////
 ParserCharPtr
-AbbyyParserChar::clone() const
+AbbyyParserChar::clone() 
 {
 	assert(node_);
 	auto parent = node_.parent();
 	auto copy = parent.insert_copy_before(node_, node_);
 	auto res = std::make_shared<AbbyyParserChar>(copy);
-	// auto l = node_.attribute("l").as_int();
-	// if (l >= 0 and l < cut_) {
-	// 	res->cut_ = l + (l / 2);
-	// 	res->node_.attribute("r").set_value(res->cut_);
-	// }
+	auto splits = box_.split(2);
+	box_ = splits[1];
+	res->box_ = splits[0];
+	set_box_to_node(node_, box_);
+	set_box_to_node(res->node_, res->box_);
 	return res;
 }
 
@@ -75,6 +75,16 @@ AbbyyParserChar::get_box_from_node(const pugi::xml_node& node)
 		node.attribute("r").as_int(),
 		node.attribute("b").as_int()
 	};
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+AbbyyParserChar::set_box_to_node(pugi::xml_node& node, const Box& box)
+{
+	node.attribute("l").set_value(box.left());
+	node.attribute("t").set_value(box.top());
+	node.attribute("r").set_value(box.right());
+	node.attribute("b").set_value(box.bottom());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -20,7 +20,7 @@ namespace pcw {
 		virtual ~ParserChar() noexcept = default;
 		virtual void set(wchar_t c) = 0;
 		virtual void remove() = 0;
-		virtual ParserCharPtr clone() const = 0;
+		virtual ParserCharPtr clone() = 0; // TODO find a better name
 
 		wchar_t get() const noexcept {return char_;}
 		const Box& box() const noexcept {return box_;}
