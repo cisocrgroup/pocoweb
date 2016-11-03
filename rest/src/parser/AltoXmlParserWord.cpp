@@ -3,15 +3,20 @@
 #include <cstring>
 #include <utf8.h>
 #include "ParserChar.hpp"
+#include "AltoXmlPageParser.hpp"
 #include "AltoXmlParserWord.hpp"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-AltoXmlParserWord::AltoXmlParserWord(const pugi::xml_node& node, Chars& chars)
+AltoXmlParserWord::AltoXmlParserWord(const pugi::xml_node& node)
 	: node_(node)
 {
-	make(chars);
+	if (strcmp(node.name(), "String") != 0) 
+		throw std::logic_error(
+			"(AltoXmlParserWord) Invalid node for ALTO word: " +
+			std::string(node.name())
+		);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +46,7 @@ AltoXmlParserWord::remove()
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlParserWord::make(Chars& chars)
+AltoXmlParserWord::add_chars_to_line(ParserLine& line)
 {
 	auto conf = node_.attribute("WC").as_double();
 	auto cont = node_.attribute("CONTENT").value();
@@ -61,6 +66,6 @@ AltoXmlParserWord::make(Chars& chars)
 			conf,
 			shared_from_this()
 		);
-		chars.push_back(c);
+		line.chars.push_back(c);
 	}
 }

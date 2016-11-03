@@ -5,18 +5,18 @@
 #include "ParserWord.hpp"
 
 namespace pcw {
+	class ParserLine;
 	class ParserChar;
 	using ParserCharPtr = std::shared_ptr<ParserChar>;
-	using Chars = std::vector<ParserCharPtr>;
 
 	class AltoXmlParserWord: public ParserWord {
 	public:
-		AltoXmlParserWord(const pugi::xml_node& node, Chars& chars);
+		AltoXmlParserWord(const pugi::xml_node& node);
 		virtual void update() override;
 		virtual void remove() override;
+		void add_chars_to_line(ParserLine& line);
 
 	private:
-		void make(Chars& chars);
 		pugi::xml_node node_;
 	};
 }

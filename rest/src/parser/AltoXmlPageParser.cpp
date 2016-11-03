@@ -1,6 +1,7 @@
 #include <cstring>
 #include <pugixml.hpp>
 #include "AltoXmlPageParser.hpp"
+#include "AltoXmlParserWord.hpp"
 #include "core/Page.hpp"
 #include "core/Line.hpp"
 #include "core/Box.hpp"
@@ -24,6 +25,21 @@ AltoXmlPageParser::parse()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+ParserPage
+AltoXmlPageParser::pparse() const
+{
+	const auto filename = xml_.select_node(	
+		"/alto/Description/sourceImageInformation/fileName"
+	).node().child_value();
+	ParserPage page;
+	page.ocr = path_;
+	page.img = fix_windows_path(filename);
+	auto p = xml_.select_node(".//Page");
+	parse(p.node(), page);
+	return page;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 PagePtr
 AltoXmlPageParser::do_parse() const
 {
@@ -37,6 +53,19 @@ AltoXmlPageParser::do_parse() const
 	page->ocr = path_;
 	return page;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+void
+AltoXmlPageParser::parse(const XmlNode& pagenode, ParserPage& page) 
+{
+	const auto textlines = pagenode.select_nodes(".//TextLine");
+	page.box = get_box(pagenode);
+	page.id = pagenode.attribute("PHYSICAL_IMG_NR").as_int();
+	for (const auto& l: textlines) {
+		add_line(l.node(), page);
+	}
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 PagePtr
@@ -73,6 +102,23 @@ AltoXmlPageParser::add_line(Page& page, const XmlNode& linenode)
 		}
 	}
 	page.push_back(std::move(line));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+AltoXmlPageParser::add_line(const XmlNode& linenode, ParserPage& page)
+{
+	ParserLine line;
+	line.box = get_box(linenode);
+	
+	for (const auto& node: linenode.children()) {
+		if (strcmp(node.name(), "String") == 0) {
+			auto word = std::make_shared<AltoXmlParserWord>(node);
+			word->add_chars_to_line(line);
+		} else if (strcmp(node.name(), "SP") == 0) {
+		}
+	}
+	page.lines.push_back(std::move(line));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
