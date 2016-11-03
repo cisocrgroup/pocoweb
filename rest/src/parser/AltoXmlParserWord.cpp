@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cassert>
 #include <cstring>
 #include <utf8.h>
@@ -17,12 +18,26 @@ AltoXmlParserWord::AltoXmlParserWord(const pugi::xml_node& node, Chars& chars)
 void
 AltoXmlParserWord::update()
 {
+	std::wstring str;
+	str.reserve(chars_.size());
+	std::transform(begin(chars_), end(chars_), std::back_inserter(str), [](const auto& c) {
+		assert(c);
+		return c->get();
+	});
+	std::string ustr;
+	ustr.reserve(str.size());
+	utf8::utf32to8(begin(str), end(str), std::back_inserter(ustr));	
+	node_.attribute("CONTENT").set_value(ustr.data());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 AltoXmlParserWord::remove()
 {
+	assert(chars_.empty());
+	assert(node_);
+	auto parent = node_.parent();
+	parent.remove_child(node_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
