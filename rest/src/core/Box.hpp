@@ -1,6 +1,8 @@
 #ifndef pcw_Box_hpp__
 #define pcw_Box_hpp__
 
+#include <vector>
+
 namespace pcw {
 	struct Box {
 		Box(int l = 0, int t = 0, int r = 0, int b = 0);
@@ -20,6 +22,10 @@ namespace pcw {
 		Box& increase_top(int d) noexcept;
 		Box& increase_bottom(int d) noexcept;
 		Box& increase(int d) noexcept;
+		
+		Box& operator+=(const Box& other);
+		
+		std::vector<Box> split(int n) const;
 
 	private:
 		int left_, top_, right_, bottom_;
