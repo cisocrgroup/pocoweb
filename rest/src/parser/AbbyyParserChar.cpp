@@ -24,12 +24,13 @@ AbbyyParserChar::AbbyyParserChar(const pugi::xml_node& node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
+ParserCharPtr
 AbbyyParserChar::set(wchar_t c)
 {
 	assert(node_);
 	set_char_to_node(node_, c);
 	char_ = c;
+	return shared_from_this();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,7 +45,7 @@ AbbyyParserChar::remove()
 
 ////////////////////////////////////////////////////////////////////////////////
 ParserCharPtr
-AbbyyParserChar::clone() 
+AbbyyParserChar::insert(wchar_t c) 
 {
 	assert(node_);
 	auto parent = node_.parent();
@@ -55,6 +56,8 @@ AbbyyParserChar::clone()
 	res->box_ = splits[0];
 	set_box_to_node(node_, box_);
 	set_box_to_node(res->node_, res->box_);
+	res->char_ = c;
+	set_char_to_node(res->node_, res->char_);
 	return res;
 }
 

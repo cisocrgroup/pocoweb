@@ -4,11 +4,12 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+ParserCharPtr 
 ParserWordChar::set(wchar_t c)
 {
 	char_ = c;
 	word_->update();
+	return shared_from_this();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -20,9 +21,9 @@ ParserWordChar::remove()
 
 ////////////////////////////////////////////////////////////////////////////////
 ParserCharPtr 
-ParserWordChar::clone()
+ParserWordChar::insert(wchar_t c)
 {
-	auto clone = std::make_shared<ParserWordChar>(box_, char_, conf_, word_);
+	auto clone = std::make_shared<ParserWordChar>(box_, c, conf_, word_);
 	word_->insert(clone.get(), this);	
 	return clone;
 }

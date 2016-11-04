@@ -9,9 +9,9 @@ namespace pcw {
 	public:
 		AbbyyParserChar(const pugi::xml_node& node);
 		virtual ~AbbyyParserChar() noexcept override = default;
-		virtual void set(wchar_t c) override;
+		virtual ParserCharPtr set(wchar_t c) override;
 		virtual void remove() override;
-		virtual ParserCharPtr clone() override;
+		virtual ParserCharPtr insert(wchar_t c) override;
 
 	private:
 		static double get_conf_from_node(const pugi::xml_node& node);

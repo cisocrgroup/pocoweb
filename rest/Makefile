@@ -63,11 +63,14 @@ PAR_OBJS += ParserChar.o
 PAR_OBJS += ParserWord.o
 PAR_OBJS += AltoXmlParserWord.o
 PAR_OBJS += AltoXmlPageParser.o
+PAR_OBJS += AltoXmlSpaceChar.o
 
 default: all
-all: pcwd
+all: pcwd pcw_test
 
 pcwd: pcwd.o libpcwapi.a libpcwcore.a libpcwparser.a
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+pcw_test: pcw_test.o libpcwapi.a libpcwparser.a libpcwcore.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 libpcwcore.a: $(OBJS)
@@ -84,6 +87,6 @@ libpcwparser.a: $(PAR_OBJS)
 clean:
 	$(RM) *.o *.d *.so *.a pcwd
 
-DEPS = $(patsubst %.o,%.d,$(OBJS) $(API_OBJS) $(PAR_OBJS) pcwd.o)
+DEPS = $(patsubst %.o,%.d,$(OBJS) $(API_OBJS) $(PAR_OBJS) pcwd.o pcw_test.o)
 -include $(DEPS)
 

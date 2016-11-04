@@ -17,22 +17,23 @@ AltoXmlParserWord::AltoXmlParserWord(const pugi::xml_node& node)
 			"(AltoXmlParserWord) Invalid node for ALTO word: " +
 			std::string(node.name())
 		);
+	auto x0 = node_.attribute("HPOS").as_int();
+	auto y0 = node_.attribute("VPOS").as_int();
+	auto w = node_.attribute("WIDTH").as_int();
+	auto h = node_.attribute("HEIGHT").as_int();
+	box_ = Box{x0, y0, x0 + w, y0 + h};
+	conf_ = node_.attribute("WC").as_double();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlParserWord::update()
+AltoXmlParserWord::update(const std::string& word)
 {
-	std::wstring str;
-	str.reserve(chars_.size());
-	std::transform(begin(chars_), end(chars_), std::back_inserter(str), [](const auto& c) {
-		assert(c);
-		return c->get();
-	});
-	std::string ustr;
-	ustr.reserve(str.size());
-	utf8::utf32to8(begin(str), end(str), std::back_inserter(ustr));	
-	node_.attribute("CONTENT").set_value(ustr.data());
+	node_.attribute("CONTENT").set_value(word.data());
+	node_.attribute("HPOS").set_value(box().left());
+	node_.attribute("VPOS").set_value(box().top());
+	node_.attribute("WIDTH").set_value(box().width());
+	node_.attribute("HEIGHT").set_value(box().height());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,22 +49,16 @@ AltoXmlParserWord::remove()
 void
 AltoXmlParserWord::add_chars_to_line(ParserLine& line)
 {
-	auto conf = node_.attribute("WC").as_double();
 	auto cont = node_.attribute("CONTENT").value();
-	auto x0 = node_.attribute("HPOS").as_int();
-	auto y0 = node_.attribute("VPOS").as_int();
-	auto w = node_.attribute("WIDTH").as_int();
-	auto h = node_.attribute("HEIGHT").as_int();
-	Box box{x0, y0, x0 + w, y0 + h};
 	std::wstring str;
 	utf8::utf8to32(cont, cont + strlen(cont), std::back_inserter(str));
-	auto boxes = box.split(static_cast<int>(str.size()));
+	auto boxes = box_.split(static_cast<int>(str.size()));
 	assert(boxes.size() == str.size());
 	for (auto i = 0U; i < str.size(); ++i) {
 		auto c = std::make_shared<ParserWordChar>(
 			boxes[i],
 			str[i],
-			conf,
+			conf_,
 			shared_from_this()
 		);
 		line.chars.push_back(c);

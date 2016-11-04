@@ -30,7 +30,7 @@ namespace pcw {
 		virtual bool has_next() const noexcept override {return not done_;}
 		virtual PagePtr parse() override;
 
-		ParserPage pparse() const;
+		ParserPage pparse();
 
 	private:
 		PagePtr do_parse() const;

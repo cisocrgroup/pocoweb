@@ -18,9 +18,9 @@ namespace pcw {
 			, conf_(conf)
 		{}
 		virtual ~ParserChar() noexcept = default;
-		virtual void set(wchar_t c) = 0;
+		virtual ParserCharPtr set(wchar_t c) = 0;
 		virtual void remove() = 0;
-		virtual ParserCharPtr clone() = 0; // TODO find a better name
+		virtual ParserCharPtr insert(wchar_t c) = 0;
 
 		wchar_t get() const noexcept {return char_;}
 		const Box& box() const noexcept {return box_;}
@@ -34,14 +34,20 @@ namespace pcw {
 
 	class ParserWordChar: public ParserChar {
 	public:
-		ParserWordChar(Box box = {}, wchar_t c = 0, double conf = 0, ParserWordPtr word = nullptr)
+		ParserWordChar(
+			Box box = {}, 
+			wchar_t c = 0, 
+			double conf = 0, 
+			ParserWordPtr word = nullptr
+		)
 			: ParserChar(box, c, conf)
 			, word_(word)
 		{}
 		virtual ~ParserWordChar() noexcept override = default;
-		virtual void set(wchar_t c) override;
+		virtual ParserCharPtr set(wchar_t c) override;
 		virtual void remove() override;
-		virtual ParserCharPtr clone() override;
+		virtual ParserCharPtr insert(wchar_t c) override;
+		const ParserWordPtr& word() const noexcept {return word_;}
 		void set_word(ParserWordPtr word) noexcept {word_ = std::move(word);}
 
 	private:

@@ -2,6 +2,7 @@
 #include <pugixml.hpp>
 #include "AltoXmlPageParser.hpp"
 #include "AltoXmlParserWord.hpp"
+#include "AltoXmlSpaceChar.hpp"
 #include "core/Page.hpp"
 #include "core/Line.hpp"
 #include "core/Box.hpp"
@@ -26,8 +27,9 @@ AltoXmlPageParser::parse()
 
 ////////////////////////////////////////////////////////////////////////////////
 ParserPage
-AltoXmlPageParser::pparse() const
+AltoXmlPageParser::pparse() 
 {
+	done_ = true; // alto documents contain just one page
 	const auto filename = xml_.select_node(	
 		"/alto/Description/sourceImageInformation/fileName"
 	).node().child_value();
@@ -65,7 +67,6 @@ AltoXmlPageParser::parse(const XmlNode& pagenode, ParserPage& page)
 		add_line(l.node(), page);
 	}
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 PagePtr
@@ -111,11 +112,21 @@ AltoXmlPageParser::add_line(const XmlNode& linenode, ParserPage& page)
 	ParserLine line;
 	line.box = get_box(linenode);
 	
+	AltoXmlParserWordPtr last_word = nullptr;
+	AltoXmlSpaceCharPtr space = nullptr;
 	for (const auto& node: linenode.children()) {
 		if (strcmp(node.name(), "String") == 0) {
-			auto word = std::make_shared<AltoXmlParserWord>(node);
-			word->add_chars_to_line(line);
+			last_word = std::make_shared<AltoXmlParserWord>(node);
+			last_word->add_chars_to_line(line);
+			if (space) {
+				space->set_right(last_word);
+				space = nullptr;
+			}
 		} else if (strcmp(node.name(), "SP") == 0) {
+			space = std::make_shared<AltoXmlSpaceChar>(node);
+			space->set_left(last_word);
+			line.chars.push_back(space);
+			last_word = nullptr;
 		}
 	}
 	page.lines.push_back(std::move(line));

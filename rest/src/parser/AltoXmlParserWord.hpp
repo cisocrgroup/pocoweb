@@ -2,6 +2,7 @@
 #define pcw_AltoXmlParserWord_hpp__
 
 #include <pugixml.hpp>
+#include "core/Box.hpp"
 #include "ParserWord.hpp"
 
 namespace pcw {
@@ -12,7 +13,7 @@ namespace pcw {
 	class AltoXmlParserWord: public ParserWord {
 	public:
 		AltoXmlParserWord(const pugi::xml_node& node);
-		virtual void update() override;
+		virtual void update(const std::string& word) override;
 		virtual void remove() override;
 		void add_chars_to_line(ParserLine& line);
 

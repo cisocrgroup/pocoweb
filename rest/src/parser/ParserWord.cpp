@@ -1,9 +1,30 @@
 #include <algorithm>
 #include <cassert>
+#include <utf8.h>
 #include "ParserChar.hpp"
 #include "ParserWord.hpp"
 
 using namespace pcw;
+
+////////////////////////////////////////////////////////////////////////////////
+void
+ParserWord::update()
+{
+	std::wstring str;
+	str.reserve(chars_.size());
+	std::transform(begin(chars_), end(chars_), std::back_inserter(str), [](const auto& c) {
+		assert(c);
+		return c->get();
+	});
+	box_ = std::accumulate(begin(chars_), end(chars_), box_, [](Box box, const auto& c) {
+		assert(c);
+		return box += c->box();
+	});
+	std::string ustr;
+	ustr.reserve(str.size());
+	utf8::utf32to8(begin(str), end(str), std::back_inserter(ustr));	
+	update(ustr);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
@@ -19,11 +40,33 @@ ParserWord::remove(ParserWordChar* c)
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
+ParserWord::push_back(ParserWordChar* new_char)
+{
+	if (new_char) {
+		new_char->set_word(shared_from_this());
+		chars_.push_back(new_char);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+ParserWord::push_front(ParserWordChar* new_char)
+{
+	if (new_char) {
+		new_char->set_word(shared_from_this());
+		chars_.insert(begin(chars_), new_char);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
 ParserWord::insert(ParserWordChar* new_char, ParserWordChar* at)
 {
-	assert(new_char);
-	auto i = std::find(begin(chars_), end(chars_), at);
-	chars_.insert(i, new_char);
+	if (new_char) {
+		new_char->set_word(shared_from_this());
+		auto i = std::find(begin(chars_), end(chars_), at);
+		chars_.insert(i, new_char);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
