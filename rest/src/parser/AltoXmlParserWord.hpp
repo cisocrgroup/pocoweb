@@ -13,9 +13,11 @@ namespace pcw {
 	class AltoXmlParserWord: public ParserWord {
 	public:
 		AltoXmlParserWord(const pugi::xml_node& node);
+		void add_chars_to_line(ParserLine& line);
+
+	protected:
 		virtual void update(const std::string& word) override;
 		virtual void remove() override;
-		void add_chars_to_line(ParserLine& line);
 
 	private:
 		pugi::xml_node node_;

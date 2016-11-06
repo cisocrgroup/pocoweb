@@ -14,8 +14,6 @@ namespace pcw {
 	class ParserWord: public std::enable_shared_from_this<ParserWord> {
 	public:
 		virtual ~ParserWord() noexcept = default;
-		virtual void update(const std::string& word) = 0;
-		virtual void remove() = 0;
 
 		void update();
 		void remove(ParserWordChar* c);
@@ -27,6 +25,9 @@ namespace pcw {
 		double conf() const noexcept {return conf_;}
 
 	protected:
+		virtual void update(const std::string& word) = 0;
+		virtual void remove() = 0;
+
 		Box box_;
 		std::vector<ParserWordChar*> chars_;
 		double conf_;
