@@ -78,11 +78,17 @@ pcwd: pcwd.o libpcwapi.a libpcwcore.a libpcwparser.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) -l boost_unit_test_framework
 
 test: $(TESTS)
-	@for test in $(TESTS); do \
+	@errors=0;\
+	for test in $(TESTS); do \
 		echo running $$test ;\
-		./$$test ;\
-		echo ;\
-	done 
+		./$$test; \
+		res=$$?; \
+		if [ $$res -ne 0 ]; then \
+			errors=$$((errors + 1)); \
+		fi \
+	done; \
+	exit $$errors
+
 libpcwcore.a: $(OBJS)
 	$(AR) rcs $@ $^
 libpcwapi.a: $(API_OBJS)
