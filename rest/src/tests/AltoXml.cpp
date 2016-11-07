@@ -9,7 +9,6 @@
 
 using namespace pcw;
 
-// <TextLine HEIGHT="90.0" WIDTH="3570.0" HPOS="3960.0" VPOS="972.0">
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(ParsingTest)
 {
@@ -22,10 +21,13 @@ BOOST_AUTO_TEST_CASE(ParsingTest)
 	
 	// three lines
 	BOOST_REQUIRE(page.lines.size() == 3);
-	BOOST_CHECK(page.lines[0].string() == L"ab cd ef");
 
+	// <TextLine HEIGHT="90.0" WIDTH="3570.0" HPOS="3960.0" VPOS="972.0">
+	BOOST_CHECK(page.lines[0].string() == L"ab cd ef");
 	BOOST_CHECK(page.lines[0].box.left() == 3960);
 	BOOST_CHECK(page.lines[0].box.top() == 972);
+	BOOST_CHECK(page.lines[0].box.right() == 3960 + 3570);
+	BOOST_CHECK(page.lines[0].box.bottom() == 972 + 90);
 	BOOST_CHECK(page.lines[0].box.width() == 3570);
 	BOOST_CHECK(page.lines[0].box.height() == 90);
 
