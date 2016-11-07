@@ -12,14 +12,12 @@ ParserWord::update()
 {
 	std::wstring str;
 	str.reserve(chars_.size());
-	std::transform(begin(chars_), end(chars_), std::back_inserter(str), [](const auto& c) {
+	for (auto& c: chars_) {
 		assert(c);
-		return c->get();
-	});
-	box_ = std::accumulate(begin(chars_), end(chars_), box_, [](Box box, const auto& c) {
-		assert(c);
-		return box += c->box();
-	});
+		str.push_back(c->get());
+		box_ += c->box();
+		c->set_word(shared_from_this());
+	}
 	std::string ustr;
 	ustr.reserve(str.size());
 	utf8::utf32to8(begin(str), end(str), std::back_inserter(ustr));	
@@ -82,4 +80,29 @@ ParserWord::merge(ParserWordChar* at, ParserWord& word)
 	}
 	word.remove();
 	update();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+ParserWord::split(ParserWordChar* at)
+{
+	if (not at)
+		return;
+	auto b = begin(chars_);
+	auto e = end(chars_);
+	auto i = std::find(b, e, at);
+	if (i == e)
+		return;
+
+	std::vector<ParserWordChar*> left, right;
+	std::copy(b, i, std::back_inserter(left));
+	std::copy(std::next(i), e, std::back_inserter(right));
+	
+	auto r = create();
+	if (not right.empty())
+		r->box_ = right.front()->box();
+	std::swap(left, this->chars_);
+	std::swap(right, r->chars_);
+	this->update();
+	r->update();
 }

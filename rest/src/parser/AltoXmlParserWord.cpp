@@ -64,3 +64,11 @@ AltoXmlParserWord::add_chars_to_line(ParserLine& line)
 		line.chars.push_back(c);
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////
+ParserWordPtr 
+AltoXmlParserWord::create() 
+{
+	auto copy = node_.insert_copy_after(node_, node_);
+	return std::make_shared<AltoXmlParserWord>(copy);	
+}

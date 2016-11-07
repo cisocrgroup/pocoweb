@@ -18,6 +18,7 @@ namespace pcw {
 	protected:
 		virtual void update(const std::string& word) override;
 		virtual void remove() override;
+		virtual ParserWordPtr create() override;
 
 	private:
 		pugi::xml_node node_;

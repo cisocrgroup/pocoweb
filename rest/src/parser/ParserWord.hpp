@@ -21,10 +21,12 @@ namespace pcw {
 		void push_front(ParserWordChar* new_char);
 		void insert(ParserWordChar* new_char, ParserWordChar* at);
 		void merge(ParserWordChar* at, ParserWord& word);
+		void split(ParserWordChar* at);
 		const Box& box() const noexcept {return box_;}
 		double conf() const noexcept {return conf_;}
 
 	protected:
+		virtual ParserWordPtr create() = 0;
 		virtual void update(const std::string& word) = 0;
 		virtual void remove() = 0;
 
