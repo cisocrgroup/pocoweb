@@ -14,12 +14,23 @@ namespace pcw {
                 using Trace = std::vector<EditOp>;
                 using Table = std::vector<std::vector<size_t> >;
 
-                size_t operator()(const std::wstring& truth, const Line& line);
-                size_t operator()(const wchar_t* truth, const Line& line);
-                size_t operator()(const wchar_t* truth, size_t n, const Line& line);
-                size_t operator()(const std::string& truth, const Line& line);
-                size_t operator()(const char* truth, const Line& line);
-                size_t operator()(const char* truth, size_t n, const Line& line);
+		void set_test(const std::string& test);
+		void set_test(const char* test);
+		void set_test(const char* test, size_t n);
+		void set_test(const std::wstring& test);
+		void set_test(const wchar_t* test);
+		void set_test(const wchar_t* test, size_t n);
+		void set_test(const Line& line);
+
+		void set_truth(const std::string& truth);
+		void set_truth(const char* truth);
+		void set_truth(const char* truth, size_t n);
+		void set_truth(const std::wstring& truth);
+		void set_truth(const wchar_t* truth);
+		void set_truth(const wchar_t* truth, size_t n);
+		void set_truth(const Line& line);
+
+                size_t operator()();
 	
                 const std::wstring& test() const noexcept {
                         return test_;

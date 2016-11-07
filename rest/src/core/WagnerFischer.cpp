@@ -10,51 +10,113 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-size_t 
-WagnerFischer::operator()(const std::wstring& truth, const Line& line)
+void
+WagnerFischer::set_truth(const std::string& truth)
 {
-	return (*this)(truth.data(), truth.size(), line);
+	set_truth(truth.data(), truth.size());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-size_t 
-WagnerFischer::operator()(const wchar_t* truth, const Line& line)
+void
+WagnerFischer::set_truth(const char* truth)
 {
-	return (*this)(truth, wcslen(truth), line);
+	set_truth(truth, strlen(truth));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-size_t 
-WagnerFischer::operator()(const std::string& truth, const Line& line)
-{
-	return (*this)(truth.data(), truth.size(), line);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-size_t 
-WagnerFischer::operator()(const char* truth, const Line& line)
-{
-	std::wstring wstr;
-	const auto n = strlen(truth);
-	return (*this)(truth, n, line);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-size_t 
-WagnerFischer::operator()(const char* truth, size_t n, const Line& line)
+void
+WagnerFischer::set_truth(const char* truth, size_t n)
 {
 	std::wstring wstr;
 	wstr.reserve(n * 2);
 	utf8::utf8to32(truth, truth + n, std::back_inserter(wstr));
-	return (*this)(wstr.data(), wstr.size(), line);
+	set_truth(wstr.data(), wstr.size());
+}
+	
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_truth(const std::wstring& truth)
+{
+	truth_ = truth;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_truth(const wchar_t* truth)
+{
+	set_truth(truth, wcslen(truth));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_truth(const wchar_t* truth, size_t n)
+{
+	truth_ = std::wstring(truth, n);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_truth(const Line& line)
+{
+	truth_ = line.wstring();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_test(const std::string& test)
+{
+	set_test(test.data(), test.size());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_test(const char* test)
+{
+	set_test(test, strlen(test));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_test(const char* test, size_t n)
+{
+	std::wstring wstr;
+	wstr.reserve(n * 2);
+	utf8::utf8to32(test, test + n, std::back_inserter(wstr));
+	set_test(wstr.data(), wstr.size());
+}
+	
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_test(const std::wstring& test)
+{
+	test_ = test;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_test(const wchar_t* test)
+{
+	set_test(test, wcslen(test));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_test(const wchar_t* test, size_t n)
+{
+	test_ = std::wstring(test, n);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_test(const Line& line)
+{
+	test_ = line.wstring();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 size_t 
-WagnerFischer::operator()(const wchar_t* truth, size_t n, const Line& line)
+WagnerFischer::operator()()
 {
-        truth_ = std::wstring(truth, n);
-        test_ = line.wstring();
         const auto truthn = truth_.size();
         const auto testn = test_.size();
         l_.clear();
