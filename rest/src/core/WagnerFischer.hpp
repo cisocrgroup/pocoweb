@@ -44,6 +44,8 @@ namespace pcw {
 		const Table& table() const noexcept { // just for debugging
 			return l_;
 		}
+		template<class T>
+		void apply(T& t) const;
 
         private:
                 size_t getMin(size_t i, size_t j) const noexcept;
@@ -58,5 +60,37 @@ namespace pcw {
 	std::ostream& operator<<(std::ostream& os, const WagnerFischer& wf);
 	std::ostream& operator<<(std::ostream& os, const WagnerFischer::Table& t);
 };
+
+////////////////////////////////////////////////////////////////////////////////
+template<class T>
+void 
+pcw::WagnerFischer::apply(T& t) const
+{
+	int o = 0;
+	const auto n = trace_.size();
+	for (size_t i = 0; i < n; ++i) {
+		const auto ii = i + o;
+		switch (trace_[i]) {
+		// insertion means that the ocr recognized a character
+		// where in reality there should be none; delete it
+		case WagnerFischer::EditOp::Ins:
+			t.erase(ii);
+			--o;	
+			break;
+		// deletion means that the ocr did not recognize a character 
+		// where in reality there should be one; so insert it
+		case WagnerFischer::EditOp::Del: 
+			t.insert(ii, truth()[i]);
+			break;
+		// subustitution just updates the according char
+		case WagnerFischer::EditOp::Sub:
+			t.set(ii, truth()[i]);
+			break;
+		// do nothing; char is already correct
+		case WagnerFischer::EditOp::Nop:
+			break;
+		}
+	}
+}
 
 #endif // pcw_WagnerFischer_hpp__

@@ -43,8 +43,6 @@ namespace pcw {
 		void each_word(std::function<void(const Word&)> f) const;
 		int id() const noexcept {return id_;}
 
-		void correct(const WagnerFischer& wf);
-
 		void append(const std::string& str, int l, int r, double c, bool corr = false);
 		void append(const std::wstring& str, int l, int r, double c, bool corr = false);
 		void append(const char* str, int l, int r, double c, bool corr = false);
@@ -53,14 +51,15 @@ namespace pcw {
 		void append(const wchar_t* str, size_t n, int l, int r, double c, bool corr = false);
 		void append(wchar_t c, int r, double conf, bool corr = false);
 
-		Box box;
-		Path img, ocr;
-
-	private:
+		// interface for WagnerFischer correction
 		void insert(size_t i, wchar_t c);
 		void erase(size_t i);
 		void set(size_t i, wchar_t c);
 
+		Box box;
+		Path img, ocr;
+
+	private:
 		String string_;
 		Cuts cuts_;
 		Confidences confs_;
