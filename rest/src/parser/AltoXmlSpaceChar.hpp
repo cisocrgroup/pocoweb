@@ -22,7 +22,6 @@ namespace pcw {
 		
 	private:
 		ParserWordCharPtr new_token(wchar_t c);
-		Box box() const;
 		double conf() const;
 
 		pugi::xml_node node_;

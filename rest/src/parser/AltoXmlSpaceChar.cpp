@@ -16,6 +16,12 @@ AltoXmlSpaceChar::AltoXmlSpaceChar(const pugi::xml_node& node)
 			"(AltoXmlSpaceChar) Invalid ALTO space node: " +
 			std::string(node_.name())
 		);
+	const auto l = node_.attribute("HPOS").as_int();
+	const auto t = node_.attribute("VPOS").as_int();
+	const auto w = node_.attribute("WIDTH").as_int();
+	const auto h = node_.attribute("HEIGHT").as_int();
+	
+	box_ = {l, t, l + w, t + h};
 }	
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -101,27 +107,6 @@ AltoXmlSpaceChar::new_token(wchar_t c)
 	new_char->set_word(word);
 	word->push_back(new_char.get());
 	return new_char;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Box 
-AltoXmlSpaceChar::box() const
-{
-	Box box;
-	if (left_) {
-		box.set_top(left_->box().top());
-		box.set_bottom(left_->box().bottom());
-		box.set_left(left_->box().right());
-		box.set_right(left_->box().right());
-	} 
-	if (right_) {
-		box.set_top(std::min(right_->box().top(), box.top()));
-		box.set_bottom(std::max(right_->box().bottom(), box.bottom()));
-		if (box_.left() == 0)
-			box.set_left(right_->box().left());
-		box.set_right(right_->box().left());
-	}
-	return {};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
