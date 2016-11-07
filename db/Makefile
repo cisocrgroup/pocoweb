@@ -5,6 +5,7 @@ clean:
 	$(RM) .create-tables 
 install:
 uninstall:
+test:
 
 DB_USER := $(shell git config -f ../config.ini --get db.user)
 DB_PASS := $(shell git config -f ../config.ini --get db.pass)

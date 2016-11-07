@@ -1,5 +1,5 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE pcw_test
+#define BOOST_TEST_MODULE AltoXmlTestTest
 #include <boost/test/unit_test.hpp>
 #include <functional>
 #include <iostream>
@@ -11,9 +11,9 @@ using namespace pcw;
 
 // <TextLine HEIGHT="90.0" WIDTH="3570.0" HPOS="3960.0" VPOS="972.0">
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(alto_xml_parser)
+BOOST_AUTO_TEST_CASE(ParsingTest)
 {
-	AltoXmlPageParser p("misc/data/test/alto-test.xml");
+	AltoXmlPageParser p("../misc/data/test/alto-test.xml");
 	
 	// exactly one Page!
 	BOOST_REQUIRE(p.has_next());
@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE(alto_xml_parser)
 	BOOST_CHECK(page.lines[0].string() == L"ab cd ef");
 
 	BOOST_CHECK(page.lines[0].box.left() == 3960);
-	BOOST_CHECK(page.lines[0].box.right() == 972);
+	BOOST_CHECK(page.lines[0].box.top() == 972);
 	BOOST_CHECK(page.lines[0].box.width() == 3570);
 	BOOST_CHECK(page.lines[0].box.height() == 90);
 
