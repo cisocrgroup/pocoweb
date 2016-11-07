@@ -28,7 +28,7 @@ LDFLAGS += -lboost_filesystem
 # LDFLAGS += -lboost_thread
 LDFLAGS += -lcrypto
 
-VPATH = src src/core ../modules/pugixml/src src/api src/parser
+VPATH = src src/core ../modules/pugixml/src src/api src/parser src/tests
 
 OBJS += AbbyyXmlPageParser.o
 OBJS += HocrPageParser.o
@@ -65,14 +65,23 @@ PAR_OBJS += AltoXmlParserWord.o
 PAR_OBJS += AltoXmlPageParser.o
 PAR_OBJS += AltoXmlSpaceChar.o
 
+TESTS += AltoXml.test
+
 default: all
 all: pcwd pcw_test
 
 pcwd: pcwd.o libpcwapi.a libpcwcore.a libpcwparser.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
-pcw_test: pcw_test.o libpcwapi.a libpcwparser.a libpcwcore.a
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
+%.test: %.o libpcwapi.a libpcwparser.a libpcwcore.a
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) -l boost_unit_test_framework
+
+test: $(TESTS)
+	@for test in $(TESTS); do \
+		echo running $$test ;\
+		./$$test ;\
+		echo ;\
+	done 
 libpcwcore.a: $(OBJS)
 	$(AR) rcs $@ $^
 libpcwapi.a: $(API_OBJS)
@@ -85,8 +94,8 @@ libpcwparser.a: $(PAR_OBJS)
 
 .PHONY: clean
 clean:
-	$(RM) *.o *.d *.so *.a pcwd
+	$(RM) *.o *.d *.so *.a *.test pcwd
 
-DEPS = $(patsubst %.o,%.d,$(OBJS) $(API_OBJS) $(PAR_OBJS) pcwd.o pcw_test.o)
+DEPS = $(patsubst %.o,%.d,$(OBJS) $(API_OBJS) $(PAR_OBJS) $(patsubst %.test,%.o,$(TESTS)) pcwd.o)
 -include $(DEPS)
 

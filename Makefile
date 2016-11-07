@@ -16,7 +16,8 @@ export # export all
 
 default: all
 
-all install clean uninstall:
+.PHONY: all install clean uninstall test
+all install clean uninstall test:
 	$(MAKE) -C modules $@
 	#$(MAKE) -C misc $@
 	$(MAKE) -C rest $@

@@ -10,7 +10,7 @@
 		</sourceImageInformation>
 		<OCRProcessing ID="ID0">
 			<ocrProcessingStep>
-				<processingStepSettings>useAbbyy4:0 </processingStepSettings>
+				<processingStepSettings>useAbbyy4:0</processingStepSettings>
 				<processingSoftware>
 					<softwareCreator>iArchives</softwareCreator>
 					<softwareName>Newpah</softwareName>
@@ -27,25 +27,27 @@
 					WIDTH="16026" HPOS="294" VPOS="972" ns1:type="simple" language="en"
 					TAGREFS="Tag103">
 					<TextLine HEIGHT="90.0" WIDTH="3570.0" HPOS="3960.0" VPOS="972.0">
-						<String HEIGHT="81.0" WIDTH="36.0" HPOS="3960.0" VPOS="981.0" CONTENT="J"
+						<String HEIGHT="81.0" WIDTH="36.0" HPOS="3960.0" VPOS="981.0" CONTENT="ab"
 							WC="0.8095238"/>
 						<SP WIDTH="36.0" HPOS="3996.0" VPOS="981.0"/>
-						<String HEIGHT="66.0" WIDTH="42.0" HPOS="4032.0" VPOS="993.0" CONTENT="a"
+						<String HEIGHT="66.0" WIDTH="42.0" HPOS="4032.0" VPOS="993.0" CONTENT="cd"
 							WC="0.8095238"/>
 						<SP WIDTH="68.0" HPOS="4074.0" VPOS="993.0"/>
-						<String HEIGHT="81.0" WIDTH="228.0" HPOS="4143.0" VPOS="972.0" CONTENT="Ira"
+						<String HEIGHT="81.0" WIDTH="228.0" HPOS="4143.0" VPOS="972.0" CONTENT="ef"
 							WC="0.95238096"/>
-						<SP WIDTH="447.0" HPOS="4371.0" VPOS="972.0"/>
-						<String HEIGHT="84.0" WIDTH="81.0" HPOS="4818.0" VPOS="975.0" CONTENT="mj"
+					</TextLine>
+					<TextLine HEIGHT="90.0" WIDTH="3570.0" HPOS="3960.0" VPOS="972.0">
+						<String HEIGHT="81.0" WIDTH="36.0" HPOS="3960.0" VPOS="981.0" CONTENT="ab"
 							WC="0.8095238"/>
-						<SP WIDTH="687.0" HPOS="4899.0" VPOS="975.0"/>
-						<String HEIGHT="63.0" WIDTH="105.0" HPOS="5586.0" VPOS="984.0" CONTENT="iI"
+						<SP WIDTH="36.0" HPOS="3996.0" VPOS="981.0"/>
+						<String HEIGHT="66.0" WIDTH="42.0" HPOS="4032.0" VPOS="993.0" CONTENT="cd"
 							WC="0.8095238"/>
-						<SP WIDTH="416.0" HPOS="5691.0" VPOS="984.0"/>
-						<String HEIGHT="90.0" WIDTH="810.0" HPOS="6108.0" VPOS="972.0"
-							CONTENT="tE1r" WC="0.8095238"/>
-						<SP WIDTH="585.0" HPOS="6918.0" VPOS="972.0"/>
-						<String HEIGHT="51.0" WIDTH="27.0" HPOS="7503.0" VPOS="1008.0" CONTENT="3"
+					</TextLine>
+					<TextLine HEIGHT="90.0" WIDTH="3570.0" HPOS="3960.0" VPOS="972.0">
+						<String HEIGHT="81.0" WIDTH="36.0" HPOS="3960.0" VPOS="981.0" CONTENT="abcd"
+							WC="0.8095238"/>
+						<SP WIDTH="36.0" HPOS="3996.0" VPOS="981.0"/>
+						<String HEIGHT="66.0" WIDTH="42.0" HPOS="4032.0" VPOS="993.0" CONTENT="ef"
 							WC="0.8095238"/>
 					</TextLine>
 				</TextBlock>

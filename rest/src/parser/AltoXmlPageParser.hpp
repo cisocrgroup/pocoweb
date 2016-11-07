@@ -14,6 +14,7 @@ namespace pcw {
 	struct ParserLine {
 		Box box;
 		std::vector<ParserCharPtr> chars;
+		std::wstring string() const noexcept; 
 	};	
 	struct ParserPage {
 		Box box;

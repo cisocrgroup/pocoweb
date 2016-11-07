@@ -5,6 +5,7 @@ MODS += utfcpp.mod
 all: $(MODS)
 install:
 uninstall:
+test:
 clean:
 	$(RM) *.mod
 
