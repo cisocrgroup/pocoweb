@@ -3,23 +3,13 @@
 #include "AltoXmlPageParser.hpp"
 #include "AltoXmlParserWord.hpp"
 #include "AltoXmlSpaceChar.hpp"
+#include "ParserPage.hpp"
 #include "core/Page.hpp"
 #include "core/Line.hpp"
 #include "core/Box.hpp"
 #include "core/util.hpp"
 
 using namespace pcw;
-
-////////////////////////////////////////////////////////////////////////////////
-std::wstring 
-ParserLine::string() const noexcept 
-{
-	std::wstring res(chars.size(), 0);
-	std::transform(begin(chars), end(chars), begin(res), [](const auto& c) {
-		return c->get();
-	});
-	return res;
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 AltoXmlPageParser::AltoXmlPageParser(const Path& path)

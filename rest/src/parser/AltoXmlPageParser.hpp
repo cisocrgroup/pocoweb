@@ -8,20 +8,7 @@
 #include "core/XmlFile.hpp"
 
 namespace pcw {
-	class ParserChar;
-	using ParserCharPtr = std::shared_ptr<ParserChar>;	
-
-	struct ParserLine {
-		Box box;
-		std::vector<ParserCharPtr> chars;
-		std::wstring string() const noexcept; 
-	};	
-	struct ParserPage {
-		Box box;
-		Path ocr, img;
-		std::vector<ParserLine> lines;
-		int id;
-	};
+	class ParserPage;
 
 	class AltoXmlPageParser: public PageParser,
 				 public XmlFile {

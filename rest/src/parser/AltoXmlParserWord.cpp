@@ -3,6 +3,7 @@
 #include <cstring>
 #include <utf8.h>
 #include "ParserChar.hpp"
+#include "ParserPage.hpp"
 #include "AltoXmlPageParser.hpp"
 #include "AltoXmlParserWord.hpp"
 
