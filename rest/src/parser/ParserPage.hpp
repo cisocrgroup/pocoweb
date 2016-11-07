@@ -28,6 +28,7 @@ namespace pcw {
 		Path ocr, img;
 		std::vector<ParserLine> lines;
 		int id;
+		void write(const Path& path) const;
 	};
 }
 #endif // pcw_ParserPage_hpp__

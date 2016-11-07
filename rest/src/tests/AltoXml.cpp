@@ -4,6 +4,7 @@
 #include <functional>
 #include <iostream>
 #include <vector>
+#include "TmpDir.hpp"
 #include "core/WagnerFischer.hpp"
 #include "parser/ParserPage.hpp"
 #include "parser/AltoXmlPageParser.hpp"
@@ -69,4 +70,9 @@ BOOST_AUTO_TEST_CASE(CorrectionTest)
 	BOOST_CHECK(lev == 1);
 	wf.apply(page.lines[2]);
 	BOOST_CHECK(page.lines[2].wstring() == L"ab cd ef");
+
+	// write and read;
+	TmpDir tmp;
+	auto file = tmp / "alto.xml";
+	page.write(file);
 }

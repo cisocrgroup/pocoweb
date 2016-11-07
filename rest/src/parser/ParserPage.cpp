@@ -1,8 +1,18 @@
+#include <fstream>
 #include "core/WagnerFischer.hpp"
 #include "ParserChar.hpp"
 #include "ParserPage.hpp"
 
 using namespace pcw;
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+ParserPage::write(const Path& path) const
+{
+	std::ofstream os(path.string());
+	os << "\n";
+	os.close();
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 std::wstring 
