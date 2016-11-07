@@ -71,7 +71,7 @@ all: pcwd pcw_test
 pcwd: pcwd.o libpcwapi.a libpcwcore.a libpcwparser.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 pcw_test: pcw_test.o libpcwapi.a libpcwparser.a libpcwcore.a
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) -l boost_unit_test_framework
 
 libpcwcore.a: $(OBJS)
 	$(AR) rcs $@ $^

@@ -11,6 +11,17 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
+std::wstring 
+ParserLine::string() const noexcept 
+{
+	std::wstring res(chars.size(), 0);
+	std::transform(begin(chars), end(chars), begin(res), [](const auto& c) {
+		return c->get();
+	});
+	return res;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 AltoXmlPageParser::AltoXmlPageParser(const Path& path)
 	: XmlFile(path)
 	, done_(false)
