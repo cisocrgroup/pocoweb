@@ -77,4 +77,15 @@ BOOST_AUTO_TEST_CASE(CorrectionTest)
 	TmpDir tmp;
 	auto file = tmp / "alto.xml";
 	page->write(file);
+
+	AltoXmlPageParser p2(file);
+	page = p2.pparse();
+	BOOST_REQUIRE(page != nullptr);
+	BOOST_REQUIRE(page->size() == 3);
+	std::wcerr << page->get(0).wstring() << "\n";
+	std::wcerr << page->get(1).wstring() << "\n";
+	std::wcerr << page->get(2).wstring() << "\n";
+	BOOST_CHECK(page->get(0).wstring() == L"fe dc ba");
+	BOOST_CHECK(page->get(1).wstring() == L"abcd");
+	BOOST_CHECK(page->get(2).wstring() == L"ab cd ef");
 }
