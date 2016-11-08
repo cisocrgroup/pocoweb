@@ -9,7 +9,8 @@ namespace pcw {
 
 	class TmpDir {
 	public:
-		TmpDir(): dir_(boost::filesystem::temp_directory_path()) {
+		TmpDir(): 
+			dir_(get_tmp_dir()) {
 			boost::filesystem::create_directory(dir_);
 		}
 		~TmpDir() noexcept {
@@ -22,6 +23,11 @@ namespace pcw {
 		const Path& dir() const noexcept {return dir_;}
 
 	private:
+		static Path get_tmp_dir() noexcept {
+			return boost::filesystem::temp_directory_path() /
+				boost::filesystem::unique_path();
+		}
+			
 		Path dir_;
 	};
 }
