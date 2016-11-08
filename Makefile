@@ -1,4 +1,4 @@
-CXXFLAGS ?= -Wall -Werror -std=gnu++14 -g -Og
+CXXFLAGS ?= -Wall -Werror -std=gnu++14 -ggdb -Og
 CXXFLAGS := $(CXXFLAGS) -MD -MP
 SHELL ?= /bin/bash
 
