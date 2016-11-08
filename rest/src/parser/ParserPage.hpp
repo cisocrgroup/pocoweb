@@ -23,12 +23,16 @@ namespace pcw {
 		void set(size_t i, wchar_t c);
 	};	
 
-	struct ParserPage {
+	class ParserPage {
+	public:
+		virtual ~ParserPage() noexcept = default;
+		virtual void write(const Path&) const = 0;
+		virtual ParserLine& get(size_t i) = 0;
+		virtual size_t size() const noexcept = 0;
 		Box box;
 		Path ocr, img;
-		std::vector<ParserLine> lines;
 		int id;
-		void write(const Path& path) const;
 	};
 }
+
 #endif // pcw_ParserPage_hpp__

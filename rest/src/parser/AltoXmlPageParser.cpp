@@ -3,7 +3,7 @@
 #include "AltoXmlPageParser.hpp"
 #include "AltoXmlParserWord.hpp"
 #include "AltoXmlSpaceChar.hpp"
-#include "ParserPage.hpp"
+#include "XmlParserPage.hpp"
 #include "core/Page.hpp"
 #include "core/Line.hpp"
 #include "core/Box.hpp"
@@ -27,18 +27,18 @@ AltoXmlPageParser::parse()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ParserPage
+XmlParserPagePtr
 AltoXmlPageParser::pparse() 
 {
 	done_ = true; // alto documents contain just one page
 	const auto filename = xml_.select_node(	
 		"/alto/Description/sourceImageInformation/fileName"
 	).node().child_value();
-	ParserPage page;
-	page.ocr = path_;
-	page.img = fix_windows_path(filename);
+	auto page = std::make_shared<XmlParserPage>(path_);
+	page->ocr = path_;
+	page->img = fix_windows_path(filename);
 	auto p = xml_.select_node(".//Page");
-	parse(p.node(), page);
+	parse(p.node(), *page);
 	return page;
 }
 
@@ -59,7 +59,7 @@ AltoXmlPageParser::do_parse() const
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlPageParser::parse(const XmlNode& pagenode, ParserPage& page) 
+AltoXmlPageParser::parse(const XmlNode& pagenode, XmlParserPage& page) 
 {
 	const auto textlines = pagenode.select_nodes(".//TextLine");
 	page.box = get_box(pagenode);
@@ -108,7 +108,7 @@ AltoXmlPageParser::add_line(Page& page, const XmlNode& linenode)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlPageParser::add_line(const XmlNode& linenode, ParserPage& page)
+AltoXmlPageParser::add_line(const XmlNode& linenode, XmlParserPage& page)
 {
 	ParserLine line;
 	line.box = get_box(linenode);
@@ -130,7 +130,7 @@ AltoXmlPageParser::add_line(const XmlNode& linenode, ParserPage& page)
 			last_word = nullptr;
 		}
 	}
-	page.lines.push_back(std::move(line));
+	page.lines().push_back(std::move(line));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

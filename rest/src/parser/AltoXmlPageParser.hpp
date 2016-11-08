@@ -8,7 +8,8 @@
 #include "core/XmlFile.hpp"
 
 namespace pcw {
-	class ParserPage;
+	class XmlParserPage;
+	using XmlParserPagePtr = std::shared_ptr<XmlParserPage>;
 
 	class AltoXmlPageParser: public PageParser,
 				 public XmlFile {
@@ -18,15 +19,15 @@ namespace pcw {
 		virtual bool has_next() const noexcept override {return not done_;}
 		virtual PagePtr parse() override;
 
-		ParserPage pparse();
+		XmlParserPagePtr pparse();
 
 	private:
 		PagePtr do_parse() const;
 
 		static PagePtr parse(const XmlNode& pagenode);
-		static void parse(const XmlNode& pagenode, ParserPage& page);
+		static void parse(const XmlNode& pagenode, XmlParserPage& page);
 		static void add_line(Page& page, const XmlNode& linenode);
-		static void add_line(const XmlNode& linenode, ParserPage& page);
+		static void add_line(const XmlNode& linenode, XmlParserPage& page);
 		static Box get_box(const XmlNode& node);
 
 		bool done_;

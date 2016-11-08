@@ -65,6 +65,7 @@ PAR_OBJS += AltoXmlParserWord.o
 PAR_OBJS += AltoXmlPageParser.o
 PAR_OBJS += AltoXmlSpaceChar.o
 PAR_OBJS += ParserPage.o
+PAR_OBJS += XmlParserPage.o
 
 TESTS += AltoXml.test
 
