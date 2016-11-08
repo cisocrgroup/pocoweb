@@ -67,8 +67,8 @@ std::vector<Box>
 Box::split(int n) const
 {
 	std::vector<Box> splits(n);
-	const int width = this->width() / n;
-	const int ratio = this->width() % n;
+	const int width = n > 0 ? this->width() / n : 0;
+	const int ratio = n > 0 ? this->width() % n : 0;
 
 	for (int i = 0, x0 = left_; i < n; ++i) {
 		int w = width;
