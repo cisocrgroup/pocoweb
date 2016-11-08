@@ -9,8 +9,7 @@ namespace pcw {
 
 	class TmpDir {
 	public:
-		TmpDir(): 
-			dir_(get_tmp_dir()) {
+		TmpDir(): dir_(get_tmp_dir()) {
 			boost::filesystem::create_directory(dir_);
 		}
 		~TmpDir() noexcept {
