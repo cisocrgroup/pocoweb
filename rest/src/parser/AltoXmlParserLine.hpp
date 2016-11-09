@@ -19,6 +19,7 @@ namespace pcw {
 		virtual void set(size_t i, wchar_t c) override;
 		virtual std::wstring wstring() const override;
 		virtual std::string string() const override;
+		virtual LinePtr line(int id) const override;
 
 	private:
 		enum class Type {Char, Space, Hyphen};

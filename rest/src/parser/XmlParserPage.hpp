@@ -17,6 +17,9 @@ namespace pcw {
 		virtual size_t size() const noexcept override {
 			return lines_.size();
 		}
+		virtual ParserLine& get(size_t i) const override {
+			return *lines_[i];
+		}
 		virtual ParserLine& get(size_t i) override {
 			return *lines_[i];
 		}

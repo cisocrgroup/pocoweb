@@ -1,5 +1,6 @@
 #include <iostream>
 #include <utf8.h>
+#include "core/Line.hpp"
 #include "AltoXmlParserLine.hpp"
 
 using namespace pcw;
@@ -12,6 +13,17 @@ AltoXmlParserLine::AltoXmlParserLine(pugi::xml_node node)
 {
 	init();
 	box = get_box(node_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+LinePtr
+AltoXmlParserLine::line(int id) const
+{
+	auto line = std::make_shared<Line>(id, box);
+	for (const auto& c: chars_) {
+		line->append(c.c, c.box.right(), c.conf);
+	}
+	return line;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

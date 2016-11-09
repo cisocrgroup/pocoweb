@@ -7,10 +7,14 @@
 #include "core/Box.hpp"
 
 namespace pcw {
+	class Page;
+	class Line;
 	class WagnerFischer;
 	class ParserChar;
 	class ParserPage;
 	class ParserLine;
+	using PagePtr = std::shared_ptr<Page>;
+	using LinePtr = std::shared_ptr<Line>;
 	using ParserCharPtr = std::shared_ptr<ParserChar>;	
 	using Path = boost::filesystem::path;
 	using ParserPagePtr = std::shared_ptr<ParserPage>;
@@ -26,6 +30,7 @@ namespace pcw {
 		virtual void end_correction() {}
 		virtual std::wstring wstring() const = 0;
 		virtual std::string string() const = 0;
+		virtual LinePtr line(int id) const = 0;
 		size_t correct(WagnerFischer& wf);
 
 		Box box;
@@ -36,7 +41,9 @@ namespace pcw {
 		virtual ~ParserPage() noexcept = default;
 		virtual void write(const Path&) const = 0;
 		virtual ParserLine& get(size_t i) = 0;
+		virtual ParserLine& get(size_t i) const = 0;
 		virtual size_t size() const noexcept = 0;
+		virtual PagePtr page() const;
 		Box box;
 		Path ocr, img;
 		int id;
