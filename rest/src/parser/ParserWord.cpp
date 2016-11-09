@@ -1,3 +1,4 @@
+#include <iostream>
 #include <algorithm>
 #include <cassert>
 #include <utf8.h>
@@ -13,11 +14,13 @@ ParserWord::update()
 	std::wstring str;
 	str.reserve(chars_.size());
 	for (auto& c: chars_) {
+		std::cerr << "Updating: " << c->get() << "\n";
 		assert(c);
 		str.push_back(c->get());
 		box_ += c->box();
 		c->set_word(shared_from_this());
 	}
+	std::cerr << "str.size(): " << str.size() << "\n";
 	std::string ustr;
 	ustr.reserve(str.size());
 	utf8::utf32to8(begin(str), end(str), std::back_inserter(ustr));	

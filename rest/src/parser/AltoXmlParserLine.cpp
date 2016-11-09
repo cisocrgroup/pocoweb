@@ -1,21 +1,22 @@
 #include <iostream>
 #include <utf8.h>
-#include "AltoXmlLine.hpp"
+#include "AltoXmlParserLine.hpp"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-AltoXmlLine::AltoXmlLine(pugi::xml_node node)
+AltoXmlParserLine::AltoXmlParserLine(pugi::xml_node node)
 	: chars_()
 	, node_(node) 
 	, needs_update_(false)
 {
 	init();
+	box = get_box(node_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 std::wstring 
-AltoXmlLine::wstring() const 
+AltoXmlParserLine::wstring() const 
 {
 	std::wstring res(chars_.size(), 0);
 	std::transform(begin(chars_), end(chars_), begin(res), [](const auto& c) {
@@ -26,7 +27,7 @@ AltoXmlLine::wstring() const
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string 
-AltoXmlLine::string() const 
+AltoXmlParserLine::string() const 
 {
 	std::string res;
 	res.reserve(chars_.size());
@@ -39,38 +40,46 @@ AltoXmlLine::string() const
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-AltoXmlLine::end_correction()
+AltoXmlParserLine::end_correction()
 {
 	if (not needs_update_)
 		return;
+	auto last = node_.last_child();
+// 	auto copy = node_.parent().insert_copy_before(node_, node_);
+// 	for (auto& node: copy.children())
+// 		node.parent().remove_child(node);
+
 	const auto b = begin(chars_);
 	const auto e = end(chars_);
-	auto copy = node_.parent().insert_copy_before(node_, node_);
-	for (auto& node: copy.children())
-		node.parent().remove_child(node);
-
 	for (auto i = b; i != e; ) {
 		auto eot = find_end_of_token(i, e);
 		switch (i->type) {
 		case Type::Space:
-			update_space(i, copy);
+			update_space(i, node_);
 			break;
 		case Type::Hyphen:
-			update_hyphen(i, copy);
+			update_hyphen(i, node_);
 			break;
 		case Type::Char:
-			update_char(i, eot, copy);
+			update_char(i, eot, node_);
 			break;
 		}
 		i = eot;	
 	}	
-	node_.parent().remove_child(node_);
-	node_ = copy;
+
+	for (auto n = node_.first_child(); n != last;) {
+		auto next = n.next_sibling();
+		n.parent().remove_child(n);
+		n = next;
+	}
+	last.parent().remove_child(last);
+	// node_.parent().remove_child(node_);
+	// node_ = copy;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlLine::update_space(Iterator i, Node& parent)
+AltoXmlParserLine::update_space(Iterator i, Node& parent)
 {
 	assert(i->type == Type::Space);
 	if (not i->node) {
@@ -78,14 +87,16 @@ AltoXmlLine::update_space(Iterator i, Node& parent)
 	} else {
 		i->node = parent.append_copy(i->node);
 		i->node.set_name("SP");
+		i->node.remove_attribute("CONTENT");
 	}
+	
 	set_box(i->box, i->node);
 	set_conf(i->conf, i->node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlLine::update_hyphen(Iterator i, Node& parent)
+AltoXmlParserLine::update_hyphen(Iterator i, Node& parent)
 {
 	assert(i->type == Type::Hyphen);
 	if (not i->node) {
@@ -93,6 +104,7 @@ AltoXmlLine::update_hyphen(Iterator i, Node& parent)
 	} else {
 		i->node = parent.append_copy(i->node);
 		i->node.set_name("HYP");
+		i->node.remove_attribute("CONTENT");
 	}
 	set_box(i->box, i->node);
 	set_conf(i->conf, i->node);
@@ -100,7 +112,7 @@ AltoXmlLine::update_hyphen(Iterator i, Node& parent)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlLine::update_char(Iterator b, Iterator e, Node& parent)
+AltoXmlParserLine::update_char(Iterator b, Iterator e, Node& parent)
 {
 	assert(b != e);
 	Node node;
@@ -129,9 +141,9 @@ AltoXmlLine::update_char(Iterator b, Iterator e, Node& parent)
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-AltoXmlLine::insert(size_t pos, wchar_t c)
+AltoXmlParserLine::insert(size_t pos, wchar_t c)
 {
-	std::cerr << "(AltoXmlLine) insert pos: " << pos << " " << c << "\n";
+	std::cerr << "(AltoXmlParserLine) insert pos: " << pos << " " << c << "\n";
 	assert(pos < chars_.size());
 	chars_.insert(begin(chars_) + pos, make_copy(chars_[pos]));
 	auto type = isspace(c) ? Type::Space : Type::Char; // don't care about hyphens
@@ -142,9 +154,9 @@ AltoXmlLine::insert(size_t pos, wchar_t c)
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-AltoXmlLine::erase(size_t pos)
+AltoXmlParserLine::erase(size_t pos)
 {
-	std::cerr << "(AltoXmlLine) erase pos: " << pos << "\n";
+	std::cerr << "(AltoXmlParserLine) erase pos: " << pos << "\n";
 	assert(pos < chars_.size());
 	chars_.erase(begin(chars_) + pos);	
 	needs_update_ = true;
@@ -152,9 +164,9 @@ AltoXmlLine::erase(size_t pos)
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-AltoXmlLine::set(size_t pos, wchar_t c)
+AltoXmlParserLine::set(size_t pos, wchar_t c)
 {
-	std::cerr << "(AltoXmlLine) set pos: " << pos << " " << c << "\n";
+	std::cerr << "(AltoXmlParserLine) set pos: " << pos << " " << c << "\n";
 	assert(pos < chars_.size());
 
 	auto type = isspace(c) ? Type::Space : Type::Char; // don't care about hyphens
@@ -165,7 +177,7 @@ AltoXmlLine::set(size_t pos, wchar_t c)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlLine::init_string(const pugi::xml_node& node) 
+AltoXmlParserLine::init_string(const pugi::xml_node& node) 
 {
 	assert(strcmp(node.name(), "String") == 0);
 
@@ -190,7 +202,7 @@ AltoXmlLine::init_string(const pugi::xml_node& node)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlLine::init_space(const Node& node) 
+AltoXmlParserLine::init_space(const Node& node) 
 {
 	assert(strcmp(node.name(), "SP") == 0);
 	auto wc = node.attribute("WC").as_double();
@@ -205,7 +217,7 @@ AltoXmlLine::init_space(const Node& node)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlLine::init_hyphen(const Node& node) 
+AltoXmlParserLine::init_hyphen(const Node& node) 
 {
 	assert(strcmp(node.name(), "HYP") == 0);
 	auto wc = node.attribute("WC").as_double();
@@ -220,7 +232,7 @@ AltoXmlLine::init_hyphen(const Node& node)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlLine::init()
+AltoXmlParserLine::init()
 {
 	for (const auto& node: node_.children()) {
 		if (strcmp(node.name(), "String") == 0) {
@@ -235,7 +247,7 @@ AltoXmlLine::init()
 
 ////////////////////////////////////////////////////////////////////////////////
 Box
-AltoXmlLine::get_box(const Node& node) 
+AltoXmlParserLine::get_box(const Node& node) 
 {
 	const auto x0 = node.attribute("HPOS").as_int();
 	const auto y0 = node.attribute("VPOS").as_int();
@@ -245,7 +257,7 @@ AltoXmlLine::get_box(const Node& node)
 }	
 ////////////////////////////////////////////////////////////////////////////////
 void 
-AltoXmlLine::set_box(const Box& box, Node& node)
+AltoXmlParserLine::set_box(const Box& box, Node& node)
 {
 	if (not node.attribute("HPOS"))
 		node.append_attribute("HPOS");
@@ -263,7 +275,7 @@ AltoXmlLine::set_box(const Box& box, Node& node)
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-AltoXmlLine::set_conf(double conf, Node& node)
+AltoXmlParserLine::set_conf(double conf, Node& node)
 {
 	if (not node.attribute("WC"))
 		node.append_attribute("WC");
@@ -272,7 +284,7 @@ AltoXmlLine::set_conf(double conf, Node& node)
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-AltoXmlLine::set_content(const std::wstring& str, Node& node)
+AltoXmlParserLine::set_content(const std::wstring& str, Node& node)
 {
 	if (not node.attribute("CONTENT"))
 		node.append_attribute("CONTENT");
@@ -283,8 +295,8 @@ AltoXmlLine::set_content(const std::wstring& str, Node& node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-AltoXmlLine::Iterator 
-AltoXmlLine::find_end_of_token(Iterator b, Iterator e) noexcept
+AltoXmlParserLine::Iterator 
+AltoXmlParserLine::find_end_of_token(Iterator b, Iterator e) noexcept
 {
 	assert(b != e);
 	switch (b->type) {
@@ -298,8 +310,8 @@ AltoXmlLine::find_end_of_token(Iterator b, Iterator e) noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-AltoXmlLine::Char 
-AltoXmlLine::make_copy(Char& c)
+AltoXmlParserLine::Char 
+AltoXmlParserLine::make_copy(Char& c)
 {
 	auto split = c.box.split(2);
 	auto copy = c;
@@ -308,8 +320,8 @@ AltoXmlLine::make_copy(Char& c)
 	return copy;	
 }
 ////////////////////////////////////////////////////////////////////////////////
-AltoXmlLine::Node 
-AltoXmlLine::merge(Node& a, const Node& b)
+AltoXmlParserLine::Node 
+AltoXmlParserLine::merge(Node& a, const Node& b)
 {
 	if (a != b) { // don't merge the same node with itself
 		for (const auto& attr: b.attributes()) {

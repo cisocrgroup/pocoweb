@@ -36,7 +36,10 @@ namespace pcw {
 
 	class AltoXmlChar: public ParserWordChar {
 	public:
+		AltoXmlChar(Box box, wchar_t c, double conf, AltoXmlParserWordPtr word);
 		virtual ~AltoXmlChar() noexcept override = default;
+		virtual ParserCharPtr set(wchar_t c) override;
+		virtual ParserCharPtr insert(wchar_t c) override;
 	};
 
 	class AltoXmlParserWord: public ParserWord {

@@ -51,31 +51,24 @@ BOOST_AUTO_TEST_CASE(CorrectionTest)
 
 	// first line
 	wf.set_truth(L"fe dc ba");
-	wf.set_test(page->get(0).wstring());
-	auto lev = wf();
+	auto lev = page->get(0).correct(wf);
 	BOOST_CHECK(lev == 6);
-	wf.apply(page->get(0));
 	BOOST_CHECK(page->get(0).wstring() == L"fe dc ba");
 	std::cerr << wf << "\n";
-	std::cerr << wf.table() << "\n";
 
 	// second line (merge)
 	wf.set_truth(L"abcd");
-	wf.set_test(page->get(1).wstring());
-	lev = wf();
+	lev = page->get(1).correct(wf);
 	BOOST_CHECK(lev == 1);
-	wf.apply(page->get(1));
 	BOOST_CHECK(page->get(1).wstring() == L"abcd");
-	std::cerr << wf.table() << "\n";
+	std::cerr << wf << "\n";
 
 	// third line (split)
 	wf.set_truth(L"ab cd ef");
-	wf.set_test(page->get(2).wstring());
-	lev = wf();
+	lev = page->get(2).correct(wf);
 	BOOST_CHECK(lev == 1);
-	wf.apply(page->get(2));
 	BOOST_CHECK(page->get(2).wstring() == L"ab cd ef");
-	std::cerr << wf.table() << "\n";
+	std::cerr << wf << "\n";
 
 	// write and read;
 	TmpDir tmp;

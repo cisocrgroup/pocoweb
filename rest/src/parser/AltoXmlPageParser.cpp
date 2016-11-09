@@ -1,7 +1,7 @@
 #include <cstring>
 #include <pugixml.hpp>
 #include "AltoXmlPageParser.hpp"
-#include "AltoXml.hpp"
+#include "AltoXmlParserLine.hpp"
 #include "XmlParserPage.hpp"
 #include "core/Page.hpp"
 #include "core/Line.hpp"
@@ -109,27 +109,7 @@ AltoXmlPageParser::add_line(Page& page, const XmlNode& linenode)
 void
 AltoXmlPageParser::add_line(const XmlNode& linenode, XmlParserPage& page)
 {
-	ParserLine line;
-	line.box = get_box(linenode);
-	
-	AltoXmlParserWordPtr last_word = nullptr;
-	AltoXmlSpaceCharPtr space = nullptr;
-	for (const auto& node: linenode.children()) {
-		if (strcmp(node.name(), "String") == 0) {
-			last_word = std::make_shared<AltoXmlParserWord>(node);
-			last_word->add_chars_to_line(line);
-			if (space) {
-				space->set_right(last_word);
-				space = nullptr;
-			}
-		} else if (strcmp(node.name(), "SP") == 0) {
-			space = std::make_shared<AltoXmlSpaceChar>(node);
-			space->set_left(last_word);
-			line.chars.push_back(space);
-			last_word = nullptr;
-		}
-	}
-	page.lines().push_back(std::move(line));
+	page.lines().push_back(std::make_shared<AltoXmlParserLine>(linenode));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

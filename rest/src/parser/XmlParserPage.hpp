@@ -18,7 +18,7 @@ namespace pcw {
 			return lines_.size();
 		}
 		virtual ParserLine& get(size_t i) override {
-			return lines_[i];
+			return *lines_[i];
 		}
 		pugi::xml_document& doc() noexcept {
 			return *doc_;
@@ -26,15 +26,15 @@ namespace pcw {
 		const pugi::xml_document& doc() const noexcept {
 			return *doc_;
 		}
-		const std::vector<ParserLine>& lines() const noexcept {
+		const std::vector<ParserLinePtr>& lines() const noexcept {
 			return lines_;
 		}
-		std::vector<ParserLine>& lines() noexcept {
+		std::vector<ParserLinePtr>& lines() noexcept {
 			return lines_;
 		}
 	
 	protected:
-		std::vector<ParserLine> lines_;
+		std::vector<ParserLinePtr> lines_;
 		std::shared_ptr<pugi::xml_document> doc_;
 
 	};

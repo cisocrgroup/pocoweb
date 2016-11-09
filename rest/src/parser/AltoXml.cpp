@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cassert>
 #include <cstring>
 #include <utf8.h>
@@ -121,6 +122,26 @@ AltoXmlSpaceChar::conf() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+AltoXmlChar::AltoXmlChar(Box box, wchar_t c, double conf, AltoXmlParserWordPtr w)
+	: ParserWordChar(box, c, conf, std::move(w))
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////
+ParserCharPtr
+AltoXmlChar::set(wchar_t c)
+{
+	return ParserWordChar::set(c);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+ParserCharPtr
+AltoXmlChar::insert(wchar_t c)
+{
+	return ParserWordChar::set(c);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 AltoXmlParserWord::AltoXmlParserWord(const pugi::xml_node& node)
 	: node_(node)
 {
@@ -141,6 +162,7 @@ AltoXmlParserWord::AltoXmlParserWord(const pugi::xml_node& node)
 void
 AltoXmlParserWord::update(const std::string& word)
 {
+	std::cerr << "(AltoXmlParser) word: " << word << "\n";
 	node_.attribute("CONTENT").set_value(word.data());
 	node_.attribute("HPOS").set_value(box().left());
 	node_.attribute("VPOS").set_value(box().top());
@@ -167,13 +189,14 @@ AltoXmlParserWord::add_chars_to_line(ParserLine& line)
 	auto boxes = box_.split(static_cast<int>(str.size()));
 	assert(boxes.size() == str.size());
 	for (auto i = 0U; i < str.size(); ++i) {
-		auto c = std::make_shared<ParserWordChar>(
+		auto c = std::make_shared<AltoXmlChar>(
 			boxes[i],
 			str[i],
 			conf_,
 			shared_from_this()
 		);
-		line.chars.push_back(c);
+		// line.chars.push_back(c);
+		chars_.push_back(c.get());
 	}
 }
 

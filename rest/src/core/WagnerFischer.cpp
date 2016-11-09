@@ -212,7 +212,7 @@ WagnerFischer::backtrack(size_t i, size_t j) const noexcept
 std::ostream& 
 pcw::operator<<(std::ostream& os, const WagnerFischer& wf)
 {
-	os << wf.table() << "\n";
+	// os << wf.table() << "\n";
 
 	char buf[] = {0,0,0,0,0}; // 5 are enough
 	for (size_t i = 0; i < wf.test().size(); ++i) {

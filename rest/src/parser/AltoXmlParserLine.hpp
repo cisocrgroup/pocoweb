@@ -1,18 +1,18 @@
-#ifndef pcw_AltoXmlLine_hpp__
-#define pcw_AltoXmlLine_hpp__
+#ifndef pcw_AltoXmlParserLine_hpp__
+#define pcw_AltoXmlParserLine_hpp__
 
 #include <pugixml.hpp>
 #include "core/Box.hpp"
 #include "ParserPage.hpp"
 
 namespace pcw {
-	class AltoXmlLine: public ParserLine {
+	class AltoXmlParserLine: public ParserLine {
 	public:
 		using Node = pugi::xml_node;
 
-		AltoXmlLine(Node node);
+		AltoXmlParserLine(Node node);
 
-		virtual ~AltoXmlLine() noexcept override = default;
+		virtual ~AltoXmlParserLine() noexcept override = default;
 		virtual void end_correction() override;
 		virtual void insert(size_t i, wchar_t c) override;
 		virtual void erase(size_t i) override;
@@ -54,4 +54,4 @@ namespace pcw {
 	};	
 }
 
-#endif // pcw_AltoXmlLine_hpp__
+#endif // pcw_AltoXmlParserLine_hpp__
