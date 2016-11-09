@@ -6,6 +6,7 @@
 *.log
 *.mod
 *.so
+*.test
 rest/pcwd
 rest/pocoweb_create_user
 rest/pocoweb_insert_book
