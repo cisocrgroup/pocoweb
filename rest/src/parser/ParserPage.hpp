@@ -9,13 +9,16 @@
 namespace pcw {
 	class WagnerFischer;
 	class ParserChar;
+	class ParserPage;
 	using ParserCharPtr = std::shared_ptr<ParserChar>;	
 	using Path = boost::filesystem::path;
+	using ParserPagePtr = std::shared_ptr<ParserPage>;
 
 	struct ParserLine {
 		Box box;
 		std::vector<ParserCharPtr> chars;
 		std::wstring wstring() const noexcept; 
+		std::string string() const noexcept; 
 
 		// interface for WagnerFischer correction
 		void insert(size_t i, wchar_t c);
