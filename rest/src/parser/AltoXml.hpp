@@ -1,14 +1,20 @@
-#ifndef pcw_AltoXmlSpaceChar_hpp__
-#define pcw_AltoXmlSpaceChar_hpp__
+#ifndef pcw_AltoXml_hpp__
+#define pcw_AltoXml_hpp__
 
 #include <pugixml.hpp>
 #include "ParserChar.hpp"
+#include "ParserWord.hpp"
 
 namespace pcw {
 	class AltoXmlParserWord;
 	using AltoXmlParserWordPtr = std::shared_ptr<AltoXmlParserWord>;
 	class AltoXmlSpaceChar;
 	using AltoXmlSpaceCharPtr = std::shared_ptr<AltoXmlSpaceChar>;
+	class AltoXmlChar;
+	using AltoXmlCharPtr = std::shared_ptr<AltoXmlChar>;
+	class ParserChar;
+	using ParserCharPtr = std::shared_ptr<ParserChar>;
+	class ParserLine;
 
 	class AltoXmlSpaceChar: public ParserChar {
 	public:
@@ -27,6 +33,25 @@ namespace pcw {
 		pugi::xml_node node_;
 		AltoXmlParserWordPtr left_, right_;
 	};
+
+	class AltoXmlChar: public ParserWordChar {
+	public:
+		virtual ~AltoXmlChar() noexcept override = default;
+	};
+
+	class AltoXmlParserWord: public ParserWord {
+	public:
+		AltoXmlParserWord(const pugi::xml_node& node);
+		void add_chars_to_line(ParserLine& line);
+
+	protected:
+		virtual void update(const std::string& word) override;
+		virtual void remove() override;
+		virtual ParserWordPtr create() override;
+
+	private:
+		pugi::xml_node node_;
+	};
 }
 
-#endif // pcw_AltoXmlSpaceChar_hpp__
+#endif // pcw_AltoXml_hpp__

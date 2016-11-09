@@ -1,5 +1,5 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE AltoXmlTestTest
+#define BOOST_TEST_MODULE AltoXmlTest
 #include <boost/test/unit_test.hpp>
 #include <functional>
 #include <iostream>
@@ -13,19 +13,24 @@
 
 using namespace pcw;
 
+struct Fixture {
+	Fixture(): page() {
+		AltoXmlPageParser parser("../misc/data/test/alto-test.xml");
+		BOOST_REQUIRE(parser.has_next());
+		page = parser.pparse();
+		BOOST_REQUIRE(not parser.has_next());
+		BOOST_REQUIRE(page);
+		BOOST_REQUIRE(page->size() == 3);
+	}
+	ParserPagePtr page;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_FIXTURE_TEST_SUITE(AltoXmlTest, Fixture)
+
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(ParsingTest)
 {
-	AltoXmlPageParser p("../misc/data/test/alto-test.xml");
-	
-	// exactly one Page!
-	BOOST_REQUIRE(p.has_next());
-	auto page = p.pparse();
-	BOOST_CHECK(not p.has_next());
-	
-	// three lines
-	BOOST_REQUIRE(page->size() == 3);
-
 	// <TextLine HEIGHT="90.0" WIDTH="3570.0" HPOS="3960.0" VPOS="972.0">
 	BOOST_CHECK(page->get(0).wstring() == L"ab cd ef");
 	BOOST_CHECK(page->get(0).box.left() == 3960);
@@ -42,12 +47,7 @@ BOOST_AUTO_TEST_CASE(ParsingTest)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(CorrectionTest)
 {
-	AltoXmlPageParser p("../misc/data/test/alto-test.xml");
 	WagnerFischer wf;
-	BOOST_REQUIRE(p.has_next());
-	auto page = p.pparse();
-	BOOST_REQUIRE(page != nullptr);
-	BOOST_REQUIRE(page->size() == 3);
 
 	// first line
 	wf.set_truth(L"fe dc ba");
@@ -56,6 +56,8 @@ BOOST_AUTO_TEST_CASE(CorrectionTest)
 	BOOST_CHECK(lev == 6);
 	wf.apply(page->get(0));
 	BOOST_CHECK(page->get(0).wstring() == L"fe dc ba");
+	std::cerr << wf << "\n";
+	std::cerr << wf.table() << "\n";
 
 	// second line (merge)
 	wf.set_truth(L"abcd");
@@ -64,6 +66,7 @@ BOOST_AUTO_TEST_CASE(CorrectionTest)
 	BOOST_CHECK(lev == 1);
 	wf.apply(page->get(1));
 	BOOST_CHECK(page->get(1).wstring() == L"abcd");
+	std::cerr << wf.table() << "\n";
 
 	// third line (split)
 	wf.set_truth(L"ab cd ef");
@@ -72,6 +75,7 @@ BOOST_AUTO_TEST_CASE(CorrectionTest)
 	BOOST_CHECK(lev == 1);
 	wf.apply(page->get(2));
 	BOOST_CHECK(page->get(2).wstring() == L"ab cd ef");
+	std::cerr << wf.table() << "\n";
 
 	// write and read;
 	TmpDir tmp;
@@ -82,10 +86,14 @@ BOOST_AUTO_TEST_CASE(CorrectionTest)
 	page = p2.pparse();
 	BOOST_REQUIRE(page != nullptr);
 	BOOST_REQUIRE(page->size() == 3);
-	std::wcerr << page->get(0).wstring() << "\n";
-	std::wcerr << page->get(1).wstring() << "\n";
-	std::wcerr << page->get(2).wstring() << "\n";
+
+	std::cerr << "0: " << page->get(0).string() << "\n";
+	std::cerr << "1: " << page->get(1).string() << "\n";
+	std::cerr << "2: " << page->get(2).string() << "\n";
 	BOOST_CHECK(page->get(0).wstring() == L"fe dc ba");
 	BOOST_CHECK(page->get(1).wstring() == L"abcd");
 	BOOST_CHECK(page->get(2).wstring() == L"ab cd ef");
 }
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_SUITE_END()

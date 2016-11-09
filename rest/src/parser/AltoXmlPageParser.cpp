@@ -1,8 +1,7 @@
 #include <cstring>
 #include <pugixml.hpp>
 #include "AltoXmlPageParser.hpp"
-#include "AltoXmlParserWord.hpp"
-#include "AltoXmlSpaceChar.hpp"
+#include "AltoXml.hpp"
 #include "XmlParserPage.hpp"
 #include "core/Page.hpp"
 #include "core/Line.hpp"
@@ -31,13 +30,13 @@ XmlParserPagePtr
 AltoXmlPageParser::pparse() 
 {
 	done_ = true; // alto documents contain just one page
-	const auto filename = xml_.select_node(	
+	auto page = std::make_shared<XmlParserPage>(path_);
+	const auto filename = page->doc().select_node(	
 		"/alto/Description/sourceImageInformation/fileName"
 	).node().child_value();
-	auto page = std::make_shared<XmlParserPage>(path_);
 	page->ocr = path_;
 	page->img = fix_windows_path(filename);
-	auto p = xml_.select_node(".//Page");
+	auto p = page->doc().select_node(".//Page");
 	parse(p.node(), *page);
 	return page;
 }

@@ -61,13 +61,12 @@ PAR_OBJS += pugixml.o
 PAR_OBJS += AbbyyParserChar.o
 PAR_OBJS += ParserChar.o
 PAR_OBJS += ParserWord.o
-PAR_OBJS += AltoXmlParserWord.o
+PAR_OBJS += AltoXml.o
 PAR_OBJS += AltoXmlPageParser.o
-PAR_OBJS += AltoXmlSpaceChar.o
 PAR_OBJS += ParserPage.o
 PAR_OBJS += XmlParserPage.o
 
-TESTS += AltoXml.test
+TESTS += AltoXmlParsing.test
 
 default: all
 all: pcwd pcw_test
