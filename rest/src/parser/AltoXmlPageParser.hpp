@@ -22,11 +22,7 @@ namespace pcw {
 		XmlParserPagePtr pparse();
 
 	private:
-		PagePtr do_parse() const;
-
-		static PagePtr parse(const XmlNode& pagenode);
 		static void parse(const XmlNode& pagenode, XmlParserPage& page);
-		static void add_line(Page& page, const XmlNode& linenode);
 		static void add_line(const XmlNode& linenode, XmlParserPage& page);
 		static Box get_box(const XmlNode& node);
 
