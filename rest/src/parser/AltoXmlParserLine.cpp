@@ -143,7 +143,7 @@ AltoXmlParserLine::update_char(Iterator b, Iterator e, Node& parent)
 void 
 AltoXmlParserLine::insert(size_t pos, wchar_t c)
 {
-	std::cerr << "(AltoXmlParserLine) insert pos: " << pos << " " << c << "\n";
+	// std::cerr << "(AltoXmlParserLine) insert pos: " << pos << " " << c << "\n";
 	assert(pos < chars_.size());
 	chars_.insert(begin(chars_) + pos, make_copy(chars_[pos]));
 	auto type = isspace(c) ? Type::Space : Type::Char; // don't care about hyphens
@@ -156,7 +156,7 @@ AltoXmlParserLine::insert(size_t pos, wchar_t c)
 void 
 AltoXmlParserLine::erase(size_t pos)
 {
-	std::cerr << "(AltoXmlParserLine) erase pos: " << pos << "\n";
+	// std::cerr << "(AltoXmlParserLine) erase pos: " << pos << "\n";
 	assert(pos < chars_.size());
 	chars_.erase(begin(chars_) + pos);	
 	needs_update_ = true;
@@ -166,7 +166,7 @@ AltoXmlParserLine::erase(size_t pos)
 void 
 AltoXmlParserLine::set(size_t pos, wchar_t c)
 {
-	std::cerr << "(AltoXmlParserLine) set pos: " << pos << " " << c << "\n";
+	// std::cerr << "(AltoXmlParserLine) set pos: " << pos << " " << c << "\n";
 	assert(pos < chars_.size());
 
 	auto type = isspace(c) ? Type::Space : Type::Char; // don't care about hyphens

@@ -2,7 +2,6 @@
 #include <fstream>
 #include <utf8.h>
 #include "core/WagnerFischer.hpp"
-#include "ParserChar.hpp"
 #include "ParserPage.hpp"
 
 using namespace pcw;

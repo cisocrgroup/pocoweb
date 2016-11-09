@@ -9,7 +9,6 @@
 #include "parser/ParserPage.hpp"
 #include "parser/XmlParserPage.hpp"
 #include "parser/AltoXmlPageParser.hpp"
-#include "parser/ParserChar.hpp"
 
 using namespace pcw;
 
@@ -54,21 +53,21 @@ BOOST_AUTO_TEST_CASE(CorrectionTest)
 	auto lev = page->get(0).correct(wf);
 	BOOST_CHECK(lev == 6);
 	BOOST_CHECK(page->get(0).wstring() == L"fe dc ba");
-	std::cerr << wf << "\n";
+	// std::cerr << wf << "\n";
 
 	// second line (merge)
 	wf.set_truth(L"abcd");
 	lev = page->get(1).correct(wf);
 	BOOST_CHECK(lev == 1);
 	BOOST_CHECK(page->get(1).wstring() == L"abcd");
-	std::cerr << wf << "\n";
+	// std::cerr << wf << "\n";
 
 	// third line (split)
 	wf.set_truth(L"ab cd ef");
 	lev = page->get(2).correct(wf);
 	BOOST_CHECK(lev == 1);
 	BOOST_CHECK(page->get(2).wstring() == L"ab cd ef");
-	std::cerr << wf << "\n";
+	// std::cerr << wf << "\n";
 
 	// write and read;
 	TmpDir tmp;
@@ -80,9 +79,9 @@ BOOST_AUTO_TEST_CASE(CorrectionTest)
 	BOOST_REQUIRE(page != nullptr);
 	BOOST_REQUIRE(page->size() == 3);
 
-	std::cerr << "0: " << page->get(0).string() << "\n";
-	std::cerr << "1: " << page->get(1).string() << "\n";
-	std::cerr << "2: " << page->get(2).string() << "\n";
+	// std::cerr << "0: " << page->get(0).string() << "\n";
+	// std::cerr << "1: " << page->get(1).string() << "\n";
+	// std::cerr << "2: " << page->get(2).string() << "\n";
 	BOOST_CHECK(page->get(0).wstring() == L"fe dc ba");
 	BOOST_CHECK(page->get(1).wstring() == L"abcd");
 	BOOST_CHECK(page->get(2).wstring() == L"ab cd ef");
