@@ -63,6 +63,7 @@ PAR_OBJS += ParserPage.o
 PAR_OBJS += XmlParserPage.o
 PAR_OBJS += AltoXmlParserLine.o
 PAR_OBJS += AbbyyXmlParserLine.o
+PAR_OBJS += XmlPageParser.o
 
 TESTS += AltoXmlParsing.test
 
