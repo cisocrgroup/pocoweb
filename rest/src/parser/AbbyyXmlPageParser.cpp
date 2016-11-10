@@ -1,19 +1,29 @@
 #include <cstring>
 #include <pugixml.hpp>
 #include "AbbyyXmlPageParser.hpp"
-#include "Page.hpp"
-#include "Line.hpp"
-#include "Box.hpp"
-#include "util.hpp"
+#include "core/Page.hpp"
+#include "core/Line.hpp"
+#include "core/Box.hpp"
+#include "core/util.hpp"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-AbbyyXmlPageParser::AbbyyXmlPageParser(const Path& path)
-	: XmlFile(path)
+AbbyyXmlPageParser::AbbyyXmlPageParser(Xml xml)
+	: path_()
+	, xml_(xml)
 	, page_()
 {
-	page_ = xml_.select_node("/document/page").node();
+	page_ = xml_.doc().select_node("/document/page").node();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+AbbyyXmlPageParser::AbbyyXmlPageParser(const Path& path)
+	: path_(path)
+	, xml_(path)
+	, page_()
+{
+	page_ = xml_.doc().select_node("/document/page").node();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -24,8 +34,8 @@ AbbyyXmlPageParser::has_next() const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-PagePtr 
-AbbyyXmlPageParser::parse() 
+PagePtr
+AbbyyXmlPageParser::parse()
 {
 	assert(page_);
 	auto page = std::make_shared<Page>(0);
@@ -44,9 +54,9 @@ AbbyyXmlPageParser::parse()
 			const auto r = j.attribute("r").as_int();
 			const auto l = j.attribute("l").as_int();
 			// char confidence is saved as integer <= 100
-			const double c = j.attribute("charConfidence").as_int(); 
+			const double c = j.attribute("charConfidence").as_int();
 			const auto str = j.child_value();
-			line.append(str, 0, l, r, c/100.0, false);	
+			line.append(str, 0, l, r, c/100.0, false);
 		}
 		page->push_back(std::move(line));
 	}

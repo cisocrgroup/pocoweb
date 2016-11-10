@@ -28,7 +28,6 @@ namespace pcw {
 			{}
 			Node node;
 		};
-
 		void init();
 
 		static Box get_box(const Node& node);

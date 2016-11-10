@@ -3,24 +3,27 @@
 
 #include <boost/filesystem/path.hpp>
 #include <memory>
-#include "PageParser.hpp"
-#include "XmlFile.hpp"
+#include <pugixml.hpp>
+#include "core/PageParser.hpp"
+#include "Xml.hpp"
 
 namespace pcw {
 	class Box;
 
-	class AbbyyXmlPageParser: public PageParser, 
-				  public XmlFile {
+	class AbbyyXmlPageParser: public PageParser {
 	public:
-		static bool is_alto_document(const XmlDocument& xml);
-	
+		static bool is_alto_document(const Xml::Doc& xml);
+
+		AbbyyXmlPageParser(Xml xml);
 		AbbyyXmlPageParser(const Path& path);
 		virtual ~AbbyyXmlPageParser() noexcept override = default;
 		virtual bool has_next() const noexcept override;
 		virtual PagePtr parse() override;
 
 	private:
-		XmlNode page_;
+		Path path_;
+		Xml xml_;
+		Xml::Node page_;
 	};
 }
 

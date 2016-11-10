@@ -30,7 +30,6 @@ LDFLAGS += -lcrypto
 
 VPATH = src src/core ../modules/pugixml/src src/api src/parser src/tests
 
-OBJS += AbbyyXmlPageParser.o
 OBJS += HocrPageParser.o
 OBJS += WagnerFischer.o
 OBJS += LlocsPageParser.o
@@ -64,6 +63,7 @@ PAR_OBJS += Xml.o
 PAR_OBJS += AltoXmlParserLine.o
 PAR_OBJS += AbbyyXmlParserLine.o
 PAR_OBJS += XmlParserPage.o
+PAR_OBJS += AbbyyXmlPageParser.o
 
 TESTS += AltoXmlParsing.test
 
