@@ -20,6 +20,7 @@ namespace pcw {
 		XmlParserPage(const Path& path);
 		virtual ~XmlParserPage() noexcept override = default;
 		virtual void write(const Path& path) const override;
+		void read(const Path& path);
 		virtual size_t size() const noexcept override {
 			return lines_.size();
 		}
@@ -40,8 +41,7 @@ namespace pcw {
 			return lines_;
 		}
 
-	protected:
-		void read(const Path& path);
+	private:
 		std::vector<ParserLinePtr> lines_;
 		std::shared_ptr<pugi::xml_document> doc_;
 
