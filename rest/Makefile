@@ -57,12 +57,12 @@ API_OBJS += ApiVersion.o
 API_OBJS += ApiBooks.o
 
 PAR_OBJS += pugixml.o
+PAR_OBJS += AltoXmlParserLine.o
 PAR_OBJS += AltoXmlPageParser.o
 PAR_OBJS += ParserPage.o
 PAR_OBJS += Xml.o
-PAR_OBJS += AltoXmlParserLine.o
-PAR_OBJS += AbbyyXmlParserLine.o
 PAR_OBJS += XmlParserPage.o
+PAR_OBJS += AbbyyXmlParserLine.o
 PAR_OBJS += AbbyyXmlPageParser.o
 
 TESTS += AltoXmlParsing.test
@@ -73,7 +73,7 @@ all: pcwd
 pcwd: pcwd.o libpcwapi.a libpcwcore.a libpcwparser.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-%.test: %.o libpcwapi.a libpcwparser.a libpcwcore.a
+%.test: %.o libpcwapi.a libpcwparser.a libpcwcore.a libpcwparser.a
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) -l boost_unit_test_framework
 
 test: $(TESTS)
