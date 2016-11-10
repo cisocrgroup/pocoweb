@@ -23,12 +23,14 @@ namespace pcw {
 
 	private:
 		enum class Type {Char, Space, Hyphen};
-		struct Char {
-			Box box;
+		struct Char: public ParserLine::Char {
+			Char(wchar_t cc, Node nnode, Type ttype, double cconf, Box bbox)
+				: ParserLine::Char(cc, cconf, bbox)
+				, node(nnode)
+				, type(ttype)
+			{}
 			Node node;
 			Type type;
-			double conf;
-			wchar_t c;
 		};
 		using Chars = std::vector<Char>;
 		using Iterator = Chars::iterator;

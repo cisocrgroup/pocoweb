@@ -32,7 +32,17 @@ namespace pcw {
 		virtual std::string string() const = 0;
 		virtual LinePtr line(int id) const = 0;
 		size_t correct(WagnerFischer& wf);
-
+		
+		struct Char {
+			Char(wchar_t cc, double cconf = 0, Box bbox = {})
+				: box(bbox)
+				, conf(cconf)
+				, c(cc)
+			{}
+			Box box;
+			double conf;
+			wchar_t c;
+		};
 		Box box;
 	};	
 

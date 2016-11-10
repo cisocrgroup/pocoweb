@@ -202,13 +202,7 @@ AltoXmlParserLine::init_string(const pugi::xml_node& node)
 	const auto boxes = box.split(wstr.size());
 	assert(boxes.size() == wstr.size());
 	for (auto i = 0U; i < wstr.size(); ++i) {
-		chars_.push_back(Char{
-			boxes[i],
-			node,
-			Type::Char,
-			wc,
-			wstr[i]
-		});
+		chars_.emplace_back(wstr[i], node, Type::Char, wc, boxes[i]);
 	}
 }
 
@@ -218,13 +212,7 @@ AltoXmlParserLine::init_space(const Node& node)
 {
 	assert(strcmp(node.name(), "SP") == 0);
 	auto wc = node.attribute("WC").as_double();
-	chars_.push_back(Char{
-		get_box(node),
-		node,
-		Type::Space,
-		wc,
-		L' '
-	});
+	chars_.emplace_back(L' ', node, Type::Space, wc, get_box(node));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -233,13 +221,7 @@ AltoXmlParserLine::init_hyphen(const Node& node)
 {
 	assert(strcmp(node.name(), "HYP") == 0);
 	auto wc = node.attribute("WC").as_double();
-	chars_.push_back(Char{
-		get_box(node),
-		node,
-		Type::Hyphen,
-		wc,
-		L'-'
-	});
+	chars_.emplace_back(L'-', node, Type::Hyphen, wc, get_box(node));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
