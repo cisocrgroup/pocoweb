@@ -3,11 +3,7 @@
 
 #include <memory>
 #include "ParserPage.hpp"
-
-namespace pugi {
-	class xml_document;
-	class xml_node;
-}
+#include "Xml.hpp"
 
 namespace pcw {
 	class XmlParserPage: public ParserPage {
@@ -16,11 +12,10 @@ namespace pcw {
 		using Doc = pugi::xml_document;
 		using DocPtr = std::shared_ptr<Doc>;
 
-		XmlParserPage(DocPtr doc = nullptr);
-		XmlParserPage(const Path& path);
+		XmlParserPage(Xml xml = {}): lines_(), xml_(xml) {}
+		XmlParserPage(const Path& path): lines_(), xml_(path) {}
 		virtual ~XmlParserPage() noexcept override = default;
 		virtual void write(const Path& path) const override;
-		void read(const Path& path);
 		virtual size_t size() const noexcept override {
 			return lines_.size();
 		}
@@ -30,10 +25,8 @@ namespace pcw {
 		virtual ParserLine& get(size_t i) override {
 			return *lines_[i];
 		}
-		Doc& doc() noexcept {return *doc_;}
-		const Doc& doc() const noexcept {return *doc_;}
-		const DocPtr& doc_ptr() const noexcept {return doc_;}
-		DocPtr& doc_ptr() noexcept {return doc_;}
+		Xml& xml() noexcept {return xml_;}
+		const Xml& xml() const noexcept {return xml_;}
 		const std::vector<ParserLinePtr>& lines() const noexcept {
 			return lines_;
 		}
@@ -43,8 +36,7 @@ namespace pcw {
 
 	private:
 		std::vector<ParserLinePtr> lines_;
-		std::shared_ptr<pugi::xml_document> doc_;
-
+		Xml xml_;
 	};
 }
 

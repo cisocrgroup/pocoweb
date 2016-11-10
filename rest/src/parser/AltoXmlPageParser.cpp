@@ -11,15 +11,8 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-AltoXmlPageParser::AltoXmlPageParser(const Path& path)
-	: XmlFile(path)
-	, done_(false)
-{
-}
-
-////////////////////////////////////////////////////////////////////////////////
-PagePtr 
-AltoXmlPageParser::parse() 
+PagePtr
+AltoXmlPageParser::parse()
 {
 	done_ = true; // alto documents contain just one page
 	return pparse()->page();
@@ -27,23 +20,23 @@ AltoXmlPageParser::parse()
 
 ////////////////////////////////////////////////////////////////////////////////
 XmlParserPagePtr
-AltoXmlPageParser::pparse() 
+AltoXmlPageParser::pparse()
 {
 	done_ = true; // alto documents contain just one page
 	auto page = std::make_shared<XmlParserPage>(path_);
-	const auto filename = page->doc().select_node(	
+	const auto filename = page->xml().doc().select_node(
 		"/alto/Description/sourceImageInformation/fileName"
 	).node().child_value();
 	page->ocr = path_;
 	page->img = fix_windows_path(filename);
-	auto p = page->doc().select_node(".//Page");
+	auto p = page->xml().doc().select_node(".//Page");
 	parse(p.node(), *page);
 	return page;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlPageParser::parse(const XmlNode& pagenode, XmlParserPage& page) 
+AltoXmlPageParser::parse(const Xml::Node& pagenode, XmlParserPage& page)
 {
 	const auto textlines = pagenode.select_nodes(".//TextLine");
 	page.box = get_box(pagenode);
@@ -55,14 +48,14 @@ AltoXmlPageParser::parse(const XmlNode& pagenode, XmlParserPage& page)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlPageParser::add_line(const XmlNode& linenode, XmlParserPage& page)
+AltoXmlPageParser::add_line(const Xml::Node& linenode, XmlParserPage& page)
 {
 	page.lines().push_back(std::make_shared<AltoXmlParserLine>(linenode));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Box 
-AltoXmlPageParser::get_box(const XmlNode& node)
+Box
+AltoXmlPageParser::get_box(const Xml::Node& node)
 {
 	const auto l = node.attribute("HPOS").as_int();
 	const auto t = node.attribute("VPOS").as_int();

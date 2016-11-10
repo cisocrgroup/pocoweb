@@ -1,15 +1,15 @@
 #include <pugixml.hpp>
-#include "XmlPageParser.hpp"
+#include "Xml.hpp"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-XmlPageParser::XmlPageParser(DocPtr doc)
+Xml::Xml(DocPtr doc)
 	: doc_(std::move(doc))
 {}
 
 ////////////////////////////////////////////////////////////////////////////////
-XmlPageParser::XmlPageParser(const Path& path)
+Xml::Xml(const Path& path)
 	: doc_()
 {
 	read(path);
@@ -17,14 +17,22 @@ XmlPageParser::XmlPageParser(const Path& path)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-XmlPageParser::read(const Path& path)
+Xml::read(const Path& path)
 {
 	doc_ = std::make_shared<pugi::xml_document>();
 	auto ok = doc_->load_file(path.string().data());
 	if (not ok)
 		throw std::runtime_error(
-				"(XmlPageParser) Could not read file " +
+				"(Xml) Could not read file " +
 				path.string() + ": " +
 				ok.description()
 		);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Xml::write(const Path& path) const
+{
+	assert(doc_);
+	doc_->save_file(path.string().data());
 }

@@ -3,18 +3,18 @@
 
 #include <boost/filesystem/path.hpp>
 #include <memory>
-#include "core/Box.hpp"
 #include "core/PageParser.hpp"
-#include "core/XmlFile.hpp"
+#include "Xml.hpp"
 
 namespace pcw {
+	class Box;
 	class XmlParserPage;
 	using XmlParserPagePtr = std::shared_ptr<XmlParserPage>;
 
-	class AltoXmlPageParser: public PageParser,
-				 public XmlFile {
+	class AltoXmlPageParser: public PageParser {
 	public:
-		AltoXmlPageParser(const Path& path);
+		AltoXmlPageParser(const Path& path): path_(path), xml_(path), done_(false) {}
+		AltoXmlPageParser(Xml xml): xml_(xml), done_(false) {}
 		virtual ~AltoXmlPageParser() noexcept override = default;
 		virtual bool has_next() const noexcept override {return not done_;}
 		virtual PagePtr parse() override;
@@ -22,10 +22,12 @@ namespace pcw {
 		XmlParserPagePtr pparse();
 
 	private:
-		static void parse(const XmlNode& pagenode, XmlParserPage& page);
-		static void add_line(const XmlNode& linenode, XmlParserPage& page);
-		static Box get_box(const XmlNode& node);
+		static void parse(const Xml::Node& pagenode, XmlParserPage& page);
+		static void add_line(const Xml::Node& linenode, XmlParserPage& page);
+		static Box get_box(const Xml::Node& node);
 
+		Path path_;
+		Xml xml_;
 		bool done_;
 	};
 }

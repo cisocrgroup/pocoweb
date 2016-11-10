@@ -60,10 +60,10 @@ API_OBJS += ApiBooks.o
 PAR_OBJS += pugixml.o
 PAR_OBJS += AltoXmlPageParser.o
 PAR_OBJS += ParserPage.o
-PAR_OBJS += XmlParserPage.o
+PAR_OBJS += Xml.o
 PAR_OBJS += AltoXmlParserLine.o
 PAR_OBJS += AbbyyXmlParserLine.o
-PAR_OBJS += XmlPageParser.o
+PAR_OBJS += XmlParserPage.o
 
 TESTS += AltoXmlParsing.test
 
