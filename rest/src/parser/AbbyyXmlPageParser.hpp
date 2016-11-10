@@ -9,6 +9,8 @@
 
 namespace pcw {
 	class Box;
+	class ParserPage;
+	using ParserPagePtr = std::shared_ptr<ParserPage>;
 
 	class AbbyyXmlPageParser: public PageParser {
 	public:
@@ -17,8 +19,9 @@ namespace pcw {
 		AbbyyXmlPageParser(Xml xml);
 		AbbyyXmlPageParser(const Path& path);
 		virtual ~AbbyyXmlPageParser() noexcept override = default;
-		virtual bool has_next() const noexcept override;
+		virtual bool has_next() const noexcept override {return page_;}
 		virtual PagePtr parse() override;
+		ParserPagePtr pparse();
 
 	private:
 		Path path_;
