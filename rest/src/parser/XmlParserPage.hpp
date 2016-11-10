@@ -1,6 +1,7 @@
 #ifndef pcw_XmlParserPage_hpp__
 #define pcw_XmlParserPage_hpp__
 
+#include <memory>
 #include "ParserPage.hpp"
 
 namespace pugi {
@@ -11,6 +12,11 @@ namespace pugi {
 namespace pcw {
 	class XmlParserPage: public ParserPage {
 	public:
+		using Node = pugi::xml_node;
+		using Doc = pugi::xml_document;
+		using DocPtr = std::shared_ptr<Doc>;
+
+		XmlParserPage(DocPtr doc = nullptr);
 		XmlParserPage(const Path& path);
 		virtual ~XmlParserPage() noexcept override = default;
 		virtual void write(const Path& path) const override;
@@ -23,20 +29,19 @@ namespace pcw {
 		virtual ParserLine& get(size_t i) override {
 			return *lines_[i];
 		}
-		pugi::xml_document& doc() noexcept {
-			return *doc_;
-		}
-		const pugi::xml_document& doc() const noexcept {
-			return *doc_;
-		}
+		Doc& doc() noexcept {return *doc_;}
+		const Doc& doc() const noexcept {return *doc_;}
+		const DocPtr& doc_ptr() const noexcept {return doc_;}
+		DocPtr& doc_ptr() noexcept {return doc_;}
 		const std::vector<ParserLinePtr>& lines() const noexcept {
 			return lines_;
 		}
 		std::vector<ParserLinePtr>& lines() noexcept {
 			return lines_;
 		}
-	
+
 	protected:
+		void read(const Path& path);
 		std::vector<ParserLinePtr> lines_;
 		std::shared_ptr<pugi::xml_document> doc_;
 
