@@ -12,6 +12,11 @@ CXXFLAGS += -DBOOST_LOG_DYN_LINK
 LDFLAGS ?=
 LDFLAGS := $(LDFLAGS)
 LDFLAGS += -L.
+LDFLAGS += -lpcwapi
+LDFLAGS += -lpcwcore
+LDFLAGS += -lpcwparser
+LDFLAGS += -lpcwcore
+LDFLAGS += -lpcwparser
 LDFLAGS += -ldl
 LDFLAGS += -lmysqlcppconn
 LDFLAGS += -lssl
@@ -71,10 +76,10 @@ default: all
 all: pcwd
 
 pcwd: pcwd.o libpcwapi.a libpcwcore.a libpcwparser.a
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
 
-%.test: %.o libpcwapi.a libpcwparser.a libpcwcore.a libpcwparser.a
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) -l boost_unit_test_framework
+%.test: %.o libpcwapi.a libpcwcore.a libpcwparser.a libpcwcore.a
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
 
 test: $(TESTS)
 	@errors=0;\
