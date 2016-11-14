@@ -38,7 +38,6 @@ namespace pcw {
 
 		std::vector<Char> chars_;
 		Node node_;
-		bool needs_update_;
 	};
 }
 

@@ -9,7 +9,6 @@ using namespace pcw;
 AbbyyXmlParserLine::AbbyyXmlParserLine(pugi::xml_node node)
 	: chars_()
 	, node_(node)
-	, needs_update_(false)
 {
 	init();
 	box = get_box(node_);
@@ -54,10 +53,9 @@ AbbyyXmlParserLine::string() const
 void
 AbbyyXmlParserLine::insert(size_t pos, wchar_t c)
 {
-	// std::cerr << "(AbbyyXmlParserLine) insert pos: " << pos << " " << c << "\n";
+	std::cerr << "(AbbyyXmlParserLine) insert pos: " << pos << " " << c << "\n";
 	assert(pos < chars_.size());
 	chars_.insert(begin(chars_) + pos, char_before(chars_[pos], c));
-	needs_update_ = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -68,7 +66,6 @@ AbbyyXmlParserLine::erase(size_t pos)
 	assert(pos < chars_.size());
 	chars_[pos].node.parent().remove_child(chars_[pos].node);
 	chars_.erase(begin(chars_) + pos);
-	needs_update_ = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -79,14 +76,15 @@ AbbyyXmlParserLine::set(size_t pos, wchar_t c)
 	assert(pos < chars_.size());
 	chars_[pos].c = c;
 	set_char(c, chars_[pos].node);
-	needs_update_ = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 AbbyyXmlParserLine::init()
 {
-	for (const auto& node: node_.children("charParams")) {
+	auto char_params = node_.select_nodes(".//charParams");
+	for (const auto& char_param: char_params) {
+		auto node = char_param.node();
 		const auto box = get_box(node);
 		const auto conf = node.attribute("charConfidence").as_double();
 		const auto c = get_char(node);
@@ -129,7 +127,7 @@ AbbyyXmlParserLine::get_char(const Node& node)
 {
 	const auto text = node.child_value();
 	const auto n = strlen(text);
-	return utf8::peek_next(text, text + n);
+	return n > 0 ? utf8::peek_next(text, text + n) : L' ';
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -146,13 +144,15 @@ AbbyyXmlParserLine::Char
 AbbyyXmlParserLine::char_before(Char& c, wchar_t cc)
 {
 	auto split = c.box.split(2);
-	auto node = c.node.insert_copy_before(c.node, c.node);
 	auto copy = c;
 	copy.c = cc;
-	copy.node = node;
+	assert(c.node);
+	copy.node = c.node.parent().insert_copy_before(c.node, c.node);
+	assert(copy.node);
 	copy.box = split[0];
+	c.box = split[1];
 	set_box(copy.box, copy.node);
 	set_char(copy.c, copy.node);
-	c.box = split[1];
+	set_box(c.box, c.node);
 	return copy;
 }

@@ -71,6 +71,7 @@ PAR_OBJS += AbbyyXmlParserLine.o
 PAR_OBJS += AbbyyXmlPageParser.o
 
 TESTS += AltoXmlParsing.test
+TESTS += AbbyyXmlParsing.test
 
 default: all
 all: pcwd

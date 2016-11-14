@@ -13,8 +13,8 @@ namespace pcw {
 			boost::filesystem::create_directory(dir_);
 		}
 		~TmpDir() noexcept {
-			// boost::system::error_code ec;
-			//boost::filesystem::remove_all(dir_, ec);
+			boost::system::error_code ec;
+			boost::filesystem::remove_all(dir_, ec);
 		}
 		Path operator/(const Path& other) noexcept {
 			return dir_ / other;
@@ -26,7 +26,7 @@ namespace pcw {
 			return boost::filesystem::temp_directory_path() /
 				boost::filesystem::unique_path();
 		}
-			
+
 		Path dir_;
 	};
 }

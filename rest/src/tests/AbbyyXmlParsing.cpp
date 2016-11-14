@@ -1,5 +1,5 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE AltoXmlTest
+#define BOOST_TEST_MODULE AbbyyXmlTest
 
 #include <boost/test/unit_test.hpp>
 #include <functional>
@@ -9,13 +9,13 @@
 #include "core/WagnerFischer.hpp"
 #include "parser/ParserPage.hpp"
 #include "parser/XmlParserPage.hpp"
-#include "parser/AltoXmlPageParser.hpp"
+#include "parser/AbbyyXmlPageParser.hpp"
 
 using namespace pcw;
 
 struct Fixture {
 	Fixture(): page() {
-		AltoXmlPageParser parser("../misc/data/test/alto-test.xml");
+		AbbyyXmlPageParser parser("../misc/data/test/abbyy-test.xml");
 		BOOST_REQUIRE(parser.has_next());
 		page = parser.pparse();
 		BOOST_REQUIRE(not parser.has_next());
@@ -26,14 +26,12 @@ struct Fixture {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_FIXTURE_TEST_SUITE(AltoXmlTest, Fixture)
+BOOST_FIXTURE_TEST_SUITE(AbbyyXmlTest, Fixture)
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(ParsingTest)
 {
-	// <TextLine HEIGHT="90.0" WIDTH="3570.0" HPOS="3960.0" VPOS="972.0">
-	// check_l
-	Box box{3960, 972, 3960 + 3570, 972 + 90};
+	Box box{258, 126, 1958, 294};
 	BOOST_CHECK_EQUAL(page->get(0).string(), "ab cd ef");
 	BOOST_CHECK_EQUAL(page->get(0).box, box);
 	BOOST_CHECK_EQUAL(page->get(1).string(), "ab cd");
@@ -73,7 +71,7 @@ BOOST_AUTO_TEST_CASE(CorrectionTest)
 	auto file = tmp / "alto.xml";
 	page->write(file);
 
-	AltoXmlPageParser p2(file);
+	AbbyyXmlPageParser p2(file);
 	page = p2.pparse();
 	BOOST_REQUIRE(page != nullptr);
 	BOOST_REQUIRE(page->size() == 3);
