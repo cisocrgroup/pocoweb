@@ -52,7 +52,7 @@ AltoXmlParserLine::string() const
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-AltoXmlParserLine::end_correction()
+AltoXmlParserLine::end_wagner_fischer()
 {
 	if (not needs_update_)
 		return;
