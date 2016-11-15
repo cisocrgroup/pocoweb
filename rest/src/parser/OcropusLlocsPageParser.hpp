@@ -1,28 +1,31 @@
-#ifndef pcw_LlocsPageParser_hpp__
-#define pcw_LlocsPageParser_hpp__
+#ifndef pcw_OcropusLlocsPageParser_hpp__
+#define pcw_OcropusLlocsPageParser_hpp__
 
 #include <boost/filesystem/path.hpp>
 #include <boost/optional.hpp>
 #include <memory>
-#include "PageParser.hpp"
+#include "core/PageParser.hpp"
 
 namespace pcw {
+	class ParserPage;
+	using ParserPagePtr = std::shared_ptr<ParserPage>;
 	class Line;
+	using LinePtr = std::shared_ptr<Line>;
 	using Path = boost::filesystem::path;
 
-	class LlocsPageParser: public PageParser {
+	class OcropusLlocsPageParser: public PageParser {
 	public:
-		LlocsPageParser(Path path);
-		virtual ~LlocsPageParser() noexcept override = default;
+		OcropusLlocsPageParser(Path path);
+		virtual ~OcropusLlocsPageParser() noexcept override = default;
 		virtual bool has_next() const noexcept override {return not done_;}
 		virtual PagePtr parse() override;
+		virtual ParserPagePtr pparse();
 
 	private:
 		using PathPair = std::pair<Path, Path>;
-		PagePtr parse_page() const;
+		ParserPagePtr parse_page() const;
 
 		static boost::optional<PathPair> get_path_pair(const Path& file);
-		static Line parse_line(int i, const PathPair& pair);
 
 		const Path dir_;
 		const int id_;
@@ -30,4 +33,4 @@ namespace pcw {
 	};
 }
 
-#endif // pcw_LlocsPageParser_hpp__
+#endif // pcw_OcropusLlocsPageParser_hpp__

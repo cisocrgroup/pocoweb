@@ -13,7 +13,7 @@
 #include "util.hpp"
 #include "parser/AltoXmlPageParser.hpp"
 #include "HocrPageParser.hpp"
-#include "LlocsPageParser.hpp"
+#include "parser/OcropusLlocsPageParser.hpp"
 #include "parser/AbbyyXmlPageParser.hpp"
 
 #ifndef PCW_WHAT_LEN
@@ -201,7 +201,7 @@ pcw::make_page_parser(FileType type, const Path& ocr)
 	case FileType::AbbyyXml:
 		return std::make_unique<AbbyyXmlPageParser>(ocr);
 	case FileType::Llocs:
-		return std::make_unique<LlocsPageParser>(ocr);
+		return std::make_unique<OcropusLlocsPageParser>(ocr);
 	default:
 		throw std::logic_error("Cannot parse file: " + ocr.string());
 	}

@@ -12,7 +12,9 @@ using namespace pcw;
 void
 OcropusLlocsParserPage::write(const Path& path) const
 {
-	auto base = path / dir_;
+	std::stringstream dir;
+	dir << std::hex << std::setfill('0') << std::setw(10) << id_;
+	auto base = path / dir.str();
 	boost::filesystem::create_directory(base);
 	int i = 0;
 	for (const auto& line: lines()) {
@@ -30,10 +32,10 @@ OcropusLlocsParserPage::write(int id, const ParserLine& line, const Path& path) 
 	std::wofstream os(path.string());
 	if (not os.good())
 		throw std::system_error(errno, std::system_category(), path.string());
-	for (auto i = 0U; i < l->size(); ++i) {
-		os << l->wstring()[i] << '\t'
-		   << l->cuts()[i] << '\t'
-		   << l->confidences()[i] << '\n';
+	for (auto i = 0U; i < l.size(); ++i) {
+		os << l.wstring()[i] << '\t'
+		   << l.cuts()[i] << '\t'
+		   << l.confidences()[i] << '\n';
 	}
 	os.close();
 }

@@ -29,7 +29,7 @@ ParserPage::page() const
 	const auto n = size();
 	for (auto i = 0U; i < n; ++i) {
 		auto id = static_cast<int>(i + 1);
-		page->push_back(*get(i).line(id));
+		page->push_back(get(i).line(id));
 	}
 	return page;
 }

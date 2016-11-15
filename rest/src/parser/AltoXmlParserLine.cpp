@@ -16,12 +16,12 @@ AltoXmlParserLine::AltoXmlParserLine(pugi::xml_node node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-LinePtr
+Line
 AltoXmlParserLine::line(int id) const
 {
-	auto line = std::make_shared<Line>(id, box);
+	Line line(id, box);
 	for (const auto& c: chars_) {
-		line->append(c.c, c.box.right(), c.conf);
+		line.append(c.c, c.box.right(), c.conf);
 	}
 	return line;
 }

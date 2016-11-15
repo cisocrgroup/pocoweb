@@ -17,7 +17,7 @@
 #include "Pix.hpp"
 #include "BookDirectoryBuilder.hpp"
 #include "parser/AltoXmlPageParser.hpp"
-#include "LlocsPageParser.hpp"
+#include "parser/OcropusLlocsPageParser.hpp"
 #include "parser/AbbyyXmlPageParser.hpp"
 #include "HocrPageParser.hpp"
 

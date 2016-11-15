@@ -27,9 +27,9 @@ namespace pcw {
 			double confidence;
 			bool corrected;
 		};
-	
+
 		Line(int i, Box box = {});
-	
+
 		bool empty() const noexcept {return string_.empty();}
 		size_t size() const noexcept {return string_.size();}
 		const String& wstring() const noexcept {return string_;}
