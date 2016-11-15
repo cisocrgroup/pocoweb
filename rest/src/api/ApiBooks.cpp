@@ -248,9 +248,9 @@ ApiBooks::put(const Request& req, Database& db, Line& line) const
 	wf.set_test(line);
 	auto lev = wf();
 	CROW_LOG_DEBUG << "(ApiBooks) lev: " << lev << "\n" << wf;
-	CROW_LOG_DEBUG << "(ApiBooks) line: " << line.string();
+	CROW_LOG_DEBUG << "(ApiBooks) line: " << line.cor();
 	wf.apply(line);
-	CROW_LOG_DEBUG << "(ApiBooks) line: " << line.string();
+	CROW_LOG_DEBUG << "(ApiBooks) line: " << line.cor();
 	db.set_autocommit(false);
 	db.update_line(line);
 	db.commit();

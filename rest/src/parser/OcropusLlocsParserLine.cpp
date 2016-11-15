@@ -26,14 +26,14 @@ OcropusLlocsParserLine::line(int id) const
 std::wstring
 OcropusLlocsParserLine::wstring() const
 {
-	return line_.wstring();
+	return line_.wcor();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string
 OcropusLlocsParserLine::string() const
 {
-	return line_.string();
+	return line_.cor();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

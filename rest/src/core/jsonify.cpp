@@ -50,21 +50,21 @@ pcw::operator<<(Json& json, const Line& line)
 	json["id"] = line.id();
 	json["box"] << line.box;
 	json["imgFile"] = line.img.native();
-	json["string"] = line.string();
+	json["string"] = line.cor();
 	json["cuts"] = line.cuts();
 	json["confidences"] = line.confidences();
+	json["averageConfidence"] = line.average_conf();
 	size_t i = 0;
-	for (auto b: line.corrections()) 
-		json["corrections"][i++] = b;
-	i = 0;
-	line.each_token([&i,&json](const auto& word) {
-		json["tokens"][i]["corrected"] = word.corrected;
-		json["tokens"][i]["word"] = word.word;
-		json["tokens"][i]["confidence"] = word.confidence;
-		json["tokens"][i]["box"] << word.box;
+	line.each_token([&i,&json](const auto& token) {
+		json["tokens"][i]["isCorrected"] = token.is_corrected();
+		json["tokens"][i]["ocr"] = token.ocr();
+		json["tokens"][i]["cor"] = token.cor();
+		json["tokens"][i]["confidence"] = token.average_conf();
+		json["tokens"][i]["box"] << token.box;
+		json["tokens"][i]["isNormal"] = token.is_normal();
+		json["tokens"][i]["isSpace"] = token.is_space();
 		++i;
 	});
-	json["averageConfidence"] = line.calculate_average_confidence();
 	return json;
 }
 

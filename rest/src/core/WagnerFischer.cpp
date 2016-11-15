@@ -58,7 +58,7 @@ WagnerFischer::set_truth(const wchar_t* truth, size_t n)
 void
 WagnerFischer::set_truth(const Line& line)
 {
-	truth_ = line.wstring();
+	truth_ = line.wcor();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +110,9 @@ WagnerFischer::set_test(const wchar_t* test, size_t n)
 void
 WagnerFischer::set_test(const Line& line)
 {
-	test_ = line.wstring();
+	// use the corrected version as well 
+	// (if line is not corrected, wcor contains all ocr chars)
+	test_ = line.wcor();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
