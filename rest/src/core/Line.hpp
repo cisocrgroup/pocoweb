@@ -7,25 +7,31 @@
 #include "Box.hpp"
 
 namespace pcw {
-	struct EditOp;
-	using EditOps = std::vector<EditOp>;
 	class Page;
 	using PagePtr = std::shared_ptr<Page>;
 	class WagnerFischer;
 
 	class Line {
 	public:
+		struct Char;
+		using Chars = std::vector<Char>;
 		using Path = boost::filesystem::path;
 		using String = std::wstring;
 		using Cuts = std::vector<int>;
 		using Confidences = std::vector<double>;
 		using Corrections = std::vector<bool>;
-		using EditOps = std::vector<EditOp>;
+
 		struct Word {
 			Box box;
 			std::string word;
 			double confidence;
 			bool corrected;
+		};
+
+		struct Char {
+			wchar_t ocr, cor;
+			double conf;
+			int cut;
 		};
 
 		Line(int i, Box box = {});
