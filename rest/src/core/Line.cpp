@@ -185,12 +185,12 @@ isword(wchar_t c)
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-Line::each_word(std::function<void(const Word&)> f) const
+Line::each_token(std::function<void(const Token&)> f) const
 {
-	Word word;
-	word.box.set_top(this->box.top());
-	word.box.set_bottom(this->box.bottom());
-	word.word.reserve(string_.size() * 2);
+	Token token;
+	token.box.set_top(this->box.top());
+	token.box.set_bottom(this->box.bottom());
+	token.word.reserve(string_.size() * 2);
 
 	auto e = end(string_);
 	auto b = begin(string_);
@@ -203,13 +203,13 @@ Line::each_word(std::function<void(const Word&)> f) const
 
 		auto corr = std::all_of(begin(corrs_) + pi, begin(corrs_) + pj, [](bool b) {return b;});
 		auto conf = std::accumulate(begin(confs_) + pi, begin(confs_) + pj, 0.0);
-		word.box.set_left(pi > 0 ? cuts_[pi - 1] : 0);
-		word.box.set_right(pj > 0 ? cuts_[pj - 1] : cuts_[pj]);
-		word.confidence = conf / n;
-		word.corrected = corr;
-		utf8::utf32to8(i, j, std::back_inserter(word.word));
-		f(word);
-		word.word.clear();
+		token.box.set_left(pi > 0 ? cuts_[pi - 1] : 0);
+		token.box.set_right(pj > 0 ? cuts_[pj - 1] : cuts_[pj]);
+		token.confidence = conf / n;
+		token.corrected = corr;
+		utf8::utf32to8(i, j, std::back_inserter(token.word));
+		f(token);
+		token.word.clear();
 		i = std::find_if(j, e, isword);
 	}
 }

@@ -21,7 +21,7 @@ namespace pcw {
 		using Confidences = std::vector<double>;
 		using Corrections = std::vector<bool>;
 
-		struct Word {
+		struct Token {
 			Box box;
 			std::string word;
 			double confidence;
@@ -46,7 +46,7 @@ namespace pcw {
 		double calculate_average_confidence() const noexcept;
 		PagePtr page() const noexcept {return page_.lock();}
 		bool has_img_path() const noexcept {return not img.empty();}
-		void each_word(std::function<void(const Word&)> f) const;
+		void each_token(std::function<void(const Token&)> f) const;
 		int id() const noexcept {return id_;}
 
 		void append(const std::string& str, int l, int r, double c, bool corr = false);
