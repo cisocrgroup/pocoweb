@@ -68,6 +68,7 @@ pcw::WagnerFischer::apply(T& t) const
 {
 	int o = 0;
 	const auto n = trace_.size();
+	t.begin_wagner_fischer();
 	for (size_t i = 0; i < n; ++i) {
 		const auto ii = i + o;
 		switch (trace_[i]) {
@@ -88,9 +89,11 @@ pcw::WagnerFischer::apply(T& t) const
 			break;
 		// do nothing; char is already correct
 		case WagnerFischer::EditOp::Nop:
+			t.noop(ii);
 			break;
 		}
 	}
+	t.end_wagner_fischer();
 }
 
 #endif // pcw_WagnerFischer_hpp__
