@@ -8,7 +8,7 @@
 namespace pcw {
 	class OcropusLlocsParserLine: public ParserLine {
 	public:
-		OcropusLlocsParserLine(Path llocs, const Path& img);
+		OcropusLlocsParserLine(int id, Path llocs, const Path& img);
 
 		virtual ~OcropusLlocsParserLine() noexcept override = default;
 		virtual void insert(size_t i, wchar_t c) override;

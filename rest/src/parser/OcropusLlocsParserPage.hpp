@@ -7,12 +7,16 @@
 namespace pcw {
 	class OcropusLlocsParserPage: public BasicParserPage {
 	public:
-		OcropusLlocsParserPage(int id): id_(id) {}
+		OcropusLlocsParserPage(int id);
 		virtual ~OcropusLlocsParserPage() noexcept override = default;
 		virtual void write(const Path& path) const override;
+		const Path& dir() const noexcept {return dir_;}
 
 	private:
-		void write(int id, const ParserLine& line, const Path& path) const;
+		static void write(int id, const ParserLine& line, const Path& base);
+		static void copy(const Path& from, const Path& to);
+
+		Path dir_;
 		int id_;
 	};
 }

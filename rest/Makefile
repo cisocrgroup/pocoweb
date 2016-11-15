@@ -74,6 +74,7 @@ PAR_OBJS += OcropusLlocsParserPage.o
 
 TESTS += AltoXmlParsing.test
 TESTS += AbbyyXmlParsing.test
+TESTS += OcropusLlocsParsing.test
 
 default: all
 all: pcwd

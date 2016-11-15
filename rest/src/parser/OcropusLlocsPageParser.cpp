@@ -60,6 +60,7 @@ OcropusLlocsPageParser::parse_page() const
 	for (int i = 0; i < static_cast<int>(llocs.size()); ++i) {
 		page->lines().push_back(
 			std::make_shared<OcropusLlocsParserLine>(
+				i + 1,
 				llocs[i].first, 
 				llocs[i].second
 			)

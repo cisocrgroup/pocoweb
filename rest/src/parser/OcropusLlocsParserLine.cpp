@@ -7,8 +7,8 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-OcropusLlocsParserLine::OcropusLlocsParserLine(Path llocs, const Path& img)
-	: line_(std::stoi(llocs.filename().string(), nullptr, 16))
+OcropusLlocsParserLine::OcropusLlocsParserLine(int id, Path llocs, const Path& img)
+	: line_(id)
 	, llocs_(std::move(llocs))
 {
 	line_.img = img;
@@ -61,25 +61,24 @@ OcropusLlocsParserLine::set(size_t pos, wchar_t c)
 void
 OcropusLlocsParserLine::init()
 {
-	static const std::wregex linere{LR"((.*)\t(-?\d*\.\d+)(\t(\d*\.\d+))?)"};
+	static const std::wregex linere{LR"((.?)\t(-?\d*\.?\d+)(\t(\d*\.?\d+))?)"};
 	std::wifstream is(llocs_.string());
 	if (not is.good())
 		throw std::system_error(errno, std::system_category(), llocs_.string());
 	std::wstring tmp;
+	std::wsmatch m;
 	while (std::getline(is, tmp)) {
-		std::wsmatch m;
 		if (not std::regex_match(tmp, m, linere))
 			throw BadRequest(
 				"(OcropusLLocsParserLine) Invalid llocs file: " +
 				llocs_.string()
 			);
+		wchar_t c = m[1].length() ? *m[1].first : L' ';
 		double cut = std::stod(m[2]);
-		double conf = 0;
-		if (m[4].length())
-			conf = std::stod(m[4]);
+		double conf = m[4].length() ? std::stod(m[4]) : 0;
 		if (cut < 0) // fix cuts smaller than 0 (does happen)
 			cut = 0;
-		line_.append(m[1], 0, static_cast<int>(cut), conf);
+		line_.append(c, cut, conf);
 	}
 }
 

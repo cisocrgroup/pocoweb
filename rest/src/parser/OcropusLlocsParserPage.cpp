@@ -3,39 +3,68 @@
 #include <fstream>
 #include <iomanip>
 #include <stdexcept>
+#include <crow/logging.h>
 #include "core/Line.hpp"
 #include "OcropusLlocsParserPage.hpp"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-OcropusLlocsParserPage::write(const Path& path) const
+OcropusLlocsParserPage::OcropusLlocsParserPage(int id)
+	: dir_()
+	, id_(id)
 {
 	std::stringstream dir;
 	dir << std::hex << std::setfill('0') << std::setw(10) << id_;
-	auto base = path / dir.str();
+	dir_ = dir.str();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+OcropusLlocsParserPage::write(const Path& path) const
+{
+	auto base = path / dir_;
 	boost::filesystem::create_directory(base);
 	int i = 0;
 	for (const auto& line: lines()) {
-		std::stringstream os;
-		os << std::hex << std::setfill('0') << std::setw(10) << ++i;
-		write(i, *line, base / os.str());
+		write(++i, *line, base);
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-OcropusLlocsParserPage::write(int id, const ParserLine& line, const Path& path) const
+OcropusLlocsParserPage::write(int id, const ParserLine& line, const Path& base) 
 {
 	auto l = line.line(id);
-	std::wofstream os(path.string());
+	auto img = base / l.img.filename();
+	auto llocs = img.replace_extension(".llocs");
+	std::wofstream os(llocs.string());
 	if (not os.good())
-		throw std::system_error(errno, std::system_category(), path.string());
+		throw std::system_error(errno, std::system_category(), llocs.string());
+	copy(l.img, base / l.img.filename());
 	for (auto i = 0U; i < l.size(); ++i) {
 		os << l.wstring()[i] << '\t'
-		   << l.cuts()[i] << '\t'
+		   << static_cast<double>(l.cuts()[i]) << '\t'
 		   << l.confidences()[i] << '\n';
 	}
 	os.close();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+OcropusLlocsParserPage::copy(const Path& from, const Path& to)
+{
+	boost::system::error_code ec;
+	boost::filesystem::create_hard_link(from, to, ec);
+	if (ec) { // could not create hard link; try copy
+		CROW_LOG_WARNING << "Could not create hardlink from "
+				 << from << " to " << to << ": "
+				 << ec.message();
+		boost::filesystem::copy_file(from, to, ec);
+		if (ec) {
+			CROW_LOG_WARNING << "Could not copy file from "
+					 << from << " to " << to << ": "
+					 << ec.message();
+		}
+	}
 }
