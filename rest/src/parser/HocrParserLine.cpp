@@ -107,9 +107,9 @@ HocrParserLine::update_char(Iterator b, Iterator e, Node& parent)
 		
 	});
 	conf /= wstr.size();
-	set_box(box, node);
-	set_conf(conf, node);
-	set_content(wstr, node);
+	hocr::set_box(box, node);
+	hocr::set_conf(conf, node);
+	hocr::set_cont(wstr, node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -147,22 +147,19 @@ HocrParserLine::set(size_t pos, wchar_t c)
 void
 HocrParserLine::init_string(const pugi::xml_node& node, bool space_before)
 {
-	assert(strcmp(node.name(), "String") == 0);
+	assert(strcmp(node.name(), "span") == 0);
 
 	const auto wc = hocr::get_conf(node);
 	const auto box = hocr::get_box(node);
 	const auto token = hocr::get_cont(node);
-	const auto len = strlen(token);
 
-	std::wstring wstr;
-	utf8::utf8to32(token, token + len, std::back_inserter(wstr));
-	const auto boxes = box.split(wstr.size());
-	assert(boxes.size() == wstr.size());
+	const auto boxes = box.split(token.size());
+	assert(boxes.size() == token.size());
 	if (space_before and not boxes.empty() and not chars_.empty()) {
 		chars_.back().box.set_right(boxes.front().left());
 	}
-	for (auto i = 0U; i < wstr.size(); ++i) {
-		chars_.emplace_back(wstr[i], node, wc, boxes[i]);
+	for (auto i = 0U; i < token.size(); ++i) {
+		chars_.emplace_back(token[i], node, wc, boxes[i]);
 	}
 }
 
@@ -198,58 +195,6 @@ HocrParserLine::init()
 	}
 }
 
-// <span class='ocrx_word' ... title='bbox 1700 121 1827 195; x_wconf 80' lang='eng' dir='ltr'>Cap.</span> 
-////////////////////////////////////////////////////////////////////////////////
-void 
-HocrParserLine::set_box(const Box& box, Node& node)
-{
-	static const std::regex bboxre{R"(bbox\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+"))"};
-	std::stringstream os;
-	os << "bbox " 
-	   << box.left() << " " 
-	   << box.top() << " "
-	   << box.right() << " "
-	   << box.bottom();
-	if (not node.attribute("title")) {
-		node.append_attribute("title").set_value(os.str().data());
-	} else {
-		std::string title = node.attribute("title").value();
-		auto repl = std::regex_replace(title, bboxre, os.str());
-		node.attribute("title").set_value(repl.data());
-	}
-}
-
-// <span title='bbox 1700 121 1827 195; x_wconf 80' lang='eng' dir='ltr'>Cap.</span> 
-////////////////////////////////////////////////////////////////////////////////
-void 
-HocrParserLine::set_conf(double conf, Node& node)
-{
-	static const std::regex confre{R"(x_wconf\s+(\d+))"};
-	auto iconf = static_cast<int>(conf * 100);
-	std::stringstream os;
-	os << "x_wconf " << iconf;
-	if (not node.attribute("title")) {
-		node.append_attribute("title").set_value(os.str().data());
-	} else {
-		std::string title = node.attribute("title").value();
-		auto repl = std::regex_replace(title, confre, os.str());
-		node.attribute("title").set_value(repl.data());
-	}
-}
-
-// <span title='bbox 1700 121 1827 195; x_wconf 80' lang='eng' dir='ltr'>Cap.</span> 
-////////////////////////////////////////////////////////////////////////////////
-void 
-HocrParserLine::set_content(const std::wstring& str, Node& node)
-{
-	if (not node.first_child())
-		node.append_child(pugi::node_pcdata);
-	std::string ustr;
-	ustr.reserve(str.size());
-	utf8::utf32to8(begin(str), end(str), std::back_inserter(ustr));
-	node.first_child().set_value(ustr.data());
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 HocrParserLine::Iterator 
 HocrParserLine::find_end_of_token(Iterator b, Iterator e) noexcept
@@ -278,7 +223,8 @@ HocrParserLine::merge(Node& a, const Node& b)
 	if (a != b) { // don't merge the same node with itself
 		for (const auto& attr: b.attributes()) {
 			if (not a.attribute(attr.name())) 
-				a.append_attribute(attr.name()).set_value(attr.value());
+				a.append_attribute(attr.name()).
+					set_value(attr.value());
 		}
 	}
 	return a;
