@@ -203,6 +203,7 @@ Line::set(size_t i, wchar_t c)
 	const auto ii = i + ofs_;
 	assert(ii < chars_.size());
 	chars_[ii].cor = c;
+	chars_[ii].conf = 1;
 	assert(chars_[ii].is_substitution());
 	assert(chars_[ii].is_corrected());
 }
@@ -212,13 +213,40 @@ void
 Line::insert(size_t i, wchar_t c)
 {
 	const auto ii = i + ofs_;
-	assert(ii < chars_.size());
-	const int l = ii > 0 ? chars_[ii].cut : 0;
-	const int r = chars_[ii].cut;
-	const int half = (r - l) / 2; // fuck the consequences!
-	chars_.insert(begin(chars_) + ii, Char{0, c, l + half, 1.0});
+	assert(ii <= chars_.size()); // if ii == chars_.size() append to end
+
+	const int cut = ii < chars_.size() ? chars_[ii].cut : box.right();
+
+	auto r = end(chars_);
+	if (ii == chars_.size()) {
+		chars_.emplace_back(0, c, cut, 1.0);
+		r = std::prev(end(chars_)); 
+	} else {
+		r = chars_.emplace(begin(chars_) + ii, 0, c, cut, 1.0);
+	}
+	auto l = ii > 0 ? begin(chars_) + (ii - 1) : begin(chars_);
+	divide_cuts(l, r);
 	assert(chars_[ii].is_insertion());
 	assert(chars_[ii].is_corrected());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void 
+Line::divide_cuts(Chars::iterator first, Chars::iterator last)
+{
+	auto e = end(chars_);
+	if (first != last and first != e and last != e) {
+		auto left = first == begin(chars_) ? first : std::prev(first);
+		const auto right = last;
+
+		const int n = std::distance(left, right) + 1;
+		const int d = right->cut - left->cut;
+		const int p = d / n;
+
+		while (++left != right) {
+			left->cut = std::prev(left)->cut + p;
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -240,6 +268,7 @@ Line::noop(size_t i)
 	const auto ii = i + ofs_;
 	assert(ii < chars_.size());
 	chars_[ii].cor = chars_[ii].ocr;
+	chars_[ii].conf = 1;
 	assert(chars_[ii].is_corrected());
 }
 

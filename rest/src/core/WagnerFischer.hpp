@@ -45,7 +45,7 @@ namespace pcw {
 			return l_;
 		}
 		template<class T>
-		void apply(T& t) const;
+		size_t apply(T& t);
 
         private:
                 size_t getMin(size_t i, size_t j) const noexcept;
@@ -63,9 +63,10 @@ namespace pcw {
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class T>
-void 
-pcw::WagnerFischer::apply(T& t) const
+size_t 
+pcw::WagnerFischer::apply(T& t) 
 {
+	const auto lev = (*this)();
 	int o = 0;
 	const auto n = trace_.size();
 	t.begin_wagner_fischer();
@@ -94,6 +95,7 @@ pcw::WagnerFischer::apply(T& t) const
 		}
 	}
 	t.end_wagner_fischer();
+	return lev;
 }
 
 #endif // pcw_WagnerFischer_hpp__

@@ -55,7 +55,7 @@ namespace pcw {
 			bool is_substitution() const noexcept {return cor and ocr and cor != ocr;}
 			bool is_corrected() const noexcept {return cor;}
 			wchar_t get_cor() const noexcept {
-				return is_corrected() and not is_deletion() ? cor : ocr;
+				return not is_deletion() ?  is_corrected() ? cor : ocr : 0;
 			}
 
 			wchar_t ocr, cor;
@@ -105,6 +105,8 @@ namespace pcw {
 		Path img;
 
 	private:
+		void divide_cuts(Chars::iterator f, Chars::iterator l);
+
 		template<class It, class F>
 		static void cor(It b, It e, F f) {
 			while (b != e) {

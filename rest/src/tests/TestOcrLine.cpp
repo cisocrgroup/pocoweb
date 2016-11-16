@@ -1,5 +1,5 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE LineTest
+#define BOOST_TEST_MODULE OcrLineTest
 
 #include <boost/test/unit_test.hpp>
 #include <functional>
@@ -10,7 +10,6 @@
 using namespace pcw;
 
 struct Fixture {
-	static const char* gt;
 	static const char* ocr;
 	static const Box box;
 
@@ -21,15 +20,14 @@ struct Fixture {
 	Line line;
 };
 
-const char* Fixture::gt = "ꝑfectũ eſt: quidq◌̉d tempꝰ ·";
 const char* Fixture::ocr = "pectũeſt: quioo te mp";
 const Box Fixture::box{0, 0, 100, 20};
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_FIXTURE_TEST_SUITE(LineTest, Fixture)
+BOOST_FIXTURE_TEST_SUITE(OcrLineTest, Fixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Ocr)
+BOOST_AUTO_TEST_CASE(Line)
 {
 	BOOST_CHECK_EQUAL(line.ocr(), ocr);
 	BOOST_CHECK_EQUAL(line.cor(), ocr); // cor and ocr must be the same
@@ -38,7 +36,7 @@ BOOST_AUTO_TEST_CASE(Ocr)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(OcrTokens)
+BOOST_AUTO_TEST_CASE(Tokens)
 {
 	auto tokens = line.tokens();
 	BOOST_REQUIRE(tokens.size() == 7);
@@ -73,7 +71,7 @@ BOOST_AUTO_TEST_CASE(OcrTokens)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(OcrWords)
+BOOST_AUTO_TEST_CASE(Words)
 {
 	auto words = line.words();
 	BOOST_CHECK_EQUAL(words.size(), 4);
@@ -88,11 +86,6 @@ BOOST_AUTO_TEST_CASE(OcrWords)
 	BOOST_CHECK_EQUAL(words[2].cor(), "te"); 
 	BOOST_CHECK_EQUAL(words[3].ocr(), "mp"); 
 	BOOST_CHECK_EQUAL(words[3].cor(), "mp"); 
-}
-
-////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Cor)
-{
 }
 
 ////////////////////////////////////////////////////////////////////////////////

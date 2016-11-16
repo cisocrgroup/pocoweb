@@ -27,10 +27,9 @@ WagnerFischer::set_gt(const char* gt)
 void
 WagnerFischer::set_gt(const char* gt, size_t n)
 {
-	std::wstring wstr;
-	wstr.reserve(n * 2);
-	utf8::utf8to32(gt, gt + n, std::back_inserter(wstr));
-	set_gt(wstr.data(), wstr.size());
+	gt_.clear();
+	gt_.reserve(std::max(n * 2, gt_.capacity()));
+	utf8::utf8to32(gt, gt + n, std::back_inserter(gt_));
 }
 	
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,7 +43,7 @@ WagnerFischer::set_gt(const std::wstring& gt)
 void
 WagnerFischer::set_gt(const wchar_t* gt)
 {
-	set_gt(gt, wcslen(gt));
+	gt_ = std::wstring(gt);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -79,10 +78,9 @@ WagnerFischer::set_ocr(const char* ocr)
 void
 WagnerFischer::set_ocr(const char* ocr, size_t n)
 {
-	std::wstring wstr;
-	wstr.reserve(n * 2);
-	utf8::utf8to32(ocr, ocr + n, std::back_inserter(wstr));
-	set_ocr(wstr.data(), wstr.size());
+	ocr_.clear();
+	ocr_.reserve(std::max(n * 2, ocr_.capacity()));
+	utf8::utf8to32(ocr, ocr + n, std::back_inserter(ocr_));
 }
 	
 ////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +94,7 @@ WagnerFischer::set_ocr(const std::wstring& ocr)
 void
 WagnerFischer::set_ocr(const wchar_t* ocr)
 {
-	set_ocr(ocr, wcslen(ocr));
+	ocr_ = std::wstring(ocr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
