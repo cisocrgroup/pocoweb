@@ -3,7 +3,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <memory>
-#include "core/PageParser.hpp"
+#include "PageParser.hpp"
 #include "Xml.hpp"
 
 namespace pcw {

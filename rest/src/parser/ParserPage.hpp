@@ -46,7 +46,7 @@ namespace pcw {
 		Box box;
 	};	
 
-	class ParserPage {
+	class ParserPage: public std::enable_shared_from_this<ParserPage> {
 	public:
 		virtual ~ParserPage() noexcept = default;
 		virtual void write(const Path&) const = 0;
@@ -54,6 +54,7 @@ namespace pcw {
 		virtual const ParserLine& get(size_t i) const = 0;
 		virtual size_t size() const noexcept = 0;
 		virtual PagePtr page() const;
+
 		Box box;
 		Path ocr, img;
 		int id;

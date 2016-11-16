@@ -4,7 +4,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/optional.hpp>
 #include <memory>
-#include "core/PageParser.hpp"
+#include "PageParser.hpp"
 
 namespace pcw {
 	class ParserPage;

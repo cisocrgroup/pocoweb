@@ -6,7 +6,7 @@
 #include "BookBuilder.hpp"
 #include "Book.hpp"
 #include "MetsXmlBookParser.hpp"
-#include "PageParser.hpp"
+#include "parser/PageParser.hpp"
 
 using namespace pcw;
 
