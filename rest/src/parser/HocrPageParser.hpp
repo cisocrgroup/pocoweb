@@ -3,8 +3,8 @@
 
 #include <boost/filesystem/path.hpp>
 #include <memory>
-#include "PageParser.hpp"
-#include "XmlFile.hpp"
+#include "core/PageParser.hpp"
+#include "core/XmlFile.hpp"
 
 namespace pcw {
 	class Box;

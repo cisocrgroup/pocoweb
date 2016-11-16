@@ -12,7 +12,7 @@
 #include <openssl/sha.h>
 #include "util.hpp"
 #include "parser/AltoXmlPageParser.hpp"
-#include "HocrPageParser.hpp"
+#include "parser/HocrPageParser.hpp"
 #include "parser/OcropusLlocsPageParser.hpp"
 #include "parser/AbbyyXmlPageParser.hpp"
 

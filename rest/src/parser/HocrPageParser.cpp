@@ -2,12 +2,12 @@
 #include <iostream>
 #include <pugixml.hpp>
 #include <regex>
-#include "BadRequest.hpp"
+#include "core/BadRequest.hpp"
 #include "HocrPageParser.hpp"
-#include "Page.hpp"
-#include "Line.hpp"
-#include "Box.hpp"
-#include "util.hpp"
+#include "core/Page.hpp"
+#include "core/Line.hpp"
+#include "core/Box.hpp"
+#include "core/util.hpp"
 
 using namespace pcw;
 

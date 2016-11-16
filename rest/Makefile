@@ -35,7 +35,6 @@ LDFLAGS += -lcrypto
 
 VPATH = src src/core ../modules/pugixml/src src/api src/parser src/tests
 
-OBJS += HocrPageParser.o
 OBJS += WagnerFischer.o
 OBJS += MetsXmlBookParser.o
 OBJS += BookDirectoryBuilder.o
@@ -71,6 +70,7 @@ PAR_OBJS += AbbyyXmlPageParser.o
 PAR_OBJS += OcropusLlocsParserLine.o
 PAR_OBJS += OcropusLlocsPageParser.o
 PAR_OBJS += OcropusLlocsParserPage.o
+PAR_OBJS += HocrPageParser.o
 
 TESTS += TestOcrLine.test
 TESTS += TestCorLine.test

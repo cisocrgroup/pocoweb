@@ -19,7 +19,7 @@
 #include "parser/AltoXmlPageParser.hpp"
 #include "parser/OcropusLlocsPageParser.hpp"
 #include "parser/AbbyyXmlPageParser.hpp"
-#include "HocrPageParser.hpp"
+#include "parser/HocrPageParser.hpp"
 
 namespace fs = boost::filesystem;
 using namespace pcw;
