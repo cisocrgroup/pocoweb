@@ -39,9 +39,6 @@ namespace pcw {
 		void init_space(const Node& node);
 		void init();
 
-		static void set_box(const Box& box, Node& node);
-		static void set_conf(double conf, Node& node);
-		static void set_content(const std::wstring& str, Node& node);
 		static Iterator find_end_of_token(Iterator b, Iterator e) noexcept;
 		static Char make_copy(Char& c, wchar_t cc);
 		static Node merge(Node& a, const Node& b);
