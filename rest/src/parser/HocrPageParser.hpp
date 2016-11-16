@@ -23,10 +23,9 @@ namespace pcw {
 		virtual bool has_next() const noexcept override {
 			return page_node_;
 		}
-		virtual PagePtr parse() override;
+		virtual ParserPagePtr parse() override;
 		virtual bool begin(Xml::Node& node) override;
 		virtual bool for_each(Xml::Node& node) override;
-		ParserPagePtr pparse();
 
 	private:
 		void next_page();

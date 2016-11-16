@@ -28,15 +28,8 @@ OcropusLlocsPageParser::OcropusLlocsPageParser(Path path)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-PagePtr
-OcropusLlocsPageParser::parse()
-{
-	return pparse()->page();
-}
-
-////////////////////////////////////////////////////////////////////////////////
 ParserPagePtr
-OcropusLlocsPageParser::pparse()
+OcropusLlocsPageParser::parse()
 {
 	assert(not done_);
 	done_ = true; // one page per directory

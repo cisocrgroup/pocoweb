@@ -1,5 +1,6 @@
 #include <regex>
 #include <fstream>
+#include "parser/ParserPage.hpp"
 #include "util.hpp"
 #include "Page.hpp"
 #include "BadRequest.hpp"
@@ -56,7 +57,7 @@ BookBuilder::parse_book_data() const
 		auto pp = make_page_parser(ocr.second, ocr.first);
 		assert(pp);
 		while (pp->has_next()) {
-			auto page = pp->parse();
+			auto page = pp->parse()->page();
 			if (page->has_ocr_path() and not page->has_img_path()) {
 				auto i = find_matching_img_file(page->ocr);
 				if (i == end(img_))

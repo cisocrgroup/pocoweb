@@ -13,13 +13,12 @@ namespace pcw {
 
 	class AltoXmlPageParser: public PageParser {
 	public:
-		AltoXmlPageParser(const Path& path): path_(path), xml_(path), done_(false) {}
+		AltoXmlPageParser(const Path& path)
+			: path_(path), xml_(path), done_(false) {}
 		AltoXmlPageParser(Xml xml): xml_(xml), done_(false) {}
 		virtual ~AltoXmlPageParser() noexcept override = default;
 		virtual bool has_next() const noexcept override {return not done_;}
-		virtual PagePtr parse() override;
-
-		XmlParserPagePtr pparse();
+		virtual ParserPagePtr parse() override;
 
 	private:
 		static void parse(const Xml::Node& pagenode, XmlParserPage& page);

@@ -17,7 +17,7 @@ struct Fixture {
 	Fixture(): page() {
 		AbbyyXmlPageParser parser("../misc/data/test/abbyy-test.xml");
 		BOOST_REQUIRE(parser.has_next());
-		page = parser.pparse();
+		page = parser.parse();
 		BOOST_REQUIRE(not parser.has_next());
 		BOOST_REQUIRE(page);
 		BOOST_REQUIRE(page->size() == 3);
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(CorrectionTest)
 	page->write(file);
 
 	AbbyyXmlPageParser p2(file);
-	page = p2.pparse();
+	page = p2.parse();
 	BOOST_REQUIRE(page != nullptr);
 	BOOST_REQUIRE(page->size() == 3);
 

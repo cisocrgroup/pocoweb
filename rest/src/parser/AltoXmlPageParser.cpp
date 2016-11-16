@@ -11,16 +11,8 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-PagePtr
+ParserPagePtr
 AltoXmlPageParser::parse()
-{
-	done_ = true; // alto documents contain just one page
-	return pparse()->page();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-XmlParserPagePtr
-AltoXmlPageParser::pparse()
 {
 	done_ = true; // alto documents contain just one page
 	auto page = std::make_shared<XmlParserPage>(path_);

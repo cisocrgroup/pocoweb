@@ -18,8 +18,7 @@ namespace pcw {
 		OcropusLlocsPageParser(Path path);
 		virtual ~OcropusLlocsPageParser() noexcept override = default;
 		virtual bool has_next() const noexcept override {return not done_;}
-		virtual PagePtr parse() override;
-		virtual ParserPagePtr pparse();
+		virtual ParserPagePtr parse() override;
 
 	private:
 		using PathPair = std::pair<Path, Path>;

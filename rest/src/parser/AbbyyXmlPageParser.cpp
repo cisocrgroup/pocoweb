@@ -27,15 +27,8 @@ AbbyyXmlPageParser::AbbyyXmlPageParser(const Path& path)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-PagePtr
-AbbyyXmlPageParser::parse()
-{
-	return pparse()->page();
-}
-
-////////////////////////////////////////////////////////////////////////////////
 ParserPagePtr
-AbbyyXmlPageParser::pparse()
+AbbyyXmlPageParser::parse()
 {
 	assert(page_);
 	auto page = std::make_shared<XmlParserPage>(xml_);

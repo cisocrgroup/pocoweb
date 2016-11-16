@@ -35,15 +35,8 @@ HocrPageParser::HocrPageParser(const Path& path)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-PagePtr 
-HocrPageParser::parse() 
-{
-	return pparse()->page();
-}
-
-////////////////////////////////////////////////////////////////////////////////
 ParserPagePtr 
-HocrPageParser::pparse() 
+HocrPageParser::parse() 
 {
 	assert(page_node_);
 	page_node_.traverse(*this);

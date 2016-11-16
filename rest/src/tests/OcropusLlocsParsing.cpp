@@ -18,7 +18,7 @@ struct Fixture {
 	Fixture(): page() {
 		OcropusLlocsPageParser parser("../misc/data/test/llocs-test/0001");
 		BOOST_REQUIRE(parser.has_next());
-		page = parser.pparse();
+		page = parser.parse();
 		BOOST_REQUIRE(not parser.has_next());
 		BOOST_REQUIRE(page);
 		BOOST_REQUIRE(page->size() == 3);
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(CorrectionTest)
 	page->write(tmp);
 
 	OcropusLlocsPageParser p2(tmp / std::dynamic_pointer_cast<OcropusLlocsParserPage>(page)->dir());
-	page = p2.pparse();
+	page = p2.parse();
 	BOOST_REQUIRE(page != nullptr);
 	BOOST_REQUIRE(page->size() == 3);
 

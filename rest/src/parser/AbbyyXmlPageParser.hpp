@@ -20,8 +20,7 @@ namespace pcw {
 		AbbyyXmlPageParser(const Path& path);
 		virtual ~AbbyyXmlPageParser() noexcept override = default;
 		virtual bool has_next() const noexcept override {return page_;}
-		virtual PagePtr parse() override;
-		ParserPagePtr pparse();
+		virtual ParserPagePtr parse() override;
 
 	private:
 		Path path_;
