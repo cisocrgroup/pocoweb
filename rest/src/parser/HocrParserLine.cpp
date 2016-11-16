@@ -209,7 +209,7 @@ HocrParserLine::init()
 	}
 }
 
-// <span class='ocr_line' id='line_1_1' title="bbox 297 121 1906 195; baseline 0.001 -23">
+// <span title="bbox 297 121 1906 195; baseline 0.001 -23">
 ////////////////////////////////////////////////////////////////////////////////
 Box
 HocrParserLine::get_box(const char* title, size_t n)
@@ -259,7 +259,7 @@ HocrParserLine::set_box(const Box& box, Node& node)
 	}
 }
 
-// <span class='ocrx_word' ... title='bbox 1700 121 1827 195; x_wconf 80' lang='eng' dir='ltr'>Cap.</span> 
+// <span title='bbox 1700 121 1827 195; x_wconf 80' lang='eng' dir='ltr'>Cap.</span> 
 ////////////////////////////////////////////////////////////////////////////////
 void 
 HocrParserLine::set_conf(double conf, Node& node)
@@ -277,7 +277,7 @@ HocrParserLine::set_conf(double conf, Node& node)
 	}
 }
 
-// <span class='ocrx_word' ... title='bbox 1700 121 1827 195; x_wconf 80' lang='eng' dir='ltr'>Cap.</span> 
+// <span title='bbox 1700 121 1827 195; x_wconf 80' lang='eng' dir='ltr'>Cap.</span> 
 ////////////////////////////////////////////////////////////////////////////////
 void 
 HocrParserLine::set_content(const std::wstring& str, Node& node)

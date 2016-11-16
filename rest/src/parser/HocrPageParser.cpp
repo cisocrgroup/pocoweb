@@ -4,25 +4,47 @@
 #include <regex>
 #include "core/BadRequest.hpp"
 #include "HocrPageParser.hpp"
-#include "core/Page.hpp"
-#include "core/Line.hpp"
-#include "core/Box.hpp"
+#include "HocrParserLine.hpp"
+#include "ParserPage.hpp"
+#include "XmlParserPage.hpp"
 #include "core/util.hpp"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-HocrPageParser::HocrPageParser(const Path& path)
-	: XmlFile(path)
+HocrPageParser::HocrPageParser(Xml xml)
+	: xml_(std::move(xml))
+	, path_()
 	, page_node_()
 	, page_()
 {
-	page_node_ = xml_.select_node("/html/body/div[@class='ocr_page']").node();
+	page_node_ = xml_.doc().select_node(
+		"/html/body/div[@class='ocr_page']"
+	).node();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+HocrPageParser::HocrPageParser(const Path& path)
+	: xml_(path)
+	, path_(path)
+	, page_node_()
+	, page_()
+{
+	page_node_ = xml_.doc().select_node(
+		"/html/body/div[@class='ocr_page']"
+	).node();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 PagePtr 
 HocrPageParser::parse() 
+{
+	return pparse()->page();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+ParserPagePtr 
+HocrPageParser::pparse() 
 {
 	assert(page_node_);
 	page_node_.traverse(*this);
@@ -33,35 +55,25 @@ HocrPageParser::parse()
 
 ////////////////////////////////////////////////////////////////////////////////
 bool
-HocrPageParser::begin(XmlNode& node)
+HocrPageParser::begin(Xml::Node& node)
 {
-	auto box = get_box(node);
-	auto img = get_img(node);
-	page_ = std::make_shared<Page>(0, box);
+	page_ = std::make_shared<XmlParserPage>(xml_);
 	page_->ocr = path_;
-	page_->img = img;
+	page_->img = get_img(node);
+	page_->box = get_box(node);
 	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 bool
-HocrPageParser::for_each(XmlNode& node)
+HocrPageParser::for_each(Xml::Node& node)
 {
 	if (strcasecmp(node.name(), "span") == 0) {
 		if (strcmp(node.attribute("class").value(), "ocr_line") == 0) {
 			assert(page_);
-			auto box = get_box(node);
-			auto id = static_cast<int>(page_->size() + 1);
-			page_->push_back({id, box});
-		} else if (strcmp(node.attribute("class").value(), "ocrx_word") == 0) {
-			if (page_->empty())
-				throw std::runtime_error("(HocrPageParser) Missing class='ocr_line'");
-			auto box = get_box(node);
-			auto conf = get_conf(node);
-			if (not page_->back().empty()) {
-				page_->back().append(' ', box.left(), 0);
-			}
-			page_->back().append(node.child_value(), box.left(), box.right(), conf);
+			page_->lines().push_back(
+				std::make_shared<HocrParserLine>(node)
+			);
 		}
 	}
 	return true;
@@ -81,7 +93,7 @@ HocrPageParser::next_page()
 
 ////////////////////////////////////////////////////////////////////////////////
 double
-HocrPageParser::get_conf(const XmlNode& node)
+HocrPageParser::get_conf(const Xml::Node& node)
 {
 	static const std::regex re{R"(x_wconf\s+(\d+))"};
 	std::cmatch m;
@@ -92,7 +104,7 @@ HocrPageParser::get_conf(const XmlNode& node)
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string
-HocrPageParser::get_img(const XmlNode& node)
+HocrPageParser::get_img(const Xml::Node& node)
 {
 	static const std::regex re{R"xx(title\s+"(.*)")xx"};
 	std::cmatch m;
@@ -103,7 +115,7 @@ HocrPageParser::get_img(const XmlNode& node)
 
 ////////////////////////////////////////////////////////////////////////////////
 Box
-HocrPageParser::get_box(const XmlNode& node)
+HocrPageParser::get_box(const Xml::Node& node)
 {
 	static const std::regex re{R"(bbox\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+))"};
 	std::cmatch m;
