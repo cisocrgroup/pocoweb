@@ -16,10 +16,10 @@
 #include "Page.hpp"
 #include "Pix.hpp"
 #include "BookDirectoryBuilder.hpp"
-#include "AltoXmlPageParser.hpp"
-#include "LlocsPageParser.hpp"
-#include "AbbyyXmlPageParser.hpp"
-#include "HocrPageParser.hpp"
+#include "parser/AltoXmlPageParser.hpp"
+#include "parser/OcropusLlocsPageParser.hpp"
+#include "parser/AbbyyXmlPageParser.hpp"
+#include "parser/HocrPageParser.hpp"
 
 namespace fs = boost::filesystem;
 using namespace pcw;
@@ -58,18 +58,18 @@ BookDirectoryBuilder::BookDirectoryBuilder(Path path)
 ////////////////////////////////////////////////////////////////////////////////
 BookDirectoryBuilder::~BookDirectoryBuilder() noexcept
 {
-	CROW_LOG_INFO << "(BookDirectoryBuilder) Removing tmp dir " << tmp_dir(); 
+	CROW_LOG_INFO << "(BookDirectoryBuilder) Removing tmp dir " << tmp_dir();
 	// clean up tmp directory; do not throw
 	boost::system::error_code ec;
 	fs::remove_all(tmp_dir(), ec);
 	if (ec) {
-		CROW_LOG_WARNING << "(BookDirectoryBuilder) Could not remove " 
+		CROW_LOG_WARNING << "(BookDirectoryBuilder) Could not remove "
 				 << tmp_dir() << ": " << ec.message();
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 BookDirectoryBuilder::remove() const
 {
 	CROW_LOG_INFO << "(BookDirectoryBuilder) Removing directory " << dir_;
@@ -77,7 +77,7 @@ BookDirectoryBuilder::remove() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 BookDirectoryBuilder::add_zip_file(const std::string& content)
 {
 	auto tdir = tmp_dir();
@@ -100,7 +100,7 @@ BookDirectoryBuilder::add_zip_file(const std::string& content)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 BookDirectoryBuilder::add_file(const Path& path)
 {
 	builder_.add(path);
@@ -151,12 +151,12 @@ BookDirectoryBuilder::setup_img_and_ocr_files(Page& page) const
 void
 BookDirectoryBuilder::make_line_img_files(const Path& pagedir, Page& page) const
 {
-	PixPtr pix; 
+	PixPtr pix;
 	if (page.has_img_path()) {
 		pix.reset(pixRead(page.img.string().data()));
 		if (not pix)
 			throw std::runtime_error(
-				"(BookDirectoryBuilder) Cannot read image " + 
+				"(BookDirectoryBuilder) Cannot read image " +
 				page.img.string()
 			);
 	}
@@ -204,18 +204,21 @@ BookDirectoryBuilder::write_line_img_file(void *vpix, const Line& line)
 	assert(pix);
 	auto format = pixGetInputFormat(pix);
 	BOX box {
-		.x = line.box.left(), 
-		.y = line.box.top(), 
-		.w = line.box.width(), 
+		.x = line.box.left(),
+		.y = line.box.top(),
+		.w = line.box.width(),
 		.h = line.box.height()
 	};
 	clip(box, *pix);
 	if (box.x + box.w <= (int) pix->w and box.y + box.h <= (int) pix->h) {
 		PixPtr tmp{pixClipRectangle(pix, &box, nullptr)};
 		if (not tmp or pixWrite(line.img.string().data(), tmp.get(), format))
-			throw std::runtime_error("(BookDirectoryBuilder) Cannot write img " + line.img.string());
+			throw std::runtime_error(
+				"(BookDirectoryBuilder) Cannot write img " + 
+				line.img.string()
+			);
 	} else {
-		CROW_LOG_WARNING << "Cannot write line image for " << line.string();
+		CROW_LOG_WARNING << "Cannot write line image for " << line.cor();
 	}
 }
 
@@ -228,8 +231,8 @@ BookDirectoryBuilder::copy(const Path& from, const Path& to)
 	boost::system::error_code ec;
 	fs::create_hard_link(from, to, ec);
 	if (ec) { // could not create hard link; try copy
-		CROW_LOG_WARNING << "Could not create hardlink from " 
-				 << from << " to " << to << ": " 
+		CROW_LOG_WARNING << "Could not create hardlink from "
+				 << from << " to " << to << ": "
 				 << ec.message();
 		fs::copy_file(from, to);
 	}
@@ -245,7 +248,7 @@ BookDirectoryBuilder::path_from_id(int id)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Path 
+Path
 BookDirectoryBuilder::remove_common_base_path(const Path& p, const Path& base)
 {
 	auto i = std::mismatch(p.begin(), p.end(), base.begin(), base.end());

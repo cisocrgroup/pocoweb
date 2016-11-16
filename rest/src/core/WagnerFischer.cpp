@@ -10,65 +10,127 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-size_t 
-WagnerFischer::operator()(const std::wstring& truth, const Line& line)
+void
+WagnerFischer::set_gt(const std::string& gt)
 {
-	return (*this)(truth.data(), truth.size(), line);
+	set_gt(gt.data(), gt.size());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_gt(const char* gt)
+{
+	set_gt(gt, strlen(gt));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_gt(const char* gt, size_t n)
+{
+	gt_.clear();
+	gt_.reserve(std::max(n * 2, gt_.capacity()));
+	utf8::utf8to32(gt, gt + n, std::back_inserter(gt_));
+}
+	
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_gt(const std::wstring& gt)
+{
+	gt_ = gt;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_gt(const wchar_t* gt)
+{
+	gt_ = std::wstring(gt);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_gt(const wchar_t* gt, size_t n)
+{
+	gt_ = std::wstring(gt, n);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_gt(const Line& line)
+{
+	gt_ = line.wcor();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_ocr(const std::string& ocr)
+{
+	set_ocr(ocr.data(), ocr.size());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_ocr(const char* ocr)
+{
+	set_ocr(ocr, strlen(ocr));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_ocr(const char* ocr, size_t n)
+{
+	ocr_.clear();
+	ocr_.reserve(std::max(n * 2, ocr_.capacity()));
+	utf8::utf8to32(ocr, ocr + n, std::back_inserter(ocr_));
+}
+	
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_ocr(const std::wstring& ocr)
+{
+	ocr_ = ocr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_ocr(const wchar_t* ocr)
+{
+	ocr_ = std::wstring(ocr);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_ocr(const wchar_t* ocr, size_t n)
+{
+	ocr_ = std::wstring(ocr, n);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+WagnerFischer::set_ocr(const Line& line)
+{
+	// use the corrected version as well 
+	// (if line is not corrected, wcor contains all ocr chars)
+	ocr_ = line.wcor();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 size_t 
-WagnerFischer::operator()(const wchar_t* truth, const Line& line)
+WagnerFischer::operator()()
 {
-	return (*this)(truth, wcslen(truth), line);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-size_t 
-WagnerFischer::operator()(const std::string& truth, const Line& line)
-{
-	return (*this)(truth.data(), truth.size(), line);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-size_t 
-WagnerFischer::operator()(const char* truth, const Line& line)
-{
-	std::wstring wstr;
-	const auto n = strlen(truth);
-	return (*this)(truth, n, line);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-size_t 
-WagnerFischer::operator()(const char* truth, size_t n, const Line& line)
-{
-	std::wstring wstr;
-	wstr.reserve(n * 2);
-	utf8::utf8to32(truth, truth + n, std::back_inserter(wstr));
-	return (*this)(wstr.data(), wstr.size(), line);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-size_t 
-WagnerFischer::operator()(const wchar_t* truth, size_t n, const Line& line)
-{
-        truth_ = std::wstring(truth, n);
-        test_ = line.wstring();
-        const auto truthn = truth_.size();
-        const auto testn = test_.size();
+        const auto gtn = gt_.size();
+        const auto ocrn = ocr_.size();
         l_.clear();
-        l_.emplace_back(truthn + 1, 0);
+        l_.emplace_back(gtn + 1, 0);
         std::iota(l_[0].begin(), l_[0].end(), 0);
-        for (auto i = 1U; i < testn + 1; ++i) {
-                l_.emplace_back(truthn + 1, 0);
+        for (auto i = 1U; i < ocrn + 1; ++i) {
+                l_.emplace_back(gtn + 1, 0);
                 l_[i][0] = i;
-                for (auto j = 1U; j < truthn + 1; ++j) {
+                for (auto j = 1U; j < gtn + 1; ++j) {
                         l_[i][j] = getMin(i, j);
                 }
         }
         backtrack();
-        return l_[testn][truthn];
+        return l_[ocrn][gtn];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -77,7 +139,7 @@ WagnerFischer::getMin(size_t i, size_t j) const noexcept
 {
         assert(i > 0);
         assert(j > 0);
-        if (test_[i - 1] == truth_[j - 1]) {
+        if (ocr_[i - 1] == gt_[j - 1]) {
                 return l_[i - 1][j - 1];
         } else {
                 return std::min(l_[i - 1][j - 1] + 1,
@@ -91,8 +153,8 @@ void
 WagnerFischer::backtrack()
 {
         trace_.clear();
-        trace_.reserve(std::max(truth_.size(), test_.size()));
-        for (size_t i = test_.size(), j = truth_.size(); i or j;) {
+        trace_.reserve(std::max(gt_.size(), ocr_.size()));
+        for (size_t i = ocr_.size(), j = gt_.size(); i or j;) {
                 auto t = backtrack(i, j);
                 i = std::get<1>(t);
                 j = std::get<2>(t);
@@ -105,15 +167,15 @@ WagnerFischer::backtrack()
                 case EditOp::Sub:
                         break;
                 case EditOp::Del:
-                        test_.insert(i, 1, L'_');
+                        ocr_.insert(i, 1, L'_');
                         break;
                 case EditOp::Ins:
-                        truth_.insert(i, 1, L'_');
+                        gt_.insert(i, 1, L'_');
                         break;
                 }
         }
-        assert(trace_.size() == truth_.size());
-        assert(trace_.size() == test_.size());
+        assert(trace_.size() == gt_.size());
+        assert(trace_.size() == ocr_.size());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -150,11 +212,11 @@ WagnerFischer::backtrack(size_t i, size_t j) const noexcept
 std::ostream& 
 pcw::operator<<(std::ostream& os, const WagnerFischer& wf)
 {
-	os << wf.table() << "\n";
+	// os << wf.table() << "\n";
 
 	char buf[] = {0,0,0,0,0}; // 5 are enough
-	for (size_t i = 0; i < wf.test().size(); ++i) {
-		utf8::append(wf.test()[i], buf);
+	for (size_t i = 0; i < wf.ocr().size(); ++i) {
+		utf8::append(wf.ocr()[i], buf);
 		os << buf;
 	}
 	os << "\n";
@@ -162,8 +224,8 @@ pcw::operator<<(std::ostream& os, const WagnerFischer& wf)
 		os << static_cast<char>(wf.trace()[i]);
 	}
 	os << "\n";
-	for (size_t i = 0; i < wf.truth().size(); ++i) {
-		utf8::append(wf.truth()[i], buf);
+	for (size_t i = 0; i < wf.gt().size(); ++i) {
+		utf8::append(wf.gt()[i], buf);
 		os << buf;
 	}	
 	return os;

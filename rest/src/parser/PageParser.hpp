@@ -4,14 +4,14 @@
 #include <memory>
 
 namespace pcw {
-	class Page;
-	using PagePtr = std::shared_ptr<Page>;
+	class ParserPage;
+	using ParserPagePtr = std::shared_ptr<ParserPage>;
 
 	class PageParser {
 	public:
 		virtual ~PageParser() noexcept = default;
 		virtual bool has_next() const noexcept = 0;
-		virtual PagePtr parse() = 0;
+		virtual ParserPagePtr parse() = 0;
 	};
 }
 

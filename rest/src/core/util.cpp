@@ -11,10 +11,10 @@
 #include <regex>
 #include <openssl/sha.h>
 #include "util.hpp"
-#include "AltoXmlPageParser.hpp"
-#include "HocrPageParser.hpp"
-#include "LlocsPageParser.hpp"
-#include "AbbyyXmlPageParser.hpp"
+#include "parser/AltoXmlPageParser.hpp"
+#include "parser/HocrPageParser.hpp"
+#include "parser/OcropusLlocsPageParser.hpp"
+#include "parser/AbbyyXmlPageParser.hpp"
 
 #ifndef PCW_WHAT_LEN
 #define PCW_WHAT_LEN 1024
@@ -120,7 +120,7 @@ pcw::check(const std::string& comb, const std::string& passwd)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string 
+std::string
 pcw::fix_windows_path(std::string path)
 {
 	const std::regex drive{R"(^[a-zA-Z]:\\+)"};
@@ -131,7 +131,7 @@ pcw::fix_windows_path(std::string path)
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::FileType
-pcw::get_xml_file_type(const Path& path) 
+pcw::get_xml_file_type(const Path& path)
 {
 	static const std::string abbyy{"http://www.abbyy.com"};
 	static const std::string alto{"<alto"};
@@ -156,11 +156,11 @@ pcw::get_xml_file_type(const Path& path)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::FileType 
+pcw::FileType
 pcw::get_file_type(const Path& path)
 {
 	static const std::regex hocr{
-		R"(\.((html?)|(hocr))$)", 
+		R"(\.((html?)|(hocr))$)",
 		std::regex_constants::icase
 	};
 	static const std::regex xml{R"(\.xml$)", std::regex_constants::icase};
@@ -174,7 +174,7 @@ pcw::get_file_type(const Path& path)
 		return FileType::Img;
 	if (std::regex_search(str, llocs))
 		return FileType::Llocs;
-	if (std::regex_search(str, xml)) 
+	if (std::regex_search(str, xml))
 		return get_xml_file_type(path);
 	if (std::regex_search(str, hocr))
 		return FileType::Hocr;
@@ -182,7 +182,7 @@ pcw::get_file_type(const Path& path)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::PageParserPtr 
+pcw::PageParserPtr
 pcw::make_page_parser(const Path& ocr)
 {
 	auto type = get_file_type(ocr);
@@ -190,7 +190,7 @@ pcw::make_page_parser(const Path& ocr)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::PageParserPtr 
+pcw::PageParserPtr
 pcw::make_page_parser(FileType type, const Path& ocr)
 {
 	switch (type) {
@@ -201,7 +201,7 @@ pcw::make_page_parser(FileType type, const Path& ocr)
 	case FileType::AbbyyXml:
 		return std::make_unique<AbbyyXmlPageParser>(ocr);
 	case FileType::Llocs:
-		return std::make_unique<LlocsPageParser>(ocr);
+		return std::make_unique<OcropusLlocsPageParser>(ocr);
 	default:
 		throw std::logic_error("Cannot parse file: " + ocr.string());
 	}

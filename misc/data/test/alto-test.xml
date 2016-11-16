@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alto xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.loc.gov/standards/alto/ns-v2#"
+	xsi:schemaLocation="http://www.loc.gov/standards/alto/ns-v2# https://raw.github.com/altoxml/schema/master/v2/alto-2-1-draft.xsd">
+
+	<Description>
+		<MeasurementUnit>inch1200</MeasurementUnit>
+		<sourceImageInformation>
+			<fileName>test/file.png</fileName>
+		</sourceImageInformation>
+		<OCRProcessing ID="ID0">
+			<ocrProcessingStep>
+				<processingStepSettings>useAbbyy4:0</processingStepSettings>
+				<processingSoftware>
+					<softwareCreator>iArchives</softwareCreator>
+					<softwareName>Newpah</softwareName>
+					<softwareVersion>v2.07</softwareVersion>
+				</processingSoftware>
+			</ocrProcessingStep>
+		</OCRProcessing>
+	</Description>
+
+	<Layout>
+		<Page ID="ID1" HEIGHT="25941" WIDTH="20463" PHYSICAL_IMG_NR="1" PRINTED_IMG_NR="[1]" PROCESSING="ID0">
+			<PrintSpace HEIGHT="24453.0" WIDTH="19500.0" HPOS="294.0" VPOS="954.0">
+				<TextBlock xmlns:ns1="http://www.w3.org/1999/xlink" ID="ID2" HEIGHT="1701"
+					WIDTH="16026" HPOS="294" VPOS="972" ns1:type="simple" language="en"
+					TAGREFS="Tag103">
+					<TextLine HEIGHT="90.0" WIDTH="3570.0" HPOS="3960.0" VPOS="972.0">
+						<String HEIGHT="81.0" WIDTH="36.0" HPOS="3960.0" VPOS="981.0" CONTENT="ab"
+							WC="0.8095238"/>
+						<SP WIDTH="36.0" HPOS="3996.0" VPOS="981.0"/>
+						<String HEIGHT="66.0" WIDTH="42.0" HPOS="4032.0" VPOS="993.0" CONTENT="cd"
+							WC="0.8095238"/>
+						<SP WIDTH="68.0" HPOS="4074.0" VPOS="993.0"/>
+						<String HEIGHT="81.0" WIDTH="228.0" HPOS="4143.0" VPOS="972.0" CONTENT="ef"
+							WC="0.95238096"/>
+					</TextLine>
+					<TextLine HEIGHT="90.0" WIDTH="3570.0" HPOS="3960.0" VPOS="972.0">
+						<String HEIGHT="81.0" WIDTH="36.0" HPOS="3960.0" VPOS="981.0" CONTENT="ab"
+							WC="0.8095238"/>
+						<SP WIDTH="36.0" HPOS="3996.0" VPOS="981.0"/>
+						<String HEIGHT="66.0" WIDTH="42.0" HPOS="4032.0" VPOS="993.0" CONTENT="cd"
+							WC="0.8095238"/>
+					</TextLine>
+					<TextLine HEIGHT="90.0" WIDTH="3570.0" HPOS="3960.0" VPOS="972.0">
+						<String HEIGHT="81.0" WIDTH="36.0" HPOS="3960.0" VPOS="981.0" CONTENT="abcd"
+							WC="0.8095238"/>
+						<SP WIDTH="36.0" HPOS="3996.0" VPOS="981.0"/>
+						<String HEIGHT="66.0" WIDTH="42.0" HPOS="4032.0" VPOS="993.0" CONTENT="ef"
+							WC="0.8095238"/>
+					</TextLine>
+				</TextBlock>
+			</PrintSpace>
+		</Page>
+	</Layout>
+</alto>

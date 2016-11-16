@@ -1,7 +1,8 @@
-#include "PageParser.hpp"
+#include "parser/PageParser.hpp"
 #include "Page.hpp"
 #include "BadRequest.hpp"
 #include "Book.hpp"
+#include "parser/ParserPage.hpp"
 #include "MetsXmlBookParser.hpp"
 
 using namespace pcw;
@@ -117,7 +118,7 @@ MetsXmlBookParser::make_book()
 		auto pp = make_page_parser(ids_[*j].type, ids_[*j].href);
 		assert(pp);
 		while (pp->has_next()) {
-			auto page = pp->parse();
+			auto page = pp->parse()->page();
 			if (not page)
 				continue;
 			page->id = grp.first;

@@ -12,6 +12,11 @@ CXXFLAGS += -DBOOST_LOG_DYN_LINK
 LDFLAGS ?=
 LDFLAGS := $(LDFLAGS)
 LDFLAGS += -L.
+LDFLAGS += -lpcwapi
+LDFLAGS += -lpcwcore
+LDFLAGS += -lpcwparser
+LDFLAGS += -lpcwcore
+LDFLAGS += -lpcwparser
 LDFLAGS += -ldl
 LDFLAGS += -lmysqlcppconn
 LDFLAGS += -lssl
@@ -28,13 +33,9 @@ LDFLAGS += -lboost_filesystem
 # LDFLAGS += -lboost_thread
 LDFLAGS += -lcrypto
 
-VPATH = src src/core ../modules/pugixml/src src/api
+VPATH = src src/core ../modules/pugixml/src src/api src/parser src/tests
 
-OBJS += AltoXmlPageParser.o
-OBJS += AbbyyXmlPageParser.o
-OBJS += HocrPageParser.o
 OBJS += WagnerFischer.o
-OBJS += LlocsPageParser.o
 OBJS += MetsXmlBookParser.o
 OBJS += BookDirectoryBuilder.o
 OBJS += BookBuilder.o
@@ -51,7 +52,6 @@ OBJS += Line.o
 OBJS += User.o
 OBJS += Sessions.o
 OBJS += XmlFile.o
-OBJS += pugixml.o
 OBJS += util.o
 OBJS += jsonify.o
 OBJS += db.o
@@ -59,15 +59,54 @@ OBJS += db.o
 API_OBJS += ApiVersion.o
 API_OBJS += ApiBooks.o
 
+PAR_OBJS += pugixml.o
+PAR_OBJS += ParserPage.o
+PAR_OBJS += Xml.o
+PAR_OBJS += XmlParserPage.o
+PAR_OBJS += AltoXmlParserLine.o
+PAR_OBJS += AltoXmlPageParser.o
+PAR_OBJS += AbbyyXmlParserLine.o
+PAR_OBJS += AbbyyXmlPageParser.o
+PAR_OBJS += OcropusLlocsParserLine.o
+PAR_OBJS += OcropusLlocsPageParser.o
+PAR_OBJS += OcropusLlocsParserPage.o
+PAR_OBJS += hocr.o
+PAR_OBJS += HocrPageParser.o
+PAR_OBJS += HocrParserLine.o
+
+TESTS += TestOcrLine.test
+TESTS += TestCorLine.test
+TESTS += AltoXmlParsing.test
+TESTS += AbbyyXmlParsing.test
+TESTS += OcropusLlocsParsing.test
+TESTS += HocrParsing.test
+
 default: all
 all: pcwd
 
-pcwd: pcwd.o libpcwapi.a libpcwcore.a 
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+pcwd: pcwd.o libpcwapi.a libpcwcore.a libpcwparser.a
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
+
+%.test: %.o libpcwapi.a libpcwcore.a libpcwparser.a libpcwcore.a
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
+
+test: $(TESTS)
+	@errors=0;\
+	for test in $(TESTS); do \
+		echo running $$test ;\
+		./$$test; \
+		res=$$?; \
+		if [ $$res -ne 0 ]; then \
+			errors=$$((errors + 1)); \
+		fi \
+	done; \
+	exit $$errors
 
 libpcwcore.a: $(OBJS)
 	$(AR) rcs $@ $^
 libpcwapi.a: $(API_OBJS)
+	$(AR) rcs $@ $^
+libpcwparser.a: $(PAR_OBJS)
 	$(AR) rcs $@ $^
 
 ## libpcwcore.so: $(OBJS)
@@ -75,8 +114,8 @@ libpcwapi.a: $(API_OBJS)
 
 .PHONY: clean
 clean:
-	$(RM) *.o *.d *.so *.a pcwd
+	$(RM) *.o *.d *.so *.a *.test pcwd
 
-DEPS = $(patsubst %.o,%.d,$(OBJS) $(API_OBJS) pcwd.o)
+DEPS = $(patsubst %.o,%.d,$(OBJS) $(API_OBJS) $(PAR_OBJS) $(patsubst %.test,%.o,$(TESTS)) pcwd.o)
 -include $(DEPS)
 

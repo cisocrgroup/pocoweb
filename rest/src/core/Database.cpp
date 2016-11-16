@@ -209,10 +209,11 @@ Database::update_line(const Line& line, sql::Connection& conn) const
 	t->setInt(3, lineid);
 	for (size_t i = 0; i < line.size(); ++i) {
 		t->setInt(4, static_cast<int>(i));
-		t->setInt(5, line.wstring()[i]);
-		t->setInt(6, line.cuts()[i]);
-		t->setDouble(7, line.confidences()[i]);
-		t->setBoolean(8, line.corrections()[i]);
+		t->setInt(5, line[i].cor);
+		t->setInt(6, line[i].cut);
+		t->setDouble(7, line[i].conf);
+		t->setBoolean(8, line[i].is_corrected());
+		//t->setInt(8, line[i].ocr); // TODO update table
 		t->executeUpdate();
 	}
 }
@@ -366,15 +367,16 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 
 	PreparedStatementPtr t{conn.prepareStatement(tql)};
 	assert(t);
-	for (auto i = 0U; i < line.wstring().size(); ++i) {
+	for (auto i = 0U; i < line.size(); ++i) {
 		t->setInt(1, bookid);
 		t->setInt(2, pageid);
 		t->setInt(3, line.id());
 		t->setInt(4, static_cast<int>(i));
-		t->setInt(5, line.wstring().at(i));
-		t->setInt(6, line.cuts().at(i));
-		t->setDouble(7, line.confidences().at(i));
-		t->setBoolean(8, line.corrections().at(i));
+		t->setInt(5, line[i].cor);
+		t->setInt(6, line[i].cut);
+		t->setDouble(7, line[i].conf);
+		t->setBoolean(8, line[i].is_corrected());
+		// t->setInt(8, line[i].ocr); // TODO update table;
 		t->executeUpdate();
 	}
 }
