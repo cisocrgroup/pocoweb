@@ -72,6 +72,8 @@ PAR_OBJS += OcropusLlocsParserLine.o
 PAR_OBJS += OcropusLlocsPageParser.o
 PAR_OBJS += OcropusLlocsParserPage.o
 
+TESTS += TestOcrLine.test
+TESTS += TestCorLine.test
 TESTS += AltoXmlParsing.test
 TESTS += AbbyyXmlParsing.test
 TESTS += OcropusLlocsParsing.test

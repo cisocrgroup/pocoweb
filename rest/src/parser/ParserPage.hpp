@@ -25,8 +25,9 @@ namespace pcw {
 		virtual void insert(size_t i, wchar_t c) = 0;
 		virtual void erase(size_t i) = 0;
 		virtual void set(size_t i, wchar_t c) = 0;
-		virtual void begin_correction() {}
-		virtual void end_correction() {}
+		virtual void noop(size_t) {}
+		virtual void begin_wagner_fischer() {}
+		virtual void end_wagner_fischer() {}
 		virtual std::wstring wstring() const = 0;
 		virtual std::string string() const = 0;
 		virtual Line line(int id) const = 0;

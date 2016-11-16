@@ -213,9 +213,12 @@ BookDirectoryBuilder::write_line_img_file(void *vpix, const Line& line)
 	if (box.x + box.w <= (int) pix->w and box.y + box.h <= (int) pix->h) {
 		PixPtr tmp{pixClipRectangle(pix, &box, nullptr)};
 		if (not tmp or pixWrite(line.img.string().data(), tmp.get(), format))
-			throw std::runtime_error("(BookDirectoryBuilder) Cannot write img " + line.img.string());
+			throw std::runtime_error(
+				"(BookDirectoryBuilder) Cannot write img " + 
+				line.img.string()
+			);
 	} else {
-		CROW_LOG_WARNING << "Cannot write line image for " << line.string();
+		CROW_LOG_WARNING << "Cannot write line image for " << line.cor();
 	}
 }
 
