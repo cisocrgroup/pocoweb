@@ -74,4 +74,23 @@ BOOST_AUTO_TEST_CASE(Tokens)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(Words)
+{
+	auto words = line.words();
+	BOOST_REQUIRE_EQUAL(words.size(), 4);
+
+	BOOST_CHECK(words[0].is_normal());
+	BOOST_CHECK_EQUAL(words[0].cor(), "ꝑfectũ");
+
+	BOOST_CHECK(words[1].is_normal());
+	BOOST_CHECK_EQUAL(words[1].cor(), "eſt");
+
+	BOOST_CHECK(words[2].is_normal());
+	BOOST_CHECK_EQUAL(words[2].cor(), "quidq̉d");
+
+	BOOST_CHECK(words[3].is_normal());
+	BOOST_CHECK_EQUAL(words[3].cor(), "tempꝰ");
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
