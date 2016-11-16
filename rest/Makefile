@@ -71,6 +71,7 @@ PAR_OBJS += OcropusLlocsParserLine.o
 PAR_OBJS += OcropusLlocsPageParser.o
 PAR_OBJS += OcropusLlocsParserPage.o
 PAR_OBJS += HocrPageParser.o
+PAR_OBJS += HocrParserLine.o
 
 TESTS += TestOcrLine.test
 TESTS += TestCorLine.test
