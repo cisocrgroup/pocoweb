@@ -273,41 +273,20 @@ Line::noop(size_t i)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-static bool
-isword(wchar_t c) noexcept
-{
-	switch (u_charType(c)) {     // all cases fall through
-	case U_UPPERCASE_LETTER:     // Lu
-	case U_LOWERCASE_LETTER:     // Al
-	case U_TITLECASE_LETTER:     // Lt
-	case U_MODIFIER_LETTER:      // Lm
-	case U_OTHER_LETTER:         // Lo
-	case U_DECIMAL_DIGIT_NUMBER: // Nd
-	case U_LETTER_NUMBER:        // Nl
-	case U_OTHER_NUMBER:         // No
-	case U_NON_SPACING_MARK:     // Mn
-		return true;
-	default:
-		return false;
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-static bool
-cisword(const Line::Char& c) noexcept
-{
-	return isword(c.get_cor());
-}
-
-////////////////////////////////////////////////////////////////////////////////
 static Line::CharIterator
 next(Line::CharIterator i, Line::CharIterator e)
 {
 	if (i != e) {
-		if (cisword(*i))
-			return std::find_if_not(i, e, cisword);
+		// we need find_if_not in order to handle deletions (which are both
+		// considered part of words and separators) correctly.
+		if (i->is_word())
+			return std::find_if_not(i, e, [](const auto& c){
+				return c.is_word();
+			});
 		else
-			return std::find_if(i, e, cisword);
+			return std::find_if_not(i, e, [](const auto& c){
+				return c.is_sep();
+			});
 	}
 	return e;
 }
@@ -355,6 +334,48 @@ Line::words() const
 			words.push_back(token);
 	});
 	return words;
+}
+
+//
+// CHAR
+//
+
+////////////////////////////////////////////////////////////////////////////////
+static bool
+isword(wchar_t c) noexcept
+{
+	switch (u_charType(c)) { // all cases fall through
+	case U_UPPERCASE_LETTER:     		
+	case U_LOWERCASE_LETTER:     		
+	case U_TITLECASE_LETTER:     		
+	case U_MODIFIER_LETTER:      		
+	case U_OTHER_LETTER:         		
+	case U_DECIMAL_DIGIT_NUMBER: 		
+	case U_LETTER_NUMBER:        		
+	case U_OTHER_NUMBER:         		
+	case U_NON_SPACING_MARK:     		
+		return true;
+	default:
+		return false;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool 
+Line::Char::is_word() const noexcept
+{
+	auto c = get_cor();
+	// c=0 means deletion and is considered to be part of a word.
+	return c ? isword(c) : true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool 
+Line::Char::is_sep() const noexcept
+{
+	auto c = get_cor();
+	// c=0 means deletion and is considered to be part of a separator.
+	return c ? not isword(c) : true; 
 }
 
 //
@@ -436,7 +457,7 @@ bool
 Line::Token::is_normal() const
 {
 	return std::all_of(range.first, range.second, [](const Char& c) {
-		return isword(c.get_cor());
+		return c.is_word();
 	});
 }
 

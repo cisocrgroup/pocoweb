@@ -54,8 +54,10 @@ namespace pcw {
 			bool is_insertion() const noexcept {return cor and not ocr;}
 			bool is_substitution() const noexcept {return cor and ocr and cor != ocr;}
 			bool is_corrected() const noexcept {return cor;}
+			bool is_word() const noexcept;
+			bool is_sep() const noexcept;
 			wchar_t get_cor() const noexcept {
-				return not is_deletion() ?  is_corrected() ? cor : ocr : 0;
+				return is_deletion() ? 0 : is_corrected() ? cor : ocr;
 			}
 
 			wchar_t ocr, cor;
