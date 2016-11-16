@@ -69,6 +69,7 @@ namespace pcw {
 
 		bool empty() const noexcept {return chars_.empty();}
 		size_t size() const noexcept {return chars_.size();}
+		bool is_corrected() const noexcept;
 		std::wstring wocr() const;
 		std::string ocr() const;
 		std::wstring wcor() const;

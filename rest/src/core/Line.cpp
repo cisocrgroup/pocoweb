@@ -24,6 +24,15 @@ Line::Line(int i, Box b)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+bool 
+Line::is_corrected() const noexcept
+{
+	return std::all_of(begin(chars_), end(chars_), [](const auto& c) {
+		return c.is_corrected();
+	});
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void
 Line::append(const std::string& str, int l, int r, double conf)
 {
