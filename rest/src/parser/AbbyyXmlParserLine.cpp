@@ -53,7 +53,7 @@ AbbyyXmlParserLine::string() const
 void
 AbbyyXmlParserLine::insert(size_t pos, wchar_t c)
 {
-	std::cerr << "(AbbyyXmlParserLine) insert pos: " << pos << " " << c << "\n";
+	// std::cerr << "(AbbyyXmlParserLine) insert pos: " << pos << " " << c << "\n";
 	assert(pos < chars_.size());
 	chars_.insert(begin(chars_) + pos, char_before(chars_[pos], c));
 }
