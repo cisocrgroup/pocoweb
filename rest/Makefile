@@ -79,6 +79,7 @@ TESTS += TestCorLine.test
 TESTS += AltoXmlParsing.test
 TESTS += AbbyyXmlParsing.test
 TESTS += OcropusLlocsParsing.test
+TESTS += HocrParsing.test
 
 default: all
 all: pcwd
