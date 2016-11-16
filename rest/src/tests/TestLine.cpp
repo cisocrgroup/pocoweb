@@ -73,4 +73,27 @@ BOOST_AUTO_TEST_CASE(OcrTokens)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(OcrWords)
+{
+	auto words = line.words();
+	BOOST_CHECK_EQUAL(words.size(), 4);
+	BOOST_CHECK(std::all_of(begin(words), end(words), [](const auto& c) {
+		return c.is_normal();
+	}));
+	BOOST_CHECK_EQUAL(words[0].ocr(), "pectũeſt"); 
+	BOOST_CHECK_EQUAL(words[0].cor(), "pectũeſt"); 
+	BOOST_CHECK_EQUAL(words[1].ocr(), "quioo"); 
+	BOOST_CHECK_EQUAL(words[1].cor(), "quioo"); 
+	BOOST_CHECK_EQUAL(words[2].ocr(), "te"); 
+	BOOST_CHECK_EQUAL(words[2].cor(), "te"); 
+	BOOST_CHECK_EQUAL(words[3].ocr(), "mp"); 
+	BOOST_CHECK_EQUAL(words[3].cor(), "mp"); 
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(Cor)
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
