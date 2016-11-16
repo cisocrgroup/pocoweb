@@ -2,6 +2,7 @@
 #include <regex>
 #include <utf8.h>
 #include "core/Line.hpp"
+#include "hocr.hpp"
 #include "HocrParserLine.hpp"
 
 using namespace pcw;
@@ -13,9 +14,7 @@ HocrParserLine::HocrParserLine(pugi::xml_node node)
 	, needs_update_(false)
 {
 	init();
-	const auto title = node_.attribute("title").value();
-	const auto n = strlen(title);
-	box = get_box(title, n);
+	box = hocr::get_box(node);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -144,23 +143,15 @@ HocrParserLine::set(size_t pos, wchar_t c)
 	needs_update_ = true;
 }
 
-     // <span class='ocr_line' id='line_1_1' title="bbox 297 121 1906 195; baseline 0.001 -23">
-     // <span class='ocrx_word' id='word_1_1' title='bbox 297 143 360 175; x_wconf 81' lang='eng'>20</span> 
-     // <span class='ocrx_word' id='word_1_2' title='bbox 925 129 999 177; x_wconf 70' lang='eng' dir='ltr'>De</span> 
-     // <span class='ocrx_word' id='word_1_3' title='bbox 1041 122 1255 172; x_wconf 65' lang='eng' dir='ltr'>Homint.</span> 
-     // <span class='ocrx_word' id='word_1_4' title='bbox 1700 121 1827 195; x_wconf 80' lang='eng' dir='ltr'>Cap.</span> 
-     // <span class='ocrx_word' id='word_1_5' title='bbox 1855 140 1906 190; x_wconf 65' lang='eng'>5:.</span> 
 ////////////////////////////////////////////////////////////////////////////////
 void
 HocrParserLine::init_string(const pugi::xml_node& node, bool space_before)
 {
 	assert(strcmp(node.name(), "String") == 0);
 
-	const auto title = node.attribute("title").value();
-	const auto n = strlen(title);
-	const auto wc = get_conf(title, n);
-	const auto box = get_box(title, n);
-	const auto token = node.child_value();
+	const auto wc = hocr::get_conf(node);
+	const auto box = hocr::get_box(node);
+	const auto token = hocr::get_cont(node);
 	const auto len = strlen(token);
 
 	std::wstring wstr;
@@ -179,16 +170,14 @@ HocrParserLine::init_string(const pugi::xml_node& node, bool space_before)
 void
 HocrParserLine::init_space(const Node& node) 
 {
-	auto title = node.attribute("title").value();
-	auto n = strlen(title);
-	auto token_box = get_box(title, n);
+	auto token_box = hocr::get_box(node);
 	Box box{
 		token_box.right(),
 		token_box.top(), 
 		token_box.right() + 1, 
 		token_box.bottom()
 	};
-	chars_.emplace_back(L' ', node, get_conf(title, n), box);
+	chars_.emplace_back(L' ', node, hocr::get_conf(node), box);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -206,35 +195,6 @@ HocrParserLine::init()
 				span = true;
 			}
 		}
-	}
-}
-
-// <span title="bbox 297 121 1906 195; baseline 0.001 -23">
-////////////////////////////////////////////////////////////////////////////////
-Box
-HocrParserLine::get_box(const char* title, size_t n)
-{
-	static const std::regex bboxre{R"(bbox\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+"))"};
-	std::cmatch m;
-	if (std::regex_search(title, title + n, m, bboxre)) {
-		return Box{stoi(m[1]), stoi(m[2]), stoi(m[3]), stoi(m[4])};
-	} else {
-		return {};
-	}
-}	
-
-// <span class='ocrx_word' ... title='bbox 1700 121 1827 195; x_wconf 80' lang='eng' dir='ltr'>Cap.</span> 
-////////////////////////////////////////////////////////////////////////////////
-double
-HocrParserLine::get_conf(const char *title, size_t n)
-{
-	static const std::regex confre{R"(x_wconf\s+(\d+))"};
-	std::cmatch m;
-	if (std::regex_search(title, title + n, m, confre)) {
-		auto p = static_cast<double>(std::stoi(m[1]));
-		return p / 100.0;
-	} else {
-		return 0;
 	}
 }
 

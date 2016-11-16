@@ -29,10 +29,6 @@ namespace pcw {
 	private:
 		void next_page();
 
-		static double get_conf(const Xml::Node& node);
-		static std::string get_img(const Xml::Node& node);
-		static Box get_box(const Xml::Node& node);
-
 		Xml xml_;
 		Path path_;
 		Xml::Node page_node_;

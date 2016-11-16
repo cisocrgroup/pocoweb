@@ -3,11 +3,10 @@
 #include <pugixml.hpp>
 #include <regex>
 #include "core/BadRequest.hpp"
+#include "hocr.hpp"
 #include "HocrPageParser.hpp"
 #include "HocrParserLine.hpp"
-#include "ParserPage.hpp"
 #include "XmlParserPage.hpp"
-#include "core/util.hpp"
 
 using namespace pcw;
 
@@ -59,8 +58,8 @@ HocrPageParser::begin(Xml::Node& node)
 {
 	page_ = std::make_shared<XmlParserPage>(xml_);
 	page_->ocr = path_;
-	page_->img = get_img(node);
-	page_->box = get_box(node);
+	page_->img = hocr::get_img(node);
+	page_->box = hocr::get_box(node);
 	return true;
 }
 
@@ -90,37 +89,3 @@ HocrPageParser::next_page()
 			done = true;
 	}
 }
-
-////////////////////////////////////////////////////////////////////////////////
-double
-HocrPageParser::get_conf(const Xml::Node& node)
-{
-	static const std::regex re{R"(x_wconf\s+(\d+))"};
-	std::cmatch m;
-	if (std::regex_search(node.attribute("title").value(), m, re))
-		return static_cast<double>(std::stoi(m[1])) / 100;
-	return 0;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-std::string
-HocrPageParser::get_img(const Xml::Node& node)
-{
-	static const std::regex re{R"xx(title\s+"(.*)")xx"};
-	std::cmatch m;
-	if (std::regex_search(node.attribute("title").value(), m, re))
-		return m[1];
-	return {};
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Box
-HocrPageParser::get_box(const Xml::Node& node)
-{
-	static const std::regex re{R"(bbox\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+))"};
-	std::cmatch m;
-	if (not std::regex_search(node.attribute("title").value(), m, re))
-		throw BadRequest("(HocrPageParser) Missing bbox");
-	return Box {std::stoi(m[1]), std::stoi(m[2]), std::stoi(m[3]), std::stoi(m[4])};
-}
-

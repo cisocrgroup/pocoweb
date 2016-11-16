@@ -70,6 +70,7 @@ PAR_OBJS += AbbyyXmlPageParser.o
 PAR_OBJS += OcropusLlocsParserLine.o
 PAR_OBJS += OcropusLlocsPageParser.o
 PAR_OBJS += OcropusLlocsParserPage.o
+PAR_OBJS += hocr.o
 PAR_OBJS += HocrPageParser.o
 PAR_OBJS += HocrParserLine.o
 

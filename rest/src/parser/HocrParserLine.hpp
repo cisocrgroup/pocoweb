@@ -39,8 +39,6 @@ namespace pcw {
 		void init_space(const Node& node);
 		void init();
 
-		static Box get_box(const char* title, size_t n);
-		static double get_conf(const char* title, size_t n);
 		static void set_box(const Box& box, Node& node);
 		static void set_conf(double conf, Node& node);
 		static void set_content(const std::wstring& str, Node& node);
