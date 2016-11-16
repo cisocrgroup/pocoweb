@@ -122,7 +122,10 @@ Line::wocr() const
 	std::wstring res;
 	res.reserve(chars_.size());
 	ocr(begin(chars_), end(chars_), [&res](const Char& c) {
-		res.push_back(c.ocr);
+		if (c.cor)
+			res.push_back(c.cor);
+		else if (c.ocr)
+			res.push_back(c.ocr);
 	});
 	return res;
 }
@@ -134,7 +137,10 @@ Line::cor() const
 	std::string res;
 	res.reserve(chars_.size());
 	cor(begin(chars_), end(chars_), [&res](const Char& c) {
-		utf8::utf32to8(&c.cor, &c.cor + 1, std::back_inserter(res));
+		if (c.cor)
+			utf8::utf32to8(&c.cor, &c.cor + 1, std::back_inserter(res));
+		else if (c.ocr)
+			utf8::utf32to8(&c.ocr, &c.ocr + 1, std::back_inserter(res));
 	});
 	return res;
 }

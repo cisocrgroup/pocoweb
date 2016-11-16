@@ -32,7 +32,9 @@ BOOST_FIXTURE_TEST_SUITE(LineTest, Fixture)
 BOOST_AUTO_TEST_CASE(Basic)
 {
 	BOOST_CHECK_EQUAL(line.ocr(), ocr);
+	BOOST_CHECK_EQUAL(line.cor(), ocr); // cor and ocr must be the same
 	BOOST_CHECK_CLOSE(line.average_conf(), .8, .001); // it's not rocket sience
+	BOOST_CHECK_EQUAL(line.chars().back().cut, 100);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
