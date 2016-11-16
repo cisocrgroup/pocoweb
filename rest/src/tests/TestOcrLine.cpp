@@ -33,6 +33,7 @@ BOOST_AUTO_TEST_CASE(Line)
 	BOOST_CHECK_EQUAL(line.cor(), ocr); // cor and ocr must be the same
 	BOOST_CHECK_CLOSE(line.average_conf(), .8, .001); // it's not rocket sience
 	BOOST_CHECK_EQUAL(line.chars().back().cut, 100);
+	BOOST_CHECK(not line.is_corrected());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,30 +45,38 @@ BOOST_AUTO_TEST_CASE(Tokens)
 	BOOST_CHECK(tokens[0].is_normal());
 	BOOST_CHECK_EQUAL(tokens[0].ocr(), "pectũeſt"); 
 	BOOST_CHECK_EQUAL(tokens[0].cor(), "pectũeſt"); 
+	BOOST_CHECK_EQUAL(tokens[0].cor(), "pectũeſt"); 
+	BOOST_CHECK(not tokens[0].is_corrected());
 
 	BOOST_CHECK(not tokens[1].is_normal());
 	BOOST_CHECK_EQUAL(tokens[1].ocr(), ": ");
 	BOOST_CHECK_EQUAL(tokens[1].cor(), ": ");
+	BOOST_CHECK(not tokens[1].is_corrected());
 
 	BOOST_CHECK(tokens[2].is_normal());
 	BOOST_CHECK_EQUAL(tokens[2].ocr(), "quioo"); 
 	BOOST_CHECK_EQUAL(tokens[2].cor(), "quioo"); 
+	BOOST_CHECK(not tokens[2].is_corrected());
 
 	BOOST_CHECK(not tokens[3].is_normal());
 	BOOST_CHECK_EQUAL(tokens[3].ocr(), " "); 
 	BOOST_CHECK_EQUAL(tokens[3].cor(), " "); 
+	BOOST_CHECK(not tokens[3].is_corrected());
 
 	BOOST_CHECK(tokens[4].is_normal());
 	BOOST_CHECK_EQUAL(tokens[4].ocr(), "te"); 
 	BOOST_CHECK_EQUAL(tokens[4].cor(), "te"); 
+	BOOST_CHECK(not tokens[4].is_corrected());
 
 	BOOST_CHECK(not tokens[5].is_normal());
 	BOOST_CHECK_EQUAL(tokens[5].ocr(), " "); 
 	BOOST_CHECK_EQUAL(tokens[5].cor(), " "); 
+	BOOST_CHECK(not tokens[5].is_corrected());
 
 	BOOST_CHECK(tokens[6].is_normal());
 	BOOST_CHECK_EQUAL(tokens[6].ocr(), "mp"); 
 	BOOST_CHECK_EQUAL(tokens[6].cor(), "mp"); 
+	BOOST_CHECK(not tokens[6].is_corrected());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -80,12 +89,16 @@ BOOST_AUTO_TEST_CASE(Words)
 	}));
 	BOOST_CHECK_EQUAL(words[0].ocr(), "pectũeſt"); 
 	BOOST_CHECK_EQUAL(words[0].cor(), "pectũeſt"); 
+	BOOST_CHECK(not words[0].is_corrected());
 	BOOST_CHECK_EQUAL(words[1].ocr(), "quioo"); 
 	BOOST_CHECK_EQUAL(words[1].cor(), "quioo"); 
+	BOOST_CHECK(not words[1].is_corrected());
 	BOOST_CHECK_EQUAL(words[2].ocr(), "te"); 
 	BOOST_CHECK_EQUAL(words[2].cor(), "te"); 
+	BOOST_CHECK(not words[2].is_corrected());
 	BOOST_CHECK_EQUAL(words[3].ocr(), "mp"); 
 	BOOST_CHECK_EQUAL(words[3].cor(), "mp"); 
+	BOOST_CHECK(not words[3].is_corrected());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
