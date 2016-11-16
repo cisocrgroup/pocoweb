@@ -62,7 +62,6 @@ pcw::operator<<(Json& json, const Line& line)
 		json["tokens"][i]["confidence"] = token.average_conf();
 		json["tokens"][i]["box"] << token.box;
 		json["tokens"][i]["isNormal"] = token.is_normal();
-		json["tokens"][i]["isSpace"] = token.is_space();
 		++i;
 	});
 	return json;

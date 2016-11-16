@@ -15,7 +15,7 @@ namespace pcw {
 	public:
 		struct Char;
 		using Chars = std::vector<Char>;
-		using CharsIterator = Chars::const_iterator;
+		using CharIterator = Chars::const_iterator;
 		using Path = boost::filesystem::path;
 		using String = std::wstring;
 		using Cuts = std::vector<int>;
@@ -24,7 +24,7 @@ namespace pcw {
 
 		struct Token {
 			Token() = default;
-			Token(CharsIterator b, CharsIterator e, Box bbox = {})
+			Token(CharIterator b, CharIterator e, Box bbox = {})
 				: range(b, e)
 				, box(bbox)
 			{}
@@ -36,9 +36,8 @@ namespace pcw {
 			std::string ocr() const;
 			bool is_corrected() const;
 			bool is_normal() const;
-			bool is_space() const;
 
-			std::pair<CharsIterator, CharsIterator> range;
+			std::pair<CharIterator, CharIterator> range;
 			Box box;
 		};
 
@@ -81,6 +80,8 @@ namespace pcw {
 		PagePtr page() const noexcept {return page_.lock();}
 		bool has_img_path() const noexcept {return not img.empty();}
 		void each_token(std::function<void(const Token&)> f) const;
+		std::vector<Token> tokens() const;
+		std::vector<Token> words() const;
 		int id() const noexcept {return id_;}
 
 		void append(const std::string& str, int l, int r, double c);

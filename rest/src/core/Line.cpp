@@ -110,7 +110,7 @@ Line::wcor() const
 	std::wstring res;
 	res.reserve(chars_.size());
 	cor(begin(chars_), end(chars_), [&res](const Char& c) {
-		res.push_back(c.cor);
+		res.push_back(c.get_cor());
 	});
 	return res;
 }
@@ -122,10 +122,7 @@ Line::wocr() const
 	std::wstring res;
 	res.reserve(chars_.size());
 	ocr(begin(chars_), end(chars_), [&res](const Char& c) {
-		if (c.cor)
-			res.push_back(c.cor);
-		else if (c.ocr)
-			res.push_back(c.ocr);
+		res.push_back(c.ocr);
 	});
 	return res;
 }
@@ -137,10 +134,8 @@ Line::cor() const
 	std::string res;
 	res.reserve(chars_.size());
 	cor(begin(chars_), end(chars_), [&res](const Char& c) {
-		if (c.cor)
-			utf8::utf32to8(&c.cor, &c.cor + 1, std::back_inserter(res));
-		else if (c.ocr)
-			utf8::utf32to8(&c.ocr, &c.ocr + 1, std::back_inserter(res));
+		const auto cc = c.get_cor();
+		utf8::utf32to8(&cc, &cc + 1, std::back_inserter(res));
 	});
 	return res;
 }
@@ -276,6 +271,19 @@ cisword(const Line::Char& c) noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+static Line::CharIterator
+next(Line::CharIterator i, Line::CharIterator e)
+{
+	if (i != e) {
+		if (cisword(*i))
+			return std::find_if_not(i, e, cisword);
+		else
+			return std::find_if(i, e, cisword);
+	}
+	return e;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void 
 Line::each_token(std::function<void(const Token&)> f) const
 {
@@ -285,16 +293,39 @@ Line::each_token(std::function<void(const Token&)> f) const
 
 	const auto e = end(chars_);
 	const auto b = begin(chars_);
-	auto i = std::find_if(b, e, cisword);
-	while (i != e) {
-		auto j = std::find_if_not(i, e, cisword);
+
+	for (auto i = b; i != e; ) {
+		auto j = next(i, e);
 		token.box.set_left(i != b ? std::prev(i)->cut : 0);
 		token.box.set_right(j != e ? j->cut : this->box.right());
 		token.range.first = i; 
 		token.range.second = j;
 		f(token);
-		i = std::find_if(j, e, cisword);
+		i = j;
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::vector<Line::Token> 
+Line::tokens() const
+{
+	std::vector<Token> tokens;
+	each_token([&tokens](const Token& token) {
+		tokens.push_back(token);
+	});
+	return tokens;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::vector<Line::Token> 
+Line::words() const
+{
+	std::vector<Token> words;
+	each_token([&words](const Token& token) {
+		if (token.is_normal())
+			words.push_back(token);
+	});
+	return words;
 }
 
 //
@@ -320,7 +351,7 @@ Line::Token::wcor() const
 	std::wstring res;
 	res.reserve(std::distance(range.first, range.second));
 	Line::cor(range.first, range.second, [&res](const Char& c) {
-		res.push_back(c.cor);
+		res.push_back(c.get_cor());
 	});
 	return res;
 }
@@ -344,7 +375,8 @@ Line::Token::cor() const
 	std::string res;
 	res.reserve(std::distance(range.first, range.second));
 	Line::cor(range.first, range.second, [&res](const Char& c) {
-		utf8::utf32to8(&c.cor, &c.cor + 1, std::back_inserter(res));
+		const auto cc = c.get_cor();
+		utf8::utf32to8(&cc, &cc + 1, std::back_inserter(res));
 	});
 	return res;
 }
@@ -375,15 +407,7 @@ bool
 Line::Token::is_normal() const
 {
 	return std::all_of(range.first, range.second, [](const Char& c) {
-		return isword(c.cor);
+		return isword(c.get_cor());
 	});
 }
 
-////////////////////////////////////////////////////////////////////////////////
-bool 
-Line::Token::is_space() const
-{
-	return std::all_of(range.first, range.second, [](const Char& c) {
-		return isspace(c.cor);
-	});
-}
