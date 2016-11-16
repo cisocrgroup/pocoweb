@@ -244,8 +244,8 @@ ApiBooks::put(const Request& req, Database& db, Line& line) const
 		return bad_request();
 	CROW_LOG_DEBUG << "(ApiBooks) correction: " << req.url_params.get("correction");
 	WagnerFischer wf;
-	wf.set_truth(correction);
-	wf.set_test(line);
+	wf.set_gt(correction);
+	wf.set_ocr(line);
 	auto lev = wf();
 	CROW_LOG_DEBUG << "(ApiBooks) lev: " << lev << "\n" << wf;
 	CROW_LOG_DEBUG << "(ApiBooks) line: " << line.cor();

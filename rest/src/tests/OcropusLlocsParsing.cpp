@@ -47,21 +47,21 @@ BOOST_AUTO_TEST_CASE(CorrectionTest)
 	WagnerFischer wf;
 
 	// first line
-	wf.set_truth("fe dc ba");
+	wf.set_gt("fe dc ba");
 	auto lev = page->get(0).correct(wf);
 	BOOST_CHECK(lev == 6);
 	BOOST_CHECK_EQUAL(page->get(0).string(), "fe dc ba");
 	// std::cerr << wf << "\n";
 
 	// second line (merge)
-	wf.set_truth("abcd");
+	wf.set_gt("abcd");
 	lev = page->get(1).correct(wf);
 	BOOST_CHECK(lev == 1);
 	BOOST_CHECK_EQUAL(page->get(1).string(), "abcd");
 	// std::cerr << wf << "\n";
 
 	// third line (split)
-	wf.set_truth("ab cd ef");
+	wf.set_gt("ab cd ef");
 	lev = page->get(2).correct(wf);
 	BOOST_CHECK(lev == 1);
 	BOOST_CHECK_EQUAL(page->get(2).string(), "ab cd ef");

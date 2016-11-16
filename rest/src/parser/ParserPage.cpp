@@ -11,7 +11,7 @@ using namespace pcw;
 size_t 
 ParserLine::correct(WagnerFischer& wf)
 {
-	wf.set_test(wstring());
+	wf.set_ocr(wstring());
 	auto lev = wf();
 	wf.apply(*this);	
 	return lev;

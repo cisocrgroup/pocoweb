@@ -14,29 +14,29 @@ namespace pcw {
                 using Trace = std::vector<EditOp>;
                 using Table = std::vector<std::vector<size_t> >;
 
-		void set_test(const std::string& test);
-		void set_test(const char* test);
-		void set_test(const char* test, size_t n);
-		void set_test(const std::wstring& test);
-		void set_test(const wchar_t* test);
-		void set_test(const wchar_t* test, size_t n);
-		void set_test(const Line& line);
+		void set_ocr(const std::string& ocr);
+		void set_ocr(const char* ocr);
+		void set_ocr(const char* ocr, size_t n);
+		void set_ocr(const std::wstring& ocr);
+		void set_ocr(const wchar_t* ocr);
+		void set_ocr(const wchar_t* ocr, size_t n);
+		void set_ocr(const Line& line);
 
-		void set_truth(const std::string& truth);
-		void set_truth(const char* truth);
-		void set_truth(const char* truth, size_t n);
-		void set_truth(const std::wstring& truth);
-		void set_truth(const wchar_t* truth);
-		void set_truth(const wchar_t* truth, size_t n);
-		void set_truth(const Line& line);
+		void set_gt(const std::string& gt);
+		void set_gt(const char* gt);
+		void set_gt(const char* gt, size_t n);
+		void set_gt(const std::wstring& gt);
+		void set_gt(const wchar_t* gt);
+		void set_gt(const wchar_t* gt, size_t n);
+		void set_gt(const Line& line);
 
                 size_t operator()();
 	
-                const std::wstring& test() const noexcept {
-                        return test_;
+                const std::wstring& ocr() const noexcept {
+                        return ocr_;
                 }
-                const std::wstring& truth() const noexcept {
-                        return truth_;
+                const std::wstring& gt() const noexcept {
+                        return gt_;
                 }
                 const Trace& trace() const noexcept {
                         return trace_;
@@ -53,7 +53,7 @@ namespace pcw {
                 std::tuple<EditOp, size_t, size_t>
                 backtrack(size_t i, size_t j) const noexcept;
 
-                std::wstring truth_, test_;
+                std::wstring gt_, ocr_;
                 Trace trace_;
                 Table l_;
         };
@@ -81,11 +81,11 @@ pcw::WagnerFischer::apply(T& t) const
 		// deletion means that the ocr did not recognize a character 
 		// where in reality there should be one; so insert it
 		case WagnerFischer::EditOp::Del: 
-			t.insert(ii, truth()[i]);
+			t.insert(ii, gt_[i]);
 			break;
 		// subustitution just updates the according char
 		case WagnerFischer::EditOp::Sub:
-			t.set(ii, truth()[i]);
+			t.set(ii, gt_[i]);
 			break;
 		// do nothing; char is already correct
 		case WagnerFischer::EditOp::Nop:
