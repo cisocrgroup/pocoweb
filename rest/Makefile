@@ -76,10 +76,10 @@ PAR_OBJS += HocrParserLine.o
 
 TESTS += TestOcrLine.test
 TESTS += TestCorLine.test
-TESTS += AltoXmlParsing.test
-TESTS += AbbyyXmlParsing.test
-TESTS += OcropusLlocsParsing.test
-TESTS += HocrParsing.test
+TESTS += TestAltoXmlParsing.test
+TESTS += TestAbbyyXmlParsing.test
+TESTS += TestOcropusLlocsParsing.test
+TESTS += TestHocrParsing.test
 
 default: all
 all: pcwd
