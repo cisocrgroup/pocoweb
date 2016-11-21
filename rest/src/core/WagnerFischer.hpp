@@ -31,7 +31,7 @@ namespace pcw {
 		void set_gt(const Line& line);
 
                 size_t operator()();
-	
+
                 const std::wstring& ocr() const noexcept {
                         return ocr_;
                 }
@@ -45,9 +45,20 @@ namespace pcw {
 			return l_;
 		}
 		template<class T>
-		size_t apply(T& t);
+		void correct(T& t, bool partial=false) const;
 
         private:
+		template<class T>
+		void correct(size_t b, size_t n, T& t) const;
+		std::pair<size_t, size_t> find_corrected_token(size_t i) const noexcept;
+		size_t find_begin_of_token(
+			Trace::const_iterator b,
+			Trace::const_iterator i
+		) const noexcept;
+		size_t find_end_of_token(
+			Trace::const_iterator i,
+			Trace::const_iterator e
+		) const noexcept;
                 size_t getMin(size_t i, size_t j) const noexcept;
                 void backtrack();
                 std::tuple<EditOp, size_t, size_t>
@@ -63,25 +74,40 @@ namespace pcw {
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class T>
-size_t 
-pcw::WagnerFischer::apply(T& t) 
+void
+pcw::WagnerFischer::correct(T& t, bool partial) const
 {
-	const auto lev = (*this)();
-	int o = 0;
-	const auto n = trace_.size();
+	if (not partial) {
+		correct(0, trace_.size(), t);
+	} else {
+		for (auto r = find_corrected_token(0);
+				r.first != 0 and r.second != 0;
+				r = find_corrected_token(r.second)
+		    ) {
+			correct(r.first, r.second, t);
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class T>
+void
+pcw::WagnerFischer::correct(size_t b, size_t n, T& t) const
+{
+	int ofs = 0;
 	t.begin_wagner_fischer();
-	for (size_t i = 0; i < n; ++i) {
-		const auto ii = i + o;
+	for (size_t i = b; i < n; ++i) {
+		const auto ii = i + ofs;
 		switch (trace_[i]) {
 		// insertion means that the ocr recognized a character
 		// where in reality there should be none; delete it
 		case WagnerFischer::EditOp::Ins:
 			t.erase(ii);
-			--o;	
+			--ofs;
 			break;
-		// deletion means that the ocr did not recognize a character 
+		// deletion means that the ocr did not recognize a character
 		// where in reality there should be one; so insert it
-		case WagnerFischer::EditOp::Del: 
+		case WagnerFischer::EditOp::Del:
 			t.insert(ii, gt_[i]);
 			break;
 		// subustitution just updates the according char
@@ -95,7 +121,6 @@ pcw::WagnerFischer::apply(T& t)
 		}
 	}
 	t.end_wagner_fischer();
-	return lev;
 }
 
 #endif // pcw_WagnerFischer_hpp__

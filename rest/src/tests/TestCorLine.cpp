@@ -20,7 +20,8 @@ struct Fixture {
 		BOOST_REQUIRE(not line.empty());
 		wf.set_gt(gt);
 		wf.set_ocr(line);
-		wf.apply(line);
+		BOOST_CHECK_EQUAL(wf(), 11);
+		wf.correct(line);
 	}
 	Line line;
 	WagnerFischer wf;
@@ -39,7 +40,7 @@ BOOST_AUTO_TEST_CASE(Ocr)
 	BOOST_CHECK_EQUAL(line.ocr(), ocr);
 	BOOST_CHECK_EQUAL(line.cor(), gt);
 	BOOST_CHECK_EQUAL(line.chars().back().cut, 100);
-	BOOST_CHECK(line.average_conf() > .8); 
+	BOOST_CHECK(line.average_conf() > .8);
 	BOOST_CHECK(line.is_corrected());
 }
 

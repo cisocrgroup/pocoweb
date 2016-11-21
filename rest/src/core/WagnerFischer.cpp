@@ -31,7 +31,7 @@ WagnerFischer::set_gt(const char* gt, size_t n)
 	gt_.reserve(std::max(n * 2, gt_.capacity()));
 	utf8::utf8to32(gt, gt + n, std::back_inserter(gt_));
 }
-	
+
 ////////////////////////////////////////////////////////////////////////////////
 void
 WagnerFischer::set_gt(const std::wstring& gt)
@@ -82,7 +82,7 @@ WagnerFischer::set_ocr(const char* ocr, size_t n)
 	ocr_.reserve(std::max(n * 2, ocr_.capacity()));
 	utf8::utf8to32(ocr, ocr + n, std::back_inserter(ocr_));
 }
-	
+
 ////////////////////////////////////////////////////////////////////////////////
 void
 WagnerFischer::set_ocr(const std::wstring& ocr)
@@ -108,13 +108,13 @@ WagnerFischer::set_ocr(const wchar_t* ocr, size_t n)
 void
 WagnerFischer::set_ocr(const Line& line)
 {
-	// use the corrected version as well 
+	// use the corrected version as well
 	// (if line is not corrected, wcor contains all ocr chars)
 	ocr_ = line.wcor();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-size_t 
+size_t
 WagnerFischer::operator()()
 {
         const auto gtn = gt_.size();
@@ -167,10 +167,10 @@ WagnerFischer::backtrack()
                 case EditOp::Sub:
                         break;
                 case EditOp::Del:
-                        ocr_.insert(i, 1, L'_');
+                        ocr_.insert(i, 1, L'~');
                         break;
                 case EditOp::Ins:
-                        gt_.insert(i, 1, L'_');
+                        gt_.insert(i, 1, L'~');
                         break;
                 }
         }
@@ -189,7 +189,7 @@ WagnerFischer::backtrack(size_t i, size_t j) const noexcept
 		assert(i != 0);
                 return std::make_tuple(EditOp::Ins, i-1, j);
 	}
-		
+
         assert(i > 0);
         assert(j > 0);
         const size_t x[] = {l_[i-1][j-1], l_[i][j-1], l_[i-1][j]};
@@ -209,7 +209,57 @@ WagnerFischer::backtrack(size_t i, size_t j) const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::ostream& 
+std::pair<size_t, size_t>
+pcw::WagnerFischer::find_corrected_token(size_t i) const noexcept
+{
+	assert(i <= trace_.size()); // it is ok if i points to end(trace_)
+	const auto b = begin(trace_);
+	const auto e = end(trace_);
+	auto f = std::find_if_not(b + i, e, [](auto op) {return op == EditOp::Nop;});
+	if (f != e)
+		return {find_begin_of_token(b, f), find_end_of_token(f, e)};
+	else
+		return {0, 0};
+}
+
+////////////////////////////////////////////////////////////////////////////////
+size_t
+pcw::WagnerFischer::find_begin_of_token(
+	Trace::const_iterator b,
+	Trace::const_iterator i
+) const noexcept
+{
+	for (; i != b; --i) {
+		if (*i == EditOp::Nop) {
+			auto pos = std::distance(b, i);
+			if (isspace(gt_[pos]))
+				return pos + 1;
+		}
+	}
+	assert(i == b);
+	return gt_.empty() ? 0 : isspace(gt_[0]) ? 1 : 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+size_t
+pcw::WagnerFischer::find_end_of_token(
+	Trace::const_iterator i,
+	Trace::const_iterator e
+) const noexcept
+{
+	const auto b = begin(trace_);
+	for (; i != e; ++i) {
+		if (*i == EditOp::Nop) {
+			auto pos = std::distance(b, i);
+			if (isspace(gt_[pos]))
+				return pos;
+		}
+	}
+	return trace_.size();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::ostream&
 pcw::operator<<(std::ostream& os, const WagnerFischer& wf)
 {
 	// os << wf.table() << "\n";
@@ -227,12 +277,12 @@ pcw::operator<<(std::ostream& os, const WagnerFischer& wf)
 	for (size_t i = 0; i < wf.gt().size(); ++i) {
 		utf8::append(wf.gt()[i], buf);
 		os << buf;
-	}	
+	}
 	return os;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::ostream& 
+std::ostream&
 pcw::operator<<(std::ostream& os, const WagnerFischer::Table& t)
 {
 	for (const auto& row: t) {
