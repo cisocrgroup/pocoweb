@@ -50,10 +50,15 @@ BOOST_AUTO_TEST_CASE(Partial)
 	auto words = line.words();
 	BOOST_REQUIRE_EQUAL(words.size(), 5);
 	BOOST_CHECK(not words[0].is_corrected());
+	BOOST_CHECK_EQUAL(words[0].cor(), "Dum");
 	BOOST_CHECK(words[1].is_corrected());
+	BOOST_CHECK_EQUAL(words[1].cor(), "fata");
 	BOOST_CHECK(words[2].is_corrected());
+	BOOST_CHECK_EQUAL(words[2].cor(), "ſinunt");
 	BOOST_CHECK(words[3].is_corrected());
+	BOOST_CHECK_EQUAL(words[3].cor(), "vivite");
 	BOOST_CHECK(words[4].is_corrected());
+	BOOST_CHECK_EQUAL(words[4].cor(), "laeti");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
