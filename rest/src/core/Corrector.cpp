@@ -1,5 +1,4 @@
 #include <utf8.h>
-#include <crow/logging.h>
 #include "Line.hpp"
 #include "Page.hpp"
 #include "Project.hpp"
@@ -131,7 +130,6 @@ Corrector::correct(Line& line, const std::wstring& gt, bool partial)
 	wf_.set_ocr(line);
 	wf_.set_gt(gt);
 	wf_();
-	CROW_LOG_INFO << "(Corrector) correcting\n" << wf_;
 	wf_.correct(line, partial);
 }
 
@@ -143,6 +141,5 @@ Corrector::correct(Line& line, const std::wregex& pat, const std::wstring& repl)
 	wf_.set_ocr(line);
 	wf_.set_gt(pat, repl);
 	wf_();
-	CROW_LOG_INFO << "(Corrector) correcting\n" << wf_;
 	wf_.correct(line, true);
 }
