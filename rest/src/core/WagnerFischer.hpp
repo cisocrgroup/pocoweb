@@ -45,11 +45,20 @@ namespace pcw {
 			return l_;
 		}
 		template<class T>
-		void correct(T& t);
+		void correct(T& t, bool partial=false) const;
 
         private:
 		template<class T>
 		void correct(size_t b, size_t n, T& t) const;
+		std::pair<size_t, size_t> find_corrected_token(size_t i) const noexcept;
+		size_t find_begin_of_token(
+			Trace::const_iterator b,
+			Trace::const_iterator i
+		) const noexcept;
+		size_t find_end_of_token(
+			Trace::const_iterator i,
+			Trace::const_iterator e
+		) const noexcept;
                 size_t getMin(size_t i, size_t j) const noexcept;
                 void backtrack();
                 std::tuple<EditOp, size_t, size_t>
@@ -66,9 +75,18 @@ namespace pcw {
 ////////////////////////////////////////////////////////////////////////////////
 template<class T>
 void
-pcw::WagnerFischer::correct(T& t)
+pcw::WagnerFischer::correct(T& t, bool partial) const
 {
-	correct(0, trace_.size(), t);
+	if (not partial) {
+		correct(0, trace_.size(), t);
+	} else {
+		for (auto r = find_corrected_token(0);
+				r.first != 0 and r.second != 0;
+				r = find_corrected_token(r.second)
+		    ) {
+			correct(r.first, r.second, t);
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
