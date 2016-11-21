@@ -2,6 +2,7 @@
 #include <pugixml.hpp>
 #include <utf8.h>
 #include "hocr.hpp"
+#include "Xml.hpp"
 #include "core/BadRequest.hpp"
 #include "core/Box.hpp"
 
@@ -12,7 +13,15 @@ static const std::regex IMGRE{R"xx(image\s+"(.*)")xx"};
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-Box 
+bool
+pcw::hocr::is(const pugi::xml_document& doc)
+{
+	const auto root_name = doc.document_element().name();
+	return strcasecmp(root_name, "html") == 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Box
 pcw::hocr::get_box(pugi::xml_node node)
 {
 	std::cmatch m;
@@ -22,9 +31,9 @@ pcw::hocr::get_box(pugi::xml_node node)
 			std::string(node.attribute("title").value())
 		);
 	return Box{
-		std::stoi(m[1]), 
-		std::stoi(m[2]), 
-		std::stoi(m[3]), 
+		std::stoi(m[1]),
+		std::stoi(m[2]),
+		std::stoi(m[3]),
 		std::stoi(m[4])
 	};
 }
@@ -42,7 +51,7 @@ pcw::hocr::get_cont(pugi::xml_node node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-double 
+double
 pcw::hocr::get_conf(pugi::xml_node node)
 {
 	std::cmatch m;
@@ -64,12 +73,12 @@ pcw::hocr::get_img(pugi::xml_node node)
 	return {};
 }
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcw::hocr::set_box(const Box& box, pugi::xml_node node)
 {
 	std::stringstream os;
-	os << "bbox " 
-	   << box.left() << " " 
+	os << "bbox "
+	   << box.left() << " "
 	   << box.top() << " "
 	   << box.right() << " "
 	   << box.bottom();
@@ -83,7 +92,7 @@ pcw::hocr::set_box(const Box& box, pugi::xml_node node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcw::hocr::set_cont(const std::wstring& cont, pugi::xml_node node)
 {
 	if (not node.first_child())
@@ -95,7 +104,7 @@ pcw::hocr::set_cont(const std::wstring& cont, pugi::xml_node node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcw::hocr::set_conf(double conf, pugi::xml_node node)
 {
 	auto iconf = static_cast<int>(conf * 100);
@@ -111,7 +120,7 @@ pcw::hocr::set_conf(double conf, pugi::xml_node node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcw::hocr::set_img(const std::string& str, pugi::xml_node node)
 {
 	if (not node.attribute("title")) {
