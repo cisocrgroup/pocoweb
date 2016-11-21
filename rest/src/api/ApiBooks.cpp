@@ -25,7 +25,7 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* ApiBooks::route_ = 
+const char* ApiBooks::route_ =
 	API_BOOKS_ROUTE_0 ","
 	API_BOOKS_ROUTE_1 ","
 	API_BOOKS_ROUTE_2 ","
@@ -102,7 +102,7 @@ ApiBooks::operator()(const Request& req, int bid, int pid, int lid) const
 	if (not page->contains(lid))
 		return not_found();
 
-	// TODO authentication 
+	// TODO authentication
 
 	switch (req.method) {
 	case crow::HTTPMethod::Get:
@@ -126,7 +126,7 @@ ApiBooks::post(const Request& req) const
 			return forbidden();
 
 		// create new bookdir
-		BookDirectoryBuilder dir(config()); 
+		BookDirectoryBuilder dir(config());
 		ScopeGuard sg([&dir](){dir.remove();});
 		CROW_LOG_INFO << "(ApiBooks) BookDirectoryBuilder: " << dir.dir();
 		dir.add_zip_file(extract_content(req));
@@ -136,7 +136,7 @@ ApiBooks::post(const Request& req) const
 		// book->author = author;
 		// book->title = title;
 		book->set_owner(*db->session().user);
-		
+
 		// insert book into database
 		CROW_LOG_INFO << "(ApiBooks) Inserting new book into database";
 		std::lock_guard<std::mutex> lock(db->session().mutex);
@@ -207,7 +207,7 @@ ApiBooks::post(const Request& req, int bid) const
 	auto user = db->session().user;
 
 	if (not user)
-		return internal_server_error();	
+		return internal_server_error();
 
 	const size_t n = 5;
 	std::vector<ProjectPtr> projs(n);
@@ -228,7 +228,7 @@ ApiBooks::post(const Request& req, int bid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response 
+Route::Response
 ApiBooks::get(const Line& line) const
 {
 	Json j;
@@ -236,7 +236,7 @@ ApiBooks::get(const Line& line) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response 
+Route::Response
 ApiBooks::put(const Request& req, Database& db, Line& line) const
 {
 	auto correction = req.url_params.get("correction");
@@ -249,7 +249,7 @@ ApiBooks::put(const Request& req, Database& db, Line& line) const
 	auto lev = wf();
 	CROW_LOG_DEBUG << "(ApiBooks) lev: " << lev << "\n" << wf;
 	CROW_LOG_DEBUG << "(ApiBooks) line: " << line.cor();
-	wf.apply(line);
+	wf.correct(line);
 	CROW_LOG_DEBUG << "(ApiBooks) line: " << line.cor();
 	db.set_autocommit(false);
 	db.update_line(line);
@@ -258,14 +258,14 @@ ApiBooks::put(const Request& req, Database& db, Line& line) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr 
+ProjectPtr
 ApiBooks::find(const Database& db, int bid) const
 {
 	return db.select_project(bid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-PagePtr 
+PagePtr
 ApiBooks::find(const Database& db, int bid, int pid) const
 {
 	auto book = find(db, bid);
