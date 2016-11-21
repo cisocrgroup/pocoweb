@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <regex>
 #include <tuple>
 
 namespace pcw {
@@ -29,6 +30,9 @@ namespace pcw {
 		void set_gt(const wchar_t* gt);
 		void set_gt(const wchar_t* gt, size_t n);
 		void set_gt(const Line& line);
+		void set_gt(const std::wregex& pat, const std::wstring& repl);
+
+		void clear() {l_.clear(); trace_.clear(), gt_.clear(); ocr_.clear();}
 
                 size_t operator()();
 
