@@ -42,6 +42,7 @@ OBJS += BookBuilder.o
 OBJS += BookFixer.o
 OBJS += Box.o
 OBJS += Book.o
+OBJS += Corrector.o
 OBJS += Project.o
 OBJS += SubProject.o
 OBJS += Config.o
