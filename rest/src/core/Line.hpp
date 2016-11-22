@@ -26,12 +26,12 @@ namespace pcw {
 
 		struct Token {
 			Token() = default;
-			Token(CharIterator b, CharIterator e, Box bbox = {})
-				: range(b, e)
-				, box(bbox)
-			{}
 
 			double average_conf() const;
+			std::wstring wcor_lc() const;
+			std::wstring wocr_lc() const;
+			std::string cor_lc() const;
+			std::string ocr_lc() const;
 			std::wstring wcor() const;
 			std::wstring wocr() const;
 			std::string cor() const;
@@ -39,8 +39,10 @@ namespace pcw {
 			bool is_corrected() const;
 			bool is_normal() const;
 
-			std::pair<CharIterator, CharIterator> range;
+			CharIterator begin, end;
+			std::shared_ptr<const Line> line;
 			Box box;
+			int id;
 		};
 
 		struct Char {

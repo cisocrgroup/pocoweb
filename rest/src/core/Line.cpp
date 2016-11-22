@@ -24,7 +24,7 @@ Line::Line(int i, Box b)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 Line::is_corrected() const noexcept
 {
 	return std::all_of(begin(chars_), end(chars_), [](const auto& c) {
@@ -71,7 +71,7 @@ Line::append(const char* str, int l, int r, double conf)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Line::append(const wchar_t* str, size_t n, int l, int r, double conf)
 {
 	PRAECONDITION;
@@ -87,7 +87,7 @@ Line::append(const wchar_t* str, size_t n, int l, int r, double conf)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Line::append(const wchar_t* str, int l, int r, double conf)
 {
 	PRAECONDITION;
@@ -97,7 +97,7 @@ Line::append(const wchar_t* str, int l, int r, double conf)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Line::append(wchar_t c, int r, double conf)
 {
 	PRAECONDITION;
@@ -105,7 +105,7 @@ Line::append(wchar_t c, int r, double conf)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Line::append(wchar_t o, wchar_t c, int r, double conf)
 {
 	PRAECONDITION;
@@ -113,7 +113,7 @@ Line::append(wchar_t o, wchar_t c, int r, double conf)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::wstring 
+std::wstring
 Line::wcor() const
 {
 	std::wstring res;
@@ -125,7 +125,7 @@ Line::wcor() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::wstring 
+std::wstring
 Line::wocr() const
 {
 	std::wstring res;
@@ -137,7 +137,7 @@ Line::wocr() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string 
+std::string
 Line::cor() const
 {
 	std::string res;
@@ -150,7 +150,7 @@ Line::cor() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string 
+std::string
 Line::ocr() const
 {
 	std::string res;
@@ -162,8 +162,8 @@ Line::ocr() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Line::Confidences 
-Line::confidences() const 
+Line::Confidences
+Line::confidences() const
 {
 	Confidences confidences;
 	confidences.reserve(chars_.size());
@@ -174,8 +174,8 @@ Line::confidences() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Line::Cuts 
-Line::cuts() const 
+Line::Cuts
+Line::cuts() const
 {
 	Cuts cuts;
 	cuts.reserve(chars_.size());
@@ -186,13 +186,13 @@ Line::cuts() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-double 
+double
 Line::average_conf() const noexcept
 {
 	double sum = 0;
 	double n = 0;
 	cor(begin(chars_), end(chars_), [&sum,&n](const Char& c) {
-		++n; 
+		++n;
 		sum += c.conf;
 	});
 	return sum / n;
@@ -206,7 +206,7 @@ Line::begin_wagner_fischer() noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Line::set(size_t i, wchar_t c)
 {
 	const auto ii = i + ofs_;
@@ -218,7 +218,7 @@ Line::set(size_t i, wchar_t c)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Line::insert(size_t i, wchar_t c)
 {
 	const auto ii = i + ofs_;
@@ -229,7 +229,7 @@ Line::insert(size_t i, wchar_t c)
 	auto r = end(chars_);
 	if (ii == chars_.size()) {
 		chars_.emplace_back(0, c, cut, 1.0);
-		r = std::prev(end(chars_)); 
+		r = std::prev(end(chars_));
 	} else {
 		r = chars_.emplace(begin(chars_) + ii, 0, c, cut, 1.0);
 	}
@@ -240,7 +240,7 @@ Line::insert(size_t i, wchar_t c)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Line::divide_cuts(Chars::iterator first, Chars::iterator last)
 {
 	auto e = end(chars_);
@@ -259,7 +259,7 @@ Line::divide_cuts(Chars::iterator first, Chars::iterator last)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Line::erase(size_t i)
 {
 	const auto ii = i + ofs_;
@@ -271,7 +271,7 @@ Line::erase(size_t i)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Line::noop(size_t i)
 {
 	const auto ii = i + ofs_;
@@ -301,29 +301,32 @@ next(Line::CharIterator i, Line::CharIterator e)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Line::each_token(std::function<void(const Token&)> f) const
 {
 	Token token;
 	token.box.set_top(this->box.top());
 	token.box.set_bottom(this->box.bottom());
+	token.line = shared_from_this();
 
 	const auto e = end(chars_);
 	const auto b = begin(chars_);
+	int id = 0;
 
 	for (auto i = b; i != e; ) {
 		auto j = next(i, e);
 		token.box.set_left(i != b ? std::prev(i)->cut : 0);
 		token.box.set_right(j != e ? j->cut : this->box.right());
-		token.range.first = i; 
-		token.range.second = j;
+		token.begin = i;
+		token.end = j;
+		token.id = ++id;
 		f(token);
 		i = j;
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::vector<Line::Token> 
+std::vector<Line::Token>
 Line::tokens() const
 {
 	std::vector<Token> tokens;
@@ -334,7 +337,7 @@ Line::tokens() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::vector<Line::Token> 
+std::vector<Line::Token>
 Line::words() const
 {
 	std::vector<Token> words;
@@ -354,15 +357,15 @@ static bool
 isword(wchar_t c) noexcept
 {
 	switch (u_charType(c)) { // all cases fall through
-	case U_UPPERCASE_LETTER:     		
-	case U_LOWERCASE_LETTER:     		
-	case U_TITLECASE_LETTER:     		
-	case U_MODIFIER_LETTER:      		
-	case U_OTHER_LETTER:         		
-	case U_DECIMAL_DIGIT_NUMBER: 		
-	case U_LETTER_NUMBER:        		
-	case U_OTHER_NUMBER:         		
-	case U_NON_SPACING_MARK:     		
+	case U_UPPERCASE_LETTER:
+	case U_LOWERCASE_LETTER:
+	case U_TITLECASE_LETTER:
+	case U_MODIFIER_LETTER:
+	case U_OTHER_LETTER:
+	case U_DECIMAL_DIGIT_NUMBER:
+	case U_LETTER_NUMBER:
+	case U_OTHER_NUMBER:
+	case U_NON_SPACING_MARK:
 		return true;
 	default:
 		return false;
@@ -370,7 +373,7 @@ isword(wchar_t c) noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 Line::Char::is_word() const noexcept
 {
 	auto c = get_cor();
@@ -379,12 +382,12 @@ Line::Char::is_word() const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 Line::Char::is_sep() const noexcept
 {
 	auto c = get_cor();
 	// c=0 means deletion and is considered to be part of a separator.
-	return c ? not isword(c) : true; 
+	return c ? not isword(c) : true;
 }
 
 //
@@ -392,11 +395,11 @@ Line::Char::is_sep() const noexcept
 //
 
 ////////////////////////////////////////////////////////////////////////////////
-double 
+double
 Line::Token::average_conf() const
 {
 	double sum = 0, n = 0;
-	Line::cor(range.first, range.second, [&sum, &n](const Char& c) {
+	Line::cor(begin, end, [&sum, &n](const Char& c) {
 		sum += c.conf;
 		++n;
 	});
@@ -404,36 +407,73 @@ Line::Token::average_conf() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::wstring 
+std::wstring
+Line::Token::wcor_lc() const
+{
+	std::wstring res;
+	res.reserve(std::distance(begin, end));
+	Line::cor(begin, end, [&res](const Char& c) {
+		res.push_back(u_tolower(c.get_cor()));
+	});
+	return res;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::wstring
 Line::Token::wcor() const
 {
 	std::wstring res;
-	res.reserve(std::distance(range.first, range.second));
-	Line::cor(range.first, range.second, [&res](const Char& c) {
+	res.reserve(std::distance(begin, end));
+	Line::cor(begin, end, [&res](const Char& c) {
 		res.push_back(c.get_cor());
 	});
 	return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::wstring 
-Line::Token::wocr() const
+std::wstring
+Line::Token::wocr_lc() const
 {
 	std::wstring res;
-	res.reserve(std::distance(range.first, range.second));
-	Line::ocr(range.first, range.second, [&res](const Char& c) {
-		res.push_back(c.cor);
+	res.reserve(std::distance(begin, end));
+	Line::ocr(begin, end, [&res](const Char& c) {
+		res.push_back(u_tolower(c.ocr));
 	});
 	return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string 
+std::wstring
+Line::Token::wocr() const
+{
+	std::wstring res;
+	res.reserve(std::distance(begin, end));
+	Line::ocr(begin, end, [&res](const Char& c) {
+		res.push_back(c.ocr);
+	});
+	return res;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::string
+Line::Token::cor_lc() const
+{
+	std::string res;
+	res.reserve(std::distance(begin, end));
+	Line::cor(begin, end, [&res](const Char& c) {
+		const auto cc = u_tolower(c.get_cor());
+		utf8::utf32to8(&cc, &cc + 1, std::back_inserter(res));
+	});
+	return res;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::string
 Line::Token::cor() const
 {
 	std::string res;
-	res.reserve(std::distance(range.first, range.second));
-	Line::cor(range.first, range.second, [&res](const Char& c) {
+	res.reserve(std::distance(begin, end));
+	Line::cor(begin, end, [&res](const Char& c) {
 		const auto cc = c.get_cor();
 		utf8::utf32to8(&cc, &cc + 1, std::back_inserter(res));
 	});
@@ -441,31 +481,44 @@ Line::Token::cor() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string 
+std::string
+Line::Token::ocr_lc() const
+{
+	std::string res;
+	res.reserve(std::distance(begin, end));
+	Line::ocr(begin, end, [&res](const Char& c) {
+		auto cc = u_tolower(c.ocr);
+		utf8::utf32to8(&cc, &cc + 1, std::back_inserter(res));
+	});
+	return res;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::string
 Line::Token::ocr() const
 {
 	std::string res;
-	res.reserve(std::distance(range.first, range.second));
-	Line::ocr(range.first, range.second, [&res](const Char& c) {
+	res.reserve(std::distance(begin, end));
+	Line::ocr(begin, end, [&res](const Char& c) {
 		utf8::utf32to8(&c.ocr, &c.ocr + 1, std::back_inserter(res));
 	});
 	return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 Line::Token::is_corrected() const
 {
-	return std::all_of(range.first, range.second, [](const Char& c) {
+	return std::all_of(begin, end, [](const Char& c) {
 		return c.is_corrected();
 	});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 Line::Token::is_normal() const
 {
-	return std::all_of(range.first, range.second, [](const Char& c) {
+	return std::all_of(begin, end, [](const Char& c) {
 		return c.is_word();
 	});
 }
