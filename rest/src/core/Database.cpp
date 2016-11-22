@@ -592,66 +592,6 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 		page.push_back(std::move(line));
 }
 
-#ifdef FOO
-////////////////////////////////////////////////////////////////////////////////
-void
-Database::select_all_lines(Page& page, sql::Connection& conn) const
-{
-	CROW_LOG_DEBUG << __LINE__ << " (Database) Start: select all lines; pageid = " << page.id;
-	static const char *sql = "SELECT * FROM textlines "
-				 "WHERE bookid = ? AND pageid = ? "
-				 "ORDER BY lineid;";
-	static const char *cql = "SELECT * FROM contents "
-				 "WHERE bookid = ? AND pageid = ? AND lineid = ? "
-				 "ORDER BY seq;";
-
-	PreparedStatementPtr s{conn.prepareStatement(sql)};
-	assert(s);
-	const int bookid = page.book()->id();
-	const int pageid = page.id;
-	s->setInt(1, bookid);
-	s->setInt(2, pageid);
-	ResultSetPtr res{s->executeQuery()};
-	assert(res);
-
-	PreparedStatementPtr c{conn.prepareStatement(cql)};
-	assert(c);
-	c->setInt(1, bookid);
-	c->setInt(2, pageid);
-
-	while (res->next()) {
-		assert(res->getInt("bookid") == bookid);
-		assert(res->getInt("pageid") == pageid);
-
-		const int id = res->getInt("lineid");
-		const int l = res->getInt("lleft");
-		const int r = res->getInt("lright");
-		const int t = res->getInt("ltop");
-		const int b = res->getInt("lbottom");
-		Line line(id, {l, t, r, b});
-		line.img = res->getString("imagepath");
-
-		c->setInt(3, id);
-		ResultSetPtr contents{c->executeQuery()};
-		assert(contents);
-
-		while (contents->next()) {
-			assert(contents->getInt("bookid") == bookid);
-			assert(contents->getInt("pageid") == pageid);
-			assert(contents->getInt("lineid") == line.id);
-
-			const wchar_t ocr = contents->getInt("ocr");
-			const wchar_t cor = contents->getInt("cor");
-			const auto r = contents->getInt("cut");
-			const auto c = contents->getDouble("conf");
-			line.append(ocr, r, c, cor);
-		}
-		page.push_back(std::move(line));
-	}
-	CROW_LOG_DEBUG << __LINE__ << " (Database) End: select all lines; pageid = " << page.id;
-}
-#endif // FOO
-
 ////////////////////////////////////////////////////////////////////////////////
 bool
 Database::autocommit() const noexcept
