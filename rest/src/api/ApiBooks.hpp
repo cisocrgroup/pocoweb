@@ -6,8 +6,8 @@
 namespace pcw {
 	class Line;
 	class Page;
-	class Project;
-	using ProjectPtr = std::shared_ptr<Project>;
+	class BookView;
+	using BookViewPtr = std::shared_ptr<BookView>;
 	using PagePtr = std::shared_ptr<Page>;
 
 	class ApiBooks: public Route {
@@ -28,7 +28,7 @@ namespace pcw {
 		Response post(const Request& req, int bid) const;
 		Response put(const Request& req, Database& db, Line& line) const;
 		Response get(const Line& line) const;
-		ProjectPtr find(const Database& db, int bid) const;
+		BookViewPtr find(const Database& db, int bid) const;
 		PagePtr find(const Database& db, int bid, int pid) const;
 
 		static const char* route_;

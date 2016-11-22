@@ -7,7 +7,7 @@
 #include "Book.hpp"
 #include "AppCache.hpp"
 #include "Page.hpp"
-#include "SubProject.hpp"
+#include "Package.hpp"
 #include "Line.hpp"
 #include "Config.hpp"
 #include "Sessions.hpp"
@@ -218,8 +218,8 @@ Database::update_line(const Line& line, sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr
-Database::insert_project(Project& project) const
+BookViewPtr
+Database::insert_project(BookView& project) const
 {
 	static const char *sql = "INSERT INTO projects "
 				 "(origin,owner) "
@@ -288,7 +288,7 @@ Database::insert_book(Book& book) const
 
 ////////////////////////////////////////////////////////////////////////////////
 int
-Database::insert_book_project(const Project& project, sql::Connection& conn) const
+Database::insert_book_project(const BookView& project, sql::Connection& conn) const
 {
 	static const char *sql = "INSERT INTO projects (origin, owner) "
 				 "VALUES (0,?);";
@@ -334,7 +334,7 @@ Database::insert_page(const Page& page, sql::Connection& conn) const
 	s->setInt(8, page.box.bottom());
 	s->executeUpdate();
 	for (const auto& line: page)
-		insert_line(line, conn);
+		insert_line(*line, conn);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -381,7 +381,7 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr
+BookViewPtr
 Database::select_project(int projectid) const
 {
 	check_session_lock();
@@ -391,7 +391,7 @@ Database::select_project(int projectid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::vector<ProjectPtr>
+std::vector<BookViewPtr>
 Database::select_all_projects(const User& user) const
 {
 	static const char *sql = "SELECT projectid "
@@ -405,7 +405,7 @@ Database::select_all_projects(const User& user) const
 	s->setInt(1, user.id());
 	ResultSetPtr res{s->executeQuery()};
 	assert(res);
-	std::vector<ProjectPtr> projects;
+	std::vector<BookViewPtr> projects;
 	while (res->next()) {
 		const auto prid = res->getInt(1);
 		projects.push_back(cached_select_project(prid, *conn));
@@ -414,7 +414,7 @@ Database::select_all_projects(const User& user) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr
+BookViewPtr
 Database::select_project(int projectid, sql::Connection& conn) const
 {
 	static const char *sql = "SELECT origin,owner FROM projects WHERE projectid = ?;";
@@ -437,7 +437,7 @@ Database::select_project(int projectid, sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr
+BookViewPtr
 Database::select_subproject(int projectid, int origin, int owner, sql::Connection& conn) const
 {
 	// it is save to use the cache here
@@ -449,7 +449,7 @@ Database::select_subproject(int projectid, int origin, int owner, sql::Connectio
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr
+BookViewPtr
 Database::select_subproject(int projectid, int owner, const Book& origin, sql::Connection& conn) const
 {
 	static const char *sql = "SELECT pageid FROM project_pages "
@@ -468,7 +468,7 @@ Database::select_subproject(int projectid, int owner, const Book& origin, sql::C
 	while (res->next()) {
 		ids.insert(res->getInt(1));
 	}
-	auto project = std::make_shared<SubProject>(projectid, *ownerptr, origin);
+	auto project = std::make_shared<Package>(projectid, *ownerptr, origin);
 	std::copy_if(begin(origin), end(origin), std::back_inserter(*project),
 		[&ids](const auto& page) {
 			assert(page);
@@ -563,7 +563,7 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 	s->setInt(2, pageid);
 	ResultSetPtr res{s->executeQuery()};
 	assert(res);
-	Line line{-1};
+	LinePtr line = nullptr;
 	while (res->next()) {
 		assert(res->getInt(1) == bookid);
 		assert(res->getInt(2) == pageid);
@@ -575,82 +575,22 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 		const int b = res->getInt(7);
 
 		// finished with current line
-		if (line.id() != id) {
-			if (line.id() != -1)
+		if (not line or line->id() != id) {
+			if (line)
 				page.push_back(std::move(line));
-			line = Line(id, {l, t, r, b});
-			line.img = res->getString(8);
+			line = std::make_shared<Line>(id, Box{l, t, r, b});
+			line->img = res->getString(8);
 		}
 		const wchar_t ocr = res->getInt(9);
 		const wchar_t cor = res->getInt(10);
 		const auto cut = res->getInt(11);
 		const auto conf = res->getDouble(12);
-		line.append(ocr, cut, conf, cor);
+		line->append(ocr, cut, conf, cor);
 	}
 	// insert last line
-	if (line.id() != -1)
+	if (line)
 		page.push_back(std::move(line));
 }
-
-#ifdef FOO
-////////////////////////////////////////////////////////////////////////////////
-void
-Database::select_all_lines(Page& page, sql::Connection& conn) const
-{
-	CROW_LOG_DEBUG << __LINE__ << " (Database) Start: select all lines; pageid = " << page.id;
-	static const char *sql = "SELECT * FROM textlines "
-				 "WHERE bookid = ? AND pageid = ? "
-				 "ORDER BY lineid;";
-	static const char *cql = "SELECT * FROM contents "
-				 "WHERE bookid = ? AND pageid = ? AND lineid = ? "
-				 "ORDER BY seq;";
-
-	PreparedStatementPtr s{conn.prepareStatement(sql)};
-	assert(s);
-	const int bookid = page.book()->id();
-	const int pageid = page.id;
-	s->setInt(1, bookid);
-	s->setInt(2, pageid);
-	ResultSetPtr res{s->executeQuery()};
-	assert(res);
-
-	PreparedStatementPtr c{conn.prepareStatement(cql)};
-	assert(c);
-	c->setInt(1, bookid);
-	c->setInt(2, pageid);
-
-	while (res->next()) {
-		assert(res->getInt("bookid") == bookid);
-		assert(res->getInt("pageid") == pageid);
-
-		const int id = res->getInt("lineid");
-		const int l = res->getInt("lleft");
-		const int r = res->getInt("lright");
-		const int t = res->getInt("ltop");
-		const int b = res->getInt("lbottom");
-		Line line(id, {l, t, r, b});
-		line.img = res->getString("imagepath");
-
-		c->setInt(3, id);
-		ResultSetPtr contents{c->executeQuery()};
-		assert(contents);
-
-		while (contents->next()) {
-			assert(contents->getInt("bookid") == bookid);
-			assert(contents->getInt("pageid") == pageid);
-			assert(contents->getInt("lineid") == line.id);
-
-			const wchar_t ocr = contents->getInt("ocr");
-			const wchar_t cor = contents->getInt("cor");
-			const auto r = contents->getInt("cut");
-			const auto c = contents->getDouble("conf");
-			line.append(ocr, r, c, cor);
-		}
-		page.push_back(std::move(line));
-	}
-	CROW_LOG_DEBUG << __LINE__ << " (Database) End: select all lines; pageid = " << page.id;
-}
-#endif // FOO
 
 ////////////////////////////////////////////////////////////////////////////////
 bool
@@ -766,7 +706,7 @@ Database::cached_select_user(int userid, sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr
+BookViewPtr
 Database::cached_select_project(int prid, sql::Connection& conn) const
 {
 	auto get_project = [this,&conn](int prid) {
@@ -794,11 +734,11 @@ Database::put_cache(UserPtr user) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr
-Database::put_cache(ProjectPtr proj) const
+BookViewPtr
+Database::put_cache(BookViewPtr proj) const
 {
 	if (proj and cache_) {
-		CROW_LOG_INFO << "(Database) Caching Project " << *proj;
+		CROW_LOG_INFO << "(Database) Caching BookView " << *proj;
 		cache_->project.put(proj);
 	}
 	return proj;

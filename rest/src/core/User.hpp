@@ -4,7 +4,7 @@
 #include <memory>
 
 namespace pcw {
-	class Project;
+	class BookView;
 	class User;
 	using UserPtr = std::shared_ptr<User>;
 
@@ -19,9 +19,9 @@ namespace pcw {
 			, institute(std::move(i))
 			, id_(id)
 		{}
-		bool has_permission(const Project& project) const noexcept;
+		bool has_permission(const BookView& project) const noexcept;
 		int id() const noexcept {return id_;}
-		
+
 		const std::string name;
 		std::string email, institute;
 

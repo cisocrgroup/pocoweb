@@ -10,7 +10,7 @@ using namespace pcw;
 ////////////////////////////////////////////////////////////////////////////////
 HocrParserLine::HocrParserLine(pugi::xml_node node)
 	: chars_()
-	, node_(node) 
+	, node_(node)
 	, needs_update_(false)
 {
 	init();
@@ -18,19 +18,19 @@ HocrParserLine::HocrParserLine(pugi::xml_node node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Line
+LinePtr
 HocrParserLine::line(int id) const
 {
-	Line line(id, box);
+	auto line = std::make_shared<Line>(id, box);
 	for (const auto& c: chars_) {
-		line.append(c.c, c.box.right(), c.conf);
+		line->append(c.c, c.box.right(), c.conf);
 	}
 	return line;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::wstring 
-HocrParserLine::wstring() const 
+std::wstring
+HocrParserLine::wstring() const
 {
 	std::wstring res(chars_.size(), 0);
 	std::transform(begin(chars_), end(chars_), begin(res), [](const auto& c) {
@@ -40,8 +40,8 @@ HocrParserLine::wstring() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string 
-HocrParserLine::string() const 
+std::string
+HocrParserLine::string() const
 {
 	std::string res;
 	res.reserve(chars_.size());
@@ -53,7 +53,7 @@ HocrParserLine::string() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 HocrParserLine::end_wagner_fischer()
 {
 	if (not needs_update_)
@@ -70,8 +70,8 @@ HocrParserLine::end_wagner_fischer()
 		if (not i->is_space) {
 			update_char(i, eot, node_);
 		}
-		i = eot;	
-	}	
+		i = eot;
+	}
 
 	for (auto n = node_.first_child(); n != last;) {
 		auto next = n.next_sibling();
@@ -104,7 +104,7 @@ HocrParserLine::update_char(Iterator b, Iterator e, Node& parent)
 		box += c.box;
 		conf += c.conf;
 		c.node = merge(node, c.node);
-		
+
 	});
 	conf /= wstr.size();
 	hocr::set_box(box, node);
@@ -113,7 +113,7 @@ HocrParserLine::update_char(Iterator b, Iterator e, Node& parent)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 HocrParserLine::insert(size_t pos, wchar_t c)
 {
 	// std::cerr << "(HocrParserLine) insert pos: " << pos << " " << c << "\n";
@@ -123,17 +123,17 @@ HocrParserLine::insert(size_t pos, wchar_t c)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 HocrParserLine::erase(size_t pos)
 {
 	// std::cerr << "(HocrParserLine) erase pos: " << pos << "\n";
 	assert(pos < chars_.size());
-	chars_.erase(begin(chars_) + pos);	
+	chars_.erase(begin(chars_) + pos);
 	needs_update_ = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 HocrParserLine::set(size_t pos, wchar_t c)
 {
 	// std::cerr << "(HocrParserLine) set pos: " << pos << " " << c << "\n";
@@ -165,13 +165,13 @@ HocrParserLine::init_string(const pugi::xml_node& node, bool space_before)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-HocrParserLine::init_space(const Node& node) 
+HocrParserLine::init_space(const Node& node)
 {
 	auto token_box = hocr::get_box(node);
 	Box box{
 		token_box.right(),
-		token_box.top(), 
-		token_box.right() + 1, 
+		token_box.top(),
+		token_box.right() + 1,
 		token_box.bottom()
 	};
 	chars_.emplace_back(L' ', node, hocr::get_conf(node), box);
@@ -196,7 +196,7 @@ HocrParserLine::init()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-HocrParserLine::Iterator 
+HocrParserLine::Iterator
 HocrParserLine::find_end_of_token(Iterator b, Iterator e) noexcept
 {
 	assert(b != e);
@@ -207,22 +207,22 @@ HocrParserLine::find_end_of_token(Iterator b, Iterator e) noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-HocrParserLine::Char 
+HocrParserLine::Char
 HocrParserLine::make_copy(Char& c, wchar_t cc)
 {
 	auto split = c.box.split(2);
 	auto copy = Char(cc, c.node, c.conf, split[0]);
 	c.box = split[1];
-	return copy;	
+	return copy;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-HocrParserLine::Node 
+HocrParserLine::Node
 HocrParserLine::merge(Node& a, const Node& b)
 {
 	if (a != b) { // don't merge the same node with itself
 		for (const auto& attr: b.attributes()) {
-			if (not a.attribute(attr.name())) 
+			if (not a.attribute(attr.name()))
 				a.append_attribute(attr.name()).
 					set_value(attr.value());
 		}

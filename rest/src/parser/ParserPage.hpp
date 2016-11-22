@@ -14,10 +14,11 @@ namespace pcw {
 	class ParserPage;
 	class ParserLine;
 	using PagePtr = std::shared_ptr<Page>;
-	using ParserCharPtr = std::shared_ptr<ParserChar>;	
+	using ParserCharPtr = std::shared_ptr<ParserChar>;
 	using Path = boost::filesystem::path;
 	using ParserPagePtr = std::shared_ptr<ParserPage>;
 	using ParserLinePtr = std::shared_ptr<ParserLine>;
+	using LinePtr = std::shared_ptr<Line>;
 
 	class ParserLine {
 	public:
@@ -30,9 +31,9 @@ namespace pcw {
 		virtual void end_wagner_fischer() {}
 		virtual std::wstring wstring() const = 0;
 		virtual std::string string() const = 0;
-		virtual Line line(int id) const = 0;
+		virtual LinePtr line(int id) const = 0;
 		size_t correct(WagnerFischer& wf);
-		
+
 		struct Char {
 			Char(wchar_t cc, double cconf = 0, Box bbox = {})
 				: box(bbox)
@@ -44,7 +45,7 @@ namespace pcw {
 			wchar_t c;
 		};
 		Box box;
-	};	
+	};
 
 	class ParserPage: public std::enable_shared_from_this<ParserPage> {
 	public:

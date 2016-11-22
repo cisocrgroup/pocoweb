@@ -2,21 +2,22 @@
 #include <iostream>
 #include <regex>
 #include "core/BadRequest.hpp"
+#include "core/Line.hpp"
 #include "OcropusLlocsParserLine.hpp"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 OcropusLlocsParserLine::OcropusLlocsParserLine(int id, Path llocs, const Path& img)
-	: line_(id)
+	: line_(std::make_shared<Line>(id))
 	, llocs_(std::move(llocs))
 {
-	line_.img = img;
+	line_->img = img;
 	init();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Line
+LinePtr
 OcropusLlocsParserLine::line(int id) const
 {
 	return line_;
@@ -26,35 +27,35 @@ OcropusLlocsParserLine::line(int id) const
 std::wstring
 OcropusLlocsParserLine::wstring() const
 {
-	return line_.wcor();
+	return line_->wcor();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string
 OcropusLlocsParserLine::string() const
 {
-	return line_.cor();
+	return line_->cor();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 OcropusLlocsParserLine::insert(size_t pos, wchar_t c)
 {
-	line_.insert(pos, c);
+	line_->insert(pos, c);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 OcropusLlocsParserLine::erase(size_t pos)
 {
-	line_.erase(pos);
+	line_->erase(pos);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 OcropusLlocsParserLine::set(size_t pos, wchar_t c)
 {
-	line_.set(pos, c);
+	line_->set(pos, c);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -78,7 +79,7 @@ OcropusLlocsParserLine::init()
 		double conf = m[4].length() ? std::stod(m[4]) : 0;
 		if (cut < 0) // fix cuts smaller than 0 (does happen)
 			cut = 0;
-		line_.append(c, cut, conf);
+		line_->append(c, cut, conf);
 	}
 }
 

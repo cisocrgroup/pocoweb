@@ -15,12 +15,12 @@ AbbyyXmlParserLine::AbbyyXmlParserLine(pugi::xml_node node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Line
+LinePtr
 AbbyyXmlParserLine::line(int id) const
 {
-	Line line(id, box);
+	auto line = std::make_shared<Line>(id, box);
 	for (const auto& c: chars_) {
-		line.append(c.c, c.box.right(), c.conf);
+		line->append(c.c, c.box.right(), c.conf);
 	}
 	return line;
 }

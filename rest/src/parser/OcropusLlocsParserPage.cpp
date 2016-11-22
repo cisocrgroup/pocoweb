@@ -33,16 +33,16 @@ OcropusLlocsParserPage::write(const Path& path) const
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-OcropusLlocsParserPage::write(int id, const ParserLine& line, const Path& base) 
+OcropusLlocsParserPage::write(int id, const ParserLine& line, const Path& base)
 {
 	auto l = line.line(id);
-	auto img = base / l.img.filename();
+	auto img = base / l->img.filename();
 	auto llocs = img.replace_extension(".llocs");
 	std::wofstream os(llocs.string());
 	if (not os.good())
 		throw std::system_error(errno, std::system_category(), llocs.string());
-	copy(l.img, base / l.img.filename());
-	for (const auto& c: l.chars()) {
+	copy(l->img, base / l->img.filename());
+	for (const auto& c: l->chars()) {
 		auto cc = c.get_cor();
 		if (cc) {
 			os << cc << '\t'

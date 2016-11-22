@@ -8,7 +8,7 @@ using namespace pcw;
 ////////////////////////////////////////////////////////////////////////////////
 AltoXmlParserLine::AltoXmlParserLine(pugi::xml_node node)
 	: chars_()
-	, node_(node) 
+	, node_(node)
 	, needs_update_(false)
 {
 	init();
@@ -16,19 +16,19 @@ AltoXmlParserLine::AltoXmlParserLine(pugi::xml_node node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Line
+LinePtr
 AltoXmlParserLine::line(int id) const
 {
-	Line line(id, box);
+	auto line = std::make_shared<Line>(id, box);
 	for (const auto& c: chars_) {
-		line.append(c.c, c.box.right(), c.conf);
+		line->append(c.c, c.box.right(), c.conf);
 	}
 	return line;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::wstring 
-AltoXmlParserLine::wstring() const 
+std::wstring
+AltoXmlParserLine::wstring() const
 {
 	std::wstring res(chars_.size(), 0);
 	std::transform(begin(chars_), end(chars_), begin(res), [](const auto& c) {
@@ -38,8 +38,8 @@ AltoXmlParserLine::wstring() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string 
-AltoXmlParserLine::string() const 
+std::string
+AltoXmlParserLine::string() const
 {
 	std::string res;
 	res.reserve(chars_.size());
@@ -51,7 +51,7 @@ AltoXmlParserLine::string() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 AltoXmlParserLine::end_wagner_fischer()
 {
 	if (not needs_update_)
@@ -76,8 +76,8 @@ AltoXmlParserLine::end_wagner_fischer()
 			update_char(i, eot, node_);
 			break;
 		}
-		i = eot;	
-	}	
+		i = eot;
+	}
 
 	for (auto n = node_.first_child(); n != last;) {
 		auto next = n.next_sibling();
@@ -101,7 +101,7 @@ AltoXmlParserLine::update_space(Iterator i, Node& parent)
 		i->node.set_name("SP");
 		i->node.remove_attribute("CONTENT");
 	}
-	
+
 	set_box(i->box, i->node);
 	set_conf(i->conf, i->node);
 }
@@ -143,7 +143,7 @@ AltoXmlParserLine::update_char(Iterator b, Iterator e, Node& parent)
 		box += c.box;
 		conf += c.conf;
 		c.node = merge(node, c.node);
-		
+
 	});
 	conf /= wstr.size();
 	set_box(box, node);
@@ -152,7 +152,7 @@ AltoXmlParserLine::update_char(Iterator b, Iterator e, Node& parent)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 AltoXmlParserLine::insert(size_t pos, wchar_t c)
 {
 	// std::cerr << "(AltoXmlParserLine) insert pos: " << pos << " " << c << "\n";
@@ -165,17 +165,17 @@ AltoXmlParserLine::insert(size_t pos, wchar_t c)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 AltoXmlParserLine::erase(size_t pos)
 {
 	// std::cerr << "(AltoXmlParserLine) erase pos: " << pos << "\n";
 	assert(pos < chars_.size());
-	chars_.erase(begin(chars_) + pos);	
+	chars_.erase(begin(chars_) + pos);
 	needs_update_ = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 AltoXmlParserLine::set(size_t pos, wchar_t c)
 {
 	// std::cerr << "(AltoXmlParserLine) set pos: " << pos << " " << c << "\n";
@@ -189,7 +189,7 @@ AltoXmlParserLine::set(size_t pos, wchar_t c)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlParserLine::init_string(const pugi::xml_node& node) 
+AltoXmlParserLine::init_string(const pugi::xml_node& node)
 {
 	assert(strcmp(node.name(), "String") == 0);
 
@@ -208,7 +208,7 @@ AltoXmlParserLine::init_string(const pugi::xml_node& node)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlParserLine::init_space(const Node& node) 
+AltoXmlParserLine::init_space(const Node& node)
 {
 	assert(strcmp(node.name(), "SP") == 0);
 	auto wc = node.attribute("WC").as_double();
@@ -217,7 +217,7 @@ AltoXmlParserLine::init_space(const Node& node)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlParserLine::init_hyphen(const Node& node) 
+AltoXmlParserLine::init_hyphen(const Node& node)
 {
 	assert(strcmp(node.name(), "HYP") == 0);
 	auto wc = node.attribute("WC").as_double();
@@ -241,16 +241,16 @@ AltoXmlParserLine::init()
 
 ////////////////////////////////////////////////////////////////////////////////
 Box
-AltoXmlParserLine::get_box(const Node& node) 
+AltoXmlParserLine::get_box(const Node& node)
 {
 	const auto x0 = node.attribute("HPOS").as_int();
 	const auto y0 = node.attribute("VPOS").as_int();
 	const auto w = node.attribute("WIDTH").as_int();
 	const auto h = node.attribute("HEIGHT").as_int();
 	return Box {x0, y0, x0 + w, y0 + h};
-}	
+}
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 AltoXmlParserLine::set_box(const Box& box, Node& node)
 {
 	if (not node.attribute("HPOS"))
@@ -268,7 +268,7 @@ AltoXmlParserLine::set_box(const Box& box, Node& node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 AltoXmlParserLine::set_conf(double conf, Node& node)
 {
 	if (not node.attribute("WC"))
@@ -277,7 +277,7 @@ AltoXmlParserLine::set_conf(double conf, Node& node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 AltoXmlParserLine::set_content(const std::wstring& str, Node& node)
 {
 	if (not node.attribute("CONTENT"))
@@ -289,7 +289,7 @@ AltoXmlParserLine::set_content(const std::wstring& str, Node& node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-AltoXmlParserLine::Iterator 
+AltoXmlParserLine::Iterator
 AltoXmlParserLine::find_end_of_token(Iterator b, Iterator e) noexcept
 {
 	assert(b != e);
@@ -304,22 +304,22 @@ AltoXmlParserLine::find_end_of_token(Iterator b, Iterator e) noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-AltoXmlParserLine::Char 
+AltoXmlParserLine::Char
 AltoXmlParserLine::make_copy(Char& c)
 {
 	auto split = c.box.split(2);
 	auto copy = c;
 	copy.box = split[0];
 	c.box = split[1];
-	return copy;	
+	return copy;
 }
 ////////////////////////////////////////////////////////////////////////////////
-AltoXmlParserLine::Node 
+AltoXmlParserLine::Node
 AltoXmlParserLine::merge(Node& a, const Node& b)
 {
 	if (a != b) { // don't merge the same node with itself
 		for (const auto& attr: b.attributes()) {
-			if (not a.attribute(attr.name())) 
+			if (not a.attribute(attr.name()))
 				a.append_attribute(attr.name()).set_value(attr.value());
 		}
 	}

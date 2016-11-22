@@ -10,8 +10,10 @@ namespace pcw {
 	class Page;
 	using PagePtr = std::shared_ptr<Page>;
 	class WagnerFischer;
+	class Line;
+	using LinePtr = std::shared_ptr<Line>;
 
-	class Line {
+	class Line: public std::enable_shared_from_this<Line> {
 	public:
 		struct Char;
 		using Chars = std::vector<Char>;
@@ -50,7 +52,7 @@ namespace pcw {
 				, conf(cconf)
 				, cut(ccut)
 			{}
-			bool is_deletion() const noexcept {return cor == DELETION;} 
+			bool is_deletion() const noexcept {return cor == DELETION;}
 			bool is_insertion() const noexcept {return cor and not ocr;}
 			bool is_substitution() const noexcept {return cor and ocr and cor != ocr;}
 			bool is_corrected() const noexcept {return cor;}

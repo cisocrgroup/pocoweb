@@ -7,7 +7,7 @@
 #include <vector>
 #include "util.hpp"
 #include "Config.hpp"
-#include "Project.hpp"
+#include "BookView.hpp"
 #include "User.hpp"
 #include "Sessions.hpp"
 
@@ -77,4 +77,4 @@ pcw::Sessions::find_session(const std::string& sid) const
 		return *j;
 	}
 }
-	
+
