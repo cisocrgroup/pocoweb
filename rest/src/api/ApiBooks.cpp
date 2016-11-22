@@ -9,7 +9,7 @@
 #include "core/Database.hpp"
 #include "ApiBooks.hpp"
 #include "core/Sessions.hpp"
-#include "core/SubProject.hpp"
+#include "core/Package.hpp"
 #include "core/ScopeGuard.hpp"
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/WagnerFischer.hpp"
@@ -212,7 +212,7 @@ ApiBooks::post(const Request& req, int bid) const
 	const size_t n = 5;
 	std::vector<BookViewPtr> projs(n);
 	std::generate(begin(projs), end(projs), [&proj,&user]() {
-		return std::make_shared<SubProject>(0, *user, proj->origin());
+		return std::make_shared<Package>(0, *user, proj->origin());
 	});
 	size_t i = 0;
 	for (const auto& p: *proj) {

@@ -7,7 +7,7 @@
 #include "Book.hpp"
 #include "AppCache.hpp"
 #include "Page.hpp"
-#include "SubProject.hpp"
+#include "Package.hpp"
 #include "Line.hpp"
 #include "Config.hpp"
 #include "Sessions.hpp"
@@ -468,7 +468,7 @@ Database::select_subproject(int projectid, int owner, const Book& origin, sql::C
 	while (res->next()) {
 		ids.insert(res->getInt(1));
 	}
-	auto project = std::make_shared<SubProject>(projectid, *ownerptr, origin);
+	auto project = std::make_shared<Package>(projectid, *ownerptr, origin);
 	std::copy_if(begin(origin), end(origin), std::back_inserter(*project),
 		[&ids](const auto& page) {
 			assert(page);
