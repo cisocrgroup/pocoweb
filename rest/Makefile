@@ -78,6 +78,7 @@ PAR_OBJS += HocrParserLine.o
 
 TESTS += TestOcrLine.test
 TESTS += TestCorLine.test
+TESTS += TestDocXml.test
 TESTS += TestWagnerFischer.test
 TESTS += TestCorrector.test
 TESTS += TestAltoXmlParsing.test

@@ -6,19 +6,21 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-static DocXmlNode& operator<<(DocXmlNode& j, const Page& page);
-static DocXmlNode& operator<<(DocXmlNode& j, const Line& line);
-static DocXmlNode& operator<<(DocXmlNode& j, const Line::Token& token);
-static DocXmlNode& operator<<(DocXmlNode& j, const Box& Box);
+namespace pcw {
+	DocXmlNode& operator<<(DocXmlNode& j, const Page& page);
+	DocXmlNode& operator<<(DocXmlNode& j, const Line& line);
+	DocXmlNode& operator<<(DocXmlNode& j, const Line::Token& token);
+	DocXmlNode& operator<<(DocXmlNode& j, const Box& Box);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 DocXml&
-operator<<(DocXml& docxml, const BookView& project)
+pcw::operator<<(DocXml& docxml, const BookView& view)
 {
 	docxml.doc.reset();
 	DocXmlNode document{docxml.doc.append_child()};
 	document.node.set_name("document");
-	for (const auto& page: project) {
+	for (const auto& page: view) {
 		assert(page);
 		document << *page;
 	}
@@ -27,7 +29,7 @@ operator<<(DocXml& docxml, const BookView& project)
 
 ////////////////////////////////////////////////////////////////////////////////
 DocXml&
-operator<<(DocXml& docxml, const Page& page)
+pcw::operator<<(DocXml& docxml, const Page& page)
 {
 	docxml.doc.reset();
 	DocXmlNode document{docxml.doc.append_child()};
@@ -38,7 +40,7 @@ operator<<(DocXml& docxml, const Page& page)
 
 ////////////////////////////////////////////////////////////////////////////////
 DocXmlNode&
-operator<<(DocXmlNode& node, const Page& page)
+pcw::operator<<(DocXmlNode& node, const Page& page)
 {
 	DocXmlNode pnode{node.node.append_child()};
 	pnode.node.set_name("page");
@@ -53,7 +55,7 @@ operator<<(DocXmlNode& node, const Page& page)
 
 ////////////////////////////////////////////////////////////////////////////////
 DocXmlNode&
-operator<<(DocXmlNode& node, const Line& line)
+pcw::operator<<(DocXmlNode& node, const Line& line)
 {
 	int id = 0;
 	line.each_token([&node,&id,&line](const auto& token) {
@@ -83,7 +85,7 @@ ext_id(const Line::Token& token)
 
 ////////////////////////////////////////////////////////////////////////////////
 DocXmlNode&
-operator<<(DocXmlNode& node, const Line::Token& token)
+pcw::operator<<(DocXmlNode& node, const Line::Token& token)
 {
 	static const char* bools[] = {"false", "true"};
 	auto tnode = node.node.append_child();
@@ -115,7 +117,7 @@ operator<<(DocXmlNode& node, const Line::Token& token)
 
 ////////////////////////////////////////////////////////////////////////////////
 DocXmlNode&
-operator<<(DocXmlNode& node, const Box& box)
+pcw::operator<<(DocXmlNode& node, const Box& box)
 {
 	auto coord = node.node.append_child();
 	coord.set_name("coord");

@@ -18,8 +18,8 @@ namespace pcw {
 	class BookView;
 	class Page;
 
-	DocXml& operator<<(DocXml& j, const BookView& project);
-	DocXml& operator<<(DocXml& j, const Page& page);
+	DocXml& operator<<(DocXml& docxml, const BookView& view);
+	DocXml& operator<<(DocXml& docxml, const Page& page);
 }
 
 #endif // pcw_docxml_hpp__
