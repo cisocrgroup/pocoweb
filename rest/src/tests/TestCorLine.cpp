@@ -15,15 +15,15 @@ struct Fixture {
 	static const char* ocr;
 	static const Box box;
 
-	Fixture(): line(1, box), wf() {
-		line.append(ocr, 0, 100, 0.8);
-		BOOST_REQUIRE(not line.empty());
+	Fixture(): line(std::make_shared<Line>(1, box)), wf() {
+		line->append(ocr, 0, 100, 0.8);
+		BOOST_REQUIRE(not line->empty());
 		wf.set_gt(gt);
-		wf.set_ocr(line);
+		wf.set_ocr(*line);
 		BOOST_CHECK_EQUAL(wf(), 11);
-		wf.correct(line);
+		wf.correct(*line);
 	}
-	Line line;
+	LinePtr line;
 	WagnerFischer wf;
 };
 
@@ -37,17 +37,17 @@ BOOST_FIXTURE_TEST_SUITE(CorLineTest, Fixture)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(Ocr)
 {
-	BOOST_CHECK_EQUAL(line.ocr(), ocr);
-	BOOST_CHECK_EQUAL(line.cor(), gt);
-	BOOST_CHECK_EQUAL(line.chars().back().cut, 100);
-	BOOST_CHECK(line.average_conf() > .8);
-	BOOST_CHECK(line.is_corrected());
+	BOOST_CHECK_EQUAL(line->ocr(), ocr);
+	BOOST_CHECK_EQUAL(line->cor(), gt);
+	BOOST_CHECK_EQUAL(line->chars().back().cut, 100);
+	BOOST_CHECK(line->average_conf() > .8);
+	BOOST_CHECK(line->is_corrected());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(Tokens)
 {
-	auto tokens = line.tokens();
+	auto tokens = line->tokens();
 	BOOST_REQUIRE_EQUAL(tokens.size(), 8);
 
 	BOOST_CHECK(tokens[0].is_normal());
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(Tokens)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(Words)
 {
-	auto words = line.words();
+	auto words = line->words();
 	BOOST_REQUIRE_EQUAL(words.size(), 4);
 
 	BOOST_CHECK(words[0].is_normal());
