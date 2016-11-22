@@ -55,6 +55,7 @@ OBJS += Sessions.o
 OBJS += XmlFile.o
 OBJS += util.o
 OBJS += jsonify.o
+OBJS += docxml.o
 OBJS += db.o
 
 API_OBJS += ApiVersion.o
