@@ -30,13 +30,13 @@ create table projects (
 	origin int,
 	owner int references users(userid)
 );
-	
+
 drop table if exists project_pages;
 create table project_pages (
 	projectid int not null references projects(projectid),
 	pageid int not null references pages(pageid),
 	primary key (projectid, pageid)
-);	
+);
 
 drop table if exists pages;
 create table pages (
@@ -63,20 +63,20 @@ create table textlines (
 	lbottom int,
 	primary key (bookid, pageid, lineid)
 );
-	
+
 drop table if exists contents;
 create table contents (
 	bookid int references books(bookid),
 	pageid int references pages(pageid),
 	lineid int references textlines(lineid),
 	seq int,
-	letter int not null,
+	ocr int not null,
+	cor int,
 	cut int,
-	conf double,	
-	corrected bool,
+	conf double,
 	primary key (bookid, pageid, lineid, seq)
 );
-	
+
 drop table if exists bookpermissions;
 
 
