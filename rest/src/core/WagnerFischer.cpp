@@ -62,6 +62,31 @@ WagnerFischer::set_gt(const Line& line)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
+WagnerFischer::set_gt(const std::wregex& pat, const std::wstring& repl)
+{
+	if (gt_.empty()) {
+		std::regex_replace(
+			std::back_inserter(gt_),
+			begin(ocr_),
+			end(ocr_),
+			pat,
+			repl.data()
+		);
+	} else {
+		std::wstring tmp = gt_;
+		gt_.clear();
+		std::regex_replace(
+			std::back_inserter(gt_),
+			begin(tmp),
+			end(tmp),
+			pat,
+			repl.data()
+		);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
 WagnerFischer::set_ocr(const std::string& ocr)
 {
 	set_ocr(ocr.data(), ocr.size());
