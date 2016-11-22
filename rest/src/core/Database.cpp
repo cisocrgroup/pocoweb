@@ -31,13 +31,13 @@ Database::Database(SessionPtr session, ConfigPtr config, CachePtr cache)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-UserPtr 
+UserPtr
 Database::insert_user(const std::string& name, const std::string& pass) const
 {
 	static const char *sql = "INSERT INTO users (name, passwd) "
 				 "VALUES (?, SHA2(?, ?))"
 				 ";";
-	
+
 	check_session_lock();
 	auto conn = connection();
 	assert(conn);
@@ -55,7 +55,7 @@ Database::insert_user(const std::string& name, const std::string& pass) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-UserPtr 
+UserPtr
 Database::authenticate(const std::string& name, const std::string& pass) const
 {
 	static const char *sql = "SELECT name,email,institute,userid "
@@ -65,7 +65,7 @@ Database::authenticate(const std::string& name, const std::string& pass) const
 	check_session_lock();
 	auto conn = connection();
 	assert(conn);
-	
+
 	PreparedStatementPtr s(conn->prepareStatement(sql));
 	assert(s);
 	s->setString(1, name);
@@ -100,7 +100,7 @@ Database::select_user(const std::string& name, sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-UserPtr 
+UserPtr
 Database::select_user(int userid) const
 {
 	check_session_lock();
@@ -110,7 +110,7 @@ Database::select_user(int userid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-UserPtr 
+UserPtr
 Database::select_user(int userid, sql::Connection& conn) const
 {
 	static const char *sql = "SELECT name,email,institute,userid "
@@ -124,7 +124,7 @@ Database::select_user(int userid, sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Database::update_user(const User& user) const
 {
 	// just update email and institute; not name or userid
@@ -144,7 +144,7 @@ Database::update_user(const User& user) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Database::delete_user(const std::string& name) const
 {
 	static const char *sql = "DELETE FROM users "
@@ -160,8 +160,8 @@ Database::delete_user(const std::string& name) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-UserPtr 
-Database::get_user_from_result_set(ResultSetPtr res) 
+UserPtr
+Database::get_user_from_result_set(ResultSetPtr res)
 {
 	if (not res or not res->next())
 		return nullptr;
@@ -174,7 +174,7 @@ Database::get_user_from_result_set(ResultSetPtr res)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Database::update_line(const Line& line) const
 {
 	check_session_lock();
@@ -184,13 +184,13 @@ Database::update_line(const Line& line) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Database::update_line(const Line& line, sql::Connection& conn) const
 {
 	static const char* sql = "DELETE FROM contents "
 				 "WHERE bookid = ? AND pageid = ? AND lineid = ?;";
 	static const char* tql = "INSERT INTO contents "
-				 "(bookid, pageid, lineid, seq, letter, cut, conf, corrected) "
+				 "(bookid, pageid, lineid, seq, ocr, cor, cut, conf, corrected) "
 				 "VALUES (?,?,?,?,?,?,?,?);";
 
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
@@ -209,17 +209,16 @@ Database::update_line(const Line& line, sql::Connection& conn) const
 	t->setInt(3, lineid);
 	for (size_t i = 0; i < line.size(); ++i) {
 		t->setInt(4, static_cast<int>(i));
-		t->setInt(5, line[i].cor);
-		t->setInt(6, line[i].cut);
-		t->setDouble(7, line[i].conf);
-		t->setBoolean(8, line[i].is_corrected());
-		//t->setInt(8, line[i].ocr); // TODO update table
+		t->setInt(5, line[i].ocr);
+		t->setInt(6, line[i].cor);
+		t->setInt(7, line[i].cut);
+		t->setDouble(8, line[i].conf);
 		t->executeUpdate();
 	}
 }
-	
+
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr 
+ProjectPtr
 Database::insert_project(Project& project) const
 {
 	static const char *sql = "INSERT INTO projects "
@@ -252,12 +251,12 @@ Database::insert_project(Project& project) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookPtr 
+BookPtr
 Database::insert_book(Book& book) const
 {
 	static const char *sql = "INSERT INTO books "
 				 "(author, title, directory, year, uri, bookid, description) "
-				  "VALUES (?,?,?,?,?,?,?);"; 
+				  "VALUES (?,?,?,?,?,?,?);";
 	check_session_lock();
 	auto conn = connection();
 	assert(conn);
@@ -316,10 +315,10 @@ Database::update_project_origin_id(int id, sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Database::insert_page(const Page& page, sql::Connection& conn) const
 {
-	static const char* sql = 
+	static const char* sql =
 		"INSERT INTO pages "
 		"(bookid, pageid, imagepath, ocrpath, pleft, ptop, pright, pbottom) "
 		"VALUES (?,?,?,?,?,?,?,?);";
@@ -334,21 +333,21 @@ Database::insert_page(const Page& page, sql::Connection& conn) const
 	s->setInt(7, page.box.right());
 	s->setInt(8, page.box.bottom());
 	s->executeUpdate();
-	for (const auto& line: page) 
+	for (const auto& line: page)
 		insert_line(line, conn);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Database::insert_line(const Line& line, sql::Connection& conn) const
 {
-	static const char* sql = 
+	static const char* sql =
 		"INSERT INTO textlines "
 		"(bookid, pageid, lineid, imagepath, lleft, ltop, lright, lbottom) "
 		"VALUES (?,?,?,?,?,?,?,?);";
-	static const char* tql = 
+	static const char* tql =
 		"INSERT INTO contents "
-		"(bookid, pageid, lineid, seq, letter, cut, conf, corrected) "
+		"(bookid, pageid, lineid, seq, ocr, cor, cut, conf) "
 		"VALUES (?,?,?,?,?,?,?,?);";
 
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
@@ -372,10 +371,10 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 		t->setInt(2, pageid);
 		t->setInt(3, line.id());
 		t->setInt(4, static_cast<int>(i));
-		t->setInt(5, line[i].cor);
-		t->setInt(6, line[i].cut);
-		t->setDouble(7, line[i].conf);
-		t->setBoolean(8, line[i].is_corrected());
+		t->setInt(5, line[i].ocr);
+		t->setBoolean(6, line[i].cor);
+		t->setInt(7, line[i].cut);
+		t->setDouble(8, line[i].conf);
 		// t->setInt(8, line[i].ocr); // TODO update table;
 		t->executeUpdate();
 	}
@@ -392,7 +391,7 @@ Database::select_project(int projectid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::vector<ProjectPtr> 
+std::vector<ProjectPtr>
 Database::select_all_projects(const User& user) const
 {
 	static const char *sql = "SELECT projectid "
@@ -403,7 +402,7 @@ Database::select_all_projects(const User& user) const
 	assert(conn);
 	PreparedStatementPtr s{conn->prepareStatement(sql)};
 	assert(s);
-	s->setInt(1, user.id());	
+	s->setInt(1, user.id());
 	ResultSetPtr res{s->executeQuery()};
 	assert(res);
 	std::vector<ProjectPtr> projects;
@@ -430,10 +429,10 @@ Database::select_project(int projectid, sql::Connection& conn) const
 	auto owner = res->getInt(2);
 	if (not origin or not owner) // TODO throw?
 		return nullptr;
-	
+
 	// return book or subproject
-	return origin == projectid ? 
-		select_book(origin, owner, conn) : 
+	return origin == projectid ?
+		select_book(origin, owner, conn) :
 		select_subproject(projectid, origin, owner, conn);
 }
 
@@ -470,7 +469,7 @@ Database::select_subproject(int projectid, int owner, const Book& origin, sql::C
 		ids.insert(res->getInt(1));
 	}
 	auto project = std::make_shared<SubProject>(projectid, *ownerptr, origin);
-	std::copy_if(begin(origin), end(origin), std::back_inserter(*project), 
+	std::copy_if(begin(origin), end(origin), std::back_inserter(*project),
 		[&ids](const auto& page) {
 			assert(page);
 			return ids.count(page->id);
@@ -510,9 +509,9 @@ Database::select_book(int bookid, int owner, sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Database::select_all_pages(Book& book, sql::Connection& conn) const
-{	
+{
 	CROW_LOG_DEBUG << "(Database) Start: select all pages";
 	static const char *sql = "SELECT * FROM pages "
 				 "WHERE bookid = ? "
@@ -534,7 +533,7 @@ Database::select_all_pages(Book& book, sql::Connection& conn) const
 		assert(res->getInt("bookid") == book.id());
 		page->img = res->getString("imagepath");
 		page->ocr = res->getString("ocrpath");
-		// first insert the page into books; then load lines 
+		// first insert the page into books; then load lines
 		// otherwise page->book() is not set!
 		book.push_back(page);
 		select_all_lines(*book.back(), conn);
@@ -543,13 +542,13 @@ Database::select_all_pages(Book& book, sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Database::select_all_lines(Page& page, sql::Connection& conn) const
 {
 	static const char *sql = "SELECT l.bookid,l.pageid,l.lineid,"
 				 "       l.lleft,l.lright,l.ltop,l.lbottom,"
 				 "       l.imagepath,"
-				 "       c.letter,c.cut,c.conf,c.corrected "
+				 "       c.ocr,c.cor,c.cut,c.conf "
 			  	 "FROM textlines AS l JOIN contents AS c "
 				 "ON (l.bookid=c.bookid AND"
 				 "    l.pageid=c.pageid AND"
@@ -582,11 +581,11 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 			line = Line(id, {l, t, r, b});
 			line.img = res->getString(8);
 		}
-		const wchar_t letter = res->getInt(9);	
-		const auto cut = res->getInt(10);	
-		const auto conf = res->getDouble(11);	
-		const auto corr = res->getDouble(12);	
-		line.append(letter, cut, conf, corr);
+		const wchar_t ocr = res->getInt(9);
+		const wchar_t cor = res->getInt(10);
+		const auto cut = res->getInt(11);
+		const auto conf = res->getDouble(12);
+		line.append(ocr, cut, conf, cor);
 	}
 	// insert last line
 	if (line.id() != -1)
@@ -595,7 +594,7 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 
 #ifdef FOO
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Database::select_all_lines(Page& page, sql::Connection& conn) const
 {
 	CROW_LOG_DEBUG << __LINE__ << " (Database) Start: select all lines; pageid = " << page.id;
@@ -635,16 +634,17 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 		c->setInt(3, id);
 		ResultSetPtr contents{c->executeQuery()};
 		assert(contents);
-		
+
 		while (contents->next()) {
 			assert(contents->getInt("bookid") == bookid);
 			assert(contents->getInt("pageid") == pageid);
 			assert(contents->getInt("lineid") == line.id);
-			
-			const wchar_t l = contents->getInt("letter");	
-			const auto r = contents->getInt("cut");	
-			const auto c = contents->getDouble("conf");	
-			line.append(l, r, c);
+
+			const wchar_t ocr = contents->getInt("ocr");
+			const wchar_t cor = contents->getInt("cor");
+			const auto r = contents->getInt("cut");
+			const auto c = contents->getDouble("conf");
+			line.append(ocr, r, c, cor);
 		}
 		page.push_back(std::move(line));
 	}
@@ -653,14 +653,14 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 #endif // FOO
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 Database::autocommit() const noexcept
 {
 	return not scope_guard_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Database::set_autocommit(bool ac)
 {
 	check_session_lock();
@@ -676,7 +676,7 @@ Database::set_autocommit(bool ac)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Database::commit()
 {
 	CROW_LOG_INFO << "(Database) Committing data";
@@ -692,7 +692,7 @@ Database::commit()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 Database::check_session_lock() const
 {
 	assert(session_);
@@ -714,7 +714,7 @@ Database::last_insert_id(sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-sql::Connection* 
+sql::Connection*
 Database::connection() const
 {
 	assert(config_);
@@ -724,24 +724,24 @@ Database::connection() const
 
 	if (session_->connection and session_->connection->isValid()) {
 		conn = session_->connection.get();
-	} else if (session_->connection and session_->connection->reconnect()) { 
+	} else if (session_->connection and session_->connection->reconnect()) {
 		conn = session_->connection.get();
 	} else { // new connection or could not reconnect
 		session_->connection = connect(*config_);
 		assert(session_->connection);
 		conn = session_->connection.get();
 	}
-	
+
 	assert(conn);
 	// if scope_guard is not set, use autocommit mode
 	if (not scope_guard_)
 		conn->setAutoCommit(true);
-	else 
+	else
 		conn->setAutoCommit(false);
 	return conn;
 }
 ////////////////////////////////////////////////////////////////////////////////
-UserPtr 
+UserPtr
 Database::cached_select_user(const std::string& name, sql::Connection& conn) const
 {
 	auto get_user = [this,&conn](const std::string& name) {
@@ -752,7 +752,7 @@ Database::cached_select_user(const std::string& name, sql::Connection& conn) con
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-UserPtr 
+UserPtr
 Database::cached_select_user(int userid, sql::Connection& conn) const
 {
 	auto get_user = [this,&conn](int userid) {
@@ -766,7 +766,7 @@ Database::cached_select_user(int userid, sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr 
+ProjectPtr
 Database::cached_select_project(int prid, sql::Connection& conn) const
 {
 	auto get_project = [this,&conn](int prid) {
@@ -775,15 +775,15 @@ Database::cached_select_project(int prid, sql::Connection& conn) const
 		if (proj)
 			CROW_LOG_INFO << "(Database) Loaded project: " << *proj;
 		return proj;
-			
+
 	};
-	return cache_ ? 
-		cache_->project.get(prid, get_project) : 
-		get_project(prid);	
+	return cache_ ?
+		cache_->project.get(prid, get_project) :
+		get_project(prid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-UserPtr 
+UserPtr
 Database::put_cache(UserPtr user) const
 {
 	if (user and cache_) {
@@ -794,7 +794,7 @@ Database::put_cache(UserPtr user) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr 
+ProjectPtr
 Database::put_cache(ProjectPtr proj) const
 {
 	if (proj and cache_) {
