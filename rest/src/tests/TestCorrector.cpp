@@ -111,7 +111,6 @@ BOOST_AUTO_TEST_CASE(BookWise)
 		(*book->find(2))[3].cor(),
 		"Horum omnium ſortiſſimi ſunt Belgae..."
 	);
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////

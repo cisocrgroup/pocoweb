@@ -243,7 +243,7 @@ pcw::WagnerFischer::find_corrected_token(size_t i) const noexcept
 	auto f = std::find_if_not(b + i, e, [](auto op) {return op == EditOp::Nop;});
 	if (f != e)
 		return {find_begin_of_token(b, f), find_end_of_token(f, e)};
-	 else
+	else
 		return {0, 0};
 }
 
