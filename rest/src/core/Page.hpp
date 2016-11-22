@@ -9,7 +9,7 @@
 #include "Line.hpp"
 
 namespace pcw {
-	class Project;
+	class BookView;
 	class Book;
 	using ConstBookPtr = std::shared_ptr<const Book>;
 	class Page;
@@ -24,12 +24,12 @@ namespace pcw {
 
 		Page(int i, Box b = {})
 			: box(b)
-			, id(i) 
+			, id(i)
 			, ocr()
 			, img()
 			, book_()
 		{}
-	
+
 		using Base::begin;
 		using Base::end;
 		using Base::back;
@@ -37,7 +37,7 @@ namespace pcw {
 		using Base::empty;
 		using Base::size;
 		ConstBookPtr book() const noexcept {return book_.lock();}
-			
+
 		void push_back(const Line& line) {
 			Base::push_back(line);
 			this->back().page_ = shared_from_this();
@@ -59,14 +59,14 @@ namespace pcw {
 		bool contains(int id) const noexcept {
 			return id > 0 and static_cast<size_t>(id) < this->size();
 		}
-		
+
 		Box box;
 		int id;
 		Path ocr, img;
 
 	private:
 		std::weak_ptr<const Book> book_;
-		friend class Project;
+		friend class BookView;
 	};
 }
 

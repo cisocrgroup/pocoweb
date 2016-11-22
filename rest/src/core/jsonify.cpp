@@ -5,7 +5,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json&
-pcw::operator<<(Json& json, const Project& project)
+pcw::operator<<(Json& json, const BookView& project)
 {
 	json["id"] = project.origin().id();
 	json["uri"] = project.origin().uri;
@@ -14,7 +14,7 @@ pcw::operator<<(Json& json, const Project& project)
 	json["year"] = project.origin().year;
 	json["description"] = project.origin().description;
 	json["isBook"] = project.is_book();
-	
+
 	std::vector<int> ids;
 	ids.resize(project.size());
 	std::transform(begin(project), end(project), begin(ids), [](const auto& page) {
@@ -27,14 +27,14 @@ pcw::operator<<(Json& json, const Project& project)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json& 
+pcw::Json&
 pcw::operator<<(Json& json, const Page& page)
 {
 	json["id"] = page.id;
 	json["box"] << page.box;
 	json["ocrFile"] = page.ocr.native();
 	json["imgFile"] = page.img.native();
-	
+
 	// add from left to right
 	size_t i = 0;
 	for (const auto& line: page) {
@@ -44,7 +44,7 @@ pcw::operator<<(Json& json, const Page& page)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json& 
+pcw::Json&
 pcw::operator<<(Json& json, const Line& line)
 {
 	json["id"] = line.id();
@@ -68,7 +68,7 @@ pcw::operator<<(Json& json, const Line& line)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json& 
+pcw::Json&
 pcw::operator<<(Json& json, const Box& box)
 {
 	json["left"] = box.left();

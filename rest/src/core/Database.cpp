@@ -218,8 +218,8 @@ Database::update_line(const Line& line, sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr
-Database::insert_project(Project& project) const
+BookViewPtr
+Database::insert_project(BookView& project) const
 {
 	static const char *sql = "INSERT INTO projects "
 				 "(origin,owner) "
@@ -288,7 +288,7 @@ Database::insert_book(Book& book) const
 
 ////////////////////////////////////////////////////////////////////////////////
 int
-Database::insert_book_project(const Project& project, sql::Connection& conn) const
+Database::insert_book_project(const BookView& project, sql::Connection& conn) const
 {
 	static const char *sql = "INSERT INTO projects (origin, owner) "
 				 "VALUES (0,?);";
@@ -381,7 +381,7 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr
+BookViewPtr
 Database::select_project(int projectid) const
 {
 	check_session_lock();
@@ -391,7 +391,7 @@ Database::select_project(int projectid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::vector<ProjectPtr>
+std::vector<BookViewPtr>
 Database::select_all_projects(const User& user) const
 {
 	static const char *sql = "SELECT projectid "
@@ -405,7 +405,7 @@ Database::select_all_projects(const User& user) const
 	s->setInt(1, user.id());
 	ResultSetPtr res{s->executeQuery()};
 	assert(res);
-	std::vector<ProjectPtr> projects;
+	std::vector<BookViewPtr> projects;
 	while (res->next()) {
 		const auto prid = res->getInt(1);
 		projects.push_back(cached_select_project(prid, *conn));
@@ -414,7 +414,7 @@ Database::select_all_projects(const User& user) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr
+BookViewPtr
 Database::select_project(int projectid, sql::Connection& conn) const
 {
 	static const char *sql = "SELECT origin,owner FROM projects WHERE projectid = ?;";
@@ -437,7 +437,7 @@ Database::select_project(int projectid, sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr
+BookViewPtr
 Database::select_subproject(int projectid, int origin, int owner, sql::Connection& conn) const
 {
 	// it is save to use the cache here
@@ -449,7 +449,7 @@ Database::select_subproject(int projectid, int origin, int owner, sql::Connectio
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr
+BookViewPtr
 Database::select_subproject(int projectid, int owner, const Book& origin, sql::Connection& conn) const
 {
 	static const char *sql = "SELECT pageid FROM project_pages "
@@ -766,7 +766,7 @@ Database::cached_select_user(int userid, sql::Connection& conn) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr
+BookViewPtr
 Database::cached_select_project(int prid, sql::Connection& conn) const
 {
 	auto get_project = [this,&conn](int prid) {
@@ -794,11 +794,11 @@ Database::put_cache(UserPtr user) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProjectPtr
-Database::put_cache(ProjectPtr proj) const
+BookViewPtr
+Database::put_cache(BookViewPtr proj) const
 {
 	if (proj and cache_) {
-		CROW_LOG_INFO << "(Database) Caching Project " << *proj;
+		CROW_LOG_INFO << "(Database) Caching BookView " << *proj;
 		cache_->project.put(proj);
 	}
 	return proj;

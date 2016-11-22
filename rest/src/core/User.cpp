@@ -5,14 +5,14 @@
 #include <cppconn/resultset.h>
 #include <cppconn/connection.h>
 #include <cppconn/prepared_statement.h>
-#include "Project.hpp"
+#include "BookView.hpp"
 #include "User.hpp"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 bool
-User::has_permission(const Project& project) const noexcept
+User::has_permission(const BookView& project) const noexcept
 {
 	return project.owner().id() == id_;
 }
@@ -21,8 +21,8 @@ User::has_permission(const Project& project) const noexcept
 std::ostream&
 pcw::operator<<(std::ostream& os, const User& user)
 {
-	return os << user.name 
-		  << " <" << user.email << "> [" 
+	return os << user.name
+		  << " <" << user.email << "> ["
 		  << user.id() << "] {"
 		  << user.institute << "}";
 }

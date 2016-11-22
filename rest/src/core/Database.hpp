@@ -7,8 +7,8 @@
 #include "db.hpp"
 
 namespace pcw {
-	class Project;
-	using ProjectPtr = std::shared_ptr<Project>;
+	class BookView;
+	using BookViewPtr = std::shared_ptr<BookView>;
 	class Session;
 	using SessionPtr = std::shared_ptr<Session>;
 	class Config;
@@ -27,7 +27,7 @@ namespace pcw {
 	class Database {
 	public:
 		Database(SessionPtr session, ConfigPtr config, CachePtr cache = nullptr);
-		
+
 		void set_autocommit(bool ac = true);
 		bool autocommit() const noexcept;
 		void commit();
@@ -41,22 +41,22 @@ namespace pcw {
 		void delete_user(const std::string& name) const;
 
 		BookPtr insert_book(Book& book) const;
-		ProjectPtr insert_project(Project& project) const;
-		ProjectPtr select_project(int projectid) const;
-		std::vector<ProjectPtr> select_all_projects(const User& user) const;
+		BookViewPtr insert_project(BookView& project) const;
+		BookViewPtr select_project(int projectid) const;
+		std::vector<BookViewPtr> select_all_projects(const User& user) const;
 		void update_line(const Line& line) const;
 
 	private:
 		UserPtr select_user(const std::string& name, sql::Connection& conn) const;
 		UserPtr select_user(int userid, sql::Connection& conn) const;
-		ProjectPtr select_project(int projectid, sql::Connection& conn) const;
-		ProjectPtr select_subproject(int projectid, int origin, int owner, sql::Connection& conn) const;
-		ProjectPtr select_subproject(int projectid, int owner, const Book& book, sql::Connection& conn) const;
+		BookViewPtr select_project(int projectid, sql::Connection& conn) const;
+		BookViewPtr select_subproject(int projectid, int origin, int owner, sql::Connection& conn) const;
+		BookViewPtr select_subproject(int projectid, int owner, const Book& book, sql::Connection& conn) const;
 		BookPtr select_book(int bookid, int owner, sql::Connection& conn) const;
-		int insert_book_project(const Project& project, sql::Connection& conn) const;
+		int insert_book_project(const BookView& project, sql::Connection& conn) const;
 		void update_project_origin_id(int id, sql::Connection& conn) const;
 		void insert_page(const Page& page, sql::Connection& conn) const;
-		void insert_line(const Line& line, sql::Connection& conn) const; 
+		void insert_line(const Line& line, sql::Connection& conn) const;
 		void select_all_pages(Book& book, sql::Connection& conn) const;
 		void select_all_lines(Page& page, sql::Connection& conn) const;
 		void update_line(const Line& line, sql::Connection& conn) const;
@@ -66,9 +66,9 @@ namespace pcw {
 
 		UserPtr cached_select_user(const std::string& name, sql::Connection& conn) const;
 		UserPtr cached_select_user(int userid, sql::Connection& conn) const;
-		ProjectPtr cached_select_project(int prid, sql::Connection& conn) const;
+		BookViewPtr cached_select_project(int prid, sql::Connection& conn) const;
 		UserPtr put_cache(UserPtr user) const;
-		ProjectPtr put_cache(ProjectPtr proj) const;
+		BookViewPtr put_cache(BookViewPtr proj) const;
 
 		static UserPtr get_user_from_result_set(ResultSetPtr res);
 
