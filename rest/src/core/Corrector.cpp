@@ -66,7 +66,7 @@ Corrector::correct(int pid, const std::wregex& pat, const std::wstring repl)
 		auto page = view_->find(pid);
 		if (page) {
 			for (auto& line: *page)
-				correct(line, pat, repl);
+				correct(*line, pat, repl);
 		}
 	}
 }
@@ -98,7 +98,7 @@ Corrector::correct(const std::wregex& pat, const std::wstring repl)
 		for (const auto& page: *view_) {
 			if (page) {
 				for (auto& line: *page)
-					correct(line, pat, repl);
+					correct(*line, pat, repl);
 			}
 		}
 	}

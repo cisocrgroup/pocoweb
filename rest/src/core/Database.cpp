@@ -334,7 +334,7 @@ Database::insert_page(const Page& page, sql::Connection& conn) const
 	s->setInt(8, page.box.bottom());
 	s->executeUpdate();
 	for (const auto& line: page)
-		insert_line(line, conn);
+		insert_line(*line, conn);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -563,7 +563,7 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 	s->setInt(2, pageid);
 	ResultSetPtr res{s->executeQuery()};
 	assert(res);
-	Line line{-1};
+	LinePtr line = nullptr;
 	while (res->next()) {
 		assert(res->getInt(1) == bookid);
 		assert(res->getInt(2) == pageid);
@@ -575,20 +575,20 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 		const int b = res->getInt(7);
 
 		// finished with current line
-		if (line.id() != id) {
-			if (line.id() != -1)
+		if (not line or line->id() != id) {
+			if (line)
 				page.push_back(std::move(line));
-			line = Line(id, {l, t, r, b});
-			line.img = res->getString(8);
+			line = std::make_shared<Line>(id, Box{l, t, r, b});
+			line->img = res->getString(8);
 		}
 		const wchar_t ocr = res->getInt(9);
 		const wchar_t cor = res->getInt(10);
 		const auto cut = res->getInt(11);
 		const auto conf = res->getDouble(12);
-		line.append(ocr, cut, conf, cor);
+		line->append(ocr, cut, conf, cor);
 	}
 	// insert last line
-	if (line.id() != -1)
+	if (line)
 		page.push_back(std::move(line));
 }
 

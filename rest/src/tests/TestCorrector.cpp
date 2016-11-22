@@ -18,15 +18,15 @@ struct Fixture {
 	Fixture(): book(std::make_shared<Book>()), corrector() {
 		auto page1 = std::make_shared<Page>(1);
 		for (const auto& l: p1) {
-			Line line(0);
-			line.append(l, 0, 100, .8);
+			auto line = std::make_shared<Line>(0);
+			line->append(l, 0, 100, .8);
 			page1->push_back(std::move(line));
 		}
 		book->push_back(page1);
 		auto page2 = std::make_shared<Page>(2);
 		for (const auto& l: p2) {
-			Line line(0);
-			line.append(l, 0, 100, .8);
+			auto line = std::make_shared<Line>(0);
+			line->append(l, 0, 100, .8);
 			page2->push_back(std::move(line));
 		}
 		book->push_back(page2);

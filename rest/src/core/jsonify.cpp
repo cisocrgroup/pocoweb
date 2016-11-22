@@ -38,7 +38,7 @@ pcw::operator<<(Json& json, const Page& page)
 	// add from left to right
 	size_t i = 0;
 	for (const auto& line: page) {
-		json["lines"][i++] << line;
+		json["lines"][i++] << *line;
 	}
 	return json;
 }
