@@ -1,3 +1,4 @@
+#include <sstream>
 #include "BookView.hpp"
 #include "Page.hpp"
 #include "docxml.hpp"
@@ -39,9 +40,13 @@ operator<<(DocXml& docxml, const Page& page)
 DocXmlNode&
 operator<<(DocXmlNode& node, const Page& page)
 {
+	DocXmlNode pnode{node.node.append_child()};
+	pnode.node.set_name("page");
+	pnode.node.append_attribute("imageFile").set_value(page.img.string().data());
+	pnode.node.append_attribute("sourceFile").set_value(page.ocr.string().data());
 	for (const auto& line: page) {
 		assert(line);
-		node << *line;
+		pnode << *line;
 	}
 	return node;
 }
@@ -50,14 +55,60 @@ operator<<(DocXmlNode& node, const Page& page)
 DocXmlNode&
 operator<<(DocXmlNode& node, const Line& line)
 {
-	line.each_token([&node](const auto& token) {node << token;});
+	int id = 0;
+	line.each_token([&node,&id,&line](const auto& token) {
+		if (token.is_normal())
+			node << token;
+	});
 	return node;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+static int
+id(const Line::Token& token)
+{
+	return (token.line->page()->id * 1000 * 1000) +
+		(token.line->id() * 1000) +
+		(token.id);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+static std::string
+ext_id(const Line::Token& token)
+{
+	std::stringstream os;
+	os << token.line->page()->id << ":" << token.line->id() << ":" << token.id;
+	return os.str();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 DocXmlNode&
 operator<<(DocXmlNode& node, const Line::Token& token)
 {
+	static const char* bools[] = {"false", "true"};
+	auto tnode = node.node.append_child();
+	tnode.set_name("token");
+	tnode.append_attribute("token_id").set_value(id(token));
+	tnode.append_attribute("isCorrected").
+		set_value(bools[(int)!!token.is_corrected()]);
+	tnode.append_attribute("isNormal").
+		set_value(bools[(int)!!token.is_normal()]);
+	auto tmp = tnode.append_child();
+	tmp.set_name("ext_id");
+	tmp.append_child(pugi::node_pcdata).set_value(ext_id(token).data());
+
+	tmp = tnode.append_child();
+	tmp.set_name("wOCR_lc");
+	tmp.append_child(pugi::node_pcdata).set_value(token.ocr_lc().data());
+
+	tmp = tnode.append_child();
+	tmp.set_name("wOCR");
+	tmp.append_child(pugi::node_pcdata).set_value(token.ocr().data());
+
+	tmp = tnode.append_child();
+	tmp.set_name("wCorr");
+	tmp.append_child(pugi::node_pcdata).set_value(token.cor().data());
+
 	node << token.box;
 	return node;
 }
@@ -66,5 +117,11 @@ operator<<(DocXmlNode& node, const Line::Token& token)
 DocXmlNode&
 operator<<(DocXmlNode& node, const Box& box)
 {
+	auto coord = node.node.append_child();
+	coord.set_name("coord");
+	coord.append_attribute("l").set_value(box.left());
+	coord.append_attribute("t").set_value(box.top());
+	coord.append_attribute("r").set_value(box.right());
+	coord.append_attribute("b").set_value(box.bottom());
 	return node;
 }
