@@ -2,7 +2,7 @@
 #include <regex>
 #include <crow.h>
 #include "core/jsonify.hpp"
-#include "core/BadRequest.hpp"
+#include "core/Error.hpp"
 #include "core/User.hpp"
 #include "core/Page.hpp"
 #include "core/Book.hpp"

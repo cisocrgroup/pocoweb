@@ -3,7 +3,7 @@
 #include <utf8.h>
 #include "hocr.hpp"
 #include "Xml.hpp"
-#include "core/BadRequest.hpp"
+#include "core/Error.hpp"
 #include "core/Box.hpp"
 
 static const std::regex BBOXRE{R"(bbox\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+))"};
@@ -26,9 +26,8 @@ pcw::hocr::get_box(pugi::xml_node node)
 {
 	std::cmatch m;
 	if (not std::regex_search(node.attribute("title").value(), m, BBOXRE))
-		throw BadRequest(
-			"(HocrPageParser) Missing bbox in title: " +
-			std::string(node.attribute("title").value())
+		THROW(BadRequest, "(HocrPageParser) Missing bbox in title: ",
+			node.attribute("title").value()
 		);
 	return Box{
 		std::stoi(m[1]),

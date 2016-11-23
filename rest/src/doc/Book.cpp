@@ -13,7 +13,7 @@
 pcw::Book::Book(int iid): id(iid) {assert(id > 0);}
 
 ///////////////////////////////////////////////////////////////////////////////
-pcw::PagePtr 
+pcw::PagePtr
 pcw::Book::add_page(PagePtr page)
 {
 	if (not page or page->id < 1) // invalid page or invalid page id
@@ -25,7 +25,7 @@ pcw::Book::add_page(PagePtr page)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-pcw::PagePtr 
+pcw::PagePtr
 pcw::Book::get_page(int id) const noexcept
 {
 	if (id > 0 and static_cast<size_t>(id) <= size()) {
@@ -47,7 +47,7 @@ pcw::Book::dbstore(sql::Connection& c) const
 	s->setInt(2, last_page_id());
 	s->setInt(3, data.id);
 	s->setInt(3, id);
-	s->executeUpdate();	
+	s->executeUpdate();
 	data.dbstore(c);
 
 	// do not store pages (they have to be created serparately)
@@ -63,12 +63,12 @@ pcw::Book::dbload(sql::Connection& c)
 	s->setInt(1, id);
 	ResultSetPtr res{s->executeQuery()};
 	if (not res or not res->next())
-		throw std::runtime_error("(Book) No such book id " + std::to_string(id));
-	
+		THROW(BadRequest, "(Book) No such book id ", id);
+
 	auto firstpage = res->getInt("firstpage");
 	auto lastpage = res->getInt("lastpage");
 	data.id = res->getInt("dataid");
-	
+
 	// load bookdata
 	data.owner = res->getInt("owner");
 	data.year = res->getInt("year");
@@ -87,17 +87,17 @@ pcw::Book::dbload(sql::Connection& c)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void 
-pcw::Book::load(nlohmann::json& json) 
+void
+pcw::Book::load(nlohmann::json& json)
 {
 	id = json["bookid"];
 	data.load(json["data"]);
 	for (auto& page: json["pages"])
 		push_back(std::make_shared<Page>(page));
 }
-		
+
 ///////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcw::Book::store(nlohmann::json& json) const
 {
 	json["bookid"] = id;
@@ -111,7 +111,7 @@ pcw::Book::store(nlohmann::json& json) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int 
+int
 pcw::Book::first_page_id() const noexcept
 {
 	using std::begin;
@@ -122,7 +122,7 @@ pcw::Book::first_page_id() const noexcept
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int 
+int
 pcw::Book::last_page_id() const noexcept
 {
 	using std::begin;

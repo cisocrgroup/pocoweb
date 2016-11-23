@@ -2,7 +2,7 @@
 #include <iostream>
 #include <pugixml.hpp>
 #include <regex>
-#include "core/BadRequest.hpp"
+#include "core/Error.hpp"
 #include "hocr.hpp"
 #include "HocrPageParser.hpp"
 #include "HocrParserLine.hpp"
@@ -35,8 +35,8 @@ HocrPageParser::HocrPageParser(const Path& path)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ParserPagePtr 
-HocrPageParser::parse() 
+ParserPagePtr
+HocrPageParser::parse()
 {
 	assert(page_node_);
 	page_node_.traverse(*this);

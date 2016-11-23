@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <regex>
 #include <openssl/sha.h>
+#include "Error.hpp"
 #include "util.hpp"
 #include "parser/AltoXmlPageParser.hpp"
 #include "parser/HocrPageParser.hpp"
@@ -203,7 +204,7 @@ pcw::make_page_parser(FileType type, const Path& ocr)
 	case FileType::Llocs:
 		return std::make_unique<OcropusLlocsPageParser>(ocr);
 	default:
-		throw std::logic_error("Cannot parse file: " + ocr.string());
+		THROW(BadRequest, "(util) Cannot parse file: ", ocr);
 	}
 }
 

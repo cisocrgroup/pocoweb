@@ -9,7 +9,7 @@
 #include "OcropusLlocsPageParser.hpp"
 #include "OcropusLlocsParserPage.hpp"
 #include "OcropusLlocsParserLine.hpp"
-#include "core/BadRequest.hpp"
+#include "core/Error.hpp"
 #include "core/Page.hpp"
 #include "core/Line.hpp"
 #include "core/Box.hpp"
@@ -54,7 +54,7 @@ OcropusLlocsPageParser::parse_page() const
 		page->lines().push_back(
 			std::make_shared<OcropusLlocsParserLine>(
 				i + 1,
-				llocs[i].first, 
+				llocs[i].first,
 				llocs[i].second
 			)
 		);

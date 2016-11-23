@@ -3,7 +3,7 @@
 #include "parser/ParserPage.hpp"
 #include "util.hpp"
 #include "Page.hpp"
-#include "BadRequest.hpp"
+#include "Error.hpp"
 #include "BookBuilder.hpp"
 #include "Book.hpp"
 #include "MetsXmlBookParser.hpp"
@@ -23,11 +23,11 @@ BookBuilder::build() const
 	} else {
 		MetsXmlBookParser p(i->first);
 		return p.parse();
-	}	
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 BookBuilder::add(const Path& file)
 {
 	auto type = get_file_type(file);
@@ -48,7 +48,7 @@ BookBuilder::add(const Path& file)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookBuilder::BookData 
+BookBuilder::BookData
 BookBuilder::parse_book_data() const
 {
 	BookData data;
@@ -61,12 +61,9 @@ BookBuilder::parse_book_data() const
 			if (page->has_ocr_path() and not page->has_img_path()) {
 				auto i = find_matching_img_file(page->ocr);
 				if (i == end(img_))
-					throw BadRequest(
-						"(BookBuilder) Unable to find "
-						"matching image file for: " + 
-						page->ocr.string()
-					);
-			}	
+					THROW(BadRequest, "(BookBuilder) Unable to find ",
+							"matching img file for ", page->ocr);
+			}
 			data.pages.push_back(page);
 		}
 	}
@@ -75,7 +72,7 @@ BookBuilder::parse_book_data() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookPtr 
+BookPtr
 BookBuilder::build(const BookData& data)
 {
 	auto book = std::make_shared<Book>();
@@ -90,7 +87,7 @@ BookBuilder::build(const BookData& data)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookBuilder::ImgFiles::const_iterator 
+BookBuilder::ImgFiles::const_iterator
 BookBuilder::find_matching_img_file(const Path& ocr) const noexcept
 {
 	auto stem = ocr.stem();
@@ -100,7 +97,7 @@ BookBuilder::find_matching_img_file(const Path& ocr) const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 BookBuilder::order_pages(std::vector<PagePtr>& pages) noexcept
 {
 	const auto b = begin(pages);
@@ -131,7 +128,7 @@ BookBuilder::order_pages(std::vector<PagePtr>& pages) noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 BookBuilder::fix_indizes(std::vector<PagePtr>& pages) noexcept
 {
 	int id = 0;

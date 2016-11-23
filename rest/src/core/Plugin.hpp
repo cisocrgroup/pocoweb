@@ -3,6 +3,7 @@
 
 #include <dlfcn.h>
 #include <stdexcept>
+#include "Error.hpp"
 #include "Route.hpp"
 
 namespace pcw {
@@ -26,7 +27,7 @@ namespace pcw {
 			try {
 				close();
 			} catch (const std::exception& e) {
-				std::cerr << "[error] Could not close plugin: " 
+				std::cerr << "[error] Could not close plugin: "
 					  << e.what() << "\n";
 			}
 		}
@@ -48,14 +49,14 @@ namespace pcw {
 			auto f = reinterpret_cast<plugin_t>(dlsym(dl_, "plugin"));
 			const char *error = dlerror();
 			if (error)
-				throw std::runtime_error(error);
+				THROW(Error, error);
 			error = f(p, app);
 			if (error)
-				throw std::runtime_error(error);
+				THROW(Error, error);
 		}
 
 	private:
-		void close() const 
+		void close() const
 		{
 			// std::cerr << "Closing dl: " << dl_ << "\n";
 			if (dl_) { // it is an error to close a null handle
@@ -67,9 +68,9 @@ namespace pcw {
 		[[noreturn]] void error(const char* e) const
 		{
 			if (e)
-				throw std::runtime_error(e);
+				THROW(Error, e);
 			else
-				throw std::runtime_error("??");
+				THROW(Error, "??");
 		}
 
 		void* dl_;

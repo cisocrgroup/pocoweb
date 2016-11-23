@@ -20,9 +20,9 @@ pcw::Books::Books(SessionPtr session)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::BookData 
+pcw::BookData
 pcw::Books::new_book_data(
-	const std::string& title, 
+	const std::string& title,
 	const std::string& author,
 	const std::string& dir
 ) const {
@@ -51,8 +51,8 @@ pcw::Books::new_book_data(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::BookPtr 
-pcw::Books::new_book(BookData data) const 
+pcw::BookPtr
+pcw::Books::new_book(BookData data) const
 {
 	static const char *sql = "INSERT INTO book "
 			 	  "(bookdataid,firstpage,lastpage) VALUES(?,0,0)";
@@ -68,7 +68,7 @@ pcw::Books::new_book(BookData data) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::BookPtr 
+pcw::BookPtr
 pcw::Books::find_book(int bookid) const
 {
 	try {
@@ -89,7 +89,7 @@ pcw::Books::insert_book(const Book& book) const
 	ScopeGuard sc([this]{
 		session_->connection->rollback();
 	});
-	
+
 	book.dbstore(*session_->connection);
 
 	// commit results
@@ -98,14 +98,14 @@ pcw::Books::insert_book(const Book& book) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcw::Books::insert_page(const Book& book, const Page& page) const
 {
 	session_->connection->setAutoCommit(false);
 	ScopeGuard sc([this]{
 		session_->connection->rollback();
 	});
-	
+
 	page.dbstore(*session_->connection, book.id);
 
 	// commit results
@@ -114,7 +114,7 @@ pcw::Books::insert_page(const Book& book, const Page& page) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 pcw::Books::is_allowed(const Book& book) const
 {
 	if (is_owner(book))
@@ -124,14 +124,14 @@ pcw::Books::is_allowed(const Book& book) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 pcw::Books::is_owner(const Book& book) const
 {
 	return book.data.id == session_->user->id;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-int 
+int
 pcw::Books::last_insert_id() const
 {
 	static const char *sql = "SELECT last_insert_id()";
@@ -139,7 +139,7 @@ pcw::Books::last_insert_id() const
 	assert(s);
 	ResultSetPtr res{s->executeQuery(sql)};
 	if (not res or not res->next())
-		throw std::runtime_error("(Books) cannot determine id");
+		THROW(Error, "(Books) Cannot determine last_insert_id");
 	return res->getInt(1);
 }
 

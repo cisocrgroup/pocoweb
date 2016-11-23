@@ -28,19 +28,19 @@ pcw::BookData::dbstore(sql::Connection& c) const
 
 ///////////////////////////////////////////////////////////////////////////////
 void
-pcw::BookData::dbload(sql::Connection& c) 
+pcw::BookData::dbload(sql::Connection& c)
 {
 	static const char *sql = "SELECT * FROM bookdata WHERE bookdataid=?";
 	PreparedStatementPtr s{c.prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, id);
 	ResultSetPtr res{s->executeQuery()};
-	if (not res or not res->next()) 
+	if (not res or not res->next())
 		throw std::runtime_error("(BookData) No such book data id " + std::to_string(id));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcw::BookData::load(nlohmann::json& json)
 {
 	title = json["title"];
@@ -57,7 +57,7 @@ pcw::BookData::load(nlohmann::json& json)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcw::BookData::store(nlohmann::json& json) const
 {
 	json["title"] = title;

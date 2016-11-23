@@ -1,3 +1,4 @@
+#include "Error.hpp"
 #include "Book.hpp"
 #include "Page.hpp"
 #include "BookView.hpp"
@@ -21,11 +22,7 @@ void
 BookView::set_id(int id)
 {
 	if (id_ > 0)
-		throw std::logic_error(
-			"(BookView) Cannot reset id " +
-			std::to_string(id_) + " to id " +
-			std::to_string(id)
-		);
+		THROW(Error, "(BookView) Cannot reset id ", id_, " to id ", id);
 	id_ = id;
 }
 
