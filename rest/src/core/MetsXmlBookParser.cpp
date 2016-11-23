@@ -115,7 +115,7 @@ MetsXmlBookParser::make_book()
 			auto page = pp->parse()->page();
 			if (not page)
 				continue;
-			page->id = grp.first;
+			page->set_id(grp.first);
 			page->img = ids_[*i].href;
 			pages.push_back(page);
 		}

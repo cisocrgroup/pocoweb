@@ -22,12 +22,12 @@ namespace pcw {
 		using Base = std::vector<LinePtr>;
 		using value_type = Base::value_type;
 
-		Page(int i, Box b = {})
+		Page(int id, Box b = {})
 			: box(b)
-			, id(i)
 			, ocr()
 			, img()
 			, book_()
+			, id_(id)
 		{}
 
 		using Base::begin;
@@ -54,13 +54,15 @@ namespace pcw {
 		bool contains(int id) const noexcept {
 			return id > 0 and static_cast<size_t>(id) < this->size();
 		}
+		int id() const noexcept {return id_;}
+		void set_id(int id) noexcept {id_ = id;}
 
 		Box box;
-		int id;
 		Path ocr, img;
 
 	private:
 		std::weak_ptr<const Book> book_;
+		int id_;
 		friend class BookView;
 	};
 }

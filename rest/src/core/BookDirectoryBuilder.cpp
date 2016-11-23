@@ -124,7 +124,7 @@ BookDirectoryBuilder::setup(const Book& book) const
 	for (const auto& page: book) {
 		assert(page);
 		setup_img_and_ocr_files(*page);
-		const auto pagedir = line_img_dir() / path_from_id(page->id);
+		const auto pagedir = line_img_dir() / path_from_id(page->id());
 		make_line_img_files(pagedir, *page);
 	}
 }

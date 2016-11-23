@@ -33,16 +33,16 @@ BookFixer::fix_page_and_line_ordering(Book& book) const
 	const auto b = begin(book);
 	const auto e = end(book);
 
-	if (std::all_of(b, e, [](const auto& page) {return page->id > 0;})) {
+	if (std::all_of(b, e, [](const auto& page) {return page->id() > 0;})) {
 		// sort by page index of ocr source file
 		std::sort(b, e, [](const auto& a, const auto& b) {
-			return a->id < b->id;
+			return a->id() < b->id();
 		});
-	} else if (std::any_of(b, e, [](const auto& page) {return page->id > 0;})) {
+	} else if (std::any_of(b, e, [](const auto& page) {return page->id() > 0;})) {
 		// sort by page index AND path stem
 		std::sort(b, e, [](const auto& a, const auto& b) {
-			if (a->id > 0 and b->id > 0) {
-				return a->id < b->id;
+			if (a->id() > 0 and b->id() > 0) {
+				return a->id() < b->id();
 			} else {
 				return a->ocr.stem() < b->ocr.stem();
 			}
@@ -63,7 +63,7 @@ BookFixer::update_indizes(Book& book) const
 {
 	int id = 0;
 	for (auto& page: book) {
-		page->id = ++id;
+		page->set_id(++id);
 	}
 }
 

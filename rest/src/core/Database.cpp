@@ -197,7 +197,7 @@ Database::update_line(const Line& line, sql::Connection& conn) const
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
 	const auto lineid = line.id();
-	const auto pageid = line.page()->id;
+	const auto pageid = line.page()->id();
 	const auto bookid = line.page()->book()->id();
 	s->setInt(1, bookid);
 	s->setInt(2, pageid);
@@ -245,7 +245,7 @@ Database::insert_project(BookView& project) const
 	t->setInt(1, project.id());
 	std::for_each(begin(project), end(project), [&t](const auto& page) {
 		assert(page);
-		t->setInt(2, page->id);
+		t->setInt(2, page->id());
 		t->executeUpdate();
 	});
 	return put_cache(project.shared_from_this());
@@ -326,7 +326,7 @@ Database::insert_page(const Page& page, sql::Connection& conn) const
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, page.book()->id());
-	s->setInt(2, page.id);
+	s->setInt(2, page.id());
 	s->setString(3, page.img.string());
 	s->setString(4, page.ocr.string());
 	s->setInt(5, page.box.left());
@@ -353,7 +353,7 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
-	const auto pageid = line.page()->id;
+	const auto pageid = line.page()->id();
 	const auto bookid = line.page()->book()->id();
 	s->setInt(1, bookid);
 	s->setInt(2, pageid);
@@ -473,7 +473,7 @@ Database::select_subproject(int projectid, int owner, const Book& origin, sql::C
 	std::copy_if(begin(origin), end(origin), std::back_inserter(*project),
 		[&ids](const auto& page) {
 			assert(page);
-			return ids.count(page->id);
+			return ids.count(page->id());
 	});
 	return project;
 }
@@ -559,7 +559,7 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
 	const int bookid = page.book()->id();
-	const int pageid = page.id;
+	const int pageid = page.id();
 	s->setInt(1, bookid);
 	s->setInt(2, pageid);
 	ResultSetPtr res{s->executeQuery()};

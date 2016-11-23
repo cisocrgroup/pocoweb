@@ -19,7 +19,7 @@ pcw::operator<<(Json& json, const BookView& project)
 	ids.resize(project.size());
 	std::transform(begin(project), end(project), begin(ids), [](const auto& page) {
 		assert(page);
-		return page->id;
+		return page->id();
 	});
 	json["pages"] = ids.size();
 	json["pageIds"] = ids;
@@ -30,7 +30,7 @@ pcw::operator<<(Json& json, const BookView& project)
 pcw::Json&
 pcw::operator<<(Json& json, const Page& page)
 {
-	json["id"] = page.id;
+	json["id"] = page.id();
 	json["box"] << page.box;
 	json["ocrFile"] = page.ocr.native();
 	json["imgFile"] = page.img.native();

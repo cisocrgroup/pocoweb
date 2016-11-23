@@ -13,12 +13,12 @@ struct Fixture {
 	static const char* ocr;
 	static const Box box;
 
-	Fixture(): line(1, box) {
-		line.append(ocr, 0, 100, 0.8);
-		BOOST_REQUIRE(not line.empty());
-		BOOST_CHECK_EQUAL(line.box, box);
+	Fixture(): line(std::make_shared<Line>(1, box)) {
+		line->append(ocr, 0, 100, 0.8);
+		BOOST_REQUIRE(not line->empty());
+		BOOST_CHECK_EQUAL(line->box, box);
 	}
-	Line line;
+	LinePtr line;
 };
 
 const char* Fixture::ocr = "pectũeſt: quioo te mp";
@@ -30,17 +30,17 @@ BOOST_FIXTURE_TEST_SUITE(OcrLineTest, Fixture)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(Line)
 {
-	BOOST_CHECK_EQUAL(line.ocr(), ocr);
-	BOOST_CHECK_EQUAL(line.cor(), ocr); // cor and ocr must be the same
-	BOOST_CHECK_CLOSE(line.average_conf(), .8, .001); // it's not rocket sience
-	BOOST_CHECK_EQUAL(line.chars().back().cut, 100);
-	BOOST_CHECK(not line.is_corrected());
+	BOOST_CHECK_EQUAL(line->ocr(), ocr);
+	BOOST_CHECK_EQUAL(line->cor(), ocr); // cor and ocr must be the same
+	BOOST_CHECK_CLOSE(line->average_conf(), .8, .001); // it's not rocket sience
+	BOOST_CHECK_EQUAL(line->chars().back().cut, 100);
+	BOOST_CHECK(not line->is_corrected());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(Tokens)
 {
-	auto tokens = line.tokens();
+	auto tokens = line->tokens();
 	BOOST_REQUIRE(tokens.size() == 7);
 
 	BOOST_CHECK(tokens[0].is_normal());
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(Tokens)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(Words)
 {
-	auto words = line.words();
+	auto words = line->words();
 	BOOST_CHECK_EQUAL(words.size(), 4);
 	BOOST_CHECK(std::all_of(begin(words), end(words), [](const auto& c) {
 		return c.is_normal();
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(Words)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(WordBoundinBoxes)
 {
-	auto words = line.words();
+	auto words = line->words();
 	BOOST_CHECK_EQUAL(words.size(), 4);
 
 	BOOST_CHECK_EQUAL(words[0].box.top(), 0);

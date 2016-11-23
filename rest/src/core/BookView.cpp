@@ -12,7 +12,7 @@ do_find(It b, It e, int id)
 {
 	auto i = std::find_if(b, e, [id](const auto& page) {
 		assert(page);
-		return page->id == id;
+		return page->id() == id;
 	});
 	return i != e ? *i : nullptr;
 }
