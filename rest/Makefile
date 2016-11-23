@@ -98,14 +98,19 @@ pcwd: pcwd.o libpcwapi.a libpcwcore.a libpcwparser.a
 test: $(TESTS)
 	@errors=0;\
 	for test in $(TESTS); do \
-		echo running $$test ;\
 		./$$test; \
 		res=$$?; \
 		if [ $$res -ne 0 ]; then \
 			errors=$$((errors + 1)); \
+			echo $$test ': \033[0;31mFAIL\033[0m' ;\
+		else \
+			echo $$test ': \033[0;32mSUCCESS\033[0m' ;\
 		fi \
-	done; \
-	exit $$errors
+	done ;\
+	if [ $$errors -ne 0 ]; then \
+		echo "\033[0;31m$$errors FAILURE(S)\033[0m" ;\
+		exit $$errors ;\
+	fi
 
 libpcwcore.a: $(OBJS)
 	$(AR) rcs $@ $^
