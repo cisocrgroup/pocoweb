@@ -88,30 +88,30 @@ DocXmlNode&
 pcw::operator<<(DocXmlNode& node, const Line::Token& token)
 {
 	static const char* bools[] = {"false", "true"};
-	auto tnode = node.node.append_child();
-	tnode.set_name("token");
-	tnode.append_attribute("token_id").set_value(id(token));
-	tnode.append_attribute("isCorrected").
+	DocXmlNode tnode{node.node.append_child()};
+	tnode.node.set_name("token");
+	tnode.node.append_attribute("token_id").set_value(id(token));
+	tnode.node.append_attribute("isCorrected").
 		set_value(bools[(int)!!token.is_corrected()]);
-	tnode.append_attribute("isNormal").
+	tnode.node.append_attribute("isNormal").
 		set_value(bools[(int)!!token.is_normal()]);
-	auto tmp = tnode.append_child();
+	auto tmp = tnode.node.append_child();
 	tmp.set_name("ext_id");
 	tmp.append_child(pugi::node_pcdata).set_value(ext_id(token).data());
 
-	tmp = tnode.append_child();
+	tmp = tnode.node.append_child();
 	tmp.set_name("wOCR_lc");
 	tmp.append_child(pugi::node_pcdata).set_value(token.ocr_lc().data());
 
-	tmp = tnode.append_child();
+	tmp = tnode.node.append_child();
 	tmp.set_name("wOCR");
 	tmp.append_child(pugi::node_pcdata).set_value(token.ocr().data());
 
-	tmp = tnode.append_child();
+	tmp = tnode.node.append_child();
 	tmp.set_name("wCorr");
 	tmp.append_child(pugi::node_pcdata).set_value(token.cor().data());
 
-	node << token.box;
+	tnode << token.box;
 	return node;
 }
 

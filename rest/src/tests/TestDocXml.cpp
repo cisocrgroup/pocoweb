@@ -16,13 +16,13 @@ struct Fixture {
 	static std::vector<std::string> p1;
 	static std::vector<std::string> p2;
 	Fixture(): docxml(), root() {
-		auto page1 = std::make_shared<Page>(1);
+		auto page1 = std::make_shared<Page>(1, Box{0, 0, 100, 10});
 		page1->img = "test1.img";
 		page1->ocr = "test1.ocr";
 		page1->push_back(line("Он привыно, без хлопот"));
 		page1->push_back(line("снова ждет,"));
 
-		auto page2 = std::make_shared<Page>(2);
+		auto page2 = std::make_shared<Page>(2, Box{0, 10, 100, 20});
 		page2->img = "test2.img";
 		page2->ocr = "test2.ocr";
 		page2->push_back(line("Что галушка попадет"));
@@ -56,16 +56,56 @@ struct Fixture {
 BOOST_FIXTURE_TEST_SUITE(DocXmlTest, Fixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(DocumentPages)
+BOOST_AUTO_TEST_CASE(Document)
 {
 	BOOST_CHECK_EQUAL(root.name(), "document");
-	BOOST_CHECK_EQUAL(root.first_child().name(), "page");
-	BOOST_CHECK_EQUAL(root.first_child().next_sibling().name(), "page");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Page)
+BOOST_AUTO_TEST_CASE(Page1)
 {
+	// docxml.save(std::cerr);
+	auto page = root.first_child();
+	BOOST_CHECK_EQUAL(page.name(), "page");
+	BOOST_CHECK_EQUAL(page.attribute("imageFile").value(), "test1.img");
+	BOOST_CHECK_EQUAL(page.attribute("sourceFile").value(), "test1.ocr");
+
+	auto b = pugi::xml_node_iterator(page.first_child());
+	BOOST_CHECK_EQUAL(std::next(b, 0)->name(), "token");
+	BOOST_CHECK_EQUAL(std::next(b, 0)->child("wOCR").child_value(), "Он");
+	BOOST_CHECK_EQUAL(std::next(b, 1)->name(), "token");
+	BOOST_CHECK_EQUAL(std::next(b, 1)->child("wOCR").child_value(), "привыно");
+	BOOST_CHECK_EQUAL(std::next(b, 2)->name(), "token");
+	BOOST_CHECK_EQUAL(std::next(b, 2)->child("wOCR").child_value(), "без");
+	BOOST_CHECK_EQUAL(std::next(b, 3)->name(), "token");
+	BOOST_CHECK_EQUAL(std::next(b, 3)->child("wOCR").child_value(), "хлопот");
+	BOOST_CHECK_EQUAL(std::next(b, 4)->name(), "token");
+	BOOST_CHECK_EQUAL(std::next(b, 4)->child("wOCR").child_value(), "снова");
+	BOOST_CHECK_EQUAL(std::next(b, 5)->name(), "token");
+	BOOST_CHECK_EQUAL(std::next(b, 5)->child("wOCR").child_value(), "ждет");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(Page2)
+{
+	auto page = root.first_child().next_sibling();
+	BOOST_CHECK_EQUAL(page.name(), "page");
+	BOOST_CHECK_EQUAL(page.attribute("imageFile").value(), "test2.img");
+	BOOST_CHECK_EQUAL(page.attribute("sourceFile").value(), "test2.ocr");
+
+	auto b = pugi::xml_node_iterator(page.first_child());
+	BOOST_CHECK_EQUAL(std::next(b, 0)->name(), "token");
+	BOOST_CHECK_EQUAL(std::next(b, 0)->child("wOCR").child_value(), "Что");
+	BOOST_CHECK_EQUAL(std::next(b, 1)->name(), "token");
+	BOOST_CHECK_EQUAL(std::next(b, 1)->child("wOCR").child_value(), "галушка");
+	BOOST_CHECK_EQUAL(std::next(b, 2)->name(), "token");
+	BOOST_CHECK_EQUAL(std::next(b, 2)->child("wOCR").child_value(), "попадет");
+	BOOST_CHECK_EQUAL(std::next(b, 3)->name(), "token");
+	BOOST_CHECK_EQUAL(std::next(b, 3)->child("wOCR").child_value(), "прямо");
+	BOOST_CHECK_EQUAL(std::next(b, 4)->name(), "token");
+	BOOST_CHECK_EQUAL(std::next(b, 4)->child("wOCR").child_value(), "в");
+	BOOST_CHECK_EQUAL(std::next(b, 5)->name(), "token");
+	BOOST_CHECK_EQUAL(std::next(b, 5)->child("wOCR").child_value(), "рот");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
