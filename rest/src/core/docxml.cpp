@@ -71,7 +71,7 @@ ext_id(const Line::Token& token)
 {
 	std::stringstream os;
 	os << token.line->page()->book()->id()
-	   << ":" << token.line->page()->id
+	   << ":" << token.line->page()->id()
 	   << ":" << token.line->id()
 	   << ":" << token.id;
 	return os.str();

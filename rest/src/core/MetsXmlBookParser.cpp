@@ -17,7 +17,7 @@ MetsXmlBookParser::MetsXmlBookParser(const Path& path)
 
 ////////////////////////////////////////////////////////////////////////////////
 BookPtr
-MetsXmlBookParser::parse() 
+MetsXmlBookParser::parse()
 {
 	xml_.traverse(*this);
 	make_book();
@@ -26,8 +26,8 @@ MetsXmlBookParser::parse()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
-MetsXmlBookParser::begin(XmlNode& node) 
+bool
+MetsXmlBookParser::begin(XmlNode& node)
 {
 	book_ = std::make_shared<Book>();
 	ids_.clear();
@@ -36,8 +36,8 @@ MetsXmlBookParser::begin(XmlNode& node)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
-MetsXmlBookParser::for_each(XmlNode& node) 
+bool
+MetsXmlBookParser::for_each(XmlNode& node)
 {
 // <ns3:fileGrp ID="IMG">
 //     <ns3:file ID="IMG_1" SEQ="1" MIMETYPE="image/jpeg" CREATED="2016-10-28T14:13:54.000+02:00">
@@ -106,22 +106,22 @@ MetsXmlBookParser::make_book()
 		const auto j = std::find_if(b, e, iof);
 		if (i == e)
 			throw BadRequest(
-				"(MetsXmlBookParser) No image file for order: " + 
+				"(MetsXmlBookParser) No image file for order: " +
 				std::to_string(grp.first)
 			);
 		if (j == e)
 			throw BadRequest(
-				"(MetsXmlBookParser) No ocr file for order: " + 
+				"(MetsXmlBookParser) No ocr file for order: " +
 				std::to_string(grp.first)
 			);
-		
+
 		auto pp = make_page_parser(ids_[*j].type, ids_[*j].href);
 		assert(pp);
 		while (pp->has_next()) {
 			auto page = pp->parse()->page();
 			if (not page)
 				continue;
-			page->id = grp.first;
+			page->set_id(grp.first);
 			page->img = ids_[*i].href;
 			pages.push_back(page);
 		}
@@ -134,14 +134,14 @@ MetsXmlBookParser::make_book()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 MetsXmlBookParser::equal(const char* uri, const char* str) noexcept
 {
 	return strcmp(uri, str) == 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 MetsXmlBookParser::equal_ns(const char* uri, const char* str) noexcept
 {
 	auto local = strrchr(uri, ':');
@@ -155,8 +155,8 @@ MetsXmlBookParser::is_flocat(const XmlNode& node) noexcept
 	// <ns3:fileGrp ID="IMG">
 	//     <ns3:file ID="IMG_1" SEQ="1" MIMETYPE="image/jpeg" CREATED="2016-10-28T14:13:54.000+02:00">
 	//         <ns3:FLocat LOCTYPE="OTHER" OTHERLOCTYPE="FILE" ns2:type="simple" ns2:href="005401_0001_164689.jpg"/>
-	return equal_ns(node.name(), "FLocat") and 
-		equal_ns(node.parent().name(), "file") and 
+	return equal_ns(node.name(), "FLocat") and
+		equal_ns(node.parent().name(), "file") and
 		equal_ns(node.parent().parent().name(), "fileGrp");
 }
 
@@ -168,13 +168,13 @@ MetsXmlBookParser::is_area(const XmlNode& node) noexcept
 	//     <ns3:fptr>
 	//         <ns3:area FILEID="IMG_1"/>
 	//     </ns3:fptr>
-	return equal_ns(node.name(), "area") and 
-		equal_ns(node.parent().name(), "fptr") and 
+	return equal_ns(node.name(), "area") and
+		equal_ns(node.parent().name(), "fptr") and
 		equal_ns(node.parent().parent().name(), "div");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* 
+const char*
 MetsXmlBookParser::attr_value_ns(const XmlNode& node, const char* name) noexcept
 {
 	static const char* EMPTY = "";
@@ -182,7 +182,7 @@ MetsXmlBookParser::attr_value_ns(const XmlNode& node, const char* name) noexcept
 		if (equal_ns(attr.name(), name))
 			return attr.value();
 	}
-	return EMPTY;	
+	return EMPTY;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

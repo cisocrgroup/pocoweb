@@ -550,5 +550,5 @@ Line::Token::is_normal() const
 uint64_t
 Line::Token::unique_id() const noexcept
 {
-	return Line::unique_id(line->page()->book()->id(), line->page()->id, line->id(), id);
+	return Line::unique_id(line->page()->book()->id(), line->page()->id(), line->id(), id);
 }
