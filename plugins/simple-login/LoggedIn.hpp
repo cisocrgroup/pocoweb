@@ -1,7 +1,7 @@
 #ifndef pcw_LoggedIn_hpp__
 #define pcw_LoggedIn_hpp__
 
-#include "Route.hpp"
+#include "core/Route.hpp"
 
 namespace pcw {
 	class LoggedIn: public Route {

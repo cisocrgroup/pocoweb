@@ -1,8 +1,8 @@
 #include <crow.h>
 #include <cppconn/connection.h>
-#include "User.hpp"
-#include "Sessions.hpp"
-#include "Database.hpp"
+#include "core/User.hpp"
+#include "core/Sessions.hpp"
+#include "core/Database.hpp"
 #include "DeleteUser.hpp"
 
 using namespace pcw;
@@ -16,19 +16,17 @@ const char* DeleteUser::route_ = DELETE_USER_ROUTE;
 const char* DeleteUser::name_ = "DeleteUser";
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
-DeleteUser::Register(App& app) 
+void
+DeleteUser::Register(App& app)
 {
 	CROW_ROUTE(app, DELETE_USER_ROUTE)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::response 
+crow::response
 DeleteUser::operator()(const crow::request& request, const std::string& name) const
 {
 	auto db = database(request);
-	if (not db)
-		return forbidden();
-	db.get().delete_user(name);
+	db.delete_user(name);
 	return ok();
 }
