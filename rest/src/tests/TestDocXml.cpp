@@ -4,7 +4,9 @@
 #include <boost/test/unit_test.hpp>
 #include <functional>
 #include <iostream>
+#include <fstream>
 #include <vector>
+#include "TmpDir.hpp"
 #include "core/docxml.hpp"
 #include "core/Book.hpp"
 #include "core/Page.hpp"
@@ -121,6 +123,26 @@ BOOST_AUTO_TEST_CASE(BoundingBoxes)
 			BOOST_CHECK(coord.attribute("r").as_int() > 0);
 		}
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(ReadWrite)
+{
+	TmpDir tmp;
+	auto file = tmp / "test.docxml";
+
+	// write
+	std::ofstream os(file.string());
+	BOOST_REQUIRE(os.good());
+	docxml.save(os);
+	os.close();
+
+	// read
+	std::ifstream is(file.string());
+	BOOST_REQUIRE(is.good());
+	pugi::xml_document doc;
+	auto ok = doc.load(is);
+	BOOST_CHECK(ok);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
