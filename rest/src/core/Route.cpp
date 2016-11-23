@@ -58,20 +58,20 @@ Route::session(const crow::request& request) const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-boost::optional<Database>
-Route::database(const crow::request& request) const noexcept
+Database
+Route::database(const crow::request& request) const
 {
 	return database(session(request));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-boost::optional<Database>
-Route::database(SessionPtr session) const noexcept
+Database
+Route::database(SessionPtr session) const
 {
 	assert(config_);
-	return session ?
-		Database(session, config_, cache_) :
-		boost::optional<Database>{};
+	if (not session)
+		THROW(Forbidden);
+	return Database{session, config_, cache_};
 }
 
 ////////////////////////////////////////////////////////////////////////////////

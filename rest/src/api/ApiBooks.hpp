@@ -1,7 +1,7 @@
 #ifndef pcw_ApiBooks_hpp__
 #define pcw_ApiBooks_hpp__
 
-#include "core/Route.hpp"
+#include "CrtpRoute.hpp"
 
 namespace pcw {
 	class Line;
@@ -9,27 +9,33 @@ namespace pcw {
 	class BookView;
 	using BookViewPtr = std::shared_ptr<BookView>;
 	using PagePtr = std::shared_ptr<Page>;
+	using LinePtr = std::shared_ptr<Line>;
 
-	class ApiBooks: public Route {
+	class ApiBooks: public CrtpRoute<ApiBooks> {
 	public:
 		virtual ~ApiBooks() noexcept override = default;
 		virtual void Register(App& app) override;
 		virtual const char* route() const noexcept override {return route_;}
 		virtual const char* name() const noexcept override {return name_;}
-		Response operator()(const Request& req) const;
-		Response operator()(const Request& req, int bid) const;
-		Response operator()(const Request& req, int bid, int pid) const;
-		Response operator()(const Request& req, int bid, int pid, int lid) const;
+
+		template<class T, class... Args>
+		[[noreturn]] Response impl(T, const Request& req, Args&&... args) const {
+			THROW(NotImplemented, "Not implemented: ", req.url,
+					": ", typeid(T).name());
+		}
+
+		Response impl(HttpPost, const Request& req) const;
+		Response impl(HttpGet, const Request& req) const;
+		Response impl(HttpGet, const Request& req, int bid) const;
+		Response impl(HttpPost, const Request& req, int bid) const;
+		Response impl(HttpGet, const Request& req, int bid, int pid) const;
+		Response impl(HttpGet, const Request& req, int bid, int pid, int lid) const;
+		Response impl(HttpPut, const Request& req, int bid, int pid, int lid) const;
 
 	private:
-		Response post(const Request& req) const;
-		Response get(const Request& req) const;
-		Response get(const Request& req, int bid) const;
-		Response post(const Request& req, int bid) const;
-		Response put(const Request& req, Database& db, Line& line) const;
-		Response get(const Line& line) const;
 		BookViewPtr find(const Database& db, int bid) const;
 		PagePtr find(const Database& db, int bid, int pid) const;
+		LinePtr find(const Database& db, int bid, int pid, int lid) const;
 
 		static const char* route_;
 		static const char* name_;

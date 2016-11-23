@@ -15,14 +15,13 @@ const char* ApiVersion::name_ = "ApiVersion";
 void
 ApiVersion::Register(App& app)
 {
-	CROW_ROUTE(app, API_VERSION_ROUTE)(*this);
+	CROW_ROUTE(app, API_VERSION_ROUTE).methods("GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::response
+Route::Response
 ApiVersion::operator()() const noexcept
 {
-	CROW_LOG_INFO << "foo: " << pcw::App::version_major();
 	CROW_LOG_INFO << route() << ": " << pcw::App::version_str();
 	Json j;
 	j["version"] = pcw::App::version_str();

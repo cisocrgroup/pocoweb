@@ -49,6 +49,11 @@ namespace pcw {
 		const Line& operator[](int id) const noexcept {
 			return *Base::operator[](id - 1);
 		}
+		LinePtr find(int id) const noexcept {
+			if (id > 0 and id <= static_cast<int>(this->size()))
+				return Base::operator[](id - 1);
+			return nullptr;
+		}
 		bool has_ocr_path() const noexcept {return not ocr.empty();}
 		bool has_img_path() const noexcept {return not img.empty();}
 		bool contains(int id) const noexcept {
