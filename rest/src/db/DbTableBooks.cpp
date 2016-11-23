@@ -19,7 +19,7 @@
 #include "DbTableBooks.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
-/* 
+/*
 #define JOIN "select * from books "\
 	     "natural join bookdata natural join pages "\
 	     "join linesx on linesx.bookid = books.bookid "\
@@ -55,7 +55,7 @@ pcw::DbTableBooks::getLine(int bookid, int pageid, int lineid) const
 	assert(bookid > 0 and pageid > 0 and lineid > 0);
 	static const char *sql = JOIN
 		"where bookid=? and pageid=? and lineid=?";
-	conn_->setAutoCommit(true);	
+	conn_->setAutoCommit(true);
 	PreparedStatementPtr s{conn_->prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, bookid);
@@ -75,7 +75,7 @@ pcw::DbTableBooks::getPage(int bookid, int pageid) const
 	static const char *sql = JOIN
 		"where bookid=? and pageid=? "
 		"order by bookid, pageid, lineid";
-	conn_->setAutoCommit(true);	
+	conn_->setAutoCommit(true);
 	PreparedStatementPtr s{conn_->prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, bookid);
@@ -94,7 +94,7 @@ pcw::DbTableBooks::getBook(int bookid) const
 	static const char *sql = JOIN
 		"where books.bookid = ? "
 		"order by bookid, pageid, lineid";
-	conn_->setAutoCommit(true);	
+	conn_->setAutoCommit(true);
 	PreparedStatementPtr s{conn_->prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, bookid);
@@ -105,12 +105,12 @@ pcw::DbTableBooks::getBook(int bookid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::BookPtr
-pcw::DbTableBooks::makeBook(sql::ResultSet& res) 
+pcw::DbTableBooks::makeBook(sql::ResultSet& res)
 {
 	BookPtr book = nullptr;
 	PagePtr page = nullptr;
 	while (res.next()) {
-		if (not book) 
+		if (not book)
 			book = doMakeBook(res);
 		const auto pageid = res.getInt("pageid");
 		if (not page) {
@@ -188,11 +188,11 @@ pcw::DbTableBooks::insertBook(int userid, Book& book) const
 	book.data.id = insertBookData(userid, book.data);
 	book.id = insertBook(book);
 	allowBook(userid, book.id);
-	
+
 	// insert pages
-	for (const auto& page: book) 
+	for (const auto& page: book)
 		insertPage(book, *page);
-	
+
 	// done; commit and disable rollback
 	conn_->commit();
 	sc.dismiss();
@@ -216,7 +216,7 @@ pcw::DbTableBooks::insertBookData(int owner, const BookData& data) const
 	s->setString(3, data.author);
 	s->setInt(4, data.year);
 	s->setString(5, data.desc);
-	s->setString(6, data.uri);	
+	s->setString(6, data.uri);
 	s->setString(7, data.path);
 	s->executeUpdate();
 
@@ -224,13 +224,13 @@ pcw::DbTableBooks::insertBookData(int owner, const BookData& data) const
 	ResultSetPtr res{liid->executeQuery("select last_insert_id()")};
 	assert(res);
 	if (not res->next())
-		throw std::runtime_error("Cannot determine data id of book");
+		THROW("(Database) Cannot determine data id of book");
 	return res->getInt(1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 int
-pcw::DbTableBooks::insertBook(const Book& book) const 
+pcw::DbTableBooks::insertBook(const Book& book) const
 {
 	assert(conn_);
 	static const char *sql = "insert into books "
@@ -242,12 +242,12 @@ pcw::DbTableBooks::insertBook(const Book& book) const
 	s->setInt(2, book.data.firstpage);
 	s->setInt(3, book.data.lastpage);
 	s->executeUpdate();
-	
+
 	StatementPtr liid{conn_->createStatement()};
 	ResultSetPtr res{liid->executeQuery("select last_insert_id()")};
 	assert(res);
 	if (not res->next())
-		throw std::runtime_error("Cannot determine id of book");
+		THROW(Error, "Cannot determine id of book");
 	return res->getInt(1);
 }
 
@@ -270,7 +270,7 @@ pcw::DbTableBooks::insertPage(const Book& book, const Page& page) const
 	s->setInt(7, page.box.top);
 	s->setInt(8, page.box.bottom);
 	s->executeUpdate();
-	
+
 	for (const auto& line: page)
 		insertLine(book, page, *line);
 }
@@ -312,7 +312,7 @@ pcw::DbTableBooks::getAllowedBooks(int userid) const
 	s->setInt(1, userid);
 	ResultSetPtr res{s->executeQuery()};
 	assert(res);
-	
+
 	std::vector<BookPtr> books;
 	while (res->next()) {
 		books.push_back(doMakeBook(*res));
@@ -321,7 +321,7 @@ pcw::DbTableBooks::getAllowedBooks(int userid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcw::DbTableBooks::allowBook(int userid, int bookid) const
 {
 	assert(conn_);
@@ -336,7 +336,7 @@ pcw::DbTableBooks::allowBook(int userid, int bookid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcw::DbTableBooks::denyBook(int userid, int bookid) const
 {
 	assert(conn_);
@@ -351,7 +351,7 @@ pcw::DbTableBooks::denyBook(int userid, int bookid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 pcw::DbTableBooks::pageIsAllowed(int userid, int bookid, int pageid) const
 {
 	assert(conn_);
@@ -359,7 +359,7 @@ pcw::DbTableBooks::pageIsAllowed(int userid, int bookid, int pageid) const
 	static const char *sql = "select * from bookpermissions left join books "
 				 "on bookpermissions.bookid = books.bookid "
 				 "where userid=? and bookid=?";
-	
+
 	PreparedStatementPtr s{conn_->prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, userid);
@@ -376,11 +376,11 @@ pcw::DbTableBooks::pageIsAllowed(int userid, int bookid, int pageid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string 
+std::string
 pcw::DbTableBooks::cutsToString(const Line& line)
 {
 	std::stringstream os;
-	std::copy(begin(line.cuts()), 
+	std::copy(begin(line.cuts()),
 		  end(line.cuts()),
 		  std::ostream_iterator<int>(os, " "));
 	return os.str();

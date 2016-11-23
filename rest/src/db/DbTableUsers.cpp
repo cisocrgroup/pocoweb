@@ -61,7 +61,7 @@ pcw::DbTableUsers::findUserByName(const std::string& name) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::UserPtr 
+pcw::UserPtr
 pcw::DbTableUsers::findUserByNameOrEmail(const std::string& what) const
 {
 	auto user = findUserByName(what);
@@ -95,7 +95,7 @@ pcw::DbTableUsers::createUser(const std::string& name,
 	ResultSetPtr res{liid->executeQuery("select last_insert_id()")};
 	assert(res);
 	if (not res->next())
-		throw std::runtime_error("Could not determine user id");
+		THROW(Error, "Could not determine user id");
 	return findUserById(res->getInt(1));
 }
 

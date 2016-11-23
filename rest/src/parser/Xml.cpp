@@ -1,4 +1,5 @@
 #include <pugixml.hpp>
+#include "core/Error.hpp"
 #include "Xml.hpp"
 
 using namespace pcw;
@@ -22,11 +23,7 @@ Xml::read(const Path& path)
 	doc_ = std::make_shared<pugi::xml_document>();
 	auto ok = doc_->load_file(path.string().data());
 	if (not ok)
-		throw std::runtime_error(
-				"(Xml) Could not read file " +
-				path.string() + ": " +
-				ok.description()
-		);
+		THROW(Error, "(Xml) Could not read file ", path, ": ", ok.description());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

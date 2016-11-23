@@ -1,3 +1,4 @@
+#include "Error.hpp"
 #include "XmlFile.hpp"
 
 using namespace pcw;
@@ -24,10 +25,7 @@ XmlFile::read(const Path& path)
 	path_ = path;
 	auto ok = xml_.load_file(path_.string().data());
 	if (not ok)
-		throw std::runtime_error(
-			"(XmlFile) Could not read xml file " +
-			path_.string() + ": " + ok.description()
-		);
+		THROW(Error, "(XmlFile) Could not read xml file ", path_, ": ", ok.description());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,9 +35,6 @@ XmlFile::read(const std::string& content)
 	path_.clear();
 	auto ok = xml_.load_string(content.data());
 	if (not ok)
-		throw std::runtime_error(
-			"(XmlFile) Could not read xml file: " +
-			std::string(ok.description())
-		);
+		THROW(Error, "(XmlFile) Could not read xml file: ", ok.description());
 }
 
