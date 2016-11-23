@@ -66,20 +66,14 @@ pcw::operator<<(DocXmlNode& node, const Line& line)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-static int
-id(const Line::Token& token)
-{
-	return (token.line->page()->id * 1000 * 1000) +
-		(token.line->id() * 1000) +
-		(token.id);
-}
-
-////////////////////////////////////////////////////////////////////////////////
 static std::string
 ext_id(const Line::Token& token)
 {
 	std::stringstream os;
-	os << token.line->page()->id << ":" << token.line->id() << ":" << token.id;
+	os << token.line->page()->book()->id()
+	   << ":" << token.line->page()->id
+	   << ":" << token.line->id()
+	   << ":" << token.id;
 	return os.str();
 }
 
@@ -90,7 +84,7 @@ pcw::operator<<(DocXmlNode& node, const Line::Token& token)
 	static const char* bools[] = {"false", "true"};
 	DocXmlNode tnode{node.node.append_child()};
 	tnode.node.set_name("token");
-	tnode.node.append_attribute("token_id").set_value(id(token));
+	tnode.node.append_attribute("token_id").set_value(token.unique_id());
 	tnode.node.append_attribute("isCorrected").
 		set_value(bools[(int)!!token.is_corrected()]);
 	tnode.node.append_attribute("isNormal").

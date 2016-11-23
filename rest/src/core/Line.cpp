@@ -348,6 +348,29 @@ Line::words() const
 	return words;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+int64_t
+Line::unique_id(int bid, int pid, int lid, int tid) noexcept
+{
+	auto r = static_cast<uint16_t>(static_cast<unsigned int>(bid));
+	auto s = static_cast<uint16_t>(static_cast<unsigned int>(pid));
+	auto t = static_cast<uint16_t>(static_cast<unsigned int>(lid));
+	auto u = static_cast<uint16_t>(static_cast<unsigned int>(tid));
+
+	uint64_t id = 0;
+	id |= r;
+
+	id <<= 16;
+	id |= s;
+
+	id <<= 16;
+	id |= t;
+
+	id <<= 16;
+	id |= u;
+	return static_cast<int64_t>(id);
+}
+
 //
 // CHAR
 //
@@ -523,3 +546,9 @@ Line::Token::is_normal() const
 	});
 }
 
+////////////////////////////////////////////////////////////////////////////////
+uint64_t
+Line::Token::unique_id() const noexcept
+{
+	return Line::unique_id(line->page()->book()->id(), line->page()->id, line->id(), id);
+}

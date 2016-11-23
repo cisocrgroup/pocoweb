@@ -36,6 +36,7 @@ namespace pcw {
 			std::wstring wocr() const;
 			std::string cor() const;
 			std::string ocr() const;
+			uint64_t unique_id() const noexcept;
 			bool is_corrected() const;
 			bool is_normal() const;
 
@@ -112,6 +113,8 @@ namespace pcw {
 		Path img;
 
 	private:
+		static int64_t unique_id(int bid, int pid, int lid, int tid) noexcept;
+
 		void divide_cuts(Chars::iterator f, Chars::iterator l);
 
 		template<class It, class F>
