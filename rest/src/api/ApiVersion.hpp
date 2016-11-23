@@ -1,7 +1,7 @@
 #ifndef pcw_ApiVersion_hpp__
 #define pcw_ApiVersion_hpp__
 
-#include "CrtpRoute.hpp"
+#include "core/CrtpRoute.hpp"
 
 namespace pcw {
 	class ApiVersion: public CrtpRoute<ApiVersion> {

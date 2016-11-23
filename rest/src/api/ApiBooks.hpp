@@ -1,7 +1,7 @@
 #ifndef pcw_ApiBooks_hpp__
 #define pcw_ApiBooks_hpp__
 
-#include "CrtpRoute.hpp"
+#include "core/CrtpRoute.hpp"
 
 namespace pcw {
 	class Line;

@@ -1,7 +1,7 @@
 #ifndef pcw_CreateUser_hpp__
 #define pcw_CreateUser_hpp__
 
-#include "api/CrtpRoute.hpp"
+#include "core/CrtpRoute.hpp"
 
 namespace pcw {
 	class CreateUser: public CrtpRoute<CreateUser> {
