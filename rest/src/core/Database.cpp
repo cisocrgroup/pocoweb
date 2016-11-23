@@ -4,6 +4,7 @@
 #include <cppconn/connection.h>
 #include <cppconn/prepared_statement.h>
 #include <crow/logging.h>
+#include "Error.hpp"
 #include "Book.hpp"
 #include "AppCache.hpp"
 #include "Page.hpp"
@@ -638,7 +639,7 @@ Database::check_session_lock() const
 	assert(session_);
 	if (session_->mutex.try_lock()) {
 		session_->mutex.unlock(); // unlock
-		throw std::logic_error("(Database) Current session is not locked");
+		THROW(Error, "(Database) Current session is not locked");
 	}
 }
 

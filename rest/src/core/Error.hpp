@@ -52,11 +52,6 @@ namespace pcw {
 		}
 	};
 
-	template<class T>
-	Error& operator<<(Error& error, const T& t) {
-		return error.append(t);
-	}
-
 	template<class E>
 	void do_append(E& e) {}
 

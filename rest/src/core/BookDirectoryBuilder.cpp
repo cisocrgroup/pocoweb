@@ -92,7 +92,7 @@ BookDirectoryBuilder::add_zip_file(const std::string& content)
 	CROW_LOG_DEBUG << "(BookDirectoryBuilder) Unzip command: " << command;
 	auto err = system(command.data());
 	if (err)
-		throw std::runtime_error(command + " returned: " + std::to_string(err));
+		THROW(Error, "(BookDirectoryBuilder) ", command, " returned ", err);
 	fs::recursive_directory_iterator i(tdir), e;
 	for (; i != e; ++i) {
 		add_file(*i);
@@ -155,10 +155,7 @@ BookDirectoryBuilder::make_line_img_files(const Path& pagedir, Page& page) const
 	if (page.has_img_path()) {
 		pix.reset(pixRead(page.img.string().data()));
 		if (not pix)
-			throw std::runtime_error(
-				"(BookDirectoryBuilder) Cannot read image " +
-				page.img.string()
-			);
+			THROW(Error, "(BookDirectoryBuilder) Cannot read img ", page.img);
 	}
 	for (auto& line: page) {
 		if (not line->has_img_path() and not pix) {
@@ -213,10 +210,7 @@ BookDirectoryBuilder::write_line_img_file(void *vpix, const Line& line)
 	if (box.x + box.w <= (int) pix->w and box.y + box.h <= (int) pix->h) {
 		PixPtr tmp{pixClipRectangle(pix, &box, nullptr)};
 		if (not tmp or pixWrite(line.img.string().data(), tmp.get(), format))
-			throw std::runtime_error(
-				"(BookDirectoryBuilder) Cannot write img " +
-				line.img.string()
-			);
+			THROW(Error, "(BookDirectoryBuilder) Cannot write img ", line.img);
 	} else {
 		CROW_LOG_WARNING << "Cannot write line image for " << line.cor();
 	}
