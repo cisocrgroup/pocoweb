@@ -105,15 +105,9 @@ MetsXmlBookParser::make_book()
 		const auto i = std::find_if(b, e, iif);
 		const auto j = std::find_if(b, e, iof);
 		if (i == e)
-			throw BadRequest(
-				"(MetsXmlBookParser) No image file for order: " +
-				std::to_string(grp.first)
-			);
+			THROW(BadRequest, "(MetsXmlBookParser) No img file for order: ", grp.first);
 		if (j == e)
-			throw BadRequest(
-				"(MetsXmlBookParser) No ocr file for order: " +
-				std::to_string(grp.first)
-			);
+			THROW(BadRequest, "(MetsXmlBookParser) No ocr file for order: ", grp.first);
 
 		auto pp = make_page_parser(ids_[*j].type, ids_[*j].href);
 		assert(pp);

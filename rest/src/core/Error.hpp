@@ -8,8 +8,6 @@
 namespace pcw {
 	class Error: public std::exception {
 	public:
-		Error(const char *what): what_(what) {}
-		Error(const std::string& what): what_(what) {}
 		Error(const char* f, int l)
 			: what_(std::string(f) + ":" + std::to_string(l) + ": ")
 		{}
@@ -36,8 +34,6 @@ namespace pcw {
 
 	class BadRequest: public Error {
 	public:
-		BadRequest(const char *what): Error(what) {}
-		BadRequest(const std::string& what): Error(what) {}
 		BadRequest(const char* f, int l): Error(f, l) {}
 		virtual ~BadRequest() noexcept override = default;
 		virtual int code() const noexcept override {

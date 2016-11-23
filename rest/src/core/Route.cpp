@@ -96,13 +96,13 @@ Route::extract_multipart(const crow::request& request, const std::string& bounda
 	CROW_LOG_INFO << "(Route) Boundary in multipart data: " << boundary;
 	auto b = request.body.find("\r\n\r\n");
 	if (b == std::string::npos)
-		throw BadRequest("(Route) Missing '\\r\\n\\r\\n' in multipart data");
+		THROW(BadRequest, "(Route) Missing '\\r\\n\\r\\n' in multipart data");
 	b += 4;
 	auto e = request.body.rfind(boundary);
 	if (b == std::string::npos)
-		throw BadRequest("(Route) Boundary in multipart data" + boundary);
+		THROW(BadRequest, "(Route) Boundary in multipart data ", boundary);
 	if (e < b)
-		throw BadRequest("(Route) Invalid Boundary in multipart data" + boundary);
+		THROW(BadRequest, "(Route) Boundary in multipart data ", boundary);
 	CROW_LOG_INFO << "(Route) b = " << b << ", e = " << e;
 
 	return request.body.substr(b, e - b);

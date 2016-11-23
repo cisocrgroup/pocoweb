@@ -61,11 +61,8 @@ BookBuilder::parse_book_data() const
 			if (page->has_ocr_path() and not page->has_img_path()) {
 				auto i = find_matching_img_file(page->ocr);
 				if (i == end(img_))
-					throw BadRequest(
-						"(BookBuilder) Unable to find "
-						"matching image file for: " +
-						page->ocr.string()
-					);
+					THROW(BadRequest, "(BookBuilder) Unable to find ",
+							"matching img file for ", page->ocr);
 			}
 			data.pages.push_back(page);
 		}

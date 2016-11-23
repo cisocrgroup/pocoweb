@@ -70,10 +70,7 @@ OcropusLlocsParserLine::init()
 	std::wsmatch m;
 	while (std::getline(is, tmp)) {
 		if (not std::regex_match(tmp, m, linere))
-			throw BadRequest(
-				"(OcropusLLocsParserLine) Invalid llocs file: " +
-				llocs_.string()
-			);
+			THROW(BadRequest, "(OcropusLLocsParserLine) Invalid llocs file: ", llocs_);
 		wchar_t c = m[1].length() ? *m[1].first : L' ';
 		double cut = std::stod(m[2]);
 		double conf = m[4].length() ? std::stod(m[4]) : 0;

@@ -26,9 +26,8 @@ pcw::hocr::get_box(pugi::xml_node node)
 {
 	std::cmatch m;
 	if (not std::regex_search(node.attribute("title").value(), m, BBOXRE))
-		throw BadRequest(
-			"(HocrPageParser) Missing bbox in title: " +
-			std::string(node.attribute("title").value())
+		THROW(BadRequest, "(HocrPageParser) Missing bbox in title: ",
+			node.attribute("title").value()
 		);
 	return Box{
 		std::stoi(m[1]),

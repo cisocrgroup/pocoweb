@@ -102,9 +102,6 @@ BookFixer::fix_image_paths(Page& page) const
 	}
 
 	// cannot find the image file
-	throw BadRequest(
-		"(BookFixer) Cannot find image file for " +
-		page.ocr.string() + " (" + page.img.string() + ")"
-	);
+	THROW(BadRequest, "(BookFixer) Cannot find img file for ", page.ocr, " (", page.img, ")");
 }
 
