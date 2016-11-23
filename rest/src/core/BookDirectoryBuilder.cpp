@@ -11,7 +11,7 @@
 #include <crow/logging.h>
 #include "util.hpp"
 #include "Config.hpp"
-#include "BadRequest.hpp"
+#include "Error.hpp"
 #include "Book.hpp"
 #include "Page.hpp"
 #include "Pix.hpp"

@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <regex>
-#include "core/BadRequest.hpp"
+#include "core/Error.hpp"
 #include "core/Line.hpp"
 #include "OcropusLlocsParserLine.hpp"
 

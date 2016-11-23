@@ -1,6 +1,6 @@
 #include <algorithm>
 #include <iostream>
-#include "BadRequest.hpp"
+#include "Error.hpp"
 #include "Book.hpp"
 #include "Page.hpp"
 #include "BookFixer.hpp"
@@ -66,7 +66,7 @@ BookFixer::update_indizes(Book& book) const
 		page->id = ++id;
 	}
 }
-		
+
 ////////////////////////////////////////////////////////////////////////////////
 void
 BookFixer::fix_image_paths(Book& book) const
@@ -95,7 +95,7 @@ BookFixer::fix_image_paths(Page& page) const
 	// find by matching file names
 	i = std::find_if(b, e, [&page](const auto& path) {
 		return path.stem() == page.ocr.stem();
-	});	
+	});
 	if (i != e) {
 		page.img = *i;
 		return;

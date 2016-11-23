@@ -4,7 +4,7 @@
 #include <regex>
 #include <cppconn/connection.h>
 #include <crow/logging.h>
-#include "BadRequest.hpp"
+#include "Error.hpp"
 #include "Book.hpp"
 #include "User.hpp"
 #include "Cache.hpp"
@@ -58,24 +58,24 @@ Route::session(const crow::request& request) const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-boost::optional<Database> 
+boost::optional<Database>
 Route::database(const crow::request& request) const noexcept
 {
 	return database(session(request));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-boost::optional<Database> 
+boost::optional<Database>
 Route::database(SessionPtr session) const noexcept
 {
 	assert(config_);
-	return session ? 
-		Database(session, config_, cache_) : 
+	return session ?
+		Database(session, config_, cache_) :
 		boost::optional<Database>{};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string 
+std::string
 Route::extract_content(const crow::request& request)
 {
 	static const std::string ContentType{"Content-Type"};
@@ -85,12 +85,12 @@ Route::extract_content(const crow::request& request)
 	std::smatch m;
 	if (std::regex_search(request.get_header_value(ContentType), m, BoundaryRegex))
 		return extract_multipart(request, m[1]);
-	else 
+	else
 		return extract_raw(request);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string 
+std::string
 Route::extract_multipart(const crow::request& request, const std::string& boundary)
 {
 	CROW_LOG_INFO << "(Route) Boundary in multipart data: " << boundary;
@@ -104,12 +104,12 @@ Route::extract_multipart(const crow::request& request, const std::string& bounda
 	if (e < b)
 		throw BadRequest("(Route) Invalid Boundary in multipart data" + boundary);
 	CROW_LOG_INFO << "(Route) b = " << b << ", e = " << e;
-	
+
 	return request.body.substr(b, e - b);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string 
+std::string
 Route::extract_raw(const crow::request& request)
 {
 	return request.body;
