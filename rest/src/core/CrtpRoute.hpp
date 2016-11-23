@@ -13,6 +13,12 @@ namespace pcw {
 		struct HttpDelete {};
 
 		virtual ~CrtpRoute() noexcept override = default;
+
+		template<class M, class... Args>
+		static Response default_impl(M, const Request& req, Args&&...) {
+			THROW(NotImplemented, "NotImplemented: ", req.url,
+					": ", typeid(M).name());
+		}
 		template<class... Args>
 		Response operator()(const Request& req, Args&&... args) const noexcept;
 

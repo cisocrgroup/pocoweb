@@ -12,9 +12,8 @@ namespace pcw {
 		virtual void Register(App&) override;
 
 		template<class T, class... Args>
-		[[noreturn]] Response impl(T, const Request& req, Args&&... args) const {
-			THROW(NotImplemented, "Not implemented: ", req.url,
-					": ", typeid(T).name());
+		Response impl(T t, const Request& req, Args&&... args) const {
+			return default_impl(t, req, std::forward<Args>(args)...);
 		}
 		crow::response impl(
 			HttpPost,

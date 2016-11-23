@@ -19,14 +19,14 @@ const char* DeleteUser::name_ = "DeleteUser";
 void
 DeleteUser::Register(App& app)
 {
-	CROW_ROUTE(app, DELETE_USER_ROUTE)(*this);
+	CROW_ROUTE(app, DELETE_USER_ROUTE).methods("DELETE"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::response
-DeleteUser::operator()(const crow::request& request, const std::string& name) const
+Route::Response
+DeleteUser::operator()(const Request& req, const std::string& name) const
 {
-	auto db = database(request);
+	auto db = database(req);
 	db.delete_user(name);
 	return ok();
 }

@@ -22,17 +22,23 @@ Login::Register(App& app)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::response
-Login::operator()(const std::string& name, const std::string& pass) const
+Route::Response
+Login::impl(
+	HttpGet,
+	const Request& req,
+	const std::string& name,
+	const std::string& pass
+) const
 {
 	auto session = sessions().new_session();
 	if (not session)
-		return internal_server_error();
+		THROW(Error, "Could not create session");
+
 	auto db = database(session);
 	std::lock_guard<std::mutex> lock(db.session().mutex);
 	auto user = db.authenticate(name, pass);
 	if (not user)
-		return forbidden();
+		THROW(Forbidden, "User ", name, " could not be authenticated");
 	session->user = user;
 	auto response = ok();
 	set_session_id(response, session->sid);

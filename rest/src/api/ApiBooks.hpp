@@ -19,9 +19,8 @@ namespace pcw {
 		virtual const char* name() const noexcept override {return name_;}
 
 		template<class T, class... Args>
-		[[noreturn]] Response impl(T, const Request& req, Args&&... args) const {
-			THROW(NotImplemented, "Not implemented: ", req.url,
-					": ", typeid(T).name());
+		Response impl(T t, const Request& req, Args&&... args) const {
+			return default_impl(t, req, std::forward<Args>(args)...);
 		}
 
 		Response impl(HttpPost, const Request& req) const;
