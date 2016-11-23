@@ -16,7 +16,7 @@ struct Fixture {
 	static std::vector<std::string> p1;
 	static std::vector<std::string> p2;
 	Fixture(): docxml(), root() {
-		auto page1 = std::make_shared<Page>(1, Box{0, 0, 100, 10});
+		auto page1 = std::make_shared<Page>(1);
 		page1->img = "test1.img";
 		page1->ocr = "test1.ocr";
 		page1->push_back(line("Он привыно, без хлопот"));
@@ -43,7 +43,8 @@ struct Fixture {
 		root = docxml.document_element();
 	}
 	static LinePtr line(const char* lstr) {
-		auto line = std::make_shared<Line>(0);
+		// all lines get the same bounding boxes
+		auto line = std::make_shared<Line>(0, Box{0, 0, 100, 10});
 		if (lstr)
 			line->append(lstr, 0, 100, .8);
 		return line;
@@ -106,6 +107,20 @@ BOOST_AUTO_TEST_CASE(Page2)
 	BOOST_CHECK_EQUAL(std::next(b, 4)->child("wOCR").child_value(), "в");
 	BOOST_CHECK_EQUAL(std::next(b, 5)->name(), "token");
 	BOOST_CHECK_EQUAL(std::next(b, 5)->child("wOCR").child_value(), "рот");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(BoundingBoxes)
+{
+	for (const auto& page: root.children("page")) {
+		for (const auto& token: page.children("token")) {
+			auto coord = token.child("coord");
+			BOOST_CHECK_EQUAL(coord.attribute("t").as_int(), 0);
+			BOOST_CHECK_EQUAL(coord.attribute("b").as_int(), 10);
+			BOOST_CHECK(coord.attribute("l").as_int() >= 0);
+			BOOST_CHECK(coord.attribute("r").as_int() > 0);
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
