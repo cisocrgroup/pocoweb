@@ -16,6 +16,7 @@ struct Fixture {
 	Fixture(): line(1, box) {
 		line.append(ocr, 0, 100, 0.8);
 		BOOST_REQUIRE(not line.empty());
+		BOOST_CHECK_EQUAL(line.box, box);
 	}
 	Line line;
 };
@@ -43,9 +44,9 @@ BOOST_AUTO_TEST_CASE(Tokens)
 	BOOST_REQUIRE(tokens.size() == 7);
 
 	BOOST_CHECK(tokens[0].is_normal());
-	BOOST_CHECK_EQUAL(tokens[0].ocr(), "pectũeſt"); 
-	BOOST_CHECK_EQUAL(tokens[0].cor(), "pectũeſt"); 
-	BOOST_CHECK_EQUAL(tokens[0].cor(), "pectũeſt"); 
+	BOOST_CHECK_EQUAL(tokens[0].ocr(), "pectũeſt");
+	BOOST_CHECK_EQUAL(tokens[0].cor(), "pectũeſt");
+	BOOST_CHECK_EQUAL(tokens[0].cor(), "pectũeſt");
 	BOOST_CHECK(not tokens[0].is_corrected());
 
 	BOOST_CHECK(not tokens[1].is_normal());
@@ -54,28 +55,28 @@ BOOST_AUTO_TEST_CASE(Tokens)
 	BOOST_CHECK(not tokens[1].is_corrected());
 
 	BOOST_CHECK(tokens[2].is_normal());
-	BOOST_CHECK_EQUAL(tokens[2].ocr(), "quioo"); 
-	BOOST_CHECK_EQUAL(tokens[2].cor(), "quioo"); 
+	BOOST_CHECK_EQUAL(tokens[2].ocr(), "quioo");
+	BOOST_CHECK_EQUAL(tokens[2].cor(), "quioo");
 	BOOST_CHECK(not tokens[2].is_corrected());
 
 	BOOST_CHECK(not tokens[3].is_normal());
-	BOOST_CHECK_EQUAL(tokens[3].ocr(), " "); 
-	BOOST_CHECK_EQUAL(tokens[3].cor(), " "); 
+	BOOST_CHECK_EQUAL(tokens[3].ocr(), " ");
+	BOOST_CHECK_EQUAL(tokens[3].cor(), " ");
 	BOOST_CHECK(not tokens[3].is_corrected());
 
 	BOOST_CHECK(tokens[4].is_normal());
-	BOOST_CHECK_EQUAL(tokens[4].ocr(), "te"); 
-	BOOST_CHECK_EQUAL(tokens[4].cor(), "te"); 
+	BOOST_CHECK_EQUAL(tokens[4].ocr(), "te");
+	BOOST_CHECK_EQUAL(tokens[4].cor(), "te");
 	BOOST_CHECK(not tokens[4].is_corrected());
 
 	BOOST_CHECK(not tokens[5].is_normal());
-	BOOST_CHECK_EQUAL(tokens[5].ocr(), " "); 
-	BOOST_CHECK_EQUAL(tokens[5].cor(), " "); 
+	BOOST_CHECK_EQUAL(tokens[5].ocr(), " ");
+	BOOST_CHECK_EQUAL(tokens[5].cor(), " ");
 	BOOST_CHECK(not tokens[5].is_corrected());
 
 	BOOST_CHECK(tokens[6].is_normal());
-	BOOST_CHECK_EQUAL(tokens[6].ocr(), "mp"); 
-	BOOST_CHECK_EQUAL(tokens[6].cor(), "mp"); 
+	BOOST_CHECK_EQUAL(tokens[6].ocr(), "mp");
+	BOOST_CHECK_EQUAL(tokens[6].cor(), "mp");
 	BOOST_CHECK(not tokens[6].is_corrected());
 }
 
@@ -87,18 +88,46 @@ BOOST_AUTO_TEST_CASE(Words)
 	BOOST_CHECK(std::all_of(begin(words), end(words), [](const auto& c) {
 		return c.is_normal();
 	}));
-	BOOST_CHECK_EQUAL(words[0].ocr(), "pectũeſt"); 
-	BOOST_CHECK_EQUAL(words[0].cor(), "pectũeſt"); 
+	BOOST_CHECK_EQUAL(words[0].ocr(), "pectũeſt");
+	BOOST_CHECK_EQUAL(words[0].cor(), "pectũeſt");
 	BOOST_CHECK(not words[0].is_corrected());
-	BOOST_CHECK_EQUAL(words[1].ocr(), "quioo"); 
-	BOOST_CHECK_EQUAL(words[1].cor(), "quioo"); 
+	BOOST_CHECK_EQUAL(words[1].ocr(), "quioo");
+	BOOST_CHECK_EQUAL(words[1].cor(), "quioo");
 	BOOST_CHECK(not words[1].is_corrected());
-	BOOST_CHECK_EQUAL(words[2].ocr(), "te"); 
-	BOOST_CHECK_EQUAL(words[2].cor(), "te"); 
+	BOOST_CHECK_EQUAL(words[2].ocr(), "te");
+	BOOST_CHECK_EQUAL(words[2].cor(), "te");
 	BOOST_CHECK(not words[2].is_corrected());
-	BOOST_CHECK_EQUAL(words[3].ocr(), "mp"); 
-	BOOST_CHECK_EQUAL(words[3].cor(), "mp"); 
+	BOOST_CHECK_EQUAL(words[3].ocr(), "mp");
+	BOOST_CHECK_EQUAL(words[3].cor(), "mp");
 	BOOST_CHECK(not words[3].is_corrected());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(WordBoundinBoxes)
+{
+	auto words = line.words();
+	BOOST_CHECK_EQUAL(words.size(), 4);
+
+	BOOST_CHECK_EQUAL(words[0].box.top(), 0);
+	BOOST_CHECK_EQUAL(words[0].box.bottom(), 20);
+	BOOST_CHECK_EQUAL(words[0].box.height(), 20);
+	BOOST_CHECK(words[0].box.width() > 0);
+
+	BOOST_CHECK_EQUAL(words[1].box.top(), 0);
+	BOOST_CHECK_EQUAL(words[1].box.bottom(), 20);
+	BOOST_CHECK_EQUAL(words[1].box.height(), 20);
+	BOOST_CHECK(words[1].box.width() > 0);
+
+	BOOST_CHECK_EQUAL(words[2].box.top(), 0);
+	BOOST_CHECK_EQUAL(words[2].box.bottom(), 20);
+	BOOST_CHECK_EQUAL(words[2].box.height(), 20);
+	BOOST_CHECK(words[2].box.width() > 0);
+
+	BOOST_CHECK_EQUAL(words[3].box.top(), 0);
+	BOOST_CHECK_EQUAL(words[3].box.bottom(), 20);
+	BOOST_CHECK_EQUAL(words[3].box.right(), 100);
+	BOOST_CHECK_EQUAL(words[3].box.height(), 20);
+	BOOST_CHECK(words[3].box.width() > 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
