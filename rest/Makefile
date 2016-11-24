@@ -4,6 +4,7 @@ CXXFLAGS += -I src
 CXXFLAGS += -I ../modules/crow/include
 CXXFLAGS += -I ../modules/pugixml/src
 CXXFLAGS += -I ../modules/utfcpp/source
+#CXXFLAGS += -fdiagnostics-color=always # does not work well with vim's :cn,:cp
 CXXFLAGS += -DPCW_API_VERSION_MAJOR=$(PCW_API_VERSION_MAJOR)
 CXXFLAGS += -DPCW_API_VERSION_MINOR=$(PCW_API_VERSION_MINOR)
 CXXFLAGS += -DPCW_API_VERSION_PATCH=$(PCW_API_VERSION_PATCH)
@@ -93,7 +94,7 @@ all: pcwd pcwc
 pcwd: pcwd.o libpcwapi.a libpcwcore.a libpcwparser.a
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
 pcwc: pcwc.o libpcwapi.a libpcwcore.a libpcwparser.a
-	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -lcurl
 
 %.test: %.o libpcwapi.a libpcwcore.a libpcwparser.a libpcwcore.a
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
