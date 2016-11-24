@@ -88,9 +88,11 @@ TESTS += TestOcropusLlocsParsing.test
 TESTS += TestHocrParsing.test
 
 default: all
-all: pcwd
+all: pcwd pcwc
 
 pcwd: pcwd.o libpcwapi.a libpcwcore.a libpcwparser.a
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
+pcwc: pcwc.o libpcwapi.a libpcwcore.a libpcwparser.a
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
 
 %.test: %.o libpcwapi.a libpcwcore.a libpcwparser.a libpcwcore.a
@@ -125,8 +127,8 @@ libpcwparser.a: $(PAR_OBJS)
 
 .PHONY: clean
 clean:
-	$(RM) *.o *.d *.so *.a *.test pcwd
+	$(RM) *.o *.d *.so *.a *.test pcwd pcwc
 
-DEPS = $(patsubst %.o,%.d,$(OBJS) $(API_OBJS) $(PAR_OBJS) $(patsubst %.test,%.o,$(TESTS)) pcwd.o)
+DEPS = $(patsubst %.o,%.d,$(OBJS) $(API_OBJS) $(PAR_OBJS) $(patsubst %.test,%.o,$(TESTS)) pcwd.o pcwc.o)
 -include $(DEPS)
 
