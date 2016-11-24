@@ -29,6 +29,8 @@ struct Ed: boost::static_visitor<void> {
 	~Ed() noexcept;
 
 	void login();
+	void perform() const;
+
 	void operator()(const std::string& line);
 	void operator()(CVersion) const;
 	void operator()(CQuit);
@@ -76,13 +78,30 @@ Ed::login()
 	curl = curl_easy_init();
 	if (not curl)
 		THROW(Error, "Could not initialize curl");
-	auto url = "http://" + host + "/login/username/" + user + "/password/" + pass;
+	auto url = "http://" + host + "/login/user/" + user + "/pass/" + pass;
 	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, EBUF);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &xwrite);
 	curl_easy_setopt(curl, CURLOPT_PORT, port);
 	curl_easy_setopt(curl, CURLOPT_URL, url.data());
+	perform();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::perform() const
+{
+	assert(curl);
 	if (curl_easy_perform(curl) != CURLE_OK)
 		THROW(Error, "curl_easy_perform(): ", EBUF);
+	long http_code = 0;
+	curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &http_code);
+	switch (http_code) {
+	case 200:
+	case 201:
+		break;
+	default:
+		THROW(Error, "Got answer: ", http_code);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +116,10 @@ Ed::operator()(const std::string& line)
 void
 Ed::operator()(CVersion) const
 {
-	std::cout << "VERSION\n";
+	assert(curl);
+	auto url = "http://" + host + "/api-version";
+	curl_easy_setopt(curl, CURLOPT_URL, url.data());
+	perform();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -133,7 +155,8 @@ Ed::parse(const std::string& line)
 size_t
 xwrite(char *ptr, size_t size, size_t nmemb, void *userdata)
 {
-	std::cout.write(ptr, size * nmemb);
+	std::cerr << "size: " << size << " nmemb: " << nmemb << "\n";
+	std::cerr.write(ptr, size * nmemb);
 	return size * nmemb;
 }
 
