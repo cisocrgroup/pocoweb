@@ -47,12 +47,6 @@ pcw::CrtpRoute<T>::operator()(const Request& req, Args&&... args) const noexcept
 	} catch (const std::system_error& e) {
 		CROW_LOG_ERROR << e.what();
 		return internal_server_error();
-	} catch (const std::logic_error& e) {
-		CROW_LOG_ERROR << e.what();
-		return internal_server_error();
-	} catch (const std::runtime_error& e) {
-		CROW_LOG_ERROR << e.what();
-		return bad_request();
 	} catch (const std::exception& e) {
 		CROW_LOG_ERROR << e.what();
 		return internal_server_error();
