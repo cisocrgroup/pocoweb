@@ -69,11 +69,11 @@ create table contents (
 	bookid int references books(bookid),
 	pageid int references pages(pageid),
 	lineid int references textlines(lineid),
-	seq int,
+	seq int not null,
 	ocr int not null,
-	cor int,
-	cut int,
-	conf double,
+	cor int not null,
+	cut int not null,
+	conf double not null,
 	primary key (bookid, pageid, lineid, seq)
 );
 
