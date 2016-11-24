@@ -11,10 +11,7 @@ namespace pcw {
 		virtual const char *name() const noexcept override {return name_;}
 		virtual void Register(App&) override;
 
-		template<class T, class... Args>
-		Response impl(T t, const Request& req, Args&&... args) const {
-			return default_impl(t, req, std::forward<Args>(args)...);
-		}
+		pcw_crtp_route_def_impl__(std::string,std::string);
 		crow::response impl(
 			HttpPost,
 			const crow::request& request,

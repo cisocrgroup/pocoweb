@@ -14,11 +14,6 @@ namespace pcw {
 
 		virtual ~CrtpRoute() noexcept override = default;
 
-		template<class M, class... Args>
-		static Response default_impl(M, const Request& req, Args&&...) {
-			THROW(NotImplemented, "NotImplemented: ", req.url,
-					": ", typeid(M).name());
-		}
 		template<class... Args>
 		Response operator()(const Request& req, Args&&... args) const noexcept;
 
@@ -66,5 +61,17 @@ pcw::CrtpRoute<T>::operator()(const Request& req, Args&&... args) const noexcept
 		return internal_server_error();
 	}
 }
+
+#define pcw_crtp_route_def_impl__(args...) \
+	template<class T> \
+	pcw::Route::Response \
+	impl(T, const Request& req, ##args) const { \
+		pcw::do_throw<pcw::NotImplemented>( \
+			__FILE__, __LINE__, \
+			"Not implemented: ", req.url, ": ", \
+			typeid(T).name() \
+		); \
+		return pcw::Route::internal_server_error(); \
+	}
 
 #endif // pcw_CrtpRoute_hpp__

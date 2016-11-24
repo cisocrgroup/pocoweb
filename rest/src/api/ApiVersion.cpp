@@ -20,7 +20,7 @@ ApiVersion::Register(App& app)
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-ApiVersion::operator()() const noexcept
+ApiVersion::impl(HttpGet, const Request&) const noexcept
 {
 	CROW_LOG_INFO << route() << ": " << pcw::App::version_str();
 	Json j;

@@ -18,11 +18,10 @@ namespace pcw {
 		virtual const char* route() const noexcept override {return route_;}
 		virtual const char* name() const noexcept override {return name_;}
 
-		template<class T, class... Args>
-		Response impl(T t, const Request& req, Args&&... args) const {
-			return default_impl(t, req, std::forward<Args>(args)...);
-		}
-
+		pcw_crtp_route_def_impl__();
+		pcw_crtp_route_def_impl__(int);
+		pcw_crtp_route_def_impl__(int,int);
+		pcw_crtp_route_def_impl__(int,int,int);
 		Response impl(HttpPost, const Request& req) const;
 		Response impl(HttpGet, const Request& req) const;
 		Response impl(HttpGet, const Request& req, int bid) const;
