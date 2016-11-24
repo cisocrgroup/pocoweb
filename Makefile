@@ -6,6 +6,8 @@ PCW_API_VERSION_MAJOR = 0
 PCW_API_VERSION_MINOR = 1
 PCW_API_VERSION_PATCH = 0
 
+SRCS=$(shell find . -type f -regex '.*\.[hc]p?p?$$')
+
 ## export $(CXX)
 ## export $(CXXFLAGS)
 ## export $(SHELL)
@@ -14,13 +16,25 @@ PCW_API_VERSION_PATCH = 0
 
 export # export all
 
-default: all
+default: all tags
 
 .PHONY: all install clean uninstall test
-all install clean uninstall test:
+all install uninstall test:
 	$(MAKE) -C modules $@
 	#$(MAKE) -C misc $@
 	$(MAKE) -C rest $@
 	$(MAKE) -C plugins $@
 	#$(MAKE) -C db $@ SHELL=$(SHELL)
+
+clean:
+	$(MAKE) -C modules $@
+	#$(MAKE) -C misc $@
+	$(MAKE) -C rest $@
+	$(MAKE) -C plugins $@
+	#$(MAKE) -C db $@ SHELL=$(SHELL)
+	$(RM) tags
+
+tags: $(SRCS)
+	@echo "generating tags file"
+	@ctags $(SRCS)
 
