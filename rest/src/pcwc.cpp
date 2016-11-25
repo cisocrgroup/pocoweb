@@ -17,16 +17,44 @@ struct CVersion {};
 struct CQuit {};
 struct CBooks {};
 struct CBook {int id;};
-struct CNextPage{int ofs;};
+struct CPage {int id;};
+struct CNextPage {int ofs;};
+struct CPrevPage {int ofs;};
+struct CFirstPage {};
+struct CLastPage {};
+struct CFirstLine {};
+struct CLastLine {};
+struct CNextLine {int ofs;};
+struct CPrevLine {int ofs;};
+struct CPrint {int b, e; bool cor;};
+struct CInfo {};
 struct CUpload {std::string what;};
 struct CError {std::string what;};
+
+struct LinePair {
+	LinePair(std::string c, std::string o)
+		: cor(std::move(c))
+		, ocr(std::move(o))
+	{}
+	std::string cor, ocr;
+};
 
 using Command = boost::variant<
 	CVersion,
 	CBooks,
 	CUpload,
 	CBook,
+	CPage,
 	CNextPage,
+	CPrevPage,
+	CFirstPage,
+	CLastPage,
+	CFirstLine,
+	CLastLine,
+	CNextLine,
+	CPrevLine,
+	CPrint,
+	CInfo,
 	CQuit,
 	CError
 >;
@@ -41,8 +69,8 @@ struct Ed: boost::static_visitor<void> {
 
 	void login();
 	void perform() const;
-	void get(const std::string& url) const;
-	void post(const std::string& url) const;
+	void get(const std::string& url);
+	void post(const std::string& url);
 
 	void operator()(const std::string& line);
 	void operator()(CVersion);
@@ -50,8 +78,20 @@ struct Ed: boost::static_visitor<void> {
 	void operator()(CBooks);
 	void operator()(const CUpload& c);
 	void operator()(CBook b);
+	void operator()(CPage p);
 	void operator()(CNextPage np);
+	void operator()(CPrevPage pp);
+	void operator()(CFirstPage);
+	void operator()(CLastPage);
+	void operator()(CNextLine nl);
+	void operator()(CPrevLine pl);
+	void operator()(CFirstLine);
+	void operator()(CLastLine);
+	void operator()(const CPrint& p) const;
+	void operator()(CInfo) const;
 	void operator()(const CError& error) const;
+	void read_book();
+	void read_page();
 
 	static Command parse(const std::string& line);
 
@@ -59,9 +99,9 @@ struct Ed: boost::static_visitor<void> {
 	std::ifstream is;
 	TmpDir tmpdir;
 	Path cookiefile;
-	std::vector<std::string> page;
+	std::vector<LinePair> page;
 	CURL* curl;
-	int port, bookid, pageid, lineid;
+	int port, bookid, pageid, lineid, npages;
 	bool done;
 };
 
@@ -80,6 +120,7 @@ Ed::Ed(int argc, char* argv[])
 	, bookid()
 	, pageid()
 	, lineid()
+	, npages()
 	, done(false)
 {
 	if (argc != 5)
@@ -122,25 +163,27 @@ Ed::login()
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-Ed::get(const std::string& url) const
+Ed::get(const std::string& url)
 {
 	assert(curl);
 	curl_easy_setopt(curl, CURLOPT_URL, url.data());
 	curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 	curl_easy_setopt(curl, CURLOPT_PUT, 0);
 	curl_easy_setopt(curl, CURLOPT_POST, 0);
+	buffer.clear();
 	perform();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-Ed::post(const std::string& url) const
+Ed::post(const std::string& url)
 {
 	assert(curl);
 	curl_easy_setopt(curl, CURLOPT_URL, url.data());
 	curl_easy_setopt(curl, CURLOPT_HTTPGET, 0);
 	curl_easy_setopt(curl, CURLOPT_PUT, 0);
 	curl_easy_setopt(curl, CURLOPT_POST, 1);
+	buffer.clear();
 	perform();
 }
 
@@ -219,27 +262,158 @@ Ed::operator()(const CUpload& c)
 	buffer.clear();
 	post(url);
 	is.close();
-	auto json = crow::json::load(buffer);
-	bookid = static_cast<int>(json["id"]);
+	read_book();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 Ed::operator()(CBook b)
 {
-	bookid = b.id;
+	auto url = "http://" + host + "/books/" + std::to_string(b.id);
+	get(url);
+	read_book();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::operator()(CPage p)
+{
+	auto url = "http://" + host + "/books/" + std::to_string(bookid) +
+		"/pages/" + std::to_string(p.id);
+	get(url);
+	read_page();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 Ed::operator()(CNextPage np)
 {
+	if (np.ofs < 0)
+		return (*this)(CPrevPage{std::abs(np.ofs)});
+	if (pageid == 0 or np.ofs == 0)
+		return (*this)(CFirstPage{});
+
 	auto url = "http://" + host + "/books/" + std::to_string(bookid) +
-		"/pages/" + std::to_string(pageid) + "/" + std::to_string(np.ofs);
+		"/pages/" + std::to_string(pageid) + "/next/" +
+		std::to_string(np.ofs);
 	buffer.clear();
 	get(url);
-	auto json = crow::json::load(buffer);
-	std::cout << json;
+	read_page();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::operator()(CPrevPage pp)
+{
+	if (pp.ofs < 0)
+		return (*this)(CNextPage{std::abs(pp.ofs)});
+	if (pageid == 0 or pp.ofs == 0)
+		return (*this)(CLastPage{});
+
+	auto url = "http://" + host + "/books/" + std::to_string(bookid) +
+		"/pages/" + std::to_string(pageid) + "/prev/" +
+		std::to_string(pp.ofs);
+	buffer.clear();
+	get(url);
+	read_page();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::operator()(CFirstPage)
+{
+	auto url = "http://" + host + "/books/" + std::to_string(bookid) + "/pages/first";
+	buffer.clear();
+	get(url);
+	read_page();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::operator()(CLastPage)
+{
+	auto url = "http://" + host + "/books/" + std::to_string(bookid) + "/pages/last";
+	buffer.clear();
+	get(url);
+	read_page();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::operator()(CNextLine nl)
+{
+	if (nl.ofs < 0)
+		return (*this)(CPrevLine{std::abs(nl.ofs)});
+	if (pageid == 0) {
+		(*this)(CFirstPage{});
+		(*this)(CFirstLine{});
+	}
+	if (lineid + nl.ofs >= static_cast<int>(page.size())) {
+		(*this)(CNextPage{1});
+		(*this)(CFirstLine{});
+	} else if (nl.ofs == 0) {
+		(*this)(CFirstLine{});
+	} else {
+		lineid += nl.ofs;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::operator()(CPrevLine pl)
+{
+	if (pl.ofs < 0)
+		return (*this)(CNextLine{std::abs(pl.ofs)});
+	if (pageid == 0) {
+		(*this)(CLastPage{});
+		(*this)(CLastLine{});
+	}
+	if (lineid < pl.ofs) {
+		(*this)(CPrevPage{1});
+		(*this)(CLastLine{});
+	} else if (pl.ofs == 0) {
+		(*this)(CLastLine{});
+	} else {
+		lineid -= pl.ofs;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::operator()(CFirstLine)
+{
+	lineid = 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::operator()(CLastLine)
+{
+	lineid = page.empty() ? 0 : static_cast<int>(page.size()) - 1;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::operator()(const CPrint& p) const
+{
+	auto print = [this](const CPrint& p, int id) {
+		if (p.cor) {
+			std::cout << page[id].cor << "\n";
+		} else {
+			std::cout << page[id].ocr << "\n";
+		}
+	};
+
+	if (p.b == 0 and p.e == 0) {
+		print(p, lineid);
+	} else {
+		const auto end = std::min(p.e, static_cast<int>(page.size()));
+		const auto begin = std::min(p.b, static_cast<int>(page.size()));
+		for (auto i = begin; i != end; ++i) {
+			std::cout << i << ":";
+			print(p, i);
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -247,6 +421,19 @@ void
 Ed::operator()(CQuit)
 {
 	done = true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::operator()(CInfo) const
+{
+	std::cerr << "tmp dir: " << tmpdir.dir() << "\n";
+	std::cerr << "host:    " << host << "\n";
+	std::cerr << "port:    " << port << "\n";
+	std::cerr << "book id: " << bookid << "\n";
+	std::cerr << "page id: " << pageid << "\n";
+	std::cerr << "pages:   " << npages << "\n";
+	std::cerr << "line id: " << lineid << "\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -263,8 +450,15 @@ Ed::parse(const std::string& line)
 	static const std::regex versionre{R"(:vers?i?o?n?\s*)"};
 	static const std::regex quitre{R"(:qu?i?t?\s*)"};
 	static const std::regex booksre{R"(:books\s*)"};
+	static const std::regex bookre{R"(:book\s+(\d+)\s*)"};
+	static const std::regex pagere{R"(:page\s+(\d+)\s*)"};
 	static const std::regex uploadre{R"(:upl?o?a?d?\s+(.+))"};
 	static const std::regex nextpagere{R"(:ne?x?t?pa?g?e?\s*([-+]?\d+)?)"};
+	static const std::regex prevpagere{R"(:pr?e?v?pa?g?e?\s*([-+]?\d+)?)"};
+	static const std::regex nextlinere{R"(:ne?x?t?l?i?n?e?\s*([-+]?\d+)?)"};
+	static const std::regex prevlinere{R"(:pr?e?v?l?i?n?e?\s*([-+]?\d+)?)"};
+	static const std::regex infore{R"(:info\s*)"};
+	static const std::regex printre{R"(((\d+),(\d+))?:pri?n?t(ocr)?\s*)"};
 
 	std::smatch m;
 	if (std::regex_match(line, versionre))
@@ -273,17 +467,69 @@ Ed::parse(const std::string& line)
 		return CQuit{};
 	if (std::regex_match(line, booksre))
 		return CBooks{};
+	if (std::regex_match(line, m, bookre))
+		return CBook{std::stoi(m[1])};
+	if (std::regex_match(line, m, pagere))
+		return CPage{std::stoi(m[1])};
 	if (std::regex_match(line, m, uploadre))
 		return CUpload{m[1]};
-	if (std::regex_match(line, m, uploadre)) {
+	if (std::regex_match(line, m, nextpagere)) {
 		if (m[1].length())
 			return CNextPage{std::stoi(m[1])};
 		else
 			return CNextPage{1};
 	}
+	if (std::regex_match(line, m, nextlinere)) {
+		if (m[1].length())
+			return CNextLine{std::stoi(m[1])};
+		else
+			return CNextLine{1};
+	}
+	if (std::regex_match(line, m, prevpagere)) {
+		if (m[1].length())
+			return CPrevPage{std::stoi(m[1])};
+		else
+			return CPrevPage{1};
+	}
+	if (std::regex_match(line, m, prevlinere)) {
+		if (m[1].length())
+			return CPrevLine{std::stoi(m[1])};
+		else
+			return CPrevLine{1};
+	}
+	if (std::regex_match(line, m, printre)) {
+		const bool cor = m[4].length();
+		if (m[1].length())
+			return CPrint{std::stoi(m[2]), std::stoi(m[3]), cor};
+		else
+			return CPrint{0, 0, cor};
+	}
+	if (std::regex_match(line, infore))
+		return CInfo{};
 	else
 		return CError{"Invalid command: " + line};
 
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::read_book()
+{
+	auto json = crow::json::load(buffer);
+	bookid = static_cast<int>(json["id"]);
+	npages = static_cast<int>(json["pages"]);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::read_page()
+{
+	auto json = crow::json::load(buffer);
+	pageid = static_cast<int>(json["id"]);
+	page.clear();
+	for (auto& line: json["lines"]) {
+		page.emplace_back(line["cor"].s(), line["ocr"].s());
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -323,6 +569,7 @@ int
 main(int argc, char* argv[])
 {
 	try {
+		std::locale::global(std::locale(""));
 		return run(argc, argv);
 	} catch (const std::exception& e) {
 		std::cerr << "[error] " << e.what() << "\n";
