@@ -6,6 +6,8 @@
 #include <crow/logging.h>
 #include "Error.hpp"
 #include "Book.hpp"
+#include "Page.hpp"
+#include "Line.hpp"
 #include "User.hpp"
 #include "Cache.hpp"
 #include "AppCache.hpp"
@@ -113,4 +115,36 @@ std::string
 Route::extract_raw(const crow::request& request)
 {
 	return request.body;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BookViewPtr
+Route::find(const Database& db, int bid) const
+{
+	auto book = db.select_project(bid);
+	if (not book)
+		THROW(NotFound, "Not Found: book id ", bid);
+	return book;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+PagePtr
+Route::find(const Database& db, int bid, int pid) const
+{
+	auto page = find(db, bid)->find(pid);
+	if (not page)
+		THROW(NotFound, "Not found: book id ", bid, ", page id ", pid);
+	return page;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+LinePtr
+Route::find(const Database& db, int bid, int pid, int lid) const
+{
+	auto page = find(db, bid, pid);
+	assert(page);
+	auto line = page->find(lid);
+	if (not line)
+		THROW(NotFound, "Not found: book id ", bid, ", page id ", pid, ", line id ", lid);
+	return line;
 }

@@ -189,35 +189,3 @@ ApiBooks::impl(HttpPut, const Request& req, int bid, int pid, int lid) const
 	db.commit();
 	return ok();
 }
-
-////////////////////////////////////////////////////////////////////////////////
-BookViewPtr
-ApiBooks::find(const Database& db, int bid) const
-{
-	auto book = db.select_project(bid);
-	if (not book)
-		THROW(NotFound, "Not Found: book id ", bid);
-	return book;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-PagePtr
-ApiBooks::find(const Database& db, int bid, int pid) const
-{
-	auto page = find(db, bid)->find(pid);
-	if (not page)
-		THROW(NotFound, "Not found: book id ", bid, ", page id ", pid);
-	return page;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-LinePtr
-ApiBooks::find(const Database& db, int bid, int pid, int lid) const
-{
-	auto page = find(db, bid, pid);
-	assert(page);
-	auto line = page->find(lid);
-	if (not line)
-		THROW(NotFound, "Not found: book id ", bid, ", page id ", pid, ", line id ", lid);
-	return line;
-}

@@ -31,10 +31,6 @@ namespace pcw {
 		Response impl(HttpPut, const Request& req, int bid, int pid, int lid) const;
 
 	private:
-		BookViewPtr find(const Database& db, int bid) const;
-		PagePtr find(const Database& db, int bid, int pid) const;
-		LinePtr find(const Database& db, int bid, int pid, int lid) const;
-
 		static const char* route_;
 		static const char* name_;
 	};
