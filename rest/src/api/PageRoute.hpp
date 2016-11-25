@@ -18,8 +18,8 @@ namespace pcw {
 				const std::string& dir, int val) const;
 
 	private:
-		Response next(const Page& page, int val) const;
-		Response prev(const Page& page, int val) const;
+		Response next(const BookView& book, int pid, int val) const;
+		Response prev(const BookView& book, int pid, int val) const;
 
 		static const char* route_;
 		static const char* name_;

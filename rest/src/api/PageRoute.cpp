@@ -59,27 +59,35 @@ PageRoute::impl(HttpGet, const Request& req, int bid, int pid,
 {
 	auto db = database(req);
 	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto page = find(db, bid, pid);
-	if (not page)
+	auto book = find(db, bid);
+	if (not book)
 		return not_found();
 	if (strcasecmp(dir.data(), "next") == 0)
-		return next(*page, std::abs(val));
+		return next(*book, pid, std::abs(val));
 	else if (strcasecmp(dir.data(), "prev") == 0)
-		return prev(*page, std::abs(val));
+		return prev(*book, pid, std::abs(val));
 	else
 		return not_found();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-PageRoute::next(const Page& page, int val) const
+PageRoute::next(const BookView& book, int pid, int val) const
 {
-	return not_implemented();
+	auto page = book.next(pid, val);
+	if (not page)
+		return not_found();
+	Json j;
+	return j << *page;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-PageRoute::prev(const Page& page, int val) const
+PageRoute::prev(const BookView& book, int pid, int val) const
 {
-	return not_implemented();
+	auto page = book.next(pid, -val);
+	if (not page)
+		return not_found();
+	Json j;
+	return j << *page;
 }
