@@ -1,13 +1,13 @@
-#ifndef pcw_ApiVersion_hpp__
-#define pcw_ApiVersion_hpp__
+#ifndef pcw_VersionRoute_hpp__
+#define pcw_VersionRoute_hpp__
 
 #include "core/CrtpRoute.hpp"
 
 namespace pcw {
 	// this uses CrtpRoute just as reference
-	class ApiVersion: public CrtpRoute<ApiVersion> {
+	class VersionRoute: public CrtpRoute<VersionRoute> {
 	public:
-		virtual ~ApiVersion() noexcept override = default;
+		virtual ~VersionRoute() noexcept override = default;
 		virtual void Register(App& app) override;
 		virtual const char* route() const noexcept override {return route_;}
 		virtual const char* name() const noexcept override {return name_;}
@@ -21,4 +21,4 @@ namespace pcw {
 	};
 }
 
-#endif // pcw_ApiVersion_hpp__
+#endif // pcw_VersionRoute_hpp__

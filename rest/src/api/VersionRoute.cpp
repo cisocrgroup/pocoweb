@@ -1,26 +1,26 @@
 #include "crow.h"
 #include "core/jsonify.hpp"
 #include "core/App.hpp"
-#include "ApiVersion.hpp"
+#include "VersionRoute.hpp"
 
-#define API_VERSION_ROUTE "/api-version"
+#define VERSION_ROUTE_ROUTE "/api-version"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* ApiVersion::route_ = API_VERSION_ROUTE;
-const char* ApiVersion::name_ = "ApiVersion";
+const char* VersionRoute::route_ = VERSION_ROUTE_ROUTE;
+const char* VersionRoute::name_ = "VersionRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-ApiVersion::Register(App& app)
+VersionRoute::Register(App& app)
 {
-	CROW_ROUTE(app, API_VERSION_ROUTE).methods("GET"_method)(*this);
+	CROW_ROUTE(app, VERSION_ROUTE_ROUTE).methods("GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-ApiVersion::impl(HttpGet, const Request&) const noexcept
+VersionRoute::impl(HttpGet, const Request&) const noexcept
 {
 	CROW_LOG_INFO << route() << ": " << pcw::App::version_str();
 	Json j;

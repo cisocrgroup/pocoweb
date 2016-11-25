@@ -1,5 +1,5 @@
-#ifndef pcw_ApiBooks_hpp__
-#define pcw_ApiBooks_hpp__
+#ifndef pcw_BookRoute_hpp__
+#define pcw_BookRoute_hpp__
 
 #include "core/CrtpRoute.hpp"
 
@@ -11,9 +11,9 @@ namespace pcw {
 	using PagePtr = std::shared_ptr<Page>;
 	using LinePtr = std::shared_ptr<Line>;
 
-	class ApiBooks: public CrtpRoute<ApiBooks> {
+	class BookRoute: public CrtpRoute<BookRoute> {
 	public:
-		virtual ~ApiBooks() noexcept override = default;
+		virtual ~BookRoute() noexcept override = default;
 		virtual void Register(App& app) override;
 		virtual const char* route() const noexcept override {return route_;}
 		virtual const char* name() const noexcept override {return name_;}
@@ -36,4 +36,4 @@ namespace pcw {
 	};
 }
 
-#endif // pcw_ApiBooks_hpp__
+#endif // pcw_BookRoute_hpp__

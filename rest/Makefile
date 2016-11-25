@@ -59,8 +59,9 @@ OBJS += jsonify.o
 OBJS += docxml.o
 OBJS += db.o
 
-API_OBJS += ApiVersion.o
-API_OBJS += ApiBooks.o
+API_OBJS += VersionRoute.o
+API_OBJS += BookRoute.o
+API_OBJS += PageRoute.o
 
 PAR_OBJS += pugixml.o
 PAR_OBJS += ParserPage.o

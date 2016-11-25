@@ -7,48 +7,48 @@
 #include "core/Page.hpp"
 #include "core/Book.hpp"
 #include "core/Database.hpp"
-#include "ApiBooks.hpp"
+#include "BookRoute.hpp"
 #include "core/Sessions.hpp"
 #include "core/Package.hpp"
 #include "core/ScopeGuard.hpp"
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/WagnerFischer.hpp"
 
-#define API_BOOKS_ROUTE_0 "/books"
-#define API_BOOKS_ROUTE_1 "/books/<int>"
-#define API_BOOKS_ROUTE_2 "/books/<int>/pages"
-#define API_BOOKS_ROUTE_3 "/books/<int>/pages/<int>"
-#define API_BOOKS_ROUTE_4 "/books/<int>/pages/<int>/lines"
-#define API_BOOKS_ROUTE_5 "/books/<int>/pages/<int>/lines/<int>"
+#define BOOK_ROUTE_ROUTE_0 "/books"
+#define BOOK_ROUTE_ROUTE_1 "/books/<int>"
+#define BOOK_ROUTE_ROUTE_2 "/books/<int>/pages"
+#define BOOK_ROUTE_ROUTE_3 "/books/<int>/pages/<int>"
+#define BOOK_ROUTE_ROUTE_4 "/books/<int>/pages/<int>/lines"
+#define BOOK_ROUTE_ROUTE_5 "/books/<int>/pages/<int>/lines/<int>"
 
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* ApiBooks::route_ =
-	API_BOOKS_ROUTE_0 ","
-	API_BOOKS_ROUTE_1 ","
-	API_BOOKS_ROUTE_2 ","
-	API_BOOKS_ROUTE_3 ","
-	API_BOOKS_ROUTE_4 ","
-	API_BOOKS_ROUTE_5;
-const char* ApiBooks::name_ = "ApiBooks";
+const char* BookRoute::route_ =
+	BOOK_ROUTE_ROUTE_0 ","
+	BOOK_ROUTE_ROUTE_1 ","
+	BOOK_ROUTE_ROUTE_2 ","
+	BOOK_ROUTE_ROUTE_3 ","
+	BOOK_ROUTE_ROUTE_4 ","
+	BOOK_ROUTE_ROUTE_5;
+const char* BookRoute::name_ = "BookRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-ApiBooks::Register(App& app)
+BookRoute::Register(App& app)
 {
-	CROW_ROUTE(app, API_BOOKS_ROUTE_0).methods("GET"_method, "POST"_method)(*this);
-	CROW_ROUTE(app, API_BOOKS_ROUTE_1).methods("GET"_method, "POST"_method)(*this);
-	CROW_ROUTE(app, API_BOOKS_ROUTE_2).methods("GET"_method)(*this);
-	CROW_ROUTE(app, API_BOOKS_ROUTE_3).methods("GET"_method)(*this);
-	CROW_ROUTE(app, API_BOOKS_ROUTE_4).methods("GET"_method)(*this);
-	CROW_ROUTE(app, API_BOOKS_ROUTE_5).methods("GET"_method, "PUT"_method)(*this);
+	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_0).methods("GET"_method, "POST"_method)(*this);
+	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_1).methods("GET"_method, "POST"_method)(*this);
+	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_2).methods("GET"_method)(*this);
+	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_3).methods("GET"_method)(*this);
+	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_4).methods("GET"_method)(*this);
+	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_5).methods("GET"_method, "PUT"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-ApiBooks::impl(HttpGet, const Request& req) const
+BookRoute::impl(HttpGet, const Request& req) const
 {
 	auto db = database(req);
 	std::lock_guard<std::mutex> lock(db.session().mutex);
@@ -67,7 +67,7 @@ ApiBooks::impl(HttpGet, const Request& req) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-ApiBooks::impl(HttpPost, const Request& req) const
+BookRoute::impl(HttpPost, const Request& req) const
 {
 	auto db = database(req);
 	std::lock_guard<std::mutex> lock(db.session().mutex);
@@ -75,7 +75,7 @@ ApiBooks::impl(HttpPost, const Request& req) const
 	// create new bookdir
 	BookDirectoryBuilder dir(config());
 	ScopeGuard sg([&dir](){dir.remove();});
-	CROW_LOG_INFO << "(ApiBooks) BookDirectoryBuilder: " << dir.dir();
+	CROW_LOG_INFO << "(BookRoute) BookDirectoryBuilder: " << dir.dir();
 	dir.add_zip_file(extract_content(req));
 	auto book = dir.build();
 	if (not book)
@@ -83,13 +83,13 @@ ApiBooks::impl(HttpPost, const Request& req) const
 	book->set_owner(*db.session().user);
 
 	// insert book into database
-	CROW_LOG_INFO << "(ApiBooks) Inserting new book into database";
+	CROW_LOG_INFO << "(BookRoute) Inserting new book into database";
 	db.set_autocommit(false);
 	db.insert_book(*book);
 	db.commit();
 
 	// update and clean up
-	CROW_LOG_INFO << "(ApiBooks) Created new book id: " << book->id();
+	CROW_LOG_INFO << "(BookRoute) Created new book id: " << book->id();
 	sg.dismiss();
 	Json j;
 	return j << *book;
@@ -97,7 +97,7 @@ ApiBooks::impl(HttpPost, const Request& req) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-ApiBooks::impl(HttpGet, const Request& req, int bid) const
+BookRoute::impl(HttpGet, const Request& req, int bid) const
 {
 	auto db = database(req);
 	std::lock_guard<std::mutex> lock(db.session().mutex);
@@ -111,7 +111,7 @@ ApiBooks::impl(HttpGet, const Request& req, int bid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-ApiBooks::impl(HttpPost, const Request& req, int bid) const
+BookRoute::impl(HttpPost, const Request& req, int bid) const
 {
 	auto db = database(req);
 	std::lock_guard<std::mutex> lock(db.session().mutex);
@@ -141,7 +141,7 @@ ApiBooks::impl(HttpPost, const Request& req, int bid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-ApiBooks::impl(HttpGet, const Request& req, int bid, int pid) const
+BookRoute::impl(HttpGet, const Request& req, int bid, int pid) const
 {
 	auto db = database(req);
 	std::lock_guard<std::mutex> lock(db.session().mutex);
@@ -154,7 +154,7 @@ ApiBooks::impl(HttpGet, const Request& req, int bid, int pid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-ApiBooks::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
+BookRoute::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
 {
 	auto db = database(req);
 	std::lock_guard<std::mutex> lock(db.session().mutex);
@@ -166,7 +166,7 @@ ApiBooks::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-ApiBooks::impl(HttpPut, const Request& req, int bid, int pid, int lid) const
+BookRoute::impl(HttpPut, const Request& req, int bid, int pid, int lid) const
 {
 	auto correction = req.url_params.get("correction");
 	if (not correction)
@@ -176,15 +176,15 @@ ApiBooks::impl(HttpPut, const Request& req, int bid, int pid, int lid) const
 	auto line = find(db, bid, pid, lid);
 	assert(line);
 
-	CROW_LOG_DEBUG << "(ApiBooks) correction: " << req.url_params.get("correction");
+	CROW_LOG_DEBUG << "(BookRoute) correction: " << req.url_params.get("correction");
 	WagnerFischer wf;
 	wf.set_gt(correction);
 	wf.set_ocr(*line);
 	auto lev = wf();
-	CROW_LOG_DEBUG << "(ApiBooks) lev: " << lev << "\n" << wf;
-	CROW_LOG_DEBUG << "(ApiBooks) line: " << line->cor();
+	CROW_LOG_DEBUG << "(BookRoute) lev: " << lev << "\n" << wf;
+	CROW_LOG_DEBUG << "(BookRoute) line: " << line->cor();
 	wf.correct(*line);
-	CROW_LOG_DEBUG << "(ApiBooks) line: " << line->cor();
+	CROW_LOG_DEBUG << "(BookRoute) line: " << line->cor();
 	db.set_autocommit(false);
 	db.update_line(*line);
 	db.commit();
