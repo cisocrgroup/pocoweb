@@ -91,7 +91,8 @@ ApiBooks::impl(HttpPost, const Request& req) const
 	// update and clean up
 	CROW_LOG_INFO << "(ApiBooks) Created new book id: " << book->id();
 	sg.dismiss();
-	return created();
+	Json j;
+	return j << *book;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

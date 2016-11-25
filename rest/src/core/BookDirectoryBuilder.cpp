@@ -83,6 +83,7 @@ BookDirectoryBuilder::add_zip_file(const std::string& content)
 	auto tdir = tmp_dir();
 	fs::create_directory(tdir);
 	auto zip = zip_file();
+	CROW_LOG_DEBUG << "(BookDirectoryBuilder) content.size(): " << content.size();
 	std::ofstream os(zip.string());
 	if (not os.good())
 		throw std::system_error(errno, std::system_category(), zip.string());
@@ -92,7 +93,7 @@ BookDirectoryBuilder::add_zip_file(const std::string& content)
 	CROW_LOG_DEBUG << "(BookDirectoryBuilder) Unzip command: " << command;
 	auto err = system(command.data());
 	if (err)
-		THROW(Error, "(BookDirectoryBuilder) ", command, " returned ", err);
+		THROW(Error, "Cannot unzip file: `", command, "` returned ", err);
 	fs::recursive_directory_iterator i(tdir), e;
 	for (; i != e; ++i) {
 		add_file(*i);
