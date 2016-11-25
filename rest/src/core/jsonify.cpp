@@ -50,7 +50,8 @@ pcw::operator<<(Json& json, const Line& line)
 	json["id"] = line.id();
 	json["box"] << line.box;
 	json["imgFile"] = line.img.native();
-	json["string"] = line.cor();
+	json["cor"] = line.cor();
+	json["ocr"] = line.ocr();
 	json["cuts"] = line.cuts();
 	json["confidences"] = line.confidences();
 	json["averageConfidence"] = line.average_conf();
