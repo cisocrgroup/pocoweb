@@ -62,6 +62,7 @@ OBJS += db.o
 API_OBJS += VersionRoute.o
 API_OBJS += BookRoute.o
 API_OBJS += PageRoute.o
+API_OBJS += LineRoute.o
 
 PAR_OBJS += pugixml.o
 PAR_OBJS += ParserPage.o

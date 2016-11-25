@@ -4,13 +4,6 @@
 #include "core/CrtpRoute.hpp"
 
 namespace pcw {
-	class Line;
-	class Page;
-	class BookView;
-	using BookViewPtr = std::shared_ptr<BookView>;
-	using PagePtr = std::shared_ptr<Page>;
-	using LinePtr = std::shared_ptr<Line>;
-
 	class BookRoute: public CrtpRoute<BookRoute> {
 	public:
 		virtual ~BookRoute() noexcept override = default;
@@ -20,15 +13,10 @@ namespace pcw {
 
 		pcw_crtp_route_def_impl__();
 		pcw_crtp_route_def_impl__(int);
-		pcw_crtp_route_def_impl__(int,int);
-		pcw_crtp_route_def_impl__(int,int,int);
 		Response impl(HttpPost, const Request& req) const;
 		Response impl(HttpGet, const Request& req) const;
 		Response impl(HttpGet, const Request& req, int bid) const;
 		Response impl(HttpPost, const Request& req, int bid) const;
-		Response impl(HttpGet, const Request& req, int bid, int pid) const;
-		Response impl(HttpGet, const Request& req, int bid, int pid, int lid) const;
-		Response impl(HttpPut, const Request& req, int bid, int pid, int lid) const;
 
 	private:
 		static const char* route_;

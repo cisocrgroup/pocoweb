@@ -14,36 +14,27 @@
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/WagnerFischer.hpp"
 
-#define BOOK_ROUTE_ROUTE_0 "/books"
-#define BOOK_ROUTE_ROUTE_1 "/books/<int>"
-#define BOOK_ROUTE_ROUTE_2 "/books/<int>/pages"
-#define BOOK_ROUTE_ROUTE_3 "/books/<int>/pages/<int>"
-#define BOOK_ROUTE_ROUTE_4 "/books/<int>/pages/<int>/lines"
-#define BOOK_ROUTE_ROUTE_5 "/books/<int>/pages/<int>/lines/<int>"
+#define BOOK_ROUTE_ROUTE_1 "/books"
+#define BOOK_ROUTE_ROUTE_2 "/books/<int>"
+#define BOOK_ROUTE_ROUTE_3 "/books/<int>/pages"
 
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 const char* BookRoute::route_ =
-	BOOK_ROUTE_ROUTE_0 ","
 	BOOK_ROUTE_ROUTE_1 ","
 	BOOK_ROUTE_ROUTE_2 ","
-	BOOK_ROUTE_ROUTE_3 ","
-	BOOK_ROUTE_ROUTE_4 ","
-	BOOK_ROUTE_ROUTE_5;
+	BOOK_ROUTE_ROUTE_3;
 const char* BookRoute::name_ = "BookRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 BookRoute::Register(App& app)
 {
-	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_0).methods("GET"_method, "POST"_method)(*this);
 	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_1).methods("GET"_method, "POST"_method)(*this);
-	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_2).methods("GET"_method)(*this);
+	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_2).methods("GET"_method, "POST"_method)(*this);
 	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_3).methods("GET"_method)(*this);
-	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_4).methods("GET"_method)(*this);
-	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_5).methods("GET"_method, "PUT"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -137,56 +128,4 @@ BookRoute::impl(HttpPost, const Request& req, int bid) const
 	}
 	db.commit();
 	return created();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Route::Response
-BookRoute::impl(HttpGet, const Request& req, int bid, int pid) const
-{
-	auto db = database(req);
-	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto page = find(db, bid, pid);
-	assert(page);
-	// TODO missing authentication
-	Json j;
-	return j << *page;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Route::Response
-BookRoute::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
-{
-	auto db = database(req);
-	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto line = find(db, bid, pid, lid);
-	assert(line);
-	Json j;
-	return j << *line;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Route::Response
-BookRoute::impl(HttpPut, const Request& req, int bid, int pid, int lid) const
-{
-	auto correction = req.url_params.get("correction");
-	if (not correction)
-		return bad_request();
-	auto db = database(req);
-	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto line = find(db, bid, pid, lid);
-	assert(line);
-
-	CROW_LOG_DEBUG << "(BookRoute) correction: " << req.url_params.get("correction");
-	WagnerFischer wf;
-	wf.set_gt(correction);
-	wf.set_ocr(*line);
-	auto lev = wf();
-	CROW_LOG_DEBUG << "(BookRoute) lev: " << lev << "\n" << wf;
-	CROW_LOG_DEBUG << "(BookRoute) line: " << line->cor();
-	wf.correct(*line);
-	CROW_LOG_DEBUG << "(BookRoute) line: " << line->cor();
-	db.set_autocommit(false);
-	db.update_line(*line);
-	db.commit();
-	return ok();
 }

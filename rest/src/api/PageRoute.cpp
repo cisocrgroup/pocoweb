@@ -15,14 +15,16 @@
 #include "core/WagnerFischer.hpp"
 
 #define PAGE_ROUTE_ROUTE_1 "/books/<int>/pages/<int>"
-#define PAGE_ROUTE_ROUTE_2 "/books/<int>/pages/<int>/<string>/<int>"
+#define PAGE_ROUTE_ROUTE_2 "/books/<int>/pages/<int>/lines"
+#define PAGE_ROUTE_ROUTE_3 "/books/<int>/pages/<int>/<string>/<int>"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 const char* PageRoute::route_ =
 	PAGE_ROUTE_ROUTE_1 ","
-	PAGE_ROUTE_ROUTE_2;
+	PAGE_ROUTE_ROUTE_2 ","
+	PAGE_ROUTE_ROUTE_3;
 const char* PageRoute::name_ = "PageRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -31,6 +33,7 @@ PageRoute::Register(App& app)
 {
 	CROW_ROUTE(app, PAGE_ROUTE_ROUTE_1).methods("GET"_method)(*this);
 	CROW_ROUTE(app, PAGE_ROUTE_ROUTE_2).methods("GET"_method)(*this);
+	CROW_ROUTE(app, PAGE_ROUTE_ROUTE_3).methods("GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

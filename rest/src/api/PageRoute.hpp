@@ -4,13 +4,6 @@
 #include "core/CrtpRoute.hpp"
 
 namespace pcw {
-	class Line;
-	class Page;
-	class BookView;
-	using BookViewPtr = std::shared_ptr<BookView>;
-	using PagePtr = std::shared_ptr<Page>;
-	using LinePtr = std::shared_ptr<Line>;
-
 	class PageRoute: public CrtpRoute<PageRoute> {
 	public:
 		virtual ~PageRoute() noexcept override = default;
