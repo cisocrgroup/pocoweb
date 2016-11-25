@@ -20,6 +20,8 @@ struct CBook {int id;};
 struct CPage {int id;};
 struct CNextPage {int ofs;};
 struct CPrevPage {int ofs;};
+struct CChangeFile {std::string file;};
+struct CChangeStr {std::string str;};
 struct CFirstPage {};
 struct CLastPage {};
 struct CFirstLine {};
@@ -45,6 +47,8 @@ using Command = boost::variant<
 	CUpload,
 	CBook,
 	CPage,
+	CChangeFile,
+	CChangeStr,
 	CNextPage,
 	CPrevPage,
 	CFirstPage,
@@ -71,11 +75,14 @@ struct Ed: boost::static_visitor<void> {
 	void perform() const;
 	void get(const std::string& url);
 	void post(const std::string& url);
+	void put(const std::string& url);
 
 	void operator()(const std::string& line);
 	void operator()(CVersion);
 	void operator()(CQuit);
 	void operator()(CBooks);
+	void operator()(const CChangeFile& cf);
+	void operator()(const CChangeStr& cf);
 	void operator()(const CUpload& c);
 	void operator()(CBook b);
 	void operator()(CPage p);
@@ -189,6 +196,19 @@ Ed::post(const std::string& url)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
+Ed::put(const std::string& url)
+{
+	assert(curl);
+	curl_easy_setopt(curl, CURLOPT_URL, url.data());
+	curl_easy_setopt(curl, CURLOPT_HTTPGET, 0);
+	curl_easy_setopt(curl, CURLOPT_POST, 0);
+	curl_easy_setopt(curl, CURLOPT_PUT, 1);
+	buffer.clear();
+	perform();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
 Ed::perform() const
 {
 	assert(curl);
@@ -282,6 +302,26 @@ Ed::operator()(CPage p)
 		"/pages/" + std::to_string(p.id);
 	get(url);
 	read_page();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::operator()(const CChangeFile& cf)
+{
+	std::string line;
+	is.open(cf.file);
+	if (not is.good())
+		throw std::system_error(errno, std::system_category(), cf.file);
+	std::getline(is, line);
+	is.close();
+	(*this)(CChangeStr{line});
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::operator()(const CChangeStr& cs)
+{
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -459,6 +499,8 @@ Ed::parse(const std::string& line)
 	static const std::regex prevlinere{R"(:pr?e?v?l?i?n?e?\s*([-+]?\d+)?)"};
 	static const std::regex infore{R"(:info\s*)"};
 	static const std::regex printre{R"(((\d+),(\d+))?:pri?n?t(ocr)?\s*)"};
+	static const std::regex changefilere{R"(:ch?a?n?g?e?\s+file:\s*(.*))"};
+	static const std::regex changestrre{R"(:ch?a?n?g?e?\s+(.*))"};
 
 	std::smatch m;
 	if (std::regex_match(line, versionre))
@@ -503,6 +545,12 @@ Ed::parse(const std::string& line)
 			return CPrint{std::stoi(m[2]), std::stoi(m[3]), cor};
 		else
 			return CPrint{0, 0, cor};
+	}
+	if (std::regex_match(line, m, changefilere)) { // must check this first
+		return CChangeFile{m[1]};
+	}
+	if (std::regex_match(line, m, changestrre)) {
+		return CChangeStr{m[1]};
 	}
 	if (std::regex_match(line, infore))
 		return CInfo{};
