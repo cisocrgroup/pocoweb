@@ -16,7 +16,8 @@
 
 #define PAGE_ROUTE_ROUTE_1 "/books/<int>/pages/<int>"
 #define PAGE_ROUTE_ROUTE_2 "/books/<int>/pages/<int>/lines"
-#define PAGE_ROUTE_ROUTE_3 "/books/<int>/pages/<int>/<string>/<int>"
+#define PAGE_ROUTE_ROUTE_3 "/books/<int>/pages/<string>"
+#define PAGE_ROUTE_ROUTE_4 "/books/<int>/pages/<int>/<string>/<int>"
 
 using namespace pcw;
 
@@ -24,7 +25,8 @@ using namespace pcw;
 const char* PageRoute::route_ =
 	PAGE_ROUTE_ROUTE_1 ","
 	PAGE_ROUTE_ROUTE_2 ","
-	PAGE_ROUTE_ROUTE_3;
+	PAGE_ROUTE_ROUTE_3 ","
+	PAGE_ROUTE_ROUTE_4;
 const char* PageRoute::name_ = "PageRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,6 +36,7 @@ PageRoute::Register(App& app)
 	CROW_ROUTE(app, PAGE_ROUTE_ROUTE_1).methods("GET"_method)(*this);
 	CROW_ROUTE(app, PAGE_ROUTE_ROUTE_2).methods("GET"_method)(*this);
 	CROW_ROUTE(app, PAGE_ROUTE_ROUTE_3).methods("GET"_method)(*this);
+	CROW_ROUTE(app, PAGE_ROUTE_ROUTE_4).methods("GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -53,6 +56,31 @@ PageRoute::impl(HttpGet, const Request& req, int bid, int pid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
+PageRoute::impl(HttpGet, const Request& req, int bid, const std::string& dir) const
+{
+	auto db = database(req);
+	std::lock_guard<std::mutex> lock(db.session().mutex);
+	auto book = find(db, bid);
+	bool first = false;
+	if (not book)
+		return not_found();
+	if (strcasecmp(dir.data(), "first") == 0)
+		first = true;
+	else if (strcasecmp(dir.data(), "last") == 0)
+		first = false;
+	else
+		return bad_request();
+	if (book->empty())
+		return not_found();
+	Json j;
+	if (first)
+		return j << *book->front();
+	else
+		return j << *book->back();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response
 PageRoute::impl(HttpGet, const Request& req, int bid, int pid,
 	const std::string& dir, int val
 ) const
@@ -67,7 +95,7 @@ PageRoute::impl(HttpGet, const Request& req, int bid, int pid,
 	else if (strcasecmp(dir.data(), "prev") == 0)
 		return prev(*book, pid, std::abs(val));
 	else
-		return not_found();
+		return bad_request();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

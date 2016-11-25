@@ -12,8 +12,10 @@ namespace pcw {
 		virtual const char* name() const noexcept override {return name_;}
 
 		pcw_crtp_route_def_impl__(int,int);
+		pcw_crtp_route_def_impl__(int,std::string);
 		pcw_crtp_route_def_impl__(int,int,std::string,int);
 		Response impl(HttpGet, const Request& req, int bid, int pid) const;
+		Response impl(HttpGet, const Request& req, int bid, const std::string& what) const;
 		Response impl(HttpGet, const Request& req, int bid, int pid,
 				const std::string& dir, int val) const;
 
