@@ -20,6 +20,7 @@ struct CBook {int id;};
 struct CPage {int id;};
 struct CNextPage {int ofs;};
 struct CPrevPage {int ofs;};
+struct CSetBook {std::string key, val;};
 struct CChangeFile {std::string file;};
 struct CChangeStr {std::string str;};
 struct CFirstPage {};
@@ -47,6 +48,7 @@ using Command = boost::variant<
 	CUpload,
 	CBook,
 	CPage,
+	CSetBook,
 	CChangeFile,
 	CChangeStr,
 	CNextPage,
@@ -81,6 +83,7 @@ struct Ed: boost::static_visitor<void> {
 	void operator()(CVersion);
 	void operator()(CQuit);
 	void operator()(CBooks);
+	void operator()(const CSetBook& set);
 	void operator()(const CChangeFile& cf);
 	void operator()(const CChangeStr& cf);
 	void operator()(const CUpload& c);
@@ -306,6 +309,17 @@ Ed::operator()(CPage p)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
+Ed::operator()(const CSetBook& sb)
+{
+	// auto url = "http://" + host + "/books/" + std::to_string(bookid) +
+	// 	sb.key + "/" + sb.val;
+	// put();
+	// read_book();
+	THROW(NotImplemented, "Not implemented");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
 Ed::operator()(const CChangeFile& cf)
 {
 	std::string line;
@@ -321,7 +335,7 @@ Ed::operator()(const CChangeFile& cf)
 void
 Ed::operator()(const CChangeStr& cs)
 {
-
+	THROW(NotImplemented, "Not implemented");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -362,7 +376,8 @@ Ed::operator()(CPrevPage pp)
 void
 Ed::operator()(CFirstPage)
 {
-	auto url = "http://" + host + "/books/" + std::to_string(bookid) + "/pages/first";
+	auto url = "http://" + host + "/books/" +
+		std::to_string(bookid) + "/pages/first";
 	buffer.clear();
 	get(url);
 	read_page();
@@ -372,7 +387,8 @@ Ed::operator()(CFirstPage)
 void
 Ed::operator()(CLastPage)
 {
-	auto url = "http://" + host + "/books/" + std::to_string(bookid) + "/pages/last";
+	auto url = "http://" + host + "/books/" +
+		std::to_string(bookid) + "/pages/last";
 	buffer.clear();
 	get(url);
 	read_page();
@@ -443,7 +459,6 @@ Ed::operator()(const CPrint& p) const
 			std::cout << page[id].ocr << "\n";
 		}
 	};
-
 	if (p.b == 0 and p.e == 0) {
 		print(p, lineid);
 	} else {
@@ -501,6 +516,7 @@ Ed::parse(const std::string& line)
 	static const std::regex printre{R"(((\d+),(\d+))?:pri?n?t(ocr)?\s*)"};
 	static const std::regex changefilere{R"(:ch?a?n?g?e?\s+file:\s*(.*))"};
 	static const std::regex changestrre{R"(:ch?a?n?g?e?\s+(.*))"};
+	static const std::regex setbookre{R"(:se?t?\s+([^=]+)\s*=\s*(.+)\s*)"};
 
 	std::smatch m;
 	if (std::regex_match(line, versionre))
@@ -515,6 +531,8 @@ Ed::parse(const std::string& line)
 		return CPage{std::stoi(m[1])};
 	if (std::regex_match(line, m, uploadre))
 		return CUpload{m[1]};
+	if (std::regex_match(line, m, setbookre))
+		return CSetBook{m[1], m[2]};
 	if (std::regex_match(line, m, nextpagere)) {
 		if (m[1].length())
 			return CNextPage{std::stoi(m[1])};
