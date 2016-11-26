@@ -252,12 +252,33 @@ Database::insert_project(BookView& project) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void
+Database::update_book(const BookView& view) const
+{
+	static const char *sql =
+		"UPDATE books "
+		"SET author=?,title=?,year=?,uri=?,description=? "
+		"WHERE bookid=?";
+	check_session_lock();
+	auto conn = connection();
+	PreparedStatementPtr s{conn->prepareStatement(sql)};
+	assert(s);
+	s->setString(1, view.origin().author);
+	s->setString(2, view.origin().title);
+	s->setInt(3, view.origin().year);
+	s->setString(4, view.origin().uri);
+	s->setString(5, view.origin().description);
+	s->setInt(6, view.origin().id());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BookPtr
 Database::insert_book(Book& book) const
 {
-	static const char *sql = "INSERT INTO books "
-				 "(author, title, directory, year, uri, bookid, description) "
-				  "VALUES (?,?,?,?,?,?,?);";
+	static const char *sql =
+		"INSERT INTO books "
+		"(author, title, directory, year, uri, bookid, description) "
+		"VALUES (?,?,?,?,?,?,?);";
 	check_session_lock();
 	auto conn = connection();
 	assert(conn);
