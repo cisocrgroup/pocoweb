@@ -19,6 +19,13 @@ namespace pcw {
 		Response impl(HttpPost, const Request& req, int bid) const;
 
 	private:
+		struct Data {
+			const char *author, *title, *url,
+			      *desc, *year, *package, *n;
+		};
+		Response set(const Request& req, int bid, const Data& data) const;
+		Response package(const Request& req, int bid, const Data& data) const;
+
 		static const char* route_;
 		static const char* name_;
 	};

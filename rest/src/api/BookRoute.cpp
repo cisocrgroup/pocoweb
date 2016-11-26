@@ -18,7 +18,6 @@
 #define BOOK_ROUTE_ROUTE_2 "/books/<int>"
 #define BOOK_ROUTE_ROUTE_3 "/books/<int>/pages"
 
-
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -104,6 +103,44 @@ BookRoute::impl(HttpGet, const Request& req, int bid) const
 Route::Response
 BookRoute::impl(HttpPost, const Request& req, int bid) const
 {
+	static const std::string author("author");
+	static const std::string title("title");
+	static const std::string url("url");
+	static const std::string desc("description");
+	static const std::string package("package");
+	static const std::string n("n");
+
+	Data data;
+	data.author = req.url_params.get(author);
+	data.title = req.url_params.get(title);
+	data.url = req.url_params.get(url);
+	data.desc = req.url_params.get(desc);
+	data.package = req.url_params.get(package);
+	data.n = req.url_params.get(n);
+
+	if (data.package and data.n)
+		return this->package(req, bid, data);
+	else if (data.author or data.title or data.url or data.desc)
+		return set(req, bid, data);
+	else
+		return bad_request();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response
+BookRoute::set(const Request& req, int bid, const Data& data) const
+{
+	THROW(NotImplemented, "BookRoute::set: not implemented");
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response
+BookRoute::package(const Request& req, int bid, const Data& data) const
+{
+	assert(data.n);
+	assert(data.package);
+
 	auto db = database(req);
 	std::lock_guard<std::mutex> lock(db.session().mutex);
 
@@ -112,7 +149,13 @@ BookRoute::impl(HttpPost, const Request& req, int bid) const
 		THROW(Error, "No user");
 
 	auto proj = find(db, bid);
-	const size_t n = 5;
+	if (not proj)
+		THROW(BadRequest, "Could not find book id: ", bid);
+
+	int n = atoi(data.n);
+	if (n <= 0)
+		THROW(BadRequest, "Invalid number of packages: ", data.n);
+
 	std::vector<BookViewPtr> projs(n);
 	std::generate(begin(projs), end(projs), [&proj,&user]() {
 		return std::make_shared<Package>(0, *user, proj->origin());
@@ -127,5 +170,6 @@ BookRoute::impl(HttpPost, const Request& req, int bid) const
 		db.insert_project(*p);
 	}
 	db.commit();
-	return created();
+	Json j;
+	return j << projs;
 }
