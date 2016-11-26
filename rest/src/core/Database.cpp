@@ -472,14 +472,16 @@ Database::select_subproject(int projectid, int origin, int owner, sql::Connectio
 
 ////////////////////////////////////////////////////////////////////////////////
 BookViewPtr
-Database::select_subproject(int projectid, int owner, const Book& origin, sql::Connection& conn) const
+Database::select_subproject(int projectid, int owner, const Book& origin,
+		sql::Connection& conn
+) const
 {
 	static const char *sql = "SELECT pageid FROM project_pages "
 				 "WHERE projectid = ?;";
 	// it is save to use cache here
 	auto ownerptr = cached_select_user(owner, conn);
-	if (not ownerptr) // TODO throw?
-		return nullptr;
+	if (not ownerptr)
+		THROW(Error, "Invalid user id: ", owner);
 
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
