@@ -9,6 +9,13 @@
 
 using namespace pcw;
 
+struct CurlFree {
+	void operator()(char* str) const noexcept {
+		curl_free(str);
+	}
+};
+using CurlStr = std::unique_ptr<char, CurlFree>;
+
 struct Address {
 	int b, e;
 };
@@ -311,11 +318,13 @@ Ed::operator()(CPage p)
 void
 Ed::operator()(const CSetBook& sb)
 {
-	// auto url = "http://" + host + "/books/" + std::to_string(bookid) +
-	// 	sb.key + "/" + sb.val;
-	// put();
-	// read_book();
-	THROW(NotImplemented, "Not implemented");
+	auto url = "htpp://" + host + "/books/" + std::to_string(bookid);
+	auto content = sb.key + "=" + sb.val;
+	assert(curl);
+	CurlStr str(curl_easy_escape(curl, content.data(), (int)content.size()));
+	curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(str.get()));
+	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, str.get());
+	post(url);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -605,7 +614,6 @@ xread(void *ptr, size_t size, size_t nmemb, void *userdata)
 	auto is = reinterpret_cast<std::ifstream*>(userdata);
 	is->read(static_cast<char*>(ptr), size * nmemb);
 	auto res = is->gcount();
-	// std::cerr << "xread(ptr, " << size << ", " << nmemb << ", data): " << res << "\n";
 	return res;
 }
 
