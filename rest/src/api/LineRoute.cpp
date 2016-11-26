@@ -53,7 +53,8 @@ LineRoute::impl(HttpPut, const Request& req, int bid, int pid, int lid) const
 	auto line = find(db, bid, pid, lid);
 	assert(line);
 
-	CROW_LOG_DEBUG << "(LineRoute) correction: " << req.url_params.get("correction");
+	CROW_LOG_DEBUG << "(LineRoute) correction: "
+		       << req.url_params.get("correction");
 	WagnerFischer wf;
 	wf.set_gt(correction);
 	wf.set_ocr(*line);
