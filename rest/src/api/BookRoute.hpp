@@ -20,7 +20,7 @@ namespace pcw {
 
 	private:
 		struct Data {
-			const char *author, *title, *url,
+			const char *author, *title, *uri,
 			      *desc, *year, *package, *n;
 		};
 		Response set(const Request& req, int bid, const Data& data) const;

@@ -105,7 +105,7 @@ BookRoute::impl(HttpPost, const Request& req, int bid) const
 {
 	static const std::string author("author");
 	static const std::string title("title");
-	static const std::string url("url");
+	static const std::string uri("uri");
 	static const std::string desc("description");
 	static const std::string package("package");
 	static const std::string n("n");
@@ -113,14 +113,14 @@ BookRoute::impl(HttpPost, const Request& req, int bid) const
 	Data data;
 	data.author = req.url_params.get(author);
 	data.title = req.url_params.get(title);
-	data.url = req.url_params.get(url);
+	data.uri = req.url_params.get(uri);
 	data.desc = req.url_params.get(desc);
 	data.package = req.url_params.get(package);
 	data.n = req.url_params.get(n);
 
 	if (data.package and data.n)
 		return this->package(req, bid, data);
-	else if (data.author or data.title or data.url or data.desc)
+	else if (data.author or data.title or data.uri or data.desc)
 		return set(req, bid, data);
 	else
 		return bad_request();
@@ -130,7 +130,26 @@ BookRoute::impl(HttpPost, const Request& req, int bid) const
 Route::Response
 BookRoute::set(const Request& req, int bid, const Data& data) const
 {
-	THROW(NotImplemented, "BookRoute::set: not implemented");
+	auto db = database(req);
+	std::lock_guard<std::mutex> lock(db.session().mutex);
+	auto view = find(db, bid);
+	assert(view);
+	if (not view->is_book())
+		THROW(BadRequest, "Cannot set book view id: ", bid);
+	auto book = std::dynamic_pointer_cast<Book>(view);
+
+	if (data.author)
+		book->author = data.author;
+	if (data.title)
+		book->title = data.title;
+	if (data.uri)
+		book->uri = data.uri;
+	if (data.desc)
+		book->description = data.desc;
+
+	db.update_book(*book);
+	Json json;
+	return json << *book;
 }
 
 
@@ -149,8 +168,7 @@ BookRoute::package(const Request& req, int bid, const Data& data) const
 		THROW(Error, "No user");
 
 	auto proj = find(db, bid);
-	if (not proj)
-		THROW(BadRequest, "Could not find book id: ", bid);
+	assert(proj);
 
 	int n = atoi(data.n);
 	if (n <= 0)
