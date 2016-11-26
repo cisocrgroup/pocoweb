@@ -318,13 +318,14 @@ Ed::operator()(CPage p)
 void
 Ed::operator()(const CSetBook& sb)
 {
-	auto url = "htpp://" + host + "/books/" + std::to_string(bookid);
+	auto url = "http://" + host + "/books/" + std::to_string(bookid);
 	auto content = sb.key + "=" + sb.val;
 	assert(curl);
 	CurlStr str(curl_easy_escape(curl, content.data(), (int)content.size()));
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(str.get()));
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, str.get());
 	post(url);
+	read_book();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
