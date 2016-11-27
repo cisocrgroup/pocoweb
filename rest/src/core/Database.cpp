@@ -269,6 +269,7 @@ Database::update_book(const BookView& view) const
 	s->setString(4, view.origin().uri);
 	s->setString(5, view.origin().description);
 	s->setInt(6, view.origin().id());
+	s->executeUpdate();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -439,7 +440,8 @@ Database::select_all_projects(const User& user) const
 BookViewPtr
 Database::select_project(int projectid, sql::Connection& conn) const
 {
-	static const char *sql = "SELECT origin,owner FROM projects WHERE projectid = ?;";
+	static const char *sql =
+		"SELECT origin,owner FROM projects WHERE projectid = ?;";
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, projectid);
@@ -460,7 +462,8 @@ Database::select_project(int projectid, sql::Connection& conn) const
 
 ////////////////////////////////////////////////////////////////////////////////
 BookViewPtr
-Database::select_subproject(int projectid, int origin, int owner, sql::Connection& conn) const
+Database::select_subproject(int projectid, int origin, int owner,
+		sql::Connection& conn) const
 {
 	// it is save to use the cache here
 	auto book = cached_select_project(origin, conn);
