@@ -349,7 +349,14 @@ Ed::operator()(const CChangeFile& cf)
 void
 Ed::operator()(const CChangeStr& cs)
 {
-	THROW(NotImplemented, "Not implemented");
+	auto url = "http://" + host + "/books/" + std::to_string(bookid) +
+		"/pages/" + std::to_string(pageid) +
+		"/lines/" + std::to_string(lineid) +
+		"?partial=false&correction=";
+	assert(curl);
+	CurlStr params(curl_easy_escape(curl, cs.str.data(), cs.str.size()));
+	url += params.get();
+	post(url);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
