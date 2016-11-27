@@ -12,10 +12,15 @@ namespace pcw {
 		virtual const char* name() const noexcept override {return name_;}
 
 		pcw_crtp_route_def_impl__(int,int,int);
-		Response impl(HttpGet, const Request& req, int bid, int pid, int lid) const;
-		Response impl(HttpPut, const Request& req, int bid, int pid, int lid) const;
+		Response impl(HttpGet, const Request& req, int bid,
+				int pid, int lid) const;
+		Response impl(HttpPut, const Request& req, int bid,
+				int pid, int lid) const;
 
 	private:
+		struct Data {const char *correction, *partial;};
+		Response correct(Database& db, Line& line, const Data& data) const;
+
 		static const char* route_;
 		static const char* name_;
 	};

@@ -45,26 +45,41 @@ LineRoute::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
 Route::Response
 LineRoute::impl(HttpPut, const Request& req, int bid, int pid, int lid) const
 {
-	auto correction = req.url_params.get("correction");
-	if (not correction)
+	Data data;
+	data.correction = req.url_params.get("correction");
+	data.partial = req.url_params.get("partial");
+	if (not data.correction)
 		return bad_request();
+
 	auto db = database(req);
 	std::lock_guard<std::mutex> lock(db.session().mutex);
 	auto line = find(db, bid, pid, lid);
-	assert(line);
+	if (not line)
+		THROW(NotFound, "Cannot find book id: ", bid,
+				" page id: ", pid, " line id: ", lid);
+	return correct(db, *line, data);
+}
 
-	CROW_LOG_DEBUG << "(LineRoute) correction: "
-		       << req.url_params.get("correction");
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response
+LineRoute::correct(Database& db, Line& line, const Data& data) const
+{
+	CROW_LOG_DEBUG << "(LineRoute) correction: " << data.correction;
+
 	WagnerFischer wf;
-	wf.set_gt(correction);
-	wf.set_ocr(*line);
+	wf.set_gt(data.correction);
+	wf.set_ocr(line);
 	auto lev = wf();
 	CROW_LOG_DEBUG << "(LineRoute) lev: " << lev << "\n" << wf;
-	CROW_LOG_DEBUG << "(LineRoute) line: " << line->cor();
-	wf.correct(*line);
-	CROW_LOG_DEBUG << "(LineRoute) line: " << line->cor();
+	wf.correct(line);
+	// CROW_LOG_DEBUG << "(LineRoute)    gt: " << wf.gt();
+	CROW_LOG_DEBUG << "(LineRoute)    gt: " << line.cor();
+	CROW_LOG_DEBUG << "(LineRoute) trace: " << wf.trace();
+	CROW_LOG_DEBUG << "(LineRoute)   ocr: " << line.cor();
+	// CROW_LOG_DEBUG << "(LineRoute)   ocr: " << wf.ocr();
 	db.set_autocommit(false);
-	db.update_line(*line);
+	db.update_line(line);
 	db.commit();
 	return ok();
 }
