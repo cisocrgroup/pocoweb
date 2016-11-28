@@ -27,7 +27,7 @@ struct CBook {int id;};
 struct CPage {int id;};
 struct CNextPage {int ofs;};
 struct CPrevPage {int ofs;};
-struct CSetBook {std::string key, val;};
+struct CSetBook {std::map<std::string, std::string> data;};
 struct CChangeFile {std::string file;};
 struct CChangeStr {std::string str;};
 struct CFirstPage {};
@@ -319,15 +319,20 @@ void
 Ed::operator()(const CSetBook& sb)
 {
 	assert(curl);
-	auto url = "http://" + host + "/books/" + std::to_string(bookid);
-	CurlStr key(curl_easy_escape(curl, sb.key.data(), sb.key.size()));
-	CurlStr val(curl_easy_escape(curl, sb.val.data(), sb.val.size()));
-	url += "?";
-	url += key.get();
-	url += "=";
-	url += val.get();
-	// curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(str.get()));
-	// curl_easy_setopt(curl, CURLOPT_POSTFIELDS, str.get());
+	auto url = "http://" + host + "/books/" + std::to_string(bookid) + "?";
+
+	for (const auto& p: sb.data) {
+		CurlStr key(curl_easy_escape(curl, p.first.data(), p.first.size()));
+		CurlStr val(curl_easy_escape(curl, p.second.data(), p.second.size()));
+		// std::cerr << "Setting key: " << key.get() << "\n";
+		// std::cerr << "Setting val: " << val.get() << "\n";
+		url += key.get();
+		url += "=";
+		url += val.get();
+		url += "&";
+	}
+	url.pop_back(); // remove trailing '&' or '?'
+	std::cerr << "url: " << url << "\n";
 	post(url);
 	read_book();
 }
@@ -537,7 +542,8 @@ Ed::parse(const std::string& line)
 	static const std::regex printre{R"(((\d+),(\d+))?:pri?n?t(ocr)?\s*)"};
 	static const std::regex changefilere{R"(:ch?a?n?g?e?\s+file:\s*(.*))"};
 	static const std::regex changestrre{R"(:ch?a?n?g?e?\s+(.*))"};
-	static const std::regex setbookre{R"(:se?t?\s+([^=]+)\s*=\s*(.+)\s*)"};
+	static const std::regex setbookre{R"(:se?t?\s+((\s*([^=]+)\s*=\s*([^;]+);)+))"};
+	static const std::regex keyvalre{R"(\s*([^=]+)\s*=\s*([^;]+);)"};
 
 	std::smatch m;
 	if (std::regex_match(line, versionre))
@@ -552,8 +558,19 @@ Ed::parse(const std::string& line)
 		return CPage{std::stoi(m[1])};
 	if (std::regex_match(line, m, uploadre))
 		return CUpload{m[1]};
-	if (std::regex_match(line, m, setbookre))
-		return CSetBook{m[1], m[2]};
+	if (std::regex_match(line, m, setbookre)) {
+		const auto e = end(line);
+		CSetBook keyvals;
+		for (auto i = m[1].first; i != e;) {
+			if (std::regex_search(i, e, m, keyvalre)) {
+				keyvals.data[m[1]] = m[2];
+				i = m[0].second;
+			} else {
+				i = e;
+			}
+		}
+		return keyvals;
+	}
 	if (std::regex_match(line, m, nextpagere)) {
 		if (m[1].length())
 			return CNextPage{std::stoi(m[1])};
