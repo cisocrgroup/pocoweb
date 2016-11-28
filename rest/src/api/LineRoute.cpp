@@ -82,7 +82,8 @@ LineRoute::correct(Database& db, Line& line, const Data& data) const
 	db.set_autocommit(false);
 	db.update_line(line);
 	db.commit();
-	return ok();
+	Json json;
+	return json << line;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
