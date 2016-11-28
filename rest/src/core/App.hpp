@@ -37,6 +37,8 @@ namespace pcw {
 		static const char* version_str() noexcept;
 
 	private:
+		void log(const Route& route) const;
+
 		pcw::Routes routes_;
 		std::vector<Plugin> plugins_;
 		std::unique_ptr<pcw::Route::App> app_;

@@ -44,7 +44,7 @@ void
 App::stop() noexcept
 {
 	try {
-		// order matters here: first delete the server, 
+		// order matters here: first delete the server,
 		// then delete all routes and then close the plugins
 		app_->stop();
 		app_.release();
@@ -56,7 +56,7 @@ App::stop() noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 App::Register(RoutePtr route)
 {
 	assert(app_);
@@ -70,13 +70,31 @@ App::Register(RoutePtr route)
 			route->set_cache(cache_);
 			route->Register(*app_);
 			routes_.push_back(std::move(route));
-			CROW_LOG_INFO << "(App) Registered route " 
-				      << routes_.back()->name() 
-				      << ": " << routes_.back()->route() 	
-				      << " [" << routes_.back().get() << "]";
+			log(*routes_.back());
 		} catch (const std::exception& e) {
 			CROW_LOG_ERROR << "(App) Could not register: " << e.what();
 		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+App::log(const Route& route) const
+{
+	for (auto i = route.route(); i;) {
+		auto e = strchr(i, ',');
+		std::string r;
+		if (e) {
+			r.assign(i, e);
+			i = e + 1;
+		} else {
+			r.assign(i);
+			i = e;
+		}
+		CROW_LOG_INFO << "(App) Registered route "
+			      << route.name()
+			      << ": " << r
+			      << " [" << &route << "]";
 	}
 }
 
@@ -88,7 +106,7 @@ App::register_plugins()
 	for (const auto& p: config_->plugins.configs) {
 		try {
 			auto path = p.second.get<std::string>("path");
-			CROW_LOG_INFO << "(App) Registering plugin " 
+			CROW_LOG_INFO << "(App) Registering plugin "
 				      << p.first << ": " << path;
 			pcw::Plugin plugin(path);
 			plugin(p.first, *this);
@@ -101,37 +119,37 @@ App::register_plugins()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-int 
+int
 App::version() noexcept
 {
-	return (100 * 100 * PCW_API_VERSION_MAJOR) + 
-		(100 * PCW_API_VERSION_MINOR) + 
+	return (100 * 100 * PCW_API_VERSION_MAJOR) +
+		(100 * PCW_API_VERSION_MINOR) +
 		(1 * PCW_API_VERSION_PATCH);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-int 
+int
 App::version_major() noexcept
 {
 	return PCW_API_VERSION_MAJOR;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-int 
+int
 App::version_minor() noexcept
 {
 	return PCW_API_VERSION_MINOR;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-int 
+int
 App::version_patch() noexcept
 {
 	return PCW_API_VERSION_PATCH;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* 
+const char*
 App::version_str() noexcept
 {
 #	define QQUOTE(x) #x
