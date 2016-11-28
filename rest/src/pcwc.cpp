@@ -46,6 +46,7 @@ struct CVersion {};
 struct CQuit {};
 struct CBooks {};
 struct CGoto {What what; int id;};
+struct CRaw {std::string str; bool get;};
 struct CNextPage {int ofs;};
 struct CPrevPage {int ofs;};
 struct CSetBook {std::map<std::string, std::string> data;};
@@ -74,6 +75,7 @@ using Command = boost::variant<
 	CBooks,
 	CUpload,
 	CGoto,
+	CRaw,
 	CSetBook,
 	CChange,
 	CNextPage,
@@ -111,6 +113,7 @@ struct Ed: boost::static_visitor<void> {
 	void operator()(const CChange& c);
 	void operator()(const CUpload& c);
 	void operator()(CGoto g);
+	void operator()(const CRaw& r);
 	void operator()(CNextPage np);
 	void operator()(CPrevPage pp);
 	void operator()(CFirstPage);
@@ -352,6 +355,18 @@ Ed::goto_line(int id)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
+Ed::operator()(const CRaw& r)
+{
+	auto url = "http://" + host + "/" + r.str;
+	if (r.get)
+		get(url);
+	else
+		post(url);
+	std::cout << buffer << "\n";
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
 Ed::operator()(const CSetBook& sb)
 {
 	assert(curl);
@@ -587,6 +602,7 @@ Ed::parse(const std::string& line)
 	static const std::regex changestrre{R"(:ch?a?n?g?e?\s+(.*))"};
 	static const std::regex setbookre{R"(:se?t?\s+((\s*([^=]+)\s*=\s*([^;]+);)+))"};
 	static const std::regex keyvalre{R"(\s*([^=]+)\s*=\s*([^;]+);)"};
+	static const std::regex rawre{R"(:raw\s+(get|post)\s+(.*))"};
 
 	std::smatch m;
 	if (std::regex_match(line, versionre))
@@ -650,10 +666,12 @@ Ed::parse(const std::string& line)
 	if (std::regex_match(line, m, changestrre)) {
 		return CChange{m[1], false};
 	}
+	if (std::regex_match(line, m, rawre)) {
+		return CRaw{m[2], m[1] == "get"};
+	}
 	if (std::regex_match(line, infore))
 		return CInfo{};
-	else
-		return CError{"Invalid command: " + line};
+	return CError{"Invalid command: " + line};
 
 }
 
