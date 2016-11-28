@@ -16,7 +16,26 @@ struct CurlFree {
 };
 using CurlStr = std::unique_ptr<char, CurlFree>;
 
-struct Address {
+static const std::string RANGE_RE = R"(((\d*)(,(\d*))?))";
+struct Range {
+	Range(const std::smatch& m)
+		: b(0)
+		, e(0)
+	{
+		if (m[1].length()) {
+			if (m[2].length())
+				b = std::stoi(m[2]);
+			else
+				b = 0;
+			if (m[4].length())
+				e = std::stoi(m[4]);
+			else
+				e = std::numeric_limits<int>::max();
+		}
+	}
+	bool current_line() const noexcept {
+		return b == 0 and e == 0;
+	}
 	int b, e;
 };
 
@@ -36,7 +55,7 @@ struct CFirstLine {};
 struct CLastLine {};
 struct CNextLine {int ofs;};
 struct CPrevLine {int ofs;};
-struct CPrint {int b, e; bool cor;};
+struct CPrint {Range r; bool cor;};
 struct CInfo {};
 struct CUpload {std::string what;};
 struct CError {std::string what;};
@@ -485,12 +504,12 @@ Ed::operator()(const CPrint& p) const
 			std::cout << page[id].ocr << "\n";
 		}
 	};
-	if (p.b == 0 and p.e == 0) {
+	if (p.r.current_line()) {
 		print(p, lineid);
 	} else {
-		const auto end = std::min(p.e, static_cast<int>(page.size()));
-		const auto begin = std::min(p.b, static_cast<int>(page.size()));
-		for (auto i = begin; i != end; ++i) {
+		const auto end = std::min(p.r.e, static_cast<int>(page.size()));
+		const auto begin = std::min(p.r.b, static_cast<int>(page.size()));
+		for (auto i = begin; i < end; ++i) {
 			std::cout << i << ":";
 			print(p, i);
 		}
@@ -539,7 +558,7 @@ Ed::parse(const std::string& line)
 	static const std::regex nextlinere{R"(:ne?x?t?l?i?n?e?\s*([-+]?\d+)?)"};
 	static const std::regex prevlinere{R"(:pr?e?v?l?i?n?e?\s*([-+]?\d+)?)"};
 	static const std::regex infore{R"(:info\s*)"};
-	static const std::regex printre{R"(((\d+),(\d+))?:pri?n?t(ocr)?\s*)"};
+	static const std::regex printre{RANGE_RE + R"(:pri?n?t?(ocr)?\s*)"};
 	static const std::regex changefilere{R"(:ch?a?n?g?e?\s+file:\s*(.*))"};
 	static const std::regex changestrre{R"(:ch?a?n?g?e?\s+(.*))"};
 	static const std::regex setbookre{R"(:se?t?\s+((\s*([^=]+)\s*=\s*([^;]+);)+))"};
@@ -596,11 +615,8 @@ Ed::parse(const std::string& line)
 			return CPrevLine{1};
 	}
 	if (std::regex_match(line, m, printre)) {
-		const bool cor = m[4].length();
-		if (m[1].length())
-			return CPrint{std::stoi(m[2]), std::stoi(m[3]), cor};
-		else
-			return CPrint{0, 0, cor};
+		const bool cor = m[5].length();
+		return CPrint{Range(m), cor};
 	}
 	if (std::regex_match(line, m, changefilere)) { // must check this first
 		return CChangeFile{m[1]};
