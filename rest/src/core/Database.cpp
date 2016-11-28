@@ -612,7 +612,7 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 		const wchar_t cor = res->getInt(10);
 		const auto cut = res->getInt(11);
 		const auto conf = res->getDouble(12);
-		line->append(ocr, cut, conf, cor);
+		line->append(ocr, cor, cut, conf);
 	}
 	// insert last line
 	if (line)
