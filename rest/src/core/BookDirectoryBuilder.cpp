@@ -58,13 +58,13 @@ BookDirectoryBuilder::BookDirectoryBuilder(Path path)
 ////////////////////////////////////////////////////////////////////////////////
 BookDirectoryBuilder::~BookDirectoryBuilder() noexcept
 {
-	CROW_LOG_INFO << "(BookDirectoryBuilder) Removing tmp dir " << tmp_dir();
+	// CROW_LOG_INFO << "(BookDirectoryBuilder) Removing tmp dir " << tmp_dir();
 	// clean up tmp directory; do not throw
 	boost::system::error_code ec;
 	fs::remove_all(tmp_dir(), ec);
 	if (ec) {
-		CROW_LOG_WARNING << "(BookDirectoryBuilder) Could not remove "
-				 << tmp_dir() << ": " << ec.message();
+		// CROW_LOG_WARNING << "(BookDirectoryBuilder) Could not remove "
+				 // << tmp_dir() << ": " << ec.message();
 	}
 }
 
@@ -72,7 +72,7 @@ BookDirectoryBuilder::~BookDirectoryBuilder() noexcept
 void
 BookDirectoryBuilder::remove() const
 {
-	CROW_LOG_INFO << "(BookDirectoryBuilder) Removing directory " << dir_;
+	// CROW_LOG_INFO << "(BookDirectoryBuilder) Removing directory " << dir_;
 	fs::remove_all(dir_);
 }
 
@@ -83,14 +83,14 @@ BookDirectoryBuilder::add_zip_file(const std::string& content)
 	auto tdir = tmp_dir();
 	fs::create_directory(tdir);
 	auto zip = zip_file();
-	CROW_LOG_DEBUG << "(BookDirectoryBuilder) content.size(): " << content.size();
+	// CROW_LOG_DEBUG << "(BookDirectoryBuilder) content.size(): " << content.size();
 	std::ofstream os(zip.string());
 	if (not os.good())
 		throw std::system_error(errno, std::system_category(), zip.string());
 	os << content;
 	os.close();
 	std::string command = "unzip -qq -d " + tdir.string() + " " + zip.string();
-	CROW_LOG_DEBUG << "(BookDirectoryBuilder) Unzip command: " << command;
+	// CROW_LOG_DEBUG << "(BookDirectoryBuilder) Unzip command: " << command;
 	auto err = system(command.data());
 	if (err)
 		THROW(Error, "Cannot unzip file: `", command, "` returned ", err);
@@ -160,8 +160,8 @@ BookDirectoryBuilder::make_line_img_files(const Path& pagedir, Page& page) const
 	}
 	for (auto& line: page) {
 		if (not line->has_img_path() and not pix) {
-			CROW_LOG_WARNING << "(BookDirectoryBuilder) Missing image file for: "
-					 << page.ocr;
+			// CROW_LOG_WARNING << "(BookDirectoryBuilder) Missing image file for: "
+					 // << page.ocr;
 		} else if (not line->has_img_path() and pix) {
 			line->img = pagedir / path_from_id(line->id());
 			line->img.replace_extension(page.img.extension());
@@ -182,14 +182,14 @@ clip(BOX& box, const PIX& pix)
 {
 	if (box.x + box.w > (int) pix.w) {
 		int width = pix.w - box.x;
-		CROW_LOG_WARNING << "(BookDirectoryBuilder) Clipping box width from "
-				 << box.w << " to " << width;
+		// CROW_LOG_WARNING << "(BookDirectoryBuilder) Clipping box width from "
+				 // << box.w << " to " << width;
 		box.w = width;
 	}
 	if (box.y + box.h > (int) pix.h) {
 		int height = pix.h - box.y;
-		CROW_LOG_WARNING << "(BookDirectoryBuilder) Clipping box height from "
-				 << box.h << " to " << height;
+		// CROW_LOG_WARNING << "(BookDirectoryBuilder) Clipping box height from "
+				 // << box.h << " to " << height;
 		box.h = height;
 	}
 }
@@ -213,7 +213,7 @@ BookDirectoryBuilder::write_line_img_file(void *vpix, const Line& line)
 		if (not tmp or pixWrite(line.img.string().data(), tmp.get(), format))
 			THROW(Error, "(BookDirectoryBuilder) Cannot write img ", line.img);
 	} else {
-		CROW_LOG_WARNING << "Cannot write line image for " << line.cor();
+		// CROW_LOG_WARNING << "Cannot write line image for " << line.cor();
 	}
 }
 
@@ -221,14 +221,14 @@ BookDirectoryBuilder::write_line_img_file(void *vpix, const Line& line)
 void
 BookDirectoryBuilder::copy(const Path& from, const Path& to)
 {
-	CROW_LOG_DEBUG << "(BookDirectoryBuilder) copying " << from << " to " << to;
+	// CROW_LOG_DEBUG << "(BookDirectoryBuilder) copying " << from << " to " << to;
 	// fs::create_hard_link(to, from); TODO: ??!!
 	boost::system::error_code ec;
 	fs::create_hard_link(from, to, ec);
 	if (ec) { // could not create hard link; try copy
-		CROW_LOG_WARNING << "Could not create hardlink from "
-				 << from << " to " << to << ": "
-				 << ec.message();
+		// CROW_LOG_WARNING << "Could not create hardlink from "
+				 // << from << " to " << to << ": "
+				 // << ec.message();
 		fs::copy_file(from, to);
 	}
 }
