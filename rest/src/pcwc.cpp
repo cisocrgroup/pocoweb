@@ -661,8 +661,10 @@ run(int argc, char* argv[])
 	Ed ed{argc, argv};
 	ed.login();
 	std::string line;
+	std::cout << "? " << std::flush;
 	while (not ed.done and std::getline(std::cin, line)) {
 		ed(line);
+		std::cout << "? " << std::flush;
 	}
 	return EXIT_SUCCESS;
 }
