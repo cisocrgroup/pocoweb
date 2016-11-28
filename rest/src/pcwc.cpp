@@ -40,13 +40,12 @@ struct Range {
 	}
 	int b, e;
 };
+enum struct What {Book, Page, Line};
 
 struct CVersion {};
 struct CQuit {};
 struct CBooks {};
-struct CBook {int id;};
-struct CPage {int id;};
-struct CLine {int id;};
+struct CGoto {What what; int id;};
 struct CNextPage {int ofs;};
 struct CPrevPage {int ofs;};
 struct CSetBook {std::map<std::string, std::string> data;};
@@ -74,9 +73,7 @@ using Command = boost::variant<
 	CVersion,
 	CBooks,
 	CUpload,
-	CBook,
-	CPage,
-	CLine,
+	CGoto,
 	CSetBook,
 	CChange,
 	CNextPage,
@@ -113,9 +110,7 @@ struct Ed: boost::static_visitor<void> {
 	void operator()(const CSetBook& set);
 	void operator()(const CChange& c);
 	void operator()(const CUpload& c);
-	void operator()(CBook b);
-	void operator()(CPage p);
-	void operator()(CLine l);
+	void operator()(CGoto g);
 	void operator()(CNextPage np);
 	void operator()(CPrevPage pp);
 	void operator()(CFirstPage);
@@ -128,6 +123,9 @@ struct Ed: boost::static_visitor<void> {
 	void operator()(CInfo) const;
 	void operator()(const CError& error) const;
 
+	void goto_book(int id);
+	void goto_page(int id);
+	void goto_line(int id);
 	void change(const std::string& line);
 	void read_book();
 	void read_page();
@@ -308,31 +306,48 @@ Ed::operator()(const CUpload& c)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-Ed::operator()(CBook b)
+Ed::operator()(CGoto g)
 {
-	auto url = "http://" + host + "/books/" + std::to_string(b.id);
+	switch (g.what) {
+	case What::Page:
+		goto_page(g.id);
+		break;
+	case What::Book:
+		goto_book(g.id);
+		break;
+	case What::Line:
+		goto_line(g.id);
+		break;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::goto_book(int id)
+{
+	auto url = "http://" + host + "/books/" + std::to_string(id);
 	get(url);
 	read_book();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-Ed::operator()(CPage p)
+Ed::goto_page(int id)
 {
 	auto url = "http://" + host + "/books/" + std::to_string(bookid) +
-		"/pages/" + std::to_string(p.id);
+		"/pages/" + std::to_string(id);
 	get(url);
 	read_page();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-Ed::operator()(CLine l)
+Ed::goto_line(int id)
 {
-	auto i = l.id - 1;
-	if (i < 0 or i >= static_cast<int>(page.size()))
-		THROW(Error, "Invalid line index: ", l.id);
-	lineid = i;
+	--id;
+	if (id < 0 or id >= static_cast<int>(page.size()))
+		THROW(Error, "Invalid line index: ", id);
+	lineid = id;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -581,11 +596,11 @@ Ed::parse(const std::string& line)
 	if (std::regex_match(line, booksre))
 		return CBooks{};
 	if (std::regex_match(line, m, bookre))
-		return CBook{std::stoi(m[1])};
+		return CGoto{What::Book, std::stoi(m[1])};
 	if (std::regex_match(line, m, pagere))
-		return CPage{std::stoi(m[1])};
+		return CGoto{What::Page, std::stoi(m[1])};
 	if (std::regex_match(line, m, linere))
-		return CLine{std::stoi(m[1])};
+		return CGoto{What::Line, std::stoi(m[1])};
 	if (std::regex_match(line, m, uploadre))
 		return CUpload{m[1]};
 	if (std::regex_match(line, m, setbookre)) {
