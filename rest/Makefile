@@ -89,6 +89,7 @@ TESTS += TestAltoXmlParsing.test
 TESTS += TestAbbyyXmlParsing.test
 TESTS += TestOcropusLlocsParsing.test
 TESTS += TestHocrParsing.test
+TESTS += TestBookDirectoryBuilder.test
 
 default: all
 all: pcwd pcwc
