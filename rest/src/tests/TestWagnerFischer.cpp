@@ -88,4 +88,16 @@ BOOST_AUTO_TEST_CASE(Pattern)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(Bug1)
+{
+	wf.set_gt("De Homine.");
+	wf.set_ocr("$=");
+	BOOST_CHECK_EQUAL(wf(), 10);
+	std::stringstream os;
+	os << wf.trace();
+	auto trace = os.str();
+	BOOST_CHECK_EQUAL(trace, "--------##");
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
