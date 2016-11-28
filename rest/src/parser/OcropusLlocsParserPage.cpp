@@ -10,12 +10,12 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-OcropusLlocsParserPage::OcropusLlocsParserPage(int id)
+OcropusLlocsParserPage::OcropusLlocsParserPage(int iid)
 	: dir_()
-	, id_(id)
 {
+	this->id = iid;
 	std::stringstream dir;
-	dir << std::hex << std::setfill('0') << std::setw(10) << id_;
+	dir << std::hex << std::setfill('0') << std::setw(10) << id;
 	dir_ = dir.str();
 }
 
