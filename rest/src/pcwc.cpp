@@ -332,7 +332,7 @@ Ed::operator()(const CSetBook& sb)
 		url += "&";
 	}
 	url.pop_back(); // remove trailing '&' or '?'
-	std::cerr << "url: " << url << "\n";
+	// std::cerr << "url: " << url << "\n";
 	post(url);
 	read_book();
 }
