@@ -725,16 +725,25 @@ xwrite(char *ptr, size_t size, size_t nmemb, void *userdata)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+static void
+prompt(bool p)
+{
+	if (p)
+		std::cout << "? " << std::flush;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 static int
 run(int argc, char* argv[])
 {
+	bool p = isatty(fileno(stdin));
 	Ed ed{argc, argv};
 	ed.login();
 	std::string line;
-	std::cout << "? " << std::flush;
+	prompt(p);
 	while (not ed.done and std::getline(std::cin, line)) {
 		ed(line);
-		std::cout << "? " << std::flush;
+		prompt(p);
 	}
 	return EXIT_SUCCESS;
 }
