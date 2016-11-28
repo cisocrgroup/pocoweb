@@ -1,6 +1,8 @@
 #include <cppconn/connection.h>
 #include <regex>
 #include <crow.h>
+#include <unicode/uchar.h>
+#include <utf8.h>
 #include "core/jsonify.hpp"
 #include "core/Error.hpp"
 #include "core/User.hpp"
@@ -14,7 +16,7 @@
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/WagnerFischer.hpp"
 
-#define LINE_ROUTE_ROUTE "books/<int>/pages/<int>/lines/<int>"
+#define LINE_ROUTE_ROUTE "/books/<int>/pages/<int>/lines/<int>"
 
 using namespace pcw;
 
@@ -26,7 +28,7 @@ const char* LineRoute::name_ = "LineRoute";
 void
 LineRoute::Register(App& app)
 {
-	CROW_ROUTE(app, LINE_ROUTE_ROUTE).methods("GET"_method, "PUT"_method)(*this);
+	CROW_ROUTE(app, LINE_ROUTE_ROUTE).methods("POST"_method, "GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +45,7 @@ LineRoute::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-LineRoute::impl(HttpPut, const Request& req, int bid, int pid, int lid) const
+LineRoute::impl(HttpPost, const Request& req, int bid, int pid, int lid) const
 {
 	Data data;
 	data.correction = req.url_params.get("correction");
@@ -73,13 +75,34 @@ LineRoute::correct(Database& db, Line& line, const Data& data) const
 	auto lev = wf();
 	CROW_LOG_DEBUG << "(LineRoute) lev: " << lev << "\n" << wf;
 	wf.correct(line);
-	// CROW_LOG_DEBUG << "(LineRoute)    gt: " << wf.gt();
-	CROW_LOG_DEBUG << "(LineRoute)    gt: " << line.cor();
-	CROW_LOG_DEBUG << "(LineRoute) trace: " << wf.trace();
-	CROW_LOG_DEBUG << "(LineRoute)   ocr: " << line.cor();
-	// CROW_LOG_DEBUG << "(LineRoute)   ocr: " << wf.ocr();
+	log(wf);
 	db.set_autocommit(false);
 	db.update_line(line);
 	db.commit();
 	return ok();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+LineRoute::log(const WagnerFischer& wf) const
+{
+	std::string u8;
+	print_with_dotted_circles(wf.gt(), u8);
+	CROW_LOG_DEBUG << "(LineRoute)    gt: " << u8;
+	CROW_LOG_DEBUG << "(LineRoute) trace: " << wf.trace();
+	print_with_dotted_circles(wf.ocr(), u8);
+	CROW_LOG_DEBUG << "(LineRoute)   ocr: " << u8;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+LineRoute::print_with_dotted_circles(const std::wstring& str, std::string& u8)
+{
+	static const wchar_t dotted_circle = 0x25cc;
+	u8.clear();
+	for (auto c: str) {
+		if (u_charType(c) == U_NON_SPACING_MARK)
+			utf8::utf32to8(&dotted_circle, &dotted_circle + 1, std::back_inserter(u8));
+		utf8::utf32to8(&c, &c + 1, std::back_inserter(u8));
+	}
 }
