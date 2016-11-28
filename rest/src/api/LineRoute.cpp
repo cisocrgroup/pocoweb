@@ -67,13 +67,16 @@ LineRoute::impl(HttpPost, const Request& req, int bid, int pid, int lid) const
 Route::Response
 LineRoute::correct(Database& db, Line& line, const Data& data) const
 {
-	CROW_LOG_DEBUG << "(LineRoute) correction: " << data.correction;
 
 	WagnerFischer wf;
 	wf.set_gt(data.correction);
 	wf.set_ocr(line);
 	auto lev = wf();
-	CROW_LOG_DEBUG << "(LineRoute) lev: " << lev << "\n" << wf;
+
+	CROW_LOG_DEBUG << "(LineRoute) correction: " << data.correction;
+	CROW_LOG_DEBUG << "(LineRoute) line.cor(): " << line.cor();
+	CROW_LOG_DEBUG << "(LineRoute) line.ocr(): " << line.ocr();
+	CROW_LOG_DEBUG << "(LineRoute)        lev: " << lev << "\n";
 	wf.correct(line);
 	log(wf);
 	db.set_autocommit(false);
@@ -88,10 +91,10 @@ LineRoute::log(const WagnerFischer& wf) const
 {
 	std::string u8;
 	print_with_dotted_circles(wf.gt(), u8);
-	CROW_LOG_DEBUG << "(LineRoute)    gt: " << u8;
-	CROW_LOG_DEBUG << "(LineRoute) trace: " << wf.trace();
+	CROW_LOG_INFO << "(LineRoute)    gt: " << u8;
+	CROW_LOG_INFO << "(LineRoute) trace: " << wf.trace();
 	print_with_dotted_circles(wf.ocr(), u8);
-	CROW_LOG_DEBUG << "(LineRoute)   ocr: " << u8;
+	CROW_LOG_INFO << "(LineRoute)   ocr: " << u8;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

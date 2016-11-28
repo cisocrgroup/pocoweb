@@ -4,6 +4,8 @@
 #include "core/CrtpRoute.hpp"
 
 namespace pcw {
+	class WagnerFischer;
+
 	class LineRoute: public CrtpRoute<LineRoute> {
 	public:
 		virtual ~LineRoute() noexcept override = default;
@@ -14,12 +16,14 @@ namespace pcw {
 		pcw_crtp_route_def_impl__(int,int,int);
 		Response impl(HttpGet, const Request& req, int bid,
 				int pid, int lid) const;
-		Response impl(HttpPut, const Request& req, int bid,
+		Response impl(HttpPost, const Request& req, int bid,
 				int pid, int lid) const;
 
 	private:
 		struct Data {const char *correction, *partial;};
 		Response correct(Database& db, Line& line, const Data& data) const;
+		void log(const WagnerFischer& wf) const;
+		static void print_with_dotted_circles(const std::wstring& str, std::string& u8);
 
 		static const char* route_;
 		static const char* name_;
