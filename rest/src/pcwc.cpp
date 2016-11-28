@@ -411,7 +411,7 @@ Ed::change(const std::string& str)
 {
 	auto url = "http://" + host + "/books/" + std::to_string(bookid) +
 		"/pages/" + std::to_string(pageid) +
-		"/lines/" + std::to_string(lineid) +
+		"/lines/" + std::to_string(lineid + 1) +
 		"?partial=false&correction=";
 	assert(curl);
 	CurlStr params(curl_easy_escape(curl, str.data(), str.size()));
