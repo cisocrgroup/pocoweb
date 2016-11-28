@@ -24,14 +24,16 @@ struct Range {
 	{
 		if (m[1].length()) {
 			if (m[2].length())
-				b = std::stoi(m[2]);
+				b = std::stoi(m[2]) - 1;
 			else
 				b = 0;
 			if (m[4].length())
-				e = std::stoi(m[4]);
+				e = std::stoi(m[4]) - 1;
 			else
 				e = std::numeric_limits<int>::max();
 		}
+		if (b < 0 or e < 0)
+			THROW(Error, "Invalid range: ", b, ", ", e);
 	}
 	bool current_line() const noexcept {
 		return b == 0 and e == 0;
@@ -44,11 +46,11 @@ struct CQuit {};
 struct CBooks {};
 struct CBook {int id;};
 struct CPage {int id;};
+struct CLine {int id;};
 struct CNextPage {int ofs;};
 struct CPrevPage {int ofs;};
 struct CSetBook {std::map<std::string, std::string> data;};
-struct CChangeFile {std::string file;};
-struct CChangeStr {std::string str;};
+struct CChange {std::string what; bool is_file;};
 struct CFirstPage {};
 struct CLastPage {};
 struct CFirstLine {};
@@ -74,9 +76,9 @@ using Command = boost::variant<
 	CUpload,
 	CBook,
 	CPage,
+	CLine,
 	CSetBook,
-	CChangeFile,
-	CChangeStr,
+	CChange,
 	CNextPage,
 	CPrevPage,
 	CFirstPage,
@@ -103,18 +105,17 @@ struct Ed: boost::static_visitor<void> {
 	void perform() const;
 	void get(const std::string& url);
 	void post(const std::string& url);
-	void put(const std::string& url);
 
 	void operator()(const std::string& line);
 	void operator()(CVersion);
 	void operator()(CQuit);
 	void operator()(CBooks);
 	void operator()(const CSetBook& set);
-	void operator()(const CChangeFile& cf);
-	void operator()(const CChangeStr& cf);
+	void operator()(const CChange& c);
 	void operator()(const CUpload& c);
 	void operator()(CBook b);
 	void operator()(CPage p);
+	void operator()(CLine l);
 	void operator()(CNextPage np);
 	void operator()(CPrevPage pp);
 	void operator()(CFirstPage);
@@ -126,8 +127,11 @@ struct Ed: boost::static_visitor<void> {
 	void operator()(const CPrint& p) const;
 	void operator()(CInfo) const;
 	void operator()(const CError& error) const;
+
+	void change(const std::string& line);
 	void read_book();
 	void read_page();
+	void read_line();
 
 	static Command parse(const std::string& line);
 
@@ -225,19 +229,6 @@ Ed::post(const std::string& url)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-Ed::put(const std::string& url)
-{
-	assert(curl);
-	curl_easy_setopt(curl, CURLOPT_URL, url.data());
-	curl_easy_setopt(curl, CURLOPT_HTTPGET, 0);
-	curl_easy_setopt(curl, CURLOPT_POST, 0);
-	curl_easy_setopt(curl, CURLOPT_PUT, 1);
-	buffer.clear();
-	perform();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void
 Ed::perform() const
 {
 	assert(curl);
@@ -290,7 +281,8 @@ Ed::operator()(CBooks)
 			  << type[!!book["isBook"]] << ") "
 			  << book["title"] << " "
 			  << book["author"] << " "
-			  << book["year"] << "\n";
+			  << book["year"] << " "
+			  << book["description"] << "\n";
 	}
 }
 
@@ -335,6 +327,16 @@ Ed::operator()(CPage p)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
+Ed::operator()(CLine l)
+{
+	auto i = l.id - 1;
+	if (i < 0 or i >= static_cast<int>(page.size()))
+		THROW(Error, "Invalid line index: ", l.id);
+	lineid = i;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
 Ed::operator()(const CSetBook& sb)
 {
 	assert(curl);
@@ -358,29 +360,34 @@ Ed::operator()(const CSetBook& sb)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-Ed::operator()(const CChangeFile& cf)
+Ed::operator()(const CChange& c)
 {
-	std::string line;
-	is.open(cf.file);
-	if (not is.good())
-		throw std::system_error(errno, std::system_category(), cf.file);
-	std::getline(is, line);
-	is.close();
-	(*this)(CChangeStr{line});
+	if (c.is_file) {
+		std::string line;
+		is.open(c.what);
+		if (not is.good())
+			throw std::system_error(errno, std::system_category(), c.what);
+		std::getline(is, line);
+		is.close();
+		change(line);
+	} else {
+		change(c.what);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-Ed::operator()(const CChangeStr& cs)
+Ed::change(const std::string& str)
 {
 	auto url = "http://" + host + "/books/" + std::to_string(bookid) +
 		"/pages/" + std::to_string(pageid) +
 		"/lines/" + std::to_string(lineid) +
 		"?partial=false&correction=";
 	assert(curl);
-	CurlStr params(curl_easy_escape(curl, cs.str.data(), cs.str.size()));
+	CurlStr params(curl_easy_escape(curl, str.data(), str.size()));
 	url += params.get();
 	post(url);
+	read_line();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -505,12 +512,13 @@ Ed::operator()(const CPrint& p) const
 		}
 	};
 	if (p.r.current_line()) {
+		std::cout << lineid + 1 << ":";
 		print(p, lineid);
 	} else {
 		const auto end = std::min(p.r.e, static_cast<int>(page.size()));
 		const auto begin = std::min(p.r.b, static_cast<int>(page.size()));
 		for (auto i = begin; i < end; ++i) {
-			std::cout << i << ":";
+			std::cout << i + 1 << ":";
 			print(p, i);
 		}
 	}
@@ -533,7 +541,7 @@ Ed::operator()(CInfo) const
 	std::cerr << "book id: " << bookid << "\n";
 	std::cerr << "page id: " << pageid << "\n";
 	std::cerr << "pages:   " << npages << "\n";
-	std::cerr << "line id: " << lineid << "\n";
+	std::cerr << "line id: " << lineid + 1 << "\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -552,6 +560,7 @@ Ed::parse(const std::string& line)
 	static const std::regex booksre{R"(:books\s*)"};
 	static const std::regex bookre{R"(:book\s+(\d+)\s*)"};
 	static const std::regex pagere{R"(:page\s+(\d+)\s*)"};
+	static const std::regex linere{R"(:line\s+(\d+)\s*)"};
 	static const std::regex uploadre{R"(:upl?o?a?d?\s+(.+))"};
 	static const std::regex nextpagere{R"(:ne?x?t?pa?g?e?\s*([-+]?\d+)?)"};
 	static const std::regex prevpagere{R"(:pr?e?v?pa?g?e?\s*([-+]?\d+)?)"};
@@ -575,6 +584,8 @@ Ed::parse(const std::string& line)
 		return CBook{std::stoi(m[1])};
 	if (std::regex_match(line, m, pagere))
 		return CPage{std::stoi(m[1])};
+	if (std::regex_match(line, m, linere))
+		return CLine{std::stoi(m[1])};
 	if (std::regex_match(line, m, uploadre))
 		return CUpload{m[1]};
 	if (std::regex_match(line, m, setbookre)) {
@@ -619,10 +630,10 @@ Ed::parse(const std::string& line)
 		return CPrint{Range(m), cor};
 	}
 	if (std::regex_match(line, m, changefilere)) { // must check this first
-		return CChangeFile{m[1]};
+		return CChange{m[1], true};
 	}
 	if (std::regex_match(line, m, changestrre)) {
-		return CChangeStr{m[1]};
+		return CChange{m[1], false};
 	}
 	if (std::regex_match(line, infore))
 		return CInfo{};
@@ -650,6 +661,16 @@ Ed::read_page()
 	for (auto& line: json["lines"]) {
 		page.emplace_back(line["cor"].s(), line["ocr"].s());
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+Ed::read_line()
+{
+	auto json = crow::json::load(buffer);
+	lineid = static_cast<int>(json["id"]);
+	page[lineid].cor = json["cor"].s();
+	page[lineid].ocr = json["ocr"].s();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
