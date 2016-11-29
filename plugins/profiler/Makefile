@@ -10,6 +10,7 @@ all: profiler.so
 OBJS += profiler.o
 OBJS += Config.o
 OBJS += ProfilerRoute.o
+OBJS += Profiler.o
 OBJS += LocalProfiler.o
 OBJS += RemoteProfiler.o
 
