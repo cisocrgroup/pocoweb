@@ -1,17 +1,14 @@
+#include "core/Maybe.hpp"
 #include "core/Profile.hpp"
 #include "Profiler.hpp"
 
 using namespace profiler;
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Profile
+pcw::Maybe<pcw::Profile>
 Profiler::profile() noexcept
 {
-	// try {
-		return do_profile();
-	// } catch (const std::exception& e) {
-
-	// } catch (...) {
-
-	// }
+	return pcw::Maybe<pcw::Profile>::from_lambda([this](){
+		return this->do_profile();
+	});
 }

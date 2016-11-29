@@ -6,6 +6,7 @@
 
 namespace pcw {
 	class Profile;
+	template<class T> class Maybe;
 }
 
 namespace profiler {
@@ -20,7 +21,7 @@ namespace profiler {
 		{}
 		virtual ~Profiler() noexcept = default;
 		bool done() const noexcept {return done_;}
-		pcw::Profile profile() noexcept;
+		pcw::Maybe<pcw::Profile> profile() noexcept;
 
 	protected:
 		virtual pcw::Profile do_profile() = 0;
