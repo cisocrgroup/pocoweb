@@ -28,10 +28,8 @@ again:
 		for (auto& pair: p.second) {
 			if (std::regex_search(pair.second.data(), m, var)) {
 				auto expand = ptree.get<std::string>(std::string(m[1]));
-				std::cerr << "expand: " << expand << "\n";
 				auto res = std::regex_replace(pair.second.data(),
 						var, expand, std::regex_constants::format_first_only);
-				std::cerr << "   res: " << res << "\n";
 				p.second.put(pair.first, res);
 				goto again;
 			}
