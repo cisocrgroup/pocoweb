@@ -4,14 +4,47 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <regex>
 #include <thread>
+#include "Error.hpp"
 #include "Config.hpp"
 
+#ifndef PCW_CONFIG_EXPANSION_MAX_RUNS
+#	define PCW_CONFIG_EXPANSION_MAX_RUNS 1000
+#endif // PCW_CONFIG_EXPANSION_MAX_RUNS
+
+using PluginsConfig = std::unordered_map<std::string, pcw::Ptree>;
+
 ////////////////////////////////////////////////////////////////////////////////
-static std::unordered_map<std::string, pcw::Ptree>
+static void
+expand_variables(pcw::Ptree& ptree)
+{
+	static const std::regex var{R"(\$[({](.+)[})])"};
+	std::smatch m;
+
+	size_t runs = 0;
+again:
+	if (runs++ >= PCW_CONFIG_EXPANSION_MAX_RUNS)
+		THROW(pcw::Error, "Maximal number of expansion runs exeeded: ", runs);
+	for (auto& p: ptree) {
+		for (auto& pair: p.second) {
+			if (std::regex_search(pair.second.data(), m, var)) {
+				auto expand = ptree.get<std::string>(std::string(m[1]));
+				std::cerr << "expand: " << expand << "\n";
+				auto res = std::regex_replace(pair.second.data(),
+						var, expand, std::regex_constants::format_first_only);
+				std::cerr << "   res: " << res << "\n";
+				p.second.put(pair.first, res);
+				goto again;
+			}
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+static PluginsConfig
 get_plugins(const pcw::Ptree& ptree)
 {
 	static const std::regex plugin{R"(^plugin[-_](.*)$)", std::regex_constants::icase};
-	std::unordered_map<std::string, pcw::Ptree> plugins;
+	PluginsConfig plugins;
 	std::smatch m;
 	for (const auto& config: ptree) {
 		if (std::regex_search(config.first, m, plugin)) {
@@ -46,6 +79,7 @@ pcw::Config::load(const std::string& filename)
 {
 	Ptree ptree;
 	boost::property_tree::read_ini(filename, ptree);
+	expand_variables(ptree);
 	const auto detach = ptree.get<bool>("daemon.detach");
 	const std::string logfile = detach ?
 		ptree.get<std::string>("log.file") :
