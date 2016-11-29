@@ -48,6 +48,7 @@ OBJS += BookView.o
 OBJS += Package.o
 OBJS += Config.o
 OBJS += Database.o
+OBJS += Profile.o
 OBJS += Route.o
 OBJS += App.o
 OBJS += Line.o
