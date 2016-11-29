@@ -3,6 +3,7 @@
 #include "core/util.hpp"
 #include "core/App.hpp"
 #include "Config.hpp"
+#include "ProfilerRoute.hpp"
 
 using namespace profiler;
 
@@ -11,7 +12,9 @@ static const char*
 do_plugin(const std::string& p, pcw::App& app) noexcept
 {
 	try {
-		auto config = std::make_unique<Config>(p, app.config());
+		auto config = std::make_shared<Config>(p, app.config());
+		auto route = std::make_unique<ProfilerRoute>(config);
+		app.Register(std::move(route));
 		return nullptr;
 	} catch (const std::exception& e) {
 		return pcw::what(e);

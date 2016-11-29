@@ -7,6 +7,7 @@ all: profiler.so
 
 OBJS += profiler.o
 OBJS += Config.o
+OBJS += ProfilerRoute.o
 
 %.so: ../../rest/libpcwcor.a ../../rest/libpcwparser.a
 %.so: $(OBJS)
