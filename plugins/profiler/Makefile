@@ -3,6 +3,8 @@ CXXFLAGS += -I../../modules/crow/include -I../../rest/src -fpic
 LDFLAGS := $(LDFLAGS)
 LDFLAGS += -lmysqlcppconn
 
+VPATH = src/
+
 all: profiler.so
 
 OBJS += profiler.o
