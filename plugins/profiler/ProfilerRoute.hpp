@@ -9,6 +9,8 @@
 namespace profiler {
 	class Config;
 	using ConfigPtr = std::shared_ptr<Config>;
+	class Profiler;
+	using ProfilerPtr = std::unique_ptr<Profiler>;
 
 	class ProfilerRoute: public pcw::CrtpRoute<ProfilerRoute> {
 	public:
@@ -26,9 +28,15 @@ namespace profiler {
 		using Mutex = std::mutex;
 		using MutexPtr = std::shared_ptr<Mutex>;
 		using Lock = std::lock_guard<Mutex>;
+		using Jobs = std::unordered_map<int, ProfilerPtr>;
+		using JobsPtr = std::shared_ptr<Jobs>;
+
+		ProfilerPtr get_profiler() const;
+
 		static const char *route_, *name_;
 		MutexPtr mutex_;
 		ConfigPtr config_;
+		JobsPtr jobs_;
 	};
 }
 
