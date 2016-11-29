@@ -18,9 +18,8 @@ const char* ProfilerRoute::route_ = PROFILER_ROUTE_ROUTE;
 const char* ProfilerRoute::name_ = "ProfilerRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
-ProfilerRoute::ProfilerRoute(ConfigPtr config)
+ProfilerRoute::ProfilerRoute()
 	: mutex_(std::make_unique<Mutex>())
-	, config_(std::move(config))
 	, jobs_(std::make_shared<Jobs>())
 {
 }
@@ -69,8 +68,8 @@ ProfilerRoute::impl(HttpPost, const Request& req, int bid) const
 ProfilerPtr
 ProfilerRoute::get_profiler() const
 {
-	if (config_->local())
-		return std::make_unique<LocalProfiler>(config_);
+	if (Config::get().local())
+		return std::make_unique<LocalProfiler>();
 	else
-		return std::make_unique<RemoteProfiler>(config_);
+		return std::make_unique<RemoteProfiler>();
 }

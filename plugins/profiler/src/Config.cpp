@@ -12,3 +12,9 @@ Config::Config(const std::string& name, const pcw::Config& config)
 {
 }
 
+////////////////////////////////////////////////////////////////////////////////
+void
+Config::setup(const std::string& name, const pcw::Config& config)
+{
+	INSTANCE_.reset(new Config(name, config));
+}

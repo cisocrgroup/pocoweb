@@ -6,9 +6,6 @@
 namespace profiler {
 	class RemoteProfiler: public Profiler {
 	public:
-		RemoteProfiler(ConfigPtr config)
-			: Profiler(std::move(config))
-		{}
 		virtual ~RemoteProfiler() noexcept override = default;
 
 	protected:

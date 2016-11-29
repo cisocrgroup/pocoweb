@@ -12,8 +12,8 @@ static const char*
 do_plugin(const std::string& p, pcw::App& app) noexcept
 {
 	try {
-		auto config = std::make_shared<Config>(p, app.config());
-		auto route = std::make_unique<ProfilerRoute>(config);
+		Config::setup(p, app.config());
+		auto route = std::make_unique<ProfilerRoute>();
 		app.Register(std::move(route));
 		return nullptr;
 	} catch (const std::exception& e) {

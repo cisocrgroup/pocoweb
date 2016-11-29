@@ -12,14 +12,12 @@ namespace pcw {
 }
 
 namespace profiler {
-	class Config;
-	using ConfigPtr = std::shared_ptr<Config>;
 	class Profiler;
 	using ProfilerPtr = std::unique_ptr<Profiler>;
 
 	class ProfilerRoute: public pcw::CrtpRoute<ProfilerRoute> {
 	public:
-		ProfilerRoute(ConfigPtr config);
+		ProfilerRoute();
 
 		virtual void Register(App& app) override;
 		virtual const char* route() const noexcept override {return route_;}
@@ -40,7 +38,6 @@ namespace profiler {
 
 		static const char *route_, *name_;
 		MutexPtr mutex_;
-		ConfigPtr config_;
 		JobsPtr jobs_;
 	};
 }

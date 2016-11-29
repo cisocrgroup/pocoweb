@@ -6,9 +6,6 @@
 namespace profiler {
 	class LocalProfiler: public Profiler {
 	public:
-		LocalProfiler(ConfigPtr config)
-			: Profiler(std::move(config))
-		{}
 		virtual ~LocalProfiler() noexcept override = default;
 
 	protected:
