@@ -657,7 +657,7 @@ Ed::parse(const std::string& line)
 			return CPrevLine{1};
 	}
 	if (std::regex_match(line, m, printre)) {
-		const bool cor = m[5].length();
+		const bool cor = not m[5].length();
 		return CPrint{Range(m), cor};
 	}
 	if (std::regex_match(line, m, changefilere)) { // must check this first
@@ -701,7 +701,10 @@ void
 Ed::read_line()
 {
 	auto json = crow::json::load(buffer);
-	lineid = static_cast<int>(json["id"]);
+	lineid = static_cast<int>(json["id"]) - 1;
+
+	if (lineid < 0)
+		THROW(Error, "Invalid line id from server: ", lineid);
 	page[lineid].cor = json["cor"].s();
 	page[lineid].ocr = json["ocr"].s();
 }
