@@ -5,19 +5,30 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json&
-pcw::operator<<(Json& json, const BookView& project)
+pcw::operator<<(Json& json, const std::vector<BookViewPtr>& books)
 {
-	json["id"] = project.origin().id();
-	json["uri"] = project.origin().uri;
-	json["author"] = project.origin().author;
-	json["title"] = project.origin().title;
-	json["year"] = project.origin().year;
-	json["description"] = project.origin().description;
-	json["isBook"] = project.is_book();
+	int i = 0;
+	for (const auto& book: books) {
+		json["books"][i++] << *book;
+	}
+	return json;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Json&
+pcw::operator<<(Json& json, const BookView& view)
+{
+	json["id"] = view.origin().id();
+	json["uri"] = view.origin().uri;
+	json["author"] = view.origin().author;
+	json["title"] = view.origin().title;
+	json["year"] = view.origin().year;
+	json["description"] = view.origin().description;
+	json["isBook"] = view.is_book();
 
 	std::vector<int> ids;
-	ids.resize(project.size());
-	std::transform(begin(project), end(project), begin(ids), [](const auto& page) {
+	ids.resize(view.size());
+	std::transform(begin(view), end(view), begin(ids), [](const auto& page) {
 		assert(page);
 		return page->id();
 	});
@@ -50,7 +61,8 @@ pcw::operator<<(Json& json, const Line& line)
 	json["id"] = line.id();
 	json["box"] << line.box;
 	json["imgFile"] = line.img.native();
-	json["string"] = line.cor();
+	json["cor"] = line.cor();
+	json["ocr"] = line.ocr();
 	json["cuts"] = line.cuts();
 	json["confidences"] = line.confidences();
 	json["averageConfidence"] = line.average_conf();

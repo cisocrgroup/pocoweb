@@ -1,16 +1,16 @@
 #include <crow.h>
 #include <cppconn/connection.h>
-#include "util.hpp"
-#include "App.hpp"
-#include "Config.hpp"
+#include "core/util.hpp"
+#include "core/App.hpp"
+#include "core/Config.hpp"
 #include "Login.hpp"
-#include "Sessions.hpp"
-#include "Database.hpp"
+#include "core/Sessions.hpp"
+#include "core/Database.hpp"
 #include "CreateUser.hpp"
 #include "UpdateUser.hpp"
 #include "DeleteUser.hpp"
 #include "LoggedIn.hpp"
-#include "User.hpp"
+#include "core/User.hpp"
 
 using namespace pcw;
 
@@ -24,10 +24,10 @@ insert_default_user(const std::string& p, const App& app)
 
 	Database db(session, app.config_ptr());
 	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto name = app.config().plugins[p].get<std::string>("default-user");	
-	auto pass = app.config().plugins[p].get<std::string>("default-pass");	
-	auto email = app.config().plugins[p].get<std::string>("default-email");	
-	auto inst = app.config().plugins[p].get<std::string>("default-institute");	
+	auto name = app.config().plugins[p].get<std::string>("default-user");
+	auto pass = app.config().plugins[p].get<std::string>("default-pass");
+	auto email = app.config().plugins[p].get<std::string>("default-email");
+	auto inst = app.config().plugins[p].get<std::string>("default-institute");
 
 	auto user = db.select_user(name);
 	if (not user)
@@ -57,7 +57,7 @@ do_plugin(const std::string& p, App& app) noexcept
 		app.Register(std::move(update_user));
 		app.Register(std::move(delete_user));
 		app.Register(std::move(logged_in));
-		
+
 		return nullptr;
 	} catch (const std::exception& e) {
 		return what(e);

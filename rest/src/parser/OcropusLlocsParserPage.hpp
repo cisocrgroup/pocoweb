@@ -17,7 +17,6 @@ namespace pcw {
 		static void copy(const Path& from, const Path& to);
 
 		Path dir_;
-		int id_;
 	};
 }
 

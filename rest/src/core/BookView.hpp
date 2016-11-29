@@ -29,6 +29,7 @@ namespace pcw {
 			return this == static_cast<const void*>(&origin());
 		}
 		value_type find(int pageid) const noexcept;
+		value_type next(int pageid, int val) const noexcept;
 		void push_back(PagePtr page);
 		using Base::back;
 		using Base::front;

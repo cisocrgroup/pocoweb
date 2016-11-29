@@ -6,14 +6,20 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-template<class It>
-static PagePtr
-do_find(It b, It e, int id)
+template<class It> static It
+find(It b, It e, int id) noexcept
 {
-	auto i = std::find_if(b, e, [id](const auto& page) {
+	return std::find_if(b, e, [id](const auto& page) {
 		assert(page);
 		return page->id() == id;
 	});
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class It> static PagePtr
+find_page(It b, It e, int id) noexcept
+{
+	auto i = find(b, e, id);
 	return i != e ? *i : nullptr;
 }
 
@@ -32,7 +38,27 @@ BookView::find(int pageid) const noexcept
 {
 	// just do a forward search
 	// this should be fast enough
-	return do_find(begin(), end(), pageid);
+	return find_page(begin(), end(), pageid);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+BookView::value_type
+BookView::next(int pageid, int val) const noexcept
+{
+	const auto b = begin();
+	const auto e = end();
+	const auto i = ::find(b, e, pageid);
+	const auto amount = static_cast<size_t>(std::abs(val));
+
+	if (i != e) {
+		if (val < 0 and amount <= static_cast<size_t>(std::distance(b, i))) {
+			return *(std::prev(i, amount));
+		} else if (0 <= val and amount <= static_cast<size_t>(std::distance(i, e))) {
+			return *(std::next(i, amount));
+		}
+	}
+	return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

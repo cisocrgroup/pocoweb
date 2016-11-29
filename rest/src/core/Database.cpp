@@ -188,11 +188,13 @@ Database::update_line(const Line& line) const
 void
 Database::update_line(const Line& line, sql::Connection& conn) const
 {
-	static const char* sql = "DELETE FROM contents "
-				 "WHERE bookid = ? AND pageid = ? AND lineid = ?;";
-	static const char* tql = "INSERT INTO contents "
-				 "(bookid, pageid, lineid, seq, ocr, cor, cut, conf, corrected) "
-				 "VALUES (?,?,?,?,?,?,?,?);";
+	static const char* sql =
+		"DELETE FROM contents "
+		"WHERE bookid = ? AND pageid = ? AND lineid = ?;";
+	static const char* tql =
+		"INSERT INTO contents "
+		"(bookid, pageid, lineid, seq, ocr, cor, cut, conf) "
+		"VALUES (?,?,?,?,?,?,?,?);";
 
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
@@ -252,12 +254,34 @@ Database::insert_project(BookView& project) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void
+Database::update_book(const BookView& view) const
+{
+	static const char *sql =
+		"UPDATE books "
+		"SET author=?,title=?,year=?,uri=?,description=? "
+		"WHERE bookid=?";
+	check_session_lock();
+	auto conn = connection();
+	PreparedStatementPtr s{conn->prepareStatement(sql)};
+	assert(s);
+	s->setString(1, view.origin().author);
+	s->setString(2, view.origin().title);
+	s->setInt(3, view.origin().year);
+	s->setString(4, view.origin().uri);
+	s->setString(5, view.origin().description);
+	s->setInt(6, view.origin().id());
+	s->executeUpdate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BookPtr
 Database::insert_book(Book& book) const
 {
-	static const char *sql = "INSERT INTO books "
-				 "(author, title, directory, year, uri, bookid, description) "
-				  "VALUES (?,?,?,?,?,?,?);";
+	static const char *sql =
+		"INSERT INTO books "
+		"(author, title, directory, year, uri, bookid, description) "
+		"VALUES (?,?,?,?,?,?,?);";
 	check_session_lock();
 	auto conn = connection();
 	assert(conn);
@@ -418,7 +442,8 @@ Database::select_all_projects(const User& user) const
 BookViewPtr
 Database::select_project(int projectid, sql::Connection& conn) const
 {
-	static const char *sql = "SELECT origin,owner FROM projects WHERE projectid = ?;";
+	static const char *sql =
+		"SELECT origin,owner FROM projects WHERE projectid = ?;";
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
 	s->setInt(1, projectid);
@@ -439,7 +464,8 @@ Database::select_project(int projectid, sql::Connection& conn) const
 
 ////////////////////////////////////////////////////////////////////////////////
 BookViewPtr
-Database::select_subproject(int projectid, int origin, int owner, sql::Connection& conn) const
+Database::select_subproject(int projectid, int origin, int owner,
+		sql::Connection& conn) const
 {
 	// it is save to use the cache here
 	auto book = cached_select_project(origin, conn);
@@ -451,14 +477,16 @@ Database::select_subproject(int projectid, int origin, int owner, sql::Connectio
 
 ////////////////////////////////////////////////////////////////////////////////
 BookViewPtr
-Database::select_subproject(int projectid, int owner, const Book& origin, sql::Connection& conn) const
+Database::select_subproject(int projectid, int owner, const Book& origin,
+		sql::Connection& conn
+) const
 {
 	static const char *sql = "SELECT pageid FROM project_pages "
 				 "WHERE projectid = ?;";
 	// it is save to use cache here
 	auto ownerptr = cached_select_user(owner, conn);
-	if (not ownerptr) // TODO throw?
-		return nullptr;
+	if (not ownerptr)
+		THROW(Error, "Invalid user id: ", owner);
 
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
@@ -586,7 +614,7 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 		const wchar_t cor = res->getInt(10);
 		const auto cut = res->getInt(11);
 		const auto conf = res->getDouble(12);
-		line->append(ocr, cut, conf, cor);
+		line->append(ocr, cor, cut, conf);
 	}
 	// insert last line
 	if (line)

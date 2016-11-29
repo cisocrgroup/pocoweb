@@ -21,7 +21,7 @@ using namespace pcw;
 ////////////////////////////////////////////////////////////////////////////////
 OcropusLlocsPageParser::OcropusLlocsPageParser(Path path)
 	: dir_(std::move(path))
-	, id_(std::stoi(dir_.filename().string(), nullptr, 16))
+	, id_(std::stoi(dir_.filename().string(), nullptr, 10))
 	, done_(false)
 {
 	assert(fs::is_directory(dir_));

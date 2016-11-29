@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <regex>
+#include <utf8.h>
 #include "core/Error.hpp"
 #include "core/Line.hpp"
 #include "OcropusLlocsParserLine.hpp"
@@ -62,21 +63,31 @@ OcropusLlocsParserLine::set(size_t pos, wchar_t c)
 void
 OcropusLlocsParserLine::init()
 {
-	static const std::wregex linere{LR"((.?)\t(-?\d*\.?\d+)(\t(\d*\.?\d+))?)"};
-	std::wifstream is(llocs_.string());
+	std::ifstream is(llocs_.string());
 	if (not is.good())
 		throw std::system_error(errno, std::system_category(), llocs_.string());
-	std::wstring tmp;
-	std::wsmatch m;
+	std::string tmp;
 	while (std::getline(is, tmp)) {
-		if (not std::regex_match(tmp, m, linere))
-			THROW(BadRequest, "(OcropusLLocsParserLine) Invalid llocs file: ", llocs_);
-		wchar_t c = m[1].length() ? *m[1].first : L' ';
-		double cut = std::stod(m[2]);
-		double conf = m[4].length() ? std::stod(m[4]) : 0;
+		auto line = tmp.data();
+		auto first_tab = strchr(line, '\t');
+		if (not first_tab)
+			THROW(BadRequest, "Invalid llocs line: ", tmp);
+		if (line == first_tab) // skip 0 class
+			continue;
+		auto second_tab = strchr(first_tab + 1, '\t');
+
+		wchar_t c = utf8::next(line, first_tab);
+		if (c == 0) // skip 0 class
+			continue;
+		double cut = std::strtod(first_tab + 1, nullptr);
+		double conf = 0;
+
 		if (cut < 0) // fix cuts smaller than 0 (does happen)
 			cut = 0;
+		if (second_tab) // check if the llocs file contains confidence values
+			conf = std::strtod(second_tab + 1, nullptr);
 		line_->append(c, cut, conf);
 	}
+	is.close();
 }
 

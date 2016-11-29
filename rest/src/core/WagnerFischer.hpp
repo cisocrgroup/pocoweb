@@ -73,6 +73,7 @@ namespace pcw {
                 Table l_;
         };
 	std::ostream& operator<<(std::ostream& os, const WagnerFischer& wf);
+	std::ostream& operator<<(std::ostream& os, const WagnerFischer::Trace& trace);
 	std::ostream& operator<<(std::ostream& os, const WagnerFischer::Table& t);
 };
 

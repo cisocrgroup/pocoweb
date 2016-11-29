@@ -285,6 +285,15 @@ pcw::WagnerFischer::find_end_of_token(
 
 ////////////////////////////////////////////////////////////////////////////////
 std::ostream&
+pcw::operator<<(std::ostream& os, const WagnerFischer::Trace& trace)
+{
+	for (auto op: trace)
+		os << static_cast<char>(op);
+	return os;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::ostream&
 pcw::operator<<(std::ostream& os, const WagnerFischer& wf)
 {
 	// os << wf.table() << "\n";
@@ -294,11 +303,11 @@ pcw::operator<<(std::ostream& os, const WagnerFischer& wf)
 		utf8::append(wf.ocr()[i], buf);
 		os << buf;
 	}
+
 	os << "\n";
-	for (size_t i = 0; i < wf.trace().size(); ++i) {
-		os << static_cast<char>(wf.trace()[i]);
-	}
+	os << wf.trace();
 	os << "\n";
+
 	for (size_t i = 0; i < wf.gt().size(); ++i) {
 		utf8::append(wf.gt()[i], buf);
 		os << buf;

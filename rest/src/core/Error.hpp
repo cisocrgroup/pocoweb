@@ -51,6 +51,25 @@ namespace pcw {
 			return 501;
 		}
 	};
+	class Forbidden: public Error {
+	public:
+		Forbidden(const char* f, int l): Error(f, l) {}
+		virtual ~Forbidden() noexcept override = default;
+		virtual int code() const noexcept override {
+			// Forbidden
+			return 403;
+		}
+	};
+
+	class NotFound: public Error {
+	public:
+		NotFound(const char* f, int l): Error(f, l) {}
+		virtual ~NotFound() noexcept override = default;
+		virtual int code() const noexcept override {
+			// Forbidden
+			return 404;
+		}
+	};
 
 	template<class E>
 	void do_append(E& e) {}

@@ -1,6 +1,6 @@
 #include <cppconn/connection.h>
 #include <crow.h>
-#include "Sessions.hpp"
+#include "core/Sessions.hpp"
 #include "LoggedIn.hpp"
 
 using namespace pcw;
@@ -14,14 +14,14 @@ const char* LoggedIn::route_ = LOGGED_IN_ROUTE;
 const char* LoggedIn::name_ = "LoggedIn";
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
-LoggedIn::Register(App& app) 
+void
+LoggedIn::Register(App& app)
 {
 	CROW_ROUTE(app, LOGGED_IN_ROUTE)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-crow::response 
+crow::response
 LoggedIn::operator()(const crow::request& request) const
 {
 	auto session = this->session(request);

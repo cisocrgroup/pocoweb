@@ -1,7 +1,7 @@
 #ifndef pcw_LoggedIn_hpp__
 #define pcw_LoggedIn_hpp__
 
-#include "Route.hpp"
+#include "core/Route.hpp"
 
 namespace pcw {
 	class LoggedIn: public Route {
@@ -10,7 +10,7 @@ namespace pcw {
 		virtual const char *route() const noexcept override {return route_;}
 		virtual const char *name() const noexcept override {return name_;}
 		virtual void Register(App&) override;
-		crow::response operator()(const crow::request& request) const;
+		Response operator()(const Request& request) const;
 
 	private:
 		static const char* route_;

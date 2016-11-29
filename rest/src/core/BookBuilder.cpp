@@ -53,7 +53,7 @@ BookBuilder::parse_book_data() const
 {
 	BookData data;
 	for (const auto& ocr: ocr_) {
-		std::cerr << "OCR: " << ocr.first << "\n";
+		// std::cerr << "OCR: " << ocr.first << "\n";
 		auto pp = make_page_parser(ocr.second, ocr.first);
 		assert(pp);
 		while (pp->has_next()) {

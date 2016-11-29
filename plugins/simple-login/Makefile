@@ -1,5 +1,5 @@
 CXXFLAGS := $(CXXFLAGS)
-CXXFLAGS += -I../../modules/crow/include -I../../rest/src/core -fpic
+CXXFLAGS += -I../../modules/crow/include -I../../rest/src -fpic
 ## LDFLAGS := $(LDFLAGS)
 LDFLAGS += -lmysqlcppconn
 
@@ -11,8 +11,8 @@ OBJS += DeleteUser.o
 OBJS += Login.o
 OBJS += LoggedIn.o
 
-simple-login.so: $(OBJS) ../../rest/libpcwcore.a
-	$(CXX) $(CXXFLAGS) -shared -o $@ $^ $(LDFLAGS) 
+simple-login.so: $(OBJS) ../../rest/libpcwcore.a ../../rest/libpcwparser.a
+	$(CXX) $(CXXFLAGS) -shared -o $@ $^ $(LDFLAGS)
 clean:
 	$(RM) *.so *.o *.d
 -include $(patsubst %.o,%.d,$(OBJS))

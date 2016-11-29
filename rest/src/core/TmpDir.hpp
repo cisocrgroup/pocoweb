@@ -11,12 +11,10 @@ namespace pcw {
 	public:
 		TmpDir(): dir_(get_tmp_dir()) {
 			boost::filesystem::create_directory(dir_);
-			BOOST_CHECK(boost::filesystem::is_directory(dir_));
 		}
 		~TmpDir() noexcept {
 			boost::system::error_code ec;
 			boost::filesystem::remove_all(dir_, ec);
-			BOOST_CHECK(not boost::filesystem::exists(dir_));
 		}
 		operator Path() const noexcept {return dir_;}
 		Path operator/(const Path& other) noexcept {

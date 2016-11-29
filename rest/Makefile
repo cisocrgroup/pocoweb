@@ -4,6 +4,7 @@ CXXFLAGS += -I src
 CXXFLAGS += -I ../modules/crow/include
 CXXFLAGS += -I ../modules/pugixml/src
 CXXFLAGS += -I ../modules/utfcpp/source
+#CXXFLAGS += -fdiagnostics-color=always # does not work well with vim's :cn,:cp
 CXXFLAGS += -DPCW_API_VERSION_MAJOR=$(PCW_API_VERSION_MAJOR)
 CXXFLAGS += -DPCW_API_VERSION_MINOR=$(PCW_API_VERSION_MINOR)
 CXXFLAGS += -DPCW_API_VERSION_PATCH=$(PCW_API_VERSION_PATCH)
@@ -58,8 +59,10 @@ OBJS += jsonify.o
 OBJS += docxml.o
 OBJS += db.o
 
-API_OBJS += ApiVersion.o
-API_OBJS += ApiBooks.o
+API_OBJS += VersionRoute.o
+API_OBJS += BookRoute.o
+API_OBJS += PageRoute.o
+API_OBJS += LineRoute.o
 
 PAR_OBJS += pugixml.o
 PAR_OBJS += ParserPage.o
@@ -86,12 +89,15 @@ TESTS += TestAltoXmlParsing.test
 TESTS += TestAbbyyXmlParsing.test
 TESTS += TestOcropusLlocsParsing.test
 TESTS += TestHocrParsing.test
+TESTS += TestBookDirectoryBuilder.test
 
 default: all
-all: pcwd
+all: pcwd pcwc
 
 pcwd: pcwd.o libpcwapi.a libpcwcore.a libpcwparser.a
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
+pcwc: pcwc.o libpcwapi.a libpcwcore.a libpcwparser.a
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -lcurl
 
 %.test: %.o libpcwapi.a libpcwcore.a libpcwparser.a libpcwcore.a
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
@@ -125,8 +131,8 @@ libpcwparser.a: $(PAR_OBJS)
 
 .PHONY: clean
 clean:
-	$(RM) *.o *.d *.so *.a *.test pcwd
+	$(RM) *.o *.d *.so *.a *.test pcwd pcwc
 
-DEPS = $(patsubst %.o,%.d,$(OBJS) $(API_OBJS) $(PAR_OBJS) $(patsubst %.test,%.o,$(TESTS)) pcwd.o)
+DEPS = $(patsubst %.o,%.d,$(OBJS) $(API_OBJS) $(PAR_OBJS) $(patsubst %.test,%.o,$(TESTS)) pcwd.o pcwc.o)
 -include $(DEPS)
 
