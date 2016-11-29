@@ -48,7 +48,8 @@ ProfilerRoute::impl(HttpPost, const Request& req, int bid) const
 	auto view = find(db, bid);
 	if (not view)
 		THROW(pcw::NotFound, "Cannot find book id: ", bid);
-	auto book = view->origin().shared_from_this();
+	auto book = std::dynamic_pointer_cast<const pcw::Book>(
+			view->origin().shared_from_this());
 	if (not book)
 		THROW(pcw::NotFound, "Cannot find book id: ", bid);
 	assert(book);
@@ -56,8 +57,8 @@ ProfilerRoute::impl(HttpPost, const Request& req, int bid) const
 
 	Lock lock(*mutex_);
 	if (not jobs_->count(book->id())) {
-		jobs_->emplace(book->id(), std::async(std::launch::async, [this]() {
-			auto profiler = get_profiler();
+		jobs_->emplace(book->id(), std::async(std::launch::async, [book]() {
+			auto profiler = get_profiler(book);
 			return profiler->profile();
 		}));
 	}
@@ -66,10 +67,10 @@ ProfilerRoute::impl(HttpPost, const Request& req, int bid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 ProfilerPtr
-ProfilerRoute::get_profiler() const
+ProfilerRoute::get_profiler(BookPtr book)
 {
 	if (Config::get().local())
-		return std::make_unique<LocalProfiler>();
+		return std::make_unique<LocalProfiler>(book);
 	else
-		return std::make_unique<RemoteProfiler>();
+		return std::make_unique<RemoteProfiler>(book);
 }

@@ -7,11 +7,13 @@
 #include "core/CrtpRoute.hpp"
 
 namespace pcw {
+	class Book;
 	class Profile;
 	template<class T> class Maybe;
 }
 
 namespace profiler {
+	using BookPtr = std::shared_ptr<const pcw::Book>;
 	class Profiler;
 	using ProfilerPtr = std::unique_ptr<Profiler>;
 
@@ -34,7 +36,7 @@ namespace profiler {
 		using Jobs = std::unordered_map<int, std::future<pcw::Maybe<pcw::Profile>>>;
 		using JobsPtr = std::shared_ptr<Jobs>;
 
-		ProfilerPtr get_profiler() const;
+		static ProfilerPtr get_profiler(BookPtr book);
 
 		static const char *route_, *name_;
 		MutexPtr mutex_;
