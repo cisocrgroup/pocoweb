@@ -188,11 +188,13 @@ Database::update_line(const Line& line) const
 void
 Database::update_line(const Line& line, sql::Connection& conn) const
 {
-	static const char* sql = "DELETE FROM contents "
-				 "WHERE bookid = ? AND pageid = ? AND lineid = ?;";
-	static const char* tql = "INSERT INTO contents "
-				 "(bookid, pageid, lineid, seq, ocr, cor, cut, conf) "
-				 "VALUES (?,?,?,?,?,?,?,?);";
+	static const char* sql =
+		"DELETE FROM contents "
+		"WHERE bookid = ? AND pageid = ? AND lineid = ?;";
+	static const char* tql =
+		"INSERT INTO contents "
+		"(bookid, pageid, lineid, seq, ocr, cor, cut, conf) "
+		"VALUES (?,?,?,?,?,?,?,?);";
 
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
