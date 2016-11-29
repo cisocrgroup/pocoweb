@@ -6,6 +6,11 @@
 #include <crow/logging.h>
 #include "core/CrtpRoute.hpp"
 
+namespace pcw {
+	class Profile;
+	template<class T> class Maybe;
+}
+
 namespace profiler {
 	class Config;
 	using ConfigPtr = std::shared_ptr<Config>;
@@ -28,7 +33,7 @@ namespace profiler {
 		using Mutex = std::mutex;
 		using MutexPtr = std::shared_ptr<Mutex>;
 		using Lock = std::lock_guard<Mutex>;
-		using Jobs = std::unordered_map<int, ProfilerPtr>;
+		using Jobs = std::unordered_map<int, std::future<pcw::Maybe<pcw::Profile>>>;
 		using JobsPtr = std::shared_ptr<Jobs>;
 
 		ProfilerPtr get_profiler() const;

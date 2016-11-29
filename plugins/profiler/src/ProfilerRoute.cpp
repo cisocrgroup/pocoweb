@@ -1,5 +1,9 @@
 #include <crow/app.h>
+#include "core/Database.hpp"
 #include "core/App.hpp"
+#include "core/Book.hpp"
+#include "core/Maybe.hpp"
+#include "core/Profile.hpp"
 #include "Config.hpp"
 #include "LocalProfiler.hpp"
 #include "RemoteProfiler.hpp"
@@ -40,8 +44,25 @@ ProfilerRoute::impl(HttpGet, const Request& req, int bid) const
 ProfilerRoute::Response
 ProfilerRoute::impl(HttpPost, const Request& req, int bid) const
 {
+	// query book
+	auto db = database(req);
+	auto view = find(db, bid);
+	if (not view)
+		THROW(pcw::NotFound, "Cannot find book id: ", bid);
+	auto book = view->origin().shared_from_this();
+	if (not book)
+		THROW(pcw::NotFound, "Cannot find book id: ", bid);
+	assert(book);
+	assert(book->is_book());
+
 	Lock lock(*mutex_);
-	return not_implemented();
+	if (not jobs_->count(book->id())) {
+		jobs_->emplace(book->id(), std::async(std::launch::async, [this]() {
+			auto profiler = get_profiler();
+			return profiler->profile();
+		}));
+	}
+	return accepted();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
