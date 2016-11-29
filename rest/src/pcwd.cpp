@@ -49,7 +49,7 @@ get_app(int argc, char** argv)
 		throw std::runtime_error("Usage: " + std::string(argv[0]) + " <config>");
 
 	auto app = std::make_unique<pcw::App>(argv[1]);
-	CROW_LOG_INFO << "Config:\n" << app->config();
+	app->config().LOG();
 	return app;
 }
 

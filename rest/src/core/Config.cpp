@@ -123,31 +123,30 @@ pcw::Config::Plugins::operator[](const std::string& p) const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::ostream&
-pcw::operator<<(std::ostream& os, const Config& config)
+void
+pcw::Config::LOG() const
 {
-	os << "db.user: " << config.db.user << "\n";
-	os << "db.host: " << config.db.host << "\n";
-	os << "db.pass: " << config.db.pass << "\n";
-	os << "db.db: " << config.db.db << "\n";
+	CROW_LOG_INFO << "db.user: " << this->db.user;
+	CROW_LOG_INFO << "db.host: " << this->db.host;
+	CROW_LOG_INFO << "db.pass: " << this->db.pass;
+	CROW_LOG_INFO << "db.db: " << this->db.db;
 
-	os << "daemon.host: " << config.daemon.host << "\n";
-	os << "daemon.user: " << config.daemon.user << "\n";
-	os << "daemon.group: " << config.daemon.group << "\n";
-	os << "daemon.basedir: " << config.daemon.basedir << "\n";
-	os << "daemon.port: " << config.daemon.port << "\n";
-	os << "daemon.threads: " << config.daemon.threads << "\n";
-	os << "daemon.sessions: " << config.daemon.sessions << "\n";
-	os << "daemon.detach: " << config.daemon.detach << "\n";
+	CROW_LOG_INFO << "daemon.host: " << this->daemon.host;
+	CROW_LOG_INFO << "daemon.user: " << this->daemon.user;
+	CROW_LOG_INFO << "daemon.group: " << this->daemon.group;
+	CROW_LOG_INFO << "daemon.basedir: " << this->daemon.basedir;
+	CROW_LOG_INFO << "daemon.port: " << this->daemon.port;
+	CROW_LOG_INFO << "daemon.threads: " << this->daemon.threads;
+	CROW_LOG_INFO << "daemon.sessions: " << this->daemon.sessions;
+	CROW_LOG_INFO << "daemon.detach: " << this->daemon.detach;
 
-	os << "log.file: " << config.log.file << "\n";
-	os << "log.level: " << config.log.level;
+	CROW_LOG_INFO << "log.file: " << this->log.file;
+	CROW_LOG_INFO << "log.level: " << this->log.level;
 
-	for (const auto& p: config.plugins.configs) {
+	for (const auto& p: this->plugins.configs) {
 		for (const auto& q: p.second) {
-			os << "\nplugins." << p.first << "." << q.first << ": ";
-			os << q.second.data();
+			CROW_LOG_INFO << "plugins." << p.first << "."
+				<< q.first << ": " << q.second.data();
 		}
 	}
-	return os;
 }
