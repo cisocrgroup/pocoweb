@@ -6,7 +6,7 @@
 namespace profiler {
 	class LocalProfiler: public Profiler {
 	public:
-		LocalProfiler(BookPtr book): Profiler(std::move(book)) {}
+		LocalProfiler(ConstBookSptr book): Profiler(std::move(book)) {}
 		virtual ~LocalProfiler() noexcept override = default;
 
 	protected:

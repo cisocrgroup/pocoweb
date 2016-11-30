@@ -56,7 +56,7 @@ ProfilerRoute::impl(HttpPost, const Request& req, int bid) const
 	assert(book->is_book());
 
 	Lock lock(*mutex_);
-	if (not jobs_->count(book->id())) {
+	if (not is_job_id(book->id())) {
 		jobs_->emplace(book->id(), std::async(std::launch::async, [book]() {
 			auto profiler = get_profiler(book);
 			return profiler->profile();
@@ -66,8 +66,8 @@ ProfilerRoute::impl(HttpPost, const Request& req, int bid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProfilerPtr
-ProfilerRoute::get_profiler(BookPtr book)
+ProfilerUptr
+ProfilerRoute::get_profiler(ConstBookSptr book)
 {
 	if (Config::get().local())
 		return std::make_unique<LocalProfiler>(book);

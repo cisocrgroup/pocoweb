@@ -6,16 +6,17 @@
 
 namespace pcw {
 	class Book;
+	using ConstBookSptr = std::shared_ptr<const pcw::Book>;
 	class Profile;
 	template<class T> class Maybe;
 }
 
 namespace profiler {
-	using BookPtr = std::shared_ptr<const pcw::Book>;
+	using ConstBookSptr = pcw::ConstBookSptr;
 
 	class Profiler {
 	public:
-		Profiler(BookPtr book): book_(std::move(book)) {}
+		Profiler(ConstBookSptr book): book_(std::move(book)) {}
 		virtual ~Profiler() noexcept = default;
 		pcw::Maybe<pcw::Profile> profile() noexcept;
 
@@ -24,7 +25,7 @@ namespace profiler {
 		const pcw::Book& book() const noexcept {return *book_;}
 
 	private:
-		BookPtr book_;
+		ConstBookSptr book_;
 	};
 }
 

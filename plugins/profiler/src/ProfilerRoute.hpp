@@ -8,14 +8,15 @@
 
 namespace pcw {
 	class Book;
+	using ConstBookSptr = std::shared_ptr<const Book>;
 	class Profile;
 	template<class T> class Maybe;
 }
 
 namespace profiler {
-	using BookPtr = std::shared_ptr<const pcw::Book>;
+	using ConstBookSptr = pcw::ConstBookSptr;
 	class Profiler;
-	using ProfilerPtr = std::unique_ptr<Profiler>;
+	using ProfilerUptr = std::unique_ptr<Profiler>;
 
 	class ProfilerRoute: public pcw::CrtpRoute<ProfilerRoute> {
 	public:
@@ -36,7 +37,10 @@ namespace profiler {
 		using Jobs = std::unordered_map<int, std::future<pcw::Maybe<pcw::Profile>>>;
 		using JobsPtr = std::shared_ptr<Jobs>;
 
-		static ProfilerPtr get_profiler(BookPtr book);
+		bool is_job_id(int id) const noexcept {
+			return jobs_->count(id);
+		}
+		static ProfilerUptr get_profiler(ConstBookSptr book);
 
 		static const char *route_, *name_;
 		MutexPtr mutex_;

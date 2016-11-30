@@ -6,7 +6,7 @@
 namespace profiler {
 	class RemoteProfiler: public Profiler {
 	public:
-		RemoteProfiler(BookPtr book): Profiler(std::move(book)) {}
+		RemoteProfiler(ConstBookSptr book): Profiler(std::move(book)) {}
 		virtual ~RemoteProfiler() noexcept override = default;
 
 	protected:
