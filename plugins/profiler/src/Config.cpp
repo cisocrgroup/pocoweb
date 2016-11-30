@@ -4,6 +4,9 @@
 using namespace profiler;
 
 ////////////////////////////////////////////////////////////////////////////////
+std::unique_ptr<const Config> Config::INSTANCE_ = nullptr;
+
+////////////////////////////////////////////////////////////////////////////////
 Config::Config(const std::string& name, const pcw::Config& config)
 	: backend_(config.plugins[name].get<std::string>("backend"))
 	, exe_(config.plugins[name].get<std::string>("exe"))
