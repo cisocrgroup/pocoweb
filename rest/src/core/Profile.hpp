@@ -53,17 +53,35 @@ namespace pcw {
 		int lev_;
 	};
 
+	struct Suggestion {
+		Suggestion(const Candidate& c, const Token& t)
+			: cand(c)
+			, token(t)
+		{}
+		Candidate cand;
+		Token token;
+	};
+
+	struct Pattern {
+		Pattern(const PatternExpr& e)
+			: ocr(e.ocr)
+			, cor(e.cor)
+		{}
+		std::string ocr, cor;
+	};
+	static inline bool operator==(const Pattern& lhs,
+			const Pattern& rhs) noexcept {
+		return std::tie(lhs.ocr, lhs.cor) == std::tie(rhs.ocr, rhs.cor);
+	}
+	static inline bool operator<(const Pattern& lhs,
+			const Pattern& rhs) noexcept {
+		return std::tie(lhs.ocr, lhs.cor) < std::tie(rhs.ocr, rhs.cor);
+	}
+
 	class Profile {
 	public:
-		struct Suggestion {
-			Suggestion(const Candidate& c, const Token& t)
-				: cand(c)
-				, token(t)
-			{}
-			Candidate cand;
-			Token token;
-		};
 		using Suggestions = std::vector<Suggestion>;
+		using Patterns = std::map<Pattern, Suggestion>;
 
 		Profile(ConstBookSptr book)
 			: suggestions_()
@@ -73,6 +91,7 @@ namespace pcw {
 		const Suggestions& suggestions() const noexcept {
 			return suggestions_;
 		}
+		Patterns calculate_patterns() const;
 
 	private:
 		Suggestions suggestions_;

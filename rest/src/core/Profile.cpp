@@ -95,6 +95,20 @@ Candidate::wcor() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+Profile::Patterns
+Profile::calculate_patterns() const
+{
+	Patterns ps;
+	for (const auto& s: suggestions_) {
+		auto expl = s.cand.explanation();
+		for (const auto& ocrp: expl.ocrp.patterns) {
+			ps.emplace(ocrp, s);
+		}
+	}
+	return ps;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 ProfileBuilder::ProfileBuilder(ConstBookSptr book)
 	: tokens_()
 	, suggestions_()
