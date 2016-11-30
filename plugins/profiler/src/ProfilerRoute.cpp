@@ -45,15 +45,7 @@ ProfilerRoute::impl(HttpPost, const Request& req, int bid) const
 {
 	// query book
 	auto db = database(req);
-	auto view = find(db, bid);
-	if (not view)
-		THROW(pcw::NotFound, "Cannot find book id: ", bid);
-	auto book = std::dynamic_pointer_cast<const pcw::Book>(
-			view->origin().shared_from_this());
-	if (not book)
-		THROW(pcw::NotFound, "Cannot find book id: ", bid);
-	assert(book);
-	assert(book->is_book());
+	auto book = get_origin(db, bid);
 
 	Lock lock(*mutex_);
 	if (not is_job_id(book->id())) {
@@ -73,4 +65,18 @@ ProfilerRoute::get_profiler(ConstBookSptr book)
 		return std::make_unique<LocalProfiler>(book);
 	else
 		return std::make_unique<RemoteProfiler>(book);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+ConstBookSptr
+ProfilerRoute::get_origin(const Database& db, int bid) const
+{
+	auto view = find(db, bid);
+	if (not view)
+		THROW(pcw::NotFound, "Cannot find book id: ", bid);
+	auto book = std::dynamic_pointer_cast<const pcw::Book>(
+			view->origin().shared_from_this());
+	if (not book)
+		THROW(pcw::NotFound, "Cannot find origin of book id: ", bid);
+	return book;
 }

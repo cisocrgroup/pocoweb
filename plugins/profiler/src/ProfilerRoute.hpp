@@ -40,6 +40,7 @@ namespace profiler {
 		bool is_job_id(int id) const noexcept {
 			return jobs_->count(id);
 		}
+		ConstBookSptr get_origin(const Database& db, int bid) const;
 		static ProfilerUptr get_profiler(ConstBookSptr book);
 
 		static const char *route_, *name_;
