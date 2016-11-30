@@ -12,6 +12,7 @@ namespace pcw {
 	class WagnerFischer;
 	class Line;
 	using LinePtr = std::shared_ptr<Line>;
+	using ConstLineSptr = std::shared_ptr<const Line>;
 	struct Token;
 	struct Char;
 
@@ -112,9 +113,12 @@ namespace pcw {
 		uint64_t unique_id() const noexcept;
 		bool is_corrected() const;
 		bool is_normal() const;
+		size_t offset() const noexcept {
+			return std::distance(line->chars_.begin(), begin);
+		}
 
 		Line::CharIterator begin, end;
-		std::shared_ptr<const Line> line;
+		ConstLineSptr line;
 		Box box;
 		int id;
 	};
