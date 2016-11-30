@@ -3,11 +3,14 @@
 
 #include <boost/filesystem/path.hpp>
 #include <regex>
+#include <unordered_map>
+#include "Line.hpp"
 
 namespace pcw {
 	class Book;
 	using ConstBookSptr = std::shared_ptr<const Book>;
 	using Path = boost::filesystem::path;
+	class Char;
 
 	struct PatternExpr {
 		PatternExpr() = default;
@@ -51,8 +54,26 @@ namespace pcw {
 	};
 
 	class Profile {
+	public:
+		Profile(ConstBookSptr book)
+			: suggestions_()
+			, book_(std::move(book)) {}
+		struct Suggestion {
+			Suggestion(const Candidate& c, const Token& t)
+				: cand(c)
+				, token(t)
+			{}
+			Candidate cand;
+			Token token;
+		};
+		using Suggestions = std::vector<Suggestion>;
+		const Suggestions& suggestions() const noexcept {
+			return suggestions_;
+		}
 
 	private:
+		Suggestions suggestions_;
+		ConstBookSptr book_;
 		friend class ProfileBuilder;
 	};
 
@@ -60,10 +81,13 @@ namespace pcw {
 	public:
 		ProfileBuilder(ConstBookSptr book);
 		void add_candidates_from_file(const Path& path);
-		void add_candidate_from_string(const std::string& str);
+		void add_candidate_string(const Token& token, const std::string& str);
+		void add_candidate(const Token& token, const Candidate& cand);
 		Profile build() const;
 
 	private:
+		std::unordered_map<int64_t, Token> tokens_;
+		Profile::Suggestions suggestions_;
 		ConstBookSptr book_;
 	};
 }

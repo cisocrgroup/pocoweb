@@ -1,5 +1,8 @@
 #include <iostream>
 #include <utf8.h>
+#include <pugixml.hpp>
+#include "Book.hpp"
+#include "Page.hpp"
 #include "Error.hpp"
 #include "Profile.hpp"
 
@@ -93,27 +96,62 @@ Candidate::wcor() const
 
 ////////////////////////////////////////////////////////////////////////////////
 ProfileBuilder::ProfileBuilder(ConstBookSptr book)
-	: book_(std::move(book))
+	: tokens_()
+	, suggestions_()
+	, book_(std::move(book))
 {
+	for (const auto& page: *book_) {
+		assert(page);
+		for (const auto& line: *page) {
+			assert(line);
+			line->each_token([this](const auto& token) {
+				auto id = token.unique_id();
+				tokens_[id] = token;
+			});
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Profile
 ProfileBuilder::build() const
 {
-	return {};
+	Profile profile{book_};
+	profile.suggestions_ = this->suggestions_;
+	return profile;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 ProfileBuilder::add_candidates_from_file(const Path& path)
 {
-
+	pugi::xml_document doc;
+	auto ok = doc.load_file(path.string().data());
+	if (not ok)
+		THROW(ParseError, "Could not parse file ", path, ": ", ok.description());
+	auto ts = doc.document_element().select_nodes(".//token");
+	for (const auto& t: ts) {
+		int64_t id = std::stoll(t.node().child("ext_id").child_value());
+		auto token = tokens_[id];
+		auto cs = t.node().select_nodes(".//cand");
+		for (const auto& c: cs) {
+			add_candidate_string(token, c.node().child_value());
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-ProfileBuilder::add_candidate_from_string(const std::string& str)
+ProfileBuilder::add_candidate_string(const Token& token, const std::string& str)
 {
+	add_candidate(token, Candidate(str));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+void
+ProfileBuilder::add_candidate(const Token& token, const Candidate& cand)
+{
+	if (not token.line or not token.unique_id())
+		THROW(ParseError, "Encountered empty token for candidate: ", cand.cor());
+	suggestions_.emplace_back(cand, token);
+}
