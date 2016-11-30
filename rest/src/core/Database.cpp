@@ -19,6 +19,15 @@
 static const int SHA2_HASH_SIZE = 256;
 
 using namespace pcw;
+// use macro to get the line of missing session locks
+#define check_session_lock() \
+{ \
+	assert(this->session_); \
+	if (this->session_->mutex.try_lock()) { \
+		this->session_->mutex.unlock(); \
+		THROW(Error, "(Database) Current session is not locked"); \
+	} \
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 Database::Database(SessionPtr session, ConfigPtr config, CachePtr cache)
@@ -657,17 +666,6 @@ Database::commit()
 		session_->connection->commit();
 	} else {
 		CROW_LOG_ERROR << "(Database) call to commit() in auto commit mode";
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void
-Database::check_session_lock() const
-{
-	assert(session_);
-	if (session_->mutex.try_lock()) {
-		session_->mutex.unlock(); // unlock
-		THROW(Error, "(Database) Current session is not locked");
 	}
 }
 
