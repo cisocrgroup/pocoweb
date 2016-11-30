@@ -1,9 +1,11 @@
+#include <cppconn/connection.h>
 #include <crow/app.h>
 #include "core/Database.hpp"
 #include "core/App.hpp"
 #include "core/Book.hpp"
 #include "core/Maybe.hpp"
 #include "core/Profile.hpp"
+#include "core/Sessions.hpp"
 #include "Config.hpp"
 #include "LocalProfiler.hpp"
 #include "RemoteProfiler.hpp"
@@ -37,9 +39,10 @@ ProfilerRoute::impl(HttpGet, const Request& req, int bid) const
 {
 	// query book
 	auto db = database(req);
+	Lock dblock(db.session().mutex);
 	auto book = get_origin(db, bid);
 
-	Lock lock(*mutex_);
+	Lock joblock(*mutex_);
 	if (is_running_job_id(book->id())) {
 		using namespace std::chrono_literals;
 		auto amount = 2s;
@@ -75,9 +78,10 @@ ProfilerRoute::impl(HttpPost, const Request& req, int bid) const
 {
 	// query book
 	auto db = database(req);
+	Lock dblock(db.session().mutex);
 	auto book = get_origin(db, bid);
 
-	Lock lock(*mutex_);
+	Lock joblock(*mutex_);
 	if (not is_running_job_id(book->id())) {
 		jobs_->emplace(book->id(), std::async(std::launch::async, [book]() {
 			auto profiler = get_profiler(book);
