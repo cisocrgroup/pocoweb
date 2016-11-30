@@ -35,7 +35,37 @@ ProfilerRoute::Register(App& app)
 ProfilerRoute::Response
 ProfilerRoute::impl(HttpGet, const Request& req, int bid) const
 {
+	// query book
+	auto db = database(req);
+	auto book = get_origin(db, bid);
+
 	Lock lock(*mutex_);
+	if (is_running_job_id(book->id())) {
+		using namespace std::chrono_literals;
+		auto amount = 2s;
+		auto future = jobs_->find(bid);
+		assert(future != end(*jobs_));
+		auto status = future->second.wait_for(amount);
+		if (status == std::future_status::ready) { // job is done
+			CROW_LOG_INFO << "(ProfilerRoute) Job id: " << book->id()
+				      << " done";
+			auto res = future->second.get(); // should not block
+			jobs_->erase(future); // remove job
+			return handle_new_profile(db, res);
+		} else { // job is not done yet
+			CROW_LOG_INFO << "(ProfilerRoute) Job id: " << book->id()
+				      << " not done yet";
+			return accepted();
+		}
+	} else { // no such job
+		return not_implemented();
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+ProfilerRoute::Response
+ProfilerRoute::handle_new_profile(const pcw::Database& db, const Result& res) const
+{
 	return not_implemented();
 }
 
@@ -48,7 +78,7 @@ ProfilerRoute::impl(HttpPost, const Request& req, int bid) const
 	auto book = get_origin(db, bid);
 
 	Lock lock(*mutex_);
-	if (not is_job_id(book->id())) {
+	if (not is_running_job_id(book->id())) {
 		jobs_->emplace(book->id(), std::async(std::launch::async, [book]() {
 			auto profiler = get_profiler(book);
 			return profiler->profile();
@@ -69,7 +99,7 @@ ProfilerRoute::get_profiler(ConstBookSptr book)
 
 ////////////////////////////////////////////////////////////////////////////////
 ConstBookSptr
-ProfilerRoute::get_origin(const Database& db, int bid) const
+ProfilerRoute::get_origin(const pcw::Database& db, int bid) const
 {
 	auto view = find(db, bid);
 	if (not view)

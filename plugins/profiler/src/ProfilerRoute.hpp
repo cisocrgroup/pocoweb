@@ -36,12 +36,14 @@ namespace profiler {
 		using Lock = std::lock_guard<Mutex>;
 		using Jobs = std::unordered_map<int, std::future<pcw::Maybe<pcw::Profile>>>;
 		using JobsPtr = std::shared_ptr<Jobs>;
+		using Result = pcw::Maybe<pcw::Profile>;
 
-		bool is_job_id(int id) const noexcept {
+		bool is_running_job_id(int id) const noexcept {
 			return jobs_->count(id);
 		}
-		ConstBookSptr get_origin(const Database& db, int bid) const;
+		ConstBookSptr get_origin(const pcw::Database& db, int bid) const;
 		static ProfilerUptr get_profiler(ConstBookSptr book);
+		Response handle_new_profile(const pcw::Database& db, const Result& res) const;
 
 		static const char *route_, *name_;
 		MutexPtr mutex_;
