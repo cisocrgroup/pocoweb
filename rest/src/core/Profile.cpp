@@ -100,6 +100,13 @@ ProfileBuilder::ProfileBuilder(ConstBookSptr book)
 	, suggestions_()
 	, book_(std::move(book))
 {
+	init();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+ProfileBuilder::init()
+{
 	for (const auto& page: *book_) {
 		assert(page);
 		for (const auto& line: *page) {

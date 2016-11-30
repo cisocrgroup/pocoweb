@@ -55,9 +55,6 @@ namespace pcw {
 
 	class Profile {
 	public:
-		Profile(ConstBookSptr book)
-			: suggestions_()
-			, book_(std::move(book)) {}
 		struct Suggestion {
 			Suggestion(const Candidate& c, const Token& t)
 				: cand(c)
@@ -67,6 +64,12 @@ namespace pcw {
 			Token token;
 		};
 		using Suggestions = std::vector<Suggestion>;
+
+		Profile(ConstBookSptr book)
+			: suggestions_()
+			, book_(std::move(book))
+		{}
+
 		const Suggestions& suggestions() const noexcept {
 			return suggestions_;
 		}
@@ -74,18 +77,21 @@ namespace pcw {
 	private:
 		Suggestions suggestions_;
 		ConstBookSptr book_;
+
 		friend class ProfileBuilder;
 	};
 
 	class ProfileBuilder {
 	public:
 		ProfileBuilder(ConstBookSptr book);
+		Profile build() const;
 		void add_candidates_from_file(const Path& path);
 		void add_candidate_string(const Token& token, const std::string& str);
 		void add_candidate(const Token& token, const Candidate& cand);
-		Profile build() const;
 
 	private:
+		void init();
+
 		std::unordered_map<int64_t, Token> tokens_;
 		Profile::Suggestions suggestions_;
 		ConstBookSptr book_;
