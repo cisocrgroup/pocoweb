@@ -326,7 +326,7 @@ Line::each_token(std::function<void(const Token&)> f) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::vector<Line::Token>
+std::vector<Token>
 Line::tokens() const
 {
 	std::vector<Token> tokens;
@@ -337,7 +337,7 @@ Line::tokens() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::vector<Line::Token>
+std::vector<Token>
 Line::words() const
 {
 	std::vector<Token> words;
@@ -397,7 +397,7 @@ isword(wchar_t c) noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 bool
-Line::Char::is_word() const noexcept
+Char::is_word() const noexcept
 {
 	auto c = get_cor();
 	// c=0 means deletion and is considered to be part of a word.
@@ -406,7 +406,7 @@ Line::Char::is_word() const noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 bool
-Line::Char::is_sep() const noexcept
+Char::is_sep() const noexcept
 {
 	auto c = get_cor();
 	// c=0 means deletion and is considered to be part of a separator.
@@ -419,7 +419,7 @@ Line::Char::is_sep() const noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 double
-Line::Token::average_conf() const
+Token::average_conf() const
 {
 	double sum = 0, n = 0;
 	Line::cor(begin, end, [&sum, &n](const Char& c) {
@@ -431,7 +431,7 @@ Line::Token::average_conf() const
 
 ////////////////////////////////////////////////////////////////////////////////
 std::wstring
-Line::Token::wcor_lc() const
+Token::wcor_lc() const
 {
 	std::wstring res;
 	res.reserve(std::distance(begin, end));
@@ -443,7 +443,7 @@ Line::Token::wcor_lc() const
 
 ////////////////////////////////////////////////////////////////////////////////
 std::wstring
-Line::Token::wcor() const
+Token::wcor() const
 {
 	std::wstring res;
 	res.reserve(std::distance(begin, end));
@@ -455,7 +455,7 @@ Line::Token::wcor() const
 
 ////////////////////////////////////////////////////////////////////////////////
 std::wstring
-Line::Token::wocr_lc() const
+Token::wocr_lc() const
 {
 	std::wstring res;
 	res.reserve(std::distance(begin, end));
@@ -467,7 +467,7 @@ Line::Token::wocr_lc() const
 
 ////////////////////////////////////////////////////////////////////////////////
 std::wstring
-Line::Token::wocr() const
+Token::wocr() const
 {
 	std::wstring res;
 	res.reserve(std::distance(begin, end));
@@ -479,7 +479,7 @@ Line::Token::wocr() const
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string
-Line::Token::cor_lc() const
+Token::cor_lc() const
 {
 	std::string res;
 	res.reserve(std::distance(begin, end));
@@ -492,7 +492,7 @@ Line::Token::cor_lc() const
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string
-Line::Token::cor() const
+Token::cor() const
 {
 	std::string res;
 	res.reserve(std::distance(begin, end));
@@ -505,7 +505,7 @@ Line::Token::cor() const
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string
-Line::Token::ocr_lc() const
+Token::ocr_lc() const
 {
 	std::string res;
 	res.reserve(std::distance(begin, end));
@@ -518,7 +518,7 @@ Line::Token::ocr_lc() const
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string
-Line::Token::ocr() const
+Token::ocr() const
 {
 	std::string res;
 	res.reserve(std::distance(begin, end));
@@ -530,7 +530,7 @@ Line::Token::ocr() const
 
 ////////////////////////////////////////////////////////////////////////////////
 bool
-Line::Token::is_corrected() const
+Token::is_corrected() const
 {
 	return std::all_of(begin, end, [](const Char& c) {
 		return c.is_corrected();
@@ -539,7 +539,7 @@ Line::Token::is_corrected() const
 
 ////////////////////////////////////////////////////////////////////////////////
 bool
-Line::Token::is_normal() const
+Token::is_normal() const
 {
 	return std::all_of(begin, end, [](const Char& c) {
 		return c.is_word();
@@ -548,7 +548,7 @@ Line::Token::is_normal() const
 
 ////////////////////////////////////////////////////////////////////////////////
 uint64_t
-Line::Token::unique_id() const noexcept
+Token::unique_id() const noexcept
 {
 	return Line::unique_id(line->page()->book()->id(), line->page()->id(), line->id(), id);
 }

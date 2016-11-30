@@ -9,7 +9,7 @@ using namespace pcw;
 namespace pcw {
 	DocXmlNode& operator<<(DocXmlNode& j, const Page& page);
 	DocXmlNode& operator<<(DocXmlNode& j, const Line& line);
-	DocXmlNode& operator<<(DocXmlNode& j, const Line::Token& token);
+	DocXmlNode& operator<<(DocXmlNode& j, const Token& token);
 	DocXmlNode& operator<<(DocXmlNode& j, const Box& Box);
 }
 
@@ -67,7 +67,7 @@ pcw::operator<<(DocXmlNode& node, const Line& line)
 
 ////////////////////////////////////////////////////////////////////////////////
 static std::string
-ext_id(const Line::Token& token)
+ext_id(const Token& token)
 {
 	std::stringstream os;
 	os << token.line->page()->book()->id()
@@ -79,7 +79,7 @@ ext_id(const Line::Token& token)
 
 ////////////////////////////////////////////////////////////////////////////////
 DocXmlNode&
-pcw::operator<<(DocXmlNode& node, const Line::Token& token)
+pcw::operator<<(DocXmlNode& node, const Token& token)
 {
 	static const char* bools[] = {"false", "true"};
 	DocXmlNode tnode{node.node.append_child()};

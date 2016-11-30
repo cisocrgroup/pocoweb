@@ -12,10 +12,11 @@ namespace pcw {
 	class WagnerFischer;
 	class Line;
 	using LinePtr = std::shared_ptr<Line>;
+	struct Token;
+	struct Char;
 
 	class Line: public std::enable_shared_from_this<Line> {
 	public:
-		struct Char;
 		using Chars = std::vector<Char>;
 		using CharIterator = Chars::const_iterator;
 		using Path = boost::filesystem::path;
@@ -24,51 +25,6 @@ namespace pcw {
 		using Confidences = std::vector<double>;
 		using Corrections = std::vector<bool>;
 
-		struct Token {
-			Token() = default;
-
-			double average_conf() const;
-			std::wstring wcor_lc() const;
-			std::wstring wocr_lc() const;
-			std::string cor_lc() const;
-			std::string ocr_lc() const;
-			std::wstring wcor() const;
-			std::wstring wocr() const;
-			std::string cor() const;
-			std::string ocr() const;
-			uint64_t unique_id() const noexcept;
-			bool is_corrected() const;
-			bool is_normal() const;
-
-			CharIterator begin, end;
-			std::shared_ptr<const Line> line;
-			Box box;
-			int id;
-		};
-
-		struct Char {
-			static const wchar_t DELETION = 0xffffffff;
-			Char() = default;
-			Char(wchar_t o, wchar_t c, int ccut, double cconf)
-				: ocr(o)
-				, cor(c)
-				, conf(cconf)
-				, cut(ccut)
-			{}
-			bool is_deletion() const noexcept {return cor == DELETION;}
-			bool is_insertion() const noexcept {return cor and not ocr;}
-			bool is_substitution() const noexcept {return cor and ocr and cor != ocr;}
-			bool is_corrected() const noexcept {return cor;}
-			bool is_word() const noexcept;
-			bool is_sep() const noexcept;
-			wchar_t get_cor() const noexcept {
-				return is_deletion() ? 0 : is_corrected() ? cor : ocr;
-			}
-
-			wchar_t ocr, cor;
-			double conf;
-			int cut;
-		};
 
 		Line(int i, Box box = {});
 
@@ -138,7 +94,54 @@ namespace pcw {
 		std::weak_ptr<Page> page_;
 		int id_, ofs_;
 		friend class Page;
+		friend class Token;
+		friend class Char;
+	};
+	struct Token {
+		Token() = default;
+
+		double average_conf() const;
+		std::wstring wcor_lc() const;
+		std::wstring wocr_lc() const;
+		std::string cor_lc() const;
+		std::string ocr_lc() const;
+		std::wstring wcor() const;
+		std::wstring wocr() const;
+		std::string cor() const;
+		std::string ocr() const;
+		uint64_t unique_id() const noexcept;
+		bool is_corrected() const;
+		bool is_normal() const;
+
+		Line::CharIterator begin, end;
+		std::shared_ptr<const Line> line;
+		Box box;
+		int id;
+	};
+
+	struct Char {
+		static const wchar_t DELETION = 0xffffffff;
+		Char() = default;
+		Char(wchar_t o, wchar_t c, int ccut, double cconf)
+			: ocr(o)
+			, cor(c)
+			, conf(cconf)
+			, cut(ccut)
+		{}
+		bool is_deletion() const noexcept {return cor == DELETION;}
+		bool is_insertion() const noexcept {return cor and not ocr;}
+		bool is_substitution() const noexcept {return cor and ocr and cor != ocr;}
+		bool is_corrected() const noexcept {return cor;}
+		bool is_word() const noexcept;
+		bool is_sep() const noexcept;
+		wchar_t get_cor() const noexcept {
+			return is_deletion() ? 0 : is_corrected() ? cor : ocr;
+		}
+
+		wchar_t ocr, cor;
+		double conf;
+		int cut;
 	};
 }
 
-#endif // pcw_Line_hpp__
+#endif //pcw_Line_hpp__
