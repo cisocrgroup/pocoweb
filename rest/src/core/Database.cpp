@@ -538,7 +538,7 @@ Database::select_book(int bookid, int owner, sql::Connection& conn) const
 	book->title = res->getString("title");
 	book->author = res->getString("author");
 	book->year = res->getInt("year");
-	book->lang = res->getInt("lang");
+	book->lang = res->getString("lang");
 
 	// it is save to use cache here
 	auto ownerptr = cached_select_user(owner, conn);
