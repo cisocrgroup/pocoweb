@@ -154,7 +154,7 @@ BookRoute::set(const Request& req, int bid, const Data& data) const
 	if (data.year)
 		book->year = atoi(data.year);
 	if (data.lang)
-		book->lang = atoi(data.lang);
+		book->lang = data.lang;
 
 	db.update_book(*book);
 	Json json;
