@@ -124,6 +124,13 @@ pcw::Config::Plugins::operator[](const std::string& p) const noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 void
+pcw::Config::setup_logging() const
+{
+	crow::logger::setLogLevel(static_cast<crow::LogLevel>(log.level));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
 pcw::Config::LOG() const
 {
 	CROW_LOG_INFO << "db.user: " << this->db.user;

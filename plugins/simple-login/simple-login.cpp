@@ -44,6 +44,7 @@ static const char*
 do_plugin(const std::string& p, App& app) noexcept
 {
 	try {
+		app.config().setup_logging();
 		insert_default_user(p, app);
 
 		auto login = std::make_unique<Login>();
