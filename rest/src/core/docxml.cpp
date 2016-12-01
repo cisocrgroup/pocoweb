@@ -66,18 +66,6 @@ pcw::operator<<(DocXmlNode& node, const Line& line)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-static std::string
-ext_id(const Token& token)
-{
-	std::stringstream os;
-	os << token.line->page()->book()->id()
-	   << ":" << token.line->page()->id()
-	   << ":" << token.line->id()
-	   << ":" << token.id;
-	return os.str();
-}
-
-////////////////////////////////////////////////////////////////////////////////
 DocXmlNode&
 pcw::operator<<(DocXmlNode& node, const Token& token)
 {
@@ -91,7 +79,7 @@ pcw::operator<<(DocXmlNode& node, const Token& token)
 		set_value(bools[(int)!!token.is_normal()]);
 	auto tmp = tnode.node.append_child();
 	tmp.set_name("ext_id");
-	tmp.append_child(pugi::node_pcdata).set_value(ext_id(token).data());
+	tmp.append_child(pugi::node_pcdata).set_value(std::to_string(token.unique_id()).data());
 
 	tmp = tnode.node.append_child();
 	tmp.set_name("wOCR_lc");

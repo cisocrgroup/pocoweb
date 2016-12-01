@@ -166,8 +166,10 @@ ProfileBuilder::add_candidates_from_file(const Path& path)
 		THROW(ParseError, "Could not parse file ", path, ": ", ok.description());
 	auto ts = doc.document_element().select_nodes(".//token");
 	for (const auto& t: ts) {
-		int64_t id = std::stoll(t.node().child("ext_id").child_value());
+		auto id = std::stoll(t.node().child("ext_id").child_value());
 		auto token = tokens_[id];
+		if (not token.line or not token.unique_id())
+			THROW(ParseError, "Invalid token id: ", id);
 		auto cs = t.node().select_nodes(".//cand");
 		for (const auto& c: cs) {
 			add_candidate_string(token, c.node().child_value());
@@ -179,6 +181,8 @@ ProfileBuilder::add_candidates_from_file(const Path& path)
 void
 ProfileBuilder::add_candidate_string(const Token& token, const std::string& str)
 {
+	if (not token.line or not token.unique_id())
+		THROW(ParseError, "Invalid token for expressin: ", str);
 	add_candidate(token, Candidate(str));
 }
 
