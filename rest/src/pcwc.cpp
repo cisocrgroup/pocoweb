@@ -241,6 +241,7 @@ Ed::perform() const
 	switch (http_code) {
 	case 200:
 	case 201:
+	case 202:
 		break;
 	default:
 		THROW(Error, "Got answer: ", http_code);
