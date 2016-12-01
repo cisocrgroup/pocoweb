@@ -754,7 +754,8 @@ run(int argc, char* argv[])
 	}
 
 	std::string line;
-	prompt(p);
+	if (not ed.done)
+		prompt(p);
 	while (not ed.done and std::getline(std::cin, line)) {
 		auto start = std::chrono::system_clock::now();
 		ed(line);
