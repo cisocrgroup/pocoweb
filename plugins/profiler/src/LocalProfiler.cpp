@@ -28,6 +28,7 @@ LocalProfiler::run_profiler(const std::string& command) const
 {
 	CROW_LOG_DEBUG << "(LocalProfiler) Executing profiler command: " << command;
 	auto res = system(command.data());
+	CROW_LOG_DEBUG << "(LocalProfiler) Return code: " << res;
 	switch (res) {
 	case -1: throw std::system_error(errno, std::system_category(), "fork");
 	case 127: THROW(pcw::Error, "Shell could not execute profiler: ", command);
@@ -78,5 +79,5 @@ LocalProfiler::profiler_command() const
 std::string
 LocalProfiler::profiler_config() const
 {
-	return (Config::get().backend() / book().lang / "config.ini").string();
+	return (Config::get().backend() / book().lang + ".ini").string();
 }
