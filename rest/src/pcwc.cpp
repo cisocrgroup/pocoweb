@@ -1,4 +1,5 @@
 #include <boost/variant.hpp>
+#include <chrono>
 #include <iostream>
 #include <fstream>
 #include <regex>
@@ -729,10 +730,13 @@ xwrite(char *ptr, size_t size, size_t nmemb, void *userdata)
 
 ////////////////////////////////////////////////////////////////////////////////
 static void
-prompt(bool p)
+prompt(bool p, std::chrono::duration<double> time = {})
 {
-	if (p)
+	if (p) {
+		if (time.count() > 0)
+			std::cout << "[finished in " << time.count() << "s]\n";
 		std::cout << "? " << std::flush;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -745,8 +749,10 @@ run(int argc, char* argv[])
 	std::string line;
 	prompt(p);
 	while (not ed.done and std::getline(std::cin, line)) {
+		auto start = std::chrono::system_clock::now();
 		ed(line);
-		prompt(p);
+		auto end = std::chrono::system_clock::now();
+		prompt(p, end - start);
 	}
 	return EXIT_SUCCESS;
 }
