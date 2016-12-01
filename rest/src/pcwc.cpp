@@ -165,8 +165,8 @@ Ed::Ed(int argc, char* argv[])
 	, npages()
 	, done(false)
 {
-	if (argc != 5)
-		THROW(Error, "Usage: ", argv[0], " <host> <port> <user> <pass>");
+	if (argc < 5)
+		THROW(Error, "Usage: ", argv[0], " <host> <port> <user> <pass> [commands...]");
 	if (std::stoi(argv[2]) <= 0)
 		THROW(Error, "Expceted port > 0, got: ", argv[2]);
 	host = argv[1];
@@ -748,6 +748,11 @@ run(int argc, char* argv[])
 	bool p = isatty(fileno(stdin));
 	Ed ed{argc, argv};
 	ed.login();
+
+	for (int i = 5; i < argc; ++i) {
+		ed(argv[i]);
+	}
+
 	std::string line;
 	prompt(p);
 	while (not ed.done and std::getline(std::cin, line)) {
