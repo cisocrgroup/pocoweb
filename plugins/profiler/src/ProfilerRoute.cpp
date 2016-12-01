@@ -69,6 +69,7 @@ ProfilerRoute::impl(HttpGet, const Request& req, int bid) const
 ProfilerRoute::Response
 ProfilerRoute::handle_new_profile(const pcw::Database& db, const Result& res) const
 {
+	auto profile = std::move(res.get());
 	return not_implemented();
 }
 
