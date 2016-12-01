@@ -291,7 +291,7 @@ Database::insert_book(Book& book) const
 	static const char *sql =
 		"INSERT INTO books "
 		"(author,title,directory,year,uri,bookid,description,lang) "
-		"VALUES (?,?,?,?,?,?,?);";
+		"VALUES (?,?,?,?,?,?,?,?);";
 	check_session_lock();
 	auto conn = connection();
 	assert(conn);
