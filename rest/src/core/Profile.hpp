@@ -92,6 +92,9 @@ namespace pcw {
 			, book_(std::move(book))
 		{}
 
+		const Book& book() const noexcept {
+			return *book_;
+		}
 		const Suggestions& suggestions() const noexcept {
 			return suggestions_;
 		}
