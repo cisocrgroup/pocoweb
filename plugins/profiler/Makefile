@@ -1,5 +1,5 @@
 CXXFLAGS := $(CXXFLAGS)
-CXXFLAGS += -I../../modules/crow/include -I../../rest/src -fpic
+CXXFLAGS += -I../../modules/crow/include -I../../rest/src -I../../modules/pugixml/src -fpic
 LDFLAGS := $(LDFLAGS)
 LDFLAGS += -lmysqlcppconn
 
