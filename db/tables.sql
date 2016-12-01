@@ -21,7 +21,8 @@ create table books (
 	author varchar(100) not null,
 	description varchar(255),
 	uri varchar(255),
-	directory varchar(255) not null
+	directory varchar(255) not null,
+	lang varchar(50) not null
 );
 
 drop table if exists projects;

@@ -268,7 +268,7 @@ Database::update_book(const BookView& view) const
 {
 	static const char *sql =
 		"UPDATE books "
-		"SET author=?,title=?,year=?,uri=?,description=? "
+		"SET author=?,title=?,year=?,uri=?,description=?,lang=? "
 		"WHERE bookid=?";
 	check_session_lock();
 	auto conn = connection();
@@ -279,7 +279,8 @@ Database::update_book(const BookView& view) const
 	s->setInt(3, view.origin().year);
 	s->setString(4, view.origin().uri);
 	s->setString(5, view.origin().description);
-	s->setInt(6, view.origin().id());
+	s->setString(6, view.origin().lang);
+	s->setInt(7, view.origin().id());
 	s->executeUpdate();
 }
 
@@ -289,7 +290,7 @@ Database::insert_book(Book& book) const
 {
 	static const char *sql =
 		"INSERT INTO books "
-		"(author, title, directory, year, uri, bookid, description) "
+		"(author,title,directory,year,uri,bookid,description,lang) "
 		"VALUES (?,?,?,?,?,?,?);";
 	check_session_lock();
 	auto conn = connection();
@@ -306,6 +307,7 @@ Database::insert_book(Book& book) const
 	s->setString(5, book.uri);
 	s->setInt(6, projectid);
 	s->setString(7, book.description);
+	s->setString(8, book.lang);
 	s->executeUpdate();
 	book.set_id(last_insert_id(*conn));
 	if (not book.id())
@@ -536,6 +538,7 @@ Database::select_book(int bookid, int owner, sql::Connection& conn) const
 	book->title = res->getString("title");
 	book->author = res->getString("author");
 	book->year = res->getInt("year");
+	book->lang = res->getInt("lang");
 
 	// it is save to use cache here
 	auto ownerptr = cached_select_user(owner, conn);

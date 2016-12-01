@@ -108,6 +108,7 @@ BookRoute::impl(HttpPost, const Request& req, int bid) const
 	static const std::string uri("uri");
 	static const std::string desc("description");
 	static const std::string year("year");
+	static const std::string lang("lang");
 	static const std::string package("package");
 	static const std::string n("n");
 
@@ -117,12 +118,14 @@ BookRoute::impl(HttpPost, const Request& req, int bid) const
 	data.uri = req.url_params.get(uri);
 	data.desc = req.url_params.get(desc);
 	data.year = req.url_params.get(year);
+	data.lang = req.url_params.get(lang);
 	data.package = req.url_params.get(package);
 	data.n = req.url_params.get(n);
 
 	if (data.package and data.n)
 		return this->package(req, bid, data);
-	else if (data.author or data.title or data.uri or data.desc or data.year)
+	else if (data.author or data.title or data.uri or
+			data.desc or data.year or data.lang)
 		return set(req, bid, data);
 	else
 		return bad_request();
@@ -150,6 +153,8 @@ BookRoute::set(const Request& req, int bid, const Data& data) const
 		book->description = data.desc;
 	if (data.year)
 		book->year = atoi(data.year);
+	if (data.lang)
+		book->lang = atoi(data.lang);
 
 	db.update_book(*book);
 	Json json;
