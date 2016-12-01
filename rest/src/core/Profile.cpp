@@ -102,7 +102,7 @@ Profile::calc_ocr_patterns() const
 	for (const auto& s: suggestions_) {
 		auto expl = s.cand.explanation();
 		for (const auto& ocrp: expl.ocrp.patterns) {
-			ps.emplace(ocrp, s);
+			ps[ocrp].push_back(s);
 		}
 	}
 	return ps;
@@ -116,7 +116,7 @@ Profile::calc_hist_patterns() const
 	for (const auto& s: suggestions_) {
 		auto expl = s.cand.explanation();
 		for (const auto& histp: expl.histp.patterns) {
-			ps.emplace(histp, s);
+			ps[histp].push_back(s);
 		}
 	}
 	return ps;

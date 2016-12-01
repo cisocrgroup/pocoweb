@@ -67,7 +67,7 @@ namespace pcw {
 			: ocr(e.ocr)
 			, cor(e.cor)
 		{}
-		Pattern(std::string o, std::string c)
+		Pattern(std::string c, std::string o)
 			: ocr(std::move(o))
 			, cor(std::move(c))
 		{}
@@ -85,7 +85,7 @@ namespace pcw {
 	class Profile {
 	public:
 		using Suggestions = std::vector<Suggestion>;
-		using Patterns = std::map<Pattern, Suggestion>;
+		using Patterns = std::map<Pattern, Suggestions>;
 
 		Profile(ConstBookSptr book)
 			: suggestions_()
