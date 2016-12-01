@@ -71,7 +71,7 @@ LocalProfiler::profiler_command() const
 		" --adaptive" +
 		" --config " + profiler_config() +
 		" --outputFormat DOC_XML" +
-		" --file " + outfile_.string() +
+		" --sourceFile " + outfile_.string() +
 		" --doc_out " + infile_.string();
 }
 
@@ -79,5 +79,5 @@ LocalProfiler::profiler_command() const
 std::string
 LocalProfiler::profiler_config() const
 {
-	return (Config::get().backend() / book().lang + ".ini").string();
+	return (Config::get().backend() / (book().lang + ".ini")).string();
 }
