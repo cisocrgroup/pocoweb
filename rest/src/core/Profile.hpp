@@ -91,7 +91,8 @@ namespace pcw {
 		const Suggestions& suggestions() const noexcept {
 			return suggestions_;
 		}
-		Patterns calculate_patterns() const;
+		Patterns calc_ocr_patterns() const;
+		Patterns calc_hist_patterns() const;
 
 	private:
 		Suggestions suggestions_;

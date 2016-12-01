@@ -96,13 +96,27 @@ Candidate::wcor() const
 
 ////////////////////////////////////////////////////////////////////////////////
 Profile::Patterns
-Profile::calculate_patterns() const
+Profile::calc_ocr_patterns() const
 {
 	Patterns ps;
 	for (const auto& s: suggestions_) {
 		auto expl = s.cand.explanation();
 		for (const auto& ocrp: expl.ocrp.patterns) {
 			ps.emplace(ocrp, s);
+		}
+	}
+	return ps;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Profile::Patterns
+Profile::calc_hist_patterns() const
+{
+	Patterns ps;
+	for (const auto& s: suggestions_) {
+		auto expl = s.cand.explanation();
+		for (const auto& histp: expl.histp.patterns) {
+			ps.emplace(histp, s);
 		}
 	}
 	return ps;
