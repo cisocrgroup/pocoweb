@@ -67,6 +67,10 @@ namespace pcw {
 			: ocr(e.ocr)
 			, cor(e.cor)
 		{}
+		Pattern(std::string o, std::string c)
+			: ocr(std::move(o))
+			, cor(std::move(c))
+		{}
 		std::string ocr, cor;
 	};
 	static inline bool operator==(const Pattern& lhs,
