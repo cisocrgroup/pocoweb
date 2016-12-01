@@ -24,7 +24,7 @@ pcw::operator<<(Json& json, const BookView& view)
 	json["author"] = view.origin().author;
 	json["title"] = view.origin().title;
 	json["year"] = view.origin().year;
-	json["lang"] = view.origin().lang;
+	json["language"] = view.origin().lang;
 	json["description"] = view.origin().description;
 	json["isBook"] = view.is_book();
 

@@ -285,7 +285,7 @@ Ed::operator()(CBooks)
 			  << book["author"] << " "
 			  << book["year"] << " "
 			  << book["description"] << " "
-			  << book["lang"] << "\n";
+			  << book["language"] << "\n";
 	}
 }
 

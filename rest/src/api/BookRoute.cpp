@@ -108,7 +108,7 @@ BookRoute::impl(HttpPost, const Request& req, int bid) const
 	static const std::string uri("uri");
 	static const std::string desc("description");
 	static const std::string year("year");
-	static const std::string lang("lang");
+	static const std::string lang("language");
 	static const std::string package("package");
 	static const std::string n("n");
 
