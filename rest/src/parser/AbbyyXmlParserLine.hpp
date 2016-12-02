@@ -1,7 +1,7 @@
 #ifndef pcw_AbbyyXmlParserLine_hpp__
 #define pcw_AbbyyXmlParserLine_hpp__
 
-#include <pugixml.hpp>
+#include "pugixml/pugixml.hpp"
 #include "core/Box.hpp"
 #include "ParserPage.hpp"
 

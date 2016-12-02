@@ -1,4 +1,4 @@
-#include <pugixml.hpp>
+#include "pugixml/pugixml.hpp"
 #include "core/Error.hpp"
 #include "Xml.hpp"
 

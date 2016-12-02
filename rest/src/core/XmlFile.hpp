@@ -2,7 +2,7 @@
 #define pcw_XmlFile_hpp__
 
 #include <boost/filesystem/path.hpp>
-#include <pugixml.hpp>
+#include "pugixml/pugixml.hpp"
 
 namespace pcw {
 	using Path = boost::filesystem::path;
@@ -15,9 +15,9 @@ namespace pcw {
 		XmlFile(const Path& path);
 		XmlFile(const std::string& content);
 		virtual ~XmlFile() noexcept = default;
-		
+
 		void read(const Path& path);
-		void read(const std::string& content);	
+		void read(const std::string& content);
 
 	protected:
 		XmlDocument xml_;

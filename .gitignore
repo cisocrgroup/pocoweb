@@ -4,13 +4,11 @@
 *~
 .*
 *.log
-*.mod
+*.gitmodule
 *.so
 *.test
 tags
-rest/pcwd
-rest/pcwc
-rest/pocoweb_create_user
-rest/pocoweb_insert_book
-rest/config.ini
+pcwd
+pcwc
 config.ini
+make/cache.mak

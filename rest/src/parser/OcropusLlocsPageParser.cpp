@@ -4,7 +4,7 @@
 #include <cstring>
 #include <fstream>
 #include <regex>
-#include <pugixml.hpp>
+#include "pugixml/pugixml.hpp"
 #include "ParserPage.hpp"
 #include "OcropusLlocsPageParser.hpp"
 #include "OcropusLlocsParserPage.hpp"

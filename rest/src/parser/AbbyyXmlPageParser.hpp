@@ -3,7 +3,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <memory>
-#include <pugixml.hpp>
+#include "pugixml/pugixml.hpp"
 #include "PageParser.hpp"
 #include "Xml.hpp"
 

@@ -3,7 +3,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <memory>
-#include <pugixml.hpp>
+#include "pugixml/pugixml.hpp"
 #include "PageParser.hpp"
 #include "Xml.hpp"
 
@@ -14,7 +14,7 @@ namespace pcw {
 	using ParserPagePtr = std::shared_ptr<ParserPage>;
 	using XmlParserPagePtr = std::shared_ptr<XmlParserPage>;
 
-	class HocrPageParser: public PageParser, 
+	class HocrPageParser: public PageParser,
 			      public pugi::xml_tree_walker {
 	public:
 		HocrPageParser(Xml xml);
