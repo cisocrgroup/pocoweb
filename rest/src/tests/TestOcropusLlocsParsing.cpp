@@ -16,7 +16,7 @@ using namespace pcw;
 
 struct Fixture {
 	Fixture(): page() {
-		OcropusLlocsPageParser parser("../misc/data/test/llocs-test/0001");
+		OcropusLlocsPageParser parser("misc/data/test/llocs-test/0001");
 		BOOST_REQUIRE(parser.has_next());
 		page = parser.parse();
 		BOOST_REQUIRE(not parser.has_next());

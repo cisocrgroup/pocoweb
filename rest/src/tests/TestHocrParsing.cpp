@@ -15,7 +15,7 @@ using namespace pcw;
 
 struct Fixture {
 	Fixture(): page() {
-		HocrPageParser parser("../misc/data/test/hocr-test.xml");
+		HocrPageParser parser("misc/data/test/hocr-test.xml");
 		BOOST_REQUIRE(parser.has_next());
 		page = parser.parse();
 		BOOST_REQUIRE(not parser.has_next());

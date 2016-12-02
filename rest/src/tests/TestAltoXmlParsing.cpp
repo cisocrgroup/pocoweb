@@ -15,7 +15,7 @@ using namespace pcw;
 
 struct Fixture {
 	Fixture(): page() {
-		AltoXmlPageParser parser("../misc/data/test/alto-test.xml");
+		AltoXmlPageParser parser("misc/data/test/alto-test.xml");
 		BOOST_REQUIRE(parser.has_next());
 		page = parser.parse();
 		BOOST_REQUIRE(not parser.has_next());

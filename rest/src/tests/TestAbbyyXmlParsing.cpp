@@ -15,7 +15,7 @@ using namespace pcw;
 
 struct Fixture {
 	Fixture(): page() {
-		AbbyyXmlPageParser parser("../misc/data/test/abbyy-test.xml");
+		AbbyyXmlPageParser parser("misc/data/test/abbyy-test.xml");
 		BOOST_REQUIRE(parser.has_next());
 		page = parser.parse();
 		BOOST_REQUIRE(not parser.has_next());

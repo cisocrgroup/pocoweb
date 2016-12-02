@@ -38,7 +38,7 @@ BOOST_FIXTURE_TEST_SUITE(BookDirectoryBuilderTest, Fixture)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(Ocropus)
 {
-	add_zip_file("../misc/data/test/hobbes-ocropus.zip");
+	add_zip_file("misc/data/test/hobbes-ocropus.zip");
 	auto book = builder.build();
 	BOOST_REQUIRE(book);
 	BOOST_CHECK_EQUAL(book->size(), 2);
