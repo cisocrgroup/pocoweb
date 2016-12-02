@@ -29,6 +29,7 @@ PCW_API_INSTITUTE ?= CIS
 -include make/cache.mak
 
 make/cache.mak:
+	@echo "Generating $@"
 	@echo "#" > $@
 	@echo "# cache.mak" >> $@
 	@echo "# created: `date`" >> $@
@@ -52,6 +53,7 @@ make/cache.mak:
 	@echo "PCW_API_INSTITUTE := $(PCW_API_INSTITUTE)" >> $@
 
 config.ini: misc/default/config.def.ini make/cache.mak
+	@echo "Generating $@"
 	@sed -e 's/$$[({]PCW_DB_HOST[})]/$(PCW_DB_HOST)/g' \
 	     -e 's/$$[({]PCW_DB_USER[})]/$(PCW_DB_USER)/g' \
 	     -e 's/$$[({]PCW_DB_PASS[})]/$(PCW_DB_PASS)/g' \
@@ -61,4 +63,4 @@ config.ini: misc/default/config.def.ini make/cache.mak
 	     -e 's/$$[({]PCW_API_INSTITUTE[})]/$(PCW_API_INSTITUTE)/g' \
 	     $< > $@
 
-ALL += config.ini
+#ALL += config.ini
