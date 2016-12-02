@@ -4,6 +4,7 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <regex>
 #include <thread>
+#include "Logger.hpp"
 #include "Error.hpp"
 #include "Config.hpp"
 
@@ -126,6 +127,12 @@ pcw::Config::Plugins::operator[](const std::string& p) const noexcept
 void
 pcw::Config::setup_logging() const
 {
+	static crow::CerrLogHandler cerrlogger;
+	static Syslogger syslogger;
+	if (daemon.detach)
+		crow::logger::setHandler(&syslogger);
+	else
+		crow::logger::setHandler(&cerrlogger);
 	crow::logger::setLogLevel(static_cast<crow::LogLevel>(log.level));
 }
 
