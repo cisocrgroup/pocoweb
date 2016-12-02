@@ -34,7 +34,7 @@ namespace pcw {
 		virtual const User& owner() const noexcept override {return *owner_;}
 		void set_owner(const User& user);
 
-		std::string author, title, description, uri;
+		std::string author, title, description, uri, lang;
 		Path dir;
 		int year;
 

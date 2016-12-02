@@ -19,6 +19,15 @@
 static const int SHA2_HASH_SIZE = 256;
 
 using namespace pcw;
+// use macro to get the line of missing session locks
+#define check_session_lock() \
+{ \
+	assert(this->session_); \
+	if (this->session_->mutex.try_lock()) { \
+		this->session_->mutex.unlock(); \
+		THROW(Error, "(Database) Current session is not locked"); \
+	} \
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 Database::Database(SessionPtr session, ConfigPtr config, CachePtr cache)
@@ -259,7 +268,7 @@ Database::update_book(const BookView& view) const
 {
 	static const char *sql =
 		"UPDATE books "
-		"SET author=?,title=?,year=?,uri=?,description=? "
+		"SET author=?,title=?,year=?,uri=?,description=?,lang=? "
 		"WHERE bookid=?";
 	check_session_lock();
 	auto conn = connection();
@@ -270,7 +279,8 @@ Database::update_book(const BookView& view) const
 	s->setInt(3, view.origin().year);
 	s->setString(4, view.origin().uri);
 	s->setString(5, view.origin().description);
-	s->setInt(6, view.origin().id());
+	s->setString(6, view.origin().lang);
+	s->setInt(7, view.origin().id());
 	s->executeUpdate();
 }
 
@@ -280,8 +290,8 @@ Database::insert_book(Book& book) const
 {
 	static const char *sql =
 		"INSERT INTO books "
-		"(author, title, directory, year, uri, bookid, description) "
-		"VALUES (?,?,?,?,?,?,?);";
+		"(author,title,directory,year,uri,bookid,description,lang) "
+		"VALUES (?,?,?,?,?,?,?,?);";
 	check_session_lock();
 	auto conn = connection();
 	assert(conn);
@@ -297,6 +307,7 @@ Database::insert_book(Book& book) const
 	s->setString(5, book.uri);
 	s->setInt(6, projectid);
 	s->setString(7, book.description);
+	s->setString(8, book.lang);
 	s->executeUpdate();
 	book.set_id(last_insert_id(*conn));
 	if (not book.id())
@@ -527,6 +538,7 @@ Database::select_book(int bookid, int owner, sql::Connection& conn) const
 	book->title = res->getString("title");
 	book->author = res->getString("author");
 	book->year = res->getInt("year");
+	book->lang = res->getString("lang");
 
 	// it is save to use cache here
 	auto ownerptr = cached_select_user(owner, conn);
@@ -657,17 +669,6 @@ Database::commit()
 		session_->connection->commit();
 	} else {
 		CROW_LOG_ERROR << "(Database) call to commit() in auto commit mode";
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void
-Database::check_session_lock() const
-{
-	assert(session_);
-	if (session_->mutex.try_lock()) {
-		session_->mutex.unlock(); // unlock
-		THROW(Error, "(Database) Current session is not locked");
 	}
 }
 

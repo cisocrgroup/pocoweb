@@ -10,6 +10,7 @@ namespace pcw {
 
 	struct Config {
 		static Config load(const std::string& filename);
+		void setup_logging() const;
 
 		const struct Db {
 			const std::string user, host, pass, db;
@@ -30,8 +31,8 @@ namespace pcw {
 			const std::unordered_map<std::string, Ptree> configs;
 			const Ptree& operator[](const std::string& p) const noexcept;
 		} plugins;
+		void LOG() const;
 	};
-	std::ostream& operator<<(std::ostream& os, const Config& config);
 }
 
 #endif // pcw_Config_hpp__

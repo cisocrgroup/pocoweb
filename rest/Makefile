@@ -48,6 +48,7 @@ OBJS += BookView.o
 OBJS += Package.o
 OBJS += Config.o
 OBJS += Database.o
+OBJS += Profile.o
 OBJS += Route.o
 OBJS += App.o
 OBJS += Line.o
@@ -91,6 +92,7 @@ TESTS += TestAbbyyXmlParsing.test
 TESTS += TestOcropusLlocsParsing.test
 TESTS += TestHocrParsing.test
 TESTS += TestBookDirectoryBuilder.test
+TESTS += TestProfile.test
 
 default: all
 all: pcwd pcwc

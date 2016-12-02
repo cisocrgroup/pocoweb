@@ -16,7 +16,7 @@ SRCS=$(shell find . -type f -regex '.*\.[hc]p?p?$$')
 
 export # export all
 
-default: all tags
+default: all tags config.ini
 
 .PHONY: all install clean uninstall test
 all install uninstall test:
@@ -33,6 +33,10 @@ clean:
 	$(MAKE) -C plugins $@
 	#$(MAKE) -C db $@ SHELL=$(SHELL)
 	$(RM) tags
+	$(RM) config
+
+config.ini: misc/default/config.def.ini
+	cp $^ $@
 
 tags: $(SRCS)
 	@echo "generating tags file"

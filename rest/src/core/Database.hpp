@@ -69,7 +69,6 @@ namespace pcw {
 		void select_all_pages(Book& book, sql::Connection& conn) const;
 		void select_all_lines(Page& page, sql::Connection& conn) const;
 		void update_line(const Line& line, sql::Connection& conn) const;
-		void check_session_lock() const;
 		int last_insert_id(sql::Connection& conn) const;
 		sql::Connection* connection() const;
 

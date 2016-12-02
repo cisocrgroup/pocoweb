@@ -1,16 +1,39 @@
 #include <sstream>
 #include "BookView.hpp"
 #include "Page.hpp"
+#include "Profile.hpp"
 #include "docxml.hpp"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
+struct DocXmlNode {
+	explicit DocXmlNode(const pugi::xml_node& n)
+		: node(n)
+		, suggestions_(nullptr)
+	{}
+	pugi::xml_node node;
+	const std::vector<Suggestion>* suggestions_;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+static void append_candidates(pugi::xml_node& node, const Token& token,
+		const std::vector<Suggestion>& suggs);
+
+////////////////////////////////////////////////////////////////////////////////
 namespace pcw {
 	DocXmlNode& operator<<(DocXmlNode& j, const Page& page);
 	DocXmlNode& operator<<(DocXmlNode& j, const Line& line);
-	DocXmlNode& operator<<(DocXmlNode& j, const Line::Token& token);
+	DocXmlNode& operator<<(DocXmlNode& j, const Token& token);
 	DocXmlNode& operator<<(DocXmlNode& j, const Box& Box);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+DocXml&
+pcw::operator<<(DocXml& docxml, const Profile& profile)
+{
+	docxml.suggestions_ = &profile.suggestions();
+	return docxml << profile.book();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -19,6 +42,7 @@ pcw::operator<<(DocXml& docxml, const BookView& view)
 {
 	docxml.doc.reset();
 	DocXmlNode document{docxml.doc.append_child()};
+	document.suggestions_ = docxml.suggestions_;
 	document.node.set_name("document");
 	for (const auto& page: view) {
 		assert(page);
@@ -31,8 +55,8 @@ pcw::operator<<(DocXml& docxml, const BookView& view)
 DocXml&
 pcw::operator<<(DocXml& docxml, const Page& page)
 {
-	docxml.doc.reset();
 	DocXmlNode document{docxml.doc.append_child()};
+	document.suggestions_ = docxml.suggestions_;
 	document.node.set_name("document");
 	document << page;
 	return docxml;
@@ -43,6 +67,7 @@ DocXmlNode&
 pcw::operator<<(DocXmlNode& node, const Page& page)
 {
 	DocXmlNode pnode{node.node.append_child()};
+	pnode.suggestions_ = node.suggestions_;
 	pnode.node.set_name("page");
 	pnode.node.append_attribute("imageFile").set_value(page.img.string().data());
 	pnode.node.append_attribute("sourceFile").set_value(page.ocr.string().data());
@@ -66,20 +91,8 @@ pcw::operator<<(DocXmlNode& node, const Line& line)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-static std::string
-ext_id(const Line::Token& token)
-{
-	std::stringstream os;
-	os << token.line->page()->book()->id()
-	   << ":" << token.line->page()->id()
-	   << ":" << token.line->id()
-	   << ":" << token.id;
-	return os.str();
-}
-
-////////////////////////////////////////////////////////////////////////////////
 DocXmlNode&
-pcw::operator<<(DocXmlNode& node, const Line::Token& token)
+pcw::operator<<(DocXmlNode& node, const Token& token)
 {
 	static const char* bools[] = {"false", "true"};
 	DocXmlNode tnode{node.node.append_child()};
@@ -91,7 +104,7 @@ pcw::operator<<(DocXmlNode& node, const Line::Token& token)
 		set_value(bools[(int)!!token.is_normal()]);
 	auto tmp = tnode.node.append_child();
 	tmp.set_name("ext_id");
-	tmp.append_child(pugi::node_pcdata).set_value(ext_id(token).data());
+	tmp.append_child(pugi::node_pcdata).set_value(std::to_string(token.unique_id()).data());
 
 	tmp = tnode.node.append_child();
 	tmp.set_name("wOCR_lc");
@@ -103,7 +116,11 @@ pcw::operator<<(DocXmlNode& node, const Line::Token& token)
 
 	tmp = tnode.node.append_child();
 	tmp.set_name("wCorr");
-	tmp.append_child(pugi::node_pcdata).set_value(token.cor().data());
+	if (token.is_corrected())
+		tmp.append_child(pugi::node_pcdata).set_value(token.cor().data());
+
+	if (node.suggestions_)
+		append_candidates(tnode.node, token, *node.suggestions_);
 
 	tnode << token.box;
 	return node;
@@ -120,4 +137,23 @@ pcw::operator<<(DocXmlNode& node, const Box& box)
 	coord.append_attribute("r").set_value(box.right());
 	coord.append_attribute("b").set_value(box.bottom());
 	return node;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+append_candidates(pugi::xml_node& node, const Token& token,
+		const std::vector<Suggestion>& suggs)
+{
+	auto id = token.unique_id();
+	for (const auto& s: suggs) {
+		if (s.token.unique_id() == id) {
+			auto tmp = node.append_child();
+			tmp.set_name("cand");
+			std::string expr = s.cand.cor() + ":" +
+				s.cand.explanation_string() +
+				",voteWeight=" + std::to_string(s.cand.weight()) +
+				",levDistance=" + std::to_string(s.cand.lev());
+			tmp.append_child(pugi::node_pcdata).set_value(expr.data());
+		}
+	}
 }

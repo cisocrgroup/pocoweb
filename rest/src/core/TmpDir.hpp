@@ -17,7 +17,7 @@ namespace pcw {
 			boost::filesystem::remove_all(dir_, ec);
 		}
 		operator Path() const noexcept {return dir_;}
-		Path operator/(const Path& other) noexcept {
+		Path operator/(const Path& other) const noexcept {
 			return dir_ / other;
 		}
 		const Path& dir() const noexcept {return dir_;}

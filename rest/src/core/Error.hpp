@@ -71,6 +71,16 @@ namespace pcw {
 		}
 	};
 
+	class ParseError: public Error {
+	public:
+		ParseError(const char* f, int l): Error(f, l) {}
+		virtual ~ParseError() noexcept override = default;
+		virtual int code() const noexcept override {
+			// BadRequest
+			return 400;
+		}
+	};
+
 	template<class E>
 	void do_append(E& e) {}
 
