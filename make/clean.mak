@@ -9,6 +9,7 @@ clean:
 	$(RM) $(PPROF_OBJS)
 	$(RM) $(LIBS)
 	$(RM) $(PLUGINS)
+	$(RM) $(TESTS)
 
 clean-cache:
 	$(RM) make/cache.mak config.ini
