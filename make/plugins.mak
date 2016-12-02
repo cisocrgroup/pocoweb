@@ -25,5 +25,5 @@ simple-login.so: $(PSLOG_OBJS)
 profiler.so: $(PPROF_OBJS)
 	$(CXX) $(CXXFLAGS) -shared -o $@ $^ $(LDFLAGS)
 
-DEPS += $(patsubst %.o,%d,$(PPROF_OBJS) $(PEX_OBJS) $(PSLOG_OBJS))
+DEPS += $(patsubst %.o,%.d,$(PPROF_OBJS) $(PEX_OBJS) $(PSLOG_OBJS))
 ALL += $(PLUGINS)

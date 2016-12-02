@@ -65,5 +65,5 @@ pcwc: rest/src/pcwc.cpp $(LIBS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -lcurl
 
 DEPS += $(patsubst %.o,%.d,$(CORE_OBJS) $(API_OBJS) $(PARSER_OBJS) $(PUGI_OBJS))
-DEPS == $(patsubst %,%.d,$(MAINS))
+DEPS += $(patsubst %,%.d,$(MAINS))
 ALL += $(LIBS) $(MAINS)
