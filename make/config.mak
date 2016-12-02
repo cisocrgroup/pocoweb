@@ -2,14 +2,31 @@ PCW_API_VERSION_MAJOR := 0
 PCW_API_VERSION_MINOR := 1
 PCW_API_VERSION_PATCH := 0
 
+CXX ?= g++
+
 CXXFLAGS ?= -ggdb -Og
 CXXFLAGS := $(CXXFLAGS) -MD -MP -std=gnu++14 -Wall -Werror
+CXXFLAGS += -Irest/src
+CXXFLAGS += -Imodules/crow/include
+CXXFLAGS += -Imodules/utfcpp/source
 CXXFLAGS += -DPCW_API_VERSION_MAJOR=$(PCW_API_VERSION_MAJOR)
 CXXFLAGS += -DPCW_API_VERSION_MINOR=$(PCW_API_VERSION_MINOR)
 CXXFLAGS += -DPCW_API_VERSION_PATCH=$(PCW_API_VERSION_PATCH)
 
 LDFLAGS ?=
-LDFLAGS := $(LDFLAGS) -l foo
+LDFLAGS := $(LDFLAGS) -L.
+LDFLAGS += -lpcwcore -lpcwapi -lpcwparser -lpcwpugi
+LDFLAGS += -lpcwcore -lpcwapi -lpcwparser -lpcwpugi # do it two times
+LDFLAGS += -ldl
+LDFLAGS += -lmysqlcppconn
+LDFLAGS += -lssl
+LDFLAGS += -llept
+LDFLAGS += -lpthread
+LDFLAGS += -lboost_log
+LDFLAGS += -licuuc
+LDFLAGS += -lboost_system
+LDFLAGS += -lboost_filesystem
+LDFLAGS += -lcrypto # TODO still needed?
 
 PREFIX ?= /usr/local
 BINDIR := $(PREFIX)/bin
@@ -37,6 +54,7 @@ make/cache.mak:
 	@echo "PCW_API_VERSION_MAJOR := $(PCW_API_VERSION_MAJOR)" >> $@
 	@echo "PCW_API_VERSION_MINOR := $(PCW_API_VERSION_MINOR)" >> $@
 	@echo "PCW_API_VERSION_PATCH := $(PCW_API_VERSION_PATCH)" >> $@
+	@echo "CXX := $(CXX)" >> $@
 	@echo "CXXFLAGS := $(CXXFLAGS)" >> $@
 	@echo "LDFLAGS := $(LDFLAGS)" >> $@
 	@echo "PREFIX := $(PREFIX)" >> $@

@@ -3,10 +3,10 @@ clean:
 	find . -type f -a \( \
 		-name '*.o' -o \
 		-name '*.d' -o \
-		-name '*.mod' -o \
 		-name '*.a' -o \
 		-name '*.so' -o \
-		-name '*.test' \
+		-name '*.test' -o \
+		-name '*.gitmodule' \
 		\) -delete
 
 clean-cache:

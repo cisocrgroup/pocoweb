@@ -1,8 +1,8 @@
-MODS += modules/crow.mod
-MODS += modules/pugixml.mod
-MODS += modules/utfcpp.mod
+MODS += modules/crow.gitmodule
+MODS += modules/pugixml.gitmodule
+MODS += modules/utfcpp.gitmodule
 
-%.mod:
+%.gitmodule:
 	git submodule update --init $*
 	touch $@
 

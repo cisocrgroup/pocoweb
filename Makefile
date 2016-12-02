@@ -1,12 +1,15 @@
 ALL :=
+DEPS :=
 default: all
 
 include make/config.mak
 include make/modules.mak
 include make/clean.mak
+include make/rest.mak
 
 all: $(ALL)
 .PHONY: all default
+-include $(DEPS)
 
 ## CXXFLAGS ?= -Wall -Werror -std=gnu++14 -ggdb -Og
 ## CXXFLAGS := $(CXXFLAGS) -MD -MP
