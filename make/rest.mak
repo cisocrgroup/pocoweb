@@ -43,10 +43,10 @@ PARSER_OBJS += rest/src/parser/HocrParserLine.o
 
 PUGI_OBJS += rest/src/pugixml/pugixml.o
 
-REST_LIBS += libpcwcore.a
-REST_LIBS += libpcwparser.a
-REST_LIBS += libpcwapi.a
-REST_LIBS += libpcwpugi.a
+LIBS += libpcwcore.a
+LIBS += libpcwparser.a
+LIBS += libpcwapi.a
+LIBS += libpcwpugi.a
 MAINS += pcwd
 MAINS += pcwc
 
@@ -59,11 +59,11 @@ libpcwparser.a: $(PARSER_OBJS)
 libpcwpugi.a: $(PUGI_OBJS)
 	$(AR) rcs $@ $^
 
-pcwd: rest/src/pcwd.cpp $(REST_LIBS)
+pcwd: rest/src/pcwd.cpp $(LIBS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
-pcwc: rest/src/pcwc.cpp $(REST_LIBS)
+pcwc: rest/src/pcwc.cpp $(LIBS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -lcurl
 
 DEPS += $(patsubst %.o,%.d,$(CORE_OBJS) $(API_OBJS) $(PARSER_OBJS) $(PUGI_OBJS))
 DEPS == $(patsubst %,%.d,$(MAINS))
-ALL += $(REST_LIBS) $(MAINS)
+ALL += $(LIBS) $(MAINS)
