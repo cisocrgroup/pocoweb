@@ -7,12 +7,12 @@ PSLOG_OBJS += plugins/simple-login/Login.o
 PSLOG_OBJS += plugins/simple-login/UpdateUser.o
 PSLOG_OBJS += plugins/simple-login/simple-login.o
 
-PPROF_OBJS += plugins/profiler/src/profiler.o
-PPROF_OBJS += plugins/profiler/src/Config.o
-PPROF_OBJS += plugins/profiler/src/LocalProfiler.o
-PPROF_OBJS += plugins/profiler/src/Profiler.o
-PPROF_OBJS += plugins/profiler/src/RemoteProfiler.o
-PPROF_OBJS += plugins/profiler/src/ProfilerRoute.o
+PPROF_OBJS += plugins/profiler/profiler.o
+PPROF_OBJS += plugins/profiler/Config.o
+PPROF_OBJS += plugins/profiler/LocalProfiler.o
+PPROF_OBJS += plugins/profiler/Profiler.o
+PPROF_OBJS += plugins/profiler/RemoteProfiler.o
+PPROF_OBJS += plugins/profiler/ProfilerRoute.o
 
 PLUGINS += example.so
 PLUGINS += simple-login.so
