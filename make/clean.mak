@@ -1,13 +1,14 @@
-
 clean:
-	find . -type f -a \( \
-		-name '*.o' -o \
-		-name '*.d' -o \
-		-name '*.a' -o \
-		-name '*.so' -o \
-		-name '*.test' -o \
-		-name '*.gitmodule' \
-		\) -delete
+	$(RM) $(ALL)
+	$(RM) $(DEPS)
+	$(RM) $(CORE_OBJS)
+	$(RM) $(PARSER_OBJS)
+	$(RM) $(API_OBJS)
+	$(RM) $(PEX_OBJS)
+	$(RM) $(PSLOG_OBJS)
+	$(RM) $(PPROF_OBJS)
+	$(RM) $(LIBS)
+	$(RM) $(PLUGINS)
 
 clean-cache:
 	$(RM) make/cache.mak config.ini
