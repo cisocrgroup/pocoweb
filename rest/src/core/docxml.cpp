@@ -7,13 +7,21 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-struct DocXmlNode {
-	explicit DocXmlNode(const pugi::xml_node& n)
-		: node(n)
-		, suggestions_(nullptr)
+struct DocXmlNode: public pugi::xml_node {
+private:
+	DocXmlNode(const pugi::xml_node& node,
+			const std::vector<Suggestion>* suggs)
+		: pugi::xml_node(node)
+		, suggestions(suggs)
 	{}
-	pugi::xml_node node;
-	const std::vector<Suggestion>* suggestions_;
+public:
+	static DocXmlNode append_new(DocXmlNode& other) {
+		return DocXmlNode{other.append_child(), other.suggestions};
+	}
+	static DocXmlNode append_new(DocXml& other) {
+		return DocXmlNode{other.append_child(), other.suggestions};
+	}
+	const std::vector<Suggestion>* suggestions;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +40,7 @@ namespace pcw {
 DocXml&
 pcw::operator<<(DocXml& docxml, const Profile& profile)
 {
-	docxml.suggestions_ = &profile.suggestions();
+	docxml.suggestions = &profile.suggestions();
 	return docxml << profile.book();
 }
 
@@ -41,9 +49,8 @@ DocXml&
 pcw::operator<<(DocXml& docxml, const BookView& view)
 {
 	docxml.reset();
-	DocXmlNode document{docxml.append_child()};
-	document.suggestions_ = docxml.suggestions_;
-	document.node.set_name("document");
+	auto document = DocXmlNode::append_new(docxml);
+	document.set_name("document");
 	for (const auto& page: view) {
 		assert(page);
 		document << *page;
@@ -55,9 +62,8 @@ pcw::operator<<(DocXml& docxml, const BookView& view)
 DocXml&
 pcw::operator<<(DocXml& docxml, const Page& page)
 {
-	DocXmlNode document{docxml.append_child()};
-	document.suggestions_ = docxml.suggestions_;
-	document.node.set_name("document");
+	auto document = DocXmlNode::append_new(docxml);
+	document.set_name("document");
 	document << page;
 	return docxml;
 }
@@ -66,11 +72,10 @@ pcw::operator<<(DocXml& docxml, const Page& page)
 DocXmlNode&
 pcw::operator<<(DocXmlNode& node, const Page& page)
 {
-	DocXmlNode pnode{node.node.append_child()};
-	pnode.suggestions_ = node.suggestions_;
-	pnode.node.set_name("page");
-	pnode.node.append_attribute("imageFile").set_value(page.img.string().data());
-	pnode.node.append_attribute("sourceFile").set_value(page.ocr.string().data());
+	auto pnode = DocXmlNode::append_new(node);
+	pnode.set_name("page");
+	pnode.append_attribute("imageFile").set_value(page.img.string().data());
+	pnode.append_attribute("sourceFile").set_value(page.ocr.string().data());
 	for (const auto& line: page) {
 		assert(line);
 		pnode << *line;
@@ -95,32 +100,32 @@ DocXmlNode&
 pcw::operator<<(DocXmlNode& node, const Token& token)
 {
 	static const char* bools[] = {"false", "true"};
-	DocXmlNode tnode{node.node.append_child()};
-	tnode.node.set_name("token");
-	tnode.node.append_attribute("token_id").set_value(token.unique_id());
-	tnode.node.append_attribute("isCorrected").
+	auto tnode = DocXmlNode::append_new(node);
+	tnode.set_name("token");
+	tnode.append_attribute("token_id").set_value(token.unique_id());
+	tnode.append_attribute("isCorrected").
 		set_value(bools[(int)!!token.is_corrected()]);
-	tnode.node.append_attribute("isNormal").
+	tnode.append_attribute("isNormal").
 		set_value(bools[(int)!!token.is_normal()]);
-	auto tmp = tnode.node.append_child();
+	auto tmp = tnode.append_child();
 	tmp.set_name("ext_id");
 	tmp.append_child(pugi::node_pcdata).set_value(std::to_string(token.unique_id()).data());
 
-	tmp = tnode.node.append_child();
+	tmp = tnode.append_child();
 	tmp.set_name("wOCR_lc");
 	tmp.append_child(pugi::node_pcdata).set_value(token.ocr_lc().data());
 
-	tmp = tnode.node.append_child();
+	tmp = tnode.append_child();
 	tmp.set_name("wOCR");
 	tmp.append_child(pugi::node_pcdata).set_value(token.ocr().data());
 
-	tmp = tnode.node.append_child();
+	tmp = tnode.append_child();
 	tmp.set_name("wCorr");
 	if (token.is_corrected())
 		tmp.append_child(pugi::node_pcdata).set_value(token.cor().data());
 
-	if (node.suggestions_)
-		append_candidates(tnode.node, token, *node.suggestions_);
+	if (node.suggestions)
+		append_candidates(tnode, token, *node.suggestions);
 
 	tnode << token.box;
 	return node;
@@ -130,7 +135,7 @@ pcw::operator<<(DocXmlNode& node, const Token& token)
 DocXmlNode&
 pcw::operator<<(DocXmlNode& node, const Box& box)
 {
-	auto coord = node.node.append_child();
+	auto coord = node.append_child();
 	coord.set_name("coord");
 	coord.append_attribute("l").set_value(box.left());
 	coord.append_attribute("t").set_value(box.top());
