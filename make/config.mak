@@ -35,7 +35,7 @@ DISTDIR ?=
 
 PCW_DB_HOST ?= localhost
 PCW_DB_USER ?= pocoweb
-PCW_DB_PASS ?= pcoweb1998
+PCW_DB_PASS ?= pocoweb1998
 PCW_DB ?= pocoweb
 
 PCW_API_USER ?= pocoweb
