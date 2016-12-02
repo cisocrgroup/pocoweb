@@ -28,6 +28,8 @@ namespace profiler {
 		std::string profiler_command() const;
 		std::string profiler_config() const;
 
+		// static std::string exec(const std::string& command);
+
 		const pcw::TmpDir tmpdir_;
 		const Path outfile_, infile_;
 	};

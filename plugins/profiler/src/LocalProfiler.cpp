@@ -45,6 +45,7 @@ LocalProfiler::read_profile() const
 	pcw::ProfileBuilder builder(
 		std::dynamic_pointer_cast<const pcw::Book>(book().shared_from_this()));
 	builder.add_candidates_from_file(infile_);
+	CROW_LOG_DEBUG << "(LocalProfiler) Done reading profile file " << infile_;
 	return builder.build();
 }
 
@@ -61,6 +62,7 @@ LocalProfiler::write_docxml() const
 		throw std::system_error(errno, std::system_category(), outfile_.string());
 	xml.save(os);
 	os.close();
+	CROW_LOG_DEBUG << "(LocalProfiler) Done writing doc xml file " << outfile_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,9 +72,10 @@ LocalProfiler::profiler_command() const
 	return Config::get().exe().string() +
 		" --adaptive" +
 		" --config " + profiler_config() +
-		" --outputFormat DOC_XML" +
+		" --sourceFormat DocXML" +
 		" --sourceFile " + outfile_.string() +
-		" --doc_out " + infile_.string();
+		" --out_doc " + infile_.string() +
+		" 2>&1"; // redirect stderr to stdout
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -81,3 +84,19 @@ LocalProfiler::profiler_config() const
 {
 	return (Config::get().backend() / (book().lang + ".ini")).string();
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// std::string
+// LocalProfiler::exec(const std::string& command)
+// {
+// 	std::shared_ptr<FILE> pipe(popen(command.data(), "r"), pclose);
+// 	std::string res;
+// 	char buffer[1024];
+// 	if (not pipe)
+// 		throw std::system_error(errno, std::system_category(), "popen");
+// 	while (not feof(pipe.get())) {
+// 		if (fgets(buffer, 1024, pipe.get()))
+// 			res += buffer;
+// 	}
+// 	return res;
+// }
