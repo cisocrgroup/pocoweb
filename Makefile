@@ -1,7 +1,10 @@
 default: all
-include make/config.mak
 
-all: config.ini
+include make/config.mak
+include make/modules.mak
+
+all: $(MODS) config.ini
+.PHONY: all default
 
 ## CXXFLAGS ?= -Wall -Werror -std=gnu++14 -ggdb -Og
 ## CXXFLAGS := $(CXXFLAGS) -MD -MP

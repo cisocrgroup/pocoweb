@@ -60,3 +60,4 @@ config.ini: misc/default/config.def.ini make/cache.mak
 	     -e 's/$$[({]PCW_API_EMAIL[})]/$(PCW_API_EMAIL)/g' \
 	     -e 's/$$[({]PCW_API_INSTITUTE[})]/$(PCW_API_INSTITUTE)/g' \
 	     $< > $@
+
