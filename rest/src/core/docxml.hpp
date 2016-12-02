@@ -8,12 +8,8 @@ namespace pcw {
 	class Profile;
 	class Suggestion;
 
-	struct DocXml {
-		explicit DocXml(pugi::xml_document& d)
-			: doc(d)
-			, suggestions_(nullptr)
-		{}
-		pugi::xml_document& doc;
+	struct DocXml: public pugi::xml_document {
+		DocXml(): suggestions_(nullptr) {}
 		const std::vector<Suggestion>* suggestions_;
 	};
 

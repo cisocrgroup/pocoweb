@@ -40,8 +40,8 @@ pcw::operator<<(DocXml& docxml, const Profile& profile)
 DocXml&
 pcw::operator<<(DocXml& docxml, const BookView& view)
 {
-	docxml.doc.reset();
-	DocXmlNode document{docxml.doc.append_child()};
+	docxml.reset();
+	DocXmlNode document{docxml.append_child()};
 	document.suggestions_ = docxml.suggestions_;
 	document.node.set_name("document");
 	for (const auto& page: view) {
@@ -55,7 +55,7 @@ pcw::operator<<(DocXml& docxml, const BookView& view)
 DocXml&
 pcw::operator<<(DocXml& docxml, const Page& page)
 {
-	DocXmlNode document{docxml.doc.append_child()};
+	DocXmlNode document{docxml.append_child()};
 	document.suggestions_ = docxml.suggestions_;
 	document.node.set_name("document");
 	document << page;
