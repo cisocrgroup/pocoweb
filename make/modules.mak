@@ -6,3 +6,4 @@ MODS += modules/utfcpp.mod
 	git submodule update --init $*
 	touch $@
 
+ALL += $(MODS)
