@@ -2,7 +2,7 @@
 #define pcw_docxml_hpp__
 
 #include <vector>
-#include <pugixml.hpp>
+#include "pugixml/pugixml.hpp"
 
 namespace pcw {
 	class BookView;

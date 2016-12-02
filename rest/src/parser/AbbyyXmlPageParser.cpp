@@ -1,5 +1,5 @@
 #include <cstring>
-#include <pugixml.hpp>
+#include "pugixml/pugixml.hpp"
 #include "AbbyyXmlPageParser.hpp"
 #include "AbbyyXmlParserLine.hpp"
 #include "XmlParserPage.hpp"
