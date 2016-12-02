@@ -171,10 +171,9 @@ BOOST_AUTO_TEST_CASE(PatternsIO)
 	auto file = tmp / "doc.xml";
 
 	// write
-	pugi::xml_document xml;
-	DocXml docxml(xml);
+	DocXml docxml;
 	docxml << profile;
-	xml.save_file(file.string().data());
+	docxml.save_file(file.string().data());
 
 	// read again
 	builder = ProfileBuilder(book);

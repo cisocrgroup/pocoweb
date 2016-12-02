@@ -5,20 +5,15 @@
 #include <pugixml.hpp>
 
 namespace pcw {
+	class BookView;
+	class Page;
 	class Profile;
 	class Suggestion;
 
-	struct DocXml {
-		explicit DocXml(pugi::xml_document& d)
-			: doc(d)
-			, suggestions_(nullptr)
-		{}
-		pugi::xml_document& doc;
-		const std::vector<Suggestion>* suggestions_;
+	struct DocXml: public pugi::xml_document {
+		DocXml(): suggestions(nullptr) {}
+		const std::vector<Suggestion>* suggestions;
 	};
-
-	class BookView;
-	class Page;
 
 	DocXml& operator<<(DocXml& docxml, const BookView& view);
 	DocXml& operator<<(DocXml& docxml, const Page& page);

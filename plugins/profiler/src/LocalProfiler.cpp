@@ -54,13 +54,12 @@ void
 LocalProfiler::write_docxml() const
 {
 	CROW_LOG_DEBUG << "(LocalProfiler) Writing doc xml file " << outfile_;
-	pugi::xml_document xml;
-	pcw::DocXml docxml(xml);
+	pcw::DocXml docxml;
 	docxml << book();
 	std::ofstream os(outfile_.string());
 	if (not os.good())
 		throw std::system_error(errno, std::system_category(), outfile_.string());
-	xml.save(os);
+	docxml.save(os);
 	os.close();
 	CROW_LOG_DEBUG << "(LocalProfiler) Done writing doc xml file " << outfile_;
 }

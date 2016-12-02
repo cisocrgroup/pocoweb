@@ -40,8 +40,7 @@ struct Fixture {
 		BOOST_REQUIRE(book->find(2));
 		BOOST_REQUIRE_EQUAL(book->find(2)->size(), 2);
 
-		DocXml os(docxml);
-		os << *book;
+		docxml << *book;
 		root = docxml.document_element();
 	}
 	static LinePtr line(const char* lstr) {
@@ -51,7 +50,7 @@ struct Fixture {
 			line->append(lstr, 0, 100, .8);
 		return line;
 	}
-	pugi::xml_document docxml;
+	DocXml docxml;
 	pugi::xml_node root;
 };
 
@@ -126,7 +125,7 @@ BOOST_AUTO_TEST_CASE(BoundingBoxes)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(ReadWrite)
+BOOST_AUTO_TEST_CASE(DocXmlIO)
 {
 	TmpDir tmp;
 	auto file = tmp / "test.docxml";
