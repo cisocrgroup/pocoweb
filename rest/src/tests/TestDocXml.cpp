@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(BoundingBoxes)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(ReadWrite)
+BOOST_AUTO_TEST_CASE(DocXmlIO)
 {
 	TmpDir tmp;
 	auto file = tmp / "test.docxml";
