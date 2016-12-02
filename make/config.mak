@@ -5,7 +5,7 @@ PCW_API_VERSION_PATCH := 0
 CXX ?= g++
 
 CXXFLAGS ?= -ggdb -Og
-CXXFLAGS := $(CXXFLAGS) -MD -MP -std=gnu++14 -Wall -Werror
+CXXFLAGS := $(CXXFLAGS) -MD -MP -std=gnu++14 -Wall -Werror -fpic
 CXXFLAGS += -Irest/src
 CXXFLAGS += -Imodules/crow/include
 CXXFLAGS += -Imodules/utfcpp/source
@@ -45,7 +45,7 @@ PCW_API_INSTITUTE ?= CIS
 
 -include make/cache.mak
 
-make/cache.mak:
+make/cache.mak: make/config.mak # force regenerating cache if config.mak changes
 	@echo "Generating $@"
 	@echo "#" > $@
 	@echo "# cache.mak" >> $@
@@ -57,6 +57,7 @@ make/cache.mak:
 	@echo "CXX := $(CXX)" >> $@
 	@echo "CXXFLAGS := $(CXXFLAGS)" >> $@
 	@echo "LDFLAGS := $(LDFLAGS)" >> $@
+	@echo "FPIC := $(FPIC)" >> $@
 	@echo "PREFIX := $(PREFIX)" >> $@
 	@echo "BINDIR := $(BINDIR)" >> $@
 	@echo "LIBDIR := $(LIBDIR)" >> $@

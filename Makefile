@@ -6,6 +6,7 @@ include make/config.mak
 include make/modules.mak
 include make/clean.mak
 include make/rest.mak
+include make/plugins.mak
 
 all: $(ALL)
 .PHONY: all default

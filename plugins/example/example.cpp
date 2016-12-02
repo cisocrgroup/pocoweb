@@ -1,7 +1,7 @@
 #include "crow.h"
-#include "util.hpp"
-#include "App.hpp"
-#include "Config.hpp"
+#include "core/util.hpp"
+#include "core/App.hpp"
+#include "core/Config.hpp"
 
 #define EXAMPLE_ROUTE_ROUTE "/example/<int>/<int>"
 
