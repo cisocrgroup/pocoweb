@@ -19,11 +19,11 @@ PLUGINS += simple-login.so
 PLUGINS += profiler.so
 
 example.so: $(PEX_OBJS)
-	$(CXX) $(CXXFLAGS) $(FPIC) -shared -o $@ $< $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -shared -o $@ $^ $(LDFLAGS)
 simple-login.so: $(PSLOG_OBJS)
-	$(CXX) $(CXXFLAGS) $(FPIC) -shared -o $@ $< $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -shared -o $@ $^ $(LDFLAGS)
 profiler.so: $(PPROF_OBJS)
-	$(CXX) $(CXXFLAGS) $(FPIC) -shared -o $@ $< $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -shared -o $@ $^ $(LDFLAGS)
 
 DEPS += $(patsubst %.o,%d,$(PPROF_OBJS) $(PEX_OBJS) $(PSLOG_OBJS))
 ALL += $(PLUGINS)
