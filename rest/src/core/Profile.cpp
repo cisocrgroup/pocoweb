@@ -141,10 +141,21 @@ ProfileBuilder::init()
 			assert(line);
 			line->each_token([this](const auto& token) {
 				auto id = token.unique_id();
+				// std::cerr << "ADDING TOKEN:    " << token.ocr() << "\n";
+				// std::cerr << "ADDING TOKEN ID: " << id << "\n";
 				tokens_[id] = token;
 			});
 		}
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+ProfileBuilder::clear()
+{
+	suggestions_.clear();
+	// book remains untouched
+	// tokens remains untouched
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -168,6 +179,9 @@ ProfileBuilder::add_candidates_from_file(const Path& path)
 	for (const auto& t: ts) {
 		auto id = std::stoll(t.node().child("ext_id").child_value());
 		auto token = tokens_[id];
+		// std::cerr << "TOKEN ID:   " << id << "\n";
+		// std::cerr << "TOKEN LINE: " << token.line.get() << "\n";
+		// std::cerr << "TOKEN ID:   " << token.unique_id() << "\n";
 		if (not token.line or not token.unique_id())
 			THROW(ParseError, "Invalid token id: ", id);
 		auto cs = t.node().select_nodes(".//cand");

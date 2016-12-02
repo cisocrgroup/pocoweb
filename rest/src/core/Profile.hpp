@@ -111,6 +111,7 @@ namespace pcw {
 	class ProfileBuilder {
 	public:
 		ProfileBuilder(ConstBookSptr book);
+		void clear();
 		Profile build() const;
 		void add_candidates_from_file(const Path& path);
 		void add_candidate_string(const Token& token, const std::string& str);

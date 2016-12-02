@@ -3,6 +3,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include <iostream>
+#include "core/docxml.hpp"
+#include "core/TmpDir.hpp"
 #include "core/Error.hpp"
 #include "core/Book.hpp"
 #include "core/Page.hpp"
@@ -160,6 +162,28 @@ BOOST_AUTO_TEST_CASE(OcrPatternsTTH)
 	BOOST_REQUIRE(histp.count(p));
 	BOOST_CHECK_EQUAL(histp[p].size(), 1);
 	BOOST_CHECK(contains(histp[p], "thurm", "thorm"));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(PatternsIO)
+{
+	TmpDir tmp;
+	auto file = tmp / "doc.xml";
+
+	// write
+	pugi::xml_document xml;
+	DocXml docxml(xml);
+	docxml << profile;
+	xml.save_file(file.string().data());
+
+	// read again
+	builder = ProfileBuilder(book);
+	builder.add_candidates_from_file(file);
+	profile = builder.build();
+
+	BOOST_CHECK_EQUAL(profile.suggestions().size(), 3);
+	BOOST_CHECK_EQUAL(profile.calc_ocr_patterns().size(), 2);
+	BOOST_CHECK_EQUAL(profile.calc_hist_patterns().size(), 2);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
