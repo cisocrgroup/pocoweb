@@ -116,7 +116,8 @@ pcw::operator<<(DocXmlNode& node, const Token& token)
 
 	tmp = tnode.node.append_child();
 	tmp.set_name("wCorr");
-	tmp.append_child(pugi::node_pcdata).set_value(token.cor().data());
+	if (token.is_corrected())
+		tmp.append_child(pugi::node_pcdata).set_value(token.cor().data());
 
 	if (node.suggestions_)
 		append_candidates(tnode.node, token, *node.suggestions_);
