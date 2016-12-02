@@ -76,6 +76,7 @@ config.ini: misc/default/config.def.ini make/cache.mak
 	@sed -e 's/$$[({]PCW_DB_HOST[})]/$(PCW_DB_HOST)/g' \
 	     -e 's/$$[({]PCW_DB_USER[})]/$(PCW_DB_USER)/g' \
 	     -e 's/$$[({]PCW_DB_PASS[})]/$(PCW_DB_PASS)/g' \
+	     -e 's/$$[({]PCW_DB[})]/$(PCW_DB)/g' \
 	     -e 's/$$[({]PCW_API_USER[})]/$(PCW_API_USER)/g' \
 	     -e 's/$$[({]PCW_API_PASS[})]/$(PCW_API_PASS)/g' \
 	     -e 's/$$[({]PCW_API_EMAIL[})]/$(PCW_API_EMAIL)/g' \
