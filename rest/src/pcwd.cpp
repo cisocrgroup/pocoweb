@@ -1,3 +1,5 @@
+#include <grp.h>
+#include <pwd.h>
 #include <iostream>
 #include <vector>
 #include "crow.h"
@@ -10,9 +12,12 @@
 #include "api/PageRoute.hpp"
 #include "api/LineRoute.hpp"
 
-using AppPtr = std::unique_ptr<pcw::App>;
+using namespace pcw;
+using AppPtr = std::unique_ptr<App>;
 static int run(int argc, char** argv);
+static void run(App& app);
 static AppPtr get_app(int argc, char** argv);
+static void change_user_and_group(const Config& config);
 
 ////////////////////////////////////////////////////////////////////////////////
 int
@@ -36,8 +41,31 @@ run(int argc, char** argv)
 	app->Register(std::make_unique<pcw::BookRoute>());
 	app->Register(std::make_unique<pcw::PageRoute>());
 	app->Register(std::make_unique<pcw::LineRoute>());
-	app->run();
+	run(*app);
 	return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+run(App& app)
+{
+	change_user_and_group(app.config());
+	app.run();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+change_user_and_group(const Config& config)
+{
+	const auto user = config.daemon.user.data();
+	const auto upw = getpwnam(user);
+	if (not upw)
+		throw std::system_error(errno, std::system_category(), user);
+	const auto group = config.daemon.group.data();
+	const auto gpw = getgrnam(group);
+	if (not gpw)
+		throw std::system_error(errno, std::system_category(), group);
+	// change user and group (not implemented)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
