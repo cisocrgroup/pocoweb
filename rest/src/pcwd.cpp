@@ -36,11 +36,6 @@ int
 run(int argc, char** argv)
 {
 	auto app = get_app(argc, argv);
-	app->register_plugins();
-	app->Register(std::make_unique<pcw::VersionRoute>());
-	app->Register(std::make_unique<pcw::BookRoute>());
-	app->Register(std::make_unique<pcw::PageRoute>());
-	app->Register(std::make_unique<pcw::LineRoute>());
 	run(*app);
 	return 0;
 }
@@ -50,6 +45,12 @@ void
 run(App& app)
 {
 	change_user_and_group(app.config());
+
+	app.register_plugins();
+	app.Register(std::make_unique<pcw::VersionRoute>());
+	app.Register(std::make_unique<pcw::BookRoute>());
+	app.Register(std::make_unique<pcw::PageRoute>());
+	app.Register(std::make_unique<pcw::LineRoute>());
 	app.run();
 }
 
@@ -65,7 +66,10 @@ change_user_and_group(const Config& config)
 	const auto gpw = getgrnam(group);
 	if (not gpw)
 		throw std::system_error(errno, std::system_category(), group);
-	// change user and group (not implemented)
+	if (setuid(upw->pw_uid) != 0)
+		throw std::system_error(errno, std::system_category(), "setuid");
+	if (setgid(gpw->gr_gid) != 0)
+		throw std::system_error(errno, std::system_category(), "setgid");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
