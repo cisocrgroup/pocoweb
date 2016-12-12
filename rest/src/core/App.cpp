@@ -13,7 +13,7 @@ using namespace pcw;
 App::App(const char *config)
 	: routes_()
 	, plugins_()
-	, app_(std::make_unique<pcw::Route::App>())
+	, app_()
 	, cache_(std::make_shared<AppCache>(100, 100))
 	, config_(std::make_shared<Config>(Config::load(config)))
 	, sessions_(std::make_shared<Sessions>(*config_))
@@ -33,6 +33,7 @@ App::run()
 	assert(config_);
 	assert(app_);
 	CROW_LOG_INFO << "(App) Starting server";
+	app_ = std::make_unique<Route::App>();
 	app_->port(config_->daemon.port)
 		.concurrency(config_->daemon.threads)
 		.bindaddr(config_->daemon.host)
@@ -46,12 +47,16 @@ App::stop() noexcept
 	try {
 		// order matters here: first delete the server,
 		// then delete all routes and then close the plugins
-		app_->stop();
-		app_.release();
+		if (app_) {
+			app_->stop();
+			app_.reset();
+		}
 		routes_.clear();
 		plugins_.clear();
 	} catch (const std::exception& e) {
 		CROW_LOG_ERROR << "(App) Error: " << e.what();
+	} catch (...) {
+		CROW_LOG_ERROR << "(App) Unknown error";
 	}
 }
 
