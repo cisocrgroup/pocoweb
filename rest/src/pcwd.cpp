@@ -59,21 +59,16 @@ change_user_and_group(const Config& config)
 {
 	const auto user = config.daemon.user.data();
 	errno = 0;
-	const auto upw = getpwnam(user);
-	if (not upw and errno)
+	const auto pw = getpwnam(user);
+	if (not pw and errno)
 		throw std::system_error(errno, std::system_category(), user);
-	else if (not upw)
+	else if (not pw)
 		THROW(Error, "(pcwd) Could not find user: ", user);
-	const auto group = config.daemon.group.data();
-	errno = 0;
-	const auto gpw = getgrnam(group);
-	if (not gpw and errno)
-		throw std::system_error(errno, std::system_category(), group);
-	else if (not gpw)
-		THROW(Error, "(pcwd) Could not find group: ", group);
-	if (setuid(upw->pw_uid) != 0)
+
+	// set processes uid and gid
+	if (setuid(pw->pw_uid) != 0)
 		throw std::system_error(errno, std::system_category(), "setuid");
-	if (setgid(gpw->gr_gid) != 0)
+	if (setgid(pw->pw_gid) != 0)
 		throw std::system_error(errno, std::system_category(), "setgid");
 }
 

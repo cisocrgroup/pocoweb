@@ -96,7 +96,6 @@ pcw::Config::load(const std::string& filename)
 			{
 				ptree.get<std::string>("daemon.host"),
 				ptree.get<std::string>("daemon.user"),
-				ptree.get<std::string>("daemon.group"),
 				ptree.get<std::string>("daemon.basedir"),
 				ptree.get<int>("daemon.port"),
 				threads,
@@ -147,7 +146,6 @@ pcw::Config::LOG() const
 
 	CROW_LOG_INFO << "daemon.host: " << this->daemon.host;
 	CROW_LOG_INFO << "daemon.user: " << this->daemon.user;
-	CROW_LOG_INFO << "daemon.group: " << this->daemon.group;
 	CROW_LOG_INFO << "daemon.basedir: " << this->daemon.basedir;
 	CROW_LOG_INFO << "daemon.port: " << this->daemon.port;
 	CROW_LOG_INFO << "daemon.threads: " << this->daemon.threads;

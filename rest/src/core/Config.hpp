@@ -17,7 +17,7 @@ namespace pcw {
 		} db;
 
 		const struct Daemon {
-			const std::string host, user, group, basedir;
+			const std::string host, user, basedir;
 			const int port, threads, sessions;
 			const bool detach;
 		} daemon;
