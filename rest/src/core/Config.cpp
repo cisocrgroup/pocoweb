@@ -31,11 +31,11 @@ expand_variables(pcw::Ptree& ptree)
 {
 	static const std::regex var{R"(\$[({](.+)[})])"};
 	std::smatch m;
-
 	size_t runs = 0;
 again:
 	if (runs++ >= PCW_CONFIG_EXPANSION_MAX_RUNS)
-		THROW(pcw::Error, "Maximal number of expansion runs exeeded: ", runs);
+		THROW(pcw::Error, "Maximal number of expansion runs exeeded (",
+				"Recursion in a variable?): ", runs);
 	for (auto& p: ptree) {
 		for (auto& pair: p.second) {
 			if (std::regex_search(pair.second.data(), m, var)) {
