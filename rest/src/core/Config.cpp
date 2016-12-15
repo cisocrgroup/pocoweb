@@ -34,14 +34,15 @@ expand_variables(pcw::Ptree& ptree)
 	size_t runs = 0;
 again:
 	if (runs++ >= PCW_CONFIG_EXPANSION_MAX_RUNS)
-		THROW(pcw::Error, "Maximal number of expansion runs exeeded (",
-				"Recursion in a variable?): ", runs);
+		THROW(pcw::Error, "Maximal number of expansion runs exeeded ",
+				"(Recursion in a variable?): ", runs);
 	for (auto& p: ptree) {
 		for (auto& pair: p.second) {
 			if (std::regex_search(pair.second.data(), m, var)) {
 				auto expand = get_val(ptree, m[1]);
 				auto res = std::regex_replace(pair.second.data(),
-						var, expand, std::regex_constants::format_first_only);
+						var, expand,
+						std::regex_constants::format_first_only);
 				p.second.put(pair.first, res);
 				goto again;
 			}
@@ -53,7 +54,8 @@ again:
 static PluginsConfig
 get_plugins(const pcw::Ptree& ptree)
 {
-	static const std::regex plugin{R"(^plugin[-_](.*)$)", std::regex_constants::icase};
+	static const std::regex plugin{R"(^plugin[-_](.*)$)",
+		std::regex_constants::icase};
 	PluginsConfig plugins;
 	std::smatch m;
 	for (const auto& config: ptree) {
