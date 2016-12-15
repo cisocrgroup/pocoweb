@@ -15,6 +15,17 @@
 using PluginsConfig = std::unordered_map<std::string, pcw::Ptree>;
 
 ////////////////////////////////////////////////////////////////////////////////
+static std::string
+get_val(const pcw::Ptree& ptree, const std::string& var)
+{
+	auto val = getenv(var.data());
+	if (val)
+		return val;
+	else
+		return ptree.get<std::string>(var);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 static void
 expand_variables(pcw::Ptree& ptree)
 {
@@ -28,7 +39,7 @@ again:
 	for (auto& p: ptree) {
 		for (auto& pair: p.second) {
 			if (std::regex_search(pair.second.data(), m, var)) {
-				auto expand = ptree.get<std::string>(std::string(m[1]));
+				auto expand = get_val(ptree, m[1]);
 				auto res = std::regex_replace(pair.second.data(),
 						var, expand, std::regex_constants::format_first_only);
 				p.second.put(pair.first, res);
