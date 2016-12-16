@@ -31,7 +31,6 @@ void
 App::run()
 {
 	assert(config_);
-	assert(app_);
 	CROW_LOG_INFO << "(App) Starting server";
 	app_ = std::make_unique<Route::App>();
 	app_->port(config_->daemon.port)
@@ -64,7 +63,6 @@ App::stop() noexcept
 void
 App::Register(RoutePtr route)
 {
-	assert(app_);
 	if (route) {
 		try {
 			assert(sessions_);
