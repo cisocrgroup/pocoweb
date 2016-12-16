@@ -38,14 +38,14 @@ again:
 				"(Recursion in a variable?): ", runs);
 	for (auto& p: ptree) {
 		for (auto& pair: p.second) {
-			if (std::regex_search(pair.second.data(), m, var)) {
-				auto expand = get_val(ptree, m[1]);
-				auto res = std::regex_replace(pair.second.data(),
-						var, expand,
-						std::regex_constants::format_first_only);
-				p.second.put(pair.first, res);
-				goto again;
-			}
+			if (not std::regex_search(pair.second.data(), m, var))
+				continue;
+			auto expand = get_val(ptree, m[1]);
+			auto res = std::regex_replace(pair.second.data(),
+					var, expand,
+					std::regex_constants::format_first_only);
+			p.second.put(pair.first, res);
+			goto again;
 		}
 	}
 }
@@ -87,10 +87,20 @@ get_log_level(const std::string& level)
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Config
-pcw::Config::load(const std::string& filename)
+pcw::Config::load(const std::string& file)
+{
+	std::ifstream is(file);
+	if (not is.good())
+		throw std::system_error(errno, std::system_category(), file);
+	return load(is);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Config
+pcw::Config::load(std::istream& is)
 {
 	Ptree ptree;
-	boost::property_tree::read_ini(filename, ptree);
+	boost::property_tree::read_ini(is, ptree);
 	expand_variables(ptree);
 	const auto detach = ptree.get<bool>("daemon.detach");
 	const std::string logfile = detach ?
