@@ -29,8 +29,7 @@ host = daemon.host
 port = 8080
 threads = 4
 detach = true
-user = daemon.user
-group = ${db.user}
+user = ${USER}
 sessions = 100
 basedir = ${HOME}
 
@@ -57,7 +56,7 @@ BOOST_FIXTURE_TEST_SUITE(ConfigTest, ConfigFixture)
 BOOST_AUTO_TEST_CASE(TestConfigDb)
 {
 	BOOST_CHECK_EQUAL(config.db.host, "db.host");
-	BOOST_CHECK_EQUAL(config.db.user, "daemon.user");
+	BOOST_CHECK_EQUAL(config.db.user, getenv("USER"));
 	BOOST_CHECK_EQUAL(config.db.pass, "db.pass");
 	BOOST_CHECK_EQUAL(config.db.db, "db.db");
 }
@@ -69,8 +68,7 @@ BOOST_AUTO_TEST_CASE(TestConfigDaemon)
 	BOOST_CHECK_EQUAL(config.daemon.port, 8080);
 	BOOST_CHECK_EQUAL(config.daemon.threads, 4);
 	BOOST_CHECK_EQUAL(config.daemon.detach, true);
-	BOOST_CHECK_EQUAL(config.daemon.user, "daemon.user");
-	BOOST_CHECK_EQUAL(config.daemon.group, "daemon.user");
+	BOOST_CHECK_EQUAL(config.daemon.user, getenv("USER"));
 	BOOST_CHECK_EQUAL(config.daemon.sessions, 100);
 	BOOST_CHECK_EQUAL(config.daemon.basedir, getenv("HOME"));
 }
