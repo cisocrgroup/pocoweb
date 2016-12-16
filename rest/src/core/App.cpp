@@ -31,8 +31,9 @@ void
 App::run()
 {
 	assert(config_);
+	if (not app_)
+		app_ = std::make_unique<Route::App>();
 	CROW_LOG_INFO << "(App) Starting server";
-	app_ = std::make_unique<Route::App>();
 	app_->port(config_->daemon.port)
 		.concurrency(config_->daemon.threads)
 		.bindaddr(config_->daemon.host)
@@ -64,6 +65,8 @@ void
 App::Register(RoutePtr route)
 {
 	if (route) {
+		if (not app_)
+			app_ = std::make_unique<Route::App>();
 		try {
 			assert(sessions_);
 			assert(config_);
@@ -106,6 +109,8 @@ void
 App::register_plugins()
 {
 	assert(config_);
+	if (not app_)
+		app_ = std::make_unique<Route::App>();
 	for (const auto& p: config_->plugins.configs) {
 		try {
 			auto path = p.second.get<std::string>("path");
@@ -115,8 +120,10 @@ App::register_plugins()
 			plugin(p.first, *this);
 			plugins_.push_back(std::move(plugin));
 		} catch (const std::exception& e) {
-			// exception includes path of the plugin in its error message
-			CROW_LOG_ERROR << "(App) Unable to register plugin: " << e.what();
+			// exception includes path of the plugin
+			// in its error message
+			CROW_LOG_ERROR << "(App) Unable to register plugin: "
+				       << e.what();
 		}
 	}
 }
