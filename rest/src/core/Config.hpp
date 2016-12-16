@@ -10,6 +10,7 @@ namespace pcw {
 
 	struct Config {
 		static Config load(const std::string& filename);
+		static Config load(std::istream& is);
 		void setup_logging() const;
 
 		const struct Db {

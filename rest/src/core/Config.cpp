@@ -15,25 +15,37 @@
 using PluginsConfig = std::unordered_map<std::string, pcw::Ptree>;
 
 ////////////////////////////////////////////////////////////////////////////////
+static std::string
+get_val(const pcw::Ptree& ptree, const std::string& var)
+{
+	auto val = getenv(var.data());
+	if (val)
+		return val;
+	else
+		return ptree.get<std::string>(var);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 static void
 expand_variables(pcw::Ptree& ptree)
 {
 	static const std::regex var{R"(\$[({](.+)[})])"};
 	std::smatch m;
-
 	size_t runs = 0;
 again:
 	if (runs++ >= PCW_CONFIG_EXPANSION_MAX_RUNS)
-		THROW(pcw::Error, "Maximal number of expansion runs exeeded: ", runs);
+		THROW(pcw::Error, "Maximal number of expansion runs exeeded ",
+				"(Recursion in a variable?): ", runs);
 	for (auto& p: ptree) {
 		for (auto& pair: p.second) {
-			if (std::regex_search(pair.second.data(), m, var)) {
-				auto expand = ptree.get<std::string>(std::string(m[1]));
-				auto res = std::regex_replace(pair.second.data(),
-						var, expand, std::regex_constants::format_first_only);
-				p.second.put(pair.first, res);
-				goto again;
-			}
+			if (not std::regex_search(pair.second.data(), m, var))
+				continue;
+			auto expand = get_val(ptree, m[1]);
+			auto res = std::regex_replace(pair.second.data(),
+					var, expand,
+					std::regex_constants::format_first_only);
+			p.second.put(pair.first, res);
+			goto again;
 		}
 	}
 }
@@ -42,7 +54,8 @@ again:
 static PluginsConfig
 get_plugins(const pcw::Ptree& ptree)
 {
-	static const std::regex plugin{R"(^plugin[-_](.*)$)", std::regex_constants::icase};
+	static const std::regex plugin{R"(^plugin[-_](.*)$)",
+		std::regex_constants::icase};
 	PluginsConfig plugins;
 	std::smatch m;
 	for (const auto& config: ptree) {
@@ -74,10 +87,20 @@ get_log_level(const std::string& level)
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Config
-pcw::Config::load(const std::string& filename)
+pcw::Config::load(const std::string& file)
+{
+	std::ifstream is(file);
+	if (not is.good())
+		throw std::system_error(errno, std::system_category(), file);
+	return load(is);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Config
+pcw::Config::load(std::istream& is)
 {
 	Ptree ptree;
-	boost::property_tree::read_ini(filename, ptree);
+	boost::property_tree::read_ini(is, ptree);
 	expand_variables(ptree);
 	const auto detach = ptree.get<bool>("daemon.detach");
 	const std::string logfile = detach ?

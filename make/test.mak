@@ -1,5 +1,6 @@
 TESTS += rest/src/tests/TestError.test
 TESTS += rest/src/tests/TestMaybe.test
+TESTS += rest/src/tests/TestConfig.test
 TESTS += rest/src/tests/TestOcrLine.test
 TESTS += rest/src/tests/TestCorLine.test
 TESTS += rest/src/tests/TestDocXml.test
