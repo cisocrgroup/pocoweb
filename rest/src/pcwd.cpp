@@ -1,3 +1,5 @@
+#include <grp.h>
+#include <pwd.h>
 #include <iostream>
 #include <vector>
 #include "crow.h"
@@ -10,9 +12,12 @@
 #include "api/PageRoute.hpp"
 #include "api/LineRoute.hpp"
 
-using AppPtr = std::unique_ptr<pcw::App>;
+using namespace pcw;
+using AppPtr = std::unique_ptr<App>;
 static int run(int argc, char** argv);
+static void run(App& app);
 static AppPtr get_app(int argc, char** argv);
+static void change_user_and_group(const Config& config);
 
 ////////////////////////////////////////////////////////////////////////////////
 int
@@ -31,13 +36,40 @@ int
 run(int argc, char** argv)
 {
 	auto app = get_app(argc, argv);
-	app->register_plugins();
-	app->Register(std::make_unique<pcw::VersionRoute>());
-	app->Register(std::make_unique<pcw::BookRoute>());
-	app->Register(std::make_unique<pcw::PageRoute>());
-	app->Register(std::make_unique<pcw::LineRoute>());
-	app->run();
+	run(*app);
 	return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+run(App& app)
+{
+	change_user_and_group(app.config());
+	app.register_plugins();
+	app.Register(std::make_unique<pcw::VersionRoute>());
+	app.Register(std::make_unique<pcw::BookRoute>());
+	app.Register(std::make_unique<pcw::PageRoute>());
+	app.Register(std::make_unique<pcw::LineRoute>());
+	app.run();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+change_user_and_group(const Config& config)
+{
+	const auto user = config.daemon.user.data();
+	errno = 0;
+	const auto pw = getpwnam(user);
+	if (not pw and errno)
+		throw std::system_error(errno, std::system_category(), user);
+	else if (not pw)
+		THROW(Error, "(pcwd) Could not find user: ", user);
+
+	// set processes uid and gid
+	if (setuid(pw->pw_uid) != 0)
+		throw std::system_error(errno, std::system_category(), "setuid");
+	if (setgid(pw->pw_gid) != 0)
+		throw std::system_error(errno, std::system_category(), "setgid");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
