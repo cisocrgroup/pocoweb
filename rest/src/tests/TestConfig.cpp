@@ -9,7 +9,9 @@ using namespace pcw;
 
 struct ConfigFixture {
 	static const char* INI;
-	ConfigFixture(): is(INI), config(Config::load(is)) {}
+	ConfigFixture(): is(INI), config(Config::load(is)) {
+		BOOST_REQUIRE_EQUAL(config.plugins.configs.size(), 2);
+	}
 
 	std::stringstream is;
 	Config config;
@@ -37,18 +39,14 @@ file = log.file
 # available levels: debug,info,warning,error,critical; default is info
 level = debug
 
-##
-## plugins to load
-## each plugin section must start with 'plugin-'
-##
 [plugin-first]
-val1 = pluing-first.val1
-val2 = pluing-first.val2
+val1 = plugin-first.val1
+val2 = plugin-first.val2
 home = ${daemon.basedir}
 
 [plugin-second]
-val1 = pluing-second.val1
-val2 = pluing-second.val2
+val1 = plugin-second.val1
+val2 = plugin-second.val2
 home = ${plugin-first.home}
 )";
 
@@ -75,6 +73,28 @@ BOOST_AUTO_TEST_CASE(TestConfigDaemon)
 	BOOST_CHECK_EQUAL(config.daemon.group, "daemon.user");
 	BOOST_CHECK_EQUAL(config.daemon.sessions, 100);
 	BOOST_CHECK_EQUAL(config.daemon.basedir, getenv("HOME"));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestConfigFirstPlugin)
+{
+	BOOST_CHECK_EQUAL(config.plugins["first"].get<std::string>("val1"),
+			"plugin-first.val1");
+	BOOST_CHECK_EQUAL(config.plugins["first"].get<std::string>("val2"),
+			"plugin-first.val2");
+	BOOST_CHECK_EQUAL(config.plugins["first"].get<std::string>("home"),
+			getenv("HOME"));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestConfigSecondPlugin)
+{
+	BOOST_CHECK_EQUAL(config.plugins["second"].get<std::string>("val1"),
+			"plugin-second.val1");
+	BOOST_CHECK_EQUAL(config.plugins["second"].get<std::string>("val2"),
+			"plugin-second.val2");
+	BOOST_CHECK_EQUAL(config.plugins["second"].get<std::string>("home"),
+			getenv("HOME"));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
