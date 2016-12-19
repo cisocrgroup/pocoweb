@@ -3,10 +3,10 @@ before-script:
         - g++ -v
 
 build:
-        -script:
+        script:
                 - make -j4
 
 test:
-        -script:
+        script:
                 - make test
 
