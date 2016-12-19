@@ -7,5 +7,5 @@ build:
 
 test:
         script:
-                - make test CXX=g++-5
+                - make -j4 test CXX=g++-5
 
