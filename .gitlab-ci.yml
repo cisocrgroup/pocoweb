@@ -1,4 +1,5 @@
 before_script:
+        - sudo apt-get install libleptonica-dev
         - g++-5 -v
 
 build:
