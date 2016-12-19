@@ -2,6 +2,7 @@
 #include <cassert>
 #include <algorithm>
 #include <iomanip>
+#include <numeric>
 #include <utf8.h>
 #include <crow/logging.h>
 #include "WagnerFischer.hpp"
