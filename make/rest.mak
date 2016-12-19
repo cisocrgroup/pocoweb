@@ -50,13 +50,13 @@ LIBS += libpcwpugi.a
 MAINS += pcwd
 MAINS += pcwc
 
-libpcwcore.a: $(CORE_OBJS)
+libpcwcore.a: $(CORE_OBJS) $(MODS)
 	$(AR) rcs $@ $^
-libpcwapi.a: $(API_OBJS)
+libpcwapi.a: $(API_OBJS) $(MODS)
 	$(AR) rcs $@ $^
-libpcwparser.a: $(PARSER_OBJS)
+libpcwparser.a: $(PARSER_OBJS) $(MODS)
 	$(AR) rcs $@ $^
-libpcwpugi.a: $(PUGI_OBJS)
+libpcwpugi.a: $(PUGI_OBJS) $(MODS)
 	$(AR) rcs $@ $^
 
 pcwd: rest/src/pcwd.cpp $(LIBS)
