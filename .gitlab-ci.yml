@@ -1,12 +1,11 @@
 before_script:
-        - apt-get update && apt-get install -y -qq libboost-dev g++
-        - g++ -v
+        - g++-5 -v
 
 build:
         script:
-                - make -j4
+                - make -j4 CXX=g++-5
 
 test:
         script:
-                - make test
+                - make test CXX=g++-5
 
