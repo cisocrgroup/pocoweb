@@ -3,7 +3,7 @@ MODS += modules/pugixml.gitmodule
 MODS += modules/utfcpp.gitmodule
 
 %.gitmodule:
-	git submodule update --init $*
+	flock mod.lock -c git submodule update --init $*
 	touch $@
 
 ALL += $(MODS)
