@@ -14,7 +14,7 @@ TESTS += rest/src/tests/TestBookDirectoryBuilder.test
 TESTS += rest/src/tests/TestProfile.test
 
 %.test: %.cpp
-	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -lboost_unit_test_framework
 
 test: $(TESTS)
 	@errors=0;\
