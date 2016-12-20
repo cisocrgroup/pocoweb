@@ -14,7 +14,7 @@ CXXFLAGS += -DPCW_API_VERSION_MINOR=$(PCW_API_VERSION_MINOR)
 CXXFLAGS += -DPCW_API_VERSION_PATCH=$(PCW_API_VERSION_PATCH)
 
 LDFLAGS ?=
-LDFLAGS := $(LDFLAGS) -L.
+LDFLAGS := $(LDFLAGS) -L./
 LDFLAGS += -lpcwcore -lpcwapi -lpcwparser -lpcwpugi
 LDFLAGS += -lpcwcore -lpcwapi -lpcwparser -lpcwpugi # do it two times
 LDFLAGS += -ldl
