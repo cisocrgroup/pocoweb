@@ -6,8 +6,10 @@ $(VENDOR)/sqlpp11/Makefile: $(MODS)
 		cmake -DHinnantDate_ROOT_DIR=../../modules/date \
 			-DCMAKE_INSTALL_PREFIX=.\
 			../../modules/sqlpp11
-	cd $(VENDOR)/sqlpp11 && $(MAKE) -j$(J) install
+	cd $(shell dirname $@) && $(MAKE) -j$(J) install
 
 .PHONY: sqlpp11
 ALL += sqlpp11
-CXXFLALGS += -I $(VENDOR/sqlpp11/include
+CXXFLAGS += -I$(VENDOR)/sqlpp11/include
+CXXFLAGS += -Imodules/sqlpp11-connector-stl/include
+CXXFLAGS += -Imodules/date
