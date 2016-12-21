@@ -54,9 +54,9 @@ namespace pcw {
 					static constexpr const char _literal[] =  "name";
 					using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
 					template<typename T> struct _member_t {
-						T beta;
-						T& operator()() { return beta; }
-						const T& operator()() const { return beta; }
+						T name;
+						T& operator()() { return name; }
+						const T& operator()() const { return name; }
 					};
 				};
 				using _traits = ::sqlpp::make_traits<::sqlpp::varchar>;
@@ -67,10 +67,10 @@ namespace pcw {
 			};
 			struct Table: sqlpp::table_t<Table, Userid, Name> {
 				using _value_t = sqlpp::no_value_t;
-				struct alias_t {
+				struct _alias_t {
 					static constexpr const char _literal[] =  "users";
 					using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-					template<class T> struct member_t {
+					template<class T> struct _member_t {
 						T table;
 						T& operator()() noexcept
 							{return table;}
