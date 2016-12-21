@@ -5,5 +5,6 @@ MODS += modules/utfcpp.gitmodule
 %.gitmodule:
 	flock mod.lock git submodule update --init $*
 	touch $@
+	$(RM) -f mod.lock
 
 ALL += $(MODS)
