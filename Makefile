@@ -1,9 +1,11 @@
 ALL :=
 DEPS :=
+VENDOR := vendor
 default: all
 
 include make/config.mak
 include make/modules.mak
+include make/sqlpp11.mak
 include make/clean.mak
 include make/rest.mak
 include make/plugins.mak

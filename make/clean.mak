@@ -10,6 +10,7 @@ clean:
 	$(RM) $(LIBS)
 	$(RM) $(PLUGINS)
 	$(RM) $(TESTS)
+	$(RM) -r $(VENDOR)
 
 clean-cache:
 	$(RM) make/cache.mak config.ini
