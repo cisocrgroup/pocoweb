@@ -7,3 +7,12 @@
 [submodule "modules/utfcpp"]
 	path = modules/utfcpp
 	url = https://github.com/nemtrif/utfcpp
+[submodule "modules/sqlpp11"]
+	path = modules/sqlpp11
+	url = https://github.com/rbock/sqlpp11.git
+[submodule "modules/sqlpp11-connector-mysql"]
+	path = modules/sqlpp11-connector-mysql
+	url = https://github.com/rbock/sqlpp11-connector-mysql.git
+[submodule "modules/sqlpp11-connector-stl"]
+	path = modules/sqlpp11-connector-stl
+	url = https://github.com/rbock/sqlpp11-connector-stl.git
