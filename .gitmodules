@@ -13,9 +13,6 @@
 [submodule "modules/sqlpp11-connector-mysql"]
 	path = modules/sqlpp11-connector-mysql
 	url = https://github.com/rbock/sqlpp11-connector-mysql.git
-[submodule "modules/sqlpp11-connector-stl"]
-	path = modules/sqlpp11-connector-stl
-	url = https://github.com/rbock/sqlpp11-connector-stl.git
 [submodule "modules/date"]
 	path = modules/date
 	url = https://github.com/HowardHinnant/date.git

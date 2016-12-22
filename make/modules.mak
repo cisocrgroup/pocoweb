@@ -3,7 +3,6 @@ MODS += modules/pugixml.gitmodule
 MODS += modules/utfcpp.gitmodule
 MODS += modules/sqlpp11.gitmodule
 MODS += modules/sqlpp11-connector-mysql.gitmodule
-MODS += modules/sqlpp11-connector-stl.gitmodule
 MODS += modules/date.gitmodule
 
 %.gitmodule:
