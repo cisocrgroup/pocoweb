@@ -64,6 +64,9 @@ pcwd: rest/src/pcwd.cpp $(LIBS)
 pcwc: rest/src/pcwc.cpp $(LIBS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -lcurl
 
+rest/src/core/Tables.hpp: misc/scripts/pcw_create_db
+	$^ > $@
+
 DEPS += $(patsubst %.o,%.d,$(CORE_OBJS) $(API_OBJS) $(PARSER_OBJS) $(PUGI_OBJS))
 DEPS += $(patsubst %,%.d,$(MAINS))
 ALL += $(LIBS) $(MAINS)
