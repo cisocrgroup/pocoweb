@@ -13,3 +13,4 @@ pcwc
 config.ini
 make/cache.mak
 vendor/*
+tmp/*
