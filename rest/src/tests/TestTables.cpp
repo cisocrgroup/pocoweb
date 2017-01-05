@@ -27,3 +27,27 @@ BOOST_AUTO_TEST_CASE(InsertUser)
 	db(stmt);
 	db.validate();
 }
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(SelectAllUser)
+{
+	MockDb db;
+	db.expect("SELECT users.userid,users.name,users.email,users.institute,users.passwd "
+			"FROM users WHERE (users.email='testemail')");
+	tables::Users users;
+	auto stmt = select(all_of(users)).from(users).
+		where(users.email == "testemail");
+	db(stmt);
+	db.validate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(SelectUserId)
+{
+	MockDb db;
+	db.expect("SELECT users.userid FROM users WHERE (users.name='testname')");
+	tables::Users users;
+	auto stmt = select(users.userid).from(users).where(users.name == "testname");
+	db(stmt);
+	db.validate();
+}
