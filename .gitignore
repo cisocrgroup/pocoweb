@@ -10,7 +10,7 @@
 tags
 pcwd
 pcwc
-rest/src/core/Tables.hpp
 config.ini
 make/cache.mak
 vendor/*
+tmp/*
