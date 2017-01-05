@@ -6,7 +6,7 @@
 #include <sqlpp11/sqlpp11.h>
 #include <sqlpp11/mysql/mysql.h>
 #include <sqlpp11/mysql/mysql.h>
-#include "core/Tables.hpp"
+#include "core/Tables.h"
 #include "core/Config.hpp"
 
 using namespace sqlpp;
@@ -27,17 +27,20 @@ struct TestDbConfig {
 struct TableUsersFixture {
 	TestDbConfig config;
 	mysql::connection db;
-	Tables::Users::Table users;
+	tables::Users users;
+	// Tables::Users::Table users;
 	TableUsersFixture(): config(), db(config.config) {
 		db(remove_from(users).where(users.name == "first name"));
-		db(remove_from(users).where(users.name == "second name"));
-		db(insert_into(users).set(users.name = "first name"));
-		db(insert_into(users).set(users.name = "second name"));
+		db(insert_into(users).set(
+			users.name = "first name",
+			users.email = "first email",
+			users.institute = "first insitute",
+			users.passwd = "first password"
+		));
 	}
 	~TableUsersFixture() noexcept {
 		try {
 			db(remove_from(users).where(users.name == "first name"));
-			db(remove_from(users).where(users.name == "second name"));
 		} catch (...) {
 			BOOST_FAIL("SQL error while removing users");
 		}
