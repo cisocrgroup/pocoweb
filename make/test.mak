@@ -15,7 +15,7 @@ TESTS += rest/src/tests/TestHocrParsing.test
 TESTS += rest/src/tests/TestBookDirectoryBuilder.test
 TESTS += rest/src/tests/TestProfile.test
 
-%.test: %.cpp
+%.test: %.cpp $(LIBS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
 
 test: $(TESTS)
