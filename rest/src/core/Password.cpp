@@ -8,6 +8,10 @@
 #define PCW_PASSWORD_SEED_SIZE 10
 #endif // PCW_PASSWORD_SEED_SIZE
 
+#ifndef PCW_PASSWORD_ALGORITHM
+#define PCW_PASSWORD_ALGORITHM "$2a$"
+#endif // PCW_PASSWORD_ALGORITHM
+
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +59,7 @@ Password::make(const std::string& password)
 	std::random_device r;
 	std::default_random_engine e(r());
 	std::uniform_int_distribution<int> d(0, 51);
-	std::string salt = "$6$"; // use SHA-512
+	std::string salt = PCW_PASSWORD_ALGORITHM;
 
 	std::generate_n(std::back_inserter(salt), PCW_PASSWORD_SEED_SIZE,
 			[&](){return chars[d(e)];});
