@@ -1,4 +1,5 @@
-sqlpp11: $(VENDOR)/sqlpp11/Makefile $(VENDOR)/sqlpp11-connector-mysql/Makefile
+VENDOR_MAKEFILES += $(VENDOR)/sqlpp11/Makefile
+VENDOR_MAKEFILES += $(VENDOR)/sqlpp11-connector-mysql/Makefile
 
 $(VENDOR)/sqlpp11/Makefile: $(MODS)
 	mkdir -p $(shell dirname $@)
@@ -15,8 +16,7 @@ $(VENDOR)/sqlpp11-connector-mysql/Makefile: $(MODS)
 			../../modules/sqlpp11-connector-mysql
 	cd $(shell dirname $@) && $(MAKE) -j$(J) install
 
-.PHONY: sqlpp11
-ALL += sqlpp11
+ALL += $(VENDOR_MAKEFILES)
 CXXFLAGS += -I$(VENDOR)/sqlpp11/include
 CXXFLAGS += -Imodules/sqlpp11-connector-mysql/include
 CXXFLAGS += -Imodules/date
