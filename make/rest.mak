@@ -11,6 +11,7 @@ CORE_OBJS += rest/src/core/Package.o
 CORE_OBJS += rest/src/core/Config.o
 CORE_OBJS += rest/src/core/Database.o
 CORE_OBJS += rest/src/core/Profile.o
+CORE_OBJS += rest/src/core/Password.o
 CORE_OBJS += rest/src/core/Route.o
 CORE_OBJS += rest/src/core/App.o
 CORE_OBJS += rest/src/core/Line.o
