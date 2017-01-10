@@ -26,7 +26,8 @@ LDFLAGS += -lboost_log
 LDFLAGS += -licuuc
 LDFLAGS += -lboost_system
 LDFLAGS += -lboost_filesystem
-LDFLAGS += -lcrypto # TODO still needed?
+LDFLAGS += -lcrypt
+LDFLAGS += -lcrypto # still needed?
 
 PREFIX ?= /usr/local
 BINDIR := $(PREFIX)/bin
