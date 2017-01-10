@@ -21,13 +21,13 @@ TESTS += rest/src/tests/TestProfile.test
 test: $(TESTS)
 	@errors=0;\
 	for test in $(TESTS); do \
-		./$$test; \
+		$$test > /dev/null 2>&1; \
 		res=$$?; \
 		if [ $$res -ne 0 ]; then \
 			errors=$$((errors + 1)); \
-			echo $$test ': \033[0;31mFAIL\033[0m' ;\
+			echo $$test': \033[0;31mFAIL\033[0m' ;\
 		else \
-			echo $$test ': \033[0;32mSUCCESS\033[0m' ;\
+			echo $$test': \033[0;32mSUCCESS\033[0m' ;\
 		fi \
 	done ;\
 	if [ $$errors -ne 0 ]; then \
