@@ -17,3 +17,8 @@ BOOST_AUTO_TEST_CASE(Authenticate)
 	BOOST_CHECK(not password.authenticate(pw2));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(Exception)
+{
+	BOOST_CHECK_THROW(Password("wrong_password_format"), std::runtime_error);
+}
