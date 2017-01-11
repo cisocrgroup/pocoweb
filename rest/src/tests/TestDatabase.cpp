@@ -26,3 +26,12 @@ BOOST_AUTO_TEST_CASE(CreateUser)
 	db.validate();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(LoginUser)
+{
+	MockDb db;
+	db.expect(std::regex(R"(SELECT .* FROM users WHERE \(users.name='name'\))"));
+	auto user = login_user(db, "name", "password");
+	db.validate();
+}
+

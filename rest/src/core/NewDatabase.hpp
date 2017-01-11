@@ -13,6 +13,9 @@ namespace pcw {
 			const std::string& pw,
 			const std::string& email = "",
 			const std::string& inst = "");
+	template<class Db>
+	UserSptr
+	login_user(Db& db, const std::string& user, const std::string& pw);
 
 
 }
@@ -23,6 +26,7 @@ pcw::UserSptr
 pcw::create_user(Db& db, const std::string& name, const std::string& pw,
 			const std::string& email, const std::string& inst)
 {
+	using namespace sqlpp;
 	auto password = Password::make(pw);
 	tables::Users users;
 	auto stmt = insert_into(users).set(
@@ -35,4 +39,26 @@ pcw::create_user(Db& db, const std::string& name, const std::string& pw,
 	return std::make_shared<User>(name, email, inst, id);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+pcw::UserSptr
+pcw::login_user(Db& db, const std::string& name, const std::string& pw)
+{
+	using namespace sqlpp;
+	tables::Users users;
+	auto stmt = select(all_of(users)).from(users).where(users.name == name);
+	auto res = db(stmt);
+	if (not res.empty()) {
+		Password password(res.front().passwd);
+		if (password.authenticate(pw)) {
+			return std::make_shared<User>(
+				res.front().name,
+				res.front().email,
+				res.front().institute,
+				res.front().userid
+			);
+		}
+	}
+	return nullptr;
+}
 #endif // pcw_NewDatabase_hpp__
