@@ -17,12 +17,12 @@ using namespace pcw;
 BOOST_AUTO_TEST_CASE(CreateUser)
 {
 	MockDb db;
-	// db.expect("INSERT INTO users (name,email,institute,passwd) "
-	// 	"VALUES('name','email','inst','passwd')");
+	db.expect(std::regex(R"(INSERT INTO users \(.+\) VALUES\(.+\))"));
 	auto user = create_user(db, "name", "password", "email", "institute");
 	BOOST_REQUIRE(user);
 	BOOST_CHECK_EQUAL(user->name, "name");
 	BOOST_CHECK_EQUAL(user->email, "email");
 	BOOST_CHECK_EQUAL(user->institute, "institute");
+	db.validate();
 }
 
