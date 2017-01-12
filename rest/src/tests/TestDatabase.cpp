@@ -35,3 +35,14 @@ BOOST_AUTO_TEST_CASE(LoginUser)
 	db.validate();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(UpdateUser)
+{
+	MockDb db;
+	User user("name", "email", "institute", 42);
+	db.expect("UPDATE users SET email='email',institute='institute' "
+			"WHERE (users.userid=42)");
+	update_user(db, user);
+	db.validate();
+}
+

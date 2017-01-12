@@ -17,6 +17,9 @@ namespace pcw {
 	UserSptr
 	login_user(Db& db, const std::string& user, const std::string& pw);
 
+	template<class Db>
+	void
+	update_user(Db& db, const User& user);
 
 }
 
@@ -61,4 +64,20 @@ pcw::login_user(Db& db, const std::string& name, const std::string& pw)
 	}
 	return nullptr;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+void
+pcw::update_user(Db& db, const User& user)
+{
+	using namespace sqlpp;
+	tables::Users users;
+	// do not change user's name and id
+	auto stmt = update(users).set(
+		users.email = user.email,
+		users.institute = user.institute
+	).where(users.userid == user.id());
+	db(stmt);
+}
+
 #endif // pcw_NewDatabase_hpp__
