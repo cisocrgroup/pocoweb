@@ -46,3 +46,21 @@ BOOST_AUTO_TEST_CASE(UpdateUser)
 	db.validate();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(SelectUserByName)
+{
+	MockDb db;
+	db.expect(std::regex(R"(SELECT .* FROM users WHERE \(users.name='name'\))"));
+	select_user(db, "name");
+	db.validate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(SelectUserById)
+{
+	MockDb db;
+	db.expect(std::regex(R"(SELECT .* FROM users WHERE \(users.userid=42\))"));
+	select_user(db, 42);
+	db.validate();
+}
+

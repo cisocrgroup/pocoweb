@@ -7,6 +7,18 @@ namespace pcw {
 	class User;
 	using UserSptr = std::shared_ptr<User>;
 
+	namespace detail {
+		template<class U>
+		UserSptr make_user(const U& users) {
+			return std::make_shared<User>(
+				users.name,
+				users.email,
+				users.institute,
+				users.userid
+			);
+		}
+	}
+
 	template<class Db>
 	UserSptr
 	create_user(Db& db, const std::string& user,
@@ -20,6 +32,14 @@ namespace pcw {
 	template<class Db>
 	void
 	update_user(Db& db, const User& user);
+
+	template<class Db>
+	UserSptr
+	select_user(Db& db, const std::string& name);
+
+	template<class Db>
+	UserSptr
+	select_user(Db& db, int id);
 
 }
 
@@ -54,12 +74,7 @@ pcw::login_user(Db& db, const std::string& name, const std::string& pw)
 	if (not res.empty()) {
 		Password password(res.front().passwd);
 		if (password.authenticate(pw)) {
-			return std::make_shared<User>(
-				res.front().name,
-				res.front().email,
-				res.front().institute,
-				res.front().userid
-			);
+			return detail::make_user(res.front());
 		}
 	}
 	return nullptr;
@@ -78,6 +93,34 @@ pcw::update_user(Db& db, const User& user)
 		users.institute = user.institute
 	).where(users.userid == user.id());
 	db(stmt);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+pcw::UserSptr
+pcw::select_user(Db& db, const std::string& name)
+{
+	using namespace sqlpp;
+	tables::Users users;
+	auto stmt = select(all_of(users)).from(users).where(users.name == name);
+	auto res = db(stmt);
+	if (not res.empty())
+		return pcw::detail::make_user(res.front());
+	return nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+pcw::UserSptr
+pcw::select_user(Db& db, int id)
+{
+	using namespace sqlpp;
+	tables::Users users;
+	auto stmt = select(all_of(users)).from(users).where(users.userid == id);
+	auto res = db(stmt);
+	if (not res.empty())
+		return pcw::detail::make_user(res.front());
+	return nullptr;
 }
 
 #endif // pcw_NewDatabase_hpp__
