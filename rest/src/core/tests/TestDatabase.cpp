@@ -8,6 +8,7 @@
 #include "core/Tables.h"
 #include "core/User.hpp"
 #include "core/Password.hpp"
+#include "core/Book.hpp"
 #include "core/NewDatabase.hpp"
 
 using namespace sqlpp;
@@ -80,6 +81,41 @@ BOOST_AUTO_TEST_CASE(DeleteUserById)
 {
 	db.expect("DELETE FROM users WHERE (users.userid=42)");
 	delete_user(db, 42);
+	db.validate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_SUITE_END()
+
+struct BooksFixture: public UsersFixture {
+	BookSptr book;
+	UserSptr user;
+	BooksFixture(): UsersFixture(), book(), user() {
+		user = std::make_shared<User>("test", "test", "test", 42);
+		BOOST_REQUIRE(user);
+		book = std::make_shared<Book>();
+		BOOST_REQUIRE(book);
+		book->set_owner(*user);
+	}
+};
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_FIXTURE_TEST_SUITE(Books, BooksFixture)
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(InsertProject)
+{
+	db.expect("UPDATE projects SET origin=0 WHERE (projects.projectid=0)");
+	auto view = insert_project(db, *book);
+	db.validate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(InsertBook)
+{
+	db.expect(std::regex(R"(INSERT INTO books .* VALUES.*)"));
+	auto same = insert_book(db, *book);
+	BOOST_CHECK_EQUAL(same, book);
 	db.validate();
 }
 

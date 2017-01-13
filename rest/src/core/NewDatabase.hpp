@@ -6,6 +6,10 @@
 namespace pcw {
 	class User;
 	using UserSptr = std::shared_ptr<User>;
+	class Book;
+	using BookSptr = std::shared_ptr<Book>;
+	class BookView;
+	using BookViewSptr = std::shared_ptr<BookView>;
 
 	namespace detail {
 		template<class U>
@@ -42,6 +46,11 @@ namespace pcw {
 	template<class Db>
 	void delete_user(Db& db, int id);
 
+	template<class Db>
+	BookViewSptr insert_project(Db& db, BookView& book);
+
+	template<class Db>
+	BookSptr insert_book(Db& db, Book& book);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -144,6 +153,57 @@ pcw::delete_user(Db& db, int id)
 	tables::Users users;
 	auto stmt = remove_from(users).where(users.userid == id);
 	db(stmt);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+pcw::BookViewSptr
+pcw::insert_project(Db& db, BookView& view)
+{
+	using namespace sqlpp;
+	tables::Projects projects;
+	int id;
+	if (view.is_book()) {
+		auto stmt1 = insert_into(projects).set(
+			projects.origin = 0,
+			projects.owner = view.owner().id()
+		);
+		id = db(stmt1);
+		auto stmt2 = update(projects).set(
+			projects.origin = id
+		).where(projects.projectid == id);
+		db(stmt2);
+	} else {
+		auto stmt = insert_into(projects).set(
+			projects.origin = view.origin().id(),
+			projects.owner = view.owner().id()
+		);
+		id = db(stmt);
+	}
+	view.set_id(id);
+	return view.shared_from_this();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+pcw::BookSptr
+pcw::insert_book(Db& db, Book& book)
+{
+	using namespace sqlpp;
+	tables::Books books;
+	insert_project(db, book); // sets bookid
+	auto stmt = insert_into(books).set(
+		books.author = book.author,
+		books.title = book.title,
+		books.directory = book.dir.string(),
+		books.year = book.year,
+		books.uri = book.uri,
+		books.bookid = book.id(),
+		books.description = book.description,
+		books.lang = book.lang
+	);
+	db(stmt);
+	return std::static_pointer_cast<Book>(book.shared_from_this());
 }
 
 #endif // pcw_NewDatabase_hpp__
