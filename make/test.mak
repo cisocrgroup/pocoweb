@@ -1,21 +1,23 @@
-TESTS += rest/src/tests/TestError.test
-TESTS += rest/src/tests/TestMaybe.test
-TESTS += rest/src/tests/TestConfig.test
-TESTS += rest/src/tests/TestTables.test
-TESTS += rest/src/tests/TestPassword.test
-TESTS += rest/src/tests/TestDatabase.test
-TESTS += rest/src/tests/TestOcrLine.test
-TESTS += rest/src/tests/TestCorLine.test
-TESTS += rest/src/tests/TestDocXml.test
-TESTS += rest/src/tests/TestWagnerFischer.test
-TESTS += rest/src/tests/TestCorrector.test
-TESTS += rest/src/tests/TestAltoXmlParsing.test
-TESTS += rest/src/tests/TestAbbyyXmlParsing.test
-TESTS += rest/src/tests/TestOcropusLlocsParsing.test
-TESTS += rest/src/tests/TestHocrParsing.test
-TESTS += rest/src/tests/TestBookDirectoryBuilder.test
-TESTS += rest/src/tests/TestProfile.test
+CORE_TESTS += rest/src/core/tests/TestError.test
+CORE_TESTS += rest/src/core/tests/TestMaybe.test
+CORE_TESTS += rest/src/core/tests/TestConfig.test
+CORE_TESTS += rest/src/core/tests/TestTables.test
+CORE_TESTS += rest/src/core/tests/TestPassword.test
+CORE_TESTS += rest/src/core/tests/TestDatabase.test
+CORE_TESTS += rest/src/core/tests/TestWagnerFischer.test
+CORE_TESTS += rest/src/core/tests/TestOcrLine.test
+CORE_TESTS += rest/src/core/tests/TestCorLine.test
+CORE_TESTS += rest/src/core/tests/TestCorrector.test
+CORE_TESTS += rest/src/core/tests/TestProfile.test
 
+PARSER_TESTS += rest/src/parser/tests/TestDocXml.test
+PARSER_TESTS += rest/src/parser/tests/TestAltoXmlParsing.test
+PARSER_TESTS += rest/src/parser/tests/TestAbbyyXmlParsing.test
+PARSER_TESTS += rest/src/parser/tests/TestOcropusLlocsParsing.test
+PARSER_TESTS += rest/src/parser/tests/TestHocrParsing.test
+PARSER_TESTS += rest/src/parser/tests/TestBookDirectoryBuilder.test
+
+TESTS = $(CORE_TESTS) $(PARSER_TESTS)
 %.test: %.cpp $(LIBS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
 
