@@ -30,6 +30,8 @@
 #ifndef SQLPP_MOCK_DB_H
 #define SQLPP_MOCK_DB_H
 
+#include <boost/variant.hpp>
+#include <regex>
 #include <iostream>
 #include <sqlpp11/connection.h>
 #include <sqlpp11/data_types/no_value.h>
@@ -255,14 +257,23 @@ struct MockDbT : public sqlpp::connection
   void set_last_context(const _serializer_context_t& context) {
     last_context_ = context.str();
   }
-  void expect(const char* expectation) {
-    expectation_ = expectation;
+  template<class T>
+  void expect(T expectation) {
+    expectation_ = std::move(expectation);
   }
   void validate() const noexcept {
-    BOOST_CHECK_EQUAL(expectation_, last_context_);
+    if (boost::get<std::string>(&expectation_)) {
+      BOOST_CHECK_EQUAL(boost::get<std::string>(expectation_), last_context_);
+    } else {
+        BOOST_CHECK_MESSAGE(
+		std::regex_match(last_context_, boost::get<std::regex>(expectation_)),
+		"`" << last_context_ << "` does not match expectation"
+	);
+    }
   }
   private:
-    std::string expectation_, last_context_;
+    boost::variant<std::string, std::regex> expectation_;
+    std::string last_context_;
 };
 
 using MockDb = MockDbT<false>;

@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(ErrorMessage)
 	} catch (const Error& error) {
 		BOOST_CHECK_EQUAL(
 			error.what(),
-			"rest/src/tests/TestError.cpp:71: Error Message: 123"
+			"rest/src/core/tests/TestError.cpp:71: Error Message: 123"
 		);
 	} catch (...) {
 		BOOST_FAIL("Invalid catch(...)");
