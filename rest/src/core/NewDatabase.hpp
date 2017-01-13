@@ -20,26 +20,27 @@ namespace pcw {
 	}
 
 	template<class Db>
-	UserSptr
-	create_user(Db& db, const std::string& user,
+	UserSptr create_user(Db& db, const std::string& user,
 			const std::string& pw,
 			const std::string& email = "",
 			const std::string& inst = "");
 	template<class Db>
-	UserSptr
-	login_user(Db& db, const std::string& user, const std::string& pw);
+	UserSptr login_user(Db& db, const std::string& user, const std::string& pw);
 
 	template<class Db>
-	void
-	update_user(Db& db, const User& user);
+	void update_user(Db& db, const User& user);
 
 	template<class Db>
-	UserSptr
-	select_user(Db& db, const std::string& name);
+	UserSptr select_user(Db& db, const std::string& name);
 
 	template<class Db>
-	UserSptr
-	select_user(Db& db, int id);
+	UserSptr select_user(Db& db, int id);
+
+	template<class Db>
+	void delete_user(Db& db, const std::string& name);
+
+	template<class Db>
+	void delete_user(Db& db, int id);
 
 }
 
@@ -121,6 +122,28 @@ pcw::select_user(Db& db, int id)
 	if (not res.empty())
 		return pcw::detail::make_user(res.front());
 	return nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+void
+pcw::delete_user(Db& db, const std::string& name)
+{
+	using namespace sqlpp;
+	tables::Users users;
+	auto stmt = remove_from(users).where(users.name == name);
+	db(stmt);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+void
+pcw::delete_user(Db& db, int id)
+{
+	using namespace sqlpp;
+	tables::Users users;
+	auto stmt = remove_from(users).where(users.userid == id);
+	db(stmt);
 }
 
 #endif // pcw_NewDatabase_hpp__

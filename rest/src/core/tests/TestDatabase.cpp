@@ -64,3 +64,21 @@ BOOST_AUTO_TEST_CASE(SelectUserById)
 	db.validate();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(DeleteUserByName)
+{
+	MockDb db;
+	db.expect("DELETE FROM users WHERE (users.name='name')");
+	delete_user(db, "name");
+	db.validate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(DeleteUserById)
+{
+	MockDb db;
+	db.expect("DELETE FROM users WHERE (users.userid=42)");
+	delete_user(db, 42);
+	db.validate();
+}
+
