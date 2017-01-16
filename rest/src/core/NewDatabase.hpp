@@ -10,6 +10,8 @@ namespace pcw {
 	using BookSptr = std::shared_ptr<Book>;
 	class BookView;
 	using BookViewSptr = std::shared_ptr<BookView>;
+	class Page;
+	class Line;
 
 	namespace detail {
 		template<class U>
@@ -21,6 +23,11 @@ namespace pcw {
 				users.userid
 			);
 		}
+		template<class Db, class P, class Q, class R>
+		void insert_page(Db& db, P& p, Q& q, R& r, const Page& page);
+
+		template<class Db, class Q, class R>
+		void insert_line(Db& db, Q& q, R& r, const Line& line);
 	}
 
 	template<class Db>
@@ -203,7 +210,93 @@ pcw::insert_book(Db& db, Book& book)
 		books.lang = book.lang
 	);
 	db(stmt);
+
+	tables::Pages pages;
+	auto p = db.prepare(insert_into(pages).set(
+		pages.bookid = parameter(pages.bookid),
+		pages.pageid = parameter(pages.pageid),
+		pages.imagepath = parameter(pages.imagepath),
+		pages.ocrpath = parameter(pages.ocrpath),
+		pages.pleft = parameter(pages.pleft),
+		pages.ptop = parameter(pages.ptop),
+		pages.pright = parameter(pages.pright),
+		pages.pbottom = parameter(pages.pbottom)
+	));
+
+	tables::Textlines textlines;
+	auto q = db.prepare(insert_into(textlines).set(
+		textlines.bookid = parameter(textlines.bookid),
+		textlines.pageid = parameter(textlines.pageid),
+		textlines.lineid = parameter(textlines.lineid),
+		textlines.imagepath = parameter(textlines.imagepath),
+		textlines.lleft = parameter(textlines.lleft),
+		textlines.ltop = parameter(textlines.ltop),
+		textlines.lright = parameter(textlines.lright),
+		textlines.lbottom = parameter(textlines.lbottom)
+	));
+	tables::Contents contents;
+	auto r = db.prepare(insert_into(contents).set(
+		contents.bookid = parameter(contents.bookid),
+		contents.pageid = parameter(contents.pageid),
+		contents.lineid = parameter(contents.lineid),
+		contents.seq = parameter(contents.seq),
+		contents.ocr = parameter(contents.ocr),
+		contents.cor = parameter(contents.cor),
+		contents.cut = parameter(contents.cut),
+		contents.conf = parameter(contents.conf)
+	));
+	for (const auto& page: book) {
+		assert(page);
+		detail::insert_page(db, p, q, r, *page);
+	}
 	return std::static_pointer_cast<Book>(book.shared_from_this());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db, class P, class Q, class R>
+void
+pcw::detail::insert_page(Db& db, P& p, Q& q, R& r, const Page& page)
+{
+	p.params.bookid = page.book()->id();
+	p.params.pageid = page.id();
+	p.params.imagepath = page.img.string();
+	p.params.ocrpath = page.ocr.string();
+	p.params.pleft = page.box.left();
+	p.params.ptop = page.box.top();
+	p.params.pright = page.box.right();
+	p.params.pbottom = page.box.bottom();
+	db(p);
+	for (const auto& line: page) {
+		assert(line);
+		detail::insert_line(db, q, r, *line);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db, class Q, class R>
+void
+pcw::detail::insert_line(Db& db, Q& q, R& r, const Line& line)
+{
+	q.params.bookid = line.page()->book()->id();
+	q.params.pageid = line.page()->id();
+	q.params.lineid = line.id();
+	q.params.imagepath = line.img.string();
+	q.params.lleft = line.box.left();
+	q.params.ltop = line.box.top();
+	q.params.lright = line.box.right();
+	q.params.lbottom = line.box.bottom();
+	db(q);
+
+	r.params.bookid = line.page()->book()->id();
+	r.params.pageid = line.page()->id();
+	r.params.lineid = line.id();
+	for (auto i = 0U; i < line.size(); ++i) {
+		r.params.seq = i;
+		r.params.ocr = line[i].ocr;
+		r.params.cor = line[i].cor;
+		r.params.cut = line[i].cut;
+		r.params.conf = line[i].conf;
+	}
 }
 
 #endif // pcw_NewDatabase_hpp__
