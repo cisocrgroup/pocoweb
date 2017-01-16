@@ -206,7 +206,7 @@ struct MockDbT : public sqlpp::connection
   {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
-    set_last_context(context);
+    // set_last_context(context);
     return nullptr;
   }
 
@@ -215,7 +215,7 @@ struct MockDbT : public sqlpp::connection
   {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
-    set_last_context(context);
+    // set_last_context(context);
     return nullptr;
   }
 
@@ -236,7 +236,7 @@ struct MockDbT : public sqlpp::connection
   {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
-    set_last_context(context);
+    // set_last_context(context);
     return nullptr;
   }
 
