@@ -34,13 +34,17 @@ namespace pcw {
 
 	static inline bool
 	operator==(const Box& a, const Box& b) noexcept {
-		return std::make_tuple(a.left(), a.top(), a.right(), a.bottom()) ==
-			std::make_tuple(b.left(), b.top(), b.right(), b.bottom());
+		return std::make_tuple(a.left(), a.top(),
+				a.right(), a.bottom()) ==
+			std::make_tuple(b.left(), b.top(),
+				b.right(), b.bottom());
 	}
 	static inline bool
 	operator<(const Box& a, const Box& b) noexcept {
-		return std::make_tuple(a.left(), a.top(), a.right(), a.bottom()) <
-			std::make_tuple(b.left(), b.top(), b.right(), b.bottom());
+		return std::make_tuple(a.left(), a.top(),
+				a.right(), a.bottom()) <
+			std::make_tuple(b.left(), b.top(),
+				b.right(), b.bottom());
 	}
 
 	template<class C>
