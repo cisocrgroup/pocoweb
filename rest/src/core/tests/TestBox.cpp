@@ -154,3 +154,27 @@ BOOST_AUTO_TEST_CASE(Split)
 		BOOST_CHECK_EQUAL(b.width(), 1);
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(AdditionBigger)
+{
+	Box box{2, 2, 3, 3};
+	box += Box{1, 1, 4, 4};
+	BOOST_CHECK_EQUAL(box, Box(1, 1, 4, 4));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(AdditionSmaller)
+{
+	Box box{1, 1, 4, 4};
+	box += Box{2, 2, 3, 3};
+	BOOST_CHECK_EQUAL(box, Box(1, 1, 4, 4));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(AdditionMixed)
+{
+	Box box{1, 1, 3, 3};
+	box += Box{2, 2, 4, 4};
+	BOOST_CHECK_EQUAL(box, Box(1, 1, 4, 4));
+}
