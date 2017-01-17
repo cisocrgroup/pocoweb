@@ -208,8 +208,8 @@ Database::update_line(const Line& line, sql::Connection& conn) const
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
 	const auto lineid = line.id();
-	const auto pageid = line.page()->id();
-	const auto bookid = line.page()->book()->id();
+	const auto pageid = line.page().id();
+	const auto bookid = line.page().book().id();
 	s->setInt(1, bookid);
 	s->setInt(2, pageid);
 	s->setInt(3, lineid);
@@ -360,7 +360,7 @@ Database::insert_page(const Page& page, sql::Connection& conn) const
 		"VALUES (?,?,?,?,?,?,?,?);";
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
-	s->setInt(1, page.book()->id());
+	s->setInt(1, page.book().id());
 	s->setInt(2, page.id());
 	s->setString(3, page.img.string());
 	s->setString(4, page.ocr.string());
@@ -388,8 +388,8 @@ Database::insert_line(const Line& line, sql::Connection& conn) const
 
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
-	const auto pageid = line.page()->id();
-	const auto bookid = line.page()->book()->id();
+	const auto pageid = line.page().id();
+	const auto bookid = line.page().book().id();
 	s->setInt(1, bookid);
 	s->setInt(2, pageid);
 	s->setInt(3, line.id());
@@ -509,11 +509,11 @@ Database::select_subproject(int projectid, int owner, const Book& origin,
 		ids.insert(res->getInt(1));
 	}
 	auto project = std::make_shared<Package>(projectid, *ownerptr, origin);
-	std::copy_if(begin(origin), end(origin), std::back_inserter(*project),
-		[&ids](const auto& page) {
-			assert(page);
-			return ids.count(page->id());
-	});
+	for (const auto& page: origin) {
+		assert(page);
+		if (ids.count(page->id()))
+			project->push_back(*page);
+	}
 	return project;
 }
 
@@ -576,7 +576,7 @@ Database::select_all_pages(Book& book, sql::Connection& conn) const
 		page->ocr = res->getString("ocrpath");
 		// first insert the page into books; then load lines
 		// otherwise page->book() is not set!
-		book.push_back(page);
+		book.push_back(*page);
 		select_all_lines(*book.back(), conn);
 	}
 	CROW_LOG_DEBUG << "(Database) End: select all pages";
@@ -598,7 +598,7 @@ Database::select_all_lines(Page& page, sql::Connection& conn) const
 				 "ORDER BY l.lineid,seq;";
 	PreparedStatementPtr s{conn.prepareStatement(sql)};
 	assert(s);
-	const int bookid = page.book()->id();
+	const int bookid = page.book().id();
 	const int pageid = page.id();
 	s->setInt(1, bookid);
 	s->setInt(2, pageid);

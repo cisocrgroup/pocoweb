@@ -127,7 +127,8 @@ BOOST_AUTO_TEST_CASE(InsertPage)
 {
 	db.expect("INSERT INTO pages (bookid,pageid,imagepath,ocrpath,pleft,"
 			"ptop,pright,pbottom) VALUES(0,13,'','',0,0,0,0)");
-	book->push_back(std::make_shared<Page>(13));
+	auto page = std::make_shared<Page>(13);
+	book->push_back(*page);
 	auto same = insert_book(db, *book);
 	BOOST_CHECK_EQUAL(same, book);
 	db.validate();

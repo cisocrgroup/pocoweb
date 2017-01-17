@@ -2,6 +2,7 @@
 #include <utf8.h>
 #include <cassert>
 #include <cstring>
+#include "Page.hpp"
 #include "Line.hpp"
 #include "Box.hpp"
 #include "LineBuilder.hpp"
@@ -73,7 +74,7 @@ LineBuilder::append(wchar_t o, wchar_t c, int r, double conf)
 
 ////////////////////////////////////////////////////////////////////////////////
 LineBuilder&
-LineBuilder::set_image(Path image)
+LineBuilder::set_image_path(Path image)
 {
 	line_->img = std::move(image);
 	return *this;
@@ -89,10 +90,11 @@ LineBuilder::set_box(Box box)
 
 ////////////////////////////////////////////////////////////////////////////////
 LineBuilder&
-LineBuilder::set_page(PageSptr page)
+LineBuilder::set_page(Page& page)
 {
-	page_ = page; // hold on to the page, since line_ only holds a week ptr
-	line_->page_ = std::move(page);
+	// hold on to the page, since line_ only holds a week ptr
+	page_ = page.shared_from_this();
+	line_->page_ = page_;
 	return *this;
 }
 

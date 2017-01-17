@@ -91,7 +91,7 @@ struct ProfileFixture {
 		auto line = std::make_shared<Line>(1);
 		line->append("maver thüre vnn thorm", 0, 100, 0.8);
 		page->push_back(line);
-		book->push_back(page);
+		book->push_back(*page);
 		return book;
 	}
 	static bool contains(const Profile::Suggestions& s,

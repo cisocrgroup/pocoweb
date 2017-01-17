@@ -31,8 +31,8 @@ struct Fixture {
 		page2->push_back(line("прямо в рот..."));
 
 		auto book = std::make_shared<Book>();
-		book->push_back(page1);
-		book->push_back(page2);
+		book->push_back(*page1);
+		book->push_back(*page2);
 
 		BOOST_REQUIRE_EQUAL(book->size(), 2);
 		BOOST_REQUIRE(book->find(1));

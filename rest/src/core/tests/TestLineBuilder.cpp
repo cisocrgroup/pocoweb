@@ -19,7 +19,7 @@ BOOST_FIXTURE_TEST_SUITE(LineBuilder, LineBuilderFixture)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(ImgTest)
 {
-	builder.set_image("image");
+	builder.set_image_path("image");
 	BOOST_CHECK_EQUAL(builder.build()->img, "image");
 }
 
@@ -33,8 +33,9 @@ BOOST_AUTO_TEST_CASE(BoxTest)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(PageTest)
 {
-	builder.set_page(std::make_shared<Page>(42));
-	BOOST_CHECK_EQUAL(builder.build()->page()->id(), 42);
+	auto page = std::make_shared<Page>(42);
+	builder.set_page(*page);
+	BOOST_CHECK_EQUAL(builder.build()->page().id(), 42);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

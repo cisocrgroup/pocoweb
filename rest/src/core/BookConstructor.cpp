@@ -82,7 +82,7 @@ BookConstructor::build(const BookData& data)
 	book->title = data.title;
 	book->description = data.description;
 	for (const auto& page: data.pages)
-		book->push_back(page);
+		book->push_back(*page);
 	return book;
 }
 

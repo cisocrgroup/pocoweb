@@ -11,9 +11,8 @@
 namespace pcw {
 	class BookView;
 	class Book;
-	using ConstBookPtr = std::shared_ptr<const Book>;
 	class Page;
-	using PagePtr = std::shared_ptr<Page>;
+	using PageSptr = std::shared_ptr<Page>;
 
 	class Page: private std::vector<LinePtr>,
 		    public std::enable_shared_from_this<Page> {
@@ -22,7 +21,7 @@ namespace pcw {
 		using Base = std::vector<LinePtr>;
 		using value_type = Base::value_type;
 
-		Page(int id, Box b = {})
+		Page(int id = 0, Box b = {})
 			: box(b)
 			, ocr()
 			, img()
@@ -36,7 +35,7 @@ namespace pcw {
 		using Base::front;
 		using Base::empty;
 		using Base::size;
-		ConstBookPtr book() const noexcept {return book_.lock();}
+		const Book& book() const noexcept {return *book_.lock();}
 
 		void push_back(LinePtr line) {
 			Base::push_back(std::move(line));
@@ -57,7 +56,8 @@ namespace pcw {
 		bool has_ocr_path() const noexcept {return not ocr.empty();}
 		bool has_img_path() const noexcept {return not img.empty();}
 		bool contains(int id) const noexcept {
-			return id > 0 and static_cast<size_t>(id) < this->size();
+			return static_cast<size_t>(id) < this->size() and
+				id > 0;
 		}
 		int id() const noexcept {return id_;}
 		void set_id(int id) noexcept {id_ = id;}
@@ -69,6 +69,7 @@ namespace pcw {
 		std::weak_ptr<const Book> book_;
 		int id_;
 		friend class BookView;
+		friend class PageBuilder;
 	};
 }
 

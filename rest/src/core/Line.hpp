@@ -39,10 +39,12 @@ namespace pcw {
 		Cuts cuts() const;
 		Confidences confidences() const;
 		const Chars& chars() const noexcept {return chars_;}
-		const Char& operator[](size_t i) const noexcept {return chars_[i];}
+		const Char& operator[](size_t i) const noexcept {
+			return chars_[i];
+		}
 		double average_conf() const noexcept;
 
-		PagePtr page() const noexcept {return page_.lock();}
+		const Page& page() const noexcept {return *page_.lock();}
 		bool has_img_path() const noexcept {return not img.empty();}
 		void each_token(std::function<void(const Token&)> f) const;
 		std::vector<Token> tokens() const;
@@ -70,7 +72,8 @@ namespace pcw {
 		Path img;
 
 	private:
-		static int64_t unique_id(int bid, int pid, int lid, int tid) noexcept;
+		static int64_t unique_id(int bid, int pid,
+				int lid, int tid) noexcept;
 
 		void divide_cuts(Chars::iterator f, Chars::iterator l);
 
@@ -95,6 +98,7 @@ namespace pcw {
 		std::weak_ptr<Page> page_;
 		int id_, ofs_;
 		friend class LineBuilder;
+		friend class PageBuilder;
 		friend class Page;
 		friend class Token;
 		friend class Char;

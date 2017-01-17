@@ -22,14 +22,14 @@ struct Fixture {
 			line->append(l, 0, 100, .8);
 			page1->push_back(std::move(line));
 		}
-		book->push_back(page1);
+		book->push_back(*page1);
 		auto page2 = std::make_shared<Page>(2);
 		for (const auto& l: p2) {
 			auto line = std::make_shared<Line>(0);
 			line->append(l, 0, 100, .8);
 			page2->push_back(std::move(line));
 		}
-		book->push_back(page2);
+		book->push_back(*page2);
 		corrector.set_view(book);
 		BOOST_REQUIRE_EQUAL(book->size(), 2);
 		BOOST_REQUIRE(book->find(1));

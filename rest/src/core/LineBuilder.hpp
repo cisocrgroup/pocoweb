@@ -22,9 +22,9 @@ namespace pcw {
 		LineBuilder& append(const std::wstring& str, int r, double c);
 		LineBuilder& append(wchar_t c, int r, double conf);
 		LineBuilder& append(wchar_t o, wchar_t c, int r, double conf);
-		LineBuilder& set_image(Path img);
+		LineBuilder& set_image_path(Path img);
 		LineBuilder& set_box(Box box);
-		LineBuilder& set_page(PageSptr page);
+		LineBuilder& set_page(Page& page);
 		LineSptr build() const;
 
 	private:
