@@ -1,7 +1,22 @@
 #include <algorithm>
+#include <cassert>
+#include <iostream>
 #include "Box.hpp"
 
 using namespace pcw;
+
+#define SWAP_HORIZONTAL() \
+	if (right_ < left_) \
+		std::swap(right_, left_)
+#define SWAP_VERTICAL() \
+	if (bottom_ < top_) \
+		std::swap(bottom_, top_)
+
+#define POSTCONDITION() \
+	assert(left_ <= right_); \
+	assert(top_ <= bottom_); \
+	assert(0 <= left_); \
+	assert(0 <= top_)
 
 ///////////////////////////////////////////////////////////////////////////////
 Box::Box(int l, int t, int r, int b)
@@ -10,6 +25,45 @@ Box::Box(int l, int t, int r, int b)
 	, right_(std::max(0, r))
 	, bottom_(std::max(0, b))
 {
+	SWAP_HORIZONTAL();
+	SWAP_VERTICAL();
+	POSTCONDITION();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void
+Box::set_left(int l) noexcept
+{
+	left_ = std::max(0, l);
+	SWAP_HORIZONTAL();
+	POSTCONDITION();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void
+Box::set_top(int t) noexcept
+{
+	top_ = std::max(0, t);
+	SWAP_VERTICAL();
+	POSTCONDITION();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void
+Box::set_right(int r) noexcept
+{
+	right_ = std::max(0, r);
+	SWAP_HORIZONTAL();
+	POSTCONDITION();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void
+Box::set_bottom(int b) noexcept
+{
+	bottom_ = std::max(0, b);
+	SWAP_VERTICAL();
+	POSTCONDITION();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -17,6 +71,8 @@ Box&
 Box::increase_left(int d) noexcept
 {
 	left_ = std::max(0, left_ - d); // d can be smaller than 0
+	SWAP_HORIZONTAL();
+	POSTCONDITION();
 	return *this;
 }
 
@@ -25,6 +81,7 @@ Box&
 Box::increase_right(int d) noexcept
 {
 	right_ = std::max(0, right_ + d); // d can be smaller than 0
+	POSTCONDITION();
 	return *this;
 }
 
@@ -33,6 +90,7 @@ Box&
 Box::increase_top(int d) noexcept
 {
 	top_ = std::max(0, top_ + d); // d can be smaller than 0
+	POSTCONDITION();
 	return *this;
 }
 
@@ -41,6 +99,7 @@ Box&
 Box::increase_bottom(int d) noexcept
 {
 	bottom_ = std::max(0, bottom_ + d); // d can be smaller than 0
+	POSTCONDITION();
 	return *this;
 }
 
@@ -59,6 +118,9 @@ Box::operator+=(const Box& other)
 	top_ = std::min(top_, other.top_);
 	right_ = std::max(right_, other.right_);
 	bottom_ = std::max(bottom_, other.bottom_);
+	SWAP_HORIZONTAL();
+	SWAP_VERTICAL();
+	POSTCONDITION();
 	return *this;
 }
 
@@ -82,3 +144,7 @@ Box::split(int n) const
 	}
 	return splits;
 }
+
+#undef POSTCONDITION
+#undef SWAP_HORIZONTAL
+#undef SWAP_VERTICAL
