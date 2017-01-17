@@ -1,7 +1,7 @@
 CORE_OBJS += rest/src/core/WagnerFischer.o
 CORE_OBJS += rest/src/core/MetsXmlBookParser.o
 CORE_OBJS += rest/src/core/BookDirectoryBuilder.o
-CORE_OBJS += rest/src/core/BookBuilder.o
+CORE_OBJS += rest/src/core/BookConstructor.o
 CORE_OBJS += rest/src/core/BookFixer.o
 CORE_OBJS += rest/src/core/Box.o
 CORE_OBJS += rest/src/core/Book.o

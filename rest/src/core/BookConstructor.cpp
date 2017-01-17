@@ -4,7 +4,7 @@
 #include "util.hpp"
 #include "Page.hpp"
 #include "Error.hpp"
-#include "BookBuilder.hpp"
+#include "BookConstructor.hpp"
 #include "Book.hpp"
 #include "MetsXmlBookParser.hpp"
 #include "parser/PageParser.hpp"
@@ -13,7 +13,7 @@ using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 BookPtr
-BookBuilder::build() const
+BookConstructor::build() const
 {
 	auto i = std::find_if(begin(ocr_), end(ocr_), [](const auto& p) {
 		return p.second == FileType::Mets;
@@ -28,7 +28,7 @@ BookBuilder::build() const
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookBuilder::add(const Path& file)
+BookConstructor::add(const Path& file)
 {
 	auto type = get_file_type(file);
 	switch (type) {
@@ -48,8 +48,8 @@ BookBuilder::add(const Path& file)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookBuilder::BookData
-BookBuilder::parse_book_data() const
+BookConstructor::BookData
+BookConstructor::parse_book_data() const
 {
 	BookData data;
 	for (const auto& ocr: ocr_) {
@@ -61,7 +61,7 @@ BookBuilder::parse_book_data() const
 			if (page->has_ocr_path() and not page->has_img_path()) {
 				auto i = find_matching_img_file(page->ocr);
 				if (i == end(img_))
-					THROW(BadRequest, "(BookBuilder) Unable to find ",
+					THROW(BadRequest, "(BookConstructor) Unable to find ",
 							"matching img file for ", page->ocr);
 			}
 			data.pages.push_back(page);
@@ -73,7 +73,7 @@ BookBuilder::parse_book_data() const
 
 ////////////////////////////////////////////////////////////////////////////////
 BookPtr
-BookBuilder::build(const BookData& data)
+BookConstructor::build(const BookData& data)
 {
 	auto book = std::make_shared<Book>();
 	book->description = data.description;
@@ -87,8 +87,8 @@ BookBuilder::build(const BookData& data)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookBuilder::ImgFiles::const_iterator
-BookBuilder::find_matching_img_file(const Path& ocr) const noexcept
+BookConstructor::ImgFiles::const_iterator
+BookConstructor::find_matching_img_file(const Path& ocr) const noexcept
 {
 	auto stem = ocr.stem();
 	return std::find_if(begin(img_), end(img_), [&stem](const Path& path) {
@@ -98,7 +98,7 @@ BookBuilder::find_matching_img_file(const Path& ocr) const noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookBuilder::order_pages(std::vector<PagePtr>& pages) noexcept
+BookConstructor::order_pages(std::vector<PagePtr>& pages) noexcept
 {
 	const auto b = begin(pages);
 	const auto e = end(pages);
@@ -129,7 +129,7 @@ BookBuilder::order_pages(std::vector<PagePtr>& pages) noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookBuilder::fix_indizes(std::vector<PagePtr>& pages) noexcept
+BookConstructor::fix_indizes(std::vector<PagePtr>& pages) noexcept
 {
 	int id = 0;
 	for (auto& page: pages) {

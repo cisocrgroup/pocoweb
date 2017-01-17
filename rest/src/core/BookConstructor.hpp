@@ -1,5 +1,5 @@
-#ifndef pcw_BookBuilder_hpp__
-#define pcw_BookBuilder_hpp__
+#ifndef pcw_BookConstructor_hpp__
+#define pcw_BookConstructor_hpp__
 
 #include <boost/filesystem/path.hpp>
 #include <map>
@@ -16,11 +16,11 @@ namespace pcw {
 	using PageParserPtr = std::unique_ptr<PageParser>;
 	using Path = boost::filesystem::path;
 
-	class BookBuilder {
+	class BookConstructor {
 	public:
 		void add(const Path& file);
 		BookPtr build() const;
-		
+
 	private:
 		using OcrFiles = std::map<Path, FileType>;
 		using FilePair = OcrFiles::value_type;
@@ -42,4 +42,4 @@ namespace pcw {
 	};
 }
 
-#endif // pcw_BookBuilder_hpp__
+#endif // pcw_BookConstructor_hpp__

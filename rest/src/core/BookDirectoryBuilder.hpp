@@ -6,7 +6,7 @@
 #include <vector>
 #include <map>
 #include <stdexcept>
-#include "BookBuilder.hpp"
+#include "BookConstructor.hpp"
 
 namespace pcw {
 	class Book;
@@ -17,7 +17,7 @@ namespace pcw {
 	using PagePtr = std::shared_ptr<Page>;
 	class PageParser;
 	using PageParserPtr = std::unique_ptr<PageParser>;
-	
+
 	class BookDirectoryBuilder {
 	public:
 		using Path = boost::filesystem::path;
@@ -54,7 +54,7 @@ namespace pcw {
 		static Path remove_common_base_path(const Path& p, const Path& base);
 
 		const Path dir_, tmp_dir_, line_img_dir_;
-		BookBuilder builder_;
+		BookConstructor builder_;
 	};
 }
 
