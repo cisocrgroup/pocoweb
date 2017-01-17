@@ -156,6 +156,14 @@ BOOST_AUTO_TEST_CASE(Split)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(AdditionFromUninitialized)
+{
+	Box box;
+	box += Box{1, 2, 3, 4};
+	BOOST_CHECK_EQUAL(box, Box(0, 0, 3, 4));
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(AdditionBigger)
 {
 	Box box{2, 2, 3, 3};
