@@ -10,14 +10,14 @@ using namespace pcw;
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(Left)
 {
-	Box box{1};
+	Box box{1, 2, 2, 2};
 	BOOST_CHECK_EQUAL(box.left(), 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(Top)
 {
-	Box box{0, 1};
+	Box box{0, 1, 2, 2};
 	BOOST_CHECK_EQUAL(box.top(), 1);
 }
 
@@ -64,8 +64,93 @@ BOOST_AUTO_TEST_CASE(Invalid)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(IncreaseLeft)
 {
-	Box box{2, 2, 2, 2};
+	Box box{2, 2, 3, 3};
 	box.increase_left(1);
-	BOOST_CHECK_EQUAL(box, Box(1, 2, 2, 2));
+	BOOST_CHECK_EQUAL(box, Box(1, 2, 3, 3));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(IncreaseLeftInverted)
+{
+	Box box{2, 2, 3, 3};
+	box.increase_left(-1);
+	BOOST_CHECK_EQUAL(box, Box(3, 2, 3, 3));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(IncreaseTop)
+{
+	Box box{2, 2, 3, 3};
+	box.increase_top(1);
+	BOOST_CHECK_EQUAL(box, Box(2, 1, 3, 3));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(IncreaseTopInverted)
+{
+	Box box{2, 2, 3, 3};
+	box.increase_top(-1);
+	BOOST_CHECK_EQUAL(box, Box(2, 3, 3, 3));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(IncreaseRight)
+{
+	Box box{2, 2, 3, 3};
+	box.increase_right(1);
+	BOOST_CHECK_EQUAL(box, Box(2, 2, 4, 3));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(IncreaseRightInverted)
+{
+	Box box{2, 2, 3, 3};
+	box.increase_right(-1);
+	BOOST_CHECK_EQUAL(box, Box(2, 2, 2, 3));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(IncreaseBottom)
+{
+	Box box{2, 2, 3, 3};
+	box.increase_bottom(1);
+	BOOST_CHECK_EQUAL(box, Box(2, 2, 3, 4));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(IncreaseBottomInverted)
+{
+	Box box{2, 2, 3, 3};
+	box.increase_bottom(-1);
+	BOOST_CHECK_EQUAL(box, Box(2, 2, 3, 2));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(IncreaseAll)
+{
+	Box box{2, 2, 3, 3};
+	box.increase(1);
+	BOOST_CHECK_EQUAL(box, Box(1, 1, 4, 4));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(IncreaseAllInverted)
+{
+	Box box{1, 1, 4, 4};
+	box.increase(-1);
+	BOOST_CHECK_EQUAL(box, Box(2, 2, 3, 3));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(Split)
+{
+	Box box{0, 0, 4, 4};
+	auto splits = box.split(4);
+	BOOST_CHECK_EQUAL(4, box.width());
+	BOOST_CHECK_EQUAL(4, box.height());
+	BOOST_CHECK_EQUAL(4, splits.size());
+	for (const auto& b: splits) {
+		BOOST_CHECK_EQUAL(b.height(), 4);
+		BOOST_CHECK_EQUAL(b.width(), 1);
+	}
+}
