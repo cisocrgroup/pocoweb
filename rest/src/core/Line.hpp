@@ -94,6 +94,7 @@ namespace pcw {
 		Chars chars_;
 		std::weak_ptr<Page> page_;
 		int id_, ofs_;
+		friend class LineBuilder;
 		friend class Page;
 		friend class Token;
 		friend class Char;
