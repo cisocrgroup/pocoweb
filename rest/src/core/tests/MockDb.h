@@ -148,7 +148,7 @@ struct MockDbT : public sqlpp::connection
   {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
-    set_last_context(context);
+    push_statement(context);
     return execute(context.str());
   }
 
@@ -157,7 +157,7 @@ struct MockDbT : public sqlpp::connection
   {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
-    set_last_context(context);
+    push_statement(context);
     return 0;
   }
 
@@ -166,7 +166,7 @@ struct MockDbT : public sqlpp::connection
   {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
-    set_last_context(context);
+    push_statement(context);
     return 0;
   }
 
@@ -175,7 +175,7 @@ struct MockDbT : public sqlpp::connection
   {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
-    set_last_context(context);
+    push_statement(context);
     return 0;
   }
 
@@ -184,7 +184,7 @@ struct MockDbT : public sqlpp::connection
   {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
-    set_last_context(context);
+    push_statement(context);
     return {};
   }
 
@@ -214,7 +214,7 @@ struct MockDbT : public sqlpp::connection
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
     // std::cerr << "prepare_execute: " << context.str() << "\n";
-    // set_last_context(context);
+    // push_statement(context);
     // return nullptr;
     return MockPreparedStatement(context);
   }
@@ -225,7 +225,7 @@ struct MockDbT : public sqlpp::connection
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
     // std::cerr << "prepare_insert: " << context.str() << "\n";
-    // set_last_context(context);
+    // push_statement(context);
     // return nullptr;
     return MockPreparedStatement(context);
   }
@@ -234,7 +234,7 @@ struct MockDbT : public sqlpp::connection
   size_t run_prepared_execute(const PreparedExecute& e)
   {
     e._bind_params();
-    set_last_context(e._prepared_statement.str());
+    push_statement(e._prepared_statement.str());
     return 0;
   }
 
@@ -242,7 +242,7 @@ struct MockDbT : public sqlpp::connection
   size_t run_prepared_insert(const PreparedInsert& i)
   {
     i._bind_params();
-    set_last_context(i._prepared_statement.str());
+    push_statement(i._prepared_statement.str());
     // std::cerr << "run_prepared_insert: " <<  typeid(pi).name() << "\n";
     return 0;
   }
@@ -253,7 +253,7 @@ struct MockDbT : public sqlpp::connection
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
     // std::cerr << "prepare_select: " << context.str() << "\n";
-    // set_last_context(context);
+    // push_statement(context);
     // return nullptr;
     return MockPreparedStatement(context);
   }
@@ -262,7 +262,7 @@ struct MockDbT : public sqlpp::connection
   result_t run_prepared_select(PreparedSelect& s)
   {
     s._bind_params();
-    set_last_context(s._prepared_statement.str());
+    push_statement(s._prepared_statement.str());
     return {};
   }
 
@@ -274,31 +274,36 @@ struct MockDbT : public sqlpp::connection
   //
   // Validation
   //
-  void set_last_context(const _serializer_context_t& context) {
-    std::cerr << "last_context: " << context.str() << "\n";
-    last_context_ = context.str();
+  void push_statement(const _serializer_context_t& context) {
+    statements_.push(std::move(context.str()));
   }
-  void set_last_context(const std::string& str) {
-    std::cerr << "last_context (str): " << str << "\n";
-    last_context_ = str;
+  void push_statement(const std::string& str) {
+    statements_.push(std::move(str));
   }
   template<class T>
   void expect(T expectation) {
-    expectation_ = std::move(expectation);
+    expectations_.push(std::move(expectation));
   }
-  void validate() const noexcept {
-    if (boost::get<std::string>(&expectation_)) {
-      BOOST_CHECK_EQUAL(boost::get<std::string>(expectation_), last_context_);
+  void validate() {
+    while (not expectations_.empty() and not statements_.empty()) {
+      validate_top();
+      expectations_.pop();
+      statements_.pop();
+    }
+  }
+  void validate_top() {
+    if (boost::get<std::string>(&expectations_.top())) {
+      BOOST_CHECK_EQUAL(boost::get<std::string>(expectations_.top()), statements_.top());
     } else {
       BOOST_CHECK_MESSAGE(
-        std::regex_match(last_context_, boost::get<std::regex>(expectation_)),
-        "`" << last_context_ << "` does not match expectation"
+        std::regex_match(statements_.top(), boost::get<std::regex>(expectations_.top())),
+        "`" << statements_.top() << "` does not match expectation"
       );
     }
   }
-  private:
-    boost::variant<std::string, std::regex> expectation_;
-    std::string last_context_;
+private:
+  std::stack<boost::variant<std::string, std::regex>> expectations_;
+  std::stack<std::string> statements_;
 };
 
 using MockDb = MockDbT<false>;
