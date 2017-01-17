@@ -16,7 +16,7 @@ Box::Box(int l, int t, int r, int b)
 Box&
 Box::increase_left(int d) noexcept
 {
-	left_ = std::max(0, left_ + d); // d can be smaller than 0
+	left_ = std::max(0, left_ - d); // d can be smaller than 0
 	return *this;
 }
 

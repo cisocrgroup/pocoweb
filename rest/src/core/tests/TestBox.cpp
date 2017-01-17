@@ -61,3 +61,11 @@ BOOST_AUTO_TEST_CASE(Invalid)
 	BOOST_CHECK_EQUAL(box.bottom(), 0);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(IncreaseLeft)
+{
+	Box box{2, 2, 2, 2};
+	box.increase_left(1);
+	BOOST_CHECK_EQUAL(box, Box(1, 2, 2, 2));
+}
+
