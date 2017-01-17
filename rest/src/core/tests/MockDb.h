@@ -1,3 +1,4 @@
+// vim:sw=2
 /*
  * Copyright (c) 2013-2015, Roland Bock
  * All rights reserved.
@@ -24,7 +25,8 @@
  */
 
 //
-// based on sqlcpp11 MockDb.h
+// based on sqlcpp11 MockDb.h [1]
+// [1]: https://github.com/rbock/sqlpp11/blob/master/tests/MockDb.h
 //
 
 #ifndef SQLPP_MOCK_DB_H
@@ -39,6 +41,7 @@
 #include <sqlpp11/serialize.h>
 #include <sqlpp11/serializer_context.h>
 #include <sstream>
+#include "MockPreparedStatement.h"
 
 template <bool enforceNullResultTreatment>
 struct MockDbT : public sqlpp::connection
@@ -119,6 +122,7 @@ struct MockDbT : public sqlpp::connection
   template <typename T>
   auto _run(const T& t, ::sqlpp::consistent_t) -> decltype(t._run(*this))
   {
+    // std::cerr << "_run(t): " << typeid(t).name() << "\n";
     return t._run(*this);
   }
 
@@ -128,6 +132,7 @@ struct MockDbT : public sqlpp::connection
   template <typename T>
   auto operator()(const T& t) -> decltype(this->_run(t, sqlpp::run_check_t<_serializer_context_t, T>{}))
   {
+    // std::cerr << "operator()(t)\n";
     return _run(t, sqlpp::run_check_t<_serializer_context_t, T>{});
   }
 
@@ -184,11 +189,13 @@ struct MockDbT : public sqlpp::connection
   }
 
   // Prepared statements start here
-  using _prepared_statement_t = std::nullptr_t;
+  // using _prepared_statement_t = std::nullptr_t;
+  using _prepared_statement_t = MockPreparedStatement;
 
   template <typename T>
   auto _prepare(const T& t, ::sqlpp::consistent_t) -> decltype(t._prepare(*this))
   {
+    // std::cerr << "_prepare(t, consistent_t)\n";
     return t._prepare(*this);
   }
 
@@ -206,8 +213,10 @@ struct MockDbT : public sqlpp::connection
   {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
+    // std::cerr << "prepare_execute: " << context.str() << "\n";
     // set_last_context(context);
-    return nullptr;
+    // return nullptr;
+    return MockPreparedStatement(context);
   }
 
   template <typename Insert>
@@ -215,19 +224,26 @@ struct MockDbT : public sqlpp::connection
   {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
+    // std::cerr << "prepare_insert: " << context.str() << "\n";
     // set_last_context(context);
-    return nullptr;
+    // return nullptr;
+    return MockPreparedStatement(context);
   }
 
   template <typename PreparedExecute>
-  size_t run_prepared_execute(const PreparedExecute&)
+  size_t run_prepared_execute(const PreparedExecute& e)
   {
+    e._bind_params();
+    set_last_context(e._prepared_statement.str());
     return 0;
   }
 
   template <typename PreparedInsert>
-  size_t run_prepared_insert(const PreparedInsert&)
+  size_t run_prepared_insert(const PreparedInsert& i)
   {
+    i._bind_params();
+    set_last_context(i._prepared_statement.str());
+    // std::cerr << "run_prepared_insert: " <<  typeid(pi).name() << "\n";
     return 0;
   }
 
@@ -236,13 +252,17 @@ struct MockDbT : public sqlpp::connection
   {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
+    // std::cerr << "prepare_select: " << context.str() << "\n";
     // set_last_context(context);
-    return nullptr;
+    // return nullptr;
+    return MockPreparedStatement(context);
   }
 
   template <typename PreparedSelect>
-  result_t run_prepared_select(PreparedSelect&)
+  result_t run_prepared_select(PreparedSelect& s)
   {
+    s._bind_params();
+    set_last_context(s._prepared_statement.str());
     return {};
   }
 
@@ -255,7 +275,12 @@ struct MockDbT : public sqlpp::connection
   // Validation
   //
   void set_last_context(const _serializer_context_t& context) {
+    std::cerr << "last_context: " << context.str() << "\n";
     last_context_ = context.str();
+  }
+  void set_last_context(const std::string& str) {
+    std::cerr << "last_context (str): " << str << "\n";
+    last_context_ = str;
   }
   template<class T>
   void expect(T expectation) {
@@ -265,10 +290,10 @@ struct MockDbT : public sqlpp::connection
     if (boost::get<std::string>(&expectation_)) {
       BOOST_CHECK_EQUAL(boost::get<std::string>(expectation_), last_context_);
     } else {
-        BOOST_CHECK_MESSAGE(
-		std::regex_match(last_context_, boost::get<std::regex>(expectation_)),
-		"`" << last_context_ << "` does not match expectation"
-	);
+      BOOST_CHECK_MESSAGE(
+        std::regex_match(last_context_, boost::get<std::regex>(expectation_)),
+        "`" << last_context_ << "` does not match expectation"
+      );
     }
   }
   private:
