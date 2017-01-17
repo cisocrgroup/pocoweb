@@ -32,6 +32,12 @@ namespace pcw {
 		int left_, top_, right_, bottom_;
 	};
 
+	static inline Box
+	operator+(const Box& a, const Box& b) noexcept {
+		auto box = a;
+		return box += b;
+	}
+
 	static inline bool
 	operator==(const Box& a, const Box& b) noexcept {
 		return std::make_tuple(a.left(), a.top(),
