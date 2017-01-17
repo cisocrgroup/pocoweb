@@ -81,6 +81,7 @@ Box&
 Box::increase_right(int d) noexcept
 {
 	right_ = std::max(0, right_ + d); // d can be smaller than 0
+	SWAP_HORIZONTAL();
 	POSTCONDITION();
 	return *this;
 }
@@ -89,7 +90,8 @@ Box::increase_right(int d) noexcept
 Box&
 Box::increase_top(int d) noexcept
 {
-	top_ = std::max(0, top_ + d); // d can be smaller than 0
+	top_ = std::max(0, top_ - d); // d can be smaller than 0
+	SWAP_VERTICAL();
 	POSTCONDITION();
 	return *this;
 }
@@ -99,6 +101,7 @@ Box&
 Box::increase_bottom(int d) noexcept
 {
 	bottom_ = std::max(0, bottom_ + d); // d can be smaller than 0
+	SWAP_VERTICAL();
 	POSTCONDITION();
 	return *this;
 }
