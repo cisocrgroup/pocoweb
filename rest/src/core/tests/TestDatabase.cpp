@@ -9,6 +9,7 @@
 #include "core/User.hpp"
 #include "core/Password.hpp"
 #include "core/Book.hpp"
+#include "core/Page.hpp"
 #include "core/NewDatabase.hpp"
 
 using namespace sqlpp;
@@ -114,6 +115,17 @@ BOOST_AUTO_TEST_CASE(InsertProject)
 BOOST_AUTO_TEST_CASE(InsertBook)
 {
 	db.expect(std::regex(R"(INSERT INTO books .* VALUES.*)"));
+	auto same = insert_book(db, *book);
+	BOOST_CHECK_EQUAL(same, book);
+	db.validate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(InsertPage)
+{
+	db.expect("INSERT INTO pages (bookid,pageid,imagepath,ocrpath,pleft,"
+			"ptop,pright,pbottom) VALUES(0,13,'','',0,0,0,0)");
+	book->push_back(std::make_shared<Page>(13));
 	auto same = insert_book(db, *book);
 	BOOST_CHECK_EQUAL(same, book);
 	db.validate();
