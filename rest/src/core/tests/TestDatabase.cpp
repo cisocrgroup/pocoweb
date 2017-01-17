@@ -26,8 +26,9 @@ BOOST_FIXTURE_TEST_SUITE(Users, UsersFixture)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(CreateUser)
 {
-	db.expect(std::regex(R"(INSERT INTO users \(.+\) VALUES\(.+\))"));
 	auto user = create_user(db, "name", "password", "email", "institute");
+	db.expect(std::regex(R"(INSERT INTO users \(name,email,institute,passwd\) )"
+				R"(VALUES\('name','email','institute','.+'\))"));
 	BOOST_REQUIRE(user);
 	BOOST_CHECK_EQUAL(user->name, "name");
 	BOOST_CHECK_EQUAL(user->email, "email");
@@ -114,7 +115,8 @@ BOOST_AUTO_TEST_CASE(InsertProject)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(InsertBook)
 {
-	db.expect(std::regex(R"(INSERT INTO books .* VALUES.*)"));
+	db.expect("INSERT INTO books (author,title,directory,year,uri,bookid,"
+		"description,lang) VALUES('','','',0,'',0,'','')");
 	auto same = insert_book(db, *book);
 	BOOST_CHECK_EQUAL(same, book);
 	db.validate();
