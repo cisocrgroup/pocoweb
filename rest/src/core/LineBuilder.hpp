@@ -18,12 +18,8 @@ namespace pcw {
 		LineBuilder();
 
 		LineBuilder& reset();
-		LineBuilder& append(const std::string& str, int l, int r, double c);
-		LineBuilder& append(const std::wstring& str, int l, int r, double c);
-		LineBuilder& append(const char* str, int l, int r, double );
-		LineBuilder& append(const wchar_t* str, int l, int r, double c);
-		LineBuilder& append(const char* str, size_t n, int l, int r, double c);
-		LineBuilder& append(const wchar_t* str, size_t n, int l, int r, double c);
+		LineBuilder& append(const std::string& str, int r, double c);
+		LineBuilder& append(const std::wstring& str, int r, double c);
 		LineBuilder& append(wchar_t c, int r, double conf);
 		LineBuilder& append(wchar_t o, wchar_t c, int r, double conf);
 		LineBuilder& set_image(Path img);
@@ -32,7 +28,6 @@ namespace pcw {
 		LineSptr build() const;
 
 	private:
-		std::vector<std::tuple<wchar_t, wchar_t, int, double>> contents_;
 		LineSptr line_;
 		PageSptr page_;
 	};

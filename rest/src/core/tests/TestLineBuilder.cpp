@@ -51,14 +51,14 @@ BOOST_AUTO_TEST_CASE(AppendWcharsTest)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(AppendWstrTest)
 {
-	builder.append(L"фонды", 0, 5, 1.0);
+	builder.append(L"фонды", 5, 1.0);
 	BOOST_CHECK_EQUAL(builder.build()->ocr(), "фонды");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(AppendU8strTest)
 {
-	builder.append("фонды", 0, 5, 1.0);
+	builder.append("фонды", 5, 1.0);
 	BOOST_CHECK_EQUAL(builder.build()->ocr(), "фонды");
 }
 
