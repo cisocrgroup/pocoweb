@@ -5,10 +5,14 @@ CORE_TESTS += rest/src/core/tests/TestTables.test
 CORE_TESTS += rest/src/core/tests/TestPassword.test
 CORE_TESTS += rest/src/core/tests/TestDatabase.test
 CORE_TESTS += rest/src/core/tests/TestWagnerFischer.test
+CORE_TESTS += rest/src/core/tests/TestBox.test
 CORE_TESTS += rest/src/core/tests/TestOcrLine.test
 CORE_TESTS += rest/src/core/tests/TestCorLine.test
 CORE_TESTS += rest/src/core/tests/TestCorrector.test
 CORE_TESTS += rest/src/core/tests/TestProfile.test
+CORE_TESTS += rest/src/core/tests/TestLineBuilder.test
+CORE_TESTS += rest/src/core/tests/TestPageBuilder.test
+CORE_TESTS += rest/src/core/tests/TestBookBuilder.test
 
 PARSER_TESTS += rest/src/parser/tests/TestDocXml.test
 PARSER_TESTS += rest/src/parser/tests/TestAltoXmlParsing.test

@@ -551,8 +551,8 @@ uint64_t
 Token::unique_id() const noexcept
 {
 	if (line)
-		return Line::unique_id(line->page()->book()->id(),
-				line->page()->id(), line->id(), id);
+		return Line::unique_id(line->page().book().id(),
+				line->page().id(), line->id(), id);
 	else
 		return 0;
 }

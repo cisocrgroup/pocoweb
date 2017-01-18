@@ -257,7 +257,7 @@ template<class Db, class P, class Q, class R>
 void
 pcw::detail::insert_page(Db& db, P& p, Q& q, R& r, const Page& page)
 {
-	p.params.bookid = page.book()->id();
+	p.params.bookid = page.book().id();
 	p.params.pageid = page.id();
 	p.params.imagepath = page.img.string();
 	p.params.ocrpath = page.ocr.string();
@@ -277,8 +277,8 @@ template<class Db, class Q, class R>
 void
 pcw::detail::insert_line(Db& db, Q& q, R& r, const Line& line)
 {
-	q.params.bookid = line.page()->book()->id();
-	q.params.pageid = line.page()->id();
+	q.params.bookid = line.page().book().id();
+	q.params.pageid = line.page().id();
 	q.params.lineid = line.id();
 	q.params.imagepath = line.img.string();
 	q.params.lleft = line.box.left();
@@ -287,8 +287,8 @@ pcw::detail::insert_line(Db& db, Q& q, R& r, const Line& line)
 	q.params.lbottom = line.box.bottom();
 	db(q);
 
-	r.params.bookid = line.page()->book()->id();
-	r.params.pageid = line.page()->id();
+	r.params.bookid = line.page().book().id();
+	r.params.pageid = line.page().id();
 	r.params.lineid = line.id();
 	for (auto i = 0U; i < line.size(); ++i) {
 		r.params.seq = i;
@@ -296,6 +296,7 @@ pcw::detail::insert_line(Db& db, Q& q, R& r, const Line& line)
 		r.params.cor = line[i].cor;
 		r.params.cut = line[i].cut;
 		r.params.conf = line[i].conf;
+		db(r);
 	}
 }
 

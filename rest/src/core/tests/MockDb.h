@@ -275,9 +275,10 @@ struct MockDbT : public sqlpp::connection
   // Validation
   //
   void push_statement(const _serializer_context_t& context) {
-    statements_.push(std::move(context.str()));
+    push_statement(context.str());
   }
   void push_statement(const std::string& str) {
+    // std::cerr << "pushing statement: " << str << "\n";
     statements_.push(std::move(str));
   }
   template<class T>

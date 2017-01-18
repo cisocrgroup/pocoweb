@@ -2,44 +2,35 @@
 #define pcw_BookBuilder_hpp__
 
 #include <boost/filesystem/path.hpp>
-#include <map>
 #include <memory>
-#include <vector>
-#include "util.hpp"
 
 namespace pcw {
 	class Book;
+	using BookSptr = std::shared_ptr<Book>;
+	class User;
+	using UserSptr = std::shared_ptr<User>;
 	class Page;
-	class PageParser;
-	using BookPtr = std::shared_ptr<Book>;
-	using PagePtr = std::shared_ptr<Page>;
-	using PageParserPtr = std::unique_ptr<PageParser>;
 	using Path = boost::filesystem::path;
 
 	class BookBuilder {
 	public:
-		void add(const Path& file);
-		BookPtr build() const;
-		
-	private:
-		using OcrFiles = std::map<Path, FileType>;
-		using FilePair = OcrFiles::value_type;
-		using ImgFiles = std::vector<Path>;
-		struct BookData {
-			std::vector<PagePtr> pages;
-			std::string author, title, description, uri;
-			Path dir;
-			int year;
-		};
-		BookData parse_book_data() const;
-		static BookPtr build(const BookData& data);
-		ImgFiles::const_iterator find_matching_img_file(const Path& ocr) const noexcept;
-		static void order_pages(std::vector<PagePtr>& pages) noexcept;
-		static void fix_indizes(std::vector<PagePtr>& pages) noexcept;
+		BookBuilder(): book_() {reset();}
 
-		OcrFiles ocr_;
-		ImgFiles img_;
+		BookBuilder& reset();
+		const BookBuilder& append(Page& page) const;
+		const BookBuilder& set_author(std::string author) const;
+		const BookBuilder& set_title(std::string title) const;
+		const BookBuilder& set_description(std::string desc) const;
+		const BookBuilder& set_uri(std::string uri) const;
+		const BookBuilder& set_language(std::string lang) const;
+		const BookBuilder& set_directory(Path dir) const;
+		const BookBuilder& set_year(int year) const;
+		const BookBuilder& set_owner(UserSptr owner) const;
+		const BookBuilder& set_id(int id) const;
+		BookSptr build() const;
+
+	private:
+		BookSptr book_;
 	};
 }
-
 #endif // pcw_BookBuilder_hpp__

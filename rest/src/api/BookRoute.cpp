@@ -189,7 +189,7 @@ BookRoute::package(const Request& req, int bid, const Data& data) const
 	});
 	size_t i = 0;
 	for (const auto& p: *proj) {
-		projs[i++ % n]->push_back(p);
+		projs[i++ % n]->push_back(*p);
 	}
 	db.set_autocommit(false);
 	for (const auto& p: projs) {

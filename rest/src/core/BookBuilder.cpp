@@ -1,138 +1,115 @@
-#include <regex>
-#include <fstream>
-#include "parser/ParserPage.hpp"
-#include "util.hpp"
 #include "Page.hpp"
-#include "Error.hpp"
-#include "BookBuilder.hpp"
 #include "Book.hpp"
-#include "MetsXmlBookParser.hpp"
-#include "parser/PageParser.hpp"
+#include "BookBuilder.hpp"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-BookPtr
+BookBuilder&
+BookBuilder::reset()
+{
+	book_ = std::make_shared<Book>();
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const BookBuilder&
+BookBuilder::append(Page& page) const
+{
+	assert(book_);
+	book_->push_back(page);
+	assert(not book_->empty());
+	book_->back()->id_ = static_cast<int>(book_->size());
+	book_->back()->book_ = book_;
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const BookBuilder&
+BookBuilder::set_author(std::string author) const
+{
+	assert(book_);
+	book_->author = std::move(author);
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const BookBuilder&
+BookBuilder::set_title(std::string title) const
+{
+	assert(book_);
+	book_->title = std::move(title);
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const BookBuilder&
+BookBuilder::set_description(std::string description) const
+{
+	assert(book_);
+	book_->description = std::move(description);
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const BookBuilder&
+BookBuilder::set_uri(std::string uri) const
+{
+	assert(book_);
+	book_->uri = std::move(uri);
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const BookBuilder&
+BookBuilder::set_language(std::string language) const
+{
+	assert(book_);
+	book_->lang = std::move(language);
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const BookBuilder&
+BookBuilder::set_directory(Path directory) const
+{
+	assert(book_);
+	book_->dir = std::move(directory);
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const BookBuilder&
+BookBuilder::set_year(int year) const
+{
+	assert(book_);
+	book_->year = year;
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const BookBuilder&
+BookBuilder::set_owner(UserSptr owner) const
+{
+	assert(book_);
+	if (owner)
+		book_->set_owner(*owner);
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const BookBuilder&
+BookBuilder::set_id(int id) const
+{
+	assert(book_);
+	book_->set_id(id);
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BookSptr
 BookBuilder::build() const
 {
-	auto i = std::find_if(begin(ocr_), end(ocr_), [](const auto& p) {
-		return p.second == FileType::Mets;
-	});
-	if (i == end(ocr_)) {
-		return build(parse_book_data());
-	} else {
-		MetsXmlBookParser p(i->first);
-		return p.parse();
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void
-BookBuilder::add(const Path& file)
-{
-	auto type = get_file_type(file);
-	switch (type) {
-	case FileType::Img:
-		img_.push_back(file);
-		break;
-	case FileType::Llocs:
-		ocr_[file.parent_path()] = type;
-		break;
-	case FileType::Other:
-		// do nothing
-		break;
-	default:
-		ocr_[file] = type;
-		break;
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-BookBuilder::BookData
-BookBuilder::parse_book_data() const
-{
-	BookData data;
-	for (const auto& ocr: ocr_) {
-		// std::cerr << "OCR: " << ocr.first << "\n";
-		auto pp = make_page_parser(ocr.second, ocr.first);
-		assert(pp);
-		while (pp->has_next()) {
-			auto page = pp->parse()->page();
-			if (page->has_ocr_path() and not page->has_img_path()) {
-				auto i = find_matching_img_file(page->ocr);
-				if (i == end(img_))
-					THROW(BadRequest, "(BookBuilder) Unable to find ",
-							"matching img file for ", page->ocr);
-			}
-			data.pages.push_back(page);
-		}
-	}
-	order_pages(data.pages);
-	return data;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-BookPtr
-BookBuilder::build(const BookData& data)
-{
-	auto book = std::make_shared<Book>();
-	book->description = data.description;
-	book->uri = data.uri;
-	book->author = data.author;
-	book->title = data.title;
-	book->description = data.description;
-	for (const auto& page: data.pages)
-		book->push_back(page);
-	return book;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-BookBuilder::ImgFiles::const_iterator
-BookBuilder::find_matching_img_file(const Path& ocr) const noexcept
-{
-	auto stem = ocr.stem();
-	return std::find_if(begin(img_), end(img_), [&stem](const Path& path) {
-		return path.stem() == stem;
-	});
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void
-BookBuilder::order_pages(std::vector<PagePtr>& pages) noexcept
-{
-	const auto b = begin(pages);
-	const auto e = end(pages);
-
-	if (std::all_of(b, e, [](const auto& page) {return page->id() > 0;})) {
-		// sort by page index of ocr source file
-		std::sort(b, e, [](const auto& a, const auto& b) {
-			return a->id() < b->id();
-		});
-	} else if (std::any_of(b, e, [](const auto& page) {return page->id() > 0;})) {
-		// sort by page index AND path stem
-		std::sort(b, e, [](const auto& a, const auto& b) {
-			if (a->id() > 0 and b->id() > 0) {
-				return a->id() < b->id();
-			} else {
-				return a->ocr.stem() < b->ocr.stem();
-			}
-		});
-		fix_indizes(pages);
-	} else {
-		// sort by path stem
-		std::sort(b, e, [](const auto& a, const auto& b) {
-			return a->ocr.stem() < b->ocr.stem();
-		});
-		fix_indizes(pages);
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void
-BookBuilder::fix_indizes(std::vector<PagePtr>& pages) noexcept
-{
-	int id = 0;
-	for (auto& page: pages) {
-		page->set_id(++id);
-	}
+	assert(book_);
+	return book_;
 }
