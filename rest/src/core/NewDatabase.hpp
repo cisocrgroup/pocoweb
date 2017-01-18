@@ -66,7 +66,7 @@ namespace pcw {
 
 	struct ProjectEntry {
 		bool is_book() const noexcept {return origin == projectid;}
-		int owner, origin, projectid;
+		int origin, owner, projectid;
 	};
 	template<class Db>
 	boost::optional<ProjectEntry> select_project(Db& db, int projectid);
