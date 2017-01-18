@@ -8,8 +8,12 @@
 #include "core/Tables.h"
 #include "core/User.hpp"
 #include "core/Password.hpp"
+#include "core/BookBuilder.hpp"
+#include "core/PageBuilder.hpp"
+#include "core/LineBuilder.hpp"
 #include "core/Book.hpp"
 #include "core/Page.hpp"
+#include "core/Line.hpp"
 #include "core/NewDatabase.hpp"
 
 using namespace sqlpp;
@@ -94,9 +98,34 @@ BOOST_AUTO_TEST_SUITE_END()
 
 struct BooksFixture: public UsersFixture {
 	BookSptr book;
-	BooksFixture(): UsersFixture(), book() {
-		book = std::make_shared<Book>();
-		book->set_owner(*user);
+	PageSptr page;
+	LineSptr line;
+
+	BooksFixture() {
+		LineBuilder lbuilder;
+		lbuilder.set_box({2,3,4,5});
+		lbuilder.set_image_path("image");
+		lbuilder.append("text", 4, 1.0);
+		line = lbuilder.build();
+
+		PageBuilder pbuilder;
+		pbuilder.set_image_path("image");
+		pbuilder.set_ocr_path("ocr");
+		pbuilder.set_box({1,2,3,4});
+		pbuilder.append(*line);
+		page = pbuilder.build();
+
+		BookBuilder bbuilder;
+		bbuilder.set_author("author");
+		bbuilder.set_title("title");
+		bbuilder.set_directory("directory");
+		bbuilder.set_year(2017);
+		bbuilder.set_uri("uri");
+		bbuilder.set_language("language");
+		bbuilder.set_description("description");
+		bbuilder.set_owner(user);
+		bbuilder.append(*page);
+		book = bbuilder.build();
 	}
 };
 
@@ -104,32 +133,30 @@ struct BooksFixture: public UsersFixture {
 BOOST_FIXTURE_TEST_SUITE(Books, BooksFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(InsertProject)
-{
-	db.expect("UPDATE projects SET origin=0 WHERE (projects.projectid=0)");
-	auto view = insert_project(db, *book);
-	db.validate();
-}
-
-////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(InsertBook)
 {
+	db.expect("UPDATE projects SET origin=0 WHERE (projects.projectid=0)");
 	db.expect("INSERT INTO books (author,title,directory,year,uri,bookid,"
-		"description,lang) VALUES('','','',0,'',0,'','')");
-	auto same = insert_book(db, *book);
-	BOOST_CHECK_EQUAL(same, book);
-	db.validate();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(InsertPage)
-{
+		"description,lang) VALUES('author','title','directory',2017,"
+		"'uri',0,'description','language')");
 	db.expect("INSERT INTO pages (bookid,pageid,imagepath,ocrpath,pleft,"
-			"ptop,pright,pbottom) VALUES(0,13,'','',0,0,0,0)");
-	auto page = std::make_shared<Page>(13);
-	book->push_back(*page);
-	auto same = insert_book(db, *book);
-	BOOST_CHECK_EQUAL(same, book);
+			"ptop,pright,pbottom) VALUES(0,1,'image','ocr',1,2,3,4)");
+	db.expect("INSERT INTO textlines (bookid,pageid,lineid,imagepath,lleft,"
+			"ltop,lright,lbottom) VALUES(0,1,1,'image',2,3,4,5)");
+	// t
+	db.expect("INSERT INTO contents (bookid,pageid,lineid,seq,ocr,cor,cut,conf) "
+			"VALUES(0,1,1,0,116,0,1,1)");
+	// e
+	db.expect("INSERT INTO contents (bookid,pageid,lineid,seq,ocr,cor,cut,conf) "
+			"VALUES(0,1,1,1,101,0,2,1)");
+	// x
+	db.expect("INSERT INTO contents (bookid,pageid,lineid,seq,ocr,cor,cut,conf) "
+			"VALUES(0,1,1,2,120,0,3,1)");
+	// t
+	db.expect("INSERT INTO contents (bookid,pageid,lineid,seq,ocr,cor,cut,conf) "
+			"VALUES(0,1,1,3,116,0,4,1)");
+	auto view = insert_book(db, *book);
+	BOOST_CHECK_EQUAL(view, book);
 	db.validate();
 }
 
