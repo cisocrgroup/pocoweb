@@ -296,6 +296,7 @@ pcw::detail::insert_line(Db& db, Q& q, R& r, const Line& line)
 		r.params.cor = line[i].cor;
 		r.params.cut = line[i].cut;
 		r.params.conf = line[i].conf;
+		db(r);
 	}
 }
 
