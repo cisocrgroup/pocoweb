@@ -72,13 +72,13 @@ pcw::create_user(Db& db, const std::string& name, const std::string& pw,
 	using namespace sqlpp;
 	auto password = Password::make(pw);
 	tables::Users users;
-	auto stmt = insert_into(users).set(
+	auto stmnt = insert_into(users).set(
 		users.name = name,
 		users.email = email,
 		users.institute = inst,
 		users.passwd = password.str()
 	);
-	auto id = db(stmt);
+	auto id = db(stmnt);
 	return std::make_shared<User>(name, email, inst, id);
 }
 
@@ -89,8 +89,8 @@ pcw::login_user(Db& db, const std::string& name, const std::string& pw)
 {
 	using namespace sqlpp;
 	tables::Users users;
-	auto stmt = select(all_of(users)).from(users).where(users.name == name);
-	auto res = db(stmt);
+	auto stmnt = select(all_of(users)).from(users).where(users.name == name);
+	auto res = db(stmnt);
 	if (not res.empty()) {
 		Password password(res.front().passwd);
 		if (password.authenticate(pw)) {
@@ -108,11 +108,11 @@ pcw::update_user(Db& db, const User& user)
 	using namespace sqlpp;
 	tables::Users users;
 	// do not change user's name and id
-	auto stmt = update(users).set(
+	auto stmnt = update(users).set(
 		users.email = user.email,
 		users.institute = user.institute
 	).where(users.userid == user.id());
-	db(stmt);
+	db(stmnt);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -122,8 +122,8 @@ pcw::select_user(Db& db, const std::string& name)
 {
 	using namespace sqlpp;
 	tables::Users users;
-	auto stmt = select(all_of(users)).from(users).where(users.name == name);
-	auto res = db(stmt);
+	auto stmnt = select(all_of(users)).from(users).where(users.name == name);
+	auto res = db(stmnt);
 	if (not res.empty())
 		return pcw::detail::make_user(res.front());
 	return nullptr;
@@ -136,8 +136,8 @@ pcw::select_user(Db& db, int id)
 {
 	using namespace sqlpp;
 	tables::Users users;
-	auto stmt = select(all_of(users)).from(users).where(users.userid == id);
-	auto res = db(stmt);
+	auto stmnt = select(all_of(users)).from(users).where(users.userid == id);
+	auto res = db(stmnt);
 	if (not res.empty())
 		return pcw::detail::make_user(res.front());
 	return nullptr;
@@ -150,8 +150,8 @@ pcw::delete_user(Db& db, const std::string& name)
 {
 	using namespace sqlpp;
 	tables::Users users;
-	auto stmt = remove_from(users).where(users.name == name);
-	db(stmt);
+	auto stmnt = remove_from(users).where(users.name == name);
+	db(stmnt);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -161,8 +161,8 @@ pcw::delete_user(Db& db, int id)
 {
 	using namespace sqlpp;
 	tables::Users users;
-	auto stmt = remove_from(users).where(users.userid == id);
-	db(stmt);
+	auto stmnt = remove_from(users).where(users.userid == id);
+	db(stmnt);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -174,21 +174,21 @@ pcw::insert_project(Db& db, BookView& view)
 	tables::Projects projects;
 	int id;
 	if (view.is_book()) {
-		auto stmt1 = insert_into(projects).set(
+		auto stmnt1 = insert_into(projects).set(
 			projects.origin = 0,
 			projects.owner = view.owner().id()
 		);
-		id = db(stmt1);
-		auto stmt2 = update(projects).set(
+		id = db(stmnt1);
+		auto stmnt2 = update(projects).set(
 			projects.origin = id
 		).where(projects.projectid == id);
-		db(stmt2);
+		db(stmnt2);
 	} else {
-		auto stmt = insert_into(projects).set(
+		auto stmnt = insert_into(projects).set(
 			projects.origin = view.origin().id(),
 			projects.owner = view.owner().id()
 		);
-		id = db(stmt);
+		id = db(stmnt);
 	}
 	view.set_id(id);
 	return view.shared_from_this();
@@ -202,7 +202,7 @@ pcw::insert_book(Db& db, Book& book)
 	using namespace sqlpp;
 	tables::Books books;
 	insert_project(db, book); // sets bookid
-	auto stmt = insert_into(books).set(
+	auto stmnt = insert_into(books).set(
 		books.author = book.author,
 		books.title = book.title,
 		books.directory = book.dir.string(),
@@ -212,7 +212,7 @@ pcw::insert_book(Db& db, Book& book)
 		books.description = book.description,
 		books.lang = book.lang
 	);
-	db(stmt);
+	db(stmnt);
 
 	tables::Pages pages;
 	auto p = db.prepare(insert_into(pages).set(
