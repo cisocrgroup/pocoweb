@@ -1,3 +1,4 @@
+#include "Page.hpp"
 #include "Book.hpp"
 #include "BookBuilder.hpp"
 
@@ -8,6 +9,18 @@ BookBuilder&
 BookBuilder::reset()
 {
 	book_ = std::make_shared<Book>();
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const BookBuilder&
+BookBuilder::append(Page& page) const
+{
+	assert(book_);
+	book_->push_back(page);
+	assert(not book_->empty());
+	book_->back()->id_ = static_cast<int>(book_->size());
+	book_->back()->book_ = book_;
 	return *this;
 }
 

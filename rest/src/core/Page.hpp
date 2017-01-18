@@ -70,6 +70,7 @@ namespace pcw {
 		int id_;
 		friend class BookView;
 		friend class PageBuilder;
+		friend class BookBuilder;
 	};
 }
 

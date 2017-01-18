@@ -3,8 +3,10 @@
 
 #include <boost/test/unit_test.hpp>
 #include <iostream>
+#include "core/PageBuilder.hpp"
 #include "core/BookBuilder.hpp"
 #include "core/Book.hpp"
+#include "core/Page.hpp"
 #include "core/User.hpp"
 
 using namespace pcw;
@@ -86,6 +88,29 @@ BOOST_AUTO_TEST_CASE(IdTest)
 {
 	builder.set_id(42);
 	BOOST_CHECK_EQUAL(builder.build()->id(), 42);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(AppendTest)
+{
+	std::vector<PageSptr> pages(5);
+	PageBuilder pbuilder;
+	for (auto& p: pages) {
+		pbuilder.reset();
+		p = pbuilder.build();
+		builder.append(*p);
+	}
+
+	auto b = builder.build();
+	BOOST_CHECK_EQUAL(b->size(), 5);
+
+	int i = 1;
+	for (const auto& p: pages) {
+		BOOST_CHECK_EQUAL(p->id(), i);
+		BOOST_CHECK_EQUAL(&p->book(), b.get());
+		BOOST_CHECK_EQUAL(b->find(i), p);
+		++i;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
