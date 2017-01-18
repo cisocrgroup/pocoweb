@@ -13,7 +13,8 @@ namespace pcw {
 
 	class BookBuilder {
 	public:
-		BookBuilder();
+		BookBuilder(): book_() {reset();}
+
 		BookBuilder& reset();
 		const BookBuilder& set_author(std::string author) const;
 		const BookBuilder& set_title(std::string title) const;

@@ -15,7 +15,7 @@ namespace pcw {
 
 	class LineBuilder {
 	public:
-		LineBuilder();
+		LineBuilder(): line_() {reset();}
 
 		LineBuilder& reset();
 		LineBuilder& append(const std::string& str, int r, double c);
