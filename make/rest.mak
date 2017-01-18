@@ -3,6 +3,7 @@ CORE_OBJS += rest/src/core/MetsXmlBookParser.o
 CORE_OBJS += rest/src/core/BookDirectoryBuilder.o
 CORE_OBJS += rest/src/core/BookConstructor.o
 CORE_OBJS += rest/src/core/BookBuilder.o
+CORE_OBJS += rest/src/core/PageBuilder.o
 CORE_OBJS += rest/src/core/LineBuilder.o
 CORE_OBJS += rest/src/core/BookFixer.o
 CORE_OBJS += rest/src/core/Box.o
