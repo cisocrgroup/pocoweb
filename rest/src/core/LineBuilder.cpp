@@ -23,8 +23,8 @@ LineBuilder::reset()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-LineBuilder&
-LineBuilder::append(const std::string& str, int r, double conf)
+const LineBuilder&
+LineBuilder::append(const std::string& str, int r, double conf) const
 {
 	PRAECONDITION;
 	std::wstring wstr;
@@ -34,8 +34,8 @@ LineBuilder::append(const std::string& str, int r, double conf)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-LineBuilder&
-LineBuilder::append(const std::wstring& wstr, int r, double conf)
+const LineBuilder&
+LineBuilder::append(const std::wstring& wstr, int r, double conf) const
 {
 	PRAECONDITION;
 	if (not wstr.empty()) {
@@ -53,16 +53,16 @@ LineBuilder::append(const std::wstring& wstr, int r, double conf)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-LineBuilder&
-LineBuilder::append(wchar_t c, int r, double conf)
+const LineBuilder&
+LineBuilder::append(wchar_t c, int r, double conf) const
 {
 	PRAECONDITION;
 	return append(c, 0, r, conf);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-LineBuilder&
-LineBuilder::append(wchar_t o, wchar_t c, int r, double conf)
+const LineBuilder&
+LineBuilder::append(wchar_t o, wchar_t c, int r, double conf) const
 {
 	PRAECONDITION;
 	line_->chars_.emplace_back(o, c, r, conf);
@@ -70,16 +70,16 @@ LineBuilder::append(wchar_t o, wchar_t c, int r, double conf)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-LineBuilder&
-LineBuilder::set_image_path(Path image)
+const LineBuilder&
+LineBuilder::set_image_path(Path image) const
 {
 	line_->img = std::move(image);
 	return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-LineBuilder&
-LineBuilder::set_box(Box box)
+const LineBuilder&
+LineBuilder::set_box(Box box) const
 {
 	line_->box = box;
 	return *this;

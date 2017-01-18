@@ -16,12 +16,12 @@ namespace pcw {
 		LineBuilder(): line_() {reset();}
 
 		LineBuilder& reset();
-		LineBuilder& append(const std::string& str, int r, double c);
-		LineBuilder& append(const std::wstring& str, int r, double c);
-		LineBuilder& append(wchar_t c, int r, double conf);
-		LineBuilder& append(wchar_t o, wchar_t c, int r, double conf);
-		LineBuilder& set_image_path(Path img);
-		LineBuilder& set_box(Box box);
+		const LineBuilder& append(const std::string& str, int r, double c) const;
+		const LineBuilder& append(const std::wstring& str, int r, double c) const;
+		const LineBuilder& append(wchar_t c, int r, double conf) const;
+		const LineBuilder& append(wchar_t o, wchar_t c, int r, double conf) const;
+		const LineBuilder& set_image_path(Path img) const;
+		const LineBuilder& set_box(Box box) const;
 		LineSptr build() const;
 
 	private:
