@@ -58,6 +58,9 @@ namespace pcw {
 
 	template<class Db>
 	BookSptr insert_book(Db& db, Book& book);
+
+	template<class Db>
+	void update_book(Db& db, BookView& view);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -298,6 +301,25 @@ pcw::detail::insert_line(Db& db, Q& q, R& r, const Line& line)
 		r.params.conf = line[i].conf;
 		db(r);
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+void
+pcw::update_book(Db& db, BookView& view)
+{
+	using namespace sqlpp;
+	tables::Books books;
+	auto stmnt = update(books).set(
+		books.author = view.origin().author,
+		books.title = view.origin().title,
+		books.directory = view.origin().dir.string(),
+		books.year = view.origin().year,
+		books.uri = view.origin().uri,
+		books.description = view.origin().description,
+		books.lang = view.origin().lang
+	).where(books.bookid == view.origin().id());
+	db(stmnt);
 }
 
 #endif // pcw_NewDatabase_hpp__
