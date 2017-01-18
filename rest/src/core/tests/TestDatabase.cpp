@@ -16,8 +16,12 @@ using namespace sqlpp;
 using namespace pcw;
 
 struct UsersFixture {
+	UserSptr user;
 	MockDb db;
-	UsersFixture(): db() {}
+	UsersFixture()
+		: user(std::make_shared<User>("name", "email", "institute", 42))
+		, db()
+	{}
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -26,13 +30,13 @@ BOOST_FIXTURE_TEST_SUITE(Users, UsersFixture)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(CreateUser)
 {
-	auto user = create_user(db, "name", "password", "email", "institute");
+	auto nuser = create_user(db, user->name, "password", user->email, user->institute);
 	db.expect(std::regex(R"(INSERT INTO users \(name,email,institute,passwd\) )"
 				R"(VALUES\('name','email','institute','.+'\))"));
-	BOOST_REQUIRE(user);
-	BOOST_CHECK_EQUAL(user->name, "name");
-	BOOST_CHECK_EQUAL(user->email, "email");
-	BOOST_CHECK_EQUAL(user->institute, "institute");
+	BOOST_REQUIRE(nuser);
+	BOOST_CHECK_EQUAL(user->name, nuser->name);
+	BOOST_CHECK_EQUAL(user->email, nuser->email);
+	BOOST_CHECK_EQUAL(user->institute, nuser->institute);
 	db.validate();
 }
 
@@ -40,17 +44,16 @@ BOOST_AUTO_TEST_CASE(CreateUser)
 BOOST_AUTO_TEST_CASE(LoginUser)
 {
 	db.expect(std::regex(R"(SELECT .* FROM users WHERE \(users.name='name'\))"));
-	login_user(db, "name", "password");
+	login_user(db, user->name, "password");
 	db.validate();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(UpdateUser)
 {
-	User user("name", "email", "institute", 42);
 	db.expect("UPDATE users SET email='email',institute='institute' "
 			"WHERE (users.userid=42)");
-	update_user(db, user);
+	update_user(db, *user);
 	db.validate();
 }
 
@@ -66,7 +69,7 @@ BOOST_AUTO_TEST_CASE(SelectUserByName)
 BOOST_AUTO_TEST_CASE(SelectUserById)
 {
 	db.expect(std::regex(R"(SELECT .* FROM users WHERE \(users.userid=42\))"));
-	select_user(db, 42);
+	select_user(db, user->id());
 	db.validate();
 }
 
@@ -74,7 +77,7 @@ BOOST_AUTO_TEST_CASE(SelectUserById)
 BOOST_AUTO_TEST_CASE(DeleteUserByName)
 {
 	db.expect("DELETE FROM users WHERE (users.name='name')");
-	delete_user(db, "name");
+	delete_user(db, user->name);
 	db.validate();
 }
 
@@ -82,7 +85,7 @@ BOOST_AUTO_TEST_CASE(DeleteUserByName)
 BOOST_AUTO_TEST_CASE(DeleteUserById)
 {
 	db.expect("DELETE FROM users WHERE (users.userid=42)");
-	delete_user(db, 42);
+	delete_user(db, user->id());
 	db.validate();
 }
 
@@ -91,12 +94,8 @@ BOOST_AUTO_TEST_SUITE_END()
 
 struct BooksFixture: public UsersFixture {
 	BookSptr book;
-	UserSptr user;
-	BooksFixture(): UsersFixture(), book(), user() {
-		user = std::make_shared<User>("test", "test", "test", 42);
-		BOOST_REQUIRE(user);
+	BooksFixture(): UsersFixture(), book() {
 		book = std::make_shared<Book>();
-		BOOST_REQUIRE(book);
 		book->set_owner(*user);
 	}
 };
