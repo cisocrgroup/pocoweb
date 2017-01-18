@@ -1,7 +1,9 @@
 #ifndef pcw_NewDatabase_hpp__
 #define pcw_NewDatabase_hpp__
 
+#include <boost/optional.hpp>
 #include <memory>
+#include "Tables.h"
 
 namespace pcw {
 	class User;
@@ -61,6 +63,14 @@ namespace pcw {
 
 	template<class Db>
 	void update_book(Db& db, BookView& view);
+
+	struct ProjectEntry {
+		int owner, origin, projectid;
+	};
+	template<class Db>
+	boost::optional<ProjectEntry> select_project(Db& db, int projectid);
+	template<class Db>
+	void update_project_owner(Db& db, int projectid, int owner);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -319,6 +329,40 @@ pcw::update_book(Db& db, BookView& view)
 		books.description = view.origin().description,
 		books.lang = view.origin().lang
 	).where(books.bookid == view.origin().id());
+	db(stmnt);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+boost::optional<pcw::ProjectEntry>
+pcw::select_project(Db& db, int projectid)
+{
+	using namespace sqlpp;
+	tables::Projects projects;
+	auto stmnt = select(projects.origin, projects.owner)
+		.from(projects)
+		.where(projects.projectid == projectid);
+	auto res = db(stmnt);
+
+	if (not res.empty())
+		return ProjectEntry{
+			static_cast<int>(res.front().origin),
+			static_cast<int>(res.front().owner),
+			projectid
+		};
+	return {};
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+void
+pcw::update_project_owner(Db& db, int projectid, int owner)
+{
+	using namespace sqlpp;
+	tables::Projects projects;
+	auto stmnt = update(projects)
+		.set(projects.owner = owner)
+		.where(projects.projectid == projectid);
 	db(stmnt);
 }
 

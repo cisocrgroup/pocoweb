@@ -94,6 +94,23 @@ BOOST_AUTO_TEST_CASE(DeleteUserById)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(SelectProject)
+{
+	db.expect("SELECT projects.origin,projects.owner FROM projects "
+			"WHERE (projects.projectid=42)");
+	auto projects = select_project(db, 42);
+	db.validate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(set_project_owner)
+{
+	db.expect("UPDATE projects SET owner=42 WHERE (projects.projectid=13)");
+	update_project_owner(db, 13, 42);
+	db.validate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
 
 struct BooksFixture: public UsersFixture {
