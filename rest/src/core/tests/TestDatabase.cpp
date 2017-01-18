@@ -111,6 +111,18 @@ BOOST_AUTO_TEST_CASE(UpdateProjectOwner)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(SelectBook)
+{
+	db.expect("SELECT books.bookid,books.year,books.title,books.author,"
+			"books.description,books.uri,books.directory,books.lang "
+			"FROM books "
+			"INNER JOIN projects ON (books.bookid=projects.origin) "
+			"WHERE ((books.bookid=13) AND (projects.owner=42))");
+	select_book(db, *user, 13);
+	db.validate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
 
 struct BooksFixture: public UsersFixture {
@@ -140,7 +152,7 @@ struct BooksFixture: public UsersFixture {
 		bbuilder.set_uri("uri");
 		bbuilder.set_language("language");
 		bbuilder.set_description("description");
-		bbuilder.set_owner(user);
+		bbuilder.set_owner(*user);
 		bbuilder.append(*page);
 		book = bbuilder.build();
 	}

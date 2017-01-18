@@ -14,6 +14,9 @@ namespace pcw {
 	using BookViewSptr = std::shared_ptr<BookView>;
 	class Page;
 	class Line;
+	class BookBuilder;
+	class LineBuilder;
+	class PageBuilder;
 
 	namespace detail {
 		template<class U>
@@ -30,6 +33,12 @@ namespace pcw {
 
 		template<class Db, class Q, class R>
 		void insert_line(Db& db, Q& q, R& r, const Line& line);
+
+		template<class Db, class P, class Q, class R>
+		void select_pages(Db& db, const BookBuilder& builder, P& p, Q& q, R& r);
+
+		template<class Db, class Q, class R>
+		void select_lines(Db& db, const PageBuilder& builder, Q& q, R& r);
 	}
 
 	template<class Db>
@@ -74,6 +83,9 @@ namespace pcw {
 
 	template<class Db>
 	void update_project_owner(Db& db, int projectid, int owner);
+
+	template<class Db>
+	BookSptr select_book(Db& db, const User& owner, int bookid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -367,6 +379,115 @@ pcw::update_project_owner(Db& db, int projectid, int owner)
 		.set(projects.owner = owner)
 		.where(projects.projectid == projectid);
 	db(stmnt);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+pcw::BookSptr
+pcw::select_book(Db& db, const User& owner, int bookid)
+{
+	using namespace sqlpp;
+	tables::Projects projects;
+	tables::Books books;
+
+	auto stmnt = select(all_of(books))
+		.from(books.join(projects).on(books.bookid == projects.origin))
+		.where(books.bookid == bookid and projects.owner == owner.id());
+	auto res = db(stmnt);
+
+	if (res.empty())
+		return nullptr;
+
+	tables::Pages pages;
+	auto p = select(all_of(pages))
+		.from(pages)
+		.where(pages.bookid == bookid)
+		.order_by(pages.pageid.asc());
+
+	tables::Textlines textlines;
+	auto q = db.prepare(
+			select(all_of(textlines))
+			.from(textlines)
+			.where(textlines.bookid == bookid and
+				textlines.pageid == parameter(textlines.pageid))
+			.order_by(textlines.lineid.asc())
+	);
+
+	tables::Contents contents;
+	auto r = db.prepare(
+			select(all_of(contents))
+			.from(contents)
+			.where(contents.bookid == bookid and
+				contents.pageid == parameter(contents.pageid) and
+				contents.lineid == parameter(contents.lineid))
+			.order_by(contents.seq.asc())
+	);
+
+	BookBuilder builder;
+	builder.set_description(res.front().description);
+	builder.set_uri(res.front().uri);
+	builder.set_author(res.front().author);
+	builder.set_title(res.front().title);
+	builder.set_id(res.front().bookid);
+	builder.set_language(res.front().lang);
+	builder.set_owner(owner);
+	builder.set_year(res.front().year);
+	detail::select_pages(db, builder, p, q, r);
+	return builder.build();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db, class P, class Q, class R>
+void
+pcw::detail::select_pages(Db& db, const BookBuilder& builder, P& p, Q& q, R& r)
+{
+	using namespace sqlpp;
+
+	PageBuilder pbuilder;
+	for (const auto& row: db(p)) {
+		pbuilder.reset();
+		pbuilder.set_image_path(Path(row.imagepath));
+		pbuilder.set_ocr_path(Path(row.ocrpath));
+		pbuilder.set_box({
+			static_cast<int>(row.pleft),
+			static_cast<int>(row.ptop),
+			static_cast<int>(row.pright),
+			static_cast<int>(row.pbottom)
+		});
+		q.params.pageid = row.pageid;
+		r.params.pageid = row.pageid;
+		detail::select_lines(db, pbuilder, q, r);
+		builder.append(*pbuilder.build());
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db, class Q, class R>
+void
+pcw::detail::select_lines(Db& db, const PageBuilder& builder, Q& q, R& r)
+{
+	LineBuilder lbuilder;
+	for (const auto& row: db(q)) {
+		lbuilder.reset();
+		lbuilder.set_image_path(Path(row.imagepath));
+		lbuilder.set_box({
+			static_cast<int>(row.lleft),
+			static_cast<int>(row.ltop),
+			static_cast<int>(row.lright),
+			static_cast<int>(row.lbottom)
+		});
+
+		r.params.lineid = row.lineid;
+		for (const auto& cont: db(r)) {
+			lbuilder.append(
+				static_cast<wchar_t>(cont.ocr),
+				static_cast<wchar_t>(cont.cor),
+				cont.cut,
+				cont.conf
+			);
+		}
+		builder.append(*lbuilder.build());
+	}
 }
 
 #endif // pcw_NewDatabase_hpp__
