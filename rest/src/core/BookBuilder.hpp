@@ -8,7 +8,6 @@ namespace pcw {
 	class Book;
 	using BookSptr = std::shared_ptr<Book>;
 	class User;
-	using UserSptr = std::shared_ptr<User>;
 	class Page;
 	using Path = boost::filesystem::path;
 
@@ -25,7 +24,7 @@ namespace pcw {
 		const BookBuilder& set_language(std::string lang) const;
 		const BookBuilder& set_directory(Path dir) const;
 		const BookBuilder& set_year(int year) const;
-		const BookBuilder& set_owner(UserSptr owner) const;
+		const BookBuilder& set_owner(const User& owner) const;
 		const BookBuilder& set_id(int id) const;
 		BookSptr build() const;
 

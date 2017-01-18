@@ -89,11 +89,10 @@ BookBuilder::set_year(int year) const
 
 ////////////////////////////////////////////////////////////////////////////////
 const BookBuilder&
-BookBuilder::set_owner(UserSptr owner) const
+BookBuilder::set_owner(const User& owner) const
 {
 	assert(book_);
-	if (owner)
-		book_->set_owner(*owner);
+	book_->set_owner(owner);
 	return *this;
 }
 
