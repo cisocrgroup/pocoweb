@@ -17,6 +17,15 @@ struct LineBuilderFixture {
 BOOST_FIXTURE_TEST_SUITE(LineBuilder, LineBuilderFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(ResetTest)
+{
+	auto first = builder.build();
+	builder.reset();
+	auto second = builder.build();
+	BOOST_CHECK(first != second);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(ImgTest)
 {
 	builder.set_image_path("image");
