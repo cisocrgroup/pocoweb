@@ -8,8 +8,6 @@ namespace pcw {
 	class Box;
 	class Line;
 	using LineSptr = std::shared_ptr<Line>;
-	class Page;
-	using PageSptr = std::shared_ptr<Page>;
 	class Box;
 	using Path = boost::filesystem::path;
 
@@ -24,12 +22,10 @@ namespace pcw {
 		LineBuilder& append(wchar_t o, wchar_t c, int r, double conf);
 		LineBuilder& set_image_path(Path img);
 		LineBuilder& set_box(Box box);
-		LineBuilder& set_page(Page& page);
 		LineSptr build() const;
 
 	private:
 		LineSptr line_;
-		PageSptr page_;
 	};
 }
 

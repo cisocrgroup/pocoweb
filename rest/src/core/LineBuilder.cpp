@@ -86,16 +86,6 @@ LineBuilder::set_box(Box box)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-LineBuilder&
-LineBuilder::set_page(Page& page)
-{
-	// hold on to the page, since line_ only holds a week ptr
-	page_ = page.shared_from_this();
-	line_->page_ = page_;
-	return *this;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 LineSptr
 LineBuilder::build() const
 {

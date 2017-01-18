@@ -31,14 +31,6 @@ BOOST_AUTO_TEST_CASE(BoxTest)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(PageTest)
-{
-	auto page = std::make_shared<Page>(42);
-	builder.set_page(*page);
-	BOOST_CHECK_EQUAL(builder.build()->page().id(), 42);
-}
-
-////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(AppendWcharsTest)
 {
 	builder.append(L'ф', 1, 1.0);
