@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(SelectProject)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(set_project_owner)
+BOOST_AUTO_TEST_CASE(UpdateProjectOwner)
 {
 	db.expect("UPDATE projects SET owner=42 WHERE (projects.projectid=13)");
 	update_project_owner(db, 13, 42);
