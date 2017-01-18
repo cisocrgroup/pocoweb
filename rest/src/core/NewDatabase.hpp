@@ -68,8 +68,10 @@ namespace pcw {
 		bool is_book() const noexcept {return origin == projectid;}
 		int origin, owner, projectid;
 	};
+
 	template<class Db>
 	boost::optional<ProjectEntry> select_project(Db& db, int projectid);
+
 	template<class Db>
 	void update_project_owner(Db& db, int projectid, int owner);
 }
