@@ -65,6 +65,7 @@ namespace pcw {
 	void update_book(Db& db, BookView& view);
 
 	struct ProjectEntry {
+		bool is_book() const noexcept {return origin == projectid;}
 		int owner, origin, projectid;
 	};
 	template<class Db>
