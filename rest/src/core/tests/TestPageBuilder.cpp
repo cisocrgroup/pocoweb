@@ -63,6 +63,7 @@ BOOST_AUTO_TEST_CASE(SingleAppendTest)
 	auto l = lbuilder.build();
 	pbuilder.append(*l);
 	auto p = pbuilder.build();
+	BOOST_CHECK_EQUAL(p->size(), 1);
 	BOOST_CHECK_EQUAL(l->id(), 1);
 	BOOST_CHECK_EQUAL(&l->page(), p.get());
 	BOOST_CHECK_EQUAL(p->find(1), l);
@@ -79,6 +80,8 @@ BOOST_AUTO_TEST_CASE(MultipleAppendTest)
 	}
 
 	auto p = pbuilder.build();
+	BOOST_CHECK_EQUAL(p->size(), 5);
+
 	int i = 1;
 	for (const auto& l: lines) {
 		BOOST_CHECK_EQUAL(l->id(), i);
