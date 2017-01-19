@@ -15,6 +15,7 @@ CORE_TESTS += rest/src/core/tests/TestProjectBuilder.test
 
 DATABASE_TESTS += rest/src/database/tests/TestTables.test
 DATABASE_TESTS += rest/src/database/tests/TestDatabase.test
+DATABASE_TESTS += rest/src/database/tests/TestConnectionPool.test
 
 PARSER_TESTS += rest/src/parser/tests/TestDocXml.test
 PARSER_TESTS += rest/src/parser/tests/TestAltoXmlParsing.test
