@@ -67,6 +67,9 @@ BOOST_AUTO_TEST_CASE(Release)
 	BOOST_CHECK(c5);
 	auto c6 = pool.get_connection();
 	BOOST_CHECK(not c6);
+	c1 = nullptr;
+	auto c7 = pool.get_connection();
+	BOOST_CHECK(not c7);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
