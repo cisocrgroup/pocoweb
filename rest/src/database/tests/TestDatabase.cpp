@@ -5,12 +5,12 @@
 #include <iostream>
 #include <sqlpp11/sqlpp11.h>
 #include "MockDb.h"
-#include "core/Tables.h"
 #include "core/User.hpp"
 #include "core/Password.hpp"
 #include "core/Book.hpp"
 #include "core/Page.hpp"
 #include "core/Line.hpp"
+#include "database/Tables.h"
 #include "database/NewDatabase.hpp"
 
 using namespace sqlpp;
