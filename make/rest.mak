@@ -14,7 +14,6 @@ CORE_OBJS += rest/src/core/BookView.o
 CORE_OBJS += rest/src/core/Package.o
 CORE_OBJS += rest/src/core/Config.o
 CORE_OBJS += rest/src/core/Database.o
-CORE_OBJS += rest/src/core/NewDatabase.o
 CORE_OBJS += rest/src/core/Profile.o
 CORE_OBJS += rest/src/core/Password.o
 CORE_OBJS += rest/src/core/Route.o
@@ -70,8 +69,8 @@ pcwd: rest/src/pcwd.cpp $(LIBS)
 pcwc: rest/src/pcwc.cpp $(LIBS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -lcurl
 
-rest/src/core/Tables.hpp: modules/sqlpp11/scripts/ddl2cpp db/tables.sql
-	$^ rest/src/core/Tables tables
+rest/src/database/Tables.h: modules/sqlpp11/scripts/ddl2cpp db/tables.sql
+	$^ rest/src/database/Tables tables
 
 DEPS += $(patsubst %.o,%.d,$(CORE_OBJS) $(API_OBJS) $(PARSER_OBJS) $(PUGI_OBJS))
 DEPS += $(patsubst %,%.d,$(MAINS))

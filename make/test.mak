@@ -1,9 +1,7 @@
 CORE_TESTS += rest/src/core/tests/TestError.test
 CORE_TESTS += rest/src/core/tests/TestMaybe.test
 CORE_TESTS += rest/src/core/tests/TestConfig.test
-CORE_TESTS += rest/src/core/tests/TestTables.test
 CORE_TESTS += rest/src/core/tests/TestPassword.test
-CORE_TESTS += rest/src/core/tests/TestDatabase.test
 CORE_TESTS += rest/src/core/tests/TestWagnerFischer.test
 CORE_TESTS += rest/src/core/tests/TestBox.test
 CORE_TESTS += rest/src/core/tests/TestOcrLine.test
@@ -15,6 +13,9 @@ CORE_TESTS += rest/src/core/tests/TestPageBuilder.test
 CORE_TESTS += rest/src/core/tests/TestBookBuilder.test
 CORE_TESTS += rest/src/core/tests/TestProjectBuilder.test
 
+DATABASE_TESTS += rest/src/database/tests/TestTables.test
+DATABASE_TESTS += rest/src/database/tests/TestDatabase.test
+
 PARSER_TESTS += rest/src/parser/tests/TestDocXml.test
 PARSER_TESTS += rest/src/parser/tests/TestAltoXmlParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestAbbyyXmlParsing.test
@@ -22,7 +23,7 @@ PARSER_TESTS += rest/src/parser/tests/TestOcropusLlocsParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestHocrParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestBookDirectoryBuilder.test
 
-TESTS = $(CORE_TESTS) $(PARSER_TESTS)
+TESTS = $(CORE_TESTS) $(DATABASE_TESTS) $(PARSER_TESTS)
 %.test: %.cpp $(LIBS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
 

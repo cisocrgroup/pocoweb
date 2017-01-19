@@ -3,11 +3,11 @@
 
 #include <boost/optional.hpp>
 #include <memory>
+#include "core/ProjectBuilder.hpp"
+#include "core/BookBuilder.hpp"
+#include "core/PageBuilder.hpp"
+#include "core/LineBuilder.hpp"
 #include "Tables.h"
-#include "ProjectBuilder.hpp"
-#include "BookBuilder.hpp"
-#include "PageBuilder.hpp"
-#include "LineBuilder.hpp"
 
 namespace pcw {
 	class User;

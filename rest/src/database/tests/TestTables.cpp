@@ -5,8 +5,8 @@
 #include <iostream>
 #include <sqlpp11/sqlpp11.h>
 #include "MockDb.h"
-#include "core/Tables.h"
 #include "core/Config.hpp"
+#include "database/Tables.h"
 
 using namespace sqlpp;
 using namespace pcw;
