@@ -34,11 +34,11 @@ namespace pcw {
 		template<class Db, class Q, class R>
 		void insert_line(Db& db, Q& q, R& r, const Line& line);
 
-		template<class Db, class P, class Q, class R>
-		void select_pages(Db& db, const BookBuilder& builder, P& p, Q& q, R& r);
+		template<class Db, class P, class Q>
+		void select_pages(Db& db, const BookBuilder& builder, P& p, Q& q);
 
-		template<class Db, class Q, class R>
-		void select_lines(Db& db, const PageBuilder& builder, Q& q, R& r);
+		template<class Db, class Q>
+		void select_lines(Db& db, const PageBuilder& builder, Q& q);
 	}
 
 	template<class Db>
@@ -86,6 +86,9 @@ namespace pcw {
 
 	template<class Db>
 	BookSptr select_book(Db& db, const User& owner, int bookid);
+
+	template<class Db>
+	BookViewSptr select_project(Db& db, const Book& book, int projectid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -399,28 +402,24 @@ pcw::select_book(Db& db, const User& owner, int bookid)
 		return nullptr;
 
 	tables::Pages pages;
+	tables::Textlines textlines;
+	tables::Contents contents;
 	auto p = select(all_of(pages))
 		.from(pages)
 		.where(pages.bookid == bookid)
 		.order_by(pages.pageid.asc());
-
-	tables::Textlines textlines;
 	auto q = db.prepare(
-			select(all_of(textlines))
-			.from(textlines)
-			.where(textlines.bookid == bookid and
-				textlines.pageid == parameter(textlines.pageid))
-			.order_by(textlines.lineid.asc())
-	);
-
-	tables::Contents contents;
-	auto r = db.prepare(
-			select(all_of(contents))
-			.from(contents)
-			.where(contents.bookid == bookid and
-				contents.pageid == parameter(contents.pageid) and
-				contents.lineid == parameter(contents.lineid))
-			.order_by(contents.seq.asc())
+		select(textlines.bookid, textlines.pageid, textlines.lineid,
+			textlines.lleft, textlines.ltop, textlines.lright,
+			textlines.lbottom, textlines.imagepath,
+			contents.ocr, contents.cor, contents.cut, contents.conf)
+		.from(textlines.join(contents)
+			.on(textlines.bookid == contents.bookid and
+				textlines.pageid == contents.pageid and
+				textlines.lineid == contents.lineid))
+		.where(textlines.bookid == bookid and
+			textlines.pageid == parameter(textlines.pageid))
+		.order_by(textlines.lineid.asc(), contents.seq.asc())
 	);
 
 	BookBuilder builder;
@@ -432,14 +431,14 @@ pcw::select_book(Db& db, const User& owner, int bookid)
 	builder.set_language(res.front().lang);
 	builder.set_owner(owner);
 	builder.set_year(res.front().year);
-	detail::select_pages(db, builder, p, q, r);
+	detail::select_pages(db, builder, p, q);
 	return builder.build();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template<class Db, class P, class Q, class R>
+template<class Db, class P, class Q>
 void
-pcw::detail::select_pages(Db& db, const BookBuilder& builder, P& p, Q& q, R& r)
+pcw::detail::select_pages(Db& db, const BookBuilder& builder, P& p, Q& q)
 {
 	using namespace sqlpp;
 
@@ -455,16 +454,15 @@ pcw::detail::select_pages(Db& db, const BookBuilder& builder, P& p, Q& q, R& r)
 			static_cast<int>(row.pbottom)
 		});
 		q.params.pageid = row.pageid;
-		r.params.pageid = row.pageid;
-		detail::select_lines(db, pbuilder, q, r);
+		detail::select_lines(db, pbuilder, q);
 		builder.append(*pbuilder.build());
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template<class Db, class Q, class R>
+template<class Db, class Q>
 void
-pcw::detail::select_lines(Db& db, const PageBuilder& builder, Q& q, R& r)
+pcw::detail::select_lines(Db& db, const PageBuilder& builder, Q& q)
 {
 	LineBuilder lbuilder;
 	for (const auto& row: db(q)) {
@@ -476,16 +474,12 @@ pcw::detail::select_lines(Db& db, const PageBuilder& builder, Q& q, R& r)
 			static_cast<int>(row.lright),
 			static_cast<int>(row.lbottom)
 		});
-
-		r.params.lineid = row.lineid;
-		for (const auto& cont: db(r)) {
-			lbuilder.append(
-				static_cast<wchar_t>(cont.ocr),
-				static_cast<wchar_t>(cont.cor),
-				cont.cut,
-				cont.conf
-			);
-		}
+		lbuilder.append(
+			static_cast<wchar_t>(row.ocr),
+			static_cast<wchar_t>(row.cor),
+			row.cut,
+			row.conf
+		);
 		builder.append(*lbuilder.build());
 	}
 }
