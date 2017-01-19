@@ -7,6 +7,7 @@ namespace pcw {
 	class BookView;
 	class User;
 	using UserPtr = std::shared_ptr<User>;
+	using UserSptr = std::shared_ptr<User>;
 
 	class User: public std::enable_shared_from_this<User> {
 	public:
