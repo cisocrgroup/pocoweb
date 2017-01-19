@@ -4,6 +4,10 @@
 #include <boost/optional.hpp>
 #include <memory>
 #include "Tables.h"
+#include "ProjectBuilder.hpp"
+#include "BookBuilder.hpp"
+#include "PageBuilder.hpp"
+#include "LineBuilder.hpp"
 
 namespace pcw {
 	class User;
@@ -14,9 +18,6 @@ namespace pcw {
 	using BookViewSptr = std::shared_ptr<BookView>;
 	class Page;
 	class Line;
-	class BookBuilder;
-	class LineBuilder;
-	class PageBuilder;
 
 	namespace detail {
 		template<class U>
@@ -482,6 +483,24 @@ pcw::detail::select_lines(Db& db, const PageBuilder& builder, Q& q)
 		);
 		builder.append(*lbuilder.build());
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+pcw::BookViewSptr
+pcw::select_project(Db& db, const Book& book, int projectid)
+{
+	using namespace sqlpp;
+
+	tables::ProjectPages project_pages;
+	auto stmnt = select(project_pages.pageid)
+		.from(project_pages)
+		.where(project_pages.projectid == projectid);
+	ProjectBuilder builder;
+	for (const auto& row: db(stmnt)) {
+		builder.add_page(row.pageid);
+	}
+	return builder.build();
 }
 
 #endif // pcw_NewDatabase_hpp__

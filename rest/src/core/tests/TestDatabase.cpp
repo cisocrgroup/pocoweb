@@ -8,9 +8,6 @@
 #include "core/Tables.h"
 #include "core/User.hpp"
 #include "core/Password.hpp"
-#include "core/BookBuilder.hpp"
-#include "core/PageBuilder.hpp"
-#include "core/LineBuilder.hpp"
 #include "core/Book.hpp"
 #include "core/Page.hpp"
 #include "core/Line.hpp"
@@ -204,6 +201,15 @@ BOOST_AUTO_TEST_CASE(UpdateBook)
 	book->description = "new-description";
 	book->lang = "new-language";
 	update_book(db, *book);
+	db.validate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(SelectProject)
+{
+	db.expect("SELECT project_pages.pageid FROM project_pages "
+			"WHERE (project_pages.projectid=42)");
+	select_project(db, *book, 42);
 	db.validate();
 }
 
