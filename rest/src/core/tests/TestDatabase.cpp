@@ -189,10 +189,6 @@ BOOST_AUTO_TEST_CASE(InsertBook)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(UpdateBook)
 {
-	db.expect("UPDATE books SET author='new-author',title='new-title',"
-			"directory='new-directory',year=1917,uri='new-uri',"
-			"description='new-description',lang='new-language' "
-			"WHERE (books.bookid=0)");
 	book->author = "new-author";
 	book->title = "new-title";
 	book->dir = "new-directory";
@@ -200,6 +196,10 @@ BOOST_AUTO_TEST_CASE(UpdateBook)
 	book->uri = "new-uri";
 	book->description = "new-description";
 	book->lang = "new-language";
+	db.expect("UPDATE books SET author='new-author',title='new-title',"
+			"directory='new-directory',year=1917,uri='new-uri',"
+			"description='new-description',lang='new-language' "
+			"WHERE (books.bookid=0)");
 	update_book(db, *book);
 	db.validate();
 }
