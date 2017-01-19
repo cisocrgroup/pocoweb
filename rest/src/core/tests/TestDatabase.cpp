@@ -159,8 +159,19 @@ struct BooksFixture: public UsersFixture {
 BOOST_FIXTURE_TEST_SUITE(Books, BooksFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(InsertProject)
+{
+	db.expect("INSERT INTO projects (origin,owner) VALUES(0,42)");
+	db.expect("INSERT INTO project_pages (projectid,pageid) VALUES(0,1)");
+	auto view = insert_project(db, *book);
+	BOOST_CHECK_EQUAL(view, book);
+	db.validate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(InsertBook)
 {
+	db.expect("INSERT INTO projects (origin,owner) VALUES(0,42)");
 	db.expect("UPDATE projects SET origin=0 WHERE (projects.projectid=0)");
 	db.expect("INSERT INTO books (author,title,directory,year,uri,bookid,"
 		"description,lang) VALUES('author','title','directory',2017,"

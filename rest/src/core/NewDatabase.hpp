@@ -35,6 +35,12 @@ namespace pcw {
 		template<class Db, class Q, class R>
 		void insert_line(Db& db, Q& q, R& r, const Line& line);
 
+		template<class Db>
+		void insert_book_info_and_set_id(Db& db, Book& book);
+
+		template<class Db>
+		void insert_project_info_and_set_id(Db& db, BookView& view);
+
 		template<class Db, class P, class Q>
 		void select_pages(Db& db, const BookBuilder& builder, P& p, Q& q);
 
@@ -196,31 +202,50 @@ pcw::delete_user(Db& db, int id)
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
+void
+pcw::detail::insert_project_info_and_set_id(Db& db, BookView& view)
+{
+	using namespace sqlpp;
+	tables::Projects projects;
+	auto id = db(insert_into(projects)
+			.set(projects.origin = view.origin().id(),
+				projects.owner = view.owner().id()));
+	view.set_id(id);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
 pcw::BookViewSptr
 pcw::insert_project(Db& db, BookView& view)
 {
 	using namespace sqlpp;
-	tables::Projects projects;
-	int id;
-	if (view.is_book()) {
-		auto stmnt1 = insert_into(projects).set(
-			projects.origin = 0,
-			projects.owner = view.owner().id()
-		);
-		id = db(stmnt1);
-		auto stmnt2 = update(projects).set(
-			projects.origin = id
-		).where(projects.projectid == id);
-		db(stmnt2);
-	} else {
-		auto stmnt = insert_into(projects).set(
-			projects.origin = view.origin().id(),
-			projects.owner = view.owner().id()
-		);
-		id = db(stmnt);
+	detail::insert_project_info_and_set_id(db, view);
+
+	tables::ProjectPages project_pages;
+	auto stmnt = db.prepare(insert_into(project_pages)
+			.set(project_pages.projectid = view.id(),
+				project_pages.pageid = parameter(project_pages.pageid)));
+	for (const auto& page: view) {
+		assert(page);
+		stmnt.params.pageid = page->id();
+		db(stmnt);
 	}
-	view.set_id(id);
 	return view.shared_from_this();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+void
+pcw::detail::insert_book_info_and_set_id(Db& db, Book& book)
+{
+	using namespace sqlpp;
+	tables::Projects projects;
+	auto id = db(insert_into(projects)
+			.set(projects.origin = 0,
+				projects.owner = book.owner().id()));
+	book.set_id(id);
+	db(update(projects).set(projects.origin = id)
+			.where(projects.projectid == id));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -229,8 +254,9 @@ pcw::BookSptr
 pcw::insert_book(Db& db, Book& book)
 {
 	using namespace sqlpp;
+	detail::insert_book_info_and_set_id(db, book);
+
 	tables::Books books;
-	insert_project(db, book); // sets bookid
 	auto stmnt = insert_into(books).set(
 		books.author = book.author,
 		books.title = book.title,
