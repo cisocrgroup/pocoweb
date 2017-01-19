@@ -94,11 +94,11 @@ BOOST_AUTO_TEST_CASE(DeleteUserById)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(SelectProject)
+BOOST_AUTO_TEST_CASE(SelectProjectEntry)
 {
 	db.expect("SELECT projects.origin,projects.owner FROM projects "
 			"WHERE (projects.projectid=42)");
-	auto projects = select_project(db, 42);
+	auto projects = select_project_entry(db, 42);
 	db.validate();
 }
 

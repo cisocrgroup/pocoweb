@@ -79,7 +79,7 @@ namespace pcw {
 	};
 
 	template<class Db>
-	boost::optional<ProjectEntry> select_project(Db& db, int projectid);
+	boost::optional<ProjectEntry> select_project_entry(Db& db, int projectid);
 
 	template<class Db>
 	void update_project_owner(Db& db, int projectid, int owner);
@@ -353,7 +353,7 @@ pcw::update_book(Db& db, BookView& view)
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
 boost::optional<pcw::ProjectEntry>
-pcw::select_project(Db& db, int projectid)
+pcw::select_project_entry(Db& db, int projectid)
 {
 	using namespace sqlpp;
 	tables::Projects projects;
