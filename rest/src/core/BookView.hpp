@@ -31,6 +31,7 @@ namespace pcw {
 		value_type find(int pageid) const noexcept;
 		value_type next(int pageid, int val) const noexcept;
 		void push_back(Page& page);
+		using Base::erase;
 		using Base::back;
 		using Base::front;
 		using Base::begin;

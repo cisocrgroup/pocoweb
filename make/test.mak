@@ -13,6 +13,7 @@ CORE_TESTS += rest/src/core/tests/TestProfile.test
 CORE_TESTS += rest/src/core/tests/TestLineBuilder.test
 CORE_TESTS += rest/src/core/tests/TestPageBuilder.test
 CORE_TESTS += rest/src/core/tests/TestBookBuilder.test
+CORE_TESTS += rest/src/core/tests/TestProjectBuilder.test
 
 PARSER_TESTS += rest/src/parser/tests/TestDocXml.test
 PARSER_TESTS += rest/src/parser/tests/TestAltoXmlParsing.test

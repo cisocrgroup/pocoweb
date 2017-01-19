@@ -10,13 +10,16 @@ namespace pcw {
 	class Package: public BookView {
 	public:
 		Package(int id, const User& owner, const Book& book);
+		Package(int id = 0);
 		virtual ~Package() noexcept override = default;
+		void set_origin(const Book& book);
+		void set_owner(const User& owner);
 		virtual const Book& origin() const noexcept override;
 		virtual const User& owner() const noexcept override;
 
 	private:
-		const std::shared_ptr<const User> owner_;
-		const std::shared_ptr<const Book> origin_;
+		std::shared_ptr<const User> owner_;
+		std::shared_ptr<const Book> origin_;
 	};
 }
 
