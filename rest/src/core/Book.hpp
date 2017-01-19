@@ -11,6 +11,7 @@ namespace pcw {
 	using ConstUserSptr = std::shared_ptr<const User>;
 	class Book;
 	using BookPtr = std::shared_ptr<Book>;
+	using BookSptr = std::shared_ptr<Book>;
 	using Path = boost::filesystem::path;
 
 	class Book: public BookView {
