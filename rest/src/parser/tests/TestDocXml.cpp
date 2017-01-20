@@ -6,7 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "core/TmpDir.hpp"
+#include "utils/TmpDir.hpp"
 #include "core/docxml.hpp"
 #include "core/Book.hpp"
 #include "core/Page.hpp"

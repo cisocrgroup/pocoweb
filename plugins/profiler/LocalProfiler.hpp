@@ -2,7 +2,7 @@
 #define profiler_LocalProfiler_hpp__
 
 #include <boost/filesystem/path.hpp>
-#include "core/TmpDir.hpp"
+#include "utils/TmpDir.hpp"
 #include "Profiler.hpp"
 
 namespace profiler {

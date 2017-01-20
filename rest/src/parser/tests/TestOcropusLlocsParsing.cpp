@@ -5,7 +5,7 @@
 #include <functional>
 #include <iostream>
 #include <vector>
-#include "core/TmpDir.hpp"
+#include "utils/TmpDir.hpp"
 #include "core/WagnerFischer.hpp"
 #include "parser/OcropusLlocsParserPage.hpp"
 #include "parser/ParserPage.hpp"
