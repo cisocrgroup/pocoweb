@@ -19,8 +19,8 @@ namespace pcw {
 	class Line;
 	class Box;
 	class Profile;
-	class Suggestion;
-	class Pattern;
+	struct Suggestion;
+	struct Pattern;
 
 	using Json = crow::json::wvalue;
 	Json& operator<<(Json& j, const std::vector<BookViewPtr>& books);

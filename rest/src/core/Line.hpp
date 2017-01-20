@@ -100,8 +100,8 @@ namespace pcw {
 		friend class LineBuilder;
 		friend class PageBuilder;
 		friend class Page;
-		friend class Token;
-		friend class Char;
+		friend struct Token;
+		friend struct Char;
 	};
 	struct Token {
 		Token() = default;

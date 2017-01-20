@@ -10,7 +10,7 @@ namespace sql {
 }
 
 namespace pcw {
-	class Config;
+	struct Config;
 	class User;
 	class Book;
 	using UserPtr = std::shared_ptr<User>;

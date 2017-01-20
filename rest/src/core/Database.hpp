@@ -9,9 +9,9 @@
 namespace pcw {
 	class BookView;
 	using BookViewPtr = std::shared_ptr<BookView>;
-	class Session;
+	struct Session;
 	using SessionPtr = std::shared_ptr<Session>;
-	class Config;
+	struct Config;
 	using ConfigPtr = std::shared_ptr<Config>;
 	class User;
 	using UserPtr = std::shared_ptr<User>;

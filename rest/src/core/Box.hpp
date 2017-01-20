@@ -5,7 +5,8 @@
 #include <tuple>
 
 namespace pcw {
-	struct Box {
+	class Box {
+	public:
 		Box(int l = 0, int t = 0, int r = 0, int b = 0);
 		int left() const noexcept {return left_;}
 		int right() const noexcept {return right_;}

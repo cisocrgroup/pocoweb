@@ -7,11 +7,11 @@
 #include "Plugin.hpp"
 
 namespace pcw {
-	class Config;
+	struct Config;
 	using ConfigPtr = std::shared_ptr<Config>;
 	class Sessions;
 	using SessionsPtr = std::shared_ptr<Sessions>;
-	class AppCache;
+	struct AppCache;
 	using CachePtr = std::shared_ptr<AppCache>;
 
 	class App {

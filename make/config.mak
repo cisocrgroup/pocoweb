@@ -4,7 +4,6 @@ PCW_API_VERSION_PATCH := 0
 
 CXX ?= g++
 
-CXXFLAGS ?= -ggdb -Og
 CXXFLAGS := $(CXXFLAGS) -MD -MP -std=gnu++14 -Wall -Werror -fpic
 CXXFLAGS += -Irest/src
 CXXFLAGS += -Imodules/crow/include

@@ -4,7 +4,7 @@
 #include <boost/filesystem/path.hpp>
 
 namespace pcw {
-	class Config;
+	struct Config;
 	using Path = boost::filesystem::path;
 }
 

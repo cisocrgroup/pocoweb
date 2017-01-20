@@ -88,7 +88,7 @@ void
 App::log(const Route& route) const
 {
 	for (auto i = route.route(); i;) {
-		auto e = strchr(i, ',');
+		const char* e = strchr(i, ',');
 		std::string r;
 		if (e) {
 			r.assign(i, e);

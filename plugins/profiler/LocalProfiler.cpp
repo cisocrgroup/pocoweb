@@ -4,7 +4,7 @@
 #include <crow/logging.h>
 #include "core/docxml.hpp"
 #include "core/Book.hpp"
-#include "core/Error.hpp"
+#include "utils/Error.hpp"
 #include "core/Profile.hpp"
 #include "Config.hpp"
 #include "LocalProfiler.hpp"
