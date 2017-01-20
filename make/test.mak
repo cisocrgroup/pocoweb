@@ -1,5 +1,6 @@
 CORE_TESTS += rest/src/core/tests/TestError.test
 CORE_TESTS += rest/src/core/tests/TestMaybe.test
+CORE_TESTS += rest/src/core/tests/TestScopeGuard.test
 CORE_TESTS += rest/src/core/tests/TestConfig.test
 CORE_TESTS += rest/src/core/tests/TestPassword.test
 CORE_TESTS += rest/src/core/tests/TestWagnerFischer.test
