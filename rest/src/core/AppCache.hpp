@@ -11,6 +11,7 @@ namespace pcw {
 	using BookViewCache = Cache<BookView>;
 	struct AppCache;
 	using CachePtr = std::shared_ptr<AppCache>;
+	using CacheSptr = std::shared_ptr<AppCache>;
 	struct AppCache {
 		AppCache(int us, int ps): user(us), project(ps) {}
 		UserCache user;

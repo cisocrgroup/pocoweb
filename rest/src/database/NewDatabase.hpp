@@ -3,22 +3,20 @@
 
 #include <boost/optional.hpp>
 #include <memory>
+#include <sqlpp11/sqlpp11.h>
 #include "core/ProjectBuilder.hpp"
+#include "core/Password.hpp"
 #include "core/BookBuilder.hpp"
 #include "core/PageBuilder.hpp"
 #include "core/LineBuilder.hpp"
+#include "core/BookView.hpp"
+#include "core/Book.hpp"
+#include "core/Page.hpp"
+#include "core/Line.hpp"
+#include "core/User.hpp"
 #include "Tables.h"
 
 namespace pcw {
-	class User;
-	using UserSptr = std::shared_ptr<User>;
-	class Book;
-	using BookSptr = std::shared_ptr<Book>;
-	class BookView;
-	using BookViewSptr = std::shared_ptr<BookView>;
-	class Page;
-	class Line;
-
 	namespace detail {
 		template<class U>
 		UserSptr make_user(const U& users) {

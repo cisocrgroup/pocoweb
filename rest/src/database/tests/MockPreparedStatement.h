@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <sqlpp11/chrono.h>
 
 struct MockPreparedStatement {
   template<class C>
