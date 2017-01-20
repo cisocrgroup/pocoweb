@@ -9,7 +9,7 @@
 #include "OcropusLlocsPageParser.hpp"
 #include "OcropusLlocsParserPage.hpp"
 #include "OcropusLlocsParserLine.hpp"
-#include "core/Error.hpp"
+#include "utils/Error.hpp"
 #include "core/Page.hpp"
 #include "core/Line.hpp"
 #include "core/Box.hpp"

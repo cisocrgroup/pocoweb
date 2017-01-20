@@ -2,7 +2,7 @@
 #include <iostream>
 #include <regex>
 #include <utf8.h>
-#include "core/Error.hpp"
+#include "utils/Error.hpp"
 #include "core/Line.hpp"
 #include "OcropusLlocsParserLine.hpp"
 

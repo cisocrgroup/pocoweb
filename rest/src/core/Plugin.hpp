@@ -3,7 +3,7 @@
 
 #include <dlfcn.h>
 #include <stdexcept>
-#include "Error.hpp"
+#include "utils/Error.hpp"
 #include "Route.hpp"
 
 namespace pcw {

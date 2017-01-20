@@ -3,9 +3,9 @@
 
 #include <boost/test/unit_test.hpp>
 #include <iostream>
+#include "utils/Error.hpp"
 #include "core/docxml.hpp"
 #include "core/TmpDir.hpp"
-#include "core/Error.hpp"
 #include "core/Book.hpp"
 #include "core/Page.hpp"
 #include "core/Line.hpp"

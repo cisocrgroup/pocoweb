@@ -1,7 +1,7 @@
 #ifndef pcw_DatabaseGuard_hpp__
 #define pcw_DatabaseGuard_hpp__
 
-#include "core/ScopeGuard.hpp"
+#include "utils/ScopeGuard.hpp"
 
 namespace pcw {
 	template<class Db> class Connection;

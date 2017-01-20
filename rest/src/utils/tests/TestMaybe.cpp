@@ -3,7 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include <iostream>
-#include "core/Maybe.hpp"
+#include "utils/Maybe.hpp"
 
 using namespace pcw;
 
