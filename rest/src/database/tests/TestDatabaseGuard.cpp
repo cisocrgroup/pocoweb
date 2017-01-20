@@ -9,17 +9,21 @@
 using namespace pcw;
 
 struct Mock {
-	Mock(): undo_was_called(false) {}
-	bool undo_was_called;
+	Mock(): undo_was_called(false), dismiss_was_called(false) {}
+	bool undo_was_called, dismiss_was_called;
 };
 
-class MockDatabaseGuard: public DatabaseGuard<Mock, MockDatabaseGuard> {
+class MockDatabaseGuard: public DatabaseGuardBase<Mock, MockDatabaseGuard> {
 public:
-	using Base = DatabaseGuard<Mock, MockDatabaseGuard>;
+	using Base = DatabaseGuardBase<Mock, MockDatabaseGuard>;
 	MockDatabaseGuard(connection_t& c): Base(c) {}
 	void undo_impl(Base::connection_t& c) noexcept
 	{
 		c.db().undo_was_called = true;
+	}
+	void dismiss_impl(Base::connection_t& c) noexcept
+	{
+		c.db().dismiss_was_called = true;
 	}
 };
 
@@ -33,6 +37,7 @@ BOOST_AUTO_TEST_CASE(UndoFunctionIsCalled)
 		MockDatabaseGuard guard(c);
 	}
 	BOOST_CHECK(c.db().undo_was_called);
+	BOOST_CHECK(not c.db().dismiss_was_called);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,5 +49,6 @@ BOOST_AUTO_TEST_CASE(UndoFunctionIsNotCalled)
 	MockDatabaseGuard guard(c);
 	guard.dismiss();
 	BOOST_CHECK(not c.db().undo_was_called);
+	BOOST_CHECK(c.db().dismiss_was_called);
 }
 
