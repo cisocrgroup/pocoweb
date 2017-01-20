@@ -4,8 +4,8 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <regex>
 #include <thread>
+#include "utils/Error.hpp"
 #include "Logger.hpp"
-#include "Error.hpp"
 #include "Config.hpp"
 
 #ifndef PCW_CONFIG_EXPANSION_MAX_RUNS

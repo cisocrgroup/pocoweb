@@ -3,7 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include <iostream>
-#include "core/ScopeGuard.hpp"
+#include "utils/ScopeGuard.hpp"
 
 using namespace pcw;
 

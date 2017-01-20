@@ -7,7 +7,7 @@
 #include "core/ProjectBuilder.hpp"
 #include "core/Session.hpp"
 #include "core/User.hpp"
-#include "database/tests/MockDb.h"
+#include "utils/MockDb.h"
 #include "database/ConnectionPool.hpp"
 
 using namespace pcw;

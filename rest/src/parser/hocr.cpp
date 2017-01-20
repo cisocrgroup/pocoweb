@@ -3,7 +3,7 @@
 #include <utf8.h>
 #include "hocr.hpp"
 #include "Xml.hpp"
-#include "core/Error.hpp"
+#include "utils/Error.hpp"
 #include "core/Box.hpp"
 
 static const std::regex BBOXRE{R"(bbox\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+))"};

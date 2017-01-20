@@ -3,7 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include <iostream>
-#include "core/Error.hpp"
+#include "utils/Error.hpp"
 
 using namespace pcw;
 
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(ErrorMessage)
 	} catch (const Error& error) {
 		BOOST_CHECK_EQUAL(
 			error.what(),
-			"rest/src/core/tests/TestError.cpp:71: Error Message: 123"
+			"rest/src/utils/tests/TestError.cpp:71: Error Message: 123"
 		);
 	} catch (...) {
 		BOOST_FAIL("Invalid catch(...)");

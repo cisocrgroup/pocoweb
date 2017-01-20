@@ -1,7 +1,7 @@
-CORE_TESTS += rest/src/core/tests/TestError.test
-CORE_TESTS += rest/src/core/tests/TestMaybe.test
-CORE_TESTS += rest/src/core/tests/TestScopeGuard.test
-CORE_TESTS += rest/src/core/tests/TestConfig.test
+UTILS_TESTS += rest/src/utils/tests/TestError.test
+UTILS_TESTS += rest/src/utils/tests/TestMaybe.test
+UTILS_TESTS += rest/src/utils/tests/TestScopeGuard.test
+
 CORE_TESTS += rest/src/core/tests/TestPassword.test
 CORE_TESTS += rest/src/core/tests/TestWagnerFischer.test
 CORE_TESTS += rest/src/core/tests/TestBox.test
@@ -27,7 +27,7 @@ PARSER_TESTS += rest/src/parser/tests/TestOcropusLlocsParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestHocrParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestBookDirectoryBuilder.test
 
-TESTS = $(CORE_TESTS) $(DATABASE_TESTS) $(PARSER_TESTS)
+TESTS = $(UTILS_TESTS) $(CORE_TESTS) $(DATABASE_TESTS) $(PARSER_TESTS)
 %.test: %.cpp $(LIBS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
 

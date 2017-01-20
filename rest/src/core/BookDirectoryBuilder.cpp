@@ -9,9 +9,9 @@
 #include <regex>
 #include <sstream>
 #include <crow/logging.h>
+#include "utils/Error.hpp"
 #include "util.hpp"
 #include "Config.hpp"
-#include "Error.hpp"
 #include "Book.hpp"
 #include "Page.hpp"
 #include "Pix.hpp"

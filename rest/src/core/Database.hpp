@@ -3,7 +3,7 @@
 
 #include <boost/optional.hpp>
 #include <memory>
-#include "ScopeGuard.hpp"
+#include "utils/ScopeGuard.hpp"
 #include "db.hpp"
 
 namespace pcw {

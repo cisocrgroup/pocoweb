@@ -3,7 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include <sqlpp11/sqlpp11.h>
-#include "MockDb.h"
+#include "utils/MockDb.h"
 #include "database/ConnectionPool.hpp"
 
 using namespace sqlpp;

@@ -4,7 +4,7 @@
 #include <regex>
 #include <cppconn/connection.h>
 #include <crow/logging.h>
-#include "Error.hpp"
+#include "utils/Error.hpp"
 #include "Book.hpp"
 #include "Page.hpp"
 #include "Line.hpp"

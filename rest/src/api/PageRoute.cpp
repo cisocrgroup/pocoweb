@@ -1,8 +1,9 @@
 #include <cppconn/connection.h>
 #include <regex>
 #include <crow.h>
+#include "utils/Error.hpp"
+#include "utils/ScopeGuard.hpp"
 #include "core/jsonify.hpp"
-#include "core/Error.hpp"
 #include "core/User.hpp"
 #include "core/Page.hpp"
 #include "core/Book.hpp"
@@ -10,7 +11,6 @@
 #include "PageRoute.hpp"
 #include "core/Sessions.hpp"
 #include "core/Package.hpp"
-#include "core/ScopeGuard.hpp"
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/WagnerFischer.hpp"
 

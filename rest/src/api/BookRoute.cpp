@@ -1,18 +1,18 @@
 #include <cppconn/connection.h>
 #include <regex>
 #include <crow.h>
+#include "utils/Error.hpp"
+#include "utils/ScopeGuard.hpp"
 #include "core/jsonify.hpp"
-#include "core/Error.hpp"
 #include "core/User.hpp"
 #include "core/Page.hpp"
 #include "core/Book.hpp"
 #include "core/Database.hpp"
-#include "BookRoute.hpp"
 #include "core/Sessions.hpp"
 #include "core/Package.hpp"
-#include "core/ScopeGuard.hpp"
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/WagnerFischer.hpp"
+#include "BookRoute.hpp"
 
 #define BOOK_ROUTE_ROUTE_1 "/books"
 #define BOOK_ROUTE_ROUTE_2 "/books/<int>"

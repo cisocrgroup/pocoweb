@@ -2,7 +2,7 @@
 #include <iostream>
 #include "pugixml/pugixml.hpp"
 #include <regex>
-#include "core/Error.hpp"
+#include "utils/Error.hpp"
 #include "hocr.hpp"
 #include "HocrPageParser.hpp"
 #include "HocrParserLine.hpp"
