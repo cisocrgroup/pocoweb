@@ -10,7 +10,7 @@ namespace pcw {
 	class Book;
 	using ConstBookSptr = std::shared_ptr<const Book>;
 	using Path = boost::filesystem::path;
-	class Char;
+	struct Char;
 
 	struct PatternExpr {
 		PatternExpr() = default;

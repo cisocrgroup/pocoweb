@@ -17,7 +17,7 @@ namespace pcw {
 	using ConstUserSptr = std::shared_ptr<const User>;
 	class Session;
 	using SessionSptr = std::shared_ptr<Session>;
-	class AppCache;
+	struct AppCache;
 	using AppCacheSptr = std::shared_ptr<AppCache>;
 	class Book;
 	class BookView;

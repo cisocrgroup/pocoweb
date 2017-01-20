@@ -13,9 +13,9 @@ namespace crow {
 
 namespace pcw {
 	class Database;
-	class Config;
+	struct Config;
 	using ConfigPtr = std::shared_ptr<Config>;
-	class Session;
+	struct Session;
 	using SessionPtr = std::shared_ptr<Session>;
 	class Sessions;
 	using SessionsPtr = std::shared_ptr<Sessions>;
@@ -25,7 +25,7 @@ namespace pcw {
 	using UserPtr = std::shared_ptr<User>;
 	class Project;
 	using ProjectPtr = std::shared_ptr<Project>;
-	class AppCache;
+	struct AppCache;
 	using CachePtr = std::shared_ptr<AppCache>;
 	class BookView;
 	using BookViewPtr = std::shared_ptr<BookView>;

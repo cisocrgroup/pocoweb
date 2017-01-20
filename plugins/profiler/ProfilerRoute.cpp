@@ -3,7 +3,7 @@
 #include "core/Database.hpp"
 #include "core/App.hpp"
 #include "core/Book.hpp"
-#include "core/Maybe.hpp"
+#include "utils/Maybe.hpp"
 #include "core/Profile.hpp"
 #include "core/Sessions.hpp"
 #include "Config.hpp"

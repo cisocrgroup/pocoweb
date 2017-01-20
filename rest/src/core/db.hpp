@@ -16,7 +16,7 @@ namespace pcw {
 	using PreparedStatementPtr = std::unique_ptr<sql::PreparedStatement>;
 	using ResultSetPtr = std::unique_ptr<sql::ResultSet>;
 
-	class Config;
+	struct Config;
 	ConnectionPtr connect(const Config& config);
 }
 

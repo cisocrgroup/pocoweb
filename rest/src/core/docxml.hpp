@@ -8,7 +8,7 @@ namespace pcw {
 	class BookView;
 	class Page;
 	class Profile;
-	class Suggestion;
+	struct Suggestion;
 
 	struct DocXml: public pugi::xml_document {
 		DocXml(): suggestions(nullptr) {}
