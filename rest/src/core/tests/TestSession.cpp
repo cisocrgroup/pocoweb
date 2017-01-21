@@ -18,7 +18,7 @@ struct SessionFixture {
 	BookSptr book;
 	BookViewSptr project;
 	UserSptr user;
-	AppCacheSptr cache;
+	SessionSptr session;
 
 	SessionFixture()
 		: mock()
@@ -26,7 +26,7 @@ struct SessionFixture {
 		, book()
 		, project()
 		, user()
-		, cache(std::make_shared<AppCache>(2, 2))
+		, session()
 	{
 		mock.in_use = true;
 		user = std::make_shared<User>("name", "email", "inst", 42);
@@ -36,6 +36,8 @@ struct SessionFixture {
 		ProjectBuilder pbuilder;
 		pbuilder.set_book(*book);
 		project = pbuilder.build();
+		session = std::make_shared<Session>(
+				*user, std::make_shared<AppCache>(2, 2));
 	}
 };
 
@@ -46,40 +48,48 @@ BOOST_FIXTURE_TEST_SUITE(SessionTest, SessionFixture)
 BOOST_AUTO_TEST_CASE(WorksWithNullCache)
 {
 	// just check for segfaults
-	Session s(*user);
-	s.insert_project(connection, *book);
-	s.insert_project(connection, *project);
-	auto b = s.find_project(connection, book->id());
-	auto p = s.find_project(connection, project->id());
+	session = std::make_shared<Session>(*user, nullptr);
+	session->insert_project(connection, *book);
+	session->insert_project(connection, *project);
+	auto b = session->find_project(connection, book->id());
+	auto p = session->find_project(connection, project->id());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(InsertBooks)
 {
-	// just check for segfaults
-	Session s(*user, cache);
-	s.insert_project(connection, *book);
-	s.insert_project(connection, *book);
+	session->insert_project(connection, *book);
+	session->insert_project(connection, *book);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(InsertProjects)
 {
-	// just check for segfaults
-	Session s(*user, cache);
-	s.insert_project(connection, *project);
-	s.insert_project(connection, *project);
+	session->insert_project(connection, *project);
+	session->insert_project(connection, *project);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(InsertBooksAndProjects)
 {
-	// just check for segfaults
-	Session s(*user, cache);
-	s.insert_project(connection, *book);
-	s.insert_project(connection, *project);
-	s.insert_project(connection, *book);
-	s.insert_project(connection, *project);
+	session->insert_project(connection, *book);
+	session->insert_project(connection, *project);
+	session->insert_project(connection, *book);
+	session->insert_project(connection, *project);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(FindBooks)
+{
+	session->insert_project(connection, *book);
+	auto tmp = session->find_project(connection, book->id());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(FindProjects)
+{
+	session->insert_project(connection, *project);
+	auto tmp = session->find_project(connection, project->id());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
