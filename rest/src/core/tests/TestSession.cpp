@@ -54,4 +54,33 @@ BOOST_AUTO_TEST_CASE(WorksWithNullCache)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(InsertBooks)
+{
+	// just check for segfaults
+	Session s(*user, cache);
+	s.insert_project(connection, *book);
+	s.insert_project(connection, *book);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(InsertProjects)
+{
+	// just check for segfaults
+	Session s(*user, cache);
+	s.insert_project(connection, *project);
+	s.insert_project(connection, *project);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(InsertBooksAndProjects)
+{
+	// just check for segfaults
+	Session s(*user, cache);
+	s.insert_project(connection, *book);
+	s.insert_project(connection, *project);
+	s.insert_project(connection, *book);
+	s.insert_project(connection, *project);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
