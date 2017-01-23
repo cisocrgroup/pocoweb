@@ -36,6 +36,8 @@ namespace pcw {
 		inline BookViewSptr find_project(Connection<Db>& c, int bookid) const;
 		template<class Db>
 		inline UserSptr find_user(Connection<Db>& c, int userid) const;
+		template<class Db>
+		inline UserSptr find_user(Connection<Db>& c, const std::string& name) const;
 
 	private:
 		using Mutex = std::mutex;
@@ -44,13 +46,19 @@ namespace pcw {
 		template<class Db>
 		void insert_project_impl(Connection<Db>& c, BookView& view) const;
 		template<class Db>
-		BookViewSptr find_project_impl(Connection<Db>& c, int bookid) const;
+		BookViewSptr find_project_impl(Connection<Db>& c, int projectid) const;
 		template<class Db>
-		BookViewSptr cached_find_project(Connection<Db>& c, int bookid) const;
+		BookViewSptr cached_find_project(Connection<Db>& c, int projectid) const;
+		template<class Db>
+		BookSptr cached_find_book(Connection<Db>& c, int bookid) const;
 		template<class Db>
 		UserSptr cached_find_user(Connection<Db>& c, int userid) const;
 		template<class Db>
+		UserSptr cached_find_user(Connection<Db>& c, const std::string& name) const;
+		template<class Db>
 		UserSptr find_user_impl(Connection<Db>& c, int userid) const;
+		template<class Db>
+		UserSptr find_user_impl(Connection<Db>& c, const std::string& name) const;
 
 		void cache(BookView& view) const;
 		void cache(User& user) const;
@@ -102,17 +110,52 @@ pcw::Session::find_project_impl(Connection<Db>& c, int projectid) const
 {
 	auto entry = select_project_entry(c.db(), projectid);
 	if (entry and entry->is_book()) {
-		return pcw::select_book(c.db(), *user_, projectid);
+		return cached_find_book(c, projectid);
 	} else if (entry) {
 		auto owner = cached_find_user(c, entry->owner);
 		if (owner) {
-			auto book = cached_find_project(c, entry->origin);
+			auto book = cached_find_book(c, entry->origin);
 			if (book) {
-				return select_project(c.db(), book->origin(), projectid);
+				return pcw::select_project(c.db(), book->origin(), projectid);
 			}
 		}
 	}
 	return nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+pcw::BookSptr
+pcw::Session::cached_find_book(Connection<Db>& c, int bookid) const
+{
+	if (cache_)
+		return cache_->books.get(bookid, [&](int id) {
+			return pcw::select_book(c.db(), *user_, bookid);
+		});
+	else
+		return pcw::select_book(c.db(), *user_, bookid);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+pcw::BookViewSptr
+pcw::Session::cached_find_project(Connection<Db>& c, int projectid) const
+{
+	if (cache_)
+		return cache_->projects.get(projectid, [&](int id) {
+			return find_project_impl(c, projectid);
+		});
+	else
+		return find_project_impl(c, projectid);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+inline pcw::UserSptr
+pcw::Session::find_user(Connection<Db>& c, const std::string& name) const
+{
+	Lock lock(mutex_);
+	return cached_find_user(c, name);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -127,6 +170,14 @@ pcw::Session::find_user(Connection<Db>& c, int userid) const
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
 inline pcw::UserSptr
+pcw::Session::find_user_impl(Connection<Db>& c, const std::string& name) const
+{
+	return select_user(c.db(), name);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+inline pcw::UserSptr
 pcw::Session::find_user_impl(Connection<Db>& c, int userid) const
 {
 	return select_user(c.db(), userid);
@@ -134,15 +185,15 @@ pcw::Session::find_user_impl(Connection<Db>& c, int userid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
-pcw::BookViewSptr
-pcw::Session::cached_find_project(Connection<Db>& c, int projectid) const
+pcw::UserSptr
+pcw::Session::cached_find_user(Connection<Db>& c, const std::string& name) const
 {
 	if (cache_)
-		return cache_->project.get(projectid, [&](int id) {
-			return find_project_impl(c, id);
+		return cache_->users.get(name, [&](const std::string& name) {
+			return find_user_impl(c, name);
 		});
 	else
-		return find_project_impl(c, projectid);
+		return find_user_impl(c, name);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -151,7 +202,7 @@ pcw::UserSptr
 pcw::Session::cached_find_user(Connection<Db>& c, int userid) const
 {
 	if (cache_)
-		return cache_->user.get(userid, [&](int id) {
+		return cache_->users.get(userid, [&](int id) {
 			return find_user_impl(c, id);
 		});
 	else

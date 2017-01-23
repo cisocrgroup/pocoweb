@@ -718,7 +718,7 @@ Database::cached_select_user(const std::string& name, sql::Connection& conn) con
 		CROW_LOG_INFO << "(Database) Loading not cached user: " << name;
 		return select_user(name, conn);
 	};
-	return cache_ ? cache_->user.get(name, get_user) : get_user(name);
+	return cache_ ? cache_->users.get(name, get_user) : get_user(name);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -732,7 +732,7 @@ Database::cached_select_user(int userid, sql::Connection& conn) const
 			CROW_LOG_INFO << "(Database) Loaded user: " << *user;
 		return user;
 	};
-	return cache_ ? cache_->user.get(userid, get_user) : get_user(userid);
+	return cache_ ? cache_->users.get(userid, get_user) : get_user(userid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -748,7 +748,7 @@ Database::cached_select_project(int prid, sql::Connection& conn) const
 
 	};
 	return cache_ ?
-		cache_->project.get(prid, get_project) :
+		cache_->projects.get(prid, get_project) :
 		get_project(prid);
 }
 
@@ -758,7 +758,7 @@ Database::put_cache(UserPtr user) const
 {
 	if (user and cache_) {
 		CROW_LOG_INFO << "(Database) Caching User " << *user;
-		cache_->user.put(user);
+		cache_->users.put(user);
 	}
 	return user;
 }
@@ -769,7 +769,7 @@ Database::put_cache(BookViewPtr proj) const
 {
 	if (proj and cache_) {
 		CROW_LOG_INFO << "(Database) Caching BookView " << *proj;
-		cache_->project.put(proj);
+		cache_->projects.put(proj);
 	}
 	return proj;
 }

@@ -14,7 +14,7 @@ App::App(const char *config)
 	: routes_()
 	, plugins_()
 	, app_()
-	, cache_(std::make_shared<AppCache>(100, 100))
+	, cache_(std::make_shared<AppCache>(100, 100, 100))
 	, config_(std::make_shared<Config>(Config::load(config)))
 	, sessions_(std::make_shared<Sessions>(*config_))
 {

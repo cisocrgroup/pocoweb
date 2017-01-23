@@ -37,7 +37,7 @@ struct SessionFixture {
 		pbuilder.set_book(*book);
 		project = pbuilder.build();
 		session = std::make_shared<Session>(
-				*user, std::make_shared<AppCache>(2, 2));
+				*user, std::make_shared<AppCache>(2, 2, 2));
 	}
 };
 

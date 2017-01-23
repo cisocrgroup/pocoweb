@@ -19,7 +19,13 @@ void
 Session::cache(BookView& view) const
 {
 	if (cache_) {
-		cache_->project.put(view.shared_from_this());
+		if (view.is_book()) {
+			auto book = std::dynamic_pointer_cast<Book>(
+					view.shared_from_this());
+			cache_->books.put(book);
+		} else {
+			cache_->projects.put(view.shared_from_this());
+		}
 	}
 }
 
@@ -28,6 +34,6 @@ void
 Session::cache(User& user) const
 {
 	if (cache_) {
-		cache_->user.put(user.shared_from_this());
+		cache_->users.put(user.shared_from_this());
 	}
 }
