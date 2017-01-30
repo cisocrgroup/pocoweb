@@ -21,26 +21,40 @@ namespace pcw {
 	struct AppCache;
 	using AppCacheSptr = std::shared_ptr<AppCache>;
 	class Book;
+	using BookSptr = std::shared_ptr<Book>;
 	class BookView;
 	using BookViewSptr = std::shared_ptr<BookView>;
+	class Page;
+	using PageSptr = std::shared_ptr<Page>;
+	class Line;
+	using LineSptr = std::shared_ptr<Line>;
 
 	class Session {
 	public:
 		using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
+		using Lock = std::lock_guard<Session>;
+
 		Session(const User& user, AppCacheSptr cache = nullptr);
 
 		const std::string& id() const noexcept {return sid_;}
 		const User& user() const noexcept {return *user_;}
 		const TimePoint& expiration_date() const noexcept {return expiration_date_;}
+		void lock() noexcept {mutex_.lock();}
+		void unlock() noexcept {mutex_.unlock();}
 		void set_cache(AppCacheSptr cache) noexcept {cache_ = std::move(cache);}
 		bool has_expired() const noexcept;
 		void set_expiration_date(TimePoint tp) noexcept {
-			Lock lock(mutex_);
 			expiration_date_ = std::move(tp);
 		}
 		template<class R, class P>
 		void set_expiration_date_from_now(const std::chrono::duration<R, P>& d) noexcept;
 
+		template<class Db>
+		inline BookViewSptr find(Connection<Db>& c, int bookid) const;
+		template<class Db>
+		inline PageSptr find(Connection<Db>& c, int bookid, int pageid) const;
+		template<class Db>
+		inline LineSptr find(Connection<Db>& c, int bookid, int pageid, int lineid) const;
 		template<class Db>
 		inline void insert_project(Connection<Db>& c, BookView& view) const;
 		template<class Db>
@@ -52,7 +66,6 @@ namespace pcw {
 
 	private:
 		using Mutex = std::mutex;
-		using Lock = std::lock_guard<Mutex>;
 
 		template<class Db>
 		void insert_project_impl(Connection<Db>& c, BookView& view) const;
@@ -78,7 +91,9 @@ namespace pcw {
 		const ConstUserSptr user_;
 		AppCacheSptr cache_;
 		TimePoint expiration_date_;
-		mutable Mutex mutex_;
+		Mutex mutex_;
+		mutable BookViewSptr project_;
+		mutable PagePtr page_;
 	};
 }
 
@@ -92,10 +107,56 @@ pcw::Session::set_expiration_date_from_now(const std::chrono::duration<R, P>& d)
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
+pcw::BookViewSptr
+pcw::Session::find(Connection<Db>& c, int bookid) const
+{
+	if (project_ and project_->id() == bookid)
+		return project_;
+
+	auto project = cached_find_project(c, bookid);
+	if (project) {
+		project_ = project;
+	}
+	return project;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+pcw::PageSptr
+pcw::Session::find(Connection<Db>& c, int bookid, int pageid) const
+{
+	if (page_ and page_->id() == pageid and project_ and project_->id() == bookid)
+		return page_;
+
+	auto project = find(c, bookid);
+	if (project) {
+		auto page = project->find(bookid);
+		if (page) {
+			page_ = page;
+			return page;
+		}
+	}
+	return nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+pcw::LineSptr
+pcw::Session::find(Connection<Db>& c, int bookid, int pageid, int lineid) const
+{
+	if (page_ and page_->id() == pageid and project_ and project_->id() == bookid)
+		return page_->find(lineid);
+	auto page = find(c, bookid, pageid);
+	if (page)
+		return page->find(lineid);
+	return nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
 inline void
 pcw::Session::insert_project(Connection<Db>& c, BookView& view) const
 {
-	Lock lock(mutex_);
 	DatabaseGuard<Db> guard(c);
 	insert_project_impl(c, view);
 	guard.dismiss();
@@ -119,7 +180,6 @@ template<class Db>
 inline pcw::BookViewSptr
 pcw::Session::find_project(Connection<Db>& c, int projectid) const
 {
-	Lock lock(mutex_);
 	return cached_find_project(c, projectid);
 }
 
@@ -174,7 +234,6 @@ template<class Db>
 inline pcw::UserSptr
 pcw::Session::find_user(Connection<Db>& c, const std::string& name) const
 {
-	Lock lock(mutex_);
 	return cached_find_user(c, name);
 }
 
@@ -183,7 +242,6 @@ template<class Db>
 inline pcw::UserSptr
 pcw::Session::find_user(Connection<Db>& c, int userid) const
 {
-	Lock lock(mutex_);
 	return cached_find_user(c, userid);
 }
 

@@ -123,6 +123,7 @@ BOOST_AUTO_TEST_CASE(IsThreadSave)
 	std::vector<std::thread> threads(10);
 	for (auto& thread: threads) {
 		thread = std::thread([&]() {
+			Session::Lock lock(*session);
 			session->set_expiration_date(std::chrono::system_clock::now());
 			auto p = session->find_project(connection, 42);
 			BOOST_CHECK(session->has_expired());

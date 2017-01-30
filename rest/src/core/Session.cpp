@@ -13,13 +13,14 @@ Session::Session(const User& user, AppCacheSptr cache)
 	, cache_(std::move(cache))
 	, expiration_date_()
 	, mutex_()
+	, project_()
+	, page_()
 {}
 
 ////////////////////////////////////////////////////////////////////////////////
 bool
 Session::has_expired() const noexcept
 {
-	Lock lock(mutex_);
 	const auto now = std::chrono::system_clock::now();
 	return expiration_date_ <= now;
 }
