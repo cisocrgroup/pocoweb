@@ -11,8 +11,18 @@ Session::Session(const User& user, AppCacheSptr cache)
 	: sid_(gensessionid(16))
 	, user_(user.shared_from_this())
 	, cache_(std::move(cache))
+	, expiration_date_()
 	, mutex_()
 {}
+
+////////////////////////////////////////////////////////////////////////////////
+bool
+Session::has_expired() const noexcept
+{
+	Lock lock(mutex_);
+	const auto now = std::chrono::system_clock::now();
+	return expiration_date_ <= now;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 void

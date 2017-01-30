@@ -3,6 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include <iostream>
+#include <thread>
 #include "core/BookBuilder.hpp"
 #include "core/ProjectBuilder.hpp"
 #include "core/Session.hpp"
@@ -45,6 +46,16 @@ struct SessionFixture {
 BOOST_FIXTURE_TEST_SUITE(SessionTest, SessionFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(SessionExpirationWorks)
+{
+	using namespace std::literals::chrono_literals;
+	session->set_expiration_date_from_now(2h);
+	BOOST_CHECK(not session->has_expired());
+	session->set_expiration_date(std::chrono::system_clock::now() - 1h);
+	BOOST_CHECK(session->has_expired());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(HasUser)
 {
 	BOOST_CHECK_EQUAL(&session->user(), user.get());
@@ -65,8 +76,8 @@ BOOST_AUTO_TEST_CASE(WorksWithNullCache)
 BOOST_AUTO_TEST_CASE(HasRandomSessionId)
 {
 	session = std::make_shared<Session>(*user, nullptr);
-	BOOST_CHECK(not session->sid().empty());
-	BOOST_CHECK_EQUAL(session->sid().size(), 16);
+	BOOST_CHECK(not session->id().empty());
+	BOOST_CHECK_EQUAL(session->id().size(), 16);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -104,6 +115,21 @@ BOOST_AUTO_TEST_CASE(FindProjects)
 {
 	session->insert_project(connection, *project);
 	auto tmp = session->find_project(connection, project->id());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(IsThreadSave)
+{
+	std::vector<std::thread> threads(10);
+	for (auto& thread: threads) {
+		thread = std::thread([&]() {
+			session->set_expiration_date(std::chrono::system_clock::now());
+			auto p = session->find_project(connection, 42);
+			BOOST_CHECK(session->has_expired());
+		});
+	}
+	for (auto& thread: threads)
+		thread.join();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

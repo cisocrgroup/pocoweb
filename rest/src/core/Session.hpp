@@ -1,6 +1,7 @@
 #ifndef pcw_Session_hpp__
 #define pcw_Session_hpp__
 
+#include <chrono>
 #include <memory>
 #include <mutex>
 #include "database/DatabaseGuard.hpp"
@@ -25,10 +26,20 @@ namespace pcw {
 
 	class Session {
 	public:
+		using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 		Session(const User& user, AppCacheSptr cache = nullptr);
 
-		const std::string& sid() const noexcept {return sid_;}
+		const std::string& id() const noexcept {return sid_;}
 		const User& user() const noexcept {return *user_;}
+		const TimePoint& expiration_date() const noexcept {return expiration_date_;}
+		void set_cache(AppCacheSptr cache) noexcept {cache_ = std::move(cache);}
+		bool has_expired() const noexcept;
+		void set_expiration_date(TimePoint tp) noexcept {
+			Lock lock(mutex_);
+			expiration_date_ = std::move(tp);
+		}
+		template<class R, class P>
+		void set_expiration_date_from_now(const std::chrono::duration<R, P>& d) noexcept;
 
 		template<class Db>
 		inline void insert_project(Connection<Db>& c, BookView& view) const;
@@ -65,9 +76,18 @@ namespace pcw {
 
 		const std::string sid_;
 		const ConstUserSptr user_;
-		mutable AppCacheSptr cache_;
+		AppCacheSptr cache_;
+		TimePoint expiration_date_;
 		mutable Mutex mutex_;
 	};
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class R, class P>
+void
+pcw::Session::set_expiration_date_from_now(const std::chrono::duration<R, P>& d) noexcept
+{
+	set_expiration_date(std::chrono::system_clock::now() + d);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
