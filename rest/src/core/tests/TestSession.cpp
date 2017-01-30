@@ -45,6 +45,12 @@ struct SessionFixture {
 BOOST_FIXTURE_TEST_SUITE(SessionTest, SessionFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(HasUser)
+{
+	BOOST_CHECK_EQUAL(&session->user(), user.get());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(WorksWithNullCache)
 {
 	// just check for segfaults
