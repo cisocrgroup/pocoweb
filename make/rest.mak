@@ -21,6 +21,7 @@ CORE_OBJS += rest/src/core/App.o
 CORE_OBJS += rest/src/core/Line.o
 CORE_OBJS += rest/src/core/User.o
 CORE_OBJS += rest/src/core/Session.o
+CORE_OBJS += rest/src/core/SessionStore.o
 CORE_OBJS += rest/src/core/Sessions.o
 CORE_OBJS += rest/src/core/XmlFile.o
 CORE_OBJS += rest/src/core/util.o
