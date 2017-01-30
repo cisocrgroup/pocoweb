@@ -56,6 +56,14 @@ BOOST_AUTO_TEST_CASE(WorksWithNullCache)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(HasRandomSessionId)
+{
+	session = std::make_shared<Session>(*user, nullptr);
+	BOOST_CHECK(not session->sid().empty());
+	BOOST_CHECK_EQUAL(session->sid().size(), 16);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(InsertBooks)
 {
 	session->insert_project(connection, *book);
