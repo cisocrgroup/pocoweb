@@ -66,7 +66,7 @@ namespace pcw {
 		NotFound(const char* f, int l): Error(f, l) {}
 		virtual ~NotFound() noexcept override = default;
 		virtual int code() const noexcept override {
-			// Forbidden
+			// NotFound
 			return 404;
 		}
 	};
@@ -76,7 +76,7 @@ namespace pcw {
 		ParseError(const char* f, int l): Error(f, l) {}
 		virtual ~ParseError() noexcept override = default;
 		virtual int code() const noexcept override {
-			// BadRequest
+			// ParseError (BadRequest)
 			return 400;
 		}
 	};
