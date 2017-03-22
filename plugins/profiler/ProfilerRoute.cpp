@@ -1,6 +1,5 @@
 #include <cppconn/connection.h>
 #include <crow/app.h>
-#include "core/Database.hpp"
 #include "core/App.hpp"
 #include "core/Book.hpp"
 #include "utils/Maybe.hpp"
