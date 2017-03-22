@@ -1,6 +1,6 @@
 #include <cppconn/connection.h>
 #include <crow.h>
-#include "core/Sessions.hpp"
+#include "core/Session.hpp"
 #include "LoggedIn.hpp"
 
 using namespace pcw;
@@ -24,6 +24,10 @@ LoggedIn::Register(App& app)
 crow::response
 LoggedIn::operator()(const crow::request& request) const
 {
-	auto session = this->session(request);
-	return session ? ok() : forbidden();
+	try {
+		auto session = this->session(request);
+		return session ? ok() : forbidden();
+	} catch (const Forbidden&) {
+		return forbidden();
+	}
 }

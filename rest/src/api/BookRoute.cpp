@@ -7,11 +7,10 @@
 #include "core/User.hpp"
 #include "core/Page.hpp"
 #include "core/Book.hpp"
-#include "core/Database.hpp"
-#include "core/Sessions.hpp"
 #include "core/Package.hpp"
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/WagnerFischer.hpp"
+#include "core/Session.hpp"
 #include "BookRoute.hpp"
 
 #define BOOK_ROUTE_ROUTE_1 "/books"
@@ -40,12 +39,14 @@ BookRoute::Register(App& app)
 Route::Response
 BookRoute::impl(HttpGet, const Request& req) const
 {
-	auto db = database(req);
-	std::lock_guard<std::mutex> lock(db.session().mutex);
+	auto conn = connection();
+	auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
 
-	auto projects = db.select_all_projects(*db.session().user);
+	auto projects = session->select_all_projects(conn);
 	CROW_LOG_DEBUG << "Loaded " << projects.size() << " projects";
-
 	Json j;
 	size_t i = 0;
 	for (const auto& p: projects) {
@@ -59,8 +60,9 @@ BookRoute::impl(HttpGet, const Request& req) const
 Route::Response
 BookRoute::impl(HttpPost, const Request& req) const
 {
-	auto db = database(req);
-	std::lock_guard<std::mutex> lock(db.session().mutex);
+	auto conn = connection();
+	auto session = this->session(req);
+	SessionLock lock(*session);
 
 	// create new bookdir
 	BookDirectoryBuilder dir(config());
@@ -70,16 +72,16 @@ BookRoute::impl(HttpPost, const Request& req) const
 	auto book = dir.build();
 	if (not book)
 		THROW(Error, "Could not build book");
-	book->set_owner(*db.session().user);
+	book->set_owner(session->user());
 
 	// insert book into database
 	CROW_LOG_INFO << "(BookRoute) Inserting new book into database";
-	db.set_autocommit(false);
-	db.insert_book(*book);
-	db.commit();
+	MysqlCommiter commiter(conn);
+	insert_book(conn.db(), *book);
+	CROW_LOG_INFO << "(BookRoute) Created new book id: " << book->id();
 
 	// update and clean up
-	CROW_LOG_INFO << "(BookRoute) Created new book id: " << book->id();
+	commiter.commit();
 	sg.dismiss();
 	Json j;
 	return j << *book;
@@ -89,12 +91,14 @@ BookRoute::impl(HttpPost, const Request& req) const
 Route::Response
 BookRoute::impl(HttpGet, const Request& req, int bid) const
 {
-	auto db = database(req);
-	std::lock_guard<std::mutex> lock(db.session().mutex);
+	auto conn = connection();
+	auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
 
-	auto book = find(db, bid);
+	auto book = session->find(conn, bid);
 	assert(book);
-	// TODO missing authentication
 	Json j;
 	return j << *book;
 }
@@ -135,9 +139,13 @@ BookRoute::impl(HttpPost, const Request& req, int bid) const
 Route::Response
 BookRoute::set(const Request& req, int bid, const Data& data) const
 {
-	auto db = database(req);
-	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto view = find(db, bid);
+	auto conn = connection();
+	auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
+
+	auto view = session->find(conn, bid);
 	assert(view);
 	if (not view->is_book())
 		THROW(BadRequest, "Cannot set book view id: ", bid);
@@ -156,7 +164,9 @@ BookRoute::set(const Request& req, int bid, const Data& data) const
 	if (data.lang)
 		book->lang = data.lang;
 
-	db.update_book(*book);
+	MysqlCommiter commiter(conn);
+	update_book(conn.db(), *book);
+	commiter.commit();
 	Json json;
 	return json << *book;
 }
@@ -169,14 +179,13 @@ BookRoute::package(const Request& req, int bid, const Data& data) const
 	assert(data.n);
 	assert(data.package);
 
-	auto db = database(req);
-	std::lock_guard<std::mutex> lock(db.session().mutex);
+	auto conn = connection();
+	auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
 
-	auto user = db.session().user;
-	if (not user)
-		THROW(Error, "No user");
-
-	auto proj = find(db, bid);
+	auto proj = session->find(conn, bid);
 	assert(proj);
 
 	int n = atoi(data.n);
@@ -184,19 +193,19 @@ BookRoute::package(const Request& req, int bid, const Data& data) const
 		THROW(BadRequest, "Invalid number of packages: ", data.n);
 
 	std::vector<BookViewPtr> projs(n);
-	std::generate(begin(projs), end(projs), [&proj,&user]() {
-		return std::make_shared<Package>(0, *user, proj->origin());
+	std::generate(begin(projs), end(projs), [&]() {
+		return std::make_shared<Package>(0, session->user(), proj->origin());
 	});
 	size_t i = 0;
 	for (const auto& p: *proj) {
 		projs[i++ % n]->push_back(*p);
 	}
-	db.set_autocommit(false);
+	MysqlCommiter commiter(conn);
 	for (const auto& p: projs) {
 		assert(p);
-		db.insert_project(*p);
+		insert_project(conn.db(), *p);
 	}
-	db.commit();
+	commiter.commit();
 	Json j;
 	return j << projs;
 }

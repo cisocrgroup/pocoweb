@@ -7,9 +7,8 @@
 #include "core/User.hpp"
 #include "core/Page.hpp"
 #include "core/Book.hpp"
-#include "core/Database.hpp"
 #include "PageRoute.hpp"
-#include "core/Sessions.hpp"
+#include "core/Session.hpp"
 #include "core/Package.hpp"
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/WagnerFischer.hpp"
@@ -49,13 +48,15 @@ PageRoute::Register(App& app)
 Route::Response
 PageRoute::impl(HttpGet, const Request& req, int bid, int pid) const
 {
-	auto db = database(req);
-	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto page = find(db, bid, pid);
+	auto conn = connection();
+	auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
+	auto page = session->find(conn, bid, pid);
 	if (not page)
 		return not_found();
 	assert(page);
-	// TODO missing authentication
 	Json j;
 	return j << *page;
 }
@@ -64,9 +65,13 @@ PageRoute::impl(HttpGet, const Request& req, int bid, int pid) const
 Route::Response
 PageRoute::impl(HttpGet, const Request& req, int bid) const
 {
-	auto db = database(req);
-	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto book = find(db, bid);
+	auto conn = connection();
+	auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
+
+	auto book = session->find(conn, bid);
 	bool first = false;
 	if (not book)
 		return not_found();
@@ -89,9 +94,13 @@ PageRoute::impl(HttpGet, const Request& req, int bid) const
 Route::Response
 PageRoute::impl(HttpGet, const Request& req, int bid, int pid, int val) const
 {
-	auto db = database(req);
-	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto book = find(db, bid);
+	auto conn = connection();
+	auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
+
+	auto book = session->find(conn, bid);
 	if (not book)
 		return not_found();
 	if (strcasestr(req.url.data(), "/next/"))

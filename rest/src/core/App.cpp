@@ -1,11 +1,10 @@
 #include <crow.h>
 #include <cppconn/connection.h>
-#include "db.hpp"
-#include "Cache.hpp"
-#include "AppCache.hpp"
-#include "Config.hpp"
-#include "Sessions.hpp"
 #include "App.hpp"
+#include "AppCache.hpp"
+#include "Cache.hpp"
+#include "Config.hpp"
+#include "SessionStore.hpp"
 
 using namespace pcw;
 
@@ -16,7 +15,10 @@ App::App(const char *config)
 	, app_()
 	, cache_(std::make_shared<AppCache>(100, 100, 100))
 	, config_(std::make_shared<Config>(Config::load(config)))
-	, sessions_(std::make_shared<Sessions>(*config_))
+	, session_store_(std::make_shared<SessionStore>())
+	, connection_pool_(std::make_shared<MysqlConnectionPool>(
+				config_->db.connections,
+				mysqlConnectionConfigFromConfig(*config_)))
 {
 }
 
@@ -68,12 +70,14 @@ App::Register(RoutePtr route)
 		if (not app_)
 			app_ = std::make_unique<Route::App>();
 		try {
-			assert(sessions_);
+			assert(session_store_);
+			assert(connection_pool_);
 			assert(config_);
 			assert(cache_);
-			route->set_sessions(sessions_);
+			route->set_session_store(session_store_);
 			route->set_config(config_);
 			route->set_cache(cache_);
+			route->set_connection_pool(connection_pool_);
 			route->Register(*app_);
 			routes_.push_back(std::move(route));
 			log(*routes_.back());

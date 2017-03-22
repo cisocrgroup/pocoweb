@@ -5,7 +5,7 @@
 #include "core/Book.hpp"
 #include "utils/Maybe.hpp"
 #include "core/Profile.hpp"
-#include "core/Sessions.hpp"
+#include "core/Session.hpp"
 #include "Config.hpp"
 #include "LocalProfiler.hpp"
 #include "RemoteProfiler.hpp"
@@ -38,11 +38,10 @@ ProfilerRoute::Response
 ProfilerRoute::impl(HttpGet, const Request& req, int bid) const
 {
 	// query book
-	auto db = database(req);
-	Lock dblock(db.session().mutex);
-	auto book = get_origin(db, bid);
+	auto book = get_book(req, bid);
+	assert(book);
 
-	Lock joblock(*mutex_);
+	Lock lock(*mutex_);
 	if (is_running_job_id(book->id())) {
 		using namespace std::chrono_literals;
 		auto amount = 2s;
@@ -54,7 +53,7 @@ ProfilerRoute::impl(HttpGet, const Request& req, int bid) const
 				      << " done";
 			auto res = future->second.get(); // should not block
 			jobs_->erase(future); // remove job
-			return handle_new_profile(db, res);
+			return handle_new_profile(req, res);
 		} else { // job is not done yet
 			CROW_LOG_INFO << "(ProfilerRoute) Job id: " << book->id()
 				      << " not done yet";
@@ -67,7 +66,7 @@ ProfilerRoute::impl(HttpGet, const Request& req, int bid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 ProfilerRoute::Response
-ProfilerRoute::handle_new_profile(const pcw::Database& db, const Result& res) const
+ProfilerRoute::handle_new_profile(const Request& req, const Result& res) const
 {
 	auto profile = std::move(res.get());
 	return not_implemented();
@@ -78,11 +77,10 @@ ProfilerRoute::Response
 ProfilerRoute::impl(HttpPost, const Request& req, int bid) const
 {
 	// query book
-	auto db = database(req);
-	Lock dblock(db.session().mutex);
-	auto book = get_origin(db, bid);
+	auto book = get_book(req, bid);
+	assert(book);
 
-	Lock joblock(*mutex_);
+	Lock lock(*mutex_);
 	if (not is_running_job_id(book->id())) {
 		jobs_->emplace(book->id(), std::async(std::launch::async, [book]() {
 			auto profiler = get_profiler(book);
@@ -104,9 +102,15 @@ ProfilerRoute::get_profiler(ConstBookSptr book)
 
 ////////////////////////////////////////////////////////////////////////////////
 ConstBookSptr
-ProfilerRoute::get_origin(const pcw::Database& db, int bid) const
+ProfilerRoute::get_book(const Request& req, int bid) const
 {
-	auto view = find(db, bid);
+	auto conn = connection();
+	auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	pcw::SessionLock sessionlock(*session);
+	auto view = session->find(conn, bid);
+
 	if (not view)
 		THROW(pcw::NotFound, "Cannot find book id: ", bid);
 	auto book = std::dynamic_pointer_cast<const pcw::Book>(

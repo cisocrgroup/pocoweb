@@ -18,7 +18,8 @@ namespace pcw {
 		) const;
 
 	private:
-		bool update(User& user, const std::string& key, const std::string& val) const noexcept;
+		void update(User& user, const std::string& key,
+				const std::string& val) const noexcept;
 
 		static const char* route_;
 		static const char* name_;

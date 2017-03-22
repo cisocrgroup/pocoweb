@@ -1,7 +1,7 @@
 #include <cppconn/connection.h>
 #include <crow.h>
-#include "core/Database.hpp"
-#include "core/Sessions.hpp"
+#include "database/NewDatabase.hpp"
+#include "core/Session.hpp"
 #include "Login.hpp"
 
 using namespace pcw;
@@ -30,17 +30,20 @@ Login::impl(
 	const std::string& pass
 ) const
 {
-	auto session = sessions().new_session();
-	if (not session)
-		THROW(Error, "Could not create session");
+	auto conn = connection();
+	assert(conn);
 
-	auto db = database(session);
-	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto user = db.authenticate(name, pass);
+	auto user = login_user(conn.db(), name, pass);
 	if (not user)
-		THROW(Forbidden, "User ", name, " could not be authenticated");
-	session->user = user;
+		THROW(Forbidden, "user: ", name, ": could not be authenticated");
+	auto session = new_session(*user);
+	if (not session)
+		THROW(Error, "could not create new session");
+
+	SessionLock lock(*session);
+	using namespace std::literals::chrono_literals;
+	session->set_expiration_date_from_now(24h);
 	auto response = ok();
-	set_session_id(response, session->sid);
+	set_session_id(response, session->id());
 	return response;
 }

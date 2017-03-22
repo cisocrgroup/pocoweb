@@ -5,7 +5,9 @@
 #include <vector>
 #include <crow/http_response.h>
 #include <crow/http_request.h>
+#include <boost/optional.hpp>
 #include "utils/Error.hpp"
+#include "database/mysql.hpp"
 
 namespace crow {
 	template<typename... Middleware> class Crow;
@@ -15,7 +17,7 @@ namespace pcw {
 	class Database;
 	struct Config;
 	using ConfigPtr = std::shared_ptr<Config>;
-	struct Session;
+	class Session;
 	using SessionPtr = std::shared_ptr<Session>;
 	class Sessions;
 	using SessionsPtr = std::shared_ptr<Sessions>;
@@ -33,9 +35,10 @@ namespace pcw {
 	using PagePtr = std::shared_ptr<Page>;
 	class Line;
 	using LinePtr = std::shared_ptr<Line>;
+	class SessionStore;
+	using SessionStoreSptr = std::shared_ptr<SessionStore>;
 
-
-	std::string get_session_id(const crow::request& request) noexcept;
+	boost::optional<std::string> get_session_id(const crow::request& request) noexcept;
 	void set_session_id(crow::response& response, const std::string& sid) noexcept;
 
 	class Route {
@@ -61,18 +64,24 @@ namespace pcw {
 		virtual void Deregister(App&) {}
 		void set_cache(CachePtr cache) noexcept {cache_ = std::move(cache);}
 		void set_config(ConfigPtr c) noexcept {config_ = std::move(c);}
-		void set_sessions(SessionsPtr s) noexcept {sessions_ = std::move(s);}
+		void set_session_store(SessionStoreSptr s) noexcept
+		{
+			session_store_ = std::move(s);
+		}
+		void set_connection_pool(MysqlConnectionPoolSptr pool) noexcept
+		{
+			connection_pool_ = std::move(pool);
+		}
 
 	protected:
+		SessionPtr new_session(const User& user) const noexcept;
 		SessionPtr session(const Request& request) const noexcept;
-		Sessions& sessions() const noexcept {return *sessions_;}
 		const Config& config() const noexcept {return *config_;}
-		Database database(const Request& request) const;
-		Database database(SessionPtr session) const;
+		MysqlConnection connection() const noexcept
+		{
+			return connection_pool_->get_connection();
+		}
 		static std::string extract_content(const crow::request& request);
-		BookViewPtr find(const Database& db, int bid) const;
-		PagePtr find(const Database& db, int bid, int pid) const;
-		LinePtr find(const Database& db, int bid, int pid, int lid) const;
 
 	private:
 		static std::string extract_multipart(
@@ -81,7 +90,8 @@ namespace pcw {
 		);
 		static std::string extract_raw(const Request& req);
 
-		SessionsPtr sessions_;
+		SessionStoreSptr session_store_;
+		MysqlConnectionPoolSptr connection_pool_;
 		CachePtr cache_;
 		ConfigPtr config_;
 	};

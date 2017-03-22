@@ -1,5 +1,6 @@
 #include <crow.h>
-#include "core/Database.hpp"
+#include "database/NewDatabase.hpp"
+#include "core/Session.hpp"
 #include "CreateUser.hpp"
 
 using namespace pcw;
@@ -27,9 +28,14 @@ CreateUser::impl(
 	const std::string& name,
 	const std::string& pass
 ) const {
-	auto db = database(request);
-	auto user = db.insert_user(name, pass);
+	auto conn = connection();
+	auto session = this->session(request);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
+
+	auto user = create_user(conn.db(), name, pass);
 	if (user)
 		return created();
-	THROW(BadRequest, "Could not create user ", name);
+	THROW(Error, "Could not create user ", name);
 }

@@ -28,6 +28,8 @@ namespace pcw {
 	using PageSptr = std::shared_ptr<Page>;
 	class Line;
 	using LineSptr = std::shared_ptr<Line>;
+	class Session;
+	using SessionLock = std::lock_guard<Session>;
 
 	class Session {
 	public:
@@ -51,6 +53,8 @@ namespace pcw {
 
 		template<class Db>
 		inline BookViewSptr find(Connection<Db>& c, int bookid) const;
+		template<class Db>
+		inline std::vector<BookViewSptr> select_all_projects(Connection<Db>& c) const;
 		template<class Db>
 		inline PageSptr find(Connection<Db>& c, int bookid, int pageid) const;
 		template<class Db>
@@ -118,6 +122,19 @@ pcw::Session::find(Connection<Db>& c, int bookid) const
 		project_ = project;
 	}
 	return project;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+std::vector<pcw::BookViewSptr>
+pcw::Session::select_all_projects(Connection<Db>& c) const
+{
+	auto ids = select_all_project_ids(c.db(), *user_);
+	std::vector<BookViewSptr> projects(ids.size());
+	std::transform(begin(ids), end(ids), begin(projects), [&](int id) {
+		return this->find(c, id);
+	});
+	return projects;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
