@@ -37,6 +37,8 @@ PCW_DB_HOST ?= localhost
 PCW_DB_USER ?= pocoweb
 PCW_DB_PASS ?= pocoweb1998
 PCW_DB ?= pocoweb
+PCW_DB_CONNECTIONS ?= 10
+PCW_DB_DEBUG ?= true
 
 PCW_API_USER ?= pocoweb
 PCW_API_PASS ?= pocoweb123
@@ -66,6 +68,8 @@ make/cache.mak: make/config.mak # force regenerating cache if config.mak changes
 	@echo "PCW_DB_USER := $(PCW_DB_USER)" >> $@
 	@echo "PCW_DB_PASS := $(PCW_DB_PASS)" >> $@
 	@echo "PCW_DB := $(PCW_DB)" >> $@
+	@echo "PCW_DB_CONNECTIONS := $(PCW_DB_CONNECTIONS)" >> $@
+	@echo "PCW_DB_DEBUG := $(PCW_DB_DEBUG)" >> $@
 	@echo "PCW_API_USER:= $(PCW_API_USER)" >> $@
 	@echo "PCW_API_PASS:= $(PCW_API_PASS)" >> $@
 	@echo "PCW_API_EMAIL:= $(PCW_API_EMAIL)" >> $@
