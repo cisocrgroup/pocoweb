@@ -40,7 +40,7 @@ test: $(TESTS)
 		res=$$?; \
 		if [ $$res -ne 0 ]; then \
 			errors=$$((errors + 1)); \
-			printf "%-60s \0ee[0;31mFAIL\0rr[0m\n" "$$test:";\
+			printf "%-60s \033[0;31mFAIL\033[0m\n" "$$test:";\
 		else \
 			printf "%-60s \033[0;32mSUCCESS\033[0m\n" "$$test:";\
 		fi \

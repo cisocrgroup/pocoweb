@@ -554,7 +554,7 @@ pcw::select_all_project_ids(Db& db, const User& owner)
 	auto stmnt = select(projects.projectid)
 		.from(projects)
 		.where(projects.owner == owner.id() or projects.owner == 0);
-	for (const auto& row: db.run(stmnt))
+	for (const auto& row: db(stmnt))
 		ids.push_back(row.projectid);
 	return ids;
 }
