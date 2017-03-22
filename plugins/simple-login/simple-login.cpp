@@ -4,8 +4,8 @@
 #include "core/App.hpp"
 #include "core/Config.hpp"
 #include "Login.hpp"
-#include "core/Sessions.hpp"
-#include "core/Database.hpp"
+#include "core/Session.hpp"
+#include "database/NewDatabase.hpp"
 #include "CreateUser.hpp"
 #include "UpdateUser.hpp"
 #include "DeleteUser.hpp"
@@ -18,25 +18,24 @@ using namespace pcw;
 static void
 insert_default_user(const std::string& p, const App& app)
 {
-	// this could be inproved.
-	// but there is currently no other way to do this easily.
-	auto session = std::make_shared<Session>("simple-login-sid");
-
-	Database db(session, app.config_ptr());
-	std::lock_guard<std::mutex> lock(db.session().mutex);
 	auto name = app.config().plugins[p].get<std::string>("default-user");
 	auto pass = app.config().plugins[p].get<std::string>("default-pass");
 	auto email = app.config().plugins[p].get<std::string>("default-email");
 	auto inst = app.config().plugins[p].get<std::string>("default-institute");
 
-	auto user = db.select_user(name);
-	if (not user)
-		user = db.insert_user(name, pass);
-	if (not user)
-		throw std::runtime_error("(simple-login) could not create default user");
-	user->email = email;
-	user->institute = inst;
-	db.update_user(*user);
+	auto conn = app.connection_pool().get_connection();
+	assert(conn);
+	auto user = select_user(conn.db(), name);
+	if (not user) {
+		MysqlCommiter commiter(conn);
+		user = create_user(conn.db(), name, pass, email, inst);
+		if (not user)
+			THROW(Error, "could not create default user");
+	}
+	assert(user);
+	assert(user->email == email);
+	assert(user->institute == inst);
+	assert(user->name == name);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

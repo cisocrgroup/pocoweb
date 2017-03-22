@@ -21,7 +21,7 @@ namespace pcw {
 
 	private:
 		struct Data {const char *correction, *partial;};
-		Response correct(Database& db, Line& line, const Data& data) const;
+		Response correct(MysqlConnection& conn, Line& line, const Data& data) const;
 		void log(const WagnerFischer& wf) const;
 		static void print_with_dotted_circles(const std::wstring& str, std::string& u8);
 

@@ -15,11 +15,13 @@ namespace pcw {
 
 		const struct Db {
 			const std::string user, host, pass, db;
+			const int connections;
+			const bool debug;
 		} db;
 
 		const struct Daemon {
 			const std::string host, user, basedir;
-			const int port, threads, sessions;
+			const int port, threads;
 			const bool detach;
 		} daemon;
 

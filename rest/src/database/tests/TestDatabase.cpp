@@ -225,5 +225,14 @@ BOOST_AUTO_TEST_CASE(SelectProject)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(SelectProjectIds)
+{
+	db.expect("SELECT projects.projectid FROM projects "
+			"WHERE ((projects.owner=42) OR (projects.owner=0))");
+	select_all_project_ids(db, *user);
+	db.validate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
 

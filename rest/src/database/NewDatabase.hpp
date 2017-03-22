@@ -33,6 +33,9 @@ namespace pcw {
 		template<class Db, class Q, class R>
 		void insert_line(Db& db, Q& q, R& r, const Line& line);
 
+		template<class Db, class R>
+		void insert_content(Db& db, R& r, const Line& line);
+
 		template<class Db>
 		void insert_book_info_and_set_id(Db& db, Book& book);
 
@@ -94,6 +97,12 @@ namespace pcw {
 
 	template<class Db>
 	BookViewSptr select_project(Db& db, const Book& book, int projectid);
+
+	template<class Db>
+	std::vector<int> select_all_project_ids(Db& db, const User& owner);
+
+	template<class Db>
+	void update_line(Db& db, const Line& line);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -342,7 +351,14 @@ pcw::detail::insert_line(Db& db, Q& q, R& r, const Line& line)
 	q.params.lright = line.box.right();
 	q.params.lbottom = line.box.bottom();
 	db(q);
+	insert_content(db, r, line);
+}
 
+////////////////////////////////////////////////////////////////////////////////
+template<class Db, class R>
+void
+pcw::detail::insert_content(Db& db, R& r, const Line& line)
+{
 	r.params.bookid = line.page().book().id();
 	r.params.pageid = line.page().id();
 	r.params.lineid = line.id();
@@ -525,6 +541,47 @@ pcw::select_project(Db& db, const Book& book, int projectid)
 		builder.add_page(row.pageid);
 	}
 	return builder.build();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+std::vector<int>
+pcw::select_all_project_ids(Db& db, const User& owner)
+{
+	using namespace sqlpp;
+	std::vector<int> ids;
+	tables::Projects projects;
+	auto stmnt = select(projects.projectid)
+		.from(projects)
+		.where(projects.owner == owner.id() or projects.owner == 0);
+	for (const auto& row: db(stmnt))
+		ids.push_back(row.projectid);
+	return ids;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+void
+pcw::update_line(Db& db, const Line& line)
+{
+	using namespace sqlpp;
+	tables::Contents contents;
+	auto remove = remove_from(contents)
+		.where(contents.bookid == line.page().book().id() and
+				contents.pageid == line.page().id() and
+				contents.lineid == line.id());
+	auto insert = db.prepare(insert_into(contents).set(
+		contents.bookid = parameter(contents.bookid),
+		contents.pageid = parameter(contents.pageid),
+		contents.lineid = parameter(contents.lineid),
+		contents.seq = parameter(contents.seq),
+		contents.ocr = parameter(contents.ocr),
+		contents.cor = parameter(contents.cor),
+		contents.cut = parameter(contents.cut),
+		contents.conf = parameter(contents.conf)
+	));
+	db.run(remove);
+	detail::insert_content(db, insert, line);
 }
 
 #endif // pcw_NewDatabase_hpp__
