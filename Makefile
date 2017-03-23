@@ -1,3 +1,5 @@
+CXX ?= g++
+
 default: all
 
 include make/config.mak
