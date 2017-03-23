@@ -1,5 +1,4 @@
 #include <crow.h>
-#include <cppconn/connection.h>
 #include "core/User.hpp"
 #include "core/Session.hpp"
 #include "database/NewDatabase.hpp"

@@ -1,4 +1,3 @@
-#include <cppconn/connection.h>
 #include <crow/app.h>
 #include "core/App.hpp"
 #include "core/Book.hpp"

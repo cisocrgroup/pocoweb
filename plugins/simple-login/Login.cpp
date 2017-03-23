@@ -1,4 +1,3 @@
-#include <cppconn/connection.h>
 #include <crow.h>
 #include "database/NewDatabase.hpp"
 #include "core/Session.hpp"
