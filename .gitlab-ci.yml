@@ -3,8 +3,8 @@ before_script:
 
 build:
         script:
-                - make -j4 CXX=g++-5
+                - make -j10 CXX=g++-5
 test:
         script:
-                - make -j4 test CXX=g++-5
+                - make -j10 test CXX=g++-5
 
