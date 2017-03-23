@@ -46,22 +46,17 @@ PARSER_OBJS += rest/src/parser/hocr.o
 PARSER_OBJS += rest/src/parser/HocrPageParser.o
 PARSER_OBJS += rest/src/parser/HocrParserLine.o
 
-PUGI_OBJS += rest/src/pugixml/pugixml.o
-
-LIBS += libpcwcore.a
-LIBS += libpcwparser.a
-LIBS += libpcwapi.a
-LIBS += libpcwpugi.a
+LIBS += lib/libpcwcore.a
+LIBS += lib/libpcwparser.a
+LIBS += lib/libpcwapi.a
 MAINS += pcwd
 MAINS += pcwc
 
-libpcwcore.a: $(CORE_OBJS) $(VENDOR_MAKEFILES)
+lib/libpcwcore.a: $(CORE_OBJS) | $(MODS) mkdir-lib
 	$(AR) rcs $@ $^
-libpcwapi.a: $(API_OBJS) $(VENDOR_MAKEFILES)
+lib/libpcwapi.a: $(API_OBJS) | $(MODS) $(VENDS) mkdir-lib
 	$(AR) rcs $@ $^
-libpcwparser.a: $(PARSER_OBJS) $(VENDOR_MAKEFILES)
-	$(AR) rcs $@ $^
-libpcwpugi.a: $(PUGI_OBJS) $(VENDOR_MAKEFILES)
+lib/libpcwparser.a: $(PARSER_OBJS) | $(MODS) $(VENDS) mkdir-lib
 	$(AR) rcs $@ $^
 
 pcwd: rest/src/pcwd.cpp $(LIBS)

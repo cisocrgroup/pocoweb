@@ -7,10 +7,10 @@ clean:
 	$(RM) $(PEX_OBJS)
 	$(RM) $(PSLOG_OBJS)
 	$(RM) $(PPROF_OBJS)
-	$(RM) $(LIBS)
 	$(RM) $(PLUGINS)
 	$(RM) $(TESTS)
-	$(RM) -r $(VENDOR)
+	$(RM) -r ext
+	$(RM) -r lib
 
 clean-cache:
 	$(RM) make/cache.mak config.ini
