@@ -103,10 +103,6 @@ namespace pcw {
 	}
 }
 
-#ifndef THROW
-#	define THROW(e, args...) pcw::do_throw<e>(__FILE__, __LINE__, ##args)
-#else // THROW
-#	error "`THROW` already defined"
-#endif // THROW
+#define THROW(e, args...) pcw::do_throw<e>(__FILE__, __LINE__, ##args)
 
 #endif // pcw_BadRequest_hpp__

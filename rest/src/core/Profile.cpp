@@ -1,6 +1,6 @@
 #include <iostream>
 #include <utf8.h>
-#include "pugixml/pugixml.hpp"
+#include "pugixml.hpp"
 #include "utils/Error.hpp"
 #include "Book.hpp"
 #include "Page.hpp"
