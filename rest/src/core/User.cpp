@@ -2,9 +2,6 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include <cppconn/resultset.h>
-#include <cppconn/connection.h>
-#include <cppconn/prepared_statement.h>
 #include "BookView.hpp"
 #include "User.hpp"
 

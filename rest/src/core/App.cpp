@@ -1,5 +1,4 @@
 #include <crow.h>
-#include <cppconn/connection.h>
 #include "App.hpp"
 #include "AppCache.hpp"
 #include "Cache.hpp"

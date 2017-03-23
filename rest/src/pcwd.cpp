@@ -88,8 +88,6 @@ get_app(int argc, char** argv)
 // #include <pwd.h>
 // #include <cassert>
 // #include <memory>
-// #include <cppconn/driver.h>
-// #include <cppconn/statement.h>
 // #include <boost/log/trivial.hpp>
 // #include <boost/shared_ptr.hpp>
 // #include <boost/date_time/posix_time/posix_time_types.hpp>

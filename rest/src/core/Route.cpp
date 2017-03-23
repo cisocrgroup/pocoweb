@@ -2,7 +2,6 @@
 #include <ctime>
 #include <sstream>
 #include <regex>
-#include <cppconn/connection.h>
 #include <crow/logging.h>
 #include "AppCache.hpp"
 #include "Book.hpp"
