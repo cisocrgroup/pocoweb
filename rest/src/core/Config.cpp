@@ -170,15 +170,15 @@ pcw::Config::LOG() const
 	CROW_LOG_INFO << "db.connections: " << this->db.connections;
 	CROW_LOG_INFO << "db.debug:       " << this->db.debug;
 
-	CROW_LOG_INFO << "daemon.host: " << this->daemon.host;
-	CROW_LOG_INFO << "daemon.user: " << this->daemon.user;
+	CROW_LOG_INFO << "daemon.host:    " << this->daemon.host;
+	CROW_LOG_INFO << "daemon.user:    " << this->daemon.user;
 	CROW_LOG_INFO << "daemon.basedir: " << this->daemon.basedir;
-	CROW_LOG_INFO << "daemon.port: " << this->daemon.port;
+	CROW_LOG_INFO << "daemon.port:    " << this->daemon.port;
 	CROW_LOG_INFO << "daemon.threads: " << this->daemon.threads;
-	CROW_LOG_INFO << "daemon.detach: " << this->daemon.detach;
+	CROW_LOG_INFO << "daemon.detach:  " << this->daemon.detach;
 
-	CROW_LOG_INFO << "log.file: " << this->log.file;
-	CROW_LOG_INFO << "log.level: " << this->log.level;
+	CROW_LOG_INFO << "log.file:       " << this->log.file;
+	CROW_LOG_INFO << "log.level:      " << this->log.level;
 
 	for (const auto& p: this->plugins.configs) {
 		for (const auto& q: p.second) {
