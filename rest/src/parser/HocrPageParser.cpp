@@ -1,6 +1,6 @@
 #include <cstring>
 #include <iostream>
-#include "pugixml/pugixml.hpp"
+#include "pugixml.hpp"
 #include <regex>
 #include "utils/Error.hpp"
 #include "hocr.hpp"

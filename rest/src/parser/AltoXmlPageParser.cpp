@@ -1,5 +1,5 @@
 #include <cstring>
-#include "pugixml/pugixml.hpp"
+#include "pugixml.hpp"
 #include "AltoXmlPageParser.hpp"
 #include "AltoXmlParserLine.hpp"
 #include "XmlParserPage.hpp"

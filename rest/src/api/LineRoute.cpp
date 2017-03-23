@@ -1,4 +1,3 @@
-#include <cppconn/connection.h>
 #include <regex>
 #include <crow.h>
 #include <unicode/uchar.h>

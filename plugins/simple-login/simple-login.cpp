@@ -1,5 +1,4 @@
 #include <crow.h>
-#include <cppconn/connection.h>
 #include "core/util.hpp"
 #include "core/App.hpp"
 #include "core/Config.hpp"

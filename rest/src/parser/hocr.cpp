@@ -1,5 +1,5 @@
 #include <regex>
-#include "pugixml/pugixml.hpp"
+#include "pugixml.hpp"
 #include <utf8.h>
 #include "hocr.hpp"
 #include "Xml.hpp"

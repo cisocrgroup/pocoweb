@@ -1,4 +1,3 @@
-#include <cppconn/connection.h>
 #include <crow.h>
 #include "core/Session.hpp"
 #include "LoggedIn.hpp"

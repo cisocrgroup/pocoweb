@@ -1,6 +1,7 @@
 #ifndef pcw_Cache_hpp__
 #define pcw_Cache_hpp__
 
+#include <cassert>
 #include <memory>
 #include <mutex>
 #include <list>

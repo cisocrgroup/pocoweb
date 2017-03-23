@@ -4,28 +4,32 @@ PCW_API_VERSION_PATCH := 0
 
 CXX ?= g++
 
-CXXFLAGS := $(CXXFLAGS) -MD -MP -std=gnu++14 -Wall -Werror -fpic
+CXXFLAGS := -MP -MD -std=gnu++14 -Wall -Werror -fpic
 CXXFLAGS += -Irest/src
-CXXFLAGS += -Imodules/crow/include
-CXXFLAGS += -Imodules/utfcpp/source
+CXXFLAGS += -isystem modules/sqlpp11/include
+CXXFLAGS += -isystem modules/sqlpp11-connector-mysql/include
+CXXFLAGS += -isystem modules/date
+CXXFLAGS += -isystem modules/crow/include
+CXXFLAGS += -isystem modules/utfcpp/source
+CXXFLAGS += -isystem modules/pugixml/src
 CXXFLAGS += -DPCW_API_VERSION_MAJOR=$(PCW_API_VERSION_MAJOR)
 CXXFLAGS += -DPCW_API_VERSION_MINOR=$(PCW_API_VERSION_MINOR)
 CXXFLAGS += -DPCW_API_VERSION_PATCH=$(PCW_API_VERSION_PATCH)
 
-LDFLAGS ?=
-LDFLAGS := $(LDFLAGS) -L.
-LDFLAGS += -lpcwcore -lpcwapi -lpcwparser -lpcwpugi
-LDFLAGS += -lpcwcore -lpcwapi -lpcwparser -lpcwpugi # do it two times
+LDFLAGS += -Llib
+LDFLAGS += -lpcwcore -lpcwapi -lpcwparser -lpugixml
+LDFLAGS += -lpcwcore -lpcwapi -lpcwparser -lpugixml # do it two times
 LDFLAGS += -ldl
-#LDFLAGS += -lmysqlcppconn
 LDFLAGS += -lssl
 LDFLAGS += -llept
 LDFLAGS += -lpthread
 LDFLAGS += -licuuc
 LDFLAGS += -lboost_system
 LDFLAGS += -lboost_filesystem
-#LDFLAGS += -lcrypt
-#LDFLAGS += -lcrypto # still needed?
+LDFLAGS += -lcrypto
+LDFLAGS += -lcrypt
+LDFLAGS += -lsqlpp-mysql
+LDFLAGS += -lmysqlclient
 
 PREFIX ?= /usr/local
 BINDIR := $(PREFIX)/bin
@@ -46,7 +50,7 @@ PCW_API_INSTITUTE ?= CIS
 
 -include make/cache.mak
 
-make/cache.mak: make/config.mak # force regenerating cache if config.mak changes
+make/cache.mak: Makefile make/config.mak
 	@echo "Generating $@"
 	@echo "#" > $@
 	@echo "# cache.mak" >> $@
