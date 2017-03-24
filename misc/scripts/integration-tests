@@ -29,14 +29,18 @@ start_server() {
 	sleep 1
 }
 
-run_test() {
-	if ( $1 ); then
-		printf "%-60s" "$2"
-		echo -e $success
-	else
+expect() {
+	url=$1
+	want=$2
+	got=$3
+	if [ $want -ne $got ]; then
 		((error++))
-		printf "%-60s" "$2"
-		echo -e $fail
+		printf "%-50s" "$url"
+		echo -ne $fail
+		echo " [want=$want; got=$got]"
+	else
+		printf "%-50s" "$url"
+		echo -e $success
 	fi
 }
 
@@ -45,15 +49,27 @@ run_curl() {
 	return $?
 }
 
+get_curl_status_code() {
+	curl --silent -v -w '%{http_code}' -c $cookies -g -6 http://[$host]:$port$1 |\
+		sed -e 's/\([0-9][0-9][0-9]\).*/\1/g'
+}
+
+
 #
 # API TEST FUNCTIONS
 #
 login() {
-	run_curl "/login/user/$name/pass/$pass"
+	name=$1
+	pass=$2
+	want=$3
+	url="/login/user/$name/pass/$pass"
+	code=$(get_curl_status_code $url)
+	expect $url $want $code
 }
-loggedin() {
-	run_curl "/logged-in"
-}
+
+## loggedin() {
+## 	run_curl "/logged-in"
+## }
 
 #
 # START OF SCRIPT
@@ -66,6 +82,6 @@ fi
 
 trap finish EXIT
 #start_server
-run_test login "Testing login"
+login $name $pass 200
 #run_test loggedin "Testing loggedin"
 exit $error
