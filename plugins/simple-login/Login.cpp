@@ -5,10 +5,11 @@
 
 using namespace pcw;
 
-#define LOGIN_ROUTE "/login/user/<string>/pass/<string>"
+#define LOGIN_ROUTE1 "/login/user/<string>"
+#define LOGIN_ROUTE2 "/login/user/<string>/pass/<string>"
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* Login::route_ = LOGIN_ROUTE;
+const char* Login::route_ = LOGIN_ROUTE1 "," LOGIN_ROUTE2;
 
 ////////////////////////////////////////////////////////////////////////////////
 const char* Login::name_ = "Login";
@@ -17,17 +18,14 @@ const char* Login::name_ = "Login";
 void
 Login::Register(App& app)
 {
-	CROW_ROUTE(app, LOGIN_ROUTE)(*this);
+	CROW_ROUTE(app, LOGIN_ROUTE1)(*this);
+	CROW_ROUTE(app, LOGIN_ROUTE2)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-Login::impl(
-	HttpGet,
-	const Request& req,
-	const std::string& name,
-	const std::string& pass
-) const
+Login::impl(HttpGet, const Request& req,
+		const std::string& name, const std::string& pass) const
 {
 	auto conn = connection();
 	assert(conn);
@@ -49,4 +47,16 @@ Login::impl(
 	auto response = ok();
 	set_session_id(response, session->id());
 	return response;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response
+Login::impl(HttpGet, const Request& req, const std::string& name) const
+{
+	try {
+		auto session = this->session(req);
+		return session ? ok() : forbidden();
+	} catch (const Forbidden&) {
+		return forbidden();
+	}
 }
