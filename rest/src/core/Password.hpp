@@ -7,7 +7,7 @@ namespace pcw {
 	class Password {
 	public:
 		static Password make(const std::string& password);
-		Password(const std::string& salted_hash);
+		explicit Password(const std::string& salted_hash);
 
 		bool authenticate(const std::string& password) const;
 		std::string str() const {return salt_ + hash_;}

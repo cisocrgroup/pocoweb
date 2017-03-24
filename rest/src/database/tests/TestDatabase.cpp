@@ -20,7 +20,7 @@ struct UsersFixture {
 	UserSptr user;
 	MockDb db;
 	UsersFixture()
-		: user(std::make_shared<User>("name", "email", "institute", 42))
+		: user(std::make_shared<User>("name", "pass", "email", "institute", 42))
 		, db()
 	{}
 };

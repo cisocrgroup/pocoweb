@@ -4,6 +4,7 @@
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 #include "core/Password.hpp"
+#include "utils/Error.hpp"
 
 using namespace pcw;
 
@@ -20,5 +21,5 @@ BOOST_AUTO_TEST_CASE(Authenticate)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(Exception)
 {
-	BOOST_CHECK_THROW(Password("wrong_password_format"), std::runtime_error);
+	BOOST_CHECK_THROW(Password("wrong_password_format"), Error);
 }

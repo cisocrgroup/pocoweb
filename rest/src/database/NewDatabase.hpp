@@ -22,6 +22,7 @@ namespace pcw {
 		UserSptr make_user(const U& users) {
 			return std::make_shared<User>(
 				users.name,
+				Password(users.passwd),
 				users.email,
 				users.institute,
 				users.userid
@@ -121,7 +122,7 @@ pcw::create_user(Db& db, const std::string& name, const std::string& pw,
 		users.passwd = password.str()
 	);
 	auto id = db(stmnt);
-	return std::make_shared<User>(name, email, inst, id);
+	return std::make_shared<User>(name, password, email, inst, id);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
