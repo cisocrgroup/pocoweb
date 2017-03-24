@@ -18,28 +18,24 @@ using namespace pcw;
 static void
 insert_default_user(const std::string& p, const App& app)
 {
-	auto name = app.config().plugins[p].get<std::string>("default-user");
-	auto pass = Password::make(
-		app.config().plugins[p].get<std::string>("default-pass")
-	);
-	auto email = app.config().plugins[p].get<std::string>("default-email");
-	auto inst = app.config().plugins[p].get<std::string>("default-institute");
-
 	auto conn = app.connection_pool().get_connection();
 	assert(conn);
+	auto name = app.config().plugins[p].get<std::string>("default-user");
 	auto user = select_user(conn.db(), name);
-	CROW_LOG_DEBUG << "INSERTING PASSWORD: " << pass.str();
 	if (not user) {
 		MysqlCommiter commiter(conn);
-		user = create_user(conn.db(), name, pass.str(), email, inst);
+		user = create_user(
+			conn.db(),
+			name,
+			app.config().plugins[p].get<std::string>("default-pass"),
+			app.config().plugins[p].get<std::string>("default-email"),
+			app.config().plugins[p].get<std::string>("default-institute")
+		);
 		if (not user)
 			THROW(Error, "could not create default user");
 		commiter.commit();
 	}
-	assert(user);
-	assert(user->email == email);
-	assert(user->institute == inst);
-	assert(user->name == name);
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
