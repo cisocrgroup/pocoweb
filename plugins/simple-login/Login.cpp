@@ -55,8 +55,12 @@ Login::impl(HttpGet, const Request& req, const std::string& name) const
 {
 	try {
 		auto session = this->session(req);
-		return session ? ok() : forbidden();
-	} catch (const Forbidden&) {
-		return forbidden();
+		if (session) {
+			SessionLock lock(*session);
+			return session->user().name == name ? ok() : forbidden();
+		}
+	} catch (const Forbidden& f) {
+		CROW_LOG_ERROR << f.what();
 	}
+	return forbidden();
 }
