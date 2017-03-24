@@ -1,0 +1,71 @@
+#!/bin/bash
+# integration-tests
+
+v=-v
+fail="\033[0;31mFAIL\033[0m"
+success="\033[0;32mSUCCESS\033[0m"
+cookies=$(mktemp)
+config=$1
+name=$(git config -f $config --get plugin-simple-login.default-user)
+pass=$(git config -f $config --get plugin-simple-login.default-pass)
+host=$(git config -f $config --get daemon.host)
+port=$(git config -f $config --get daemon.port)
+errors=0
+spid=0
+
+finish() {
+	echo removing $cookies
+	rm $cookies
+	echo killing $spid
+	kill $spid > /dev/null 2>&1
+}
+
+start_server() {
+	echo "config: $config"
+	echo "starting server"
+	./pcwd $config 2> /dev/null &
+	spid=$!
+	echo "started server ($spid)"
+	sleep 1
+}
+
+run_test() {
+	if ( $1 ); then
+		printf "%-60s" "$2"
+		echo -e $success
+	else
+		((error++))
+		printf "%-60s" "$2"
+		echo -e $fail
+	fi
+}
+
+run_curl() {
+	curl --fail $v -c $cookies -g -6 http://[$host]:$port$1
+	return $?
+}
+
+#
+# API TEST FUNCTIONS
+#
+login() {
+	run_curl "/login/user/$name/pass/$pass"
+}
+loggedin() {
+	run_curl "/logged-in"
+}
+
+#
+# START OF SCRIPT
+#
+
+if [ $# -ne 1 ]; then
+	echo "usage: $0 config"
+	exit 255
+fi
+
+trap finish EXIT
+#start_server
+run_test login "Testing login"
+#run_test loggedin "Testing loggedin"
+exit $error
