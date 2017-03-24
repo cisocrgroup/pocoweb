@@ -32,15 +32,17 @@ Login::impl(
 	auto conn = connection();
 	assert(conn);
 
-	auto password = Password::make(pass);
-	CROW_LOG_DEBUG << "LOGIN PASSWORD HASH: " << password.str();
-	auto user = login_user(conn.db(), name, pass);
-	if (not user)
-		THROW(Forbidden, "user: ", name, ": could not be authenticated");
-	auto session = new_session(*user);
-	if (not session)
-		THROW(Error, "could not create new session");
+	auto user = select_user(conn.db(), name);
+	if (not user or not user->password.authenticate(pass)) {
+		CROW_LOG_ERROR << "invalid user: " << name;
+		return forbidden();
+	}
 
+	auto session = new_session(*user);
+	if (not session) {
+		CROW_LOG_ERROR << "could not create new session";
+		return internal_server_error();
+	}
 	SessionLock lock(*session);
 	using namespace std::literals::chrono_literals;
 	session->set_expiration_date_from_now(24h);
