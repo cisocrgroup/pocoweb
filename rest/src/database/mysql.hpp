@@ -20,7 +20,9 @@ namespace pcw {
 		MysqlCommiter(const MysqlConnection& connection)
 			: ScopeGuard([this](){this->rollback();})
 			, connection_(connection)
-		{}
+		{
+			connection_.db().start_transaction();
+		}
 
 		void commit()
 		{
