@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <crypt.h>
 #include <system_error>
+#include "utils/Error.hpp"
 #include "Password.hpp"
 
 #ifndef PCW_PASSWORD_SEED_SIZE
@@ -36,8 +37,7 @@ static std::string
 get_salt(const std::string& salted_hash)
 {
 	if (not is_salted_hash(salted_hash))
-		throw std::runtime_error("(Password) Invalid password hash: " +
-				salted_hash);
+		THROW(Error, "invalid password hash: ", salted_hash);
 	return salted_hash.substr(0, PCW_PASSWORD_SEED_SIZE + 4);
 }
 
@@ -46,8 +46,7 @@ static std::string
 get_hash(const std::string& salted_hash)
 {
 	if (not is_salted_hash(salted_hash))
-		throw std::runtime_error("(Password) Invalid password hash: " +
-				salted_hash);
+		THROW(Error, "invalid password hash: ", salted_hash);
 	return salted_hash.substr(PCW_PASSWORD_SEED_SIZE + 4);
 }
 

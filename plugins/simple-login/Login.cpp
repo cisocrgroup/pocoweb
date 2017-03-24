@@ -32,6 +32,8 @@ Login::impl(
 	auto conn = connection();
 	assert(conn);
 
+	auto password = Password::make(pass);
+	CROW_LOG_DEBUG << "LOGIN PASSWORD HASH: " << password.str();
 	auto user = login_user(conn.db(), name, pass);
 	if (not user)
 		THROW(Forbidden, "user: ", name, ": could not be authenticated");
