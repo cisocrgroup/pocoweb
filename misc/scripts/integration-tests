@@ -14,18 +14,18 @@ errors=0
 spid=0
 
 finish() {
-	echo removing $cookies
+	# echo removing $cookies
 	rm $cookies
-	echo killing $spid
+	# echo killing $spid
 	kill $spid > /dev/null 2>&1
 }
 
 start_server() {
-	echo "config: $config"
-	echo "starting server"
+	# echo "config: $config"
+	# echo "starting server"
 	./pcwd $config 2> /dev/null &
 	spid=$!
-	echo "started server ($spid)"
+	# echo "started server ($spid)"
 	sleep 1
 }
 
