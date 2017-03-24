@@ -5,9 +5,10 @@ PCW_API_VERSION_PATCH := 0
 CXX ?= g++
 
 CXXFLAGS := -MP -MD -std=gnu++14 -Wall -Werror -fpic
+CXXFLAGS += -g
 CXXFLAGS += -Irest/src
 CXXFLAGS += -Wundef
-CXXFLAGS += -Wundef
+CXXFLAGS += -Wnoexcept
 CXXFLAGS += -Wno-aggressive-loop-optimizations
 CXXFLAGS += -Wsuggest-override
 CXXFLAGS += -Wsuggest-attribute=pure
