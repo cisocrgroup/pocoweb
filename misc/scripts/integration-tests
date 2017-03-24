@@ -44,13 +44,13 @@ expect() {
 	fi
 }
 
-run_curl() {
-	curl --fail $v -c $cookies -g -6 http://[$host]:$port$1
-	return $?
-}
+## run_curl() {
+## 	curl --fail $v -c $cookies -g -6 http://[$host]:$port$1
+## 	return $?
+## }
 
 get_curl_status_code() {
-	curl --silent -v -w '%{http_code}' -c $cookies -g -6 http://[$host]:$port$1 |\
+	curl --silent -v -w '%{http_code}' -b $cookies -c $cookies -g -6 http://[$host]:$port$1 |\
 		sed -e 's/\([0-9][0-9][0-9]\).*/\1/g'
 }
 
@@ -67,9 +67,13 @@ login() {
 	expect $url $want $code
 }
 
-## loggedin() {
-## 	run_curl "/logged-in"
-## }
+loggedin() {
+	name=$1
+	want=$2
+	url="/login/user/$name"
+	code=$(get_curl_status_code $url)
+	expect $url $want $code
+}
 
 #
 # START OF SCRIPT
@@ -83,5 +87,5 @@ fi
 trap finish EXIT
 #start_server
 login $name $pass 200
-#run_test loggedin "Testing loggedin"
+loggedin $name 200
 exit $error
