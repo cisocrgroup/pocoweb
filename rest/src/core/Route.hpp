@@ -74,8 +74,8 @@ namespace pcw {
 		}
 
 	protected:
-		SessionPtr new_session(const User& user) const noexcept;
-		SessionPtr session(const Request& request) const noexcept;
+		SessionPtr new_session(const User& user) const;
+		SessionPtr session(const Request& request) const;
 		const Config& config() const noexcept {return *config_;}
 		MysqlConnection connection() const noexcept
 		{

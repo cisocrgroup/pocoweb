@@ -53,7 +53,7 @@ Route::~Route() noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 SessionPtr
-Route::new_session(const User& user) const noexcept
+Route::new_session(const User& user) const
 {
 	assert(session_store_);
 	return session_store_->new_session(user, cache_);
@@ -61,7 +61,7 @@ Route::new_session(const User& user) const noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 SessionPtr
-Route::session(const crow::request& request) const noexcept
+Route::session(const crow::request& request) const
 {
 	auto sid = get_session_id(request);
 	if (not sid)
