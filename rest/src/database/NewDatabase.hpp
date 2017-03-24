@@ -55,8 +55,6 @@ namespace pcw {
 			const std::string& pw,
 			const std::string& email = "",
 			const std::string& inst = "");
-	template<class Db>
-	UserSptr login_user(Db& db, const std::string& user, const std::string& pw);
 
 	template<class Db>
 	void update_user(Db& db, const User& user);
@@ -123,24 +121,6 @@ pcw::create_user(Db& db, const std::string& name, const std::string& pw,
 	);
 	auto id = db(stmnt);
 	return std::make_shared<User>(name, password, email, inst, id);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template<class Db>
-pcw::UserSptr
-pcw::login_user(Db& db, const std::string& name, const std::string& pw)
-{
-	using namespace sqlpp;
-	tables::Users users;
-	auto stmnt = select(all_of(users)).from(users).where(users.name == name);
-	auto res = db(stmnt);
-	if (not res.empty()) {
-		Password password(res.front().passwd);
-		if (password.authenticate(pw)) {
-			return detail::make_user(res.front());
-		}
-	}
-	return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

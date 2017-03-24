@@ -42,14 +42,6 @@ BOOST_AUTO_TEST_CASE(CreateUser)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(LoginUser)
-{
-	db.expect(std::regex(R"(SELECT .* FROM users WHERE \(users.name='name'\))"));
-	login_user(db, user->name, "password");
-	db.validate();
-}
-
-////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(UpdateUser)
 {
 	db.expect("UPDATE users SET email='email',institute='institute' "
