@@ -23,10 +23,10 @@ namespace pcw {
 		{
 			connection_.db().start_transaction();
 		}
-
 		void commit()
 		{
 			connection_.db().commit_transaction();
+			dismiss();
 		}
 		void rollback()
 		{
