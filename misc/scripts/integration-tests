@@ -88,4 +88,6 @@ trap finish EXIT
 start_server
 login $name $pass 200
 loggedin $name 200
+login "invalid" "invalid" 403
+loggedin "invalid" 403
 exit $error
