@@ -61,6 +61,8 @@ BookRoute::impl(HttpPost, const Request& req) const
 {
 	auto conn = connection();
 	auto session = this->session(req);
+	assert(conn);
+	assert(session);
 	SessionLock lock(*session);
 
 	// create new bookdir
@@ -83,7 +85,9 @@ BookRoute::impl(HttpPost, const Request& req) const
 	commiter.commit();
 	sg.dismiss();
 	Json j;
-	return j << *book;
+	Response response(j << *book);
+	response.code = created().code;
+	return response;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
