@@ -1,9 +1,6 @@
 before_script:
         - g++-5 -v
 
-build:
-        script:
-                - make -j10 CXX=g++-5
 test:
         script:
                 - make -j10 test CXX=g++-5
