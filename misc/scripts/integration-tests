@@ -85,7 +85,7 @@ if [ $# -ne 1 ]; then
 fi
 
 trap finish EXIT
-#start_server
+start_server
 login $name $pass 200
 loggedin $name 200
 exit $error
