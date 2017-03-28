@@ -37,11 +37,11 @@ expect() {
 	got=$3
 	if [ "$want" != "$got" ]; then
 		((error++))
-		printf "%-50s" "$url"
+		printf "%-60s" "$url"
 		echo -ne $fail
 		echo " [want=$want; got=$got]"
 	else
-		printf "%-50s" "$url"
+		printf "%-60s" "$url"
 		echo -ne $success
 		echo " [want=got=$want]"
 	fi
