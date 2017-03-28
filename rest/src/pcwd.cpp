@@ -1,3 +1,4 @@
+#include <boost/filesystem/operations.hpp>
 #include <grp.h>
 #include <pwd.h>
 #include <iostream>
@@ -18,6 +19,7 @@ static int run(int argc, char** argv);
 static void run(App& app);
 static AppPtr get_app(int argc, char** argv);
 static void change_user_and_group(const Config& config);
+static void create_base_directory(const Config& config);
 
 ////////////////////////////////////////////////////////////////////////////////
 int
@@ -45,6 +47,7 @@ void
 run(App& app)
 {
 	change_user_and_group(app.config());
+	create_base_directory(app.config());
 	app.register_plugins();
 	app.Register(std::make_unique<pcw::VersionRoute>());
 	app.Register(std::make_unique<pcw::BookRoute>());
@@ -82,4 +85,14 @@ get_app(int argc, char** argv)
 	app->config().setup_logging();
 	app->config().LOG();
 	return app;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+create_base_directory(const Config& config)
+{
+	boost::system::error_code ec;
+	if (not boost::filesystem::create_directories(config.daemon.basedir, ec))
+		throw std::system_error(ec.value(), std::system_category(),
+				config.daemon.basedir);
 }
