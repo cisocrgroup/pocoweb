@@ -10,8 +10,10 @@ name=$(git config -f $config --get plugin-simple-login.default-user)
 pass=$(git config -f $config --get plugin-simple-login.default-pass)
 host=$(git config -f $config --get daemon.host)
 port=$(git config -f $config --get daemon.port)
+curlopt=
 errors=0
 spid=0
+json=
 
 finish() {
 	# echo removing $cookies
@@ -30,30 +32,38 @@ start_server() {
 }
 
 expect() {
-	url=$1
+	url="$1:"
 	want=$2
 	got=$3
-	if [ $want -ne $got ]; then
+	if [ "$want" != "$got" ]; then
 		((error++))
 		printf "%-50s" "$url"
 		echo -ne $fail
 		echo " [want=$want; got=$got]"
 	else
 		printf "%-50s" "$url"
-		echo -e $success
+		echo -ne $success
+		echo " [want=got=$want]"
 	fi
 }
 
-## run_curl() {
-## 	curl --fail $v -c $cookies -g -6 http://[$host]:$port$1
-## 	return $?
-## }
-
-get_curl_status_code() {
-	curl --silent -v -w '%{http_code}' -b $cookies -c $cookies -g -6 http://[$host]:$port$1 |\
-		sed -e 's/\([0-9][0-9][0-9]\).*/\1/g'
+run_curl() {
+	curl $curlopt --silent -v -w '%%RESPONSE_CODE=%{http_code}%%' \
+		-b $cookies -c $cookies \
+		-g -6 http://[$host]:$port$1
 }
 
+get_code() {
+	sed -e 's/.*%RESPONSE_CODE=\([0-9][0-9]*\)%.*/\1/g' <<< $1
+}
+
+get_json() {
+	sed -e 's/\(.*\)%RESPONSE_CODE=[0-9][0-9]*%\(.*\)/\1\2/g' <<< $1
+}
+
+json_get_field() {
+	sed -e "s/.*\"$1\":\([^,]*\).*/\1/g" <<< $2 | tr -d '"{}'
+}
 
 #
 # API TEST FUNCTIONS
@@ -63,16 +73,39 @@ login() {
 	pass=$2
 	want=$3
 	url="/login/user/$name/pass/$pass"
-	code=$(get_curl_status_code $url)
-	expect $url $want $code
+	res=$(run_curl $url)
+	expect $url $want $(get_code $res)
 }
 
 loggedin() {
 	name=$1
 	want=$2
 	url="/login/user/$name"
-	code=$(get_curl_status_code $url)
-	expect $url $want $code
+	res=$(run_curl $url)
+	expect $url $want $(get_code $res)
+}
+
+upload() {
+	path=$1
+	want=$2
+	url="/books"
+	curlopt="--form upload=@$path"
+	res=$(run_curl $url)
+	curlopt=""
+	expect $url $want $(get_code $res)
+	json=$(get_json $res)
+}
+
+update_book() {
+	id=$1
+	key=$2
+	val=$3
+	curlopt="-XPOST"
+	url="/books/$id?$key=$val"
+	res=$(run_curl $url)
+	curlopt=""
+	expect $url 200 $(get_code $res)
+	expect "update bookid=$id \"$key\" to $val" $val $(json_get_field $key $(get_json $res))
 }
 
 #
@@ -85,9 +118,17 @@ if [ $# -ne 1 ]; then
 fi
 
 trap finish EXIT
-start_server
+#start_server
 login $name $pass 200
 loggedin $name 200
 login "invalid" "invalid" 403
 loggedin "invalid" 403
+upload misc/data/test/hobbes-ocropus.zip 201
+bookid=$(json_get_field "id" $json)
+update_book $bookid "title" "Leviathan"
+update_book $bookid "author" "Hobbes"
+update_book $bookid "year" "1668"
+update_book $bookid "description" "Hobbes-Leviathan"
+update_book $bookid "uri" "some/uri"
+
 exit $error
