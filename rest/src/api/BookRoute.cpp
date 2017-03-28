@@ -149,9 +149,10 @@ BookRoute::set(const Request& req, int bid, const Data& data) const
 	SessionLock lock(*session);
 
 	auto view = session->find(conn, bid);
-	assert(view);
+	if (not view)
+		THROW(NotFound, "cannot load book id: ", bid);
 	if (not view->is_book())
-		THROW(BadRequest, "Cannot set book view id: ", bid);
+		THROW(BadRequest, "cannot set parameters of book view id: ", bid);
 	auto book = std::dynamic_pointer_cast<Book>(view);
 
 	if (data.author)
