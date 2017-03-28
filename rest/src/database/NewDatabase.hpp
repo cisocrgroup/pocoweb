@@ -28,6 +28,11 @@ namespace pcw {
 				users.userid
 			);
 		}
+		template<class T, class F>
+		void set_if_not_null(const T& t, F f) {
+			if (not t.is_null())
+				f(t);
+		}
 		template<class Db, class P, class Q, class R>
 		void insert_page(Db& db, P& p, Q& q, R& r, const Page& page);
 
@@ -441,18 +446,31 @@ pcw::select_book(Db& db, const User& owner, int bookid)
 				textlines.lineid == contents.lineid))
 		.where(textlines.bookid == bookid and
 			textlines.pageid == parameter(textlines.pageid))
-		.order_by(textlines.lineid.asc(), contents.seq.asc())
-	);
+		.order_by(textlines.lineid.asc(), contents.seq.asc()));
 
 	BookBuilder builder;
-	builder.set_description(res.front().description);
-	builder.set_uri(res.front().uri);
-	builder.set_author(res.front().author);
-	builder.set_title(res.front().title);
-	builder.set_id(res.front().bookid);
-	builder.set_language(res.front().lang);
+	detail::set_if_not_null(res.front().description, [&](const auto& d) {
+		builder.set_description(d);
+	});
+	detail::set_if_not_null(res.front().uri, [&](const auto& u) {
+		builder.set_uri(u);
+	});
+	detail::set_if_not_null(res.front().year, [&](const auto& y) {
+		builder.set_year(y);
+	});
+	detail::set_if_not_null(res.front().author, [&](const auto& a) {
+		builder.set_author(a);
+	});
+	detail::set_if_not_null(res.front().title, [&](const auto& t) {
+		builder.set_title(t);
+	});
+	detail::set_if_not_null(res.front().bookid, [&](const auto& id) {
+		builder.set_id(id);
+	});
+	detail::set_if_not_null(res.front().lang, [&](const auto& l) {
+		builder.set_language(l);
+	});
 	builder.set_owner(owner);
-	builder.set_year(res.front().year);
 	detail::select_pages(db, builder, p, q);
 	return builder.build();
 }
@@ -467,8 +485,12 @@ pcw::detail::select_pages(Db& db, const BookBuilder& builder, P& p, Q& q)
 	PageBuilder pbuilder;
 	for (const auto& row: db(p)) {
 		pbuilder.reset();
-		pbuilder.set_image_path(Path(row.imagepath));
-		pbuilder.set_ocr_path(Path(row.ocrpath));
+		detail::set_if_not_null(row.imagepath, [&](const auto& p) {
+			pbuilder.set_image_path(Path(p));
+		});
+		detail::set_if_not_null(row.ocrpath, [&](const auto& p) {
+			pbuilder.set_ocr_path(Path(p));
+		});
 		pbuilder.set_box({
 			static_cast<int>(row.pleft),
 			static_cast<int>(row.ptop),
@@ -489,7 +511,9 @@ pcw::detail::select_lines(Db& db, const PageBuilder& builder, Q& q)
 	LineBuilder lbuilder;
 	for (const auto& row: db(q)) {
 		lbuilder.reset();
-		lbuilder.set_image_path(Path(row.imagepath));
+		detail::set_if_not_null(row.imagepath, [&](const auto& p) {
+			lbuilder.set_image_path(Path(p));
+		});
 		lbuilder.set_box({
 			static_cast<int>(row.lleft),
 			static_cast<int>(row.ltop),
