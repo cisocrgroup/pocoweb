@@ -1,4 +1,4 @@
-#include "Error.hpp"
+#include "utils/Error.hpp"
 #include "Book.hpp"
 #include "Page.hpp"
 #include "BookView.hpp"
@@ -52,9 +52,10 @@ BookView::next(int pageid, int val) const noexcept
 	const auto amount = static_cast<size_t>(std::abs(val));
 
 	if (i != e) {
-		if (val < 0 and amount <= static_cast<size_t>(std::distance(b, i))) {
+		const auto n = static_cast<size_t>(std::distance(b, i));
+		if (val < 0 and amount <= n) {
 			return *(std::prev(i, amount));
-		} else if (0 <= val and amount <= static_cast<size_t>(std::distance(i, e))) {
+		} else if (0 <= val and amount <= n) {
 			return *(std::next(i, amount));
 		}
 	}
@@ -63,13 +64,11 @@ BookView::next(int pageid, int val) const noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookView::push_back(PagePtr page)
+BookView::push_back(Page& page)
 {
-	if (not page)
-		return;
-	Base::push_back(std::move(page));
-	Base::back()->book_ =
-		std::static_pointer_cast<const Book>(origin().shared_from_this());
+	Base::push_back(page.shared_from_this());
+	Base::back()->book_ = std::static_pointer_cast<const Book>(
+			origin().shared_from_this());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

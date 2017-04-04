@@ -9,9 +9,9 @@
 #include <regex>
 #include <sstream>
 #include <crow/logging.h>
+#include "utils/Error.hpp"
 #include "util.hpp"
 #include "Config.hpp"
-#include "Error.hpp"
 #include "Book.hpp"
 #include "Page.hpp"
 #include "Pix.hpp"
@@ -201,12 +201,11 @@ BookDirectoryBuilder::write_line_img_file(void *vpix, const Line& line)
 	auto pix = (PIX*)vpix;
 	assert(pix);
 	auto format = pixGetInputFormat(pix);
-	BOX box {
-		.x = line.box.left(),
-		.y = line.box.top(),
-		.w = line.box.width(),
-		.h = line.box.height()
-	};
+	BOX box;
+	box.x = line.box.left();
+	box.y = line.box.top();
+	box.w = line.box.width();
+	box.h = line.box.height();
 	clip(box, *pix);
 	if (box.x + box.w <= (int) pix->w and box.y + box.h <= (int) pix->h) {
 		PixPtr tmp{pixClipRectangle(pix, &box, nullptr)};

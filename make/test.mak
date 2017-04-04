@@ -1,31 +1,48 @@
-TESTS += rest/src/tests/TestError.test
-TESTS += rest/src/tests/TestMaybe.test
-TESTS += rest/src/tests/TestConfig.test
-TESTS += rest/src/tests/TestOcrLine.test
-TESTS += rest/src/tests/TestCorLine.test
-TESTS += rest/src/tests/TestDocXml.test
-TESTS += rest/src/tests/TestWagnerFischer.test
-TESTS += rest/src/tests/TestCorrector.test
-TESTS += rest/src/tests/TestAltoXmlParsing.test
-TESTS += rest/src/tests/TestAbbyyXmlParsing.test
-TESTS += rest/src/tests/TestOcropusLlocsParsing.test
-TESTS += rest/src/tests/TestHocrParsing.test
-TESTS += rest/src/tests/TestBookDirectoryBuilder.test
-TESTS += rest/src/tests/TestProfile.test
+UTILS_TESTS += rest/src/utils/tests/TestError.test
+UTILS_TESTS += rest/src/utils/tests/TestMaybe.test
+UTILS_TESTS += rest/src/utils/tests/TestScopeGuard.test
 
-%.test: %.cpp
+CORE_TESTS += rest/src/core/tests/TestPassword.test
+CORE_TESTS += rest/src/core/tests/TestWagnerFischer.test
+CORE_TESTS += rest/src/core/tests/TestBox.test
+CORE_TESTS += rest/src/core/tests/TestOcrLine.test
+CORE_TESTS += rest/src/core/tests/TestCorLine.test
+CORE_TESTS += rest/src/core/tests/TestCorrector.test
+CORE_TESTS += rest/src/core/tests/TestProfile.test
+CORE_TESTS += rest/src/core/tests/TestLineBuilder.test
+CORE_TESTS += rest/src/core/tests/TestPageBuilder.test
+CORE_TESTS += rest/src/core/tests/TestBookBuilder.test
+CORE_TESTS += rest/src/core/tests/TestProjectBuilder.test
+CORE_TESTS += rest/src/core/tests/TestCache.test
+CORE_TESTS += rest/src/core/tests/TestSession.test
+CORE_TESTS += rest/src/core/tests/TestSessionStore.test
+
+DATABASE_TESTS += rest/src/database/tests/TestTables.test
+DATABASE_TESTS += rest/src/database/tests/TestDatabase.test
+DATABASE_TESTS += rest/src/database/tests/TestConnectionPool.test
+DATABASE_TESTS += rest/src/database/tests/TestDatabaseGuard.test
+
+PARSER_TESTS += rest/src/parser/tests/TestDocXml.test
+PARSER_TESTS += rest/src/parser/tests/TestAltoXmlParsing.test
+PARSER_TESTS += rest/src/parser/tests/TestAbbyyXmlParsing.test
+PARSER_TESTS += rest/src/parser/tests/TestOcropusLlocsParsing.test
+PARSER_TESTS += rest/src/parser/tests/TestHocrParsing.test
+PARSER_TESTS += rest/src/parser/tests/TestBookDirectoryBuilder.test
+
+TESTS = $(UTILS_TESTS) $(CORE_TESTS) $(DATABASE_TESTS) $(PARSER_TESTS)
+%.test: %.cpp $(LIBS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
 
 test: $(TESTS)
 	@errors=0;\
 	for test in $(TESTS); do \
-		./$$test; \
+		$$test > /dev/null 2>&1; \
 		res=$$?; \
 		if [ $$res -ne 0 ]; then \
 			errors=$$((errors + 1)); \
-			echo $$test ': \033[0;31mFAIL\033[0m' ;\
+			printf "%-60s \033[0;31mFAIL\033[0m\n" "$$test:";\
 		else \
-			echo $$test ': \033[0;32mSUCCESS\033[0m' ;\
+			printf "%-60s \033[0;32mSUCCESS\033[0m\n" "$$test:";\
 		fi \
 	done ;\
 	if [ $$errors -ne 0 ]; then \

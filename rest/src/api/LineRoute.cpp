@@ -1,18 +1,16 @@
-#include <cppconn/connection.h>
 #include <regex>
 #include <crow.h>
 #include <unicode/uchar.h>
 #include <utf8.h>
+#include "utils/Error.hpp"
+#include "utils/ScopeGuard.hpp"
 #include "core/jsonify.hpp"
-#include "core/Error.hpp"
 #include "core/User.hpp"
 #include "core/Page.hpp"
 #include "core/Book.hpp"
-#include "core/Database.hpp"
+#include "core/Session.hpp"
 #include "LineRoute.hpp"
-#include "core/Sessions.hpp"
 #include "core/Package.hpp"
-#include "core/ScopeGuard.hpp"
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/WagnerFischer.hpp"
 
@@ -35,9 +33,15 @@ LineRoute::Register(App& app)
 Route::Response
 LineRoute::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
 {
-	auto db = database(req);
-	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto line = find(db, bid, pid, lid);
+	auto conn = connection();
+	auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
+
+	auto line = session->find(conn, bid, pid, lid);
+	if (not line)
+		return not_found();
 	assert(line);
 	Json j;
 	return j << *line;
@@ -53,19 +57,23 @@ LineRoute::impl(HttpPost, const Request& req, int bid, int pid, int lid) const
 	if (not data.correction)
 		return bad_request();
 
-	auto db = database(req);
-	std::lock_guard<std::mutex> lock(db.session().mutex);
-	auto line = find(db, bid, pid, lid);
+	auto conn = connection();
+	auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
+
+	auto line = session->find(conn, bid, pid, lid);
 	if (not line)
 		THROW(NotFound, "Cannot find book id: ", bid,
 				" page id: ", pid, " line id: ", lid);
-	return correct(db, *line, data);
+	return correct(conn, *line, data);
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-LineRoute::correct(Database& db, Line& line, const Data& data) const
+LineRoute::correct(MysqlConnection& conn, Line& line, const Data& data) const
 {
 
 	WagnerFischer wf;
@@ -79,9 +87,11 @@ LineRoute::correct(Database& db, Line& line, const Data& data) const
 	CROW_LOG_DEBUG << "(LineRoute)        lev: " << lev << "\n";
 	wf.correct(line);
 	log(wf);
-	db.set_autocommit(false);
-	db.update_line(line);
-	db.commit();
+
+	MysqlCommiter commiter(conn);
+	update_line(conn.db(), line);
+	commiter.commit();
+
 	Json json;
 	return json << line;
 }

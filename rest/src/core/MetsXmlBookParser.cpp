@@ -1,6 +1,6 @@
 #include "parser/PageParser.hpp"
 #include "Page.hpp"
-#include "Error.hpp"
+#include "utils/Error.hpp"
 #include "Book.hpp"
 #include "parser/ParserPage.hpp"
 #include "MetsXmlBookParser.hpp"
@@ -122,7 +122,7 @@ MetsXmlBookParser::make_book()
 	}
 	for (const auto& page: pages) {
 		assert(page);
-		book_->push_back(page);
+		book_->push_back(*page);
 	}
 	assert(book_);
 }

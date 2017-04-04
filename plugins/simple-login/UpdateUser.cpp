@@ -1,8 +1,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <crow.h>
-#include <cppconn/connection.h>
-#include "core/Database.hpp"
-#include "core/Sessions.hpp"
+#include "database/NewDatabase.hpp"
+#include "core/Session.hpp"
 #include "core/User.hpp"
 #include "UpdateUser.hpp"
 
@@ -32,22 +31,26 @@ UpdateUser::operator()(
 	const std::string& val
 ) const {
 	// get user
-	auto db = database(request);
-	auto user = db.select_user(name);
+	auto conn = connection();
+	auto session = this->session(request);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
+
+	auto user = session->find_user(conn, name);
 	if (not user)
 		return not_found();
 
-	// update given field
-	if (not update(*user, key, val))
-		return bad_request();
-
 	// update user information
-	db.update_user(*user);
+	update(*user, key, val);
+	MysqlCommiter commiter(conn);
+	update_user(conn.db(), *user);
+	commiter.commit();
 	return ok();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool
+void
 UpdateUser::update(User& user, const std::string& key, const std::string& val) const noexcept
 {
 	static const std::string institute = "institute";
@@ -57,11 +60,9 @@ UpdateUser::update(User& user, const std::string& key, const std::string& val) c
 	// check which field to set
 	if (boost::iequals(key, institute)) {
 		user.institute = val;
-		return true;
 	} else if (boost::iequals(key, email)) {
 		user.email = val;
-		return true;
 	} else {
-		return false;
+		THROW(BadRequest, "bad user setting: ", key, "=", val);
 	}
 }

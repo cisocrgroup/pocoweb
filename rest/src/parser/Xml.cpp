@@ -1,5 +1,5 @@
-#include "pugixml/pugixml.hpp"
-#include "core/Error.hpp"
+#include "pugixml.hpp"
+#include "utils/Error.hpp"
 #include "Xml.hpp"
 
 using namespace pcw;

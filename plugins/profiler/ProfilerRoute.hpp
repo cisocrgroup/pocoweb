@@ -41,9 +41,9 @@ namespace profiler {
 		bool is_running_job_id(int id) const noexcept {
 			return jobs_->count(id);
 		}
-		ConstBookSptr get_origin(const pcw::Database& db, int bid) const;
+		ConstBookSptr get_book(const Request& req, int bid) const;
 		static ProfilerUptr get_profiler(ConstBookSptr book);
-		Response handle_new_profile(const pcw::Database& db, const Result& res) const;
+		Response handle_new_profile(const Request& req, const Result& res) const;
 
 		static const char *route_, *name_;
 		MutexPtr mutex_;

@@ -1,8 +1,7 @@
 #include <crow.h>
-#include <cppconn/connection.h>
 #include "core/User.hpp"
-#include "core/Sessions.hpp"
-#include "core/Database.hpp"
+#include "core/Session.hpp"
+#include "database/NewDatabase.hpp"
 #include "DeleteUser.hpp"
 
 using namespace pcw;
@@ -26,7 +25,12 @@ DeleteUser::Register(App& app)
 Route::Response
 DeleteUser::operator()(const Request& req, const std::string& name) const
 {
-	auto db = database(req);
-	db.delete_user(name);
+	auto conn = connection();
+	auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
+
+	delete_user(conn.db(), name);
 	return ok();
 }

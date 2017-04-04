@@ -2,13 +2,13 @@
 #define pcw_docxml_hpp__
 
 #include <vector>
-#include "pugixml/pugixml.hpp"
+#include "pugixml.hpp"
 
 namespace pcw {
 	class BookView;
 	class Page;
 	class Profile;
-	class Suggestion;
+	struct Suggestion;
 
 	struct DocXml: public pugi::xml_document {
 		DocXml(): suggestions(nullptr) {}

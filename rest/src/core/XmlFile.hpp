@@ -2,7 +2,7 @@
 #define pcw_XmlFile_hpp__
 
 #include <boost/filesystem/path.hpp>
-#include "pugixml/pugixml.hpp"
+#include "pugixml.hpp"
 
 namespace pcw {
 	using Path = boost::filesystem::path;

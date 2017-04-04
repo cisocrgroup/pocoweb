@@ -2,20 +2,24 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include <cppconn/resultset.h>
-#include <cppconn/connection.h>
-#include <cppconn/prepared_statement.h>
 #include "BookView.hpp"
 #include "User.hpp"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-bool
-User::has_permission(const BookView& project) const noexcept
-{
-	return project.owner().id() == id_;
-}
+User::User(std::string n, const std::string& p, std::string e, std::string i, int id)
+	: User(std::move(n), Password::make(p), std::move(e), std::move(i), id)
+{}
+
+////////////////////////////////////////////////////////////////////////////////
+User::User(std::string n, Password p, std::string e, std::string i, int id)
+	: name(std::move(n))
+	, password(std::move(p))
+	, email(std::move(e))
+	, institute(std::move(i))
+	, id_(id)
+{}
 
 ////////////////////////////////////////////////////////////////////////////////
 std::ostream&

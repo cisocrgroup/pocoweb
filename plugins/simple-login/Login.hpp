@@ -12,11 +12,17 @@ namespace pcw {
 		virtual void Register(App&) override;
 
 		pcw_crtp_route_def_impl__(std::string,std::string);
+		pcw_crtp_route_def_impl__(std::string);
 		Response impl(
 			HttpGet,
 			const Request& req,
 			const std::string& name,
 			const std::string& pass
+		) const;
+		Response impl(
+			HttpGet,
+			const Request& req,
+			const std::string& name
 		) const;
 
 	private:

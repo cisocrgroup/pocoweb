@@ -1,6 +1,7 @@
 #ifndef pcw_Cache_hpp__
 #define pcw_Cache_hpp__
 
+#include <cassert>
 #include <memory>
 #include <mutex>
 #include <list>
@@ -17,7 +18,9 @@ namespace pcw {
 		using Base::end;
 		using Base::size;
 		using Base::empty;
-		
+
+		size_t size() const noexcept {Lock lock(mutex_); return Base::size();}
+		size_t max_size() const noexcept {return n_;}
 		void put(value_type t);
 		template<class G>
 		value_type get(int id, G g);
@@ -26,11 +29,14 @@ namespace pcw {
 
 	private:
 		using Iterator = typename Base::iterator;
+		using Mutex = std::mutex;
+		using Lock = std::lock_guard<Mutex>;
+
+		void put_impl(value_type t);
 		template<class F, class G>
-		value_type do_get(F f, G g);
-		template<class G>
-		value_type update(Iterator i, G g);
-		std::mutex mutex_;
+		value_type get_impl(F f, G g);
+
+		mutable Mutex mutex_;
 		const size_t n_;
 	};
 }
@@ -40,84 +46,69 @@ template<class T>
 void
 pcw::Cache<T>::put(value_type t)
 {
-	std::lock_guard<std::mutex> lock(mutex_);
-	// new elements are inserted at the back of the cache
-	if (Base::size() < n_) {
-		Base::push_back(std::move(t));
-	} else {
-		Base::back() = std::move(t);
+	Lock lock(mutex_);
+	put_impl(std::move(t));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class T>
+void
+pcw::Cache<T>::put_impl(value_type t)
+{
+	assert(not mutex_.try_lock());
+	// never put nullptr
+	if (t) {
+		// new elements are inserted at the back of the cache
+		if (Base::size() < n_) {
+			Base::push_back(std::move(t));
+		} else {
+			Base::back() = std::move(t);
+		}
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class T>
 template<class G>
-typename pcw::Cache<T>::value_type 
+typename pcw::Cache<T>::value_type
 pcw::Cache<T>::get(int id, G g)
 {
+	Lock lock(mutex_);
 	auto gg = [id,g](){return g(id);};
 	auto f = [id](const value_type& t) {return t->id() == id;};
-	return do_get(f, gg);
+	return get_impl(f, gg);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class T>
 template<class G>
-typename pcw::Cache<T>::value_type 
+typename pcw::Cache<T>::value_type
 pcw::Cache<T>::get(const std::string& name, G g)
 {
+	Lock lock(mutex_);
 	auto gg = [&name,g](){return g(name);};
 	auto f = [&name](const value_type& t) {return t->name == name;};
-	return do_get(f, gg);
+	return get_impl(f, gg);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class T>
 template<class F, class G>
-typename pcw::Cache<T>::value_type 
-pcw::Cache<T>::do_get(F f, G g)
+typename pcw::Cache<T>::value_type
+pcw::Cache<T>::get_impl(F f, G g)
 {
-	auto i = end();
-	// just lock the cache while searching
-	// update() locks the cache again if it needs to add an element
-	// this makes it save to recursively use the cache from g()
-	{
-		std::lock_guard<std::mutex> lock(mutex_);
-		i = std::find_if(begin(), end(), f);
-	}
-	return update(i, g);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template<class T>
-template<class G>
-typename pcw::Cache<T>::value_type 
-pcw::Cache<T>::update(Iterator i, G g)
-{
-	const auto b = begin();
-	const auto e = end();
-
-	if (i == e) {
+	assert(not mutex_.try_lock());
+	auto i = std::find_if(begin(), end(), f);
+	if (i == end()) {
 		auto t = g();
-		if (not t) {
-			return nullptr;
-		} else {
-			std::lock_guard<std::mutex> lock(mutex_);
-			if (size() < n_)
-				this->push_back(t);
-			else
-				this->back() = t;
-			return this->back();
-		}
+		put_impl(t);
+		return t;
+	} else if (i != begin()) {
+		auto j = std::prev(i);
+		std::swap(*i, *j);
+		return *j;
 	} else {
-		std::lock_guard<std::mutex> lock(mutex_);
-		if (i != b) {
-			auto j = std::prev(i);
-			std::swap(*i, *j);
-			return *j;
-		} else {
-			return *i;
-		}
+		return *i;
 	}
 }
 

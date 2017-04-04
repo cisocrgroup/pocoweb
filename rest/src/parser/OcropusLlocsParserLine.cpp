@@ -2,7 +2,7 @@
 #include <iostream>
 #include <regex>
 #include <utf8.h>
-#include "core/Error.hpp"
+#include "utils/Error.hpp"
 #include "core/Line.hpp"
 #include "OcropusLlocsParserLine.hpp"
 
@@ -68,8 +68,8 @@ OcropusLlocsParserLine::init()
 		throw std::system_error(errno, std::system_category(), llocs_.string());
 	std::string tmp;
 	while (std::getline(is, tmp)) {
-		auto line = tmp.data();
-		auto first_tab = strchr(line, '\t');
+		const char* line = tmp.data();
+		const char* first_tab = strchr(line, '\t');
 		if (not first_tab)
 			THROW(BadRequest, "Invalid llocs line: ", tmp);
 		if (line == first_tab) // skip 0 class

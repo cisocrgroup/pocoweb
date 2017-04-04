@@ -11,7 +11,7 @@ namespace pcw {
 	using PagePtr = std::shared_ptr<Page>;
 	class User;
 	class BookView;
-	using BookViewPtr = std::shared_ptr<BookView>;
+	using BookViewSptr = std::shared_ptr<BookView>;
 
 	class BookView: private std::vector<PagePtr>,
 		        public std::enable_shared_from_this<BookView> {
@@ -30,7 +30,8 @@ namespace pcw {
 		}
 		value_type find(int pageid) const noexcept;
 		value_type next(int pageid, int val) const noexcept;
-		void push_back(PagePtr page);
+		void push_back(Page& page);
+		using Base::erase;
 		using Base::back;
 		using Base::front;
 		using Base::begin;

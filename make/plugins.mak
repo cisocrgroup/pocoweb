@@ -2,7 +2,6 @@ PEX_OBJS += plugins/example/example.o
 
 PSLOG_OBJS += plugins/simple-login/CreateUser.o
 PSLOG_OBJS += plugins/simple-login/DeleteUser.o
-PSLOG_OBJS += plugins/simple-login/LoggedIn.o
 PSLOG_OBJS += plugins/simple-login/Login.o
 PSLOG_OBJS += plugins/simple-login/UpdateUser.o
 PSLOG_OBJS += plugins/simple-login/simple-login.o
@@ -14,15 +13,15 @@ PPROF_OBJS += plugins/profiler/Profiler.o
 PPROF_OBJS += plugins/profiler/RemoteProfiler.o
 PPROF_OBJS += plugins/profiler/ProfilerRoute.o
 
-PLUGINS += example.so
-PLUGINS += simple-login.so
-PLUGINS += profiler.so
+PLUGINS += lib/example.so
+PLUGINS += lib/simple-login.so
+PLUGINS += lib/profiler.so
 
-example.so: $(PEX_OBJS)
+lib/example.so: $(PEX_OBJS) | $(MODS) $(VENDS) $(LIBS) mkdir-lib
 	$(CXX) $(CXXFLAGS) -shared -o $@ $^ $(LDFLAGS)
-simple-login.so: $(PSLOG_OBJS)
+lib/simple-login.so: $(PSLOG_OBJS) | $(MODS) $(VENDS) $(LIBS) mkdir-lib
 	$(CXX) $(CXXFLAGS) -shared -o $@ $^ $(LDFLAGS)
-profiler.so: $(PPROF_OBJS)
+lib/profiler.so: $(PPROF_OBJS) | $(MODS) $(VENDS) $(LIBS) mkdir-lib
 	$(CXX) $(CXXFLAGS) -shared -o $@ $^ $(LDFLAGS)
 
 DEPS += $(patsubst %.o,%.d,$(PPROF_OBJS) $(PEX_OBJS) $(PSLOG_OBJS))

@@ -2,23 +2,22 @@
 #include <ctime>
 #include <sstream>
 #include <regex>
-#include <cppconn/connection.h>
 #include <crow/logging.h>
-#include "Error.hpp"
-#include "Book.hpp"
-#include "Page.hpp"
-#include "Line.hpp"
-#include "User.hpp"
-#include "Cache.hpp"
 #include "AppCache.hpp"
-#include "Database.hpp"
-#include "Sessions.hpp"
+#include "Book.hpp"
+#include "Cache.hpp"
+#include "Line.hpp"
+#include "Page.hpp"
 #include "Route.hpp"
+#include "Session.hpp"
+#include "SessionStore.hpp"
+#include "User.hpp"
+#include "utils/Error.hpp"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string
+boost::optional<std::string>
 pcw::get_session_id(const crow::request& request) noexcept
 {
 	static const std::string Cookie{"Cookie"};
@@ -27,9 +26,9 @@ pcw::get_session_id(const crow::request& request) noexcept
 	std::smatch m;
 	for (auto i = range.first; i != range.second; ++i) {
 		if (std::regex_match(i->second, m, sid))
-			return m[1];
+			return std::string(m[1]);
 	}
-	return "";
+	return {};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,26 +53,24 @@ Route::~Route() noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 SessionPtr
-Route::session(const crow::request& request) const noexcept
+Route::new_session(const User& user) const
 {
-	return sessions().find_session(get_session_id(request));
+	assert(session_store_);
+	return session_store_->new_session(user, cache_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Database
-Route::database(const crow::request& request) const
+SessionPtr
+Route::session(const crow::request& request) const
 {
-	return database(session(request));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Database
-Route::database(SessionPtr session) const
-{
-	assert(config_);
-	if (not session)
+	auto sid = get_session_id(request);
+	if (not sid)
 		THROW(Forbidden);
-	return Database{session, config_, cache_};
+	assert(session_store_);
+	auto session = session_store_->find_session(*sid);
+	if (not session)
+		THROW(BadRequest);
+	return session;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -117,34 +114,3 @@ Route::extract_raw(const crow::request& request)
 	return request.body;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-BookViewPtr
-Route::find(const Database& db, int bid) const
-{
-	auto book = db.select_project(bid);
-	if (not book)
-		THROW(NotFound, "Not Found: book id ", bid);
-	return book;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-PagePtr
-Route::find(const Database& db, int bid, int pid) const
-{
-	auto page = find(db, bid)->find(pid);
-	if (not page)
-		THROW(NotFound, "Not found: book id ", bid, ", page id ", pid);
-	return page;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-LinePtr
-Route::find(const Database& db, int bid, int pid, int lid) const
-{
-	auto page = find(db, bid, pid);
-	assert(page);
-	auto line = page->find(lid);
-	if (not line)
-		THROW(NotFound, "Not found: book id ", bid, ", page id ", pid, ", line id ", lid);
-	return line;
-}

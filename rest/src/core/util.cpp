@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <regex>
 #include <openssl/sha.h>
-#include "Error.hpp"
+#include "utils/Error.hpp"
 #include "util.hpp"
 #include "parser/AltoXmlPageParser.hpp"
 #include "parser/HocrPageParser.hpp"

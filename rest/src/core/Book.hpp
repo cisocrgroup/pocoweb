@@ -8,9 +8,10 @@
 
 namespace pcw {
 	class User;
-	using ConstUserPtr = std::shared_ptr<const User>;
+	using ConstUserSptr = std::shared_ptr<const User>;
 	class Book;
 	using BookPtr = std::shared_ptr<Book>;
+	using BookSptr = std::shared_ptr<Book>;
 	using Path = boost::filesystem::path;
 
 	class Book: public BookView {
@@ -30,8 +31,12 @@ namespace pcw {
 		Book(Book&& other) = delete;
 		Book& operator=(Book&& other) = delete;
 		virtual ~Book() noexcept override = default;
-		virtual const Book& origin() const noexcept override {return *this;}
-		virtual const User& owner() const noexcept override {return *owner_;}
+		virtual const Book& origin() const noexcept override {
+			return *this;
+		}
+		virtual const User& owner() const noexcept override {
+			return *owner_;
+		}
 		void set_owner(const User& user);
 
 		std::string author, title, description, uri, lang;
@@ -39,7 +44,7 @@ namespace pcw {
 		int year;
 
 	private:
-		ConstUserPtr owner_;
+		ConstUserSptr owner_;
 	};
 }
 

@@ -1,7 +1,7 @@
 #ifndef pcw_HocrParserLine_hpp__
 #define pcw_HocrParserLine_hpp__
 
-#include "pugixml/pugixml.hpp"
+#include "pugixml.hpp"
 #include "core/Box.hpp"
 #include "ParserPage.hpp"
 

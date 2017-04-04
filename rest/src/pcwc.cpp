@@ -5,8 +5,8 @@
 #include <regex>
 #include <curl/curl.h>
 #include <crow/json.h>
-#include "core/Error.hpp"
-#include "core/TmpDir.hpp"
+#include "utils/Error.hpp"
+#include "utils/TmpDir.hpp"
 
 using namespace pcw;
 

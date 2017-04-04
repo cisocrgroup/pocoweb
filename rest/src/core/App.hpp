@@ -5,13 +5,14 @@
 #include <memory>
 #include "Route.hpp"
 #include "Plugin.hpp"
+#include "database/mysql.hpp"
 
 namespace pcw {
-	class Config;
+	struct Config;
 	using ConfigPtr = std::shared_ptr<Config>;
-	class Sessions;
-	using SessionsPtr = std::shared_ptr<Sessions>;
-	class AppCache;
+	class SessionStore;
+	using SessionsStoreSptr = std::shared_ptr<SessionStore>;
+	struct AppCache;
 	using CachePtr = std::shared_ptr<AppCache>;
 
 	class App {
@@ -28,6 +29,7 @@ namespace pcw {
 		const Routes& routes() const noexcept {return routes_;}
 		const Config& config() const noexcept {return *config_;}
 		const ConfigPtr& config_ptr() const noexcept {return config_;}
+		MysqlConnectionPool& connection_pool() const noexcept {return *connection_pool_;}
 		void run();
 		void stop() noexcept;
 		static int version() noexcept;
@@ -44,7 +46,8 @@ namespace pcw {
 		std::unique_ptr<pcw::Route::App> app_;
 		const CachePtr cache_;
 		const std::shared_ptr<Config> config_;
-		const std::shared_ptr<Sessions> sessions_;
+		const SessionStoreSptr session_store_;
+		const MysqlConnectionPoolSptr connection_pool_;
 	};
 }
 

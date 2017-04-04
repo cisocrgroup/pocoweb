@@ -1,5 +1,5 @@
 #include <stdexcept>
-#include "pugixml/pugixml.hpp"
+#include "pugixml.hpp"
 #include "XmlParserPage.hpp"
 
 using namespace pcw;
