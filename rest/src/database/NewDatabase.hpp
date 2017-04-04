@@ -9,7 +9,7 @@
 #include "core/BookBuilder.hpp"
 #include "core/PageBuilder.hpp"
 #include "core/LineBuilder.hpp"
-#include "core/BookView.hpp"
+#include "core/Project.hpp"
 #include "core/Book.hpp"
 #include "core/Page.hpp"
 #include "core/Line.hpp"
@@ -46,7 +46,7 @@ namespace pcw {
 		void insert_book_info_and_set_id(Db& db, Book& book);
 
 		template<class Db>
-		void insert_project_info_and_set_id(Db& db, BookView& view);
+		void insert_project_info_and_set_id(Db& db, Project& view);
 
 		template<class Db, class P, class Q>
 		void select_pages(Db& db, const BookBuilder& builder, P& p, Q& q);
@@ -77,13 +77,13 @@ namespace pcw {
 	void delete_user(Db& db, int id);
 
 	template<class Db>
-	BookViewSptr insert_project(Db& db, BookView& book);
+	ProjectSptr insert_project(Db& db, Project& book);
 
 	template<class Db>
 	BookSptr insert_book(Db& db, Book& book);
 
 	template<class Db>
-	void update_book(Db& db, BookView& view);
+	void update_book(Db& db, Project& view);
 
 	struct ProjectEntry {
 		bool is_book() const noexcept {return origin == projectid;}
@@ -100,7 +100,7 @@ namespace pcw {
 	BookSptr select_book(Db& db, const User& owner, int bookid);
 
 	template<class Db>
-	BookViewSptr select_project(Db& db, const Book& book, int projectid);
+	ProjectSptr select_project(Db& db, const Book& book, int projectid);
 
 	template<class Db>
 	std::vector<int> select_all_project_ids(Db& db, const User& owner);
@@ -196,7 +196,7 @@ pcw::delete_user(Db& db, int id)
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
 void
-pcw::detail::insert_project_info_and_set_id(Db& db, BookView& view)
+pcw::detail::insert_project_info_and_set_id(Db& db, Project& view)
 {
 	using namespace sqlpp;
 	tables::Projects projects;
@@ -208,8 +208,8 @@ pcw::detail::insert_project_info_and_set_id(Db& db, BookView& view)
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
-pcw::BookViewSptr
-pcw::insert_project(Db& db, BookView& view)
+pcw::ProjectSptr
+pcw::insert_project(Db& db, Project& view)
 {
 	using namespace sqlpp;
 	detail::insert_project_info_and_set_id(db, view);
@@ -361,7 +361,7 @@ pcw::detail::insert_content(Db& db, R& r, const Line& line)
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
 void
-pcw::update_book(Db& db, BookView& view)
+pcw::update_book(Db& db, Project& view)
 {
 	using namespace sqlpp;
 	tables::Books books;
@@ -532,7 +532,7 @@ pcw::detail::select_lines(Db& db, const PageBuilder& builder, Q& q)
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
-pcw::BookViewSptr
+pcw::ProjectSptr
 pcw::select_project(Db& db, const Book& book, int projectid)
 {
 	using namespace sqlpp;

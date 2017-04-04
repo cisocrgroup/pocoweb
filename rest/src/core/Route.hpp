@@ -29,8 +29,8 @@ namespace pcw {
 	using ProjectPtr = std::shared_ptr<Project>;
 	struct AppCache;
 	using CachePtr = std::shared_ptr<AppCache>;
-	class BookView;
-	using BookViewPtr = std::shared_ptr<BookView>;
+	class Project;
+	using ProjectPtr = std::shared_ptr<Project>;
 	class Page;
 	using PagePtr = std::shared_ptr<Page>;
 	class Line;

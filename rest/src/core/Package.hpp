@@ -2,12 +2,12 @@
 #define pcw_Package_hpp__
 
 #include <vector>
-#include "BookView.hpp"
+#include "Project.hpp"
 
 namespace pcw {
 	using PagePtr = std::shared_ptr<Page>;
 
-	class Package: public BookView {
+	class Package: public Project {
 	public:
 		Package(int id, const User& owner, const Book& book);
 		Package(int id = 0);

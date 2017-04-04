@@ -27,7 +27,7 @@ Session::has_expired() const noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-Session::cache(BookView& view) const
+Session::cache(Project& view) const
 {
 	if (cache_) {
 		if (view.is_book()) {

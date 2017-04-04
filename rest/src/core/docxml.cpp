@@ -1,5 +1,5 @@
 #include <sstream>
-#include "BookView.hpp"
+#include "Project.hpp"
 #include "Page.hpp"
 #include "Profile.hpp"
 #include "docxml.hpp"
@@ -46,7 +46,7 @@ pcw::operator<<(DocXml& docxml, const Profile& profile)
 
 ////////////////////////////////////////////////////////////////////////////////
 DocXml&
-pcw::operator<<(DocXml& docxml, const BookView& view)
+pcw::operator<<(DocXml& docxml, const Project& view)
 {
 	docxml.reset();
 	auto document = DocXmlNode::append_new(docxml);

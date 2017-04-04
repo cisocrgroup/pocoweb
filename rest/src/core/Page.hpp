@@ -9,7 +9,7 @@
 #include "Line.hpp"
 
 namespace pcw {
-	class BookView;
+	class Project;
 	class Book;
 	class Page;
 	using PageSptr = std::shared_ptr<Page>;
@@ -68,7 +68,7 @@ namespace pcw {
 	private:
 		std::weak_ptr<const Book> book_;
 		int id_;
-		friend class BookView;
+		friend class Project;
 		friend class PageBuilder;
 		friend class BookBuilder;
 	};

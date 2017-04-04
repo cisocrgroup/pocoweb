@@ -5,7 +5,7 @@
 #include "Password.hpp"
 
 namespace pcw {
-	class BookView;
+	class Project;
 	class User;
 	using UserPtr = std::shared_ptr<User>;
 	using UserSptr = std::shared_ptr<User>;

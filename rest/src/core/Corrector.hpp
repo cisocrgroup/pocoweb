@@ -7,16 +7,16 @@
 
 namespace pcw {
 	class Line;
-	class BookView;
-	using BookViewPtr = std::shared_ptr<BookView>;
+	class Project;
+	using ProjectPtr = std::shared_ptr<Project>;
 
 	class Corrector {
 	public:
-		Corrector(BookViewPtr view = nullptr)
+		Corrector(ProjectPtr view = nullptr)
 			: wf_()
 			, view_(std::move(view))
 		{};
-		void set_view(BookViewPtr view) noexcept {view_ = std::move(view);}
+		void set_view(ProjectPtr view) noexcept {view_ = std::move(view);}
 		void correct(int pid, int lid, const std::wstring& str);
 		void correct(int pid, int lid, const std::string& str);
 
@@ -36,7 +36,7 @@ namespace pcw {
 		void correct(Line& line, const std::wregex& pat, const std::wstring& repl);
 
 		WagnerFischer wf_;
-		BookViewPtr view_;
+		ProjectPtr view_;
 	};
 }
 

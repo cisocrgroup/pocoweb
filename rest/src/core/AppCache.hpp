@@ -5,11 +5,11 @@
 #include "Cache.hpp"
 #include "User.hpp"
 #include "Book.hpp"
-#include "BookView.hpp"
+#include "Project.hpp"
 
 namespace pcw {
 	using UserCache = Cache<User>;
-	using BookViewCache = Cache<BookView>;
+	using ProjectCache = Cache<Project>;
 	using BookCache = Cache<Book>;
 	struct AppCache;
 	using CachePtr = std::shared_ptr<AppCache>;
@@ -20,7 +20,7 @@ namespace pcw {
 		  	, projects(ps)
 			, books(bs) {}
 		UserCache users;
-		BookViewCache projects;
+		ProjectCache projects;
 		BookCache books;
 	};
 }
