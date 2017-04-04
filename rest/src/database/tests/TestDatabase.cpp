@@ -20,7 +20,7 @@ struct UsersFixture {
 	UserSptr user;
 	MockDb db;
 	UsersFixture()
-		: user(std::make_shared<User>("name", "email", "institute", 42))
+		: user(std::make_shared<User>("name", "pass", "email", "institute", 42))
 		, db()
 	{}
 };
@@ -38,14 +38,6 @@ BOOST_AUTO_TEST_CASE(CreateUser)
 	BOOST_CHECK_EQUAL(user->name, nuser->name);
 	BOOST_CHECK_EQUAL(user->email, nuser->email);
 	BOOST_CHECK_EQUAL(user->institute, nuser->institute);
-	db.validate();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(LoginUser)
-{
-	db.expect(std::regex(R"(SELECT .* FROM users WHERE \(users.name='name'\))"));
-	login_user(db, user->name, "password");
 	db.validate();
 }
 

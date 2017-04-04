@@ -15,7 +15,7 @@ struct SessionStoreFixture {
 
 	SessionStoreFixture()
 		: session_store()
-		, user(std::make_shared<User>("name", "email", "inst", 42))
+		, user(std::make_shared<User>("name", "pass", "email", "inst", 42))
 	{}
 };
 

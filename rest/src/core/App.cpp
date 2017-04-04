@@ -49,7 +49,6 @@ App::stop() noexcept
 		// order matters here: first delete the server,
 		// then delete all routes and then close the plugins
 		if (app_) {
-			app_->stop();
 			app_.reset();
 		}
 		routes_.clear();

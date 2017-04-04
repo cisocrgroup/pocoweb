@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(YearTest)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(OwnerTest)
 {
-	builder.set_owner(*std::make_shared<User>("", "", "", 42));
+	builder.set_owner(*std::make_shared<User>("", "", "", "", 42));
 	BOOST_CHECK_EQUAL(builder.build()->owner().id(), 42);
 }
 

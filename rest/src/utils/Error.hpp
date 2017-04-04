@@ -8,6 +8,9 @@
 namespace pcw {
 	class Error: public std::exception {
 	public:
+		Error(const char* f, int l, const char* what)
+			: what_(std::string(f) + ":" + std::to_string(l) + ": " + what + ": ")
+		{}
 		Error(const char* f, int l)
 			: what_(std::string(f) + ":" + std::to_string(l) + ": ")
 		{}
@@ -34,7 +37,7 @@ namespace pcw {
 
 	class BadRequest: public Error {
 	public:
-		BadRequest(const char* f, int l): Error(f, l) {}
+		BadRequest(const char* f, int l): Error(f, l, "BadRequest") {}
 		virtual ~BadRequest() noexcept override = default;
 		virtual int code() const noexcept override {
 			// BadRequest
@@ -44,7 +47,7 @@ namespace pcw {
 
 	class NotImplemented: public Error {
 	public:
-		NotImplemented(const char* f, int l): Error(f, l) {}
+		NotImplemented(const char* f, int l): Error(f, l, "NotImplemented") {}
 		virtual ~NotImplemented() noexcept override = default;
 		virtual int code() const noexcept override {
 			// NotImplemented
@@ -53,7 +56,7 @@ namespace pcw {
 	};
 	class Forbidden: public Error {
 	public:
-		Forbidden(const char* f, int l): Error(f, l) {}
+		Forbidden(const char* f, int l): Error(f, l, "Forbidden") {}
 		virtual ~Forbidden() noexcept override = default;
 		virtual int code() const noexcept override {
 			// Forbidden
@@ -63,7 +66,7 @@ namespace pcw {
 
 	class NotFound: public Error {
 	public:
-		NotFound(const char* f, int l): Error(f, l) {}
+		NotFound(const char* f, int l): Error(f, l, "NotFound") {}
 		virtual ~NotFound() noexcept override = default;
 		virtual int code() const noexcept override {
 			// NotFound
@@ -73,7 +76,7 @@ namespace pcw {
 
 	class ParseError: public Error {
 	public:
-		ParseError(const char* f, int l): Error(f, l) {}
+		ParseError(const char* f, int l): Error(f, l, "ParseError") {}
 		virtual ~ParseError() noexcept override = default;
 		virtual int code() const noexcept override {
 			// ParseError (BadRequest)

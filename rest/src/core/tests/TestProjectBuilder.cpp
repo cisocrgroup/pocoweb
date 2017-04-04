@@ -19,7 +19,7 @@ struct ProjectBuilderFixture {
 	BookSptr book;
 	UserSptr user;
 	ProjectBuilderFixture(): builder(), book(), user() {
-		user = std::make_shared<User>("name", "email", "inst", 42);
+		user = std::make_shared<User>("name", "pass", "email", "inst", 42);
 		BookBuilder bbuilder;
 		PageBuilder pbuilder;
 		bbuilder.append(*pbuilder.build());

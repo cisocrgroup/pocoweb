@@ -61,6 +61,8 @@ BookRoute::impl(HttpPost, const Request& req) const
 {
 	auto conn = connection();
 	auto session = this->session(req);
+	assert(conn);
+	assert(session);
 	SessionLock lock(*session);
 
 	// create new bookdir
@@ -83,7 +85,9 @@ BookRoute::impl(HttpPost, const Request& req) const
 	commiter.commit();
 	sg.dismiss();
 	Json j;
-	return j << *book;
+	Response response(j << *book);
+	response.code = created().code;
+	return response;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -145,9 +149,10 @@ BookRoute::set(const Request& req, int bid, const Data& data) const
 	SessionLock lock(*session);
 
 	auto view = session->find(conn, bid);
-	assert(view);
+	if (not view)
+		THROW(NotFound, "cannot load book id: ", bid);
 	if (not view->is_book())
-		THROW(BadRequest, "Cannot set book view id: ", bid);
+		THROW(BadRequest, "cannot set parameters of book view id: ", bid);
 	auto book = std::dynamic_pointer_cast<Book>(view);
 
 	if (data.author)
