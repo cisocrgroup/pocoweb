@@ -17,6 +17,7 @@ CORE_TESTS += rest/src/core/tests/TestPackageBuilder.test
 CORE_TESTS += rest/src/core/tests/TestCache.test
 CORE_TESTS += rest/src/core/tests/TestSession.test
 CORE_TESTS += rest/src/core/tests/TestSessionStore.test
+CORE_TESTS += rest/src/core/tests/TestSearcher.test
 
 DATABASE_TESTS += rest/src/database/tests/TestTables.test
 DATABASE_TESTS += rest/src/database/tests/TestDatabase.test
