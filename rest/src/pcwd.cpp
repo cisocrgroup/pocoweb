@@ -92,7 +92,9 @@ void
 create_base_directory(const Config& config)
 {
 	boost::system::error_code ec;
-	if (not boost::filesystem::create_directories(config.daemon.basedir, ec))
+	if (not boost::filesystem::create_directories(config.daemon.basedir, ec)
+			and ec.value() != 0) {
 		throw std::system_error(ec.value(), std::system_category(),
 				config.daemon.basedir);
+	}
 }
