@@ -52,4 +52,8 @@ test: $(TESTS)
 	fi
 
 DEPS += $(patsubst %.test,%.d,$(TESTS))
+itest: misc/scripts/integration-tests config.ini pcwd
+	@$< config.ini 2>/dev/null
+
 .PHONY: test
+.PHONY: itest
