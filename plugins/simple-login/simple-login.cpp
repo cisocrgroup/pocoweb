@@ -5,7 +5,7 @@
 #include "Login.hpp"
 #include "core/Session.hpp"
 #include "core/Password.hpp"
-#include "database/NewDatabase.hpp"
+#include "database/Database.hpp"
 #include "CreateUser.hpp"
 #include "UpdateUser.hpp"
 #include "DeleteUser.hpp"

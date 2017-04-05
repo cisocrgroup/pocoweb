@@ -5,7 +5,7 @@
 #include <memory>
 #include <mutex>
 #include "database/DatabaseGuard.hpp"
-#include "database/NewDatabase.hpp"
+#include "database/Database.hpp"
 #include "database/ConnectionPool.hpp"
 #include "Book.hpp"
 #include "BookView.hpp"

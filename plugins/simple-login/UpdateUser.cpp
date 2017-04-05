@@ -1,6 +1,6 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <crow.h>
-#include "database/NewDatabase.hpp"
+#include "database/Database.hpp"
 #include "core/Session.hpp"
 #include "core/User.hpp"
 #include "UpdateUser.hpp"

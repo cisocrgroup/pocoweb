@@ -1,5 +1,5 @@
 #include <crow.h>
-#include "database/NewDatabase.hpp"
+#include "database/Database.hpp"
 #include "core/Session.hpp"
 #include "CreateUser.hpp"
 
