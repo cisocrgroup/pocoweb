@@ -50,7 +50,30 @@ PackageBuilder::build_continous() const
 	assert(continous_);
 	assert(number_ > 0);
 	assert(number_ <= project_->size());
-	return {};
+
+	std::vector<PackageSptr> res(number_);
+	const auto owner = project_->owner().shared_from_this();
+	std::generate(begin(res), end(res), [&]() {
+		return std::make_shared<Package>(0, *owner, project_->origin());
+	});
+
+	const auto n = project_->size() / number_;
+	auto r = project_->size() % number_;
+	size_t i = 0, j = 0;
+	for (const auto& page: *project_) {
+		assert(i < res.size());
+		assert(j <= n);
+		res[i]->push_back(*page);
+		if (j == (n - 1) and r > 0) {
+			--r;
+		} else if (j == (n - 1)) {
+			++i;
+			j = 0;
+		} else {
+			++j;
+		}
+	}
+	return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -67,6 +90,7 @@ PackageBuilder::build_simple() const
 	std::generate(begin(res), end(res), [&]() {
 		return std::make_shared<Package>(0, *owner, project_->origin());
 	});
+
 	size_t i = 0;
 	for (const auto& page: *project_) {
 		res[i++ % number_]->push_back(*page);

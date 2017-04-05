@@ -108,6 +108,52 @@ BOOST_AUTO_TEST_CASE(SimpleBuildWith3)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(ContinousBuildWith5)
+{
+	builder.set_number(5);
+	builder.set_continous(true);
+	auto packages = builder.build();
+	BOOST_CHECK_EQUAL(packages.size(), 5);
+	for (const auto& package: packages) {
+		BOOST_REQUIRE(package);
+		BOOST_CHECK_EQUAL(package->size(), 2);
+	}
+	CHECK_FIRST_LINE(0, 1, "first");
+	CHECK_FIRST_LINE(0, 2, "second");
+	CHECK_FIRST_LINE(1, 3, "third");
+	CHECK_FIRST_LINE(1, 4, "fourth");
+	CHECK_FIRST_LINE(2, 5, "fifth");
+	CHECK_FIRST_LINE(2, 6, "sixth");
+	CHECK_FIRST_LINE(3, 7, "seventh");
+	CHECK_FIRST_LINE(3, 8, "eighth");
+	CHECK_FIRST_LINE(4, 9, "ninth");
+	CHECK_FIRST_LINE(4, 10, "tenth");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(ContinousBuildWith3)
+{
+	builder.set_number(3);
+	builder.set_continous(true);
+	auto packages = builder.build();
+	BOOST_CHECK_EQUAL(packages.size(), 3);
+	for (const auto& package: packages) {
+		BOOST_REQUIRE(package);
+		BOOST_CHECK(package->size() <= 4);
+	}
+	CHECK_FIRST_LINE(0, 1, "first");
+	CHECK_FIRST_LINE(0, 2, "second");
+	CHECK_FIRST_LINE(0, 3, "third");
+	CHECK_FIRST_LINE(0, 4, "fourth");
+	CHECK_FIRST_LINE(1, 5, "fifth");
+	CHECK_FIRST_LINE(1, 6, "sixth");
+	CHECK_FIRST_LINE(1, 7, "seventh");
+	CHECK_FIRST_LINE(2, 8, "eighth");
+	CHECK_FIRST_LINE(2, 9, "ninth");
+	CHECK_FIRST_LINE(2, 10, "tenth");
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
 
 #undef CHECK_FIRST_LINE
