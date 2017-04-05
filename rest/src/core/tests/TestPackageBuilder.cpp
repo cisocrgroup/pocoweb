@@ -156,6 +156,33 @@ BOOST_AUTO_TEST_CASE(ContinousBuildWith3)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(RandomBuildWith5)
+{
+	builder.set_number(5);
+	builder.set_random(true);
+	auto packages = builder.build();
+	BOOST_CHECK_EQUAL(packages.size(), 5);
+	for (const auto& package: packages) {
+		BOOST_REQUIRE(package);
+		BOOST_CHECK_EQUAL(package->size(), 2);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(RandomBuildWith3)
+{
+	builder.set_number(3);
+	builder.set_random(true);
+	auto packages = builder.build();
+	BOOST_CHECK_EQUAL(packages.size(), 3);
+	for (const auto& package: packages) {
+		BOOST_REQUIRE(package);
+		BOOST_CHECK(package->size() <= 4);
+		BOOST_CHECK(package->size() >= 3);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
 
 #undef CHECK_FIRST_LINE

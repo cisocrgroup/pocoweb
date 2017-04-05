@@ -1,4 +1,6 @@
+#include <random>
 #include "utils/Error.hpp"
+#include "util.hpp"
 #include "Book.hpp"
 #include "User.hpp"
 #include "PackageBuilder.hpp"
@@ -39,7 +41,33 @@ PackageBuilder::build_random() const
 	assert(random_);
 	assert(number_ > 0);
 	assert(number_ <= project_->size());
-	return {};
+
+	std::vector<PackageSptr> res(number_);
+	const auto owner = project_->owner().shared_from_this();
+	std::generate(begin(res), end(res), [&]() {
+		return std::make_shared<Package>(0, *owner, project_->origin());
+	});
+	std::vector<std::shared_ptr<Page>> pages(project_->size());
+	std::copy(begin(*project_), end(*project_), begin(pages));
+
+	std::uniform_int_distribution<size_t> d(0, number_ - 1);
+	std::mt19937 gen(genseed());
+	const auto n = project_->size() / number_;
+	auto r = project_->size() % number_;
+	for (size_t i = 0; i < pages.size();) {
+		auto j = d(gen);
+		assert(j < res.size());
+		if (res[j]->size() == n and r > 0) {
+			--r;
+			res[j]->push_back(*pages[i]);
+			++i;
+		} else if (res[j]->size() < n) {
+			res[j]->push_back(*pages[i]);
+			++i;
+		}
+	}
+	assert(res.size() == number_);
+	return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -73,6 +101,7 @@ PackageBuilder::build_continous() const
 			++j;
 		}
 	}
+	assert(res.size() == number_);
 	return res;
 }
 
@@ -95,5 +124,6 @@ PackageBuilder::build_simple() const
 	for (const auto& page: *project_) {
 		res[i++ % number_]->push_back(*page);
 	}
+	assert(res.size() == number_);
 	return res;
 }
