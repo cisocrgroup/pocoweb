@@ -94,6 +94,7 @@ BOOST_AUTO_TEST_CASE(SimpleBuildWith3)
 	for (const auto& package: packages) {
 		BOOST_REQUIRE(package);
 		BOOST_CHECK(package->size() <= 4);
+		BOOST_CHECK(package->size() >= 3);
 	}
 	CHECK_FIRST_LINE(0, 1, "first");
 	CHECK_FIRST_LINE(1, 2, "second");
@@ -140,6 +141,7 @@ BOOST_AUTO_TEST_CASE(ContinousBuildWith3)
 	for (const auto& package: packages) {
 		BOOST_REQUIRE(package);
 		BOOST_CHECK(package->size() <= 4);
+		BOOST_CHECK(package->size() >= 3);
 	}
 	CHECK_FIRST_LINE(0, 1, "first");
 	CHECK_FIRST_LINE(0, 2, "second");
