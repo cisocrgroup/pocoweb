@@ -27,7 +27,7 @@ Searcher::find(const std::wstring& str) const
 		re = std::wregex(LR"(\b)" + str + LR"(\b)", flags);
 	else
 		re = std::wregex(str, flags);
-	return find([&re](const auto& line) {
+	return find_impl([&re](const auto& line) {
 		return std::regex_search(line.wcor(), re);
 	});
 }

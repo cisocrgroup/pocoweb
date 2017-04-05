@@ -26,8 +26,8 @@ struct SearcherFixture {
 		builder.set_owner(*user);
 		builder.append_text(
 			"This is the first line of the first page.\n"
-			"This is the second line of the second page.\n"
-			"This is the third line of the third page.\n"
+			"This is the second line of the first page.\n"
+			"This is the third line of the first page.\n"
 		);
 		builder.append_text(
 			"Mögen hätt ich schon gewollt,\n"
@@ -43,17 +43,84 @@ struct SearcherFixture {
 BOOST_FIXTURE_TEST_SUITE(Searcher, SearcherFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestDefaults)
+{
+	BOOST_CHECK(searcher.match_words());
+	BOOST_CHECK(searcher.ignore_case());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(TestNoResults)
 {
-	auto res = searcher.find([](const auto&){return false;});
+	auto res = searcher.find_impl([](const auto&){return false;});
 	BOOST_CHECK_EQUAL(res.size(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(TestAllResults)
 {
-	auto res = searcher.find([](const auto&){return true;});
+	auto res = searcher.find_impl([](const auto&){return true;});
 	BOOST_CHECK_EQUAL(res.size(), 6);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestSearchByPageId)
+{
+	auto res = searcher.find_impl(
+		[](const auto& line) {return line.page().id() == 1;});
+	BOOST_CHECK_EQUAL(res.size(), 3);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestSearchByLineId)
+{
+	auto res = searcher.find_impl(
+		[](const auto& line) {return line.id() == 1;});
+	BOOST_CHECK_EQUAL(res.size(), 2);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestSearchByRegex_first_page)
+{
+	auto res = searcher.find("first page");
+	BOOST_CHECK_EQUAL(res.size(), 3);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestSearchByRegex_nothing)
+{
+	auto res = searcher.find("nothing");
+	BOOST_CHECK_EQUAL(res.size(), 0);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestSearchByRegexIgnoreCase)
+{
+	auto res = searcher.find("mögen");
+	BOOST_CHECK_EQUAL(res.size(), 1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestSearchByRegexDoNotIgnoreCase)
+{
+	searcher.set_ignore_case(false);
+	auto res = searcher.find("mögen");
+	BOOST_CHECK_EQUAL(res.size(), 0);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestSearchByRegexMatchOnWordBoundaries)
+{
+	auto res = searcher.find("s.*n"); // matches schon but *not* second ...
+	BOOST_CHECK_EQUAL(res.size(), 1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestSearchByRegexMatchFullLines)
+{
+	searcher.set_match_words(false);
+	auto res = searcher.find("s.*n");
+	BOOST_CHECK_EQUAL(res.size(), 4);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
