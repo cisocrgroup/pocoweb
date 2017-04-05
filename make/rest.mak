@@ -12,6 +12,7 @@ CORE_OBJS += rest/src/core/Book.o
 CORE_OBJS += rest/src/core/Corrector.o
 CORE_OBJS += rest/src/core/Project.o
 CORE_OBJS += rest/src/core/Package.o
+CORE_OBJS += rest/src/core/Searcher.o
 CORE_OBJS += rest/src/core/PackageBuilder.o
 CORE_OBJS += rest/src/core/Config.o
 CORE_OBJS += rest/src/core/Profile.o
