@@ -19,8 +19,8 @@ namespace pcw {
 		Response impl(HttpGet, const Request& req, int bid, int pid, int val) const;
 
 	private:
-		Response next(const BookView& book, int pid, int val) const;
-		Response prev(const BookView& book, int pid, int val) const;
+		Response next(const Project& book, int pid, int val) const;
+		Response prev(const Project& book, int pid, int val) const;
 
 		static const char* route_;
 		static const char* name_;

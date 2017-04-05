@@ -196,7 +196,7 @@ BookRoute::package(const Request& req, int bid, const Data& data) const
 	if (n <= 0)
 		THROW(BadRequest, "Invalid number of packages: ", data.n);
 
-	std::vector<BookViewPtr> projs(n);
+	std::vector<ProjectPtr> projs(n);
 	std::generate(begin(projs), end(projs), [&]() {
 		return std::make_shared<Package>(0, session->user(), proj->origin());
 	});

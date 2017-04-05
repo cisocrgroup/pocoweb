@@ -1,7 +1,7 @@
 #include "Page.hpp"
 #include "Book.hpp"
 #include "Package.hpp"
-#include "BookView.hpp"
+#include "Project.hpp"
 #include "ProjectBuilder.hpp"
 
 using namespace pcw;

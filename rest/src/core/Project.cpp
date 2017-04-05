@@ -1,7 +1,7 @@
 #include "utils/Error.hpp"
 #include "Book.hpp"
 #include "Page.hpp"
-#include "BookView.hpp"
+#include "Project.hpp"
 
 using namespace pcw;
 
@@ -25,16 +25,16 @@ find_page(It b, It e, int id) noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookView::set_id(int id)
+Project::set_id(int id)
 {
 	if (id_ > 0)
-		THROW(Error, "(BookView) Cannot reset id ", id_, " to id ", id);
+		THROW(Error, "(Project) Cannot reset id ", id_, " to id ", id);
 	id_ = id;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookView::value_type
-BookView::find(int pageid) const noexcept
+Project::value_type
+Project::find(int pageid) const noexcept
 {
 	// just do a forward search
 	// this should be fast enough
@@ -43,8 +43,8 @@ BookView::find(int pageid) const noexcept
 
 
 ////////////////////////////////////////////////////////////////////////////////
-BookView::value_type
-BookView::next(int pageid, int val) const noexcept
+Project::value_type
+Project::next(int pageid, int val) const noexcept
 {
 	const auto b = begin();
 	const auto e = end();
@@ -64,7 +64,7 @@ BookView::next(int pageid, int val) const noexcept
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookView::push_back(Page& page)
+Project::push_back(Page& page)
 {
 	Base::push_back(page.shared_from_this());
 	Base::back()->book_ = std::static_pointer_cast<const Book>(
@@ -73,7 +73,7 @@ BookView::push_back(Page& page)
 
 ////////////////////////////////////////////////////////////////////////////////
 std::ostream&
-pcw::operator<<(std::ostream& os, const BookView& proj)
+pcw::operator<<(std::ostream& os, const Project& proj)
 {
 	if (proj.is_book()) {
 		return os << proj.origin().author << " <"

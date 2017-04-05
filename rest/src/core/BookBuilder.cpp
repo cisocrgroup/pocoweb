@@ -1,3 +1,6 @@
+#include <utf8.h>
+#include "LineBuilder.hpp"
+#include "PageBuilder.hpp"
 #include "Page.hpp"
 #include "Book.hpp"
 #include "BookBuilder.hpp"
@@ -111,4 +114,34 @@ BookBuilder::build() const
 {
 	assert(book_);
 	return book_;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const BookBuilder&
+BookBuilder::append_text(const std::string& str) const
+{
+	std::wstring wstr;
+	wstr.reserve(str.size());
+	utf8::utf8to32(begin(str), end(str), std::back_inserter(wstr));
+	return append_text(wstr);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const BookBuilder&
+BookBuilder::append_text(const std::wstring& str) const
+{
+	PageBuilder pbuilder;
+	LineBuilder lbuilder;
+	auto b = begin(str);
+	auto e = end(str);
+	do {
+		lbuilder.reset();
+		auto t = std::find(b, e, L'\n');
+		lbuilder.append(std::wstring(b, t), std::distance(b, t), 1);
+		pbuilder.append(*lbuilder.build());
+		if (t == e)
+			break;
+		b = t + 1;
+	} while (b != e);
+	return append(*pbuilder.build());
 }

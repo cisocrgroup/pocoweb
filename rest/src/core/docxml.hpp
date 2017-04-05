@@ -5,7 +5,7 @@
 #include "pugixml.hpp"
 
 namespace pcw {
-	class BookView;
+	class Project;
 	class Page;
 	class Profile;
 	struct Suggestion;
@@ -15,7 +15,7 @@ namespace pcw {
 		const std::vector<Suggestion>* suggestions;
 	};
 
-	DocXml& operator<<(DocXml& docxml, const BookView& view);
+	DocXml& operator<<(DocXml& docxml, const Project& view);
 	DocXml& operator<<(DocXml& docxml, const Page& page);
 	DocXml& operator<< (DocXml& docxml, const Profile& profile);
 }

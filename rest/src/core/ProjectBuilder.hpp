@@ -5,8 +5,8 @@
 #include <memory>
 
 namespace pcw {
-	class BookView;
-	using ProjectSptr = std::shared_ptr<BookView>;
+	class Project;
+	using ProjectSptr = std::shared_ptr<Project>;
 	class Book;
 	using ConstBookSptr = std::shared_ptr<const Book>;
 	class Package;

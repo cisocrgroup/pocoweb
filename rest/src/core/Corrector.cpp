@@ -1,7 +1,7 @@
 #include <utf8.h>
 #include "Line.hpp"
 #include "Page.hpp"
-#include "BookView.hpp"
+#include "Project.hpp"
 #include "Corrector.hpp"
 
 using namespace pcw;

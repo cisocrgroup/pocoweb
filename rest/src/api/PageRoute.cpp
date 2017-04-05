@@ -112,7 +112,7 @@ PageRoute::impl(HttpGet, const Request& req, int bid, int pid, int val) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-PageRoute::next(const BookView& book, int pid, int val) const
+PageRoute::next(const Project& book, int pid, int val) const
 {
 	auto page = book.next(pid, val);
 	if (not page)
@@ -123,7 +123,7 @@ PageRoute::next(const BookView& book, int pid, int val) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-PageRoute::prev(const BookView& book, int pid, int val) const
+PageRoute::prev(const Project& book, int pid, int val) const
 {
 	auto page = book.next(pid, -val);
 	if (not page)

@@ -4,7 +4,7 @@
 #include <boost/filesystem/path.hpp>
 #include <memory>
 #include <vector>
-#include "BookView.hpp"
+#include "Project.hpp"
 
 namespace pcw {
 	class User;
@@ -14,10 +14,10 @@ namespace pcw {
 	using BookSptr = std::shared_ptr<Book>;
 	using Path = boost::filesystem::path;
 
-	class Book: public BookView {
+	class Book: public Project {
 	public:
 		Book(int id = 0)
-			: BookView(id)
+			: Project(id)
 			, author()
 			, title()
 			, description()

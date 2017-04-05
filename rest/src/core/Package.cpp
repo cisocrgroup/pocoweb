@@ -8,7 +8,7 @@ using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 Package::Package(int id, const User& owner, const Book& book)
-	: BookView(id)
+	: Project(id)
 	, owner_(owner.shared_from_this())
 	, origin_(std::static_pointer_cast<const Book>(book.shared_from_this()))
 {
@@ -16,7 +16,7 @@ Package::Package(int id, const User& owner, const Book& book)
 
 ////////////////////////////////////////////////////////////////////////////////
 Package::Package(int id)
-	: BookView(id)
+	: Project(id)
 	, owner_()
 	, origin_()
 {
