@@ -10,6 +10,7 @@ namespace pcw {
 	using PageParserPtr = std::unique_ptr<PageParser>;
 
 	const char* what(const std::exception& e) noexcept;
+	unsigned long genseed();
 	std::string gensessionid(size_t n);
 	std::string gensalt();
 	std::string genhash(const std::string& salt, const std::string& str);

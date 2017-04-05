@@ -50,6 +50,13 @@ mix(unsigned long a, unsigned long b, unsigned long c)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+unsigned long
+pcw::genseed()
+{
+	return mix(clock(), time(NULL), getpid());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 static std::string
 dohash(const char *salt, size_t saltn, const char *str, size_t strn)
 {
@@ -75,7 +82,7 @@ dohash(const char *salt, size_t saltn, const char *str, size_t strn)
 std::string
 pcw::gensessionid(size_t n)
 {
-	unsigned long seed = mix(clock(), time(NULL), getpid());
+	auto seed = genseed();
 	std::string id(n, 0);
 
 	std::uniform_int_distribution<char> d('a', 'z');
@@ -89,7 +96,7 @@ pcw::gensessionid(size_t n)
 std::string
 pcw::gensalt()
 {
-	unsigned long seed = mix(clock(), time(NULL), getpid());
+	auto seed = genseed();
 	std::uniform_int_distribution<unsigned int> d;
 	std::mt19937 gen(seed);
 	const auto n = d(gen);
