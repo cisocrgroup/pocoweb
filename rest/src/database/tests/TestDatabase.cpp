@@ -11,7 +11,7 @@
 #include "core/Page.hpp"
 #include "core/Line.hpp"
 #include "database/Tables.h"
-#include "database/NewDatabase.hpp"
+#include "database/Database.hpp"
 
 using namespace sqlpp;
 using namespace pcw;

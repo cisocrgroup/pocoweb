@@ -1,7 +1,7 @@
 #include <crow.h>
 #include "core/User.hpp"
 #include "core/Session.hpp"
-#include "database/NewDatabase.hpp"
+#include "database/Database.hpp"
 #include "DeleteUser.hpp"
 
 using namespace pcw;

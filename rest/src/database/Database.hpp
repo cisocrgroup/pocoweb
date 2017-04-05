@@ -1,5 +1,5 @@
-#ifndef pcw_NewDatabase_hpp__
-#define pcw_NewDatabase_hpp__
+#ifndef pcw_Database_hpp__
+#define pcw_Database_hpp__
 
 #include <boost/optional.hpp>
 #include <memory>
@@ -589,4 +589,4 @@ pcw::update_line(Db& db, const Line& line)
 	detail::insert_content(db, insert, line);
 }
 
-#endif // pcw_NewDatabase_hpp__
+#endif // pcw_Database_hpp__
