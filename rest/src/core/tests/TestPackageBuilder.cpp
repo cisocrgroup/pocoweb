@@ -91,11 +91,14 @@ BOOST_AUTO_TEST_CASE(SimpleBuildWith3)
 	builder.set_number(3);
 	auto packages = builder.build();
 	BOOST_CHECK_EQUAL(packages.size(), 3);
+	size_t n = 0;
 	for (const auto& package: packages) {
 		BOOST_REQUIRE(package);
 		BOOST_CHECK(package->size() <= 4);
 		BOOST_CHECK(package->size() >= 3);
+		n += package->size();
 	}
+	BOOST_CHECK_EQUAL(n, 10);
 	CHECK_FIRST_LINE(0, 1, "first");
 	CHECK_FIRST_LINE(1, 2, "second");
 	CHECK_FIRST_LINE(2, 3, "third");
@@ -138,11 +141,14 @@ BOOST_AUTO_TEST_CASE(ContinousBuildWith3)
 	builder.set_continous(true);
 	auto packages = builder.build();
 	BOOST_CHECK_EQUAL(packages.size(), 3);
+	size_t n = 0;
 	for (const auto& package: packages) {
 		BOOST_REQUIRE(package);
 		BOOST_CHECK(package->size() <= 4);
 		BOOST_CHECK(package->size() >= 3);
+		n += package->size();
 	}
+	BOOST_CHECK_EQUAL(n, 10);
 	CHECK_FIRST_LINE(0, 1, "first");
 	CHECK_FIRST_LINE(0, 2, "second");
 	CHECK_FIRST_LINE(0, 3, "third");
@@ -175,11 +181,14 @@ BOOST_AUTO_TEST_CASE(RandomBuildWith3)
 	builder.set_random(true);
 	auto packages = builder.build();
 	BOOST_CHECK_EQUAL(packages.size(), 3);
+	size_t n = 0;
 	for (const auto& package: packages) {
 		BOOST_REQUIRE(package);
 		BOOST_CHECK(package->size() <= 4);
 		BOOST_CHECK(package->size() >= 3);
+		n += package->size();
 	}
+	BOOST_CHECK_EQUAL(n, 10);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
