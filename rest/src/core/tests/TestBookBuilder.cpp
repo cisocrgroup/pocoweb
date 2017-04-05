@@ -114,4 +114,33 @@ BOOST_AUTO_TEST_CASE(AppendTest)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(AppendTextTestWithNewLine)
+{
+	builder.append_text("first line\nsecond line\nthird line\n");
+	auto book = builder.build();
+	BOOST_CHECK_EQUAL(book->size(), 1);
+	auto page = book->find(1);
+	BOOST_REQUIRE(page);
+	BOOST_CHECK_EQUAL(page->size(), 3);
+	BOOST_CHECK_EQUAL(page->find(1)->cor(), "first line");
+	BOOST_CHECK_EQUAL(page->find(2)->cor(), "second line");
+	BOOST_CHECK_EQUAL(page->find(3)->cor(), "third line");
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(AppendTextTestWithoutNewLine)
+{
+	builder.append_text("first line\nsecond line\nthird line");
+	auto book = builder.build();
+	BOOST_CHECK_EQUAL(book->size(), 1);
+	auto page = book->find(1);
+	BOOST_REQUIRE(page);
+	BOOST_CHECK_EQUAL(page->size(), 3);
+	BOOST_CHECK_EQUAL(page->find(1)->cor(), "first line");
+	BOOST_CHECK_EQUAL(page->find(2)->cor(), "second line");
+	BOOST_CHECK_EQUAL(page->find(3)->cor(), "third line");
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()

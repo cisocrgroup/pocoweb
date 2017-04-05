@@ -7,7 +7,7 @@
 #include "core/ProjectBuilder.hpp"
 #include "core/BookBuilder.hpp"
 #include "core/PageBuilder.hpp"
-#include "core/BookView.hpp"
+#include "core/Project.hpp"
 #include "core/Book.hpp"
 #include "core/Page.hpp"
 #include "core/User.hpp"

@@ -6,7 +6,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json&
-pcw::operator<<(Json& json, const std::vector<BookViewPtr>& books)
+pcw::operator<<(Json& json, const std::vector<ProjectPtr>& books)
 {
 	int i = 0;
 	for (const auto& book: books) {
@@ -17,7 +17,7 @@ pcw::operator<<(Json& json, const std::vector<BookViewPtr>& books)
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json&
-pcw::operator<<(Json& json, const BookView& view)
+pcw::operator<<(Json& json, const Project& view)
 {
 	json["id"] = view.origin().id();
 	json["uri"] = view.origin().uri;

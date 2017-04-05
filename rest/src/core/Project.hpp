@@ -1,5 +1,5 @@
-#ifndef pcw_BookView_hpp__
-#define pcw_BookView_hpp__
+#ifndef pcw_Project_hpp__
+#define pcw_Project_hpp__
 
 #include <iostream>
 #include <memory>
@@ -10,17 +10,17 @@ namespace pcw {
 	class Page;
 	using PagePtr = std::shared_ptr<Page>;
 	class User;
-	class BookView;
-	using BookViewSptr = std::shared_ptr<BookView>;
+	class Project;
+	using ProjectSptr = std::shared_ptr<Project>;
 
-	class BookView: private std::vector<PagePtr>,
-		        public std::enable_shared_from_this<BookView> {
+	class Project: private std::vector<PagePtr>,
+		        public std::enable_shared_from_this<Project> {
 	public:
 		using Base = std::vector<PagePtr>;
 		using value_type = Base::value_type;
 
-		BookView(int id = 0): id_(id) {}
-		virtual ~BookView() noexcept = default;
+		Project(int id = 0): id_(id) {}
+		virtual ~Project() noexcept = default;
 		virtual const Book& origin() const noexcept = 0;
 		virtual const User& owner() const noexcept = 0;
 		int id() const noexcept {return id_;}
@@ -42,7 +42,7 @@ namespace pcw {
 	private:
 		int id_;
 	};
-	std::ostream& operator<<(std::ostream& os, const BookView& proj);
+	std::ostream& operator<<(std::ostream& os, const Project& proj);
 }
 
-#endif // pcw_BookView_hpp__
+#endif // pcw_Project_hpp__

@@ -8,7 +8,7 @@
 #include "database/Database.hpp"
 #include "database/ConnectionPool.hpp"
 #include "Book.hpp"
-#include "BookView.hpp"
+#include "Project.hpp"
 #include "AppCache.hpp"
 
 namespace pcw {
@@ -22,8 +22,8 @@ namespace pcw {
 	using AppCacheSptr = std::shared_ptr<AppCache>;
 	class Book;
 	using BookSptr = std::shared_ptr<Book>;
-	class BookView;
-	using BookViewSptr = std::shared_ptr<BookView>;
+	class Project;
+	using ProjectSptr = std::shared_ptr<Project>;
 	class Page;
 	using PageSptr = std::shared_ptr<Page>;
 	class Line;
@@ -52,17 +52,17 @@ namespace pcw {
 		void set_expiration_date_from_now(const std::chrono::duration<R, P>& d) noexcept;
 
 		template<class Db>
-		inline BookViewSptr find(Connection<Db>& c, int bookid) const;
+		inline ProjectSptr find(Connection<Db>& c, int bookid) const;
 		template<class Db>
-		inline std::vector<BookViewSptr> select_all_projects(Connection<Db>& c) const;
+		inline std::vector<ProjectSptr> select_all_projects(Connection<Db>& c) const;
 		template<class Db>
 		inline PageSptr find(Connection<Db>& c, int bookid, int pageid) const;
 		template<class Db>
 		inline LineSptr find(Connection<Db>& c, int bookid, int pageid, int lineid) const;
 		template<class Db>
-		inline void insert_project(Connection<Db>& c, BookView& view) const;
+		inline void insert_project(Connection<Db>& c, Project& view) const;
 		template<class Db>
-		inline BookViewSptr find_project(Connection<Db>& c, int bookid) const;
+		inline ProjectSptr find_project(Connection<Db>& c, int bookid) const;
 		template<class Db>
 		inline UserSptr find_user(Connection<Db>& c, int userid) const;
 		template<class Db>
@@ -72,11 +72,11 @@ namespace pcw {
 		using Mutex = std::mutex;
 
 		template<class Db>
-		void insert_project_impl(Connection<Db>& c, BookView& view) const;
+		void insert_project_impl(Connection<Db>& c, Project& view) const;
 		template<class Db>
-		BookViewSptr find_project_impl(Connection<Db>& c, int projectid) const;
+		ProjectSptr find_project_impl(Connection<Db>& c, int projectid) const;
 		template<class Db>
-		BookViewSptr cached_find_project(Connection<Db>& c, int projectid) const;
+		ProjectSptr cached_find_project(Connection<Db>& c, int projectid) const;
 		template<class Db>
 		BookSptr cached_find_book(Connection<Db>& c, int bookid) const;
 		template<class Db>
@@ -88,7 +88,7 @@ namespace pcw {
 		template<class Db>
 		UserSptr find_user_impl(Connection<Db>& c, const std::string& name) const;
 
-		void cache(BookView& view) const;
+		void cache(Project& view) const;
 		void cache(User& user) const;
 
 		const std::string sid_;
@@ -96,7 +96,7 @@ namespace pcw {
 		AppCacheSptr cache_;
 		TimePoint expiration_date_;
 		Mutex mutex_;
-		mutable BookViewSptr project_;
+		mutable ProjectSptr project_;
 		mutable PagePtr page_;
 	};
 }
@@ -111,7 +111,7 @@ pcw::Session::set_expiration_date_from_now(const std::chrono::duration<R, P>& d)
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
-pcw::BookViewSptr
+pcw::ProjectSptr
 pcw::Session::find(Connection<Db>& c, int bookid) const
 {
 	if (project_ and project_->id() == bookid)
@@ -126,11 +126,11 @@ pcw::Session::find(Connection<Db>& c, int bookid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
-std::vector<pcw::BookViewSptr>
+std::vector<pcw::ProjectSptr>
 pcw::Session::select_all_projects(Connection<Db>& c) const
 {
 	auto ids = select_all_project_ids(c.db(), *user_);
-	std::vector<BookViewSptr> projects(ids.size());
+	std::vector<ProjectSptr> projects(ids.size());
 	std::transform(begin(ids), end(ids), begin(projects), [&](int id) {
 		return this->find(c, id);
 	});
@@ -172,7 +172,7 @@ pcw::Session::find(Connection<Db>& c, int bookid, int pageid, int lineid) const
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
 inline void
-pcw::Session::insert_project(Connection<Db>& c, BookView& view) const
+pcw::Session::insert_project(Connection<Db>& c, Project& view) const
 {
 	DatabaseGuard<Db> guard(c);
 	insert_project_impl(c, view);
@@ -182,7 +182,7 @@ pcw::Session::insert_project(Connection<Db>& c, BookView& view) const
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
 void
-pcw::Session::insert_project_impl(Connection<Db>& c, BookView& view) const
+pcw::Session::insert_project_impl(Connection<Db>& c, Project& view) const
 {
 	if (view.is_book()) {
 		auto book = std::dynamic_pointer_cast<Book>(view.shared_from_this());
@@ -194,7 +194,7 @@ pcw::Session::insert_project_impl(Connection<Db>& c, BookView& view) const
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
-inline pcw::BookViewSptr
+inline pcw::ProjectSptr
 pcw::Session::find_project(Connection<Db>& c, int projectid) const
 {
 	return cached_find_project(c, projectid);
@@ -202,7 +202,7 @@ pcw::Session::find_project(Connection<Db>& c, int projectid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
-inline pcw::BookViewSptr
+inline pcw::ProjectSptr
 pcw::Session::find_project_impl(Connection<Db>& c, int projectid) const
 {
 	auto entry = select_project_entry(c.db(), projectid);
@@ -235,7 +235,7 @@ pcw::Session::cached_find_book(Connection<Db>& c, int bookid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
-pcw::BookViewSptr
+pcw::ProjectSptr
 pcw::Session::cached_find_project(Connection<Db>& c, int projectid) const
 {
 	if (cache_)

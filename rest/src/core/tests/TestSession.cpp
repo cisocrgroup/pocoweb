@@ -17,7 +17,7 @@ struct SessionFixture {
 	ConnectionPoolConnection<MockDb> mock;
 	Connection<MockDb> connection;
 	BookSptr book;
-	BookViewSptr project;
+	ProjectSptr project;
 	UserSptr user;
 	SessionSptr session;
 
