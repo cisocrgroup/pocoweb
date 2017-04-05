@@ -21,33 +21,20 @@ struct SearcherFixture {
 	BookSptr book;
 	UserSptr user;
 	SearcherFixture(): searcher(), book(), user() {
+		BookBuilder builder;
 		user = std::make_shared<User>("name", "pass", "email", "inst", 42);
-		BookBuilder bbuilder;
-		PageBuilder pbuilder;
-		LineBuilder lbuilder;
-
-		lbuilder.append("This is the first line of the first page.", 100, 1);
-		pbuilder.append(*lbuilder.build());
-		lbuilder.reset();
-		lbuilder.append("This is the second line of the first page.", 100, 1);
-		pbuilder.append(*lbuilder.build());
-		lbuilder.reset();
-		lbuilder.append("This is the third line of the first page.", 100, 1);
-		pbuilder.append(*lbuilder.build());
-		bbuilder.append(*pbuilder.build());
-
-		pbuilder.reset();
-		lbuilder.append("Dies ist die erste Zeile der zweiten Seite.", 100, 1);
-		pbuilder.append(*lbuilder.build());
-		lbuilder.reset();
-		lbuilder.append("Dies ist die zweite Zeile der zweiten Seite.", 100, 1);
-		pbuilder.append(*lbuilder.build());
-		lbuilder.reset();
-		lbuilder.append("Dies ist die dritte Zeile der zweiten Seite.", 100, 1);
-		pbuilder.append(*lbuilder.build());
-		bbuilder.append(*pbuilder.build());
-
-		book = bbuilder.build();
+		builder.set_owner(*user);
+		builder.append_text(
+			"This is the first line of the first page.\n"
+			"This is the second line of the second page.\n"
+			"This is the third line of the third page.\n"
+		);
+		builder.append_text(
+			"Mögen hätt ich schon gewollt,\n"
+			"aber dürfen\n"
+			"hab ich mich nicht getraut.\n"
+		);
+		book = builder.build();
 		searcher.set_project(*book);
 	}
 };
