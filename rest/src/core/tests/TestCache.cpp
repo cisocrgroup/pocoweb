@@ -7,6 +7,7 @@
 #include <random>
 #include <thread>
 #include "core/Cache.hpp"
+#include "core/util.hpp"
 
 using namespace pcw;
 
@@ -94,7 +95,7 @@ BOOST_AUTO_TEST_CASE(GeneratorFunctionIsCalledOnlyOnce)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(CacheIsThreadSave)
 {
-	std::mt19937 g;
+	std::mt19937 g(genseed());
 	std::uniform_int_distribution<char> d(0, 9);
 	std::vector<int> ids(100);
 	std::generate(begin(ids), end(ids), [&](){return d(g);});
