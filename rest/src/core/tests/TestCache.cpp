@@ -103,12 +103,16 @@ BOOST_AUTO_TEST_CASE(CacheIsThreadSave)
 	for (auto i = 0U; i < 10; ++i) {
 		threads[i] = std::thread([=](){
 			for (auto j = 0U; j < 10; ++j) {
-				auto idx = (i * 10) + j;
-				auto id = ids[idx];
-				auto mock = cache.get(id, [&](int id) {
+				const auto idx = (i * 10) + j;
+				const auto id = ids[idx];
+				const auto mock = cache.get(id, [&](int id) {
 					return make_mock(id);
 				});
-				BOOST_CHECK_EQUAL(mock->id(), id);
+				const auto mockid = mock->id();
+				assert(mockid == id);
+				// There seems to be an issue with BOOST_CHECK_EQUAL
+				// and threads
+				// BOOST_CHECK_EQUAL(mockid, id);
 			}
 		});
 	}
