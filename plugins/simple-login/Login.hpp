@@ -1,6 +1,8 @@
 #ifndef pcw_Login_hpp__
 #define pcw_Login_hpp__
 
+#include <array>
+#include <boost/optional.hpp>
 #include "core/CrtpRoute.hpp"
 
 namespace pcw {
@@ -12,7 +14,7 @@ namespace pcw {
 		virtual void Register(App&) override;
 
 		pcw_crtp_route_def_impl__();
-		Response impl(HttpGet, const Request& request) const;
+		Response impl(HttpPost, const Request& request) const;
 
 	private:
 		Response login(

@@ -1,4 +1,5 @@
 #include <crow.h>
+#include "utils/QueryParser.hpp"
 #include "database/Database.hpp"
 #include "core/Session.hpp"
 #include "Login.hpp"
@@ -17,21 +18,24 @@ const char* Login::name_ = "Login";
 void
 Login::Register(App& app)
 {
-	CROW_ROUTE(app, LOGIN_ROUTE)(*this);
+	CROW_ROUTE(app, LOGIN_ROUTE).methods("POST"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
 Login::login(const Request& req, const std::string& name, const std::string& pass) const
 {
-	CROW_LOG_INFO << "login for user '" << name << "'";
+	CROW_LOG_INFO << "login attempt for user: " << name;
 	auto conn = connection();
 	assert(conn);
 
 	auto user = select_user(conn.db(), name);
-	if (not user or not user->password.authenticate(pass)) {
+	if (not user) {
 		CROW_LOG_ERROR << "invalid user: " << name;
 		return forbidden();
+	}
+	if (not user->password.authenticate(pass)) {
+		CROW_LOG_ERROR << "invalid password for user: " << name;
 	}
 
 	auto session = new_session(*user);
@@ -44,20 +48,21 @@ Login::login(const Request& req, const std::string& name, const std::string& pas
 	session->set_expiration_date_from_now(24h);
 	auto response = ok();
 	set_session_id(response, session->id());
+	CROW_LOG_INFO << "login successfull for user: " << name
+		      << ", id: " << session->id();
 	return response;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-Login::impl(HttpGet get, const Request& req) const
+Login::impl(HttpPost, const Request& req) const
 {
-	auto name = req.get_header_value("name");
-	auto pass = req.get_header_value("pass");
-	if (not name.empty() and not pass.empty()) {
-		return login(req, name, pass);
+	QueryParser post(req.body);
+	if (not post.get("name").empty() and not post.get("pass").empty()) {
+		return login(req, post.get("name"), post.get("pass"));
 	} else {
-		CROW_LOG_ERROR << "invalid login data for user '"
-			       << name << "'";
+		CROW_LOG_ERROR << "invalid login attempt";
 		return bad_request();
 	}
 }
+
