@@ -57,6 +57,6 @@ Login::impl(HttpGet get, const Request& req) const
 	} else {
 		CROW_LOG_ERROR << "invalid login data for user '"
 			       << name << "'";
-		return forbidden();
+		return bad_request();
 	}
 }
