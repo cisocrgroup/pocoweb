@@ -5,11 +5,10 @@
 
 using namespace pcw;
 
-#define LOGIN_ROUTE1 "/login/user/<string>"
-#define LOGIN_ROUTE2 "/login/user/<string>/pass/<string>"
+#define LOGIN_ROUTE "/login"
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* Login::route_ = LOGIN_ROUTE1 "," LOGIN_ROUTE2;
+const char* Login::route_ = LOGIN_ROUTE;
 
 ////////////////////////////////////////////////////////////////////////////////
 const char* Login::name_ = "Login";
@@ -18,14 +17,12 @@ const char* Login::name_ = "Login";
 void
 Login::Register(App& app)
 {
-	CROW_ROUTE(app, LOGIN_ROUTE1)(*this);
-	CROW_ROUTE(app, LOGIN_ROUTE2)(*this);
+	CROW_ROUTE(app, LOGIN_ROUTE)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-Login::impl(HttpGet, const Request& req,
-		const std::string& name, const std::string& pass) const
+Login::login(const Request& req, const std::string& name, const std::string& pass) const
 {
 	auto conn = connection();
 	assert(conn);
@@ -51,16 +48,15 @@ Login::impl(HttpGet, const Request& req,
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-Login::impl(HttpGet, const Request& req, const std::string& name) const
+Login::impl(HttpGet get, const Request& req) const
 {
-	try {
-		auto session = this->session(req);
-		if (session) {
-			SessionLock lock(*session);
-			return session->user().name == name ? ok() : forbidden();
-		}
-	} catch (const Forbidden& f) {
-		CROW_LOG_ERROR << f.what();
+	auto name = req.get_header_value("name");
+	auto pass = req.get_header_value("pass");
+	if (not name.empty() and not pass.empty()) {
+		return login(req, name, pass);
+	} else {
+		CROW_LOG_ERROR << "invalid login data for user '"
+			       << name << "'";
+		return forbidden();
 	}
-	return forbidden();
 }

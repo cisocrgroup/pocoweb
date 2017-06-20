@@ -11,21 +11,15 @@ namespace pcw {
 		virtual const char *name() const noexcept override {return name_;}
 		virtual void Register(App&) override;
 
-		pcw_crtp_route_def_impl__(std::string,std::string);
-		pcw_crtp_route_def_impl__(std::string);
-		Response impl(
-			HttpGet,
+		pcw_crtp_route_def_impl__();
+		Response impl(HttpGet, const Request& request) const;
+
+	private:
+		Response login(
 			const Request& req,
 			const std::string& name,
 			const std::string& pass
 		) const;
-		Response impl(
-			HttpGet,
-			const Request& req,
-			const std::string& name
-		) const;
-
-	private:
 		static const char* route_;
 		static const char* name_;
 	};
