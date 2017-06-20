@@ -24,6 +24,7 @@ Login::Register(App& app)
 Route::Response
 Login::login(const Request& req, const std::string& name, const std::string& pass) const
 {
+	CROW_LOG_INFO << "login for user '" << name << "'";
 	auto conn = connection();
 	assert(conn);
 
