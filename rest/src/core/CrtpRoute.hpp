@@ -31,6 +31,10 @@ pcw::Route::Response
 pcw::CrtpRoute<T>::operator()(const Request& req, Args&&... args) const noexcept
 {
 	try {
+		for (const auto& kv: req.headers) {
+			CROW_LOG_INFO << "(CrtpRoute) "
+				      << kv.first << "=" << kv.second;
+		}
 		switch (req.method) {
 		case crow::HTTPMethod::Get:
 			return that().impl(HttpGet{}, req, std::forward<Args>(args)...);

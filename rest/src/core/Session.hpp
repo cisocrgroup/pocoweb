@@ -11,6 +11,11 @@
 #include "Project.hpp"
 #include "AppCache.hpp"
 
+namespace crow {
+	class response;
+	class request;
+}
+
 namespace pcw {
 	template<class Db> class Connection;
 	class User;
@@ -48,6 +53,8 @@ namespace pcw {
 		void set_expiration_date(TimePoint tp) noexcept {
 			expiration_date_ = std::move(tp);
 		}
+		void set_cookies(crow::response& response) const noexcept;
+
 		template<class R, class P>
 		void set_expiration_date_from_now(const std::chrono::duration<R, P>& d) noexcept;
 
@@ -99,6 +106,15 @@ namespace pcw {
 		mutable ProjectSptr project_;
 		mutable PagePtr page_;
 	};
+
+	void set_cookie(crow::response& response,
+			const std::string& key,
+			const std::string& val,
+			const std::string& path,
+			const Session::TimePoint& expires) noexcept;
+	boost::optional<std::string> get_cookie(const crow::request& request,
+			const std::string& key) noexcept;
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////

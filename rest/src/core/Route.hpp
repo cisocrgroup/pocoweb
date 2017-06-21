@@ -40,6 +40,8 @@ namespace pcw {
 
 	boost::optional<std::string> get_session_id(const crow::request& request) noexcept;
 	void set_session_id(crow::response& response, const std::string& sid) noexcept;
+	boost::optional<std::string> get_cookie(const crow::request& request) noexcept;
+	void set_session_id(crow::response& response, const std::string& key, const std::string& val) noexcept;
 
 	class Route {
 	public:
