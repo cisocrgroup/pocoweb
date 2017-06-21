@@ -9,6 +9,7 @@ include make/clean.mak
 include make/rest.mak
 include make/plugins.mak
 include make/test.mak
+include make/frontend.mak
 
 .PHONY: all default
 -include $(DEPS)
