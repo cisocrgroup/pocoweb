@@ -73,7 +73,7 @@ pcw::set_cookie(crow::response& response,
 	std::ostringstream os;
 	os << key << "=" << val
 	   << "; path=" << path
-	   << "; Expires=" << std::ctime(&e) << ";";
+	   << "; expires=" << std::ctime(&e) << ";";
 	response.add_header(SetCookie, os.str());
 }
 
