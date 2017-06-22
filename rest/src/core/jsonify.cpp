@@ -17,16 +17,24 @@ pcw::operator<<(Json& json, const std::vector<ProjectPtr>& books)
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json&
+pcw::operator<<(Json& json, const BookData& data)
+{
+	json["uri"] = data.uri;
+	json["author"] = data.author;
+	json["title"] = data.title;
+	json["year"] = data.year;
+	json["language"] = data.lang;
+	json["description"] = data.description;
+	return json;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Json&
 pcw::operator<<(Json& json, const Project& view)
 {
 	json["id"] = view.origin().id();
-	json["uri"] = view.origin().uri;
-	json["author"] = view.origin().author;
-	json["title"] = view.origin().title;
-	json["year"] = view.origin().year;
-	json["language"] = view.origin().lang;
-	json["description"] = view.origin().description;
 	json["isBook"] = view.is_book();
+	json << view.origin().data;
 
 	std::vector<int> ids;
 	ids.resize(view.size());

@@ -15,6 +15,7 @@ namespace pcw {
 	class Project;
 	using ProjectPtr = std::shared_ptr<Project>;
 	class Book;
+	struct BookData;
 	class Page;
 	class Line;
 	class Box;
@@ -24,6 +25,7 @@ namespace pcw {
 
 	using Json = crow::json::wvalue;
 	Json& operator<<(Json& j, const std::vector<ProjectPtr>& books);
+	Json& operator<<(Json& j, const BookData& data);
 	Json& operator<<(Json& j, const Project& project);
 	Json& operator<<(Json& j, const Page& page);
 	Json& operator<<(Json& j, const Line& line);

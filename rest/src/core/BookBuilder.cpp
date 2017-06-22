@@ -29,10 +29,19 @@ BookBuilder::append(Page& page) const
 
 ////////////////////////////////////////////////////////////////////////////////
 const BookBuilder&
+BookBuilder::set_book_data(BookData data) const
+{
+	assert(book_);
+	book_->data = std::move(data);
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const BookBuilder&
 BookBuilder::set_author(std::string author) const
 {
 	assert(book_);
-	book_->author = std::move(author);
+	book_->data.author = std::move(author);
 	return *this;
 }
 
@@ -41,7 +50,7 @@ const BookBuilder&
 BookBuilder::set_title(std::string title) const
 {
 	assert(book_);
-	book_->title = std::move(title);
+	book_->data.title = std::move(title);
 	return *this;
 }
 
@@ -50,7 +59,7 @@ const BookBuilder&
 BookBuilder::set_description(std::string description) const
 {
 	assert(book_);
-	book_->description = std::move(description);
+	book_->data.description = std::move(description);
 	return *this;
 }
 
@@ -59,7 +68,7 @@ const BookBuilder&
 BookBuilder::set_uri(std::string uri) const
 {
 	assert(book_);
-	book_->uri = std::move(uri);
+	book_->data.uri = std::move(uri);
 	return *this;
 }
 
@@ -68,7 +77,7 @@ const BookBuilder&
 BookBuilder::set_language(std::string language) const
 {
 	assert(book_);
-	book_->lang = std::move(language);
+	book_->data.lang = std::move(language);
 	return *this;
 }
 
@@ -77,7 +86,7 @@ const BookBuilder&
 BookBuilder::set_directory(Path directory) const
 {
 	assert(book_);
-	book_->dir = std::move(directory);
+	book_->data.dir = std::move(directory);
 	return *this;
 }
 
@@ -86,7 +95,7 @@ const BookBuilder&
 BookBuilder::set_year(int year) const
 {
 	assert(book_);
-	book_->year = year;
+	book_->data.year = year;
 	return *this;
 }
 

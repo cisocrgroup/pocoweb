@@ -83,10 +83,17 @@ PageRoute::impl(HttpGet, const Request& req, int bid) const
 	if (book->empty())
 		return not_found();
 	Json j;
-	if (first)
+	if (first) {
+		CROW_LOG_DEBUG << "(PageRoute) bookid: " << book->id()
+			       << " pageid: " << book->front()->id()
+			       << " lines: " << book->front()->size();
 		return j << *book->front();
-	else
+	} else {
+		CROW_LOG_DEBUG << "(PageRoute) bookid: " << book->id()
+			       << " pageid: " << book->back()->id()
+			       << " lines: " << book->back()->size();
 		return j << *book->back();
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////

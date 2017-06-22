@@ -32,19 +32,28 @@ pcw::CrtpRoute<T>::operator()(const Request& req, Args&&... args) const noexcept
 {
 	try {
 		for (const auto& kv: req.headers) {
-			CROW_LOG_INFO << "(CrtpRoute) "
-				      << kv.first << "=" << kv.second;
+			CROW_LOG_DEBUG << "(CrtpRoute) Request: "
+				       << kv.first << "=" << kv.second;
 		}
+		Response res;
 		switch (req.method) {
 		case crow::HTTPMethod::Get:
-			return that().impl(HttpGet{}, req, std::forward<Args>(args)...);
+			res = that().impl(HttpGet{}, req, std::forward<Args>(args)...);
+			break;
 		case crow::HTTPMethod::Post:
-			return that().impl(HttpPost{}, req, std::forward<Args>(args)...);
+			res = that().impl(HttpPost{}, req, std::forward<Args>(args)...);
+			break;
 		case crow::HTTPMethod::Put:
-			return that().impl(HttpPut{}, req, std::forward<Args>(args)...);
+			res = that().impl(HttpPut{}, req, std::forward<Args>(args)...);
+			break;
 		default:
 			return not_found();
 		}
+		for (const auto& kv: res.headers) {
+			CROW_LOG_DEBUG << "(CrtpRoute) Response: "
+				       << kv.first << "=" << kv.second;
+		}
+		return res;
 	} catch (const Error& e) {
 		CROW_LOG_ERROR << e.what();
 		return Response(e.code());

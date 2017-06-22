@@ -31,6 +31,15 @@ PageBuilder::append(Line& line) const
 
 ////////////////////////////////////////////////////////////////////////////////
 const PageBuilder&
+PageBuilder::set_id(int pageid) const
+{
+	assert(page_);
+	page_->set_id(pageid);
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const PageBuilder&
 PageBuilder::set_image_path(Path image) const
 {
 	assert(page_);

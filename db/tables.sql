@@ -29,7 +29,8 @@ drop table if exists projects;
 create table projects (
 	projectid int not null unique primary key auto_increment,
 	origin int,
-	owner int references users(userid)
+	owner int references users(userid),
+	pages int
 );
 
 drop table if exists project_pages;

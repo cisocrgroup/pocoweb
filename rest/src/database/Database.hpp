@@ -17,6 +17,8 @@
 #include "Tables.h"
 
 namespace pcw {
+	struct ProjectEntry;
+
 	namespace detail {
 		template<class U>
 		UserSptr make_user(const U& users) {
@@ -33,6 +35,12 @@ namespace pcw {
 			if (not t.is_null())
 				f(t);
 		}
+		template<class Row>
+		BookData make_book_data(const Row& row) noexcept;
+
+		template<class Row>
+		ProjectEntry make_project_entry(const Row& row) noexcept;
+
 		template<class Db, class P, class Q, class R>
 		void insert_page(Db& db, P& p, Q& q, R& r, const Page& page);
 
@@ -48,11 +56,14 @@ namespace pcw {
 		template<class Db>
 		void insert_project_info_and_set_id(Db& db, Project& view);
 
-		template<class Db, class P, class Q>
-		void select_pages(Db& db, const BookBuilder& builder, P& p, Q& q);
+		template<class Db>
+		void select_pages(Db& db, const BookBuilder& builder, int bookid);
 
-		template<class Db, class Q>
-		void select_lines(Db& db, const PageBuilder& builder, Q& q);
+		template<class Db>
+		void select_lines(Db& db, const PageBuilder& builder, int bookid, int pageid);
+
+		template<class Db>
+		void select_contents(Db& db, const LineBuilder& builder, int bookid, int pageid, int lineid);
 	}
 
 	template<class Db>
@@ -87,11 +98,21 @@ namespace pcw {
 
 	struct ProjectEntry {
 		bool is_book() const noexcept {return origin == projectid;}
-		int origin, owner, projectid;
+		int origin, owner, projectid, pages;
 	};
 
 	template<class Db>
 	boost::optional<ProjectEntry> select_project_entry(Db& db, int projectid);
+
+	template<class Db>
+	std::vector<ProjectEntry> select_all_project_entries(Db& db, const User& owner);
+
+	template<class Db>
+	boost::optional<BookData> select_book_data(Db& db, int bookid);
+
+	template<class Db>
+	std::vector<std::pair<BookData, ProjectEntry>>
+	select_all_projects(Db& db, const User& user);
 
 	template<class Db>
 	void update_project_owner(Db& db, int projectid, int owner);
@@ -101,9 +122,6 @@ namespace pcw {
 
 	template<class Db>
 	ProjectSptr select_project(Db& db, const Book& book, int projectid);
-
-	template<class Db>
-	std::vector<int> select_all_project_ids(Db& db, const User& owner);
 
 	template<class Db>
 	void update_line(Db& db, const Line& line);
@@ -202,6 +220,7 @@ pcw::detail::insert_project_info_and_set_id(Db& db, Project& view)
 	tables::Projects projects;
 	auto id = db(insert_into(projects)
 			.set(projects.origin = view.origin().id(),
+				projects.pages = static_cast<int>(view.size()),
 				projects.owner = view.owner().id()));
 	view.set_id(id);
 }
@@ -251,14 +270,14 @@ pcw::insert_book(Db& db, Book& book)
 
 	tables::Books books;
 	auto stmnt = insert_into(books).set(
-		books.author = book.author,
-		books.title = book.title,
-		books.directory = book.dir.string(),
-		books.year = book.year,
-		books.uri = book.uri,
+		books.author = book.data.author,
+		books.title = book.data.title,
+		books.directory = book.data.dir.string(),
+		books.year = book.data.year,
+		books.uri = book.data.uri,
 		books.bookid = book.id(),
-		books.description = book.description,
-		books.lang = book.lang
+		books.description = book.data.description,
+		books.lang = book.data.lang
 	);
 	db(stmnt);
 
@@ -366,13 +385,13 @@ pcw::update_book(Db& db, Project& view)
 	using namespace sqlpp;
 	tables::Books books;
 	auto stmnt = update(books).set(
-		books.author = view.origin().author,
-		books.title = view.origin().title,
-		books.directory = view.origin().dir.string(),
-		books.year = view.origin().year,
-		books.uri = view.origin().uri,
-		books.description = view.origin().description,
-		books.lang = view.origin().lang
+		books.author = view.origin().data.author,
+		books.title = view.origin().data.title,
+		books.directory = view.origin().data.dir.string(),
+		books.year = view.origin().data.year,
+		books.uri = view.origin().data.uri,
+		books.description = view.origin().data.description,
+		books.lang = view.origin().data.lang
 	).where(books.bookid == view.origin().id());
 	db(stmnt);
 }
@@ -384,17 +403,100 @@ pcw::select_project_entry(Db& db, int projectid)
 {
 	using namespace sqlpp;
 	tables::Projects projects;
-	auto stmnt = select(projects.origin, projects.owner)
+	auto stmnt = select(all_of(projects))
 		.from(projects)
 		.where(projects.projectid == projectid);
 	auto res = db(stmnt);
-
 	if (not res.empty())
-		return ProjectEntry{
-			static_cast<int>(res.front().origin),
-			static_cast<int>(res.front().owner),
-			projectid
-		};
+		return detail::make_project_entry(res.front());
+	return {};
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+std::vector<std::pair<pcw::BookData, pcw::ProjectEntry>>
+pcw::select_all_projects(Db& db, const User& user)
+{
+	using namespace sqlpp;
+	tables::Projects projects;
+	tables::Books books;
+	auto stmnt = select(all_of(projects), all_of(books))
+		.from(books.join(projects).on(books.bookid == projects.origin))
+		.where(projects.owner == user.id() or projects.owner == 0);
+	std::vector<std::pair<BookData, ProjectEntry>> data;
+	for (const auto& row: db(stmnt)) {
+		const auto bookdata = detail::make_book_data(row);
+		const auto projectentry = detail::make_project_entry(row);
+		data.emplace_back(bookdata, projectentry);
+	}
+	return data;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Row>
+pcw::ProjectEntry
+pcw::detail::make_project_entry(const Row& row) noexcept
+{
+	ProjectEntry entry;
+	set_if_not_null(row.projectid, [&](const auto pid) {
+		return entry.projectid = static_cast<int>(pid);
+	});
+	set_if_not_null(row.owner, [&](const auto owner) {
+		return entry.owner = static_cast<int>(owner);
+	});
+	set_if_not_null(row.origin, [&](const auto origin) {
+		return entry.origin = static_cast<int>(origin);
+	});
+	set_if_not_null(row.pages, [&](const auto pages) {
+		return entry.pages = static_cast<int>(pages);
+	});
+	return entry;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Row>
+pcw::BookData
+pcw::detail::make_book_data(const Row& row) noexcept
+{
+	BookData data;
+	detail::set_if_not_null(row.description, [&](const auto& d) {
+		data.description = d;
+	});
+	detail::set_if_not_null(row.uri, [&](const auto& u) {
+		data.uri = u;
+	});
+	detail::set_if_not_null(row.year, [&](const auto& y) {
+		data.year = y;
+	});
+	detail::set_if_not_null(row.author, [&](const auto& a) {
+		data.author = a;
+	});
+	detail::set_if_not_null(row.title, [&](const auto& t) {
+		data.title = t;
+	});
+	detail::set_if_not_null(row.lang, [&](const auto& l) {
+		data.lang = l;
+	});
+	detail::set_if_not_null(row.directory, [&](const auto& d) {
+		data.dir = d;
+	});
+	return data;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+boost::optional<pcw::BookData>
+pcw::select_book_data(Db& db, int bookid)
+{
+	tables::Projects projects;
+	tables::Books books;
+	auto stmnt = select(all_of(books))
+		.from(books.join(projects).on(books.bookid == projects.origin))
+		.where(books.bookid == bookid);
+
+	auto res = db(stmnt);
+	if (not res.empty())
+		return detail::make_book_data(res.front());
 	return {};
 }
 
@@ -416,74 +518,29 @@ template<class Db>
 pcw::BookSptr
 pcw::select_book(Db& db, const User& owner, int bookid)
 {
-	using namespace sqlpp;
-	tables::Projects projects;
-	tables::Books books;
-
-	auto stmnt = select(all_of(books))
-		.from(books.join(projects).on(books.bookid == projects.origin))
-		.where(books.bookid == bookid and projects.owner == owner.id());
-	auto res = db(stmnt);
-
-	if (res.empty())
+	auto book_data = select_book_data(db, bookid);
+	if (not book_data)
 		return nullptr;
-
-	tables::Pages pages;
-	tables::Textlines textlines;
-	tables::Contents contents;
-	auto p = select(all_of(pages))
-		.from(pages)
-		.where(pages.bookid == bookid)
-		.order_by(pages.pageid.asc());
-	auto q = db.prepare(
-		select(textlines.bookid, textlines.pageid, textlines.lineid,
-			textlines.lleft, textlines.ltop, textlines.lright,
-			textlines.lbottom, textlines.imagepath,
-			contents.ocr, contents.cor, contents.cut, contents.conf)
-		.from(textlines.join(contents)
-			.on(textlines.bookid == contents.bookid and
-				textlines.pageid == contents.pageid and
-				textlines.lineid == contents.lineid))
-		.where(textlines.bookid == bookid and
-			textlines.pageid == parameter(textlines.pageid))
-		.order_by(textlines.lineid.asc(), contents.seq.asc()));
-
 	BookBuilder builder;
-	detail::set_if_not_null(res.front().description, [&](const auto& d) {
-		builder.set_description(d);
-	});
-	detail::set_if_not_null(res.front().uri, [&](const auto& u) {
-		builder.set_uri(u);
-	});
-	detail::set_if_not_null(res.front().year, [&](const auto& y) {
-		builder.set_year(y);
-	});
-	detail::set_if_not_null(res.front().author, [&](const auto& a) {
-		builder.set_author(a);
-	});
-	detail::set_if_not_null(res.front().title, [&](const auto& t) {
-		builder.set_title(t);
-	});
-	detail::set_if_not_null(res.front().bookid, [&](const auto& id) {
-		builder.set_id(id);
-	});
-	detail::set_if_not_null(res.front().lang, [&](const auto& l) {
-		builder.set_language(l);
-	});
+	builder.set_id(bookid);
+	builder.set_book_data(*book_data);
 	builder.set_owner(owner);
-	detail::select_pages(db, builder, p, q);
+	detail::select_pages(db, builder, bookid);
 	return builder.build();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template<class Db, class P, class Q>
+template<class Db>
 void
-pcw::detail::select_pages(Db& db, const BookBuilder& builder, P& p, Q& q)
+pcw::detail::select_pages(Db& db, const BookBuilder& builder, int bookid)
 {
 	using namespace sqlpp;
-
+	tables::Pages pages;
+	auto stmnt = select(all_of(pages))
+		.from(pages)
+		.where(pages.bookid == bookid);
 	PageBuilder pbuilder;
-	for (const auto& row: db(p)) {
+	for (const auto& row: db(stmnt)) {
 		pbuilder.reset();
 		detail::set_if_not_null(row.imagepath, [&](const auto& p) {
 			pbuilder.set_image_path(Path(p));
@@ -497,19 +554,25 @@ pcw::detail::select_pages(Db& db, const BookBuilder& builder, P& p, Q& q)
 			static_cast<int>(row.pright),
 			static_cast<int>(row.pbottom)
 		});
-		q.params.pageid = row.pageid;
-		detail::select_lines(db, pbuilder, q);
+		pbuilder.set_id(row.pageid);
+		detail::select_lines(db, pbuilder, bookid, row.pageid);
 		builder.append(*pbuilder.build());
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template<class Db, class Q>
+template<class Db>
 void
-pcw::detail::select_lines(Db& db, const PageBuilder& builder, Q& q)
+pcw::detail::select_lines(Db& db, const PageBuilder& builder, int bookid, int pageid)
 {
+	using namespace sqlpp;
+	tables::Textlines lines;
+	auto stmnt = select(all_of(lines))
+		.from(lines)
+		.where(lines.bookid == bookid and lines.pageid == pageid)
+		.order_by(lines.lineid.asc());
 	LineBuilder lbuilder;
-	for (const auto& row: db(q)) {
+	for (const auto& row: db(stmnt)) {
 		lbuilder.reset();
 		detail::set_if_not_null(row.imagepath, [&](const auto& p) {
 			lbuilder.set_image_path(Path(p));
@@ -520,13 +583,32 @@ pcw::detail::select_lines(Db& db, const PageBuilder& builder, Q& q)
 			static_cast<int>(row.lright),
 			static_cast<int>(row.lbottom)
 		});
-		lbuilder.append(
+		lbuilder.set_id(row.lineid);
+		detail::select_contents(db, lbuilder, bookid, pageid, row.lineid);
+		builder.append(*lbuilder.build());
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+void
+pcw::detail::select_contents(Db& db, const LineBuilder& builder, int bookid, int pageid, int lineid)
+{
+	using namespace sqlpp;
+	tables::Contents contents;
+	auto stmnt = select(all_of(contents))
+		.from(contents)
+		.where(contents.bookid == bookid
+				and contents.pageid == pageid
+				and contents.lineid == lineid)
+		.order_by(contents.seq.asc());
+	for (const auto& row: db(stmnt)) {
+		builder.append(
 			static_cast<wchar_t>(row.ocr),
 			static_cast<wchar_t>(row.cor),
 			row.cut,
 			row.conf
 		);
-		builder.append(*lbuilder.build());
 	}
 }
 
@@ -542,26 +624,11 @@ pcw::select_project(Db& db, const Book& book, int projectid)
 		.from(project_pages)
 		.where(project_pages.projectid == projectid);
 	ProjectBuilder builder;
+	builder.set_book(book);
 	for (const auto& row: db(stmnt)) {
 		builder.add_page(row.pageid);
 	}
 	return builder.build();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template<class Db>
-std::vector<int>
-pcw::select_all_project_ids(Db& db, const User& owner)
-{
-	using namespace sqlpp;
-	std::vector<int> ids;
-	tables::Projects projects;
-	auto stmnt = select(projects.projectid)
-		.from(projects)
-		.where(projects.owner == owner.id() or projects.owner == 0);
-	for (const auto& row: db(stmnt))
-		ids.push_back(row.projectid);
-	return ids;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

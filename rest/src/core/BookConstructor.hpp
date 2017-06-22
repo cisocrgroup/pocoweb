@@ -27,7 +27,7 @@ namespace pcw {
 		using ImgFiles = std::vector<Path>;
 		struct BookData {
 			std::vector<PagePtr> pages;
-			std::string author, title, description, uri;
+			std::string author, title, description, uri, lang;
 			Path dir;
 			int year;
 		};

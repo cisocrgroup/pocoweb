@@ -114,7 +114,7 @@ BookDirectoryBuilder::build() const
 	const auto book = builder_.build();
 	assert(book);
 	setup(*book);
-	book->dir = dir_;
+	book->data.dir = dir_;
 	return book;
 }
 

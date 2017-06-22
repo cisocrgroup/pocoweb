@@ -76,8 +76,8 @@ std::ostream&
 pcw::operator<<(std::ostream& os, const Project& proj)
 {
 	if (proj.is_book()) {
-		return os << proj.origin().author << " <"
-			  << proj.origin().title << "> ["
+		return os << proj.origin().data.author << " <"
+			  << proj.origin().data.title << "> ["
 			  << proj.origin().id() << "]";
 	} else {
 		return os << proj.origin() << " {" << proj.id() << "}";

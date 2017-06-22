@@ -29,15 +29,23 @@ Route::new_session(const User& user) const
 
 ////////////////////////////////////////////////////////////////////////////////
 SessionPtr
-Route::session(const crow::request& request) const
+Route::find_session(const crow::request& request) const
 {
 	auto sid = get_cookie(request, "pcw-sid");
+	CROW_LOG_DEBUG << "searching for sid: " << sid;
 	if (not sid)
-		THROW(Forbidden);
+		return nullptr;
 	assert(session_store_);
-	auto session = session_store_->find_session(*sid);
+	return session_store_->find_session(*sid);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+SessionPtr
+Route::session(const crow::request& request) const
+{
+	auto session = find_session(request);
 	if (not session)
-		THROW(BadRequest);
+		THROW(Forbidden);
 	return session;
 }
 

@@ -76,11 +76,12 @@ BookPtr
 BookConstructor::build(const BookData& data)
 {
 	auto book = std::make_shared<Book>();
-	book->description = data.description;
-	book->uri = data.uri;
-	book->author = data.author;
-	book->title = data.title;
-	book->description = data.description;
+	book->data.description = data.description;
+	book->data.uri = data.uri;
+	book->data.author = data.author;
+	book->data.title = data.title;
+	book->data.lang = data.lang;
+	book->data.description = data.description;
 	for (const auto& page: data.pages)
 		book->push_back(*page);
 	return book;

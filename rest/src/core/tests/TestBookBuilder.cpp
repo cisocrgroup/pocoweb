@@ -31,49 +31,49 @@ BOOST_AUTO_TEST_CASE(ResetTest)
 BOOST_AUTO_TEST_CASE(AuthorTest)
 {
 	builder.set_author("author");
-	BOOST_CHECK_EQUAL(builder.build()->author, "author");
+	BOOST_CHECK_EQUAL(builder.build()->data.author, "author");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(TitleTest)
 {
 	builder.set_title("title");
-	BOOST_CHECK_EQUAL(builder.build()->title, "title");
+	BOOST_CHECK_EQUAL(builder.build()->data.title, "title");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(DescriptionTest)
 {
 	builder.set_description("description");
-	BOOST_CHECK_EQUAL(builder.build()->description, "description");
+	BOOST_CHECK_EQUAL(builder.build()->data.description, "description");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(UriTest)
 {
 	builder.set_uri("uri");
-	BOOST_CHECK_EQUAL(builder.build()->uri, "uri");
+	BOOST_CHECK_EQUAL(builder.build()->data.uri, "uri");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(LanguageTest)
 {
 	builder.set_language("language");
-	BOOST_CHECK_EQUAL(builder.build()->lang, "language");
+	BOOST_CHECK_EQUAL(builder.build()->data.lang, "language");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(DirectoryTest)
 {
 	builder.set_directory("/directory/");
-	BOOST_CHECK_EQUAL(builder.build()->dir, "/directory/");
+	BOOST_CHECK_EQUAL(builder.build()->data.dir, "/directory/");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(YearTest)
 {
 	builder.set_year(2017);
-	BOOST_CHECK_EQUAL(builder.build()->year, 2017);
+	BOOST_CHECK_EQUAL(builder.build()->data.year, 2017);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -85,8 +85,10 @@ BOOST_AUTO_TEST_CASE(DeleteUserById)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(SelectProjectEntry)
 {
-	db.expect("SELECT projects.origin,projects.owner FROM projects "
-			"WHERE (projects.projectid=42)");
+	db.expect("SELECT projects.projectid,projects.origin,projects.owner,projects.pages "
+			"FROM projects WHERE (projects.projectid=42)");
+	// db.expect("SELECT projects.origin,projects.owner FROM projects "
+	// 		"WHERE (projects.projectid=42)");
 	auto projects = select_project_entry(db, 42);
 	db.validate();
 }
@@ -106,7 +108,7 @@ BOOST_AUTO_TEST_CASE(SelectBook)
 			"books.description,books.uri,books.directory,books.lang "
 			"FROM books "
 			"INNER JOIN projects ON (books.bookid=projects.origin) "
-			"WHERE ((books.bookid=13) AND (projects.owner=42))");
+			"WHERE (books.bookid=13)");
 	select_book(db, *user, 13);
 	db.validate();
 }
@@ -153,7 +155,7 @@ BOOST_FIXTURE_TEST_SUITE(Books, BooksFixture)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(InsertProject)
 {
-	db.expect("INSERT INTO projects (origin,owner) VALUES(0,42)");
+	db.expect("INSERT INTO projects (origin,pages,owner) VALUES(0,1,42)");
 	db.expect("INSERT INTO project_pages (projectid,pageid) VALUES(0,1)");
 	auto view = insert_project(db, *book);
 	BOOST_CHECK_EQUAL(view, book);
@@ -192,13 +194,13 @@ BOOST_AUTO_TEST_CASE(InsertBook)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(UpdateBook)
 {
-	book->author = "new-author";
-	book->title = "new-title";
-	book->dir = "new-directory";
-	book->year = 1917;
-	book->uri = "new-uri";
-	book->description = "new-description";
-	book->lang = "new-language";
+	book->data.author = "new-author";
+	book->data.title = "new-title";
+	book->data.dir = "new-directory";
+	book->data.year = 1917;
+	book->data.uri = "new-uri";
+	book->data.description = "new-description";
+	book->data.lang = "new-language";
 	db.expect("UPDATE books SET author='new-author',title='new-title',"
 			"directory='new-directory',year=1917,uri='new-uri',"
 			"description='new-description',lang='new-language' "
@@ -219,9 +221,10 @@ BOOST_AUTO_TEST_CASE(SelectProject)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(SelectProjectIds)
 {
-	db.expect("SELECT projects.projectid FROM projects "
-			"WHERE ((projects.owner=42) OR (projects.owner=0))");
-	select_all_project_ids(db, *user);
+	db.expect("SELECT projects.projectid,projects.origin,projects.owner,projects.pages,books.bookid,books.year,books.title,books.author,books.description,books.uri,books.directory,books.lang FROM books INNER JOIN projects ON (books.bookid=projects.origin) WHERE ((projects.owner=42) OR (projects.owner=0))");
+	// db.expect("SELECT projects.projectid FROM projects "
+	// 		"WHERE ((projects.owner=42) OR (projects.owner=0))");
+	select_all_projects(db, *user);
 	db.validate();
 }
 

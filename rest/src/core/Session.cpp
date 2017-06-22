@@ -1,6 +1,7 @@
 #include <regex>
 #include <crow/http_request.h>
 #include <crow/http_response.h>
+#include <crow/logging.h>
 #include "util.hpp"
 #include "User.hpp"
 #include "Session.hpp"
@@ -56,8 +57,8 @@ Session::cache(User& user) const
 void
 Session::set_cookies(crow::response& response) const noexcept
 {
-	set_cookie(response, "pcw-sid", id(), "*", expiration_date_);
-	set_cookie(response, "pcw-user", user_->name, "*", expiration_date_);
+	set_cookie(response, "pcw-sid", id(), "/", expiration_date_);
+	set_cookie(response, "pcw-user", user_->name, "/", expiration_date_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +74,8 @@ pcw::set_cookie(crow::response& response,
 	std::ostringstream os;
 	os << key << "=" << val
 	   << "; path=" << path
-	   << "; expires=" << std::ctime(&e) << ";";
+	   << "; expires=" << std::ctime(&e)
+	   << "; domain=pocoweb.cis.lmu.de" << ";";
 	response.add_header(SetCookie, os.str());
 }
 
@@ -82,10 +84,11 @@ boost::optional<std::string>
 pcw::get_cookie(const crow::request& request, const std::string& key) noexcept
 {
 	static const std::string Cookie{"Cookie"};
-	const std::regex re{key + R"(=(.*);)"};
+	const std::regex re{key + R"(=([a-z]*);?)"};
 	const auto range = request.headers.equal_range(Cookie);
 	std::smatch m;
 	for (auto i = range.first; i != range.second; ++i) {
+		CROW_LOG_DEBUG << "SEARCHING: " << i->first << ": " << i->second;
 		if (std::regex_match(i->second, m, re))
 			return std::string(m[1]);
 	}

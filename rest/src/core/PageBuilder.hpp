@@ -17,6 +17,7 @@ namespace pcw {
 
 		PageBuilder& reset();
 		const PageBuilder& append(Line& line) const;
+		const PageBuilder& set_id(int pageid) const;
 		const PageBuilder& set_image_path(Path img) const;
 		const PageBuilder& set_ocr_path(Path ocr) const;
 		const PageBuilder& set_box(Box box) const;

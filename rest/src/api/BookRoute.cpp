@@ -43,14 +43,17 @@ BookRoute::impl(HttpGet, const Request& req) const
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
-
-	auto projects = session->select_all_projects(conn);
-	CROW_LOG_DEBUG << "Loaded " << projects.size() << " projects";
+	auto projects = select_all_projects(conn.db(), session->user());
+	CROW_LOG_DEBUG << "(BookRoute) Loaded " << projects.size() << " projects";
 	Json j;
 	size_t i = 0;
 	for (const auto& p: projects) {
-		assert(p);
-		j["books"][i++] << *p;
+		j["books"][i] << p.first;
+		j["books"][i]["bookId"] = p.second.origin;
+		j["books"][i]["projectId"] = p.second.projectid;
+		j["books"][i]["pages"] = p.second.pages;
+		j["books"][i]["isBook"] = p.second.is_book();
+		i++;
 	}
 	return j;
 }
@@ -156,17 +159,17 @@ BookRoute::set(const Request& req, int bid, const Data& data) const
 	auto book = std::dynamic_pointer_cast<Book>(view);
 
 	if (data.author)
-		book->author = data.author;
+		book->data.author = data.author;
 	if (data.title)
-		book->title = data.title;
+		book->data.title = data.title;
 	if (data.uri)
-		book->uri = data.uri;
+		book->data.uri = data.uri;
 	if (data.desc)
-		book->description = data.desc;
+		book->data.description = data.desc;
 	if (data.year)
-		book->year = atoi(data.year);
+		book->data.year = atoi(data.year);
 	if (data.lang)
-		book->lang = data.lang;
+		book->data.lang = data.lang;
 
 	MysqlCommiter commiter(conn);
 	update_book(conn.db(), *book);

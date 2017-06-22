@@ -14,16 +14,17 @@ namespace pcw {
 	using BookSptr = std::shared_ptr<Book>;
 	using Path = boost::filesystem::path;
 
+	struct BookData {
+		std::string author, title, description, uri, lang;
+		Path dir;
+		int year;
+	};
+
 	class Book: public Project {
 	public:
 		Book(int id = 0)
 			: Project(id)
-			, author()
-			, title()
-			, description()
-			, uri()
-			, dir()
-			, year()
+			, data{}
 			, owner_()
 		{}
 		Book(const Book& other) = delete;
@@ -39,9 +40,7 @@ namespace pcw {
 		}
 		void set_owner(const User& user);
 
-		std::string author, title, description, uri, lang;
-		Path dir;
-		int year;
+		BookData data;
 
 	private:
 		ConstUserSptr owner_;
