@@ -57,8 +57,8 @@ Session::cache(User& user) const
 void
 Session::set_cookies(crow::response& response) const noexcept
 {
-	set_cookie(response, "pcw-sid", id(), "/", expiration_date_);
-	set_cookie(response, "pcw-user", user_->name, "/", expiration_date_);
+	set_cookie(response, "pcw-sid", id(), expiration_date_);
+	set_cookie(response, "pcw-user", user_->name, expiration_date_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,15 +66,18 @@ void
 pcw::set_cookie(crow::response& response,
 		const std::string& key,
 		const std::string& val,
-		const std::string& path,
 		const Session::TimePoint& expires) noexcept
 {
 	static const std::string SetCookie{"Set-Cookie"};
 	const auto e = std::chrono::system_clock::to_time_t(expires);
 	std::ostringstream os;
+	std::string stime(std::ctime(&e));
+	const auto end = stime.find_last_of('\n');
+	assert(end != std::string::npos);
+	stime = stime.substr(0, end);
 	os << key << "=" << val
-	   << "; path=" << path
-	   << "; expires=" << std::ctime(&e)
+	   << "; path=/"
+	   << "; expires=" << stime
 	   << "; domain=pocoweb.cis.lmu.de" << ";";
 	response.add_header(SetCookie, os.str());
 }

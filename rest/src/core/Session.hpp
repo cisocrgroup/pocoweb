@@ -110,7 +110,6 @@ namespace pcw {
 	void set_cookie(crow::response& response,
 			const std::string& key,
 			const std::string& val,
-			const std::string& path,
 			const Session::TimePoint& expires) noexcept;
 	boost::optional<std::string> get_cookie(const crow::request& request,
 			const std::string& key) noexcept;
