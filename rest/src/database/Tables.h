@@ -317,12 +317,29 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
     };
+    struct Pages
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "pages";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T pages;
+            T& operator()() { return pages; }
+            const T& operator()() const { return pages; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
   }
 
   struct Projects: sqlpp::table_t<Projects,
                Projects_::Projectid,
                Projects_::Origin,
-               Projects_::Owner>
+               Projects_::Owner,
+               Projects_::Pages>
   {
     struct _alias_t
     {
