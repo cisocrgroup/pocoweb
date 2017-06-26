@@ -6,23 +6,22 @@
 	rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
 	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-	crossorigin="anonymous">
+	crossorigin="anonymous"/>
+    <link rel="stylesheet" type="text/css" href="css/main.css"/>
     <title>PoCoWeb - Post Correction Web</title>
 </head>
 
 <body>
 <div class="container-fluid">
     <div class="row">
-	<div class="col-md-offset-1 col-md-5">
-	    <img class="image-rounded center-block" src="img/lmu_cis_logo.jpg"/>
-	</div>
+	<img class="image-rounded center-block" src="img/lmu_cis_logo.jpg"/>
     </div>
 
-    <div class="row">
-	<div class="col-md-offset-1 col-md-5">
-	    <nav class="navbar navbar-default">
-		<div class="navbar-header">
-		    <ul class="nav navbar-nav">
+    <!-- <div class="row"> -->
+	<div id="navbar" class="navbar-collapse collapse">
+	    <!-- <nav class="navbar navbar-default"> -->
+		<!-- <div class="navbar-header"> -->
+		    <ul class="nav navbar-nav navbar-left">
 			<li><a href="index.php">Home</a></li>
 			<li><a href="about.php">About</a></li>
 			<li><a href="documentation.php">Documentation</a></li>
@@ -47,10 +46,10 @@
 			echo'<li><p class="navbar-text">Api-Version: ', $version, '</p></li>';
 		    ?>
 		    </ul>
-		</div>
-	    </nav>
+		<!-- </div> -->
+	    <!-- </nav> -->
 	</div>
-    </div>
+    <!-- </div> -->
     <!--
     <h1>Simple Site</h1>
     <ul class="nav global">

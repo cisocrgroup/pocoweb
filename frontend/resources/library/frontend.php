@@ -5,13 +5,13 @@ require_once(LIBRARY_PATH . "/backend.php");
 
 function frontend_render_login_div() {
 	echo('<div class="row">');
-	echo('<div class="input-group col-md-3 col-md-offset-2">');
+	// echo('<div class="input-group col-md-3 col-md-offset-2">');
 	echo('<form action="login.php" method="post">');
 	echo('<input name="name" type="text" class="form-control" placeholder="Username" />');
 	echo('<input name="pass" type="password" class="form-control" placeholder="Password" />');
 	echo('<input type="submit" value="Login"/>');
 	echo('</form>');
-	echo('</div>');
+	// echo('</div>');
 	echo('</div>');
 }
 
@@ -22,9 +22,11 @@ function frontend_render_projects_div() {
 }
 
 function frontend_render_home_div() {
-	echo('<div class="row"><div class="col-md-5 col-md-offset-1">');
+	echo('<div id="home">');
+	// echo('<div class="col-md-5 col-md-offset-1">');
 	echo('<h1>Home</h1>');
-	echo('</div></div>');
+	// echo('</div>');
+	echo('</div>');
 }
 
 function frontend_render_project_table_div() {
@@ -32,11 +34,12 @@ function frontend_render_project_table_div() {
 	if ($projects === NULL) {
 		frontend_render_error_div("internal error: could not load projects");
 	} else {
-		echo '<div class="row">', "\n";
-		echo '<div class="col-md-5 col-md-offset-1">', "\n";
+		// echo '<div class="row">', "\n";
+		// echo '<div class="col-md-5 col-md-offset-1">', "\n";
 		echo '<h2>Projects</h2>', "\n";
 		frontend_render_project_table($projects);
-		echo '</div>', "\n", '</div>', "\n";
+		// echo '</div>', "\n";
+		// echo '</div>', "\n";
 	}
 }
 
@@ -102,29 +105,23 @@ function frontend_get_project_table_value($val) {
 }
 
 function frontend_render_upload_new_project_div() {
-	echo '<div class="row">', "\n";
-	echo '<div class="col-md-5 col-md-offset-1">', "\n";
+	echo '<div id="upload-project">', "\n";
+	// echo '<div class="col-md-5 col-md-offset-1">', "\n";
 	echo '<h2>Upload new project</h2>', "\n";
 	echo('<p><span class="glyphicon glyphicon-ban-circle"/>&nbsp;Comming soon...</p>');
-	echo '</div>', "\n";
+	// echo '</div>', "\n";
 	echo '</div>', "\n";
 }
 
-function frontend_render_page_view_div($p, $pid, $n) {
+function frontend_render_page_view_div($pid, $p, $n) {
 	echo '<div id="page-view">', "\n";
-	echo '<div class="row">', "\n";
-	echo '<div class="col-md-5 col-md-offset-1">', "\n";
-	// echo '<p>p=' . $p . '</p>', "\n";
-	// echo '<p>pid=' . $pid . '</p>', "\n";
-	// echo '<p>n=' . $n . '</p>', "\n";
 	$page = backend_get_page($pid, $p, $n);
 	if ($page === NULL) {
 		frontend_render_error_div("could not load page");
 	} else {
 		frontend_render_page($page);
 	}
-	echo '</div>', "\n";
-	echo '</div>', "\n";
+	// echo '</div>', "\n";
 	echo '</div>', "\n";
 }
 
@@ -141,38 +138,60 @@ function frontend_render_line($page, $line) {
 	$lid = $line["id"];
 	$text = $line["cor"];
 	echo '<div class="line-view">';
-	echo '<p>';
 	echo '<img src="', $imgfile, '"',
-		'alt="line #', $lid, ', ',
-		basename($imgfile), '"',
+		// 'class="img-thumbnail"',
+		'alt="line #', $lid, ', ', basename($imgfile), '"',
+		'title="line #', $lid, ', ', basename($imgfile), '"',
+		'width="', 6*strlen($text), '"',
+		'height="auto"',
 		' />';
 	echo '<br/>';
-	echo '<input type="text" size="', strlen($text), '" value="', $text, '" />';
-	echo '</p>';
+	// echo '<iframe name="line-', $lid, '" style="display:none;"></iframe>';
+	echo '<form action="page.php" method="post" id="line-', $lid, '">';
+	echo '<input name="foo" type="text" size="', strlen($text), '" value="', $text, '" />';
+	echo '<button type="submit"><span class="glyphicon glyphicon-upload" /></button>';
+	echo '</button>';
+	echo '</form>';
 	echo '</div>';
 }
 
 function frontend_render_success_div($msg) {
-	echo('<div class="row"><div class="col-md-5 col-md-offset-1">'
-		. '<div class="alert alert-success" role="alert">'
-		. $msg . '</div></div></div>' . "\n");
+	echo('<div class="row">');
+	// echo('<div class="col-md-5 col-md-offset-1">');
+	echo('<div class="alert alert-success" role="alert">');
+	echo($msg);
+	echo('</div>');
+	// echo('</div>');
+	echo('</div>');
 }
 
 function frontend_render_info_div($msg) {
-	echo('<div class="row"><div class="col-md-5 col-md-offset-1">'
-		. '<div class="alert alert-info" role="alert">'
-		. $msg . '</div></div></div>' . "\n");
+	echo('<div class="row">');
+	// echo('<div class="col-md-5 col-md-offset-1">');
+	echo('<div class="alert alert-info" role="alert">');
+	echo($msg);
+	echo('</div>');
+	// echo('</div>');
+	echo('</div>');
 }
 
 function frontend_render_warning_div($msg) {
-	echo('<div class="row"><div class="col-md-5 col-md-offset-1">'
-		. '<div class="alert alert-warning" role="alert">'
-		. $msg . '</div></div></div>' . "\n");
+	echo('<div class="row">');
+	// echo('<div class="col-md-5 col-md-offset-1">');
+	echo('<div class="alert alert-warning" role="alert">');
+	echo($msg);
+	echo('</div>');
+	// echo('</div>');
+	echo('</div>');
 }
 
 function frontend_render_error_div($msg) {
-	echo('<div class="row"><div class="col-md-5 col-md-offset-1">'
-		. '<div class="alert alert-danger" role="alert">'
-		. $msg . '</div></div></div>' . "\n");
+	echo('<div class="row">');
+	// echo('<div class="col-md-5 col-md-offset-1">');
+	echo('<div class="alert alert-danger" role="alert">');
+	echo($msg);
+	echo('</div>');
+	// echo('</div>');
+	echo('</div>');
 }
 ?>
