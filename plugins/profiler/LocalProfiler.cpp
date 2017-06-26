@@ -81,7 +81,7 @@ LocalProfiler::profiler_command() const
 std::string
 LocalProfiler::profiler_config() const
 {
-	return (Config::get().backend() / (book().lang + ".ini")).string();
+	return (Config::get().backend() / (book().data.lang + ".ini")).string();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
