@@ -26,9 +26,17 @@ Route::Response
 Login::login(const Request& req, const std::string& name, const std::string& pass) const
 {
 	CROW_LOG_INFO << "(Login) login attempt for user: " << name;
+
+	// check for existing session
+	auto session = find_session(req);
+	if (session) {
+		CROW_LOG_INFO << "(Login) existing session sid: " << session->id();
+		return ok();
+	}
+
+	// create new session
 	auto conn = connection();
 	assert(conn);
-
 	auto user = select_user(conn.db(), name);
 	if (not user) {
 		CROW_LOG_ERROR << "(Login) invalid user: " << name;
@@ -38,7 +46,7 @@ Login::login(const Request& req, const std::string& name, const std::string& pas
 		CROW_LOG_ERROR << "(Login) invalid password for user: " << name;
 	}
 
-	auto session = new_session(*user);
+	session = new_session(*user);
 	if (not session) {
 		CROW_LOG_ERROR << "(Login) could not create new session";
 		return internal_server_error();
