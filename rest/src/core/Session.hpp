@@ -162,7 +162,7 @@ pcw::Session::find(Connection<Db>& c, int bookid, int pageid) const
 
 	auto project = find(c, bookid);
 	if (project) {
-		auto page = project->find(bookid);
+		auto page = project->find(pageid);
 		if (page) {
 			page_ = page;
 			return page;

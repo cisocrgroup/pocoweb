@@ -155,23 +155,85 @@ function frontend_render_page_view_div($pid, $p, $n) {
 	echo '<div id="page-view">', "\n";
 	$page = backend_get_page($pid, $p, $n);
 	if ($page === NULL) {
-		frontend_render_error_div("could not load page");
+		frontend_render_error_div("could not load project #$pid, page #$p");
 	} else {
+		frontend_render_page_header($page);
+		frontend_render_page_heading($page);
 		frontend_render_page($page);
 	}
-	// echo '</div>', "\n";
+	echo '</div>', "\n";
+}
+
+function frontend_render_page_header($page) {
+	$nextpageid = $page["nextPageId"];
+	$prevpageid = $page["prevPageId"];
+	$pid = $page["projectId"];
+
+	echo '<div id="page-header" data-spy="affix" data-offset-top="141">', "\n";
+	// navigation buttons
+	frontend_render_page_navigation_buttons($pid, $prevpageid, TRUE);
+	frontend_render_page_navigation_buttons($pid, $nextpageid, FALSE);
+	// search
+	echo '<div class="input-group centered">', "\n";
+	echo '<span class="input-group-btn">', "\n";
+	echo '<button class="btn btn-default centered" type="button">', "\n";
+	echo '<span class="glyphicon glyphicon-search centered"/>', "\n";
+	echo '</button>', "\n";
+	echo '</span>', "\n";
+	echo '<input type="text" class="form-control centered" placeholder="Search"/>', "\n";
+	echo '</div>', "\n";
+	echo '</div>', "\n";
+}
+
+function frontend_render_page_navigation_buttons($pid, $p, $left) {
+	$btnclass = "btn btn-default";
+	$spanclass = "glyphicon";
+	$ospanclass = "glyphicon";
+	$title = "go to page #$p";
+	$dir = "";
+	if ($left) {
+		$btnclass .= " pull-left";
+		$spanclass .= ' glyphicon-step-backward';
+		$ospanclass .= ' glyphicon-fast-backward';
+		$dir = "first";
+	} else {
+		$btnclass .= " pull-right";
+		$spanclass .= ' glyphicon-step-forward';
+		$ospanclass .= ' glyphicon-fast-forward';
+		$dir = "last";
+	}
+	if ($p <= 0) {
+		$btnclass .= " disabled";
+	}
+	echo '<button class="', $btnclass, '" type="button" ',
+		'onclick="window.location.href=\'page.php?n=0&p=',
+		$dir, '&pid=', $pid, '\'"',
+		'title="go to ', $dir, ' page">', "\n";
+	echo '<span class="', $ospanclass, '"/>', "\n";
+	echo '</button>', "\n";
+	echo '<button class="', $btnclass, '" type="button" ',
+		'onclick="window.location.href=\'page.php?n=0&p=',
+		$p, '&pid=', $pid, '\'"',
+		'title="', $title, '">', "\n";
+	echo '<span class="', $spanclass, '"/>', "\n";
+	echo '</button>', "\n";
+}
+
+function frontend_render_page_heading($page) {
+	echo '<div id="page-heading">', "\n";
+	echo "<p><h2>Project #$page[projectId], page #$page[id]</h2></p>\n";
 	echo '</div>', "\n";
 }
 
 function frontend_render_page($page) {
 	echo '<div id="page-view"';
 	foreach ($page["lines"] as $line) {
-		frontend_render_line($page, $line);
+		frontend_render_page_line($page, $line);
 	}
 	echo '</div>';
 }
 
-function frontend_render_line($page, $line) {
+function frontend_render_page_line($page, $line) {
 	$imgfile = $line["imgFile"];
 	$lid = $line["id"];
 	$text = $line["cor"];

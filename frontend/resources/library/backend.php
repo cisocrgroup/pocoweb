@@ -53,6 +53,16 @@ function backend_get_projects() {
 	return $api->get_request();
 }
 
+function backend_get_nth_page_route($pid, $p) {
+	global $config;
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["get_nth_page"], $pid, $p);
+}
+
+function backend_get_last_page_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["get_last_page"], $pid);
+}
+
 function backend_get_first_page_route($pid) {
 	global $config;
 	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["get_first_page"], $pid);
@@ -60,13 +70,14 @@ function backend_get_first_page_route($pid) {
 
 function backend_get_page($pid, $p, $n) {
 	if ($p === "first") {
-		return backend_get_first_page($pid);
+		$api = new Api(backend_get_first_page_route($pid));
+		return $api->get_request();
+	} else if ($p == "last") {
+		$api = new Api(backend_get_last_page_route($pid));
+		return $api->get_request();
+	} else {
+		$api = new Api(backend_get_nth_page_route($pid, $p));
+		return $api->get_request();
 	}
-	return NULL;
-}
-
-function backend_get_first_page($pid) {
-	$api = new Api(backend_get_first_page_route($pid));
-	return $api->get_request();
 }
 ?>

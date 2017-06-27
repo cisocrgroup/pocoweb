@@ -52,6 +52,7 @@ PageRoute::impl(HttpGet, const Request& req, int bid, int pid) const
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
+	CROW_LOG_DEBUG << "(PageRoute) searching for book id: " << bid << " page id: " << pid;
 	auto page = session->find(conn, bid, pid);
 	if (not page)
 		return not_found();
@@ -82,6 +83,12 @@ PageRoute::impl(HttpGet, const Request& req, int bid) const
 		return bad_request();
 	if (book->empty())
 		return not_found();
+	CROW_LOG_DEBUG << "(PageRoute) book id: " << book->id()
+		       << " size: " << book->size();
+	for (const auto p: *book) {
+		CROW_LOG_DEBUG << "(PageRoute) page id: " << p->id();
+	}
+
 	Json j;
 	if (first) {
 		CROW_LOG_DEBUG << "(PageRoute) bookid: " << book->id()

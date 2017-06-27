@@ -7,6 +7,8 @@ $config = array(
 			"login"          => "/login",
 			"get_projects"   => "/books",
 			"get_first_page" => "/books/%d/pages/first",
+			"get_last_page" => "/books/%d/pages/last",
+			"get_nth_page"   => "/books/%d/pages/%d",
 		),
 	),
 	"cookies" => array(

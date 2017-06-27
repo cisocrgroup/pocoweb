@@ -17,11 +17,10 @@
 
 <body>
 <div class="container-fluid">
+    <div id="pocweb-header">
     <div class="row">
 	<img class="image-rounded center-block" src="img/lmu_cis_logo.jpg"/>
     </div>
-
-    <!-- <div class="row"> -->
 	<div id="navbar" class="navbar-collapse collapse">
 	    <!-- <nav class="navbar navbar-default"> -->
 		<!-- <div class="navbar-header"> -->
@@ -32,37 +31,20 @@
 			<li><a href="http://www.cis.lmu.de">CIS</a></li>
 		    </ul>
 		    <ul class="nav navbar-nav navbar-right">
-		    <?php
-			require_once(dirname(dirname(__FILE__)) . "/config.php");
-			require_once(LIBRARY_PATH . "/backend.php");
-			if (backend_is_logged_in()) {
-			    echo('<li><p class="navbar-text">Logged in as user: '
-				. backend_get_login_name() . '</p></li>');
-			} else {
-			    // if not logged in, index.php with no parameters
-			    // will render the login page.
-			    echo('<li><a href="login.php">Login</a></li>');
-			}
-			$version = backend_get_api_version();
-			if ($version === "unknown") {
-			    $version = '<span class="glyphicon glyphicon-warning-sign"/>';
-			}
-			echo'<li><p class="navbar-text">Api-Version: ', $version, '</p></li>';
-		    ?>
-		    </ul>
-		<!-- </div> -->
-	    <!-- </nav> -->
-	</div>
-    <!-- </div> -->
-    <!--
-    <h1>Simple Site</h1>
-    <ul class="nav global">
-	<li><a href="#">Home</a></li>
-	<li><a href="#">Articles</a></li>
-	<li><a href="#">Portfolio</a></li>
-	<li><a href="#">Login</a></li>
-    </ul>
-    -->
-<!--
-vim: sw=4
--->
+<?php
+require_once(dirname(dirname(__FILE__)) . "/config.php");
+require_once(LIBRARY_PATH . "/backend.php");
+if (backend_is_logged_in()) {
+    echo('<li><p class="navbar-text">Logged in as user: '
+	. backend_get_login_name() . '</p></li>');
+} else {
+    // if not logged in, index.php with no parameters
+    // will render the login page.
+    echo('<li><a href="login.php">Login</a></li>');
+}
+$version = backend_get_api_version();
+if ($version === "unknown") {
+    $version = '<span class="glyphicon glyphicon-warning-sign"/>';
+}
+echo'<li><p class="navbar-text">Api-Version: ', $version, '</p></li>';
+?>

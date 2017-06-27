@@ -2,8 +2,8 @@ div.line-view {
 	margin: 10px;
 	/*border: 1px solid #ccc;*/
 }
-/*
-div.line-view:hover {
-	border: 1px solid #777;
+
+.affix {
+	top: 5px;
 }
-*/
+

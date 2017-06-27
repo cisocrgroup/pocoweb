@@ -32,7 +32,7 @@ SessionPtr
 Route::find_session(const crow::request& request) const
 {
 	auto sid = get_cookie(request, "pcw-sid");
-	CROW_LOG_DEBUG << "searching for sid: " << sid;
+	CROW_LOG_DEBUG << "(Route) searching for sid: " << sid;
 	if (not sid)
 		return nullptr;
 	assert(session_store_);
