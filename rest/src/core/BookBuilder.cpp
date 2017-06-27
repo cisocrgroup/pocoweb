@@ -22,7 +22,19 @@ BookBuilder::append(Page& page) const
 	assert(book_);
 	book_->push_back(page);
 	assert(not book_->empty());
-	book_->back()->id_ = static_cast<int>(book_->size());
+	// set page id only if page id = 0
+	if (not book_->back()->id_) {
+		const auto n = book_->size();
+		if (n == 1) {
+			book_->back()->id_ = 1;
+		} else {
+			// assume current_page_id = prev_page_id + 1
+			assert(n > 1);
+			auto prev_page = *(book_->begin() + (n-2));
+			assert(prev_page);
+			book_->back()->id_ = prev_page->id_ + 1;
+		}
+	}
 	book_->back()->book_ = book_;
 	return *this;
 }
