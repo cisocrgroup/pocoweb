@@ -48,3 +48,6 @@ if ($version === "unknown") {
 }
 echo'<li><p class="navbar-text">Api-Version: ', $version, '</p></li>';
 ?>
+		    </ul>
+    </div>
+</div>
