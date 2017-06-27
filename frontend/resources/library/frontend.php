@@ -106,10 +106,48 @@ function frontend_get_project_table_value($val) {
 
 function frontend_render_upload_new_project_div() {
 	echo '<div id="upload-project">', "\n";
-	// echo '<div class="col-md-5 col-md-offset-1">', "\n";
 	echo '<h2>Upload new project</h2>', "\n";
-	echo('<p><span class="glyphicon glyphicon-ban-circle"/>&nbsp;Comming soon...</p>');
-	// echo '</div>', "\n";
+	echo '<form action="upload.php" method="post">', "\n";
+	// Author
+	echo '<div class="form-group">', "\n";
+	echo '<label for="author">Project\'s author</label>', "\n";
+	echo '<input name="author" type="text" placeholder="Author" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Title
+	echo '<div class="form-group">', "\n";
+	echo '<label for="title">Project\'s title</label>', "\n";
+	echo '<input name="title" type="text" placeholder="Title" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Year
+	echo '<div class="form-group">', "\n";
+	echo '<label for="year">Year of publication</label>', "\n";
+	echo '<input name="year" type="number" min="0" max="2099" step="1" value="2017" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Language
+	echo '<div class="form-group">', "\n";
+	echo '<label for="lang">Language</label>', "\n";
+	echo '<input name="lang" type="text" placeholder="Language" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Description
+	echo '<div class="form-group">', "\n";
+	echo '<label for="desc">Description</label>', "\n";
+	echo '<input name="desc" type="text" placeholder="Description" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// upload file
+	echo '<div class="input-group">', "\n";
+	echo '<label class="input-group-btn">', "\n";
+	echo '<span class="btn">', "\n";
+	echo 'Browse&hellip; ', "\n";
+	echo '<input name="file" type="file" style="display: none;" multiple>', "\n";
+	echo '</span>', "\n";
+	echo '</label>', "\n";
+	echo '<input name="file" type="text" class="form-control" readonly>', "\n";
+	echo '</div>', "\n";
+	// upload button
+	echo '<button class="btn btn-primary" title="upload new project" type="submit">', "\n";
+	echo '<span class="glyphicon glyphicon-upload" type="submit"/>', "\n";
+	echo '</button>', "\n";
+	echo '</form>', "\n";
 	echo '</div>', "\n";
 }
 
