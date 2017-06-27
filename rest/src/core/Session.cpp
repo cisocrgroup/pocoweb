@@ -91,7 +91,7 @@ pcw::get_cookie(const crow::request& request, const std::string& key) noexcept
 	const auto range = request.headers.equal_range(Cookie);
 	std::smatch m;
 	for (auto i = range.first; i != range.second; ++i) {
-		CROW_LOG_DEBUG << "SEARCHING: " << i->first << ": " << i->second;
+		CROW_LOG_DEBUG << "(get_cookie) searching: " << i->first << ": " << i->second;
 		if (std::regex_match(i->second, m, re))
 			return std::string(m[1]);
 	}

@@ -52,6 +52,7 @@ PageRoute::impl(HttpGet, const Request& req, int bid, int pid) const
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
+	CROW_LOG_DEBUG << "(PageRoute) searching for book id: " << bid << " page id: " << pid;
 	auto page = session->find(conn, bid, pid);
 	if (not page)
 		return not_found();

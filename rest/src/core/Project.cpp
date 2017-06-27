@@ -1,3 +1,4 @@
+#include <crow/logging.h>
 #include "utils/Error.hpp"
 #include "Book.hpp"
 #include "Page.hpp"
@@ -12,6 +13,7 @@ find(It b, It e, int id) noexcept
 {
 	return std::find_if(b, e, [id](const auto& page) {
 		assert(page);
+		CROW_LOG_DEBUG << "(Project) find_page(" << id << "): " << page->id();
 		return page->id() == id;
 	});
 }
