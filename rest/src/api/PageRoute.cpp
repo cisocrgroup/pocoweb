@@ -82,6 +82,12 @@ PageRoute::impl(HttpGet, const Request& req, int bid) const
 		return bad_request();
 	if (book->empty())
 		return not_found();
+	CROW_LOG_DEBUG << "(PageRoute) book id: " << book->id()
+		       << " size: " << book->size();
+	for (const auto p: *book) {
+		CROW_LOG_DEBUG << "(PageRoute) page id: " << p->id();
+	}
+
 	Json j;
 	if (first) {
 		CROW_LOG_DEBUG << "(PageRoute) bookid: " << book->id()
