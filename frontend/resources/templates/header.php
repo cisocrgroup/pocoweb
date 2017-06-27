@@ -36,7 +36,7 @@
 			require_once(dirname(dirname(__FILE__)) . "/config.php");
 			require_once(LIBRARY_PATH . "/backend.php");
 			if (backend_is_logged_in()) {
-			    echo('<li><p class="navbar-text">Logged in as '
+			    echo('<li><p class="navbar-text">Logged in as user: '
 				. backend_get_login_name() . '</p></li>');
 			} else {
 			    // if not logged in, index.php with no parameters
