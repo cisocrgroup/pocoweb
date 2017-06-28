@@ -50,6 +50,15 @@ Route::session(const crow::request& request) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void
+Route::delete_session(const Session& session) const
+{
+	assert(session_store_);
+	CROW_LOG_DEBUG << "(Route) deleting session: " << session.id();
+	session_store_->delete_session(session.id());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 std::string
 Route::extract_content(const crow::request& request)
 {

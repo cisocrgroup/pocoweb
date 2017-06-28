@@ -21,6 +21,7 @@ namespace pcw {
 		bool empty() const noexcept {return sessions_.empty();}
 		SessionSptr new_session(const User& user, AppCacheSptr cache);
 		SessionSptr find_session(const std::string& sid) const;
+		void delete_session(const std::string& sid);
 		auto begin() const {
 			return sessions_.begin();
 		}
