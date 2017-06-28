@@ -169,7 +169,7 @@ function frontend_render_page_header($page) {
 	$prevpageid = $page["prevPageId"];
 	$pid = $page["projectId"];
 
-	echo '<div id="page-header" data-spy="affix" data-offset-top="141">', "\n";
+	echo '<div id="page-header" class="navbar navbar-nav" data-spy="affix" data-offset-top="141">', "\n";
 	// navigation buttons
 	frontend_render_page_navigation_buttons($pid, $prevpageid, TRUE);
 	frontend_render_page_navigation_buttons($pid, $nextpageid, FALSE);
