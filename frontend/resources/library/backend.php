@@ -30,17 +30,24 @@ function backend_login($name, $pass) {
 	return $api->get_http_status_code();
 }
 
-function backend_is_logged_in() {
+function backend_get_logout_route() {
 	global $config;
-	return isset($_COOKIE[$config["cookies"]["sid"]]);
+	return $config["backend"]["url"] . $config["backend"]["routes"]["logout"];
+}
+
+function backend_logout() {
+	$api = new Api(backend_get_logout_route());
+	$api->get_request();
+}
+
+function backend_is_logged_in() {
+	return backend_get_login_name() !== NULL;
 }
 
 function backend_get_login_name() {
 	global $config;
-	if (isset($_COOKIE[$config["cookies"]["name"]])) {
-		return $_COOKIE[$config["cookies"]["name"]];
-	}
-	return "unkown";
+	$api = new Api(backend_get_login_route());
+	return $api->get_request();
 }
 
 function backend_get_projects_route() {

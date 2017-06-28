@@ -1,4 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!-- vim: set ts=4 sw=4 :-->
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -34,12 +35,12 @@
 <?php
 require_once(dirname(dirname(__FILE__)) . "/config.php");
 require_once(LIBRARY_PATH . "/backend.php");
-if (backend_is_logged_in()) {
-    echo('<li><p class="navbar-text">Logged in as user: '
-	. backend_get_login_name() . '</p></li>');
+$user = backend_get_login_name();
+if ($user !== NULL) {
+	echo '<li><p class="navbar-text">Logged in as user: ',
+		$user["name"], '</p></li>', "\n";
+	echo '<li><a href="logout.php">Logout</a></li>', "\n";
 } else {
-    // if not logged in, index.php with no parameters
-    // will render the login page.
     echo('<li><a href="login.php">Login</a></li>');
 }
 $version = backend_get_api_version();
