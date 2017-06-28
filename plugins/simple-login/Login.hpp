@@ -15,6 +15,7 @@ namespace pcw {
 
 		pcw_crtp_route_def_impl__();
 		Response impl(HttpPost, const Request& request) const;
+		Response impl(HttpGet, const Request& request) const;
 
 	private:
 		Response login(

@@ -1,8 +1,9 @@
 #include <crow.h>
-#include "utils/QueryParser.hpp"
-#include "database/Database.hpp"
-#include "core/Session.hpp"
 #include "Login.hpp"
+#include "core/Session.hpp"
+#include "core/jsonify.hpp"
+#include "database/Database.hpp"
+#include "utils/QueryParser.hpp"
 
 using namespace pcw;
 
@@ -18,7 +19,7 @@ const char* Login::name_ = "Login";
 void
 Login::Register(App& app)
 {
-	CROW_ROUTE(app, LOGIN_ROUTE).methods("POST"_method)(*this);
+	CROW_ROUTE(app, LOGIN_ROUTE).methods("POST"_method, "GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -72,5 +73,18 @@ Login::impl(HttpPost, const Request& req) const
 		CROW_LOG_ERROR << "(Login) invalid login attempt";
 		return bad_request();
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response
+Login::impl(HttpGet, const Request& req) const
+{
+	auto session = find_session(req);
+	if (not session) {
+		CROW_LOG_ERROR << "(Login) not logged in";
+		return bad_request();
+	}
+	Json j;
+	return j << session->user();
 }
 
