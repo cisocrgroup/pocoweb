@@ -51,7 +51,6 @@ LIBS += lib/libpcwcore.a
 LIBS += lib/libpcwparser.a
 LIBS += lib/libpcwapi.a
 MAINS += pcwd
-MAINS += pcwc
 
 lib/libpcwcore.a: $(CORE_OBJS) | $(MODS) mkdir-lib
 	$(AR) rcs $@ $^
@@ -62,8 +61,6 @@ lib/libpcwparser.a: $(PARSER_OBJS) | $(MODS) $(VENDS) mkdir-lib
 
 pcwd: rest/src/pcwd.cpp $(LIBS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
-pcwc: rest/src/pcwc.cpp $(LIBS)
-	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -lcurl
 
 rest/src/database/Tables.h: modules/sqlpp11/scripts/ddl2cpp db/tables.sql
 	$^ rest/src/database/Tables tables
