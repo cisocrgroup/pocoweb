@@ -8,6 +8,7 @@ include make/external.mak
 include make/clean.mak
 include make/rest.mak
 include make/plugins.mak
+include make/utils.mak
 include make/test.mak
 include make/frontend.mak
 
@@ -19,6 +20,7 @@ dbg-%:; @echo $*: ${$*}
 
 all: ${ALL}
 
-tags: $(SRCS)
+.PHONY: tags
+tags:
 	@echo "generating tags file"
-	@ctags -R plugins rest modules
+	@ctags -R plugins rest modules utils
