@@ -1,20 +1,19 @@
-#ifndef pcw_Login_hpp__
-#define pcw_Login_hpp__
+#ifndef pcw_Logout_hpp__
+#define pcw_Logout_hpp__
 
 #include <array>
 #include <boost/optional.hpp>
 #include "core/CrtpRoute.hpp"
 
 namespace pcw {
-	class Login: public CrtpRoute<Login> {
+	class Logout: public CrtpRoute<Logout> {
 	public:
-		virtual ~Login() noexcept override = default;
+		virtual ~Logout() noexcept override = default;
 		virtual const char *route() const noexcept override {return route_;}
 		virtual const char *name() const noexcept override {return name_;}
 		virtual void Register(App&) override;
 
 		pcw_crtp_route_def_impl__();
-		Response impl(HttpPost, const Request& request) const;
 		Response impl(HttpGet, const Request& request) const;
 
 	private:
@@ -28,5 +27,5 @@ namespace pcw {
 	};
 }
 
-#endif // pcw_Login_hpp__
+#endif // pcw_Logout_hpp__
 

@@ -5,9 +5,10 @@ $config = array(
 		"routes" => array(
 			"api_version"    => "/api-version",
 			"login"          => "/login",
+			"logout"         => "/logout",
 			"get_projects"   => "/books",
 			"get_first_page" => "/books/%d/pages/first",
-			"get_last_page" => "/books/%d/pages/last",
+			"get_last_page"  => "/books/%d/pages/last",
 			"get_nth_page"   => "/books/%d/pages/%d",
 		),
 	),

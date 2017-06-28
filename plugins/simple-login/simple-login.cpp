@@ -3,6 +3,7 @@
 #include "core/App.hpp"
 #include "core/Config.hpp"
 #include "Login.hpp"
+#include "Logout.hpp"
 #include "core/Session.hpp"
 #include "core/Password.hpp"
 #include "database/Database.hpp"
@@ -46,11 +47,13 @@ do_plugin(const std::string& p, App& app) noexcept
 		insert_default_user(p, app);
 
 		auto login = std::make_unique<Login>();
+		auto logout = std::make_unique<Logout>();
 		auto create_user = std::make_unique<CreateUser>();
 		auto update_user = std::make_unique<UpdateUser>();
 		auto delete_user = std::make_unique<DeleteUser>();
 
 		app.Register(std::move(login));
+		app.Register(std::move(logout));
 		app.Register(std::move(create_user));
 		app.Register(std::move(update_user));
 		app.Register(std::move(delete_user));

@@ -43,6 +43,23 @@ SessionStore::find_session(const std::string& sid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 void
+SessionStore::delete_session(const std::string& sid)
+{
+	using std::begin;
+	using std::end;
+	Lock lock(mutex_);
+	const auto b = begin(sessions_);
+	const auto e = end(sessions_);
+	for (auto i = b; i != e; ++i) {
+		if (i->second->id() == sid) {
+			sessions_.erase(i);
+			break;
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
 SessionStore::clear_expired_sessions()
 {
 	using std::end;

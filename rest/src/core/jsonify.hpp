@@ -20,6 +20,7 @@ namespace pcw {
 	class Line;
 	class Box;
 	class Profile;
+	class User;
 	struct Suggestion;
 	struct Pattern;
 
@@ -34,6 +35,7 @@ namespace pcw {
 	Json& operator<<(Json& j, const Suggestion& sugg);
 	Json& operator<<(Json& j, const std::vector<Suggestion>& suggs);
 	Json& operator<<(Json& j, const std::map<Pattern, std::vector<Suggestion>>& x);
+	Json& operator<<(Json& j, const User& user);
 }
 
 #endif // pcw_jsonify_hpp__

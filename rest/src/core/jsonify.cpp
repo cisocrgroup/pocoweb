@@ -2,6 +2,7 @@
 #include "Box.hpp"
 #include "Page.hpp"
 #include "Profile.hpp"
+#include "User.hpp"
 #include "jsonify.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -153,3 +154,13 @@ pcw::operator<<(Json& json, const Profile& profile)
 	return json;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+pcw::Json&
+pcw::operator<<(Json& j, const User& user)
+{
+	j["name"] = user.name;
+	j["email"] = user.email;
+	j["institute"] = user.institute;
+	j["id"] = user.id();
+	return j;
+}
