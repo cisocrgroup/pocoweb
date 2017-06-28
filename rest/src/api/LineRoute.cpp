@@ -52,10 +52,10 @@ Route::Response
 LineRoute::impl(HttpPost, const Request& req, int bid, int pid, int lid) const
 {
 	Data data;
-	data.correction = req.url_params.get("correction");
+	data.correction = req.url_params.get("d");
 	data.partial = req.url_params.get("partial");
 	if (not data.correction)
-		return bad_request();
+		THROW(BadRequest, "missing data");
 
 	auto conn = connection();
 	auto session = this->session(req);
@@ -75,7 +75,6 @@ LineRoute::impl(HttpPost, const Request& req, int bid, int pid, int lid) const
 Route::Response
 LineRoute::correct(MysqlConnection& conn, Line& line, const Data& data) const
 {
-
 	WagnerFischer wf;
 	wf.set_gt(data.correction);
 	wf.set_ocr(line);
