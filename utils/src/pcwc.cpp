@@ -52,6 +52,7 @@ struct CNextPage {int ofs;};
 struct CPrevPage {int ofs;};
 struct CSetBook {std::map<std::string, std::string> data;};
 struct CChange {std::string what; bool is_file;};
+struct CUpdateLine{};
 struct CFirstPage {};
 struct CLastPage {};
 struct CFirstLine {};
@@ -198,7 +199,7 @@ Ed::~Ed() noexcept
 void
 Ed::login()
 {
-	auto url = "http://" + host + "/login/user/" + user + "/pass/" + pass;
+	auto url = "http://" + host + "/login";
 	curl_easy_setopt(curl, CURLOPT_URL, url.data());
 	get(url);
 }
