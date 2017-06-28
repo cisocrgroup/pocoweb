@@ -84,6 +84,7 @@ Login::impl(HttpGet, const Request& req) const
 		CROW_LOG_ERROR << "(Login) not logged in";
 		return bad_request();
 	}
+	SessionLock lock(*session);
 	Json j;
 	return j << session->user();
 }
