@@ -19,6 +19,6 @@ dbg-%:; @echo $*: ${$*}
 
 all: ${ALL}
 
-## tags: $(SRCS)
-## 	@echo "generating tags file"
-## 	@ctags $(SRCS)
+tags: $(SRCS)
+	@echo "generating tags file"
+	@ctags -R plugins rest modules
