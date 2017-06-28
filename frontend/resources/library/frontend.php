@@ -228,27 +228,29 @@ function frontend_render_page_heading($page) {
 function frontend_render_page($page) {
 	echo '<div id="page-view"';
 	foreach ($page["lines"] as $line) {
-		frontend_render_page_line($page, $line);
+		frontend_render_page_line($page["projectId"], $page["id"],
+			$line["id"], $line["cor"], $line["imgFile"]);
 	}
 	echo '</div>';
 }
 
-function frontend_render_page_line($page, $line) {
-	$imgfile = $line["imgFile"];
-	$lid = $line["id"];
-	$text = $line["cor"];
-	echo '<div class="line-view">';
+function frontend_render_page_line($pid, $p, $lid, $d, $imgfile) {
+	$file = basename($imgfile);
+	$text = "line $lid, $file";
+	$anchor = "$pid-$p-$lid";
+	echo '<div class="line-view" title="', $text, '">';
+	echo '<a class="line-anchor" id="', $anchor, '"></a>';
 	echo '<img src="', $imgfile, '"',
-		// 'class="img-thumbnail"',
-		'alt="line #', $lid, ', ', basename($imgfile), '"',
-		'title="line #', $lid, ', ', basename($imgfile), '"',
-		'width="', 6*strlen($text), '"',
+		'alt="', $text, '"',
+		'title="', $text, '"',
+		'width="', 6*strlen($d), '"',
 		'height="auto"',
 		' />';
 	echo '<br/>';
 	// echo '<iframe name="line-', $lid, '" style="display:none;"></iframe>';
-	echo '<form action="page.php" method="post" id="line-', $lid, '">';
-	echo '<input name="foo" type="text" size="', strlen($text), '" value="', $text, '" />';
+	echo '<form action="page.php', '?n=0&p=', $p, '&pid=', $pid, '#', $anchor, '"',
+		' method="post" id="line-', $lid, '">';
+	echo '<input name="', $anchor, '" type="text" size="', strlen($d), '" value="', $d, '" />';
 	echo '<button type="submit"><span class="glyphicon glyphicon-upload" /></button>';
 	echo '</button>';
 	echo '</form>';

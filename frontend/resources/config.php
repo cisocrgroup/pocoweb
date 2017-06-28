@@ -10,6 +10,7 @@ $config = array(
 			"get_first_page" => "/books/%d/pages/first",
 			"get_last_page"  => "/books/%d/pages/last",
 			"get_nth_page"   => "/books/%d/pages/%d",
+			"correct_line"   => "/books/%d/pages/%d/lines/%d",
 		),
 	),
 	"cookies" => array(

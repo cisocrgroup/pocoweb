@@ -3,7 +3,17 @@ div.line-view {
 	/*border: 1px solid #ccc;*/
 }
 
+div.line-view:hover {
+	/*background: lightgrey;*/
+}
+
 .affix {
 	top: 5px;
 }
 
+a.line-anchor {
+    display: block;
+    position: relative;
+    top: -250px;
+    /*visibility: hidden;*/
+}

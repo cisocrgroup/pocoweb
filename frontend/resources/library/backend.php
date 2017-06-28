@@ -75,6 +75,18 @@ function backend_get_first_page_route($pid) {
 	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["get_first_page"], $pid);
 }
 
+function backend_get_correct_line_route($pid, $p, $lid) {
+	global $config;
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["correct_line"], $pid, $p, $lid);
+}
+
+function backend_correct_line($pid, $p, $lid, $d) {
+	$data = 'd=' . urlencode($d);
+	$api = new Api(backend_get_correct_line_route($pid, $p, $lid));
+	$api->post_request($data);
+	return $api->get_http_status_code();
+}
+
 function backend_get_page($pid, $p, $n) {
 	if ($p === "first") {
 		$api = new Api(backend_get_first_page_route($pid));
