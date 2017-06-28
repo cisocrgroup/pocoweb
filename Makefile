@@ -23,4 +23,4 @@ all: ${ALL}
 .PHONY: tags
 tags:
 	@echo "generating tags file"
-	@ctags -R plugins rest modules
+	@ctags -R plugins rest modules utils
