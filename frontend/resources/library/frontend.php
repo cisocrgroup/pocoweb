@@ -99,7 +99,7 @@ function frontend_get_project_table_value($val) {
 function frontend_render_upload_new_project_div() {
 	echo '<div id="upload-project">', "\n";
 	echo '<h2>Upload new project</h2>', "\n";
-	echo '<form action="upload.php" method="post">', "\n";
+	echo '<form action="index.php?upload" method="post" enctype="multipart/form-data">', "\n";
 	// Author
 	echo '<div class="form-group">', "\n";
 	echo '<label for="author">Project\'s author</label>', "\n";
@@ -122,14 +122,9 @@ function frontend_render_upload_new_project_div() {
 	echo '<input name="lang" type="text" placeholder="Language" class="form-control"/>', "\n";
 	echo '</div>', "\n";
 	// upload file
-	echo '<div class="input-group">', "\n";
-	echo '<label class="input-group-btn">', "\n";
-	echo '<span class="btn">', "\n";
-	echo 'Browse&hellip; ', "\n";
-	echo '<input name="file" type="file" style="display: none;" multiple>', "\n";
-	echo '</span>', "\n";
-	echo '</label>', "\n";
-	echo '<input name="file" type="text" class="form-control" readonly>', "\n";
+	echo '<div class="form-group">', "\n";
+	echo '<label for="archive-upload">Upload project</label>', "\n";
+	echo '<input type="file" id="archive-upload" name="archive" />', "\n";
 	echo '</div>', "\n";
 	// upload button
 	echo '<button class="btn btn-primary" title="upload new project" type="submit">', "\n";
