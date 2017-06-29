@@ -5,15 +5,10 @@ require_once(LIBRARY_PATH . "/backend.php");
 require_once(TEMPLATES_PATH . "/header.php");
 
 if (isset($_GET["upload"])) {
-	// frontend_upload_project($_POST);
-	frontend_render_info_div("uploading upload=$_GET[upload]");
-	foreach ($_POST as $key => $val) {
-		echo("<p>$key = $val</p>");
-	}
-	foreach ($_FILES as $key => $val) {
-		foreach($val as $keykey => $valval) {
-			echo "<p>$keykey = $valval</p>";
-		}
+	if (isset($_FILES["archive"])) {
+		frontend_upload_project_archive($_POST, $_FILES["archive"]);
+	} else {
+		frontend_render_error_div("Could not upload project: missing file");
 	}
 }
 

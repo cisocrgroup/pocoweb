@@ -134,6 +134,16 @@ function frontend_render_upload_new_project_div() {
 	echo '</div>', "\n";
 }
 
+function frontend_upload_project_archive($post, $file) {
+	foreach ($post as $key => $val) {
+		echo("<p>$key = $val</p>");
+	}
+	foreach ($file as $key => $val) {
+		echo "<p>$key = $val</p>";
+	}
+
+}
+
 function frontend_render_page_view_div($pid, $p, $u, $post) {
 	if (isset($post["lines"])) {
 		frontend_update_lines($u, $post["lines"]);
