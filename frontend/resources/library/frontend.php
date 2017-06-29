@@ -5,13 +5,11 @@ require_once(LIBRARY_PATH . "/backend.php");
 
 function frontend_render_login_div() {
 	echo('<div class="row">');
-	// echo('<div class="input-group col-md-3 col-md-offset-2">');
 	echo('<form action="login.php" method="post">');
 	echo('<input name="name" type="text" class="form-control" placeholder="Username" />');
 	echo('<input name="pass" type="password" class="form-control" placeholder="Password" />');
 	echo('<input type="submit" value="Login"/>');
 	echo('</form>');
-	// echo('</div>');
 	echo('</div>');
 }
 
@@ -23,9 +21,7 @@ function frontend_render_projects_div() {
 
 function frontend_render_home_div() {
 	echo('<div id="home">');
-	// echo('<div class="col-md-5 col-md-offset-1">');
 	echo('<h1>Home</h1>');
-	// echo('</div>');
 	echo('</div>');
 }
 
@@ -34,12 +30,8 @@ function frontend_render_project_table_div() {
 	if ($projects === NULL) {
 		frontend_render_error_div("internal error: could not load projects");
 	} else {
-		// echo '<div class="row">', "\n";
-		// echo '<div class="col-md-5 col-md-offset-1">', "\n";
 		echo '<h2>Projects</h2>', "\n";
 		frontend_render_project_table($projects);
-		// echo '</div>', "\n";
-		// echo '</div>', "\n";
 	}
 }
 
@@ -86,7 +78,7 @@ function frontend_render_project_table_header() {
 }
 
 function frontend_get_project_table_action_button($msg, $id, $class) {
-	return '<button onclick="window.location.href=\'page.php?n=0&p=first&pid='
+	return '<button onclick="window.location.href=\'page.php?u=none&p=first&pid='
 		. $id . '\'" title="' . $msg . ' #' . $id . '">'
 		. '<span class="' . $class . '"/>'
 		. '</button>';
@@ -121,7 +113,8 @@ function frontend_render_upload_new_project_div() {
 	// Year
 	echo '<div class="form-group">', "\n";
 	echo '<label for="year">Year of publication</label>', "\n";
-	echo '<input name="year" type="number" min="0" max="2099" step="1" value="2017" class="form-control"/>', "\n";
+	echo '<input name="year" type="number" min="0" max="2099" ',
+		'step="1" value="2017" class="form-control"/>', "\n";
 	echo '</div>', "\n";
 	// Language
 	echo '<div class="form-group">', "\n";
@@ -151,9 +144,12 @@ function frontend_render_upload_new_project_div() {
 	echo '</div>', "\n";
 }
 
-function frontend_render_page_view_div($pid, $p, $n) {
+function frontend_render_page_view_div($pid, $p, $u, $post) {
+	if (isset($post["lines"])) {
+		frontend_update_lines($u, $post["lines"]);
+	}
 	echo '<div id="page-view">', "\n";
-	$page = backend_get_page($pid, $p, $n);
+	$page = backend_get_page($pid, $p);
 	if ($page === NULL) {
 		frontend_render_error_div("could not load project #$pid, page #$p");
 	} else {
@@ -163,6 +159,35 @@ function frontend_render_page_view_div($pid, $p, $n) {
 	}
 	echo '</div>', "\n";
 }
+
+function frontend_update_lines($u, $lines) {
+	if ($u === "none") {
+		return;
+	}
+	$oklines = "";
+	$errorlines = "";
+	foreach ($lines as $key => $val) {
+		if (preg_match('/(\d+)-(\d+)-(\d+)/', $key, $m)) {
+			if ($u === "all" || $u === $key) {
+				$status = backend_correct_line($m[1], $m[2], $m[3], $val);
+				if ($status === 200) {
+					$oklines .= "#$m[3] ";
+				} else {
+					$errorlines .= "#$m[3]($status) ";
+				}
+			}
+		}
+	}
+	if (strlen($errorlines) > 0) {
+		frontend_render_error_div("Error updating lines: $errorlines");
+	}
+	if (strlen($oklines) > 0) {
+		frontend_render_success_div("Successfully updated lines: $oklines");
+	}
+}
+
+
+
 
 function frontend_render_page_header($page) {
 	$nextpageid = $page["nextPageId"];
@@ -206,13 +231,13 @@ function frontend_render_page_navigation_buttons($pid, $p, $left) {
 		$btnclass .= " disabled";
 	}
 	echo '<button class="', $btnclass, '" type="button" ',
-		'onclick="window.location.href=\'page.php?n=0&p=',
+		'onclick="window.location.href=\'page.php?u=none&p=',
 		$dir, '&pid=', $pid, '\'"',
 		'title="go to ', $dir, ' page">', "\n";
 	echo '<span class="', $ospanclass, '"/>', "\n";
 	echo '</button>', "\n";
 	echo '<button class="', $btnclass, '" type="button" ',
-		'onclick="window.location.href=\'page.php?n=0&p=',
+		'onclick="window.location.href=\'page.php?u=none&p=',
 		$p, '&pid=', $pid, '\'"',
 		'title="', $title, '">', "\n";
 	echo '<span class="', $spanclass, '"/>', "\n";
@@ -226,72 +251,77 @@ function frontend_render_page_heading($page) {
 }
 
 function frontend_render_page($page) {
-	echo '<div id="page-view"';
+	echo '<div id="page-view">';
+	echo '<form method="post">';
 	foreach ($page["lines"] as $line) {
-		frontend_render_page_line($page, $line);
+		frontend_render_page_line($page["projectId"], $page["id"], $line);
 	}
-	echo '</div>';
-}
-
-function frontend_render_page_line($page, $line) {
-	$imgfile = $line["imgFile"];
-	$lid = $line["id"];
-	$text = $line["cor"];
-	echo '<div class="line-view">';
-	echo '<img src="', $imgfile, '"',
-		// 'class="img-thumbnail"',
-		'alt="line #', $lid, ', ', basename($imgfile), '"',
-		'title="line #', $lid, ', ', basename($imgfile), '"',
-		'width="', 6*strlen($text), '"',
-		'height="auto"',
-		' />';
-	echo '<br/>';
-	// echo '<iframe name="line-', $lid, '" style="display:none;"></iframe>';
-	echo '<form action="page.php" method="post" id="line-', $lid, '">';
-	echo '<input name="foo" type="text" size="', strlen($text), '" value="', $text, '" />';
-	echo '<button type="submit"><span class="glyphicon glyphicon-upload" /></button>';
+	echo '<button class="btn btn-primary" type="submit" title="', "upload page #$page[id]",
+		'" formaction="', "page.php?u=all&p=$page[id]&pid=$page[projectId]", '">';
+	echo '<span class="glyphicon glyphicon-upload"/>';
 	echo '</button>';
 	echo '</form>';
 	echo '</div>';
 }
 
+function frontend_render_page_line($pid, $p, $line) {
+	$lid = $line["id"];
+	$imgfile = $line["imgFile"];
+	$file = basename($imgfile);
+	$text = "line $lid, $file";
+	$anchor = "$pid-$p-$lid";
+	$d = $line["cor"];
+	$inputclass = '';
+	if ($line["isCorrected"]) {
+		$inputclass = 'class="corrected-line"';
+	}
+	echo '<div class="line-view" title="', $text, '">';
+	// echo '<a class="line-anchor" id="', $anchor, '"></a>';
+	echo '<img src="', $imgfile, '"',
+		'alt="', $text, '"',
+		'title="', $text, '"',
+		'width="', 6*strlen($d), '"',
+		'height="auto"',
+		' />';
+	echo '<br/>';
+	echo '<input name="lines[', $anchor, ']" type="text" size="', strlen($d), '" value="', $d, '"',
+		$inputclass, '/>';
+	echo '<button class="btn btn-default" title="', "upload line #$lid", '" type="submit" formaction="',
+		"page.php?u=$anchor&p=$p&pid=$pid", '">';
+	echo '<span class="glyphicon glyphicon-upload" />';
+	echo '</button>';
+	echo '</div>';
+}
+
 function frontend_render_success_div($msg) {
 	echo('<div class="row">');
-	// echo('<div class="col-md-5 col-md-offset-1">');
 	echo('<div class="alert alert-success" role="alert">');
 	echo($msg);
 	echo('</div>');
-	// echo('</div>');
 	echo('</div>');
 }
 
 function frontend_render_info_div($msg) {
 	echo('<div class="row">');
-	// echo('<div class="col-md-5 col-md-offset-1">');
 	echo('<div class="alert alert-info" role="alert">');
 	echo($msg);
 	echo('</div>');
-	// echo('</div>');
 	echo('</div>');
 }
 
 function frontend_render_warning_div($msg) {
 	echo('<div class="row">');
-	// echo('<div class="col-md-5 col-md-offset-1">');
 	echo('<div class="alert alert-warning" role="alert">');
 	echo($msg);
 	echo('</div>');
-	// echo('</div>');
 	echo('</div>');
 }
 
 function frontend_render_error_div($msg) {
 	echo('<div class="row">');
-	// echo('<div class="col-md-5 col-md-offset-1">');
 	echo('<div class="alert alert-danger" role="alert">');
 	echo($msg);
 	echo('</div>');
-	// echo('</div>');
 	echo('</div>');
 }
 ?>

@@ -9,9 +9,14 @@ namespace pcw {
 	public:
 		QueryParser(std::string s) { jar = parse(s); }
 
+		// returns true if the given key can be found.
+		bool contains(const std::string& key) const {
+			return jar.count(key);
+		}
+
 		// Returns the value for a given key. If the key does not exist
 		// an empty string is returned.
-		std::string get(const std::string key) {
+		std::string get(const std::string& key) const {
 			try {
 				return jar.at(key);
 			} catch (const std::out_of_range &o) {
@@ -21,7 +26,7 @@ namespace pcw {
 
 		// Returns the value for a given key. If the key does not exist,
 		// the given default value is returned.
-		std::string get(const std::string key, const std::string def) {
+		std::string get(const std::string& key, const std::string& def) const {
 			try {
 				return jar.at(key);
 			} catch (const std::out_of_range &o) {

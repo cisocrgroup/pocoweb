@@ -2,17 +2,18 @@
 #include <crow.h>
 #include <unicode/uchar.h>
 #include <utf8.h>
-#include "utils/Error.hpp"
-#include "utils/ScopeGuard.hpp"
-#include "core/jsonify.hpp"
-#include "core/User.hpp"
-#include "core/Page.hpp"
-#include "core/Book.hpp"
-#include "core/Session.hpp"
 #include "LineRoute.hpp"
-#include "core/Package.hpp"
+#include "core/Book.hpp"
 #include "core/BookDirectoryBuilder.hpp"
+#include "core/Package.hpp"
+#include "core/Page.hpp"
+#include "core/Session.hpp"
+#include "core/User.hpp"
 #include "core/WagnerFischer.hpp"
+#include "core/jsonify.hpp"
+#include "utils/Error.hpp"
+#include "utils/QueryParser.hpp"
+#include "utils/ScopeGuard.hpp"
 
 #define LINE_ROUTE_ROUTE "/books/<int>/pages/<int>/lines/<int>"
 
@@ -51,11 +52,10 @@ LineRoute::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
 Route::Response
 LineRoute::impl(HttpPost, const Request& req, int bid, int pid, int lid) const
 {
-	Data data;
-	data.correction = req.url_params.get("d");
-	data.partial = req.url_params.get("partial");
-	if (not data.correction)
-		THROW(BadRequest, "missing data");
+	const QueryParser post(req.body);
+	if (not post.contains("d"))
+		THROW(BadRequest, "missing data for book id: ",
+				bid, ", page id: ", pid, ", line id: ", lid);
 
 	auto conn = connection();
 	auto session = this->session(req);
@@ -67,23 +67,25 @@ LineRoute::impl(HttpPost, const Request& req, int bid, int pid, int lid) const
 	if (not line)
 		THROW(NotFound, "Cannot find book id: ", bid,
 				" page id: ", pid, " line id: ", lid);
-	return correct(conn, *line, data);
+	return correct(conn, *line, post);
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-LineRoute::correct(MysqlConnection& conn, Line& line, const Data& data) const
+LineRoute::correct(MysqlConnection& conn, Line& line, const QueryParser& post) const
 {
+	assert(post.contains("d"));
+	const auto correction = post.get("d");
 	WagnerFischer wf;
-	wf.set_gt(data.correction);
+	wf.set_gt(correction);
 	wf.set_ocr(line);
-	auto lev = wf();
-
-	CROW_LOG_DEBUG << "(LineRoute) correction: " << data.correction;
+	const auto lev = wf();
+	CROW_LOG_DEBUG << "(LineRoute) correction: " << correction;
 	CROW_LOG_DEBUG << "(LineRoute) line.cor(): " << line.cor();
 	CROW_LOG_DEBUG << "(LineRoute) line.ocr(): " << line.ocr();
-	CROW_LOG_DEBUG << "(LineRoute)        lev: " << lev << "\n";
+	CROW_LOG_DEBUG << "(LineRoute)        lev: " << lev;
+
 	wf.correct(line);
 	log(wf);
 
