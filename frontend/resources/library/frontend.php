@@ -271,9 +271,9 @@ function frontend_render_page_line($pid, $p, $line) {
 	$text = "line $lid, $file";
 	$anchor = "$pid-$p-$lid";
 	$d = $line["cor"];
-	$inputstyle = '';
+	$inputclass = '';
 	if ($line["isCorrected"]) {
-		$inputstyle = 'style="background-color: lightgrey;"';
+		$inputclass = 'class="corrected-line"';
 	}
 	echo '<div class="line-view" title="', $text, '">';
 	// echo '<a class="line-anchor" id="', $anchor, '"></a>';
@@ -285,7 +285,7 @@ function frontend_render_page_line($pid, $p, $line) {
 		' />';
 	echo '<br/>';
 	echo '<input name="lines[', $anchor, ']" type="text" size="', strlen($d), '" value="', $d, '"',
-		$inputstyle, '/>';
+		$inputclass, '/>';
 	echo '<button class="btn btn-default" title="', "upload line #$lid", '" type="submit" formaction="',
 		"page.php?u=$anchor&p=$p&pid=$pid", '">';
 	echo '<span class="glyphicon glyphicon-upload" />';
