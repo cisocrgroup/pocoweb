@@ -24,7 +24,6 @@ function backend_get_login_route() {
 
 function backend_login($name, $pass) {
 	$data = 'name=' . urlencode($name) . '&pass=' . urlencode($pass);
-	// $data = ['name' => $name, 'pass' => $pass];
 	$api = new Api(backend_get_login_route());
 	$api->post_request($data);
 	return $api->get_http_status_code();
@@ -87,7 +86,7 @@ function backend_correct_line($pid, $p, $lid, $d) {
 	return $api->get_http_status_code();
 }
 
-function backend_get_page($pid, $p, $n) {
+function backend_get_page($pid, $p) {
 	if ($p === "first") {
 		$api = new Api(backend_get_first_page_route($pid));
 		return $api->get_request();
