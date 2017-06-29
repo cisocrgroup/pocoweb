@@ -86,6 +86,7 @@ pcw::operator<<(Json& json, const Line& line)
 	json["cuts"] = line.cuts();
 	json["confidences"] = line.confidences();
 	json["averageConfidence"] = line.average_conf();
+	json["isCorrected"] = line.is_corrected();
 	size_t i = 0;
 	line.each_token([&i,&json](const auto& token) {
 		json["tokens"][i]["isCorrected"] = token.is_corrected();
