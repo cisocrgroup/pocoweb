@@ -2,6 +2,7 @@
 #include <crow.h>
 #include "utils/Error.hpp"
 #include "utils/ScopeGuard.hpp"
+#include "utils/QueryParser.hpp"
 #include "core/jsonify.hpp"
 #include "core/User.hpp"
 #include "core/Page.hpp"
@@ -67,7 +68,6 @@ BookRoute::impl(HttpPost, const Request& req) const
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
-
 	// create new bookdir
 	BookDirectoryBuilder dir(config());
 	ScopeGuard sg([&dir](){dir.remove();});
@@ -77,13 +77,11 @@ BookRoute::impl(HttpPost, const Request& req) const
 	if (not book)
 		THROW(Error, "Could not build book");
 	book->set_owner(session->user());
-
 	// insert book into database
 	CROW_LOG_INFO << "(BookRoute) Inserting new book into database";
 	MysqlCommiter commiter(conn);
 	insert_book(conn.db(), *book);
 	CROW_LOG_INFO << "(BookRoute) Created new book id: " << book->id();
-
 	// update and clean up
 	commiter.commit();
 	sg.dismiss();
@@ -113,63 +111,50 @@ BookRoute::impl(HttpGet, const Request& req, int bid) const
 Route::Response
 BookRoute::impl(HttpPost, const Request& req, int bid) const
 {
-	static const std::string author("author");
-	static const std::string title("title");
-	static const std::string uri("uri");
-	static const std::string desc("description");
-	static const std::string year("year");
-	static const std::string lang("language");
-	static const std::string package("package");
-	static const std::string n("n");
-
-	Data data;
-	data.author = req.url_params.get(author);
-	data.title = req.url_params.get(title);
-	data.uri = req.url_params.get(uri);
-	data.desc = req.url_params.get(desc);
-	data.year = req.url_params.get(year);
-	data.lang = req.url_params.get(lang);
-	data.package = req.url_params.get(package);
-	data.n = req.url_params.get(n);
-
-	if (data.package and data.n)
-		return this->package(req, bid, data);
-	else if (data.author or data.title or data.uri or
-			data.desc or data.year or data.lang)
-		return set(req, bid, data);
+	const QueryParser query(req.body);
+	if (query.contains("package") and query.contains("n"))
+		return this->package(req, bid, query);
+	else if (query.contains("author") or query.contains("title") or
+			query.contains("description") or query.contains("year") or
+			query.contains("uri") or query.contains("language"))
+		return set(req, bid, query);
 	else
 		return bad_request();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-BookRoute::set(const Request& req, int bid, const Data& data) const
+BookRoute::set(const Request& req, int bid, const QueryParser& data) const
 {
 	auto conn = connection();
-	auto session = this->session(req);
 	assert(conn);
+	auto session = this->session(req);
+	if (not session)
+		THROW(BadRequest, "could not find session");
+	if (not session->user().admin())
+		THROW(Forbidden, "must be admin to alter book meta data");
 	assert(session);
 	SessionLock lock(*session);
 
-	auto view = session->find(conn, bid);
+	const auto view = session->find(conn, bid);
 	if (not view)
 		THROW(NotFound, "cannot load book id: ", bid);
 	if (not view->is_book())
-		THROW(BadRequest, "cannot set parameters of book view id: ", bid);
-	auto book = std::dynamic_pointer_cast<Book>(view);
+		THROW(BadRequest, "cannot set parameters of project id: ", bid);
+	const auto book = std::dynamic_pointer_cast<Book>(view);
 
-	if (data.author)
-		book->data.author = data.author;
-	if (data.title)
-		book->data.title = data.title;
-	if (data.uri)
-		book->data.uri = data.uri;
-	if (data.desc)
-		book->data.description = data.desc;
-	if (data.year)
-		book->data.year = atoi(data.year);
-	if (data.lang)
-		book->data.lang = data.lang;
+	if (data.contains("author"))
+		book->data.author = data.get("author");
+	if (data.contains("title"))
+		book->data.title = data.get("title");
+	if (data.contains("uri"))
+		book->data.uri = data.get("uri");
+	if (data.contains("description"))
+		book->data.description = data.get("description");
+	if (data.contains("year"))
+		book->data.year = stoi(data.get("year"));
+	if (data.contains("language"))
+		book->data.lang = data.get("language");
 
 	MysqlCommiter commiter(conn);
 	update_book(conn.db(), *book);
@@ -180,25 +165,24 @@ BookRoute::set(const Request& req, int bid, const Data& data) const
 
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-BookRoute::package(const Request& req, int bid, const Data& data) const
+[[noreturn]] Route::Response
+BookRoute::package(const Request& req, int bid, const QueryParser& data) const
 {
+	THROW(Error, "BookRoute::package: not implemented");
+}
+/*
 	assert(data.n);
 	assert(data.package);
-
 	auto conn = connection();
 	auto session = this->session(req);
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
-
 	auto proj = session->find(conn, bid);
 	assert(proj);
-
 	int n = atoi(data.n);
 	if (n <= 0)
 		THROW(BadRequest, "Invalid number of packages: ", data.n);
-
 	std::vector<ProjectPtr> projs(n);
 	std::generate(begin(projs), end(projs), [&]() {
 		return std::make_shared<Package>(0, session->user(), proj->origin());
@@ -215,4 +199,4 @@ BookRoute::package(const Request& req, int bid, const Data& data) const
 	commiter.commit();
 	Json j;
 	return j << projs;
-}
+*/

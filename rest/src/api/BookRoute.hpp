@@ -4,6 +4,8 @@
 #include "core/CrtpRoute.hpp"
 
 namespace pcw {
+	class QueryParser;
+
 	class BookRoute: public CrtpRoute<BookRoute> {
 	public:
 		virtual ~BookRoute() noexcept override = default;
@@ -19,12 +21,8 @@ namespace pcw {
 		Response impl(HttpPost, const Request& req, int bid) const;
 
 	private:
-		struct Data {
-			const char *author, *title, *uri,
-			      *desc, *year, *lang, *package, *n;
-		};
-		Response set(const Request& req, int bid, const Data& data) const;
-		Response package(const Request& req, int bid, const Data& data) const;
+		Response set(const Request& req, int bid, const QueryParser& data) const;
+		[[noreturn]] Response package(const Request& req, int bid, const QueryParser& data) const;
 
 		static const char* route_;
 		static const char* name_;
