@@ -78,18 +78,11 @@ BookDirectoryBuilder::remove() const
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookDirectoryBuilder::add_zip_file(const std::string& content)
+BookDirectoryBuilder::add_zip_file_path(const std::string& path)
 {
-	auto tdir = tmp_dir();
+	const auto tdir = tmp_dir();
 	fs::create_directory(tdir);
-	auto zip = zip_file();
-	// CROW_LOG_DEBUG << "(BookDirectoryBuilder) content.size(): " << content.size();
-	std::ofstream os(zip.string());
-	if (not os.good())
-		throw std::system_error(errno, std::system_category(), zip.string());
-	os << content;
-	os.close();
-	std::string command = "unzip -qq -d " + tdir.string() + " " + zip.string();
+	std::string command = "unzip -qq -d " + tdir.string() + " " + path;
 	// CROW_LOG_DEBUG << "(BookDirectoryBuilder) Unzip command: " << command;
 	auto err = system(command.data());
 	if (err)
@@ -98,6 +91,22 @@ BookDirectoryBuilder::add_zip_file(const std::string& content)
 	for (; i != e; ++i) {
 		add_file(*i);
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+BookDirectoryBuilder::add_zip_file_content(const std::string& content)
+{
+	const auto tdir = tmp_dir();
+	fs::create_directory(tdir);
+	const auto zip = zip_file();
+	// CROW_LOG_DEBUG << "(BookDirectoryBuilder) content.size(): " << content.size();
+	std::ofstream os(zip.string());
+	if (not os.good())
+		throw std::system_error(errno, std::system_category(), zip.string());
+	os << content;
+	os.close();
+	add_zip_file_path(zip.string());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -35,7 +35,8 @@ namespace pcw {
 		Path ocr_dir() const noexcept {return dir_ / "ocr";}
 
 		void remove() const;
-		void add_zip_file(const std::string& content);
+		void add_zip_file_content(const std::string& content);
+		void add_zip_file_path(const std::string& content);
 		void add_file(const Path& path);
 		BookPtr build() const;
 

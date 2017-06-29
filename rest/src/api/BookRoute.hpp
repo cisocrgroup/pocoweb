@@ -5,6 +5,7 @@
 
 namespace pcw {
 	class QueryParser;
+	class Book;
 
 	class BookRoute: public CrtpRoute<BookRoute> {
 	public:
@@ -15,7 +16,9 @@ namespace pcw {
 
 		pcw_crtp_route_def_impl__();
 		pcw_crtp_route_def_impl__(int);
+		pcw_crtp_route_def_impl__(std::string);
 		Response impl(HttpPost, const Request& req) const;
+		Response impl(HttpPost, const Request& req, const std::string& file) const;
 		Response impl(HttpGet, const Request& req) const;
 		Response impl(HttpGet, const Request& req, int bid) const;
 		Response impl(HttpPost, const Request& req, int bid) const;
@@ -23,6 +26,7 @@ namespace pcw {
 	private:
 		Response set(const Request& req, int bid, const QueryParser& data) const;
 		[[noreturn]] Response package(const Request& req, int bid, const QueryParser& data) const;
+		void update_book_data(Book& book, const User& user, const QueryParser& data) const;
 
 		static const char* route_;
 		static const char* name_;

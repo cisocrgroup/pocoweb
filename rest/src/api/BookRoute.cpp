@@ -64,19 +64,29 @@ Route::Response
 BookRoute::impl(HttpPost, const Request& req) const
 {
 	auto conn = connection();
-	auto session = this->session(req);
 	assert(conn);
+	auto session = this->session(req);
+	if (not session)
+		THROW(BadRequest, "could not find session");
+	if (not session->user().admin())
+		THROW(Forbidden, "must be admin to upload books");
 	assert(session);
 	SessionLock lock(*session);
 	// create new bookdir
+	const std::string file = req.url_params.get("file");
 	BookDirectoryBuilder dir(config());
 	ScopeGuard sg([&dir](){dir.remove();});
 	CROW_LOG_INFO << "(BookRoute) BookDirectoryBuilder: " << dir.dir();
-	dir.add_zip_file(extract_content(req));
+	if (file.empty()) // raw upload of zip file in body
+		dir.add_zip_file_content(extract_content(req));
+	else // insert uploaded file
+		dir.add_zip_file_path(file);
 	auto book = dir.build();
 	if (not book)
 		THROW(Error, "Could not build book");
-	book->set_owner(session->user());
+	// update book data
+	const QueryParser data(req.body);
+	update_book_data(*book, session->user(), data);
 	// insert book into database
 	CROW_LOG_INFO << "(BookRoute) Inserting new book into database";
 	MysqlCommiter commiter(conn);
@@ -92,6 +102,25 @@ BookRoute::impl(HttpPost, const Request& req) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void
+BookRoute::update_book_data(Book& book, const User& user, const QueryParser& data) const
+{
+	book.set_owner(user);
+	if (data.contains("author") and book.data.author.empty())
+		book.data.author = data.get("author");
+	if (data.contains("title") and book.data.title.empty())
+		book.data.title = data.get("title");
+	if (data.contains("language") and book.data.lang.empty())
+		book.data.lang = data.get("language");
+	if (data.contains("year") and not book.data.year)
+		book.data.year = stoi(data.get("year"));
+	if (data.contains("uri") and book.data.uri.empty())
+		book.data.uri = data.get("uri");
+	if (data.contains("description") and book.data.description.empty())
+		book.data.description = data.get("description");
+}
+
+////////////////////////////////////////////////////////////////////////////////
 Route::Response
 BookRoute::impl(HttpGet, const Request& req, int bid) const
 {
@@ -100,7 +129,6 @@ BookRoute::impl(HttpGet, const Request& req, int bid) const
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
-
 	auto book = session->find(conn, bid);
 	assert(book);
 	Json j;
