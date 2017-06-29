@@ -121,11 +121,6 @@ function frontend_render_upload_new_project_div() {
 	echo '<label for="lang">Language</label>', "\n";
 	echo '<input name="lang" type="text" placeholder="Language" class="form-control"/>', "\n";
 	echo '</div>', "\n";
-	// Description
-	echo '<div class="form-group">', "\n";
-	echo '<label for="desc">Description</label>', "\n";
-	echo '<input name="desc" type="text" placeholder="Description" class="form-control"/>', "\n";
-	echo '</div>', "\n";
 	// upload file
 	echo '<div class="input-group">', "\n";
 	echo '<label class="input-group-btn">', "\n";
