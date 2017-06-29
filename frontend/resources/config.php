@@ -12,6 +12,10 @@ $config = array(
 			"get_nth_page"   => "/books/%d/pages/%d",
 			"correct_line"   => "/books/%d/pages/%d/lines/%d",
 		),
+		"upload" => array(
+			"max_size"   => 2 * 1024 * 1024 * 1024, // 2gb
+			"upload_dir" => "/tmp",
+		),
 	),
 	"cookies" => array(
 		"name" => "pcw-user",
