@@ -90,6 +90,22 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
+    struct Admin
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "admin";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T admin;
+            T& operator()() { return admin; }
+            const T& operator()() const { return admin; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::boolean, sqlpp::tag::require_insert>;
+    };
   }
 
   struct Users: sqlpp::table_t<Users,
@@ -97,7 +113,8 @@ namespace tables
                Users_::Name,
                Users_::Email,
                Users_::Institute,
-               Users_::Passwd>
+               Users_::Passwd,
+               Users_::Admin>
   {
     struct _alias_t
     {

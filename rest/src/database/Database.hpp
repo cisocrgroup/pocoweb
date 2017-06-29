@@ -70,7 +70,8 @@ namespace pcw {
 	UserSptr create_user(Db& db, const std::string& user,
 			const std::string& pw,
 			const std::string& email = "",
-			const std::string& inst = "");
+			const std::string& inst = "",
+			bool admin = false);
 
 	template<class Db>
 	void update_user(Db& db, const User& user);
@@ -131,7 +132,8 @@ namespace pcw {
 template<class Db>
 pcw::UserSptr
 pcw::create_user(Db& db, const std::string& name, const std::string& pw,
-			const std::string& email, const std::string& inst)
+			const std::string& email, const std::string& inst,
+			bool admin)
 {
 	using namespace sqlpp;
 	auto password = Password::make(pw);
@@ -140,7 +142,8 @@ pcw::create_user(Db& db, const std::string& name, const std::string& pw,
 		users.name = name,
 		users.email = email,
 		users.institute = inst,
-		users.passwd = password.str()
+		users.passwd = password.str(),
+		users.admin = admin
 	);
 	auto id = db(stmnt);
 	return std::make_shared<User>(name, password, email, inst, id);
