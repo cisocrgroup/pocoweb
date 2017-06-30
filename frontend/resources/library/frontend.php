@@ -298,8 +298,8 @@ function frontend_render_page_line($pid, $p, $line) {
 	echo '<img src="', $imgfile, '"',
 		'alt="', $text, '"',
 		'title="', $text, '"',
-		'width="', 6*strlen($d), '"',
-		'height="auto"',
+		'width="auto"',
+		'height="25"',
 		' />';
 	echo '<br/>';
 	echo '<input name="lines[', $anchor, ']" type="text" size="', strlen($d), '" value="', $d, '"',
