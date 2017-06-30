@@ -6,10 +6,11 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-AltoXmlParserLine::AltoXmlParserLine(pugi::xml_node node)
+AltoXmlParserLine::AltoXmlParserLine(pugi::xml_node node, bool explicit_spaces)
 	: chars_()
 	, node_(node)
 	, needs_update_(false)
+	, explicit_spaces_(explicit_spaces)
 {
 	init();
 	box = get_box(node_);

@@ -10,7 +10,7 @@ namespace pcw {
 	public:
 		using Node = pugi::xml_node;
 
-		AltoXmlParserLine(Node node);
+		AltoXmlParserLine(Node node, bool explicit_spaces_ = true);
 
 		virtual ~AltoXmlParserLine() noexcept override = default;
 		virtual void end_wagner_fischer() override;
@@ -53,7 +53,7 @@ namespace pcw {
 
 		std::vector<Char> chars_;
 		Node node_;
-		bool needs_update_;
+		bool needs_update_, explicit_spaces_;
 	};
 }
 

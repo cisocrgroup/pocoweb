@@ -15,6 +15,7 @@ ParserPagePtr
 AltoXmlPageParser::parse()
 {
 	done_ = true; // alto documents contain just one page
+	explicit_spaces_ = has_sp_tags();
 	auto page = std::make_shared<XmlParserPage>(path_);
 	const auto filename = page->xml().doc().select_node(
 		"/alto/Description/sourceImageInformation/fileName"
@@ -28,7 +29,7 @@ AltoXmlPageParser::parse()
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlPageParser::parse(const Xml::Node& pagenode, XmlParserPage& page)
+AltoXmlPageParser::parse(const Xml::Node& pagenode, XmlParserPage& page) const
 {
 	const auto textlines = pagenode.select_nodes(".//TextLine");
 	page.box = get_box(pagenode);
@@ -40,9 +41,9 @@ AltoXmlPageParser::parse(const Xml::Node& pagenode, XmlParserPage& page)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlPageParser::add_line(const Xml::Node& linenode, XmlParserPage& page)
+AltoXmlPageParser::add_line(const Xml::Node& linenode, XmlParserPage& page) const
 {
-	page.lines().push_back(std::make_shared<AltoXmlParserLine>(linenode));
+	page.lines().push_back(std::make_shared<AltoXmlParserLine>(linenode, explicit_spaces_));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -56,3 +57,9 @@ AltoXmlPageParser::get_box(const Xml::Node& node)
 	return Box{l, t, l + w, t + h};
 }
 
+////////////////////////////////////////////////////////////////////////////////
+bool
+AltoXmlPageParser::has_sp_tags() const noexcept
+{
+	return false;
+}
