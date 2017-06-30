@@ -190,7 +190,7 @@ AltoXmlParserLine::set(size_t pos, wchar_t c)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlParserLine::init_string(const pugi::xml_node& node)
+AltoXmlParserLine::init_string(const pugi::xml_node& node, bool prepend_space)
 {
 	assert(strcmp(node.name(), "String") == 0);
 
@@ -198,6 +198,17 @@ AltoXmlParserLine::init_string(const pugi::xml_node& node)
 	const auto box = get_box(node);
 	const auto token = node.attribute("CONTENT").value();
 	const auto len = strlen(token);
+	// handle implicit spaces
+	if (prepend_space and not explicit_spaces_) {
+		assert(not chars_.empty());
+		Box box;
+		box.set_left(chars_.back().box.right());
+		box.set_right(box.left());
+		box.set_top(box.top());
+		box.set_bottom(box.bottom());
+		auto sp = node.parent().insert_child_after("SP", node);
+		chars_.emplace_back(L' ', sp, Type::Space, 1.0, box);
+	}
 	std::wstring wstr;
 	utf8::utf8to32(token, token + len, std::back_inserter(wstr));
 	const auto boxes = box.split(wstr.size());
@@ -229,9 +240,11 @@ AltoXmlParserLine::init_hyphen(const Node& node)
 void
 AltoXmlParserLine::init()
 {
+	bool first = false;
 	for (const auto& node: node_.children()) {
 		if (strcmp(node.name(), "String") == 0) {
-			init_string(node);
+			init_string(node, not first);
+			first = true;
 		} else if (strcmp(node.name(), "SP") == 0) {
 			init_space(node);
 		} else if (strcmp(node.name(), "HYP")) {
@@ -250,6 +263,7 @@ AltoXmlParserLine::get_box(const Node& node)
 	const auto h = node.attribute("HEIGHT").as_int();
 	return Box {x0, y0, x0 + w, y0 + h};
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 void
 AltoXmlParserLine::set_box(const Box& box, Node& node)
@@ -314,6 +328,7 @@ AltoXmlParserLine::make_copy(Char& c)
 	c.box = split[1];
 	return copy;
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 AltoXmlParserLine::Node
 AltoXmlParserLine::merge(Node& a, const Node& b)
