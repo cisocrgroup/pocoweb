@@ -98,4 +98,24 @@ function backend_get_page($pid, $p) {
 		return $api->get_request();
 	}
 }
+
+function backend_get_upload_project_route($file) {
+	global $config;
+	return $config["backend"]["url"] .
+		$config["backend"]["routes"]["upload_project"] .
+		"?file=" . urlencode($file);
+}
+
+function backend_upload_project($post, $name, $file) {
+	$data = "";
+	foreach ($post as $key => $val) {
+		if (strlen($data) > 0) {
+			$data .= '&';
+		}
+		$data .= "$key=".urlencode($val);
+	}
+	$api = new Api(backend_get_upload_project_route($file));
+	$api->post_request($data);
+	return $api->get_http_status_code();
+}
 ?>

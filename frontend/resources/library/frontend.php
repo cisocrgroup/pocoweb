@@ -135,13 +135,31 @@ function frontend_render_upload_new_project_div() {
 }
 
 function frontend_upload_project_archive($post, $file) {
-	foreach ($post as $key => $val) {
-		echo("<p>$key = $val</p>");
+	global $config;
+	if ($file["error"] != UPLOAD_ERR_OK) {
+		frontend_render_error_div("Could not upload archive: error: $file[error]");
+		return;
 	}
-	foreach ($file as $key => $val) {
-		echo "<p>$key = $val</p>";
+	if ($file["size"] > $config["backend"]["upload"]["max_size"]) {
+		frontend_render_error_div("Could not upload archive: file too big");
+		return;
 	}
-
+	if ($file["type"] != "application/zip") {
+		frontend_render_error_div("Could not upload archive: not a zip file");
+		return;
+	}
+	if (!file_exists($file["tmp_name"])) {
+		frontend_render_error_div("Could not upload archive: upload file does not exist");
+	}
+	if (!chmod($file["tmp_name"], 0755)) {
+		frontend_render_error_div("Could not upload archive: could publish upload file");
+	}
+	$status = backend_upload_project($post, $file["name"], $file["tmp_name"]);
+	if ($status !== 201) {
+		frontend_render_error_div("Could not upload archive: backend returned $status");
+		return;
+	}
+	frontend_render_success_div("Successfully uploaded new project");
 }
 
 function frontend_render_page_view_div($pid, $p, $u, $post) {

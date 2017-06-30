@@ -11,6 +11,7 @@ $config = array(
 			"get_last_page"  => "/books/%d/pages/last",
 			"get_nth_page"   => "/books/%d/pages/%d",
 			"correct_line"   => "/books/%d/pages/%d/lines/%d",
+			"upload_project" => "/books",
 		),
 		"upload" => array(
 			"max_size"   => 2 * 1024 * 1024 * 1024, // 2gb
