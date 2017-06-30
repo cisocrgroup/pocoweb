@@ -48,6 +48,7 @@ namespace pcw {
 		void setup_directory_structure(Book& book) const;
 		void setup_img_and_ocr_files(Page& page) const;
 		void make_line_img_files(const Path& pagedir, Page& page) const;
+		void unzip();
 
 		static void copy(const Path& from, const Path& to);
 		static void write_line_img_file(void* pix, const Line& line);

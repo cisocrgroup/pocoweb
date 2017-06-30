@@ -20,6 +20,7 @@ namespace pcw {
 	enum class FileType {
 		Other, Img, AltoXml, AbbyyXml, Hocr, Llocs, Mets, /*Page,*/
 	};
+	std::string file_type_to_string(FileType type);
 	FileType get_file_type(const Path& path);
 	FileType get_xml_file_type(const Path& path);
 	PageParserPtr make_page_parser(const Path& path);

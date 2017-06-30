@@ -16,10 +16,6 @@
 #include "Page.hpp"
 #include "Pix.hpp"
 #include "BookDirectoryBuilder.hpp"
-#include "parser/AltoXmlPageParser.hpp"
-#include "parser/OcropusLlocsPageParser.hpp"
-#include "parser/AbbyyXmlPageParser.hpp"
-#include "parser/HocrPageParser.hpp"
 
 namespace fs = boost::filesystem;
 using namespace pcw;
@@ -63,8 +59,8 @@ BookDirectoryBuilder::~BookDirectoryBuilder() noexcept
 	boost::system::error_code ec;
 	fs::remove_all(tmp_dir(), ec);
 	if (ec) {
-		// CROW_LOG_WARNING << "(BookDirectoryBuilder) Could not remove "
-				 // << tmp_dir() << ": " << ec.message();
+		CROW_LOG_WARNING << "(BookDirectoryBuilder) Could not remove "
+				 << tmp_dir() << ": " << ec.message();
 	}
 }
 
@@ -82,7 +78,18 @@ BookDirectoryBuilder::add_zip_file_path(const std::string& path)
 {
 	const auto tdir = tmp_dir();
 	fs::create_directory(tdir);
-	std::string command = "unzip -qq -d " + tdir.string() + " " + path;
+	const auto zipfile = zip_file();
+	copy(path, zipfile);
+	unzip();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+BookDirectoryBuilder::unzip()
+{
+	const auto tdir = tmp_dir();
+	const auto zipfile = zip_file();
+	std::string command = "unzip -qq -d " + tdir.string() + " " + zipfile.string();
 	// CROW_LOG_DEBUG << "(BookDirectoryBuilder) Unzip command: " << command;
 	auto err = system(command.data());
 	if (err)
@@ -106,7 +113,7 @@ BookDirectoryBuilder::add_zip_file_content(const std::string& content)
 		throw std::system_error(errno, std::system_category(), zip.string());
 	os << content;
 	os.close();
-	add_zip_file_path(zip.string());
+	unzip();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -229,15 +236,18 @@ BookDirectoryBuilder::write_line_img_file(void *vpix, const Line& line)
 void
 BookDirectoryBuilder::copy(const Path& from, const Path& to)
 {
-	// CROW_LOG_DEBUG << "(BookDirectoryBuilder) copying " << from << " to " << to;
-	// fs::create_hard_link(to, from); TODO: ??!!
+	CROW_LOG_DEBUG << "(BookDirectoryBuilder) copying " << from << " to " << to;
 	boost::system::error_code ec;
 	fs::create_hard_link(from, to, ec);
 	if (ec) { // could not create hard link; try copy
-		// CROW_LOG_WARNING << "Could not create hardlink from "
-				 // << from << " to " << to << ": "
-				 // << ec.message();
-		fs::copy_file(from, to);
+		CROW_LOG_WARNING << "Could not create hardlink from "
+				 << from << " to " << to << ": "
+				 << ec.message();
+		fs::copy_file(from, to, ec);
+		if (ec) {
+			THROW(Error, "(BookDirectoryBuilder) Cannot copy ",
+					from.string(), " to ", to.string(), ": ", ec.message());
+		}
 	}
 }
 

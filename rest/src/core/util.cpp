@@ -164,6 +164,31 @@ pcw::get_xml_file_type(const Path& path)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+std::string
+pcw::file_type_to_string(FileType type)
+{
+	switch (type) {
+	case FileType::Other:
+		return "Other";
+	case FileType::Img:
+		return "Image";
+	case FileType::AltoXml:
+		return "AltoXML";
+	case FileType::AbbyyXml:
+		return	"AbbyyXML";
+	case FileType::Hocr:
+		return "hOCR";
+	case FileType::Llocs:
+		return "llocs";
+	case FileType::Mets:
+		return "METS/MOTS";
+	default:
+		assert(false);
+		throw std::logic_error("Unreacheable code was reached!");
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
 pcw::FileType
 pcw::get_file_type(const Path& path)
 {
