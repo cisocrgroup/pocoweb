@@ -272,7 +272,7 @@ function frontend_render_page($page) {
 	echo '<div id="page-view">';
 	echo '<form method="post">';
 	foreach ($page["lines"] as $line) {
-		frontend_render_page_line($page["projectId"], $page["id"], $line);
+		frontend_render_page_line_div($page["projectId"], $page["id"], $line);
 	}
 	echo '<button class="btn btn-primary" type="submit" title="', "upload page #$page[id]",
 		'" formaction="', "page.php?u=all&p=$page[id]&pid=$page[projectId]", '">';
@@ -282,7 +282,7 @@ function frontend_render_page($page) {
 	echo '</div>';
 }
 
-function frontend_render_page_line($pid, $p, $line) {
+function frontend_render_page_line_div($pid, $p, $line) {
 	$lid = $line["id"];
 	$imgfile = $line["imgFile"];
 	$file = basename($imgfile);
