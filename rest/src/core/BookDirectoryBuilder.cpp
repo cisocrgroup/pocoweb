@@ -176,11 +176,11 @@ BookDirectoryBuilder::make_line_img_files(const Path& pagedir, Page& page) const
 	}
 	for (auto& line: page) {
 		if (not line->has_img_path() and not pix) {
-			// CROW_LOG_WARNING << "(BookDirectoryBuilder) Missing image file for: "
-					 // << page.ocr;
+			CROW_LOG_WARNING << "(BookDirectoryBuilder) Missing image file for: " << page.ocr;
 		} else if (not line->has_img_path() and pix) {
 			line->img = pagedir / path_from_id(line->id());
-			line->img.replace_extension(page.img.extension());
+			// we use png as output format
+			line->img.replace_extension(".png");
 			fs::create_directories(pagedir);
 			write_line_img_file(pix.get(), *line);
 		} else if (line->has_img_path()) {
@@ -216,7 +216,7 @@ BookDirectoryBuilder::write_line_img_file(void *vpix, const Line& line)
 {
 	auto pix = (PIX*)vpix;
 	assert(pix);
-	auto format = pixGetInputFormat(pix);
+	// auto format = pixGetInputFormat(pix);
 	BOX box;
 	box.x = line.box.left();
 	box.y = line.box.top();
@@ -225,10 +225,10 @@ BookDirectoryBuilder::write_line_img_file(void *vpix, const Line& line)
 	clip(box, *pix);
 	if (box.x + box.w <= (int) pix->w and box.y + box.h <= (int) pix->h) {
 		PixPtr tmp{pixClipRectangle(pix, &box, nullptr)};
-		if (not tmp or pixWrite(line.img.string().data(), tmp.get(), format))
+		if (not tmp or pixWrite(line.img.string().data(), tmp.get(), IFF_PNG))
 			THROW(Error, "(BookDirectoryBuilder) Cannot write img ", line.img);
 	} else {
-		// CROW_LOG_WARNING << "Cannot write line image for " << line.cor();
+		CROW_LOG_WARNING << "Cannot write line image for " << line.cor();
 	}
 }
 
