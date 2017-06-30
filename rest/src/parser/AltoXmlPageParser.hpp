@@ -21,10 +21,10 @@ namespace pcw {
 		virtual ParserPagePtr parse() override;
 
 	private:
-		bool has_sp_tags() const noexcept;
 		void add_line(const Xml::Node& linenode, XmlParserPage& page) const;
 		void parse(const Xml::Node& pagenode, XmlParserPage& page) const;
 		static Box get_box(const Xml::Node& node);
+		static bool has_sp_tags(const XmlParserPage& page) noexcept;
 
 		Path path_;
 		Xml xml_;

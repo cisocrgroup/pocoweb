@@ -190,7 +190,7 @@ AltoXmlParserLine::set(size_t pos, wchar_t c)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-AltoXmlParserLine::init_string(const pugi::xml_node& node, bool prepend_space)
+AltoXmlParserLine::init_string(const pugi::xml_node& node)
 {
 	assert(strcmp(node.name(), "String") == 0);
 
@@ -199,14 +199,14 @@ AltoXmlParserLine::init_string(const pugi::xml_node& node, bool prepend_space)
 	const auto token = node.attribute("CONTENT").value();
 	const auto len = strlen(token);
 	// handle implicit spaces
-	if (prepend_space and not explicit_spaces_) {
-		assert(not chars_.empty());
+	if (not explicit_spaces_ and not chars_.empty()) {
 		Box box;
 		box.set_left(chars_.back().box.right());
 		box.set_right(box.left());
 		box.set_top(box.top());
 		box.set_bottom(box.bottom());
 		auto sp = node.parent().insert_child_after("SP", node);
+		set_box(box, sp);
 		chars_.emplace_back(L' ', sp, Type::Space, 1.0, box);
 	}
 	std::wstring wstr;
@@ -240,11 +240,9 @@ AltoXmlParserLine::init_hyphen(const Node& node)
 void
 AltoXmlParserLine::init()
 {
-	bool first = false;
 	for (const auto& node: node_.children()) {
 		if (strcmp(node.name(), "String") == 0) {
-			init_string(node, not first);
-			first = true;
+			init_string(node);
 		} else if (strcmp(node.name(), "SP") == 0) {
 			init_space(node);
 		} else if (strcmp(node.name(), "HYP")) {

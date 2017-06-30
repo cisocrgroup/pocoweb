@@ -38,7 +38,7 @@ namespace pcw {
 		void update_space(Iterator i, Node& parent);
 		void update_hyphen(Iterator i, Node& parent);
 		void update_char(Iterator b, Iterator e, Node& parent);
-		void init_string(const Node& node, bool prepend_space);
+		void init_string(const Node& node);
 		void init_hyphen(const Node& node);
 		void init_space(const Node& node);
 		void init();

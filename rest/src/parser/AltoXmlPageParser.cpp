@@ -14,9 +14,9 @@ using namespace pcw;
 ParserPagePtr
 AltoXmlPageParser::parse()
 {
+	const auto page = std::make_shared<XmlParserPage>(path_);
 	done_ = true; // alto documents contain just one page
-	explicit_spaces_ = has_sp_tags();
-	auto page = std::make_shared<XmlParserPage>(path_);
+	explicit_spaces_ = has_sp_tags(*page);
 	const auto filename = page->xml().doc().select_node(
 		"/alto/Description/sourceImageInformation/fileName"
 	).node().child_value();
@@ -59,7 +59,8 @@ AltoXmlPageParser::get_box(const Xml::Node& node)
 
 ////////////////////////////////////////////////////////////////////////////////
 bool
-AltoXmlPageParser::has_sp_tags() const noexcept
+AltoXmlPageParser::has_sp_tags(const XmlParserPage& page) noexcept
 {
-	return false;
+	const auto sp_nodes = page.xml().doc().select_nodes(".//SP");
+	return sp_nodes.size();
 }
