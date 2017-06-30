@@ -4,6 +4,7 @@
 #include <boost/optional.hpp>
 #include <memory>
 #include <sqlpp11/sqlpp11.h>
+#include <crow/logging.h>
 #include "core/ProjectBuilder.hpp"
 #include "core/Password.hpp"
 #include "core/BookBuilder.hpp"
@@ -27,7 +28,8 @@ namespace pcw {
 				Password(users.passwd),
 				users.email,
 				users.institute,
-				users.userid
+				users.userid,
+				users.admin
 			);
 		}
 		template<class T, class F>
@@ -70,7 +72,8 @@ namespace pcw {
 	UserSptr create_user(Db& db, const std::string& user,
 			const std::string& pw,
 			const std::string& email = "",
-			const std::string& inst = "");
+			const std::string& inst = "",
+			bool admin = false);
 
 	template<class Db>
 	void update_user(Db& db, const User& user);
@@ -131,7 +134,8 @@ namespace pcw {
 template<class Db>
 pcw::UserSptr
 pcw::create_user(Db& db, const std::string& name, const std::string& pw,
-			const std::string& email, const std::string& inst)
+			const std::string& email, const std::string& inst,
+			bool admin)
 {
 	using namespace sqlpp;
 	auto password = Password::make(pw);
@@ -140,7 +144,8 @@ pcw::create_user(Db& db, const std::string& name, const std::string& pw,
 		users.name = name,
 		users.email = email,
 		users.institute = inst,
-		users.passwd = password.str()
+		users.passwd = password.str(),
+		users.admin = admin
 	);
 	auto id = db(stmnt);
 	return std::make_shared<User>(name, password, email, inst, id);
@@ -255,6 +260,7 @@ pcw::detail::insert_book_info_and_set_id(Db& db, Book& book)
 	auto id = db(insert_into(projects)
 			.set(projects.origin = 0,
 				projects.owner = book.owner().id()));
+	CROW_LOG_DEBUG << "(insert_book_info_and_set_id) id: " << id;
 	book.set_id(id);
 	db(update(projects).set(projects.origin = id)
 			.where(projects.projectid == id));
@@ -279,6 +285,14 @@ pcw::insert_book(Db& db, Book& book)
 		books.description = book.data.description,
 		books.lang = book.data.lang
 	);
+	CROW_LOG_DEBUG << "(insert_book) bookid:      " << book.id();
+	CROW_LOG_DEBUG << "(insert_book) author:      " << book.data.author;
+	CROW_LOG_DEBUG << "(insert_book) title:       " << book.data.title;
+	CROW_LOG_DEBUG << "(insert_book) directory:   " << book.data.dir;
+	CROW_LOG_DEBUG << "(insert_book) year:        " << book.data.year;
+	CROW_LOG_DEBUG << "(insert_book) uri:         " << book.data.author;
+	CROW_LOG_DEBUG << "(insert_book) description: " << book.data.description;
+	CROW_LOG_DEBUG << "(insert_book) language:    " << book.data.lang;
 	db(stmnt);
 
 	tables::Pages pages;
@@ -335,6 +349,14 @@ pcw::detail::insert_page(Db& db, P& p, Q& q, R& r, const Page& page)
 	p.params.ptop = page.box.top();
 	p.params.pright = page.box.right();
 	p.params.pbottom = page.box.bottom();
+	CROW_LOG_DEBUG << "(insert_page) bookid:    " << page.book().id();
+	CROW_LOG_DEBUG << "(insert_page) pageid:    " << page.id();
+	CROW_LOG_DEBUG << "(insert_page) imagepath: " << page.img.string();
+	CROW_LOG_DEBUG << "(insert_page) ocrpath:   " << page.ocr.string();
+	// CROW_LOG_DEBUG << "(insert_page) pleft:     " << page.box.left();
+	// CROW_LOG_DEBUG << "(insert_page) ptop:      " << page.box.top();
+	// CROW_LOG_DEBUG << "(insert_page) pright:    " << page.box.right();
+	// CROW_LOG_DEBUG << "(insert_page) pbottom:   " << page.box.bottom();
 	db(p);
 	for (const auto& line: page) {
 		assert(line);
@@ -355,6 +377,14 @@ pcw::detail::insert_line(Db& db, Q& q, R& r, const Line& line)
 	q.params.ltop = line.box.top();
 	q.params.lright = line.box.right();
 	q.params.lbottom = line.box.bottom();
+	CROW_LOG_DEBUG << "(insert_line) bookid:    " << line.page().book().id();
+	CROW_LOG_DEBUG << "(insert_line) pageid:    " << line.page().id();
+	CROW_LOG_DEBUG << "(insert_line) lineid:    " << line.id();
+	CROW_LOG_DEBUG << "(insert_line) imagepath: " << line.img.string();
+	// CROW_LOG_DEBUG << "(insert_line) lleft:     " << line.box.left();
+	// CROW_LOG_DEBUG << "(insert_line) ltop:      " << line.box.top();
+	// CROW_LOG_DEBUG << "(insert_line) lright:    " << line.box.right();
+	// CROW_LOG_DEBUG << "(insert_line) lbottom:   " << line.box.bottom();
 	db(q);
 	insert_content(db, r, line);
 }

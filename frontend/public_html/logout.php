@@ -8,7 +8,7 @@ if (backend_logout() === FALSE) {
 	frontend_render_error_div("could not log out");
 } else {
 	require(TEMPLATES_PATH . "/header.php");
-	frontend_render_success_div("You successfully logged out");
+	frontend_render_success_div("You successfully logged out. <a href=\"login.php\">Login</a> again.");
 }
 require_once(TEMPLATES_PATH . "/footer.php");
 ?>

@@ -16,10 +16,6 @@
 #include "Page.hpp"
 #include "Pix.hpp"
 #include "BookDirectoryBuilder.hpp"
-#include "parser/AltoXmlPageParser.hpp"
-#include "parser/OcropusLlocsPageParser.hpp"
-#include "parser/AbbyyXmlPageParser.hpp"
-#include "parser/HocrPageParser.hpp"
 
 namespace fs = boost::filesystem;
 using namespace pcw;
@@ -63,8 +59,8 @@ BookDirectoryBuilder::~BookDirectoryBuilder() noexcept
 	boost::system::error_code ec;
 	fs::remove_all(tmp_dir(), ec);
 	if (ec) {
-		// CROW_LOG_WARNING << "(BookDirectoryBuilder) Could not remove "
-				 // << tmp_dir() << ": " << ec.message();
+		CROW_LOG_WARNING << "(BookDirectoryBuilder) Could not remove "
+				 << tmp_dir() << ": " << ec.message();
 	}
 }
 
@@ -78,18 +74,22 @@ BookDirectoryBuilder::remove() const
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookDirectoryBuilder::add_zip_file(const std::string& content)
+BookDirectoryBuilder::add_zip_file_path(const std::string& path)
 {
-	auto tdir = tmp_dir();
+	const auto tdir = tmp_dir();
 	fs::create_directory(tdir);
-	auto zip = zip_file();
-	// CROW_LOG_DEBUG << "(BookDirectoryBuilder) content.size(): " << content.size();
-	std::ofstream os(zip.string());
-	if (not os.good())
-		throw std::system_error(errno, std::system_category(), zip.string());
-	os << content;
-	os.close();
-	std::string command = "unzip -qq -d " + tdir.string() + " " + zip.string();
+	const auto zipfile = zip_file();
+	copy(path, zipfile);
+	unzip();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+BookDirectoryBuilder::unzip()
+{
+	const auto tdir = tmp_dir();
+	const auto zipfile = zip_file();
+	std::string command = "unzip -qq -d " + tdir.string() + " " + zipfile.string();
 	// CROW_LOG_DEBUG << "(BookDirectoryBuilder) Unzip command: " << command;
 	auto err = system(command.data());
 	if (err)
@@ -98,6 +98,22 @@ BookDirectoryBuilder::add_zip_file(const std::string& content)
 	for (; i != e; ++i) {
 		add_file(*i);
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+BookDirectoryBuilder::add_zip_file_content(const std::string& content)
+{
+	const auto tdir = tmp_dir();
+	fs::create_directory(tdir);
+	const auto zip = zip_file();
+	// CROW_LOG_DEBUG << "(BookDirectoryBuilder) content.size(): " << content.size();
+	std::ofstream os(zip.string());
+	if (not os.good())
+		throw std::system_error(errno, std::system_category(), zip.string());
+	os << content;
+	os.close();
+	unzip();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -160,11 +176,11 @@ BookDirectoryBuilder::make_line_img_files(const Path& pagedir, Page& page) const
 	}
 	for (auto& line: page) {
 		if (not line->has_img_path() and not pix) {
-			// CROW_LOG_WARNING << "(BookDirectoryBuilder) Missing image file for: "
-					 // << page.ocr;
+			CROW_LOG_WARNING << "(BookDirectoryBuilder) Missing image file for: " << page.ocr;
 		} else if (not line->has_img_path() and pix) {
 			line->img = pagedir / path_from_id(line->id());
-			line->img.replace_extension(page.img.extension());
+			// we use png as output format
+			line->img.replace_extension(".png");
 			fs::create_directories(pagedir);
 			write_line_img_file(pix.get(), *line);
 		} else if (line->has_img_path()) {
@@ -200,7 +216,7 @@ BookDirectoryBuilder::write_line_img_file(void *vpix, const Line& line)
 {
 	auto pix = (PIX*)vpix;
 	assert(pix);
-	auto format = pixGetInputFormat(pix);
+	// auto format = pixGetInputFormat(pix);
 	BOX box;
 	box.x = line.box.left();
 	box.y = line.box.top();
@@ -209,10 +225,10 @@ BookDirectoryBuilder::write_line_img_file(void *vpix, const Line& line)
 	clip(box, *pix);
 	if (box.x + box.w <= (int) pix->w and box.y + box.h <= (int) pix->h) {
 		PixPtr tmp{pixClipRectangle(pix, &box, nullptr)};
-		if (not tmp or pixWrite(line.img.string().data(), tmp.get(), format))
+		if (not tmp or pixWrite(line.img.string().data(), tmp.get(), IFF_PNG))
 			THROW(Error, "(BookDirectoryBuilder) Cannot write img ", line.img);
 	} else {
-		// CROW_LOG_WARNING << "Cannot write line image for " << line.cor();
+		CROW_LOG_WARNING << "Cannot write line image for " << line.cor();
 	}
 }
 
@@ -220,15 +236,18 @@ BookDirectoryBuilder::write_line_img_file(void *vpix, const Line& line)
 void
 BookDirectoryBuilder::copy(const Path& from, const Path& to)
 {
-	// CROW_LOG_DEBUG << "(BookDirectoryBuilder) copying " << from << " to " << to;
-	// fs::create_hard_link(to, from); TODO: ??!!
+	CROW_LOG_DEBUG << "(BookDirectoryBuilder) copying " << from << " to " << to;
 	boost::system::error_code ec;
 	fs::create_hard_link(from, to, ec);
 	if (ec) { // could not create hard link; try copy
-		// CROW_LOG_WARNING << "Could not create hardlink from "
-				 // << from << " to " << to << ": "
-				 // << ec.message();
-		fs::copy_file(from, to);
+		CROW_LOG_WARNING << "Could not create hardlink from "
+				 << from << " to " << to << ": "
+				 << ec.message();
+		fs::copy_file(from, to, ec);
+		if (ec) {
+			THROW(Error, "(BookDirectoryBuilder) Cannot copy ",
+					from.string(), " to ", to.string(), ": ", ec.message());
+		}
 	}
 }
 

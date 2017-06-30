@@ -35,7 +35,8 @@ namespace pcw {
 		Path ocr_dir() const noexcept {return dir_ / "ocr";}
 
 		void remove() const;
-		void add_zip_file(const std::string& content);
+		void add_zip_file_content(const std::string& content);
+		void add_zip_file_path(const std::string& content);
 		void add_file(const Path& path);
 		BookPtr build() const;
 
@@ -47,6 +48,7 @@ namespace pcw {
 		void setup_directory_structure(Book& book) const;
 		void setup_img_and_ocr_files(Page& page) const;
 		void make_line_img_files(const Path& pagedir, Page& page) const;
+		void unzip();
 
 		static void copy(const Path& from, const Path& to);
 		static void write_line_img_file(void* pix, const Line& line);

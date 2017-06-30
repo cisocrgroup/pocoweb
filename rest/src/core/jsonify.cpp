@@ -163,5 +163,6 @@ pcw::operator<<(Json& j, const User& user)
 	j["email"] = user.email;
 	j["institute"] = user.institute;
 	j["id"] = user.id();
+	j["admin"] = user.admin();
 	return j;
 }

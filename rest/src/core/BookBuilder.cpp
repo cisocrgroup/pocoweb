@@ -1,3 +1,4 @@
+#include <set>
 #include <utf8.h>
 #include "LineBuilder.hpp"
 #include "PageBuilder.hpp"
@@ -22,7 +23,7 @@ BookBuilder::append(Page& page) const
 	assert(book_);
 	book_->push_back(page);
 	assert(not book_->empty());
-	// set page id only if page id = 0
+	// Set page id only if page id = 0
 	if (not book_->back()->id_) {
 		const auto n = book_->size();
 		if (n == 1) {
@@ -134,7 +135,47 @@ BookSptr
 BookBuilder::build() const
 {
 	assert(book_);
+	// Handle cases where multiple ocr pages have
+	// the same page sequence number set in the ocr files.
+	if (not has_unique_page_ids(*book_)) {
+		reorder_pages(*book_);
+	}
 	return book_;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool
+BookBuilder::has_unique_page_ids(const Book& book)
+{
+	std::set<int> ids;
+	for (const auto& page: book) {
+		if (ids.count(page->id()))
+			return false;
+		ids.insert(page->id());
+	}
+	return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+BookBuilder::reorder_pages(Book& book)
+{
+	// skip empty books
+	if (book.empty())
+		return;
+	static const auto cmp = [](const PagePtr& a, const PagePtr& b) {
+		assert(a);
+		assert(b);
+		return a->ocr.filename().stem() < b->ocr.filename().stem();
+	};
+	// sort by ocr file name
+	std::sort(begin(book), end(book), cmp);
+	// set ids from 1 to n
+	int id = 1;
+	for (auto& page: book) {
+		assert(page);
+		page->id_ = id++;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////

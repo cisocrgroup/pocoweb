@@ -99,7 +99,7 @@ function frontend_get_project_table_value($val) {
 function frontend_render_upload_new_project_div() {
 	echo '<div id="upload-project">', "\n";
 	echo '<h2>Upload new project</h2>', "\n";
-	echo '<form action="upload.php" method="post">', "\n";
+	echo '<form action="index.php?upload" method="post" enctype="multipart/form-data">', "\n";
 	// Author
 	echo '<div class="form-group">', "\n";
 	echo '<label for="author">Project\'s author</label>', "\n";
@@ -121,20 +121,10 @@ function frontend_render_upload_new_project_div() {
 	echo '<label for="lang">Language</label>', "\n";
 	echo '<input name="lang" type="text" placeholder="Language" class="form-control"/>', "\n";
 	echo '</div>', "\n";
-	// Description
-	echo '<div class="form-group">', "\n";
-	echo '<label for="desc">Description</label>', "\n";
-	echo '<input name="desc" type="text" placeholder="Description" class="form-control"/>', "\n";
-	echo '</div>', "\n";
 	// upload file
-	echo '<div class="input-group">', "\n";
-	echo '<label class="input-group-btn">', "\n";
-	echo '<span class="btn">', "\n";
-	echo 'Browse&hellip; ', "\n";
-	echo '<input name="file" type="file" style="display: none;" multiple>', "\n";
-	echo '</span>', "\n";
-	echo '</label>', "\n";
-	echo '<input name="file" type="text" class="form-control" readonly>', "\n";
+	echo '<div class="form-group">', "\n";
+	echo '<label for="archive-upload">Upload project</label>', "\n";
+	echo '<input type="file" id="archive-upload" name="archive" />', "\n";
 	echo '</div>', "\n";
 	// upload button
 	echo '<button class="btn btn-primary" title="upload new project" type="submit">', "\n";
@@ -142,6 +132,34 @@ function frontend_render_upload_new_project_div() {
 	echo '</button>', "\n";
 	echo '</form>', "\n";
 	echo '</div>', "\n";
+}
+
+function frontend_upload_project_archive($post, $file) {
+	global $config;
+	if ($file["error"] != UPLOAD_ERR_OK) {
+		frontend_render_error_div("Could not upload archive: error: $file[error]");
+		return;
+	}
+	if ($file["size"] > $config["backend"]["upload"]["max_size"]) {
+		frontend_render_error_div("Could not upload archive: file too big");
+		return;
+	}
+	if ($file["type"] != "application/zip") {
+		frontend_render_error_div("Could not upload archive: not a zip file");
+		return;
+	}
+	if (!file_exists($file["tmp_name"])) {
+		frontend_render_error_div("Could not upload archive: upload file does not exist");
+	}
+	if (!chmod($file["tmp_name"], 0755)) {
+		frontend_render_error_div("Could not upload archive: could publish upload file");
+	}
+	$status = backend_upload_project($post, $file["name"], $file["tmp_name"]);
+	if ($status !== 201) {
+		frontend_render_error_div("Could not upload archive: backend returned $status");
+		return;
+	}
+	frontend_render_success_div("Successfully uploaded new project");
 }
 
 function frontend_render_page_view_div($pid, $p, $u, $post) {

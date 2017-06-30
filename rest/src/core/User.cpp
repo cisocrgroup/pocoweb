@@ -8,17 +8,18 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-User::User(std::string n, const std::string& p, std::string e, std::string i, int id)
-	: User(std::move(n), Password::make(p), std::move(e), std::move(i), id)
+User::User(std::string n, const std::string& p, std::string e, std::string i, int id, bool admin)
+	: User(std::move(n), Password::make(p), std::move(e), std::move(i), id, admin)
 {}
 
 ////////////////////////////////////////////////////////////////////////////////
-User::User(std::string n, Password p, std::string e, std::string i, int id)
+User::User(std::string n, Password p, std::string e, std::string i, int id, bool admin)
 	: name(std::move(n))
 	, password(std::move(p))
 	, email(std::move(e))
 	, institute(std::move(i))
 	, id_(id)
+	, admin_(admin)
 {}
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -29,6 +29,7 @@
 			<li><a href="index.php">Home</a></li>
 			<li><a href="about.php">About</a></li>
 			<li><a href="documentation.php">Documentation</a></li>
+			<li><a href="info.php">Info</a></li>
 			<li><a href="http://www.cis.lmu.de">CIS</a></li>
 		    </ul>
 		    <ul class="nav navbar-nav navbar-right">
