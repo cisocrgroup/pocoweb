@@ -25,7 +25,7 @@ void
 UserRoute::Register(App& app)
 {
 	CROW_ROUTE(app, USER_ROUTE_ROUTE_1).methods("GET"_method, "POST"_method)(*this);
-	CROW_ROUTE(app, USER_ROUTE_ROUTE_2).methods("GET"_method, "POST"_method)(*this);
+	CROW_ROUTE(app, USER_ROUTE_ROUTE_2).methods("GET"_method, "POST"_method, "DELETE"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -81,6 +81,29 @@ UserRoute::impl(HttpPost, const Request& req) const
 	commiter.commit();
 	Json j;
 	return j << *user;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response
+UserRoute::impl(HttpDelete, const Request& req, int uid) const
+{
+	auto conn = connection();
+	assert(conn);
+	auto session = this->session(req);
+	if (not session)
+		THROW(BadRequest, "could not find session");
+	SessionLock lock(*session);
+	if (not session->user().admin())
+		THROW(Forbidden, "only admins can create new users");
+	auto user = select_user(conn.db(), uid);
+	if (not user)
+		THROW(NotFound, "invalid user id: ", uid);
+	if (user->admin())
+		THROW(Forbidden, "cannot delete admin account");
+	MysqlCommiter commiter(conn);
+	delete_user(conn.db(), uid);
+	commiter.commit();
+	return ok();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
