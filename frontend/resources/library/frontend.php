@@ -318,7 +318,7 @@ function frontend_render_page_line_div($pid, $p, $line) {
 }
 
 function frontend_render_success_div($msg) {
-	echo('<div class="row">');
+	echo('<div class="container-fluid">');
 	echo('<div class="alert alert-success" role="alert">');
 	echo($msg);
 	echo('</div>');
@@ -326,7 +326,7 @@ function frontend_render_success_div($msg) {
 }
 
 function frontend_render_info_div($msg) {
-	echo('<div class="row">');
+	echo('<div class="container-fluid">');
 	echo('<div class="alert alert-info" role="alert">');
 	echo($msg);
 	echo('</div>');
@@ -334,7 +334,7 @@ function frontend_render_info_div($msg) {
 }
 
 function frontend_render_warning_div($msg) {
-	echo('<div class="row">');
+	echo('<div class="container-fluid">');
 	echo('<div class="alert alert-warning" role="alert">');
 	echo($msg);
 	echo('</div>');
@@ -342,7 +342,7 @@ function frontend_render_warning_div($msg) {
 }
 
 function frontend_render_error_div($msg) {
-	echo('<div class="row">');
+	echo('<div class="container-fluid">');
 	echo('<div class="alert alert-danger" role="alert">');
 	echo($msg);
 	echo('</div>');
