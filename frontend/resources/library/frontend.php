@@ -121,8 +121,8 @@ function frontend_render_upload_new_project_div() {
 	echo '</div>', "\n";
 	// Language
 	echo '<div class="form-group">', "\n";
-	echo '<label for="lang">Language</label>', "\n";
-	echo '<input name="lang" type="text" placeholder="Language" class="form-control"/>', "\n";
+	echo '<label for="language">Language</label>', "\n";
+	echo '<input name="language" type="text" placeholder="Language" class="form-control"/>', "\n";
 	echo '</div>', "\n";
 	// upload file
 	echo '<div class="form-group">', "\n";
@@ -131,7 +131,6 @@ function frontend_render_upload_new_project_div() {
 	echo '</div>', "\n";
 	// upload button
 	echo '<button class="btn btn-primary" title="upload new project" type="submit">', "\n";
-	// echo '<span class="glyphicon glyphicon-upload" type="submit"/>', "\n";
 	echo 'Upload';
 	echo '</button>', "\n";
 	echo '</form>', "\n";
