@@ -46,6 +46,9 @@ pcw::CrtpRoute<T>::operator()(const Request& req, Args&&... args) const noexcept
 		case crow::HTTPMethod::Put:
 			res = that().impl(HttpPut{}, req, std::forward<Args>(args)...);
 			break;
+		case crow::HTTPMethod::Delete:
+			res = that().impl(HttpDelete{}, req, std::forward<Args>(args)...);
+			break;
 		default:
 			return not_found();
 		}
