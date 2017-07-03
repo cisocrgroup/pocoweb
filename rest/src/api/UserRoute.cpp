@@ -87,11 +87,12 @@ UserRoute::impl(HttpPost, const Request& req) const
 [[noreturn]] Route::Response
 UserRoute::impl(HttpGet, const Request& req, int uid) const
 {
-	THROW(NotImplemented, "Not implemented: UserRoute::impl");
+	THROW(NotImplemented, "Not implemented: [GET] /users/uid");
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 [[noreturn]] Route::Response
 UserRoute::impl(HttpPost, const Request& req, int uid) const
 {
-	THROW(NotImplemented, "Not implemented: UserRoute::impl");
+	THROW(NotImplemented, "Not implemented: [POST] /users/uid");
 }
