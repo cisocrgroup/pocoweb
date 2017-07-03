@@ -192,8 +192,7 @@ AltoXmlParserLine::set(size_t pos, wchar_t c)
 void
 AltoXmlParserLine::init_string(const pugi::xml_node& node)
 {
-	assert(strcmp(node.name(), "String") == 0);
-
+	assert(is_string(node));
 	const auto wc = node.attribute("WC").as_double();
 	const auto box = get_box(node);
 	const auto token = node.attribute("CONTENT").value();
@@ -222,7 +221,7 @@ AltoXmlParserLine::init_string(const pugi::xml_node& node)
 void
 AltoXmlParserLine::init_space(const Node& node)
 {
-	assert(strcmp(node.name(), "SP") == 0);
+	assert(is_space(node));
 	auto wc = node.attribute("WC").as_double();
 	chars_.emplace_back(L' ', node, Type::Space, wc, get_box(node));
 }
@@ -231,7 +230,7 @@ AltoXmlParserLine::init_space(const Node& node)
 void
 AltoXmlParserLine::init_hyphen(const Node& node)
 {
-	assert(strcmp(node.name(), "HYP") == 0);
+	assert(is_hyphen(node));
 	auto wc = node.attribute("WC").as_double();
 	chars_.emplace_back(L'-', node, Type::Hyphen, wc, get_box(node));
 }
@@ -241,11 +240,11 @@ void
 AltoXmlParserLine::init()
 {
 	for (const auto& node: node_.children()) {
-		if (strcmp(node.name(), "String") == 0) {
+		if (is_string(node)) {
 			init_string(node);
-		} else if (strcmp(node.name(), "SP") == 0) {
+		} else if (explicit_spaces_ and is_space(node)) {
 			init_space(node);
-		} else if (strcmp(node.name(), "HYP")) {
+		} else if (is_hyphen(node)) {
 			init_hyphen(node);
 		}
 	}
@@ -339,3 +338,25 @@ AltoXmlParserLine::merge(Node& a, const Node& b)
 	}
 	return a;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+bool
+AltoXmlParserLine::is_space(const Node& node) noexcept
+{
+	return strcmp(node.name(), "SP") == 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool
+AltoXmlParserLine::is_hyphen(const Node& node) noexcept
+{
+	return strcmp(node.name(), "HYP") == 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool
+AltoXmlParserLine::is_string(const Node& node) noexcept
+{
+	return strcmp(node.name(), "String") == 0;
+}
+

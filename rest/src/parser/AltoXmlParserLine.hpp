@@ -50,6 +50,9 @@ namespace pcw {
 		static Iterator find_end_of_token(Iterator b, Iterator e) noexcept;
 		static Char make_copy(Char& c);
 		static Node merge(Node& a, const Node& b);
+		static bool is_space(const Node& node) noexcept;
+		static bool is_string(const Node& node) noexcept;
+		static bool is_hyphen(const Node& node) noexcept;
 
 		std::vector<Char> chars_;
 		Node node_;
