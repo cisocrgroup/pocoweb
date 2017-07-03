@@ -20,15 +20,8 @@ function frontend_render_login_div() {
 }
 
 function frontend_render_projects_div() {
-		frontend_render_home_div();
-		frontend_render_upload_new_project_div();
-		frontend_render_project_table_div();
-}
-
-function frontend_render_home_div() {
-	echo('<div id="home">');
-	echo('<h1>Home</h1>');
-	echo('</div>');
+	frontend_render_upload_new_project_div();
+	frontend_render_project_table_div();
 }
 
 function frontend_render_project_table_div() {
@@ -36,8 +29,10 @@ function frontend_render_project_table_div() {
 	if ($projects === NULL) {
 		frontend_render_error_div("internal error: could not load projects");
 	} else {
+		echo '<div class="container-fluid">', "\n";
 		echo '<h2>Projects</h2>', "\n";
 		frontend_render_project_table($projects);
+		echo '</div>', "\n";
 	}
 }
 
@@ -103,7 +98,7 @@ function frontend_get_table_value($val) {
 }
 
 function frontend_render_upload_new_project_div() {
-	echo '<div id="upload-project">', "\n";
+	echo '<div id="upload-project" class="container-fluid">', "\n";
 	echo '<h2>Upload new project</h2>', "\n";
 	echo '<form action="index.php?upload" method="post" enctype="multipart/form-data">', "\n";
 	// Author
@@ -224,8 +219,10 @@ function frontend_render_users_table_div() {
 	if ($users === NULL) {
 		frontend_render_error_div("internal error: could not load users");
 	} else {
+		echo '<div class="container-fluid">', "\n";
 		echo '<h2>Users</h2>', "\n";
 		frontend_render_users_table($users);
+		echo '</div>', "\n";
 	}
 }
 
