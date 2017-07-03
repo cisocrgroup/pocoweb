@@ -4,13 +4,19 @@ require_once(dirname(dirname(__FILE__)) . "/config.php");
 require_once(LIBRARY_PATH . "/backend.php");
 
 function frontend_render_login_div() {
-	echo('<div class="row">');
-	echo('<form action="login.php" method="post">');
-	echo('<input name="name" type="text" class="form-control" placeholder="Username" />');
-	echo('<input name="pass" type="password" class="form-control" placeholder="Password" />');
-	echo('<input type="submit" value="Login"/>');
-	echo('</form>');
-	echo('</div>');
+	echo '<div class="container-fluid">';
+	echo '<form class="form-horizontal" method="post">';
+	echo '<div class="form-group">';
+	echo '<label for="name">User name</label>';
+	echo '<input name="name" type="text" class="form-control" placeholder="Username"/>';
+	echo '</div>';
+	echo '<div class="form-group">';
+	echo '<label for="pass">Password</label>';
+	echo '<input name="pass" type="password" class="form-control" placeholder="Password"/>';
+	echo '</div>';
+	echo '<button type="submit" class="btn btn-default">Login</button>';
+	echo '</form>';
+	echo '</div>';
 }
 
 function frontend_render_projects_div() {
