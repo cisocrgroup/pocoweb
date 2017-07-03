@@ -3,7 +3,6 @@
 #include "core/Session.hpp"
 #include "core/jsonify.hpp"
 #include "database/Database.hpp"
-#include "utils/QueryParser.hpp"
 
 using namespace pcw;
 

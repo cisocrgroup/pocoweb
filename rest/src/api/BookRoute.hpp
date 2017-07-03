@@ -3,6 +3,12 @@
 
 #include "core/CrtpRoute.hpp"
 
+namespace crow {
+	namespace json {
+		class rvalue;
+	}
+}
+
 namespace pcw {
 	class QueryParser;
 	class Book;
@@ -24,9 +30,9 @@ namespace pcw {
 		Response impl(HttpPost, const Request& req, int bid) const;
 
 	private:
-		Response set(const Request& req, int bid, const QueryParser& data) const;
-		[[noreturn]] Response package(const Request& req, int bid, const QueryParser& data) const;
-		void update_book_data(Book& book, const User& user, const QueryParser& data) const;
+		Response set(const Request& req, int bid, const crow::json::rvalue& data) const;
+		[[noreturn]] Response package(const Request& req, int bid, const crow::json::rvalue& data) const;
+		void update_book_data(Book& book, const User& user, const crow::json::rvalue& data) const;
 
 		static const char* route_;
 		static const char* name_;

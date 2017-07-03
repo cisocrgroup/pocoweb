@@ -25,10 +25,12 @@ function frontend_render_projects_div() {
 }
 
 function frontend_render_project_table_div() {
-	$projects = backend_get_projects();
-	if ($projects === NULL) {
-		frontend_render_error_div("internal error: could not load projects");
+	$api = backend_get_projects();
+	$status = $api->get_http_status_code();
+	if ($status != 200) {
+		frontend_render_error_div("error could not load projects: $status");
 	} else {
+		$projects = $api->get_response();
 		echo '<div class="container-fluid">', "\n";
 		echo '<h2>Projects</h2>', "\n";
 		frontend_render_project_table($projects);
@@ -155,12 +157,13 @@ function frontend_upload_project_archive($post, $file) {
 	if (!chmod($file["tmp_name"], 0755)) {
 		frontend_render_error_div("Could not upload archive: could publish upload file");
 	}
-	$status = backend_upload_project($post, $file["name"], $file["tmp_name"]);
-	if ($status !== 201) {
+	$api = backend_upload_project($post, $file["name"], $file["tmp_name"]);
+	$status = $api->get_http_status_code();
+	if ($status != 201) {
 		frontend_render_error_div("Could not upload archive: backend returned $status");
-		return;
+	} else {
+		frontend_render_success_div("Successfully uploaded new project");
 	}
-	frontend_render_success_div("Successfully uploaded new project");
 }
 
 function frontend_render_users_div() {
@@ -215,10 +218,12 @@ function frontend_render_create_new_user_div() {
 }
 
 function frontend_render_users_table_div() {
-	$users = backend_get_users();
-	if ($users === NULL) {
-		frontend_render_error_div("internal error: could not load users");
+	$api = backend_get_users();
+	$status = $api->get_http_status_code();
+	if ($status != 200) {
+		frontend_render_error_div("error: could not load users: $status");
 	} else {
+		$users = $api->get_response();
 		echo '<div class="container-fluid">', "\n";
 		echo '<h2>Users</h2>', "\n";
 		frontend_render_users_table($users);
@@ -268,16 +273,18 @@ function frontend_render_page_view_div($pid, $p, $u, $post) {
 	if (isset($post["lines"])) {
 		frontend_update_lines($u, $post["lines"]);
 	}
-	echo '<div id="page-view">', "\n";
-	$page = backend_get_page($pid, $p);
-	if ($page === NULL) {
-		frontend_render_error_div("could not load project #$pid, page #$p");
+	$api = backend_get_page($pid, $p);
+	$status = $api->get_http_status_code();
+	if ($status != 200) {
+		frontend_render_error_div("error: could not load project #$pid, page #$p: $status");
 	} else {
+		$page = $api->get_response();
+		echo '<div id="page-view">', "\n";
 		frontend_render_page_header($page);
 		frontend_render_page_heading($page);
 		frontend_render_page($page);
+		echo '</div>', "\n";
 	}
-	echo '</div>', "\n";
 }
 
 function frontend_update_lines($u, $lines) {
@@ -289,8 +296,9 @@ function frontend_update_lines($u, $lines) {
 	foreach ($lines as $key => $val) {
 		if (preg_match('/(\d+)-(\d+)-(\d+)/', $key, $m)) {
 			if ($u === "all" || $u === $key) {
-				$status = backend_correct_line($m[1], $m[2], $m[3], $val);
-				if ($status === 200) {
+				$api = backend_correct_line($m[1], $m[2], $m[3], $val);
+				$status = $api->get_http_status_code();
+				if ($status == 200) {
 					$oklines .= "#$m[3] ";
 				} else {
 					$errorlines .= "#$m[3]($status) ";

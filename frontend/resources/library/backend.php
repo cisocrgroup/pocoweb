@@ -9,12 +9,8 @@ function backend_get_api_version_route() {
 
 function backend_get_api_version() {
 	$api = new Api(backend_get_api_version_route());
-	$res = $api->get_request();
-	if ($res !== NULL && array_key_exists("version", $res)) {
-		return $res["version"];
-	}
-	error_log("Could not determine api-version");
-	return "unknown";
+	$api->get_request();
+	return $api;
 }
 
 function backend_get_login_route() {
@@ -23,10 +19,10 @@ function backend_get_login_route() {
 }
 
 function backend_login($name, $pass) {
-	$data = 'name=' . urlencode($name) . '&pass=' . urlencode($pass);
+	$data = array("name" => $name, "pass" => $pass);
 	$api = new Api(backend_get_login_route());
 	$api->post_request($data);
-	return $api->get_http_status_code();
+	return $api;
 }
 
 function backend_get_logout_route() {
@@ -37,16 +33,13 @@ function backend_get_logout_route() {
 function backend_logout() {
 	$api = new Api(backend_get_logout_route());
 	$api->get_request();
-}
-
-function backend_is_logged_in() {
-	return backend_get_login_name() !== NULL;
+	return $api;
 }
 
 function backend_get_login_name() {
-	global $config;
 	$api = new Api(backend_get_login_route());
-	return $api->get_request();
+	$api->get_request();
+	return $api;
 }
 
 function backend_get_projects_route() {
@@ -56,7 +49,8 @@ function backend_get_projects_route() {
 
 function backend_get_projects() {
 	$api = new Api(backend_get_projects_route());
-	return $api->get_request();
+	$api->get_request();
+	return $api;
 }
 
 function backend_get_users_route() {
@@ -66,24 +60,19 @@ function backend_get_users_route() {
 
 function backend_get_users() {
 	$api = new Api(backend_get_users_route());
-	return $api->get_request();
+	$api->get_request();
+	return $api;
 }
 
-function backend_create_new_user($post) {
-	$data = '';
-	if (isset($post["admin"])) {
-		$post["admin"] = "true";
+function backend_create_user($post) {
+	if (isset($post["admin"]) && $post["admin"] == "On") {
+		$post["admin"] = true;
 	} else {
-		$post["admin"] = "false";
-	}
-	foreach ($post as $key => $val) {
-		if (strlen($data) > 0) {
-			$data .= '&';
-		}
-		$data .= "$key=" . urlencode($val);
+		$post["admin"] = false;
 	}
 	$api = new Api(backend_get_users_route());
-	return $api->post_request($data);
+	$api->post_request($post);
+	return $api;
 }
 
 function backend_get_delete_user_route($uid) {
@@ -93,7 +82,8 @@ function backend_get_delete_user_route($uid) {
 
 function backend_delete_user($uid) {
 	$api = new Api(backend_get_delete_user_route($uid));
-	return $api->delete_request();
+	$api->delete_request();
+	return $api;
 }
 
 function backend_get_nth_page_route($pid, $p) {
@@ -117,22 +107,25 @@ function backend_get_correct_line_route($pid, $p, $lid) {
 }
 
 function backend_correct_line($pid, $p, $lid, $d) {
-	$data = 'd=' . urlencode($d);
+	$data = array('d' => $d);
 	$api = new Api(backend_get_correct_line_route($pid, $p, $lid));
 	$api->post_request($data);
-	return $api->get_http_status_code();
+	return $api;
 }
 
 function backend_get_page($pid, $p) {
 	if ($p === "first") {
 		$api = new Api(backend_get_first_page_route($pid));
-		return $api->get_request();
+		$api->get_request();
+		return $api;
 	} else if ($p == "last") {
 		$api = new Api(backend_get_last_page_route($pid));
-		return $api->get_request();
+		$api->get_request();
+		return $api;
 	} else {
 		$api = new Api(backend_get_nth_page_route($pid, $p));
-		return $api->get_request();
+		$api->get_request();
+		return $api;
 	}
 }
 
@@ -144,15 +137,8 @@ function backend_get_upload_project_route($file) {
 }
 
 function backend_upload_project($post, $name, $file) {
-	$data = "";
-	foreach ($post as $key => $val) {
-		if (strlen($data) > 0) {
-			$data .= '&';
-		}
-		$data .= "$key=".urlencode($val);
-	}
 	$api = new Api(backend_get_upload_project_route($file));
-	$api->post_request($data);
-	return $api->get_http_status_code();
+	$api->post_request($post);
+	return $api;
 }
 ?>

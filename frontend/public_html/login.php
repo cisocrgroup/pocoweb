@@ -3,7 +3,8 @@ require_once("../resources/config.php");
 require_once(LIBRARY_PATH . "/frontend.php");
 require_once(LIBRARY_PATH . "/backend.php");
 
-if (backend_is_logged_in()) {
+global $user;
+if ($user !== NULL) {
 	require(TEMPLATES_PATH . "/header.php");
 	frontend_render_success_div("You logged in successfully");
 } else if (isset($_POST["name"]) && isset($_POST["pass"])) {
@@ -11,7 +12,8 @@ if (backend_is_logged_in()) {
 	if (headers_sent()) {
 		frontend_render_error_div("could not set session cookies");
 	}
-	$status = backend_login($_POST["name"], $_POST["pass"]);
+	$api = backend_login($_POST["name"], $_POST["pass"]);
+	$status = $api->get_http_status_code();
 	switch ($status) {
 	case "200":
 		frontend_render_success_div("You successfully logged in");

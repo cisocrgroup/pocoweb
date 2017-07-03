@@ -12,7 +12,6 @@
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
 #include "utils/Error.hpp"
-#include "utils/QueryParser.hpp"
 #include "utils/ScopeGuard.hpp"
 
 #define LINE_ROUTE_ROUTE "/books/<int>/pages/<int>/lines/<int>"
@@ -52,8 +51,9 @@ LineRoute::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
 Route::Response
 LineRoute::impl(HttpPost, const Request& req, int bid, int pid, int lid) const
 {
-	const QueryParser post(req.body);
-	if (not post.contains("d"))
+	CROW_LOG_DEBUG << "(LineRoute) body: " << req.body;
+	auto json = crow::json::load(req.body);
+	if (not json["d"].s().size())
 		THROW(BadRequest, "missing data for book id: ",
 				bid, ", page id: ", pid, ", line id: ", lid);
 
@@ -67,16 +67,16 @@ LineRoute::impl(HttpPost, const Request& req, int bid, int pid, int lid) const
 	if (not line)
 		THROW(NotFound, "Cannot find book id: ", bid,
 				" page id: ", pid, " line id: ", lid);
-	return correct(conn, *line, post);
+	return correct(conn, *line, json);
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-LineRoute::correct(MysqlConnection& conn, Line& line, const QueryParser& post) const
+LineRoute::correct(MysqlConnection& conn, Line& line, const crow::json::rvalue& json) const
 {
-	assert(post.contains("d"));
-	const auto correction = post.get("d");
+	assert(json["d"].s().size());
+	const std::string correction = json["d"].s();
 	WagnerFischer wf;
 	wf.set_gt(correction);
 	wf.set_ocr(line);
@@ -93,8 +93,8 @@ LineRoute::correct(MysqlConnection& conn, Line& line, const QueryParser& post) c
 	update_line(conn.db(), line);
 	commiter.commit();
 
-	Json json;
-	return json << line;
+	Json j;
+	return j << line;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

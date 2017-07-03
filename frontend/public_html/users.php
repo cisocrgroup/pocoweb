@@ -5,7 +5,7 @@ require_once(LIBRARY_PATH . "/backend.php");
 require_once(TEMPLATES_PATH . "/header.php");
 global $user;
 if (isset($_GET["create"])) {
-	backend_create_new_user($_POST);
+	backend_create_user($_POST);
 	frontend_render_success_div("Successfully created new user");
 } else if (isset($_GET["delete"]) and isset($_GET["uid"])) {
 	backend_delete_user($_GET["uid"]);
