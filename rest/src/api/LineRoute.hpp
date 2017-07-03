@@ -3,8 +3,13 @@
 
 #include "core/CrtpRoute.hpp"
 
+namespace crow {
+	namespace json {
+		class rvalue;
+	}
+}
+
 namespace pcw {
-	class QueryParser;
 	class WagnerFischer;
 
 	class LineRoute: public CrtpRoute<LineRoute> {
@@ -21,7 +26,7 @@ namespace pcw {
 				int pid, int lid) const;
 
 	private:
-		Response correct(MysqlConnection& conn, Line& line, const QueryParser& data) const;
+		Response correct(MysqlConnection& conn, Line& line, const crow::json::rvalue& data) const;
 		void log(const WagnerFischer& wf) const;
 		static void print_with_dotted_circles(const std::wstring& str, std::string& u8);
 

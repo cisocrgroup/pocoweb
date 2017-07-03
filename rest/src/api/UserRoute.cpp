@@ -2,7 +2,6 @@
 #include <crow.h>
 #include "utils/Error.hpp"
 #include "utils/ScopeGuard.hpp"
-#include "utils/QueryParser.hpp"
 #include "core/jsonify.hpp"
 #include "core/User.hpp"
 #include "core/WagnerFischer.hpp"
@@ -66,12 +65,13 @@ UserRoute::impl(HttpPost, const Request& req) const
 	SessionLock lock(*session);
 	if (not session->user().admin())
 		THROW(Forbidden, "only admins can create new users");
-	QueryParser data(req.body);
-	const auto name = data.get("name");
-	const auto pass = data.get("pass");
-	const auto email = data.get("email");
-	const auto institute = data.get("institute");
-	const auto admin = data.get("admin") == "true";
+	CROW_LOG_DEBUG << "(UserRoute) body: " << req.body;
+	auto json = crow::json::load(req.body);
+	const std::string name = json["name"].s();
+	const std::string pass = json["pass"].s();
+	const std::string email = json["email"].s();
+	const std::string institute = json["institute"].s();
+	const bool admin = json["admin"].b();
 	if (name.empty() or pass.empty())
 		THROW(BadRequest, "missing name and/or password for new user");
 	MysqlCommiter commiter(conn);

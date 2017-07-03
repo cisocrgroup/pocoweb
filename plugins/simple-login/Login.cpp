@@ -3,7 +3,6 @@
 #include "core/Session.hpp"
 #include "core/jsonify.hpp"
 #include "database/Database.hpp"
-#include "utils/QueryParser.hpp"
 
 using namespace pcw;
 
@@ -66,12 +65,14 @@ Login::login(const Request& req, const std::string& name, const std::string& pas
 Route::Response
 Login::impl(HttpPost, const Request& req) const
 {
-	QueryParser post(req.body);
-	if (not post.get("name").empty() and not post.get("pass").empty()) {
-		return login(req, post.get("name"), post.get("pass"));
+	CROW_LOG_DEBUG << "(Login) body: " << req.body;
+	auto json = crow::json::load(req.body);
+	if (not json)
+		THROW(BadRequest, "bad json request data");
+	if (json["name"].s().size() and json["pass"].s().size()) {
+		return login(req, json["name"].s(), json["pass"].s());
 	} else {
-		CROW_LOG_ERROR << "(Login) invalid login attempt";
-		return bad_request();
+		THROW(BadRequest, "invalid login attempt");
 	}
 }
 

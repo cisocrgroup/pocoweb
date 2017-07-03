@@ -2,7 +2,6 @@
 #include <crow.h>
 #include "utils/Error.hpp"
 #include "utils/ScopeGuard.hpp"
-#include "utils/QueryParser.hpp"
 #include "core/jsonify.hpp"
 #include "core/User.hpp"
 #include "core/Page.hpp"
@@ -85,8 +84,9 @@ BookRoute::impl(HttpPost, const Request& req) const
 	if (not book)
 		THROW(Error, "Could not build book");
 	// update book data
-	const QueryParser data(req.body);
-	update_book_data(*book, session->user(), data);
+	CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
+	auto json = crow::json::load(req.body);
+	update_book_data(*book, session->user(), json);
 	// insert book into database
 	CROW_LOG_INFO << "(BookRoute) Inserting new book into database";
 	MysqlCommiter commiter(conn);
@@ -103,21 +103,21 @@ BookRoute::impl(HttpPost, const Request& req) const
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookRoute::update_book_data(Book& book, const User& user, const QueryParser& data) const
+BookRoute::update_book_data(Book& book, const User& user, const crow::json::rvalue& data) const
 {
 	book.set_owner(user);
-	if (data.contains("author") and book.data.author.empty())
-		book.data.author = data.get("author");
-	if (data.contains("title") and book.data.title.empty())
-		book.data.title = data.get("title");
-	if (data.contains("language") and book.data.lang.empty())
-		book.data.lang = data.get("language");
-	if (data.contains("year") and not book.data.year)
-		book.data.year = stoi(data.get("year"));
-	if (data.contains("uri") and book.data.uri.empty())
-		book.data.uri = data.get("uri");
-	if (data.contains("description") and book.data.description.empty())
-		book.data.description = data.get("description");
+	if (data["author"].s().size())
+		book.data.author = data["author"].s();
+	if (data["title"].s().size())
+		book.data.title = data["title"].s();
+	if (data["language"].s().size())
+		book.data.lang = data["language"].s();
+	if (data["year"].i())
+		book.data.year = data["year"].i();
+	if (data["uri"].s().size())
+		book.data.uri = data["uri"].s();
+	if (data["description"].s().size())
+		book.data.description = data["description"].s();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -139,20 +139,21 @@ BookRoute::impl(HttpGet, const Request& req, int bid) const
 Route::Response
 BookRoute::impl(HttpPost, const Request& req, int bid) const
 {
-	const QueryParser query(req.body);
-	if (query.contains("package") and query.contains("n"))
-		return this->package(req, bid, query);
-	else if (query.contains("author") or query.contains("title") or
-			query.contains("description") or query.contains("year") or
-			query.contains("uri") or query.contains("language"))
-		return set(req, bid, query);
+	CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
+	auto json = crow::json::load(req.body);
+	if (json["package"].s().size() and json["n"].i())
+		return this->package(req, bid, json);
+	else if (json["author"].s().size() or json["title"].s().size() or
+			json["description"].s().size() or json["year"].s().size() or
+			json["uri"].s().size() or json["language"].s().size())
+		return set(req, bid, json);
 	else
 		return bad_request();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-BookRoute::set(const Request& req, int bid, const QueryParser& data) const
+BookRoute::set(const Request& req, int bid, const crow::json::rvalue& data) const
 {
 	auto conn = connection();
 	assert(conn);
@@ -170,20 +171,18 @@ BookRoute::set(const Request& req, int bid, const QueryParser& data) const
 	if (not view->is_book())
 		THROW(BadRequest, "cannot set parameters of project id: ", bid);
 	const auto book = std::dynamic_pointer_cast<Book>(view);
-
-	if (data.contains("author"))
-		book->data.author = data.get("author");
-	if (data.contains("title"))
-		book->data.title = data.get("title");
-	if (data.contains("uri"))
-		book->data.uri = data.get("uri");
-	if (data.contains("description"))
-		book->data.description = data.get("description");
-	if (data.contains("year"))
-		book->data.year = stoi(data.get("year"));
-	if (data.contains("language"))
-		book->data.lang = data.get("language");
-
+	if (data["author"].s().size())
+		book->data.author = data["author"].s();
+	if (data["title"].s().size())
+		book->data.title = data["title"].s();
+	if (data["uri"].s().size())
+		book->data.uri = data["uri"].s();
+	if (data["description"].s().size())
+		book->data.description = data["description"].s();
+	if (data["year"].i())
+		book->data.year = data["year"].i();
+	if (data["language"].s().size())
+		book->data.lang = data["language"].s();
 	MysqlCommiter commiter(conn);
 	update_book(conn.db(), *book);
 	commiter.commit();
@@ -194,7 +193,7 @@ BookRoute::set(const Request& req, int bid, const QueryParser& data) const
 
 ////////////////////////////////////////////////////////////////////////////////
 [[noreturn]] Route::Response
-BookRoute::package(const Request& req, int bid, const QueryParser& data) const
+BookRoute::package(const Request& req, int bid, const crow::json::rvalue& data) const
 {
 	THROW(Error, "BookRoute::package: not implemented");
 }
