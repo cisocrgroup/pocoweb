@@ -12,6 +12,7 @@
 #include "api/BookRoute.hpp"
 #include "api/PageRoute.hpp"
 #include "api/LineRoute.hpp"
+#include "api/UserRoute.hpp"
 
 using namespace pcw;
 using AppPtr = std::unique_ptr<App>;
@@ -53,6 +54,7 @@ run(App& app)
 	app.Register(std::make_unique<pcw::BookRoute>());
 	app.Register(std::make_unique<pcw::PageRoute>());
 	app.Register(std::make_unique<pcw::LineRoute>());
+	app.Register(std::make_unique<pcw::UserRoute>());
 	app.run();
 }
 
