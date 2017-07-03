@@ -18,6 +18,7 @@ namespace pcw {
 		pcw_crtp_route_def_impl__(int);
 		Response impl(HttpGet, const Request& req) const;
 		Response impl(HttpPost, const Request& req) const;
+		Response impl(HttpDelete, const Request& req, int uid) const;
 		[[noreturn]] Response impl(HttpGet, const Request& req, int uid) const;
 		[[noreturn]] Response impl(HttpPost, const Request& req, int uid) const;
 

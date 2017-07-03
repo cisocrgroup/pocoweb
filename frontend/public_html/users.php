@@ -6,6 +6,10 @@ require_once(TEMPLATES_PATH . "/header.php");
 global $user;
 if (isset($_GET["create"])) {
 	backend_create_new_user($_POST);
+	frontend_render_success_div("Successfully created new user");
+} else if (isset($_GET["delete"]) and isset($_GET["uid"])) {
+	backend_delete_user($_GET["uid"]);
+	frontend_render_success_div("Successfully deleted user id: $_GET[uid]");
 }
 if ($user === NULL) {
 	frontend_render_info_div("Welcome to PoCoWeb. Please <a href='login.php'>login</a>");
