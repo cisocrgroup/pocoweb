@@ -51,6 +51,16 @@ class Api {
 		return json_decode($res, TRUE);
 	}
 
+	public function delete_request() {
+		if ($this->curl === FALSE) {
+			error_log("[Api] invalid curl handle: $this->url");
+			return NULL;
+		}
+		curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+		$res = curl_exec($this->curl);
+		return $res;
+	}
+
 	public function get_http_status_code() {
 		if ($this->curl === FALSE) {
 			error_log("[Api] invalid curl handle: $this->url");

@@ -236,21 +236,21 @@ function frontend_render_users_table($users) {
 }
 
 function frontend_render_users_table_row($user) {
-	$uid = $user["id"];
 	echo '<tr>';
 	echo '<td>', $user["id"], '</td>';
 	echo '<td>', frontend_get_table_value($user["name"]), '</td>';
 	echo '<td>', frontend_get_table_value($user["email"]), '</td>';
 	echo '<td>', frontend_get_table_value($user["institute"]), '</td>';
 	echo '<td>', frontend_get_table_value($user["admin"]), '</td>';
-	echo '<td>';
-	echo frontend_get_project_table_action_button(
-		"open project", $uid, "glyphicon glyphicon-ok");
-	echo frontend_get_project_table_action_button(
-		"delete project", $uid, "glyphicon glyphicon-remove");
-	echo frontend_get_project_table_action_button(
-		"download project", $uid, "glyphicon glyphicon-download");
-	echo '</tr>', "\n";
+	if (!$user["admin"]) {
+		echo '<td>';
+		echo '<button onclick="window.location.href=\'users.php?delete&uid=',
+			$user["id"], '\'" title="delete user #', $user["id"], '">', "\n";
+		echo '<span class="glyphicon glyphicon-remove" />', "\n";
+		echo '</button>', "\n";
+	} else {
+		echo '<td />', "\n";
+	}
 }
 
 function frontend_render_users_table_header() {

@@ -86,6 +86,16 @@ function backend_create_new_user($post) {
 	return $api->post_request($data);
 }
 
+function backend_get_delete_user_route($uid) {
+	global $config;
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["delete_user"], $uid);
+}
+
+function backend_delete_user($uid) {
+	$api = new Api(backend_get_delete_user_route($uid));
+	return $api->delete_request();
+}
+
 function backend_get_nth_page_route($pid, $p) {
 	global $config;
 	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["get_nth_page"], $pid, $p);
