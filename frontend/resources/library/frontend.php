@@ -14,7 +14,7 @@ function frontend_render_login_div() {
 	echo '<label for="pass">Password</label>';
 	echo '<input name="pass" type="password" class="form-control" placeholder="Password"/>';
 	echo '</div>';
-	echo '<button type="submit" class="btn btn-default">Login</button>';
+	echo '<button type="submit" class="btn btn-primary">Login</button>';
 	echo '</form>';
 	echo '</div>';
 }
@@ -131,7 +131,8 @@ function frontend_render_upload_new_project_div() {
 	echo '</div>', "\n";
 	// upload button
 	echo '<button class="btn btn-primary" title="upload new project" type="submit">', "\n";
-	echo '<span class="glyphicon glyphicon-upload" type="submit"/>', "\n";
+	// echo '<span class="glyphicon glyphicon-upload" type="submit"/>', "\n";
+	echo 'Upload';
 	echo '</button>', "\n";
 	echo '</form>', "\n";
 	echo '</div>', "\n";
