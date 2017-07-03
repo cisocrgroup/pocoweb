@@ -1,5 +1,8 @@
 <?php
 $config = array(
+	"frontend" => array(
+		"debug" => true,
+	),
 	"backend" => array(
 		"url"    => "http://pocoweb.cis.lmu.de/rest",
 		"routes" => array(
@@ -32,6 +35,3 @@ ini_set("display_errors", "On");
 error_reporting(E_ALL|E_STRCT);
 
 ?>
-<!--
-vim: tw=4
--->
