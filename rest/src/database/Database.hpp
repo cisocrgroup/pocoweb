@@ -279,7 +279,8 @@ pcw::detail::insert_book_info_and_set_id(Db& db, Book& book)
 	tables::Projects projects;
 	auto id = db(insert_into(projects)
 			.set(projects.origin = 0,
-				projects.owner = book.owner().id()));
+				projects.owner = book.owner().id(),
+				projects.pages = book.size()));
 	CROW_LOG_DEBUG << "(insert_book_info_and_set_id) id: " << id;
 	book.set_id(id);
 	db(update(projects).set(projects.origin = id)
