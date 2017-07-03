@@ -55,10 +55,32 @@ UserRoute::impl(HttpGet, const Request& req) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-[[noreturn]] Route::Response
+Route::Response
 UserRoute::impl(HttpPost, const Request& req) const
 {
-	THROW(NotImplemented, "Not implemented: UserRoute::impl");
+	auto conn = connection();
+	assert(conn);
+	auto session = this->session(req);
+	if (not session)
+		THROW(BadRequest, "could not find session");
+	SessionLock lock(*session);
+	if (not session->user().admin())
+		THROW(Forbidden, "only admins can create new users");
+	QueryParser data(req.body);
+	const auto name = data.get("name");
+	const auto pass = data.get("pass");
+	const auto email = data.get("email");
+	const auto institute = data.get("institute");
+	const auto admin = data.get("admin") == "true";
+	if (name.empty() or pass.empty())
+		THROW(BadRequest, "missing name and/or password for new user");
+	MysqlCommiter commiter(conn);
+	const auto user = pcw::create_user(
+			conn.db(), name, pass, email, institute, admin);
+	assert(user);
+	commiter.commit();
+	Json j;
+	return j << *user;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
