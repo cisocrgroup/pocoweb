@@ -10,6 +10,7 @@ $config = array(
 			"login"          => "/login",
 			"logout"         => "/logout",
 			"get_projects"   => "/books",
+			"get_users"      => "/users",
 			"get_first_page" => "/books/%d/pages/first",
 			"get_last_page"  => "/books/%d/pages/last",
 			"get_nth_page"   => "/books/%d/pages/%d",

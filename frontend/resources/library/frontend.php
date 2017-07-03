@@ -54,12 +54,12 @@ function frontend_render_project_table_row($project) {
 	$pid = $project["projectId"];
 	echo '<tr>';
 	echo '<td>', $pid, '</td>';
-	echo '<td>', frontend_get_project_table_value($project["author"]), '</td>';
-	echo '<td>', frontend_get_project_table_value($project["title"]), '</td>';
-	echo '<td>', frontend_get_project_table_value($project["year"]), '</td>';
-	echo '<td>', frontend_get_project_table_value($project["language"]), '</td>';
-	echo '<td>', frontend_get_project_table_value($project["pages"]), '</td>';
-	echo '<td>', frontend_get_project_table_value($project["isBook"]), '</td>';
+	echo '<td>', frontend_get_table_value($project["author"]), '</td>';
+	echo '<td>', frontend_get_table_value($project["title"]), '</td>';
+	echo '<td>', frontend_get_table_value($project["year"]), '</td>';
+	echo '<td>', frontend_get_table_value($project["language"]), '</td>';
+	echo '<td>', frontend_get_table_value($project["pages"]), '</td>';
+	echo '<td>', frontend_get_table_value($project["isBook"]), '</td>';
 	echo '<td>';
 	echo frontend_get_project_table_action_button(
 		"open project", $pid, "glyphicon glyphicon-ok");
@@ -90,7 +90,7 @@ function frontend_get_project_table_action_button($msg, $id, $class) {
 		. '</button>';
 }
 
-function frontend_get_project_table_value($val) {
+function frontend_get_table_value($val) {
 	if ($val === TRUE) {
 		return '<span class="glyphicon glyphicon-ok-circle"/>';
 	} else if ($val === FALSE) {
@@ -166,6 +166,105 @@ function frontend_upload_project_archive($post, $file) {
 		return;
 	}
 	frontend_render_success_div("Successfully uploaded new project");
+}
+
+function frontend_render_users_div() {
+	global $user;
+	if ($user["admin"]) {
+		frontend_render_create_new_user_div();
+		frontend_render_users_table_div();
+	}
+}
+
+function frontend_render_create_new_user_div() {
+	echo '<div id="create-new-user" class="container-fluid">', "\n";
+	echo '<h2>Create new user</h2>', "\n";
+	echo '<form action="users.php?create" method="post">', "\n";
+	// Name
+	echo '<div class="form-group">', "\n";
+	echo '<label for="name">Username</label>', "\n";
+	echo '<input name="name" type="text" placeholder="Username" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Email
+	echo '<div class="form-group">', "\n";
+	echo '<label for="email">Email</label>', "\n";
+	echo '<input name="email" type="email" placeholder="Email" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Institute
+	echo '<div class="form-group">', "\n";
+	echo '<label for="institute">Insitute</label>', "\n";
+	echo '<input name="institute" type="text" placeholder="Institute" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Password 1
+	echo '<div class="form-group">', "\n";
+	echo '<label for="pass">Password</label>', "\n";
+	echo '<input name="pass" type="password" placeholder="Password" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Password 2
+	echo '<div class="form-group">', "\n";
+	echo '<label for="pass2">Password (retype)</label>', "\n";
+	echo '<input name="pass2" type="password" placeholder="Password" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Admin
+	echo '<div class="checkbox">', "\n";
+	echo '<label>', "\n";
+	echo '<input name="admin" type="checkbox"/>Admin', "\n";
+	echo '</label>', "\n";
+	echo '</div>', "\n";
+	// upload button
+	echo '<button class="btn btn-primary" title="create new user" type="submit">', "\n";
+	echo 'Create', "\n";
+	echo '</button>', "\n";
+	echo '</form>', "\n";
+	echo '</div>', "\n";
+}
+
+function frontend_render_users_table_div() {
+	$users = backend_get_users();
+	if ($users === NULL) {
+		frontend_render_error_div("internal error: could not load users");
+	} else {
+		echo '<h2>Users</h2>', "\n";
+		frontend_render_users_table($users);
+	}
+}
+
+function frontend_render_users_table($users) {
+	echo '<table class="table table-striped">', "\n";
+	frontend_render_users_table_header();
+	foreach ($users["users"] as $user) {
+		frontend_render_users_table_row($user);
+	}
+	echo '</table>', "\n";
+}
+
+function frontend_render_users_table_row($user) {
+	$uid = $user["id"];
+	echo '<tr>';
+	echo '<td>', $user["id"], '</td>';
+	echo '<td>', frontend_get_table_value($user["name"]), '</td>';
+	echo '<td>', frontend_get_table_value($user["email"]), '</td>';
+	echo '<td>', frontend_get_table_value($user["institute"]), '</td>';
+	echo '<td>', frontend_get_table_value($user["admin"]), '</td>';
+	echo '<td>';
+	echo frontend_get_project_table_action_button(
+		"open project", $uid, "glyphicon glyphicon-ok");
+	echo frontend_get_project_table_action_button(
+		"delete project", $uid, "glyphicon glyphicon-remove");
+	echo frontend_get_project_table_action_button(
+		"download project", $uid, "glyphicon glyphicon-download");
+	echo '</tr>', "\n";
+}
+
+function frontend_render_users_table_header() {
+	echo '<tr>';
+	echo '<th>#</th>';
+	echo '<th>Name</th>';
+	echo '<th>Email</th>';
+	echo '<th>Institute</th>';
+	echo '<th>Admin</th>';
+	echo '<th>Actions<th/>';
+	echo '</tr>', "\n";
 }
 
 function frontend_render_page_view_div($pid, $p, $u, $post) {

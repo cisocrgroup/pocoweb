@@ -59,6 +59,33 @@ function backend_get_projects() {
 	return $api->get_request();
 }
 
+function backend_get_users_route() {
+	global $config;
+	return $config["backend"]["url"] . $config["backend"]["routes"]["get_users"];
+}
+
+function backend_get_users() {
+	$api = new Api(backend_get_users_route());
+	return $api->get_request();
+}
+
+function backend_create_new_user($post) {
+	$data = '';
+	if (isset($post["admin"])) {
+		$post["admin"] = "true";
+	} else {
+		$post["admin"] = "false";
+	}
+	foreach ($post as $key => $val) {
+		if (strlen($data) > 0) {
+			$data .= '&';
+		}
+		$data .= "$key=" . urlencode($val);
+	}
+	$api = new Api(backend_get_users_route());
+	return $api->post_request($data);
+}
+
 function backend_get_nth_page_route($pid, $p) {
 	global $config;
 	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["get_nth_page"], $pid, $p);

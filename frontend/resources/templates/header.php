@@ -27,6 +27,7 @@
 		<!-- <div class="navbar-header"> -->
 		    <ul class="nav navbar-nav navbar-left">
 			<li><a href="index.php">Home</a></li>
+			<li><a href="users.php">Users</a></li>
 			<li><a href="about.php">About</a></li>
 			<li><a href="documentation.php">Documentation</a></li>
 			<?php
@@ -41,6 +42,7 @@
 <?php
 require_once(dirname(dirname(__FILE__)) . "/config.php");
 require_once(LIBRARY_PATH . "/backend.php");
+global $user;
 $user = backend_get_login_name();
 if ($user !== NULL) {
 	echo '<li><p class="navbar-text">Logged in as user: ',

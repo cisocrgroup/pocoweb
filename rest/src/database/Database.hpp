@@ -85,6 +85,9 @@ namespace pcw {
 	UserSptr select_user(Db& db, int id);
 
 	template<class Db>
+	std::vector<UserSptr> select_all_users(Db& db);
+
+	template<class Db>
 	void delete_user(Db& db, const std::string& name);
 
 	template<class Db>
@@ -192,6 +195,23 @@ pcw::select_user(Db& db, int id)
 	if (not res.empty())
 		return pcw::detail::make_user(res.front());
 	return nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+std::vector<pcw::UserSptr>
+pcw::select_all_users(Db& db)
+{
+	using namespace sqlpp;
+	std::vector<UserSptr> res;
+	tables::Users users;
+	const auto stmnt = select(all_of(users)).from(users).unconditionally();
+	// const auto rows = db(stmnt);
+	// while (not rows.empty()) {
+	for (const auto& row: db(stmnt)) {
+		res.push_back(detail::make_user(row));
+	}
+	return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
