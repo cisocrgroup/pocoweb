@@ -43,7 +43,13 @@
 require_once(dirname(dirname(__FILE__)) . "/config.php");
 require_once(LIBRARY_PATH . "/backend.php");
 global $user;
-$user = backend_get_login_name();
+$api = backend_get_login_name();
+$status = $api->get_http_status_code();
+if ($status == 200) {
+	$user = $api->get_response();
+} else {
+	$user = NULL;
+}
 if ($user !== NULL) {
 	echo '<li><p class="navbar-text">Logged in as user: ',
 		$user["name"], '</p></li>', "\n";
@@ -51,11 +57,13 @@ if ($user !== NULL) {
 } else {
     echo('<li><a href="login.php">Login</a></li>');
 }
-$version = backend_get_api_version();
-if ($version === "unknown") {
-    $version = '<span class="glyphicon glyphicon-warning-sign"/>';
+$api = backend_get_api_version();
+$status = $api->get_http_status_code();
+$version = '<span class="glyphicon glyphicon-warning-sign"/>';
+if ($status == 200) {
+	$version = $api->get_response()["version"];
 }
-echo'<li><p class="navbar-text">Api-Version: ', $version, '</p></li>';
+echo '<li><p class="navbar-text">Api-Version: ', $version, '</p></li>';
 ?>
 		    </ul>
     </div>

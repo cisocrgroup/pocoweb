@@ -12,7 +12,8 @@ if (isset($_GET["upload"])) {
 	}
 }
 
-if (backend_is_logged_in()) {
+global $user;
+if ($user !== NULL) {
 	frontend_render_projects_div();
 } else {
 	frontend_render_info_div("Welcome to PoCoWeb. Please <a href='login.php'>login</a>");
