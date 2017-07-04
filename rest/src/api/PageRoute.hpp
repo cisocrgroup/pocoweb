@@ -3,7 +3,14 @@
 
 #include "core/CrtpRoute.hpp"
 
+namespace crow {
+	namespace json {
+		class wvalue;
+	}
+}
 namespace pcw {
+	using Json = crow::json::wvalue;
+
 	class PageRoute: public CrtpRoute<PageRoute> {
 	public:
 		virtual ~PageRoute() noexcept override = default;
@@ -21,6 +28,7 @@ namespace pcw {
 	private:
 		Response next(const Project& book, int pid, int val) const;
 		Response prev(const Project& book, int pid, int val) const;
+		static Response print(Json& json, const Page& page, const Project& project);
 
 		static const char* route_;
 		static const char* name_;

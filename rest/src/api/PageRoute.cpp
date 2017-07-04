@@ -53,12 +53,14 @@ PageRoute::impl(HttpGet, const Request& req, int bid, int pid) const
 	assert(session);
 	SessionLock lock(*session);
 	CROW_LOG_DEBUG << "(PageRoute) searching for book id: " << bid << " page id: " << pid;
+	auto project = session->find(conn, bid);
 	auto page = session->find(conn, bid, pid);
-	if (not page)
+	if (not page or not project)
 		return not_found();
 	assert(page);
+	assert(project);
 	Json j;
-	return j << *page;
+	return print(j, *page, *project);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -72,6 +74,7 @@ PageRoute::impl(HttpGet, const Request& req, int bid) const
 	SessionLock lock(*session);
 
 	auto book = session->find(conn, bid);
+	CROW_LOG_DEBUG << "(PageRoute) found book id: " << book->id();
 	bool first = false;
 	if (not book)
 		return not_found();
@@ -94,12 +97,12 @@ PageRoute::impl(HttpGet, const Request& req, int bid) const
 		CROW_LOG_DEBUG << "(PageRoute) bookid: " << book->id()
 			       << " pageid: " << book->front()->id()
 			       << " lines: " << book->front()->size();
-		return j << *book->front();
+		return print(j, *book->front(), *book);
 	} else {
 		CROW_LOG_DEBUG << "(PageRoute) bookid: " << book->id()
 			       << " pageid: " << book->back()->id()
 			       << " lines: " << book->back()->size();
-		return j << *book->back();
+		return print(j, *book->back(), *book);
 	}
 }
 
@@ -132,7 +135,7 @@ PageRoute::next(const Project& book, int pid, int val) const
 	if (not page)
 		return not_found();
 	Json j;
-	return j << *page;
+	return print(j, *page, book);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -143,5 +146,22 @@ PageRoute::prev(const Project& book, int pid, int val) const
 	if (not page)
 		return not_found();
 	Json j;
-	return j << *page;
+	return print(j, *page, book);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response
+PageRoute::print(Json& json, const Page& page, const Project& project)
+{
+	json << page;
+	const auto nextpage = project.next(page.id(), 1);
+	const auto prevpage = project.next(page.id(), -1);
+	const auto nextpageid = nextpage ? nextpage->id() : 0;
+	const auto prevpageid = prevpage ? prevpage->id() : 0;
+	json["nextPageId"] = nextpageid;
+	json["prevPageId"] = prevpageid;
+	json["projectId"] = project.id();
+	json["bookId"] = project.origin().id();
+	return json;
+}
+
