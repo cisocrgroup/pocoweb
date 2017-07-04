@@ -34,6 +34,7 @@ namespace pcw {
 	private:
 		[[noreturn]] Response remove(const Request& req, int bid) const;
 		[[noreturn]] Response download(const Request& req, int bid) const;
+		Response finish(const Request& req, int bid) const;
 		Response assign(const Request& req, int bid) const;
 		Response split(const Request& req, int bid) const;
 		void update_book_data(Book& book, const User& user, const crow::json::rvalue& data) const;

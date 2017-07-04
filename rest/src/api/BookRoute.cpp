@@ -189,6 +189,8 @@ BookRoute::impl(HttpPost, const Request& req, int bid, const std::string& c) con
 		return assign(req, bid);
 	} else if (strcmp(c.data(), "remove") == 0) {
 		return remove(req, bid);
+	} else if (strcmp(c.data(), "finish") == 0) {
+		return finish(req, bid);
 	} else {
 		return not_found();
 	}
@@ -212,6 +214,47 @@ BookRoute::download(const Request& req, int bid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
+BookRoute::finish(const Request& req, int bid) const
+{
+	CROW_LOG_DEBUG << "(BookRoute::finish) body: " << req.body;
+	const auto data = crow::json::load(req.body);
+	auto conn = connection();
+	const auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	const auto project = session->find(conn, bid);
+	if (not project)
+		THROW(NotFound, "cannot finish project: no such project id: ", bid);
+	if (project->is_book())
+		THROW(BadRequest, "cannot finish project: not a project");
+	if (project->owner().id() != session->user().id())
+		THROW(Forbidden, "cannot finish project: permission denied");
+
+	using namespace sqlpp;
+	tables::Projects projects;
+	auto getorigin = select(projects.origin)
+		.from(projects)
+		.where(projects.projectid == project->id());
+	auto row1 = conn.db()(getorigin);
+	if (row1.empty())
+		THROW(Error, "cannot finish project: cannot determine origin");
+	auto getowner = select(projects.owner)
+		.from(projects)
+		.where(projects.projectid == row1.front().origin);
+	auto row2 = conn.db()(getowner);
+	if (row2.empty())
+		THROW(Error, "cannot finish project: cannot determine owner");
+	MysqlCommiter commiter(conn);
+	auto finish = update(projects)
+		.set(projects.owner = row2.front().owner)
+		.where(projects.projectid == project->id());
+	conn.db()(finish);
+	commiter.commit();
+	return ok();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response
 BookRoute::assign(const Request& req, int bid) const
 {
 	CROW_LOG_DEBUG << "(BookRoute::assign) body: " << req.body;
@@ -221,10 +264,10 @@ BookRoute::assign(const Request& req, int bid) const
 	assert(conn);
 	assert(session);
 	const auto project = session->find(conn, bid);
-	if (not session->user().admin())
-		THROW(Forbidden, "cannot assign project: permission denied");
 	if (not project)
 		THROW(NotFound, "cannot not find project: no such project id: ", bid);
+	if (not session->user().admin())
+		THROW(Forbidden, "cannot assign project: permission denied");
 	if (project->is_book())
 		THROW(Forbidden, "cannot assign project: not a project");
 	UserPtr user = nullptr;
