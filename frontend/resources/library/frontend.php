@@ -141,7 +141,7 @@ function frontend_render_project_table_header() {
 	echo '<th>Author</th>';
 	echo '<th>Title</th>';
 	echo '<th>Year</th>';
-	echo '<th>Langauge</th>';
+	echo '<th>Language</th>';
 	echo '<th>Pages</th>';
 	echo '<th>Book</th>';
 	echo '<th>Actions<th/>';
