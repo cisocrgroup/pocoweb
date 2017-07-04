@@ -223,14 +223,15 @@ pcw::Session::find_project_impl(Connection<Db>& c, int projectid) const
 	auto entry = select_project_entry(c.db(), projectid);
 	if (entry and entry->is_book()) {
 		return cached_find_book(c, projectid);
-	} else if (entry) {
+	} else if (entry) { // HERE LIES THY DOOM
 		auto owner = cached_find_user(c, entry->owner);
-		if (owner) {
-			auto book = cached_find_book(c, entry->origin);
-			if (book) {
-				return pcw::select_project(c.db(), book->origin(), projectid);
-			}
-		}
+		if (not owner)
+			return nullptr;
+		auto book = cached_find_book(c, entry->origin);
+		if (not book)
+			return nullptr;
+		assert(book->is_book());
+		return pcw::select_project(c.db(), *book, projectid);
 	}
 	return nullptr;
 }

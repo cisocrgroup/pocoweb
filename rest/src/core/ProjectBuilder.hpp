@@ -17,7 +17,8 @@ namespace pcw {
 		ProjectBuilder(): project_(), book_() {reset();}
 
 		ProjectBuilder& reset();
-		ProjectBuilder& set_book(const Book& book);
+		ProjectBuilder& set_origin(const Book& book);
+		const ProjectBuilder& set_project_id(int id) const;
 		const ProjectBuilder& add_page(int pageid) const;
 		ProjectSptr build() const;
 
