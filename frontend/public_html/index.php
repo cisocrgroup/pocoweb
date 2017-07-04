@@ -22,11 +22,23 @@ if (isset($_GET["upload"])) {
 		frontend_render_success_div("Successfully split project #$pid");
 	}
 } else if (isset($_GET["assign"])) {
-	frontend_render_error_div("Not implemented yet: assign project $_GET[pid]");
+	foreach ($_POST as $key => $val) {
+		frontend_render_info_div("$key = $val");
+	}
+	$pid = $_GET["pid"];
+	$api = backend_assign_project($pid, $_POST);
+	$status = $api->get_http_status_code();
+	if ($status != 200) {
+		frontend_render_error_div("Could not assign project #$pid: $status");
+	} else {
+		frontend_render_success_div("Successfully assigned project #$pid");
+	}
 } else if (isset($_GET["remove"])) {
 	frontend_render_error_div("Not implemented yet: remove project $_GET[pid]");
 } else if (isset($_GET["download"])) {
 	frontend_render_error_div("Not implemented yet: download project $_GET[pid]");
+} else if (isset($_GET["finish"])) {
+	frontend_render_error_div("Not implemented yet: finish project $_GET[pid]");
 }
 global $user;
 if ($user !== NULL) {

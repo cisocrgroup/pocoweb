@@ -20,39 +20,51 @@ function frontend_render_login_div() {
 }
 
 function frontend_render_projects_div() {
-	frontend_render_upload_new_project_div();
-	frontend_render_project_table_div();
+	global $user;
+	if ($user["admin"]) {
+		frontend_render_upload_new_project_div();
+		frontend_render_project_table_div(true);
+	} else {
+		frontend_render_project_table_div(false);
+	}
 }
 
-function frontend_render_project_table_div() {
+function frontend_render_project_table_div($admin) {
 	$api = backend_get_projects();
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
 		frontend_render_error_div("error could not load projects: $status");
 	} else {
 		$projects = $api->get_response();
+		if (!isset($projects["books"])) {
+			$projects["books"] = array();
+		}
 		$api = backend_get_users();
-		$users = array();
+		$users = array("users" => array());
 		if ($api->get_http_status_code() == 200) {
 			$users = $api->get_response();
 		}
 		echo '<div class="container-fluid">', "\n";
 		echo '<h2>Projects</h2>', "\n";
-		frontend_render_project_table($projects, $users["users"]);
+		frontend_render_project_table($admin, $projects, $users["users"]);
 		echo '</div>', "\n";
 	}
 }
 
-function frontend_render_project_table($projects, $users) {
+function frontend_render_project_table($admin, $projects, $users) {
 	echo '<table class="table table-striped">', "\n";
 	frontend_render_project_table_header();
 	foreach ($projects["books"] as $project) {
-		frontend_render_project_table_row($project, $users);
+		if ($admin) {
+			frontend_render_admin_project_table_row($project, $users);
+		} else {
+			frontend_render_normal_user_project_table_row($project);
+		}
 	}
 	echo '</table>', "\n";
 }
 
-function frontend_render_project_table_row($project, $users) {
+function frontend_render_admin_project_table_row($project, $users) {
 	$pid = $project["projectId"];
 	echo '<tr>';
 	echo '<td>', $pid, '</td>';
@@ -114,8 +126,11 @@ function frontend_render_project_table_row($project, $users) {
 		echo '<form method="post" class="form-inline" ',
 			'action="index.php?assign&pid=', $pid, '">', "\n";
 		echo '<div class="form-group">';
-		echo '<select class="form-control">', "\n";
+		echo '<select name="assign-user-name" class="form-control">', "\n";
 		foreach ($users as $user) {
+			if ($user["admin"]) { // skip admins
+				continue;
+			}
 			echo '<option value="', $user["name"], '">', $user["name"], '</option>', "\n";
 		}
 		echo '</select>', "\n";
@@ -132,6 +147,38 @@ function frontend_render_project_table_row($project, $users) {
 		echo '</form>', "\n";
 		echo '</div>', "\n";
 	}
+	echo '</td></tr>', "\n";
+}
+
+function frontend_render_normal_user_project_table_row($project) {
+	$pid = $project["projectId"];
+	echo '<tr>';
+	echo '<td>', $pid, '</td>';
+	echo '<td>', frontend_get_table_value($project["author"]), '</td>';
+	echo '<td>', frontend_get_table_value($project["title"]), '</td>';
+	echo '<td>', frontend_get_table_value($project["year"]), '</td>';
+	echo '<td>', frontend_get_table_value($project["language"]), '</td>';
+	echo '<td>', frontend_get_table_value($project["pages"]), '</td>';
+	echo '<td>', frontend_get_table_value($project["isBook"]), '</td>';
+	echo '<td>';
+	echo '<div class="input-group">';
+	// open project button
+	echo '<span class="input-group-btn">';
+	echo '<button class="btn btn-default"',
+		' onclick="window.location.href=\'page.php?u=none&p=first&pid=', $pid, '\'"',
+		' title="open project #', $pid, '">';
+	echo '<span class="glyphicon glyphicon-ok"/>';
+	echo '</button>';
+	echo '</span>';
+	// finish project button
+	echo '<span class="input-group-btn">';
+	echo '<button class="btn btn-default"',
+		' onclick="window.location.href=\'index.php?finish&pid=', $pid, '\'"',
+		' title="finish project #', $pid, '">';
+	echo '<span class="glyphicon glyphicon-remove"/>';
+	echo '</button>';
+	echo '</span>';
+	echo '</div>';
 	echo '</td></tr>', "\n";
 }
 
