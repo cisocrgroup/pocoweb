@@ -38,7 +38,14 @@ if (isset($_GET["upload"])) {
 } else if (isset($_GET["download"])) {
 	frontend_render_error_div("Not implemented yet: download project $_GET[pid]");
 } else if (isset($_GET["finish"])) {
-	frontend_render_error_div("Not implemented yet: finish project $_GET[pid]");
+	$pid = $_GET["pid"];
+	$api = backend_finish_project($pid);
+	$status = $api->get_http_status_code();
+	if ($status != 200) {
+		frontend_render_error_div("Could not finish project #$pid: $status");
+	} else {
+		frontend_render_success_div("Successfully finished project #$pid");
+	}
 }
 global $user;
 if ($user !== NULL) {

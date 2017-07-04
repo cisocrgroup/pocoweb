@@ -67,14 +67,14 @@ function frontend_render_project_table($admin, $projects, $users) {
 function frontend_render_admin_project_table_row($project, $users) {
 	$pid = $project["projectId"];
 	echo '<tr>';
-	echo '<td>', $pid, '</td>';
-	echo '<td>', frontend_get_table_value($project["author"]), '</td>';
-	echo '<td>', frontend_get_table_value($project["title"]), '</td>';
-	echo '<td>', frontend_get_table_value($project["year"]), '</td>';
-	echo '<td>', frontend_get_table_value($project["language"]), '</td>';
-	echo '<td>', frontend_get_table_value($project["pages"]), '</td>';
-	echo '<td>', frontend_get_table_value($project["isBook"]), '</td>';
-	echo '<td>';
+	echo '<td title="id">', $pid, '</td>';
+	echo '<td title="author">', frontend_get_table_value($project["author"]), '</td>';
+	echo '<td title="title">', frontend_get_table_value($project["title"]), '</td>';
+	echo '<td title="year">', frontend_get_table_value($project["year"]), '</td>';
+	echo '<td title="language">', frontend_get_table_value($project["language"]), '</td>';
+	echo '<td title="pages">', frontend_get_table_value($project["pages"]), '</td>';
+	echo '<td title="book">', frontend_get_table_value($project["isBook"]), '</td>';
+	echo '<td title="actions">';
 	echo '<div class="input-group">';
 	// open project button
 	echo '<span class="input-group-btn">';
@@ -153,14 +153,14 @@ function frontend_render_admin_project_table_row($project, $users) {
 function frontend_render_normal_user_project_table_row($project) {
 	$pid = $project["projectId"];
 	echo '<tr>';
-	echo '<td>', $pid, '</td>';
-	echo '<td>', frontend_get_table_value($project["author"]), '</td>';
-	echo '<td>', frontend_get_table_value($project["title"]), '</td>';
-	echo '<td>', frontend_get_table_value($project["year"]), '</td>';
-	echo '<td>', frontend_get_table_value($project["language"]), '</td>';
-	echo '<td>', frontend_get_table_value($project["pages"]), '</td>';
-	echo '<td>', frontend_get_table_value($project["isBook"]), '</td>';
-	echo '<td>';
+	echo '<td title="id">', $pid, '</td>';
+	echo '<td title="author">', frontend_get_table_value($project["author"]), '</td>';
+	echo '<td title="title">', frontend_get_table_value($project["title"]), '</td>';
+	echo '<td title="year">', frontend_get_table_value($project["year"]), '</td>';
+	echo '<td title="language">', frontend_get_table_value($project["language"]), '</td>';
+	echo '<td title="pages">', frontend_get_table_value($project["pages"]), '</td>';
+	echo '<td title="book">', frontend_get_table_value($project["isBook"]), '</td>';
+	echo '<td title="actions">';
 	echo '<div class="input-group">';
 	// open project button
 	echo '<span class="input-group-btn">';
@@ -175,7 +175,7 @@ function frontend_render_normal_user_project_table_row($project) {
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'index.php?finish&pid=', $pid, '\'"',
 		' title="finish project #', $pid, '">';
-	echo '<span class="glyphicon glyphicon-remove"/>';
+	echo '<span class="glyphicon glyphicon-share"/>';
 	echo '</button>';
 	echo '</span>';
 	echo '</div>';
@@ -357,13 +357,13 @@ function frontend_render_users_table($users) {
 
 function frontend_render_users_table_row($user) {
 	echo '<tr>';
-	echo '<td>', $user["id"], '</td>';
-	echo '<td>', frontend_get_table_value($user["name"]), '</td>';
-	echo '<td>', frontend_get_table_value($user["email"]), '</td>';
-	echo '<td>', frontend_get_table_value($user["institute"]), '</td>';
-	echo '<td>', frontend_get_table_value($user["admin"]), '</td>';
+	echo '<td title="id">', $user["id"], '</td>';
+	echo '<td title="name">', frontend_get_table_value($user["name"]), '</td>';
+	echo '<td title="email">', frontend_get_table_value($user["email"]), '</td>';
+	echo '<td title="institute">', frontend_get_table_value($user["institute"]), '</td>';
+	echo '<td title="admin">', frontend_get_table_value($user["admin"]), '</td>';
 	if (!$user["admin"]) {
-		echo '<td>';
+		echo '<td class="actions">';
 		echo '<button onclick="window.location.href=\'users.php?delete&uid=',
 			$user["id"], '\'" title="delete user #', $user["id"], '">', "\n";
 		echo '<span class="glyphicon glyphicon-remove" />', "\n";

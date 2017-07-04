@@ -115,6 +115,18 @@ function backend_assign_project($pid, $post) {
 	return $api;
 }
 
+function backend_get_finish_project_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["finish_project"], $pid);
+}
+
+function backend_finish_project($pid) {
+	$data = array();
+	$api = new Api(backend_get_finish_project_route($pid));
+	$api->post_request($data);
+	return $api;
+}
+
 function backend_get_nth_page_route($pid, $p) {
 	global $config;
 	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["get_nth_page"], $pid, $p);
