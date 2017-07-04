@@ -52,19 +52,10 @@ pcw::operator<<(Json& json, const Project& view)
 pcw::Json&
 pcw::operator<<(Json& json, const Page& page)
 {
-	json["projectId"] = page.book().id();
-	json["bookId"] = page.book().origin().id();
 	json["id"] = page.id();
 	json["box"] << page.box;
 	json["ocrFile"] = page.ocr.native();
 	json["imgFile"] = page.img.native();
-
-	const auto nextpage = page.book().next(page.id(), 1);
-	const auto prevpage = page.book().next(page.id(), -1);
-	const auto nextpageid = nextpage ? nextpage->id() : 0;
-	const auto prevpageid = prevpage ? prevpage->id() : 0;
-	json["nextPageId"] = nextpageid;
-	json["prevPageId"] = prevpageid;
 
 	// add from left to right
 	size_t i = 0;

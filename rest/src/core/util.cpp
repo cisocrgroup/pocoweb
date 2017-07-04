@@ -82,7 +82,7 @@ dohash(const char *salt, size_t saltn, const char *str, size_t strn)
 std::string
 pcw::gensessionid(size_t n)
 {
-	auto seed = genseed();
+	const auto seed = genseed();
 	std::string id(n, 0);
 
 	std::uniform_int_distribution<char> d('a', 'z');

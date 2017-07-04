@@ -65,7 +65,7 @@ function backend_get_users() {
 }
 
 function backend_create_user($post) {
-	if (isset($post["admin"]) && $post["admin"] == "On") {
+	if (isset($post["admin"]) && $post["admin"] == "on") {
 		$post["admin"] = true;
 	} else {
 		$post["admin"] = false;
@@ -83,6 +83,47 @@ function backend_get_delete_user_route($uid) {
 function backend_delete_user($uid) {
 	$api = new Api(backend_get_delete_user_route($uid));
 	$api->delete_request();
+	return $api;
+}
+
+function backend_get_split_project_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["split_project"], $pid);
+}
+
+function backend_split_project($pid, $post) {
+	$data = array("n" => $post["split-n"]);
+	if (isset($post["random"]) && $post["random"] == "on") {
+		$data["random"] = true;
+	} else {
+		$data["random"] = false;
+	}
+	$api = new Api(backend_get_split_project_route($pid));
+	$api->post_request($data);
+	return $api;
+}
+
+function backend_get_assign_project_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["assign_project"], $pid);
+}
+
+function backend_assign_project($pid, $post) {
+	$data = array("name" => $post["assign-user-name"]);
+	$api = new Api(backend_get_assign_project_route($pid));
+	$api->post_request($data);
+	return $api;
+}
+
+function backend_get_finish_project_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["finish_project"], $pid);
+}
+
+function backend_finish_project($pid) {
+	$data = array();
+	$api = new Api(backend_get_finish_project_route($pid));
+	$api->post_request($data);
 	return $api;
 }
 

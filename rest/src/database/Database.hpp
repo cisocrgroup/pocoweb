@@ -473,7 +473,7 @@ pcw::select_all_projects(Db& db, const User& user)
 	tables::Books books;
 	auto stmnt = select(all_of(projects), all_of(books))
 		.from(books.join(projects).on(books.bookid == projects.origin))
-		.where(projects.owner == user.id() or projects.owner == 0);
+		.where(projects.owner == user.id());
 	std::vector<std::pair<BookData, ProjectEntry>> data;
 	for (const auto& row: db(stmnt)) {
 		const auto bookdata = detail::make_book_data(row);
@@ -669,17 +669,23 @@ pcw::ProjectSptr
 pcw::select_project(Db& db, const Book& book, int projectid)
 {
 	using namespace sqlpp;
-
 	tables::ProjectPages project_pages;
 	auto stmnt = select(project_pages.pageid)
 		.from(project_pages)
 		.where(project_pages.projectid == projectid);
 	ProjectBuilder builder;
-	builder.set_book(book);
+	builder.set_origin(book);
+	builder.set_project_id(projectid);
 	for (const auto& row: db(stmnt)) {
+		CROW_LOG_DEBUG << "(select_project) adding page id: "
+			       << row.pageid << " to project id: " << projectid;
 		builder.add_page(row.pageid);
 	}
-	return builder.build();
+	auto p =  builder.build();
+	CROW_LOG_DEBUG << "(select_project) project id: "
+		       << p->id() << " origin: " << p->origin().id()
+		       << " size: " << p->size();
+	return p;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
