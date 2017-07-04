@@ -10,6 +10,7 @@
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/WagnerFischer.hpp"
 #include "core/Session.hpp"
+#include "core/util.hpp"
 #include "BookRoute.hpp"
 
 #define BOOK_ROUTE_ROUTE_1 "/books"
@@ -141,12 +142,11 @@ BookRoute::impl(HttpPost, const Request& req, int bid) const
 {
 	CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
 	auto json = crow::json::load(req.body);
-	if (json["package"].s().size() and json["n"].i())
-		return this->package(req, bid, json);
-	else if (json["author"].s().size() or json["title"].s().size() or
-			json["description"].s().size() or json["year"].s().size() or
-			json["uri"].s().size() or json["language"].s().size())
+	if (json.has("author") or json.has("title") or json.has("description") or
+			json.has("year") or json.has("uri") or json.has("language"))
 		return set(req, bid, json);
+	else if (json.has("n") and json.has("random"))
+		return split(req, bid, json);
 	else
 		return bad_request();
 }
@@ -171,18 +171,7 @@ BookRoute::set(const Request& req, int bid, const crow::json::rvalue& data) cons
 	if (not view->is_book())
 		THROW(BadRequest, "cannot set parameters of project id: ", bid);
 	const auto book = std::dynamic_pointer_cast<Book>(view);
-	if (data["author"].s().size())
-		book->data.author = data["author"].s();
-	if (data["title"].s().size())
-		book->data.title = data["title"].s();
-	if (data["uri"].s().size())
-		book->data.uri = data["uri"].s();
-	if (data["description"].s().size())
-		book->data.description = data["description"].s();
-	if (data["year"].i())
-		book->data.year = data["year"].i();
-	if (data["language"].s().size())
-		book->data.lang = data["language"].s();
+	update_book_data(*book, session->user(), data);
 	MysqlCommiter commiter(conn);
 	update_book(conn.db(), *book);
 	commiter.commit();
@@ -190,30 +179,98 @@ BookRoute::set(const Request& req, int bid, const crow::json::rvalue& data) cons
 	return json << *book;
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
-[[noreturn]] Route::Response
-BookRoute::package(const Request& req, int bid, const crow::json::rvalue& data) const
+Route::Response
+BookRoute::split(const Request& req, int bid, const crow::json::rvalue& data) const
 {
-	THROW(Error, "BookRoute::package: not implemented");
-}
-/*
-	assert(data.n);
-	assert(data.package);
 	auto conn = connection();
 	auto session = this->session(req);
 	assert(conn);
 	assert(session);
+	if (not session->user().admin())
+		THROW(Forbidden, "only admin users can split books");
 	SessionLock lock(*session);
 	auto proj = session->find(conn, bid);
 	assert(proj);
-	int n = atoi(data.n);
-	if (n <= 0)
-		THROW(BadRequest, "Invalid number of packages: ", data.n);
+	if (not proj->is_book())
+		THROW(BadRequest, "only books can be split");
+	if (proj->owner().id() != session->user().id())
+		THROW(Forbidden, "only the owner of a book can split it");
+	const auto n = data["n"].i();
+	if (n <= 0 or static_cast<size_t>(n) > proj->size())
+		THROW(BadRequest, "invalid split number: ", n);
+
 	std::vector<ProjectPtr> projs(n);
 	std::generate(begin(projs), end(projs), [&]() {
 		return std::make_shared<Package>(0, session->user(), proj->origin());
 	});
+	// project is a book so it's origin() points to itself
+	if (data["random"].b())
+		split_random(proj->origin(), projs);
+	else
+		split_sequencial(proj->origin(), projs);
+	MysqlCommiter commiter(conn);
+	for (const auto& p: projs) {
+		assert(p);
+		insert_project(conn.db(), *p);
+	}
+	commiter.commit();
+	Json j;
+	return j << projs;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+BookRoute::split_random(const Book& book, std::vector<ProjectPtr>& projs) const
+{
+	assert(projs.size() <= book.size());
+	std::vector<PagePtr> tmp_pages(book.size());
+	std::copy(begin(book), end(book), begin(tmp_pages));
+	// std::random_device rd;
+	std::mt19937 g(genseed());
+	std::shuffle(begin(tmp_pages), end(tmp_pages), g);
+	const auto n = projs.size();
+	for (auto i = 0U; i < tmp_pages.size(); ++i) {
+		assert(projs[i%n]);
+		projs[i%n]->push_back(*tmp_pages[i]);
+	}
+	for (auto& p: projs) {
+		assert(p);
+		std::sort(begin(*p), end(*p), [](const auto& a, const auto& b) {
+			assert(a);
+			assert(b);
+			return a->id() < b->id();
+		});
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+BookRoute::split_sequencial(const Book& book, std::vector<ProjectPtr>& projs) const
+{
+	assert(projs.size() <= book.size());
+	const auto n = projs.size();
+	const auto d = book.size() / n;
+	auto r = book.size() % n;
+	std::vector<PagePtr> tmp_pages(book.size());
+	std::copy(begin(book), end(book), begin(tmp_pages));
+	size_t o = 0;
+	for (auto i = 0U; i < n; ++i) {
+		assert(projs[i]);
+		for (auto j = 0U; j < (d + r); ++j) {
+			projs[i]->push_back(*tmp_pages[j + o]);
+		}
+		o += (d + r);
+		if (r > 0)
+			--r;
+	}
+}
+/*
+	assert(data.n);
+	assert(data.package);
+	int n = atoi(data.n);
+	if (n <= 0)
+		THROW(BadRequest, "Invalid number of packages: ", data.n);
 	size_t i = 0;
 	for (const auto& p: *proj) {
 		projs[i++ % n]->push_back(*p);
