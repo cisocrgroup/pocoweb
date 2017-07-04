@@ -31,23 +31,28 @@ function frontend_render_project_table_div() {
 		frontend_render_error_div("error could not load projects: $status");
 	} else {
 		$projects = $api->get_response();
+		$api = backend_get_users();
+		$users = array();
+		if ($api->get_http_status_code() == 200) {
+			$users = $api->get_response();
+		}
 		echo '<div class="container-fluid">', "\n";
 		echo '<h2>Projects</h2>', "\n";
-		frontend_render_project_table($projects);
+		frontend_render_project_table($projects, $users["users"]);
 		echo '</div>', "\n";
 	}
 }
 
-function frontend_render_project_table($projects) {
+function frontend_render_project_table($projects, $users) {
 	echo '<table class="table table-striped">', "\n";
 	frontend_render_project_table_header();
 	foreach ($projects["books"] as $project) {
-		frontend_render_project_table_row($project);
+		frontend_render_project_table_row($project, $users);
 	}
 	echo '</table>', "\n";
 }
 
-function frontend_render_project_table_row($project) {
+function frontend_render_project_table_row($project, $users) {
 	$pid = $project["projectId"];
 	echo '<tr>';
 	echo '<td>', $pid, '</td>';
@@ -59,19 +64,32 @@ function frontend_render_project_table_row($project) {
 	echo '<td>', frontend_get_table_value($project["isBook"]), '</td>';
 	echo '<td>';
 	echo '<div class="input-group">';
+	// open project button
 	echo '<span class="input-group-btn">';
-	echo frontend_get_project_table_action_button(
-		"open project", $pid, "glyphicon glyphicon-ok");
+	echo '<button class="btn btn-default"',
+		' onclick="window.location.href=\'page.php?u=none&p=first&pid=', $pid, '\'"',
+		' title="open project #', $pid, '">';
+	echo '<span class="glyphicon glyphicon-ok"/>';
+	echo '</button>';
 	echo '</span>';
+	// delete project button
 	echo '<span class="input-group-btn">';
-	echo frontend_get_project_table_action_button(
-		"delete project", $pid, "glyphicon glyphicon-remove");
+	echo '<button class="btn btn-default"',
+		' onclick="window.location.href=\'index.php?delete&pid=', $pid, '\'"',
+		' title="delete project #', $pid, '">';
+	echo '<span class="glyphicon glyphicon-remove"/>';
+	echo '</button>';
 	echo '</span>';
+	// download project button
+	echo '<span class="input-group-btn">';
+	echo '<button class="btn btn-default"',
+		' onclick="window.location.href=\'index.php?download&pid=', $pid, '\'"',
+		' title="download project #', $pid, '">';
+	echo '<span class="glyphicon glyphicon-download"/>';
+	echo '</button>';
+	echo '</span>';
+	// other buttons
 	if ($project["isBook"]) {
-		echo '<span class="input-group-btn">';
-		echo frontend_get_project_table_action_button(
-			"download project", $pid, "glyphicon glyphicon-download");
-		echo '</span>';
 		echo '<form method="post" class="form-inline" ',
 			'action="index.php?split&pid=', $pid, '">', "\n";
 		echo '<div class="form-group">';
@@ -83,8 +101,30 @@ function frontend_render_project_table_row($project) {
 		echo '<input name="random" title="random" type="checkbox"/>';
 		echo '</span>';
 		echo '<span class="input-group-btn">';
-		echo '<button class="btn btn-default" type="submit">';
+		echo '<button title="split project #', $pid,
+			'" class="btn btn-default" type="submit">';
 		echo '<span class="glyphicon glyphicon-resize-full"/>';
+		echo '</button>';
+		echo '</span>';
+		echo '</div>';
+		echo '</div>', "\n";
+		echo '</form>', "\n";
+		echo '</div>', "\n";
+	} else {
+		echo '<form method="post" class="form-inline" ',
+			'action="index.php?assign&pid=', $pid, '">', "\n";
+		echo '<div class="form-group">';
+		echo '<select class="form-control">', "\n";
+		foreach ($users as $user) {
+			echo '<option value="', $user["name"], '">', $user["name"], '</option>', "\n";
+		}
+		echo '</select>', "\n";
+		echo '</div>';
+		echo '<div class="form-group">';
+		echo '<span class="input-group-btn">';
+		echo '<button title="assign project #', $pid,
+			' to user" class="btn btn-default" type="submit">';
+		echo '<span class="glyphicon glyphicon-share"/>';
 		echo '</button>';
 		echo '</span>';
 		echo '</div>';

@@ -12,8 +12,22 @@ if (isset($_GET["upload"])) {
 	} else {
 		frontend_render_error_div("Could not upload project: missing file");
 	}
+} else if (isset($_GET["split"])) {
+	$pid = $_GET["pid"];
+	$api = backend_split_project($pid, $_POST);
+	$status = $api->get_http_status_code();
+	if ($status != 200) {
+		frontend_render_error_div("Could not split project #$pid: $status");
+	} else {
+		frontend_render_success_div("Successfully split project #$pid");
+	}
+} else if (isset($_GET["assign"])) {
+	frontend_render_error_div("Not implemented yet: assign project $_GET[pid]");
+} else if (isset($_GET["delete"])) {
+	frontend_render_error_div("Not implemented yet: delete project $_GET[pid]");
+} else if (isset($_GET["download"])) {
+	frontend_render_error_div("Not implemented yet: download project $_GET[pid]");
 }
-
 global $user;
 if ($user !== NULL) {
 	frontend_render_projects_div();

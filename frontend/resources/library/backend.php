@@ -86,6 +86,23 @@ function backend_delete_user($uid) {
 	return $api;
 }
 
+function backend_get_split_project_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["split_project"], $pid);
+}
+
+function backend_split_project($pid, $post) {
+	$data = array("n" => $post["split-n"]);
+	if (isset($post["random"]) && $post["random"] == "on") {
+		$data["random"] = true;
+	} else {
+		$data["random"] = false;
+	}
+	$api = new Api(backend_get_split_project_route($pid));
+	$api->post_request($data);
+	return $api;
+}
+
 function backend_get_nth_page_route($pid, $p) {
 	global $config;
 	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["get_nth_page"], $pid, $p);
