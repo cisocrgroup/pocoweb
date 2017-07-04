@@ -58,13 +58,41 @@ function frontend_render_project_table_row($project) {
 	echo '<td>', frontend_get_table_value($project["pages"]), '</td>';
 	echo '<td>', frontend_get_table_value($project["isBook"]), '</td>';
 	echo '<td>';
+	echo '<div class="input-group">';
+	echo '<span class="input-group-btn">';
 	echo frontend_get_project_table_action_button(
 		"open project", $pid, "glyphicon glyphicon-ok");
+	echo '</span>';
+	echo '<span class="input-group-btn">';
 	echo frontend_get_project_table_action_button(
 		"delete project", $pid, "glyphicon glyphicon-remove");
-	echo frontend_get_project_table_action_button(
-		"download project", $pid, "glyphicon glyphicon-download");
-	echo '</tr>', "\n";
+	echo '</span>';
+	if ($project["isBook"]) {
+		echo '<span class="input-group-btn">';
+		echo frontend_get_project_table_action_button(
+			"download project", $pid, "glyphicon glyphicon-download");
+		echo '</span>';
+		echo '<form method="post" class="form-inline" ',
+			'action="index.php?split&pid=', $pid, '">', "\n";
+		echo '<div class="form-group">';
+		echo '<input name="split-n" size="3" type="number" min="1" max="100" ',
+			'step="1" value="10" class="form-control"/>', "\n";
+		echo '</div>';
+		echo '<div class="form-group">';
+		echo '<span class="input-group-addon">';
+		echo '<input name="random" title="random" type="checkbox"/>';
+		echo '</span>';
+		echo '<span class="input-group-btn">';
+		echo '<button class="btn btn-default" type="submit">';
+		echo '<span class="glyphicon glyphicon-resize-full"/>';
+		echo '</button>';
+		echo '</span>';
+		echo '</div>';
+		echo '</div>', "\n";
+		echo '</form>', "\n";
+		echo '</div>', "\n";
+	}
+	echo '</td></tr>', "\n";
 }
 
 function frontend_render_project_table_header() {
@@ -81,7 +109,7 @@ function frontend_render_project_table_header() {
 }
 
 function frontend_get_project_table_action_button($msg, $id, $class) {
-	return '<button onclick="window.location.href=\'page.php?u=none&p=first&pid='
+	return '<button class="btn btn-default" onclick="window.location.href=\'page.php?u=none&p=first&pid='
 		. $id . '\'" title="' . $msg . ' #' . $id . '">'
 		. '<span class="' . $class . '"/>'
 		. '</button>';
@@ -314,14 +342,10 @@ function frontend_update_lines($u, $lines) {
 	}
 }
 
-
-
-
 function frontend_render_page_header($page) {
 	$nextpageid = $page["nextPageId"];
 	$prevpageid = $page["prevPageId"];
 	$pid = $page["projectId"];
-
 	echo '<div id="page-header" class="navbar navbar-nav" data-spy="affix" data-offset-top="141">', "\n";
 	// navigation buttons
 	frontend_render_page_navigation_buttons($pid, $prevpageid, TRUE);

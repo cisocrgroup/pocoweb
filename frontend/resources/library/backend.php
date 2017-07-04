@@ -65,7 +65,7 @@ function backend_get_users() {
 }
 
 function backend_create_user($post) {
-	if (isset($post["admin"]) && $post["admin"] == "On") {
+	if (isset($post["admin"]) && $post["admin"] == "on") {
 		$post["admin"] = true;
 	} else {
 		$post["admin"] = false;
