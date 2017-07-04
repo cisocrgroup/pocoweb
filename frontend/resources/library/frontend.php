@@ -72,11 +72,11 @@ function frontend_render_project_table_row($project, $users) {
 	echo '<span class="glyphicon glyphicon-ok"/>';
 	echo '</button>';
 	echo '</span>';
-	// delete project button
+	// remove project button
 	echo '<span class="input-group-btn">';
 	echo '<button class="btn btn-default"',
-		' onclick="window.location.href=\'index.php?delete&pid=', $pid, '\'"',
-		' title="delete project #', $pid, '">';
+		' onclick="window.location.href=\'index.php?remove&pid=', $pid, '\'"',
+		' title="remove project #', $pid, '">';
 	echo '<span class="glyphicon glyphicon-remove"/>';
 	echo '</button>';
 	echo '</span>';

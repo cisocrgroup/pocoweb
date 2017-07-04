@@ -23,8 +23,8 @@ if (isset($_GET["upload"])) {
 	}
 } else if (isset($_GET["assign"])) {
 	frontend_render_error_div("Not implemented yet: assign project $_GET[pid]");
-} else if (isset($_GET["delete"])) {
-	frontend_render_error_div("Not implemented yet: delete project $_GET[pid]");
+} else if (isset($_GET["remove"])) {
+	frontend_render_error_div("Not implemented yet: remove project $_GET[pid]");
 } else if (isset($_GET["download"])) {
 	frontend_render_error_div("Not implemented yet: download project $_GET[pid]");
 }
