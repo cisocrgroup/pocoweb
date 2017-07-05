@@ -28,13 +28,13 @@ class BookRoute : public CrtpRoute<BookRoute> {
 	Response impl(HttpGet, const Request& req) const;
 	Response impl(HttpGet, const Request& req, int bid) const;
 	Response impl(HttpPost, const Request& req, int bid) const;
+	Response impl(HttpDelete, const Request& req, int bid) const;
 	Response impl(HttpGet, const Request& req, int bid,
 		      const std::string& c) const;
 	Response impl(HttpPost, const Request& req, int bid,
 		      const std::string& c) const;
 
        private:
-	Response remove(const Request& req, int bid) const;
 	[[noreturn]] Response download(const Request& req, int bid) const;
 	Response finish(const Request& req, int bid) const;
 	Response assign(const Request& req, int bid) const;

@@ -30,7 +30,7 @@ void BookRoute::Register(App& app) {
 	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_1)
 	    .methods("GET"_method, "POST"_method)(*this);
 	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_2)
-	    .methods("GET"_method, "POST"_method)(*this);
+	    .methods("GET"_method, "POST"_method, "DELETE"_method)(*this);
 	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_3)
 	    .methods("GET"_method, "POST"_method)(*this);
 }
@@ -166,8 +166,6 @@ Route::Response BookRoute::impl(HttpPost, const Request& req, int bid,
 		return split(req, bid);
 	} else if (strcmp(c.data(), "assign") == 0) {
 		return assign(req, bid);
-	} else if (strcmp(c.data(), "remove") == 0) {
-		return remove(req, bid);
 	} else if (strcmp(c.data(), "finish") == 0) {
 		return finish(req, bid);
 	} else {
@@ -176,7 +174,7 @@ Route::Response BookRoute::impl(HttpPost, const Request& req, int bid,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response BookRoute::remove(const Request& req, int bid) const {
+Route::Response BookRoute::impl(HttpDelete, const Request& req, int bid) const {
 	auto conn = connection();
 	const auto session = this->session(req);
 	assert(conn);
