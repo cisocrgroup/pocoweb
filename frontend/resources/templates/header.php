@@ -36,7 +36,6 @@
 				echo('<li><a href="info.php">Info</a></li>');
 			}
 			?>
-			<li><a href="http://www.cis.lmu.de">CIS</a></li>
 		    </ul>
 		    <ul class="nav navbar-nav navbar-right">
 <?php
