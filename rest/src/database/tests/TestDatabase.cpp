@@ -32,9 +32,9 @@ BOOST_FIXTURE_TEST_SUITE(Users, UsersFixture)
 BOOST_AUTO_TEST_CASE(CreateUser) {
 	auto nuser = create_user(db, user->name, "password", user->email,
 				 user->institute);
-	db.expect(
-	    std::regex(R"(INSERT INTO users \(name,email,institute,passwd\) )"
-		       R"(VALUES\('name','email','institute','.+'\))"));
+	db.expect(std::regex(
+	    R"(INSERT INTO users \(name,email,institute,passwd,admin\) )"
+	    R"(VALUES\('name','email','institute','.+',0\))"));
 	BOOST_REQUIRE(nuser);
 	BOOST_CHECK_EQUAL(user->name, nuser->name);
 	BOOST_CHECK_EQUAL(user->email, nuser->email);
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(InsertProject) {
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(InsertBook) {
-	db.expect("INSERT INTO projects (origin,owner) VALUES(0,42)");
+	db.expect("INSERT INTO projects (origin,owner,pages) VALUES(0,42,1)");
 	db.expect("UPDATE projects SET origin=0 WHERE (projects.projectid=0)");
 	db.expect(
 	    "INSERT INTO books (author,title,directory,year,uri,bookid,"
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(SelectProjectIds) {
 	    "books.bookid,books.year,books.title,books.author,books."
 	    "description,books.uri,books.directory,books.lang FROM books INNER "
 	    "JOIN projects ON (books.bookid=projects.origin) WHERE "
-	    "((projects.owner=42) OR (projects.owner=0))");
+	    "(projects.owner=42)");
 	// db.expect("SELECT projects.projectid FROM projects "
 	// 		"WHERE ((projects.owner=42) OR (projects.owner=0))");
 	select_all_projects(db, *user);
