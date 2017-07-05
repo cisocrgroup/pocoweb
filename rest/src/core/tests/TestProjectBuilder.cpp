@@ -28,7 +28,7 @@ struct ProjectBuilderFixture {
 		bbuilder.append(*pbuilder.build());
 		bbuilder.set_owner(*user);
 		book = bbuilder.build();
-		builder.set_book(*book);
+		builder.set_origin(*book);
 	}
 };
 

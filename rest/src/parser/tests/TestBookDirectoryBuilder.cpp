@@ -2,20 +2,19 @@
 #define BOOST_TEST_MODULE BookDirectoryBuilderTest
 
 #include <boost/test/unit_test.hpp>
+#include <fstream>
 #include <functional>
 #include <iostream>
-#include <fstream>
 #include <vector>
-#include "utils/TmpDir.hpp"
-#include "core/BookDirectoryBuilder.hpp"
 #include "core/Book.hpp"
+#include "core/BookDirectoryBuilder.hpp"
 #include "core/Page.hpp"
+#include "utils/TmpDir.hpp"
 
 using namespace pcw;
 
 struct Fixture {
-	Fixture(): tmpdir(), builder(tmpdir.dir()) {
-	}
+	Fixture() : tmpdir(), builder(tmpdir.dir()) {}
 	TmpDir tmpdir;
 	BookDirectoryBuilder builder;
 	void add_zip_file(const char* file) {
@@ -23,12 +22,10 @@ struct Fixture {
 		is >> std::noskipws;
 		BOOST_REQUIRE(is.good());
 		std::string content;
-		std::copy(
-			std::istream_iterator<char>(is),
-			std::istream_iterator<char>(),
-			std::back_inserter(content)
-		);
-		builder.add_zip_file(content);
+		std::copy(std::istream_iterator<char>(is),
+			  std::istream_iterator<char>(),
+			  std::back_inserter(content));
+		builder.add_zip_file_content(content);
 	}
 };
 
@@ -36,8 +33,7 @@ struct Fixture {
 BOOST_FIXTURE_TEST_SUITE(BookDirectoryBuilderTest, Fixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Ocropus)
-{
+BOOST_AUTO_TEST_CASE(Ocropus) {
 	add_zip_file("misc/data/test/hobbes-ocropus.zip");
 	auto book = builder.build();
 	BOOST_REQUIRE(book);
@@ -48,10 +44,9 @@ BOOST_AUTO_TEST_CASE(Ocropus)
 	BOOST_REQUIRE(p1);
 	auto line = p1->find(0x27);
 	BOOST_REQUIRE(line);
-	BOOST_CHECK_EQUAL(
-		line->ocr(),
-		"ſlanti Finis alicujus propoſiti. Contrà, imaginatiotarda Defectum ani-"
-	);
+	BOOST_CHECK_EQUAL(line->ocr(),
+			  "ſlanti Finis alicujus propoſiti. Contrà, "
+			  "imaginatiotarda Defectum ani-");
 
 	// page 100
 	auto p2 = book->find(100);
@@ -59,9 +54,8 @@ BOOST_AUTO_TEST_CASE(Ocropus)
 	line = p2->find(0x8);
 	BOOST_REQUIRE(line);
 	BOOST_CHECK_EQUAL(
-		line->ocr(),
-		"ea contribuere quæ ad Pacem & Deſenſionem ſuam neceſſaria ſunt,"
-	);
+	    line->ocr(),
+	    "ea contribuere quæ ad Pacem & Deſenſionem ſuam neceſſaria ſunt,");
 
 	// no such page
 	auto p3 = book->find(200);
