@@ -196,6 +196,7 @@ Route::Response BookRoute::impl(HttpDelete, const Request& req, int bid) const {
 void BookRoute::remove_project(MysqlConnection& conn, const Session& session,
 			       const Project& project) const {
 	assert(not project.is_book());
+	CROW_LOG_DEBUG << "(BookRoute) removing project id: " << project.id();
 	MysqlCommiter commiter(conn);
 	remove_project_impl(conn, project.id());
 	session.uncache_project(project.id());
@@ -215,6 +216,7 @@ void BookRoute::remove_project_impl(MysqlConnection& conn, int pid) const {
 void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
 			    const Book& book) const {
 	assert(book.is_book());
+	CROW_LOG_DEBUG << "(BookRoute) removing book id: " << book.id();
 	using namespace sqlpp;
 	tables::Projects p;
 	tables::Textlines l;
@@ -235,6 +237,7 @@ void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
 	conn.db()(remove_from(l).where(l.bookid == book.id()));
 	conn.db()(remove_from(pgs).where(pgs.bookid == book.id()));
 	const auto dir = book.data.dir;
+	CROW_LOG_INFO << "(BookRoute) removing directory: " << dir;
 	boost::system::error_code ec;
 	boost::filesystem::remove_all(dir, ec);
 	if (ec)
