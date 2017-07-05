@@ -13,9 +13,9 @@ class Package : public Project {
 	Package(int id = 0);
 	virtual ~Package() noexcept override = default;
 	void set_origin(const Book& book);
-	void set_owner(const User& owner);
 	virtual const Book& origin() const noexcept override;
 	virtual const User& owner() const noexcept override;
+	virtual void set_owner(const User& owner) noexcept override;
 
        private:
 	std::shared_ptr<const User> owner_;

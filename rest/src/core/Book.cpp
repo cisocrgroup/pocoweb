@@ -6,7 +6,7 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-void Book::set_owner(const User& user) {
+void Book::set_owner(const User& user) noexcept {
 	if (owner_)
 		THROW(Error,
 		      "(Book) It is not allowed to change the owner of a book");
