@@ -186,9 +186,9 @@ Route::Response BookRoute::impl(HttpDelete, const Request& req, int bid) const {
 		THROW(NotFound, "cannot remove project: no such project id: ",
 		      bid);
 	if (project->is_book())
-		remove_project(conn, *session, *project);
-	else
 		remove_book(conn, *session, project->origin());
+	else
+		remove_project(conn, *session, *project);
 	return ok();
 }
 
