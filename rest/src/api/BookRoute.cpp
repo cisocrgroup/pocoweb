@@ -240,8 +240,6 @@ Route::Response BookRoute::assign(const Request& req, int bid) const {
 	if (not project)
 		THROW(NotFound, "cannot not find project: no such project id: ",
 		      bid);
-	if (project->is_book())
-		THROW(Forbidden, "cannot assign project: not a project");
 	UserPtr user = nullptr;
 	if (data.has("id"))
 		user = session->find_user(conn, data["id"].i());
