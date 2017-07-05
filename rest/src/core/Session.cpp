@@ -53,6 +53,11 @@ void Session::set_cookies(crow::response& response) const noexcept {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void Session::uncache_project(int pid) const {
+	if (cache_) cache_->projects.del(pid);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void pcw::set_cookie(crow::response& response, const std::string& key,
 		     const std::string& val,
 		     const Session::TimePoint& expires) noexcept {
