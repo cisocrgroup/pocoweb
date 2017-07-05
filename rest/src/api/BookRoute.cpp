@@ -1,5 +1,6 @@
 #include "core/Book.hpp"
 #include <crow.h>
+#include <boost/filesystem.hpp>
 #include <regex>
 #include "BookRoute.hpp"
 #include "core/BookDirectoryBuilder.hpp"
@@ -196,24 +197,55 @@ Route::Response BookRoute::remove(const Request& req, int bid) const {
 ////////////////////////////////////////////////////////////////////////////////
 void BookRoute::remove_project(MysqlConnection& conn, const Session& session,
 			       const Project& project) const {
-	using namespace sqlpp;
-	tables::Projects p;
-	tables::ProjectPages pp;
-	const auto pid = project.id();
+	assert(not project.is_book());
 	MysqlCommiter commiter(conn);
-	conn.db()(remove_from(pp).where(pp.projectid == pid));
-	conn.db()(remove_from(p).where(p.projectid == pid));
-	session.uncache_project(pid);
+	remove_project_impl(conn, project.id());
+	session.uncache_project(project.id());
 	commiter.commit();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
-			    const Book& book) const {}
+void BookRoute::remove_project_impl(MysqlConnection& conn, int pid) const {
+	using namespace sqlpp;
+	tables::Projects p;
+	tables::ProjectPages pp;
+	conn.db()(remove_from(pp).where(pp.projectid == pid));
+	conn.db()(remove_from(p).where(p.projectid == pid));
+}
 
-    ////////////////////////////////////////////////////////////////////////////////
-    [[noreturn]] Route::Response BookRoute::download(const Request& req,
-						     int bid) const {
+////////////////////////////////////////////////////////////////////////////////
+void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
+			    const Book& book) const {
+	assert(book.is_book());
+	using namespace sqlpp;
+	tables::Projects p;
+	tables::Textlines l;
+	tables::Contents c;
+	tables::Pages pgs;
+	MysqlCommiter commiter(conn);
+	auto pids =
+	    conn.db()(select(p.projectid).from(p).where(p.origin == book.id()));
+	for (const auto& pid : pids) {
+		remove_project_impl(conn, pid.projectid);
+		session.uncache_project(pid.projectid);
+	}
+	conn.db()(remove_from(c).where(c.bookid == book.id()));
+	conn.db()(remove_from(l).where(l.bookid == book.id()));
+	conn.db()(remove_from(pgs).where(pgs.bookid == book.id()));
+	const auto dir = book.data.dir;
+	boost::system::error_code ec;
+	boost::filesystem::remove_all(dir, ec);
+	if (ec)
+		CROW_LOG_WARNING
+		    << "(BookRoute) cannot remove directory: " << dir << ": "
+		    << ec.message();
+	session.uncache_project(book.id());
+	commiter.commit();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+[[noreturn]] Route::Response BookRoute::download(const Request& req,
+						 int bid) const {
 	CROW_LOG_DEBUG << "(BookRoute::download) body: " << req.body;
 	THROW(Error, "BookRoute::download: not implemented");
 }

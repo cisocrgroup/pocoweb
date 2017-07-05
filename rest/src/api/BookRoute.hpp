@@ -47,6 +47,7 @@ class BookRoute : public CrtpRoute<BookRoute> {
 			      std::vector<ProjectPtr>& projs) const;
 	void remove_project(MysqlConnection& c, const Session& session,
 			    const Project& project) const;
+	void remove_project_impl(MysqlConnection& conn, int pid) const;
 	void remove_book(MysqlConnection& c, const Session& session,
 			 const Book& book) const;
 
