@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(CacheDelete) {
 	BOOST_CHECK_EQUAL(cache.size(), 0);
 	auto mock1 = cache.get(14, [this](int id) { return make_mock(id); });
 	BOOST_CHECK_EQUAL(cache.size(), 1);
-	auto mock2 = cache.get(14, [this](int id) { return make_mock(id); });
+	auto mock2 = cache.get(15, [this](int id) { return make_mock(id); });
 	BOOST_CHECK_EQUAL(cache.size(), 2);
 	cache.del(mock1->id());
 	BOOST_CHECK_EQUAL(cache.size(), 1);
