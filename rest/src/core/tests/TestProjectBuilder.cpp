@@ -3,13 +3,13 @@
 
 #include <boost/test/unit_test.hpp>
 #include <iostream>
-#include "core/PageBuilder.hpp"
-#include "core/ProjectBuilder.hpp"
+#include "core/Book.hpp"
 #include "core/BookBuilder.hpp"
+#include "core/Page.hpp"
+#include "core/PageBuilder.hpp"
 #include "core/PageBuilder.hpp"
 #include "core/Project.hpp"
-#include "core/Book.hpp"
-#include "core/Page.hpp"
+#include "core/ProjectBuilder.hpp"
 #include "core/User.hpp"
 
 using namespace pcw;
@@ -18,8 +18,9 @@ struct ProjectBuilderFixture {
 	ProjectBuilder builder;
 	BookSptr book;
 	UserSptr user;
-	ProjectBuilderFixture(): builder(), book(), user() {
-		user = std::make_shared<User>("name", "pass", "email", "inst", 42);
+	ProjectBuilderFixture() : builder(), book(), user() {
+		user =
+		    std::make_shared<User>("name", "pass", "email", "inst", 42);
 		BookBuilder bbuilder;
 		PageBuilder pbuilder;
 		bbuilder.append(*pbuilder.build());
@@ -35,8 +36,7 @@ struct ProjectBuilderFixture {
 BOOST_FIXTURE_TEST_SUITE(ProjectBuilder, ProjectBuilderFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Reset)
-{
+BOOST_AUTO_TEST_CASE(Reset) {
 	auto first = builder.build();
 	builder.reset();
 	auto second = builder.build();
@@ -44,29 +44,25 @@ BOOST_AUTO_TEST_CASE(Reset)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Empty)
-{
+BOOST_AUTO_TEST_CASE(Empty) {
 	auto project = builder.build();
 	BOOST_CHECK(project->empty());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Origin)
-{
+BOOST_AUTO_TEST_CASE(Origin) {
 	auto project = builder.build();
 	BOOST_CHECK_EQUAL(&project->origin(), book.get());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Owner)
-{
+BOOST_AUTO_TEST_CASE(Owner) {
 	auto project = builder.build();
 	BOOST_CHECK_EQUAL(&project->owner(), user.get());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(AddOne)
-{
+BOOST_AUTO_TEST_CASE(AddOne) {
 	builder.add_page(1);
 	auto project = builder.build();
 	BOOST_CHECK_EQUAL(project->size(), 1);
@@ -75,8 +71,7 @@ BOOST_AUTO_TEST_CASE(AddOne)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(AddTwo)
-{
+BOOST_AUTO_TEST_CASE(AddTwo) {
 	builder.add_page(1);
 	builder.add_page(2);
 	auto project = builder.build();
@@ -86,8 +81,7 @@ BOOST_AUTO_TEST_CASE(AddTwo)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(AddEqual)
-{
+BOOST_AUTO_TEST_CASE(AddEqual) {
 	builder.add_page(1);
 	builder.add_page(1);
 	auto project = builder.build();
@@ -97,8 +91,7 @@ BOOST_AUTO_TEST_CASE(AddEqual)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Order)
-{
+BOOST_AUTO_TEST_CASE(Order) {
 	builder.add_page(2);
 	builder.add_page(1);
 	auto project = builder.build();
@@ -110,8 +103,7 @@ BOOST_AUTO_TEST_CASE(Order)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(AddInvalid)
-{
+BOOST_AUTO_TEST_CASE(AddInvalid) {
 	BOOST_CHECK_THROW(builder.add_page(3), std::runtime_error);
 }
 
