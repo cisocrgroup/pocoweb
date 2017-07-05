@@ -223,9 +223,13 @@ void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
 	tables::Contents c;
 	tables::Pages pgs;
 	MysqlCommiter commiter(conn);
-	auto pids =
-	    conn.db()(select(p.projectid).from(p).where(p.origin == book.id()));
+	auto pids = conn.db()(
+	    select(p.projectid, p.owner).from(p).where(p.origin == book.id()));
 	for (const auto& pid : pids) {
+		if (static_cast<int>(pid.owner) != session.user().id()) {
+			THROW(Forbidden, "cannot delete book: project id: ",
+			      pid.projectid, " is not finished");
+		}
 		remove_project_impl(conn, pid.projectid);
 		session.uncache_project(pid.projectid);
 	}
