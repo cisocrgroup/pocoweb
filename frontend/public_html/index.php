@@ -22,9 +22,6 @@ if (isset($_GET["upload"])) {
 		frontend_render_success_div("Successfully split project #$pid");
 	}
 } else if (isset($_GET["assign"])) {
-	foreach ($_POST as $key => $val) {
-		frontend_render_info_div("$key = $val");
-	}
 	$pid = $_GET["pid"];
 	$api = backend_assign_project($pid, $_POST);
 	$status = $api->get_http_status_code();
