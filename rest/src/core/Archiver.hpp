@@ -14,11 +14,12 @@ class Archiver {
 	Path operator()() const;
 
        private:
-	std::string gather_files() const;
-	void write_gt_files() const;
-	void write_gt_file(const Line& line) const;
-	Path get_gt_file(const Line& line) const;
-	Path archive_path() const noexcept;
+	void copy_files(const Path& dir) const;
+	void write_gt_file(const Line& line, const Path& to) const;
+	Path archive_name() const noexcept;
+	static Path remove_common_base_path(const Path& p, const Path& base);
+	static void copy(const Path& from, const Path& to);
+
 	const std::shared_ptr<const Project> project_;
 	const bool write_gt_files_;
 };
