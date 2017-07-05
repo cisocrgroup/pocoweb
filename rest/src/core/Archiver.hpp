@@ -1,6 +1,7 @@
 #ifndef pcw_Archiver_hpp__
 #define pcw_Archiver_hpp__
 
+#include <boost/filesystem/path.hpp>
 #include <memory>
 
 namespace pcw {
@@ -10,6 +11,8 @@ class Archiver {
 	Archiver(const Project& p);
 
        private:
+	using Path = boost::filesystem::path;
+	Path archive_path() const noexcept;
 	const std::shared_ptr<const Project> project_;
 };
 }
