@@ -34,7 +34,7 @@ class BookRoute : public CrtpRoute<BookRoute> {
 		      const std::string& c) const;
 
        private:
-	[[noreturn]] Response remove(const Request& req, int bid) const;
+	Response remove(const Request& req, int bid) const;
 	[[noreturn]] Response download(const Request& req, int bid) const;
 	Response finish(const Request& req, int bid) const;
 	Response assign(const Request& req, int bid) const;
@@ -45,6 +45,10 @@ class BookRoute : public CrtpRoute<BookRoute> {
 			  std::vector<ProjectPtr>& projs) const;
 	void split_sequencial(const Book& book,
 			      std::vector<ProjectPtr>& projs) const;
+	void remove_project(MysqlConnection& c, const Session& session,
+			    const Project& project) const;
+	void remove_book(MysqlConnection& c, const Session& session,
+			 const Book& book) const;
 
 	static const char* route_;
 	static const char* name_;

@@ -175,15 +175,45 @@ Route::Response BookRoute::impl(HttpPost, const Request& req, int bid,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-[[noreturn]] Route::Response BookRoute::remove(const Request& req,
-					       int bid) const {
-	CROW_LOG_DEBUG << "(BookRoute::remove) body: " << req.body;
-	THROW(Error, "BookRoute::download: not implemented");
+Route::Response BookRoute::remove(const Request& req, int bid) const {
+	auto conn = connection();
+	const auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
+	session->has_permission_or_throw(conn, bid, Permissions::Remove);
+	const auto project = session->find(conn, bid);
+	if (not project)
+		THROW(NotFound, "cannot remove project: no such project id: ",
+		      bid);
+	if (project->is_book())
+		remove_project(conn, *session, *project);
+	else
+		remove_book(conn, *session, project->origin());
+	return ok();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-[[noreturn]] Route::Response BookRoute::download(const Request& req,
-						 int bid) const {
+void BookRoute::remove_project(MysqlConnection& conn, const Session& session,
+			       const Project& project) const {
+	using namespace sqlpp;
+	tables::Projects p;
+	tables::ProjectPages pp;
+	const auto pid = project.id();
+	MysqlCommiter commiter(conn);
+	conn.db()(remove_from(pp).where(pp.projectid == pid));
+	conn.db()(remove_from(p).where(p.projectid == pid));
+	session.uncache_project(pid);
+	commiter.commit();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
+			    const Book& book) const {}
+
+    ////////////////////////////////////////////////////////////////////////////////
+    [[noreturn]] Route::Response BookRoute::download(const Request& req,
+						     int bid) const {
 	CROW_LOG_DEBUG << "(BookRoute::download) body: " << req.body;
 	THROW(Error, "BookRoute::download: not implemented");
 }
