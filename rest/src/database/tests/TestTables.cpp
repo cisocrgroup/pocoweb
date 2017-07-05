@@ -12,11 +12,11 @@ using namespace sqlpp;
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(InsertUser) {
+BOOST_AUTO_TEST_CASE(InsertNormalUser) {
 	MockDb db;
 	db.expect(
 	    "INSERT INTO users (name,email,institute,passwd,admin) "
-	    "VALUES('name','email','inst','passwd',false)");
+	    "VALUES('name','email','inst','passwd',0)");
 	tables::Users users;
 	auto stmt = insert_into(users).set(
 	    users.name = "name", users.email = "email",
@@ -27,11 +27,27 @@ BOOST_AUTO_TEST_CASE(InsertUser) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(InsertAdmin) {
+	MockDb db;
+	db.expect(
+	    "INSERT INTO users (name,email,institute,passwd,admin) "
+	    "VALUES('name','email','inst','passwd',1)");
+	tables::Users users;
+	auto stmt =
+	    insert_into(users).set(users.name = "name", users.email = "email",
+				   users.institute = "inst",
+				   users.passwd = "passwd", users.admin = true);
+	db(stmt);
+	db.validate();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(SelectAllUser) {
 	MockDb db;
 	db.expect(
 	    "SELECT "
-	    "users.userid,users.name,users.email,users.institute,users.passwd "
+	    "users.userid,users.name,users.email,users.institute,users.passwd,"
+	    "users.admin "
 	    "FROM users WHERE (users.email='testemail')");
 	tables::Users users;
 	auto stmt =
