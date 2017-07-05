@@ -41,7 +41,16 @@ bool pcw::has_permission(Db& db, int userid, bool admin, int projectid,
 		// Admins and normal users can finish projects but not books.
 		case Permissions::Finish:
 			return not entry->is_book();
-		// Only admins can remove, split or assign projects.
+		// Only admins can remove books and projects
+		case Permissions::Remove:
+			return admin;
+		// Only admins can split books (and not projects)
+		case Permissions::Split:
+			return admin and entry->is_book();
+		// Only admins can assign project (and not books).
+		case Permissions::Assign:
+			return admin and not entry->is_book();
+		// Only admins can create projects
 		default:
 			return admin;
 	}
