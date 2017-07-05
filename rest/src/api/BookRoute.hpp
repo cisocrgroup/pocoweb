@@ -35,7 +35,7 @@ class BookRoute : public CrtpRoute<BookRoute> {
 
        private:
 	[[noreturn]] Response remove(const Request& req, int bid) const;
-	[[noreturn]] Response download(const Request& req, int bid) const;
+	Response download(const Request& req, int bid) const;
 	Response finish(const Request& req, int bid) const;
 	Response assign(const Request& req, int bid) const;
 	Response split(const Request& req, int bid) const;
