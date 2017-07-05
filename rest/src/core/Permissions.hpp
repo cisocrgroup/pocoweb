@@ -1,14 +1,11 @@
 #ifndef pcw_Permissions_hpp__
 #define pcw_Permissions_hpp__
 
+#include <sqlpp11/sqlpp11.h>
+#include "database/Database.hpp"
 #include "database/Tables.h"
+
 namespace pcw {
-
-namespace detail {
-
-template <class Db>
-int get_owner_id(int projectid);
-}
 
 enum class Permissions {
 	Read,
@@ -22,39 +19,28 @@ enum class Permissions {
 
 template <class Db>
 bool has_permission(Db& db, int userid, bool admin, int projectid,
-		    Permission perm);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template <class Db>
-int pcw::detail::get_owner_id(int projectid) {
-	using namespace sqlpp;
-	tables::Projects p;
-	const auto res =
-	    db(select(p.owner).from(p).where(p.projectid == projectid));
-	if (not res.empty())
-		return res.front().owner;
-	else
-		return -1;
+		    Permissions perm);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 template <class Db>
 bool pcw::has_permission(Db& db, int userid, bool admin, int projectid,
-			 Permission perm) {
+			 Permissions perm) {
 	// Only admins can create new projects (ignore project id).
 	if (perm == Permissions::Create) return admin;
-	const auto ownerid = detail::get_owner_id(projectid);
+	const auto entry = pcw::select_project_entry(db, projectid);
 	// If project is not found or the user is not the owner of the project,
 	// he has no access.
-	if (ownerid <= 0 or ownerid != userid) return false;
-	switch (Perm) {
-		// Admins and normal users can read, write and finish projects
+	if (not entry or entry->owner != userid) return false;
+	switch (perm) {
+		// Admins and normal users can read and write
 		// (if they own it).
 		case Permissions::Read:
 		case Permissions::Write:
-		case Permissions::Finish:
 			return true;
+		// Admins and normal users can finish projects but not books.
+		case Permissions::Finish:
+			return not entry->is_book();
 		// Only admins can remove, split or assign projects.
 		default:
 			return admin;

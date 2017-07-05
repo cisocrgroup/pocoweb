@@ -11,6 +11,7 @@
 #include "database/ConnectionPool.hpp"
 #include "database/Database.hpp"
 #include "database/DatabaseGuard.hpp"
+#include "utils/Error.hpp"
 
 namespace crow {
 class response;
@@ -86,10 +87,10 @@ class Session {
 				  const std::string& name) const;
 	template <class Db>
 	inline bool has_permission(Connection<Db>& c, int projectid,
-				   Permission perm) const;
+				   Permissions perm) const;
 	template <class Db>
 	inline void has_permission_or_throw(Connection<Db>& c, int projectid,
-					    Permission perm) const;
+					    Permissions perm) const;
 
        private:
 	using Mutex = std::mutex;
@@ -317,7 +318,7 @@ pcw::UserSptr pcw::Session::cached_find_user(Connection<Db>& c,
 ////////////////////////////////////////////////////////////////////////////////
 template <class Db>
 bool pcw::Session::has_permission(Connection<Db>& c, int projectid,
-				  Permission perm) const {
+				  Permissions perm) const {
 	assert(user_);
 	return pcw::has_permission(c.db(), user_->id(), user_->admin(),
 				   projectid, perm);
@@ -325,8 +326,9 @@ bool pcw::Session::has_permission(Connection<Db>& c, int projectid,
 
 ////////////////////////////////////////////////////////////////////////////////
 template <class Db>
-inline void has_permission_or_throw(Connection<Db>& c, int projectid,
-				    Permission perm) const {
+inline void pcw::Session::has_permission_or_throw(Connection<Db>& c,
+						  int projectid,
+						  Permissions perm) const {
 	if (not has_permission(c, projectid, perm))
 		THROW(Forbidden, "Permission denied for project id: ",
 		      projectid);

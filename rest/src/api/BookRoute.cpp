@@ -197,35 +197,31 @@ Route::Response BookRoute::finish(const Request& req, int bid) const {
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
-	session->has_permission_or_throw(conn, bid, Permission::Finish);
+	session->has_permission_or_throw(conn, bid, Permissions::Finish);
 	const auto project = session->find(conn, bid);
 	if (not project)
 		THROW(NotFound, "cannot finish project: no such project id: ",
 		      bid);
-	if (project->is_book())
-		THROW(BadRequest, "cannot finish project: not a project");
-	if (project->owner().id() != session->user().id())
-		THROW(Forbidden, "cannot finish project: permission denied");
-
+	const auto pentry = pcw::select_project_entry(conn.db(), bid);
+	if (not pentry)
+		THROW(Error, "cannot finish project: no such project id: ",
+		      bid);
+	const auto oentry =
+	    pcw::select_project_entry(conn.db(), pentry->origin);
+	if (not oentry)
+		THROW(Error, "cannot finish project: no such project id: ",
+		      pentry->origin);
+	const auto owner = session->find_user(conn, oentry->owner);
+	if (not owner)
+		THROW(Error, "cannot finish project: no such user id: ",
+		      oentry->owner);
 	using namespace sqlpp;
-	tables::Projects projects;
-	auto getorigin = select(projects.origin)
-			     .from(projects)
-			     .where(projects.projectid == project->id());
-	auto row1 = conn.db()(getorigin);
-	if (row1.empty())
-		THROW(Error, "cannot finish project: cannot determine origin");
-	auto getowner = select(projects.owner)
-			    .from(projects)
-			    .where(projects.projectid == row1.front().origin);
-	auto row2 = conn.db()(getowner);
-	if (row2.empty())
-		THROW(Error, "cannot finish project: cannot determine owner");
+	tables::Projects p;
 	MysqlCommiter commiter(conn);
-	auto finish = update(projects)
-			  .set(projects.owner = row2.front().owner)
-			  .where(projects.projectid == project->id());
-	conn.db()(finish);
+	conn.db()(update(p)
+		      .set(p.owner = owner->id())
+		      .where(p.projectid == project->id()));
+	project->set_owner(*owner);
 	commiter.commit();
 	return ok();
 }
@@ -261,6 +257,7 @@ Route::Response BookRoute::assign(const Request& req, int bid) const {
 			 .set(projects.owner = user->id())
 			 .where(projects.projectid == project->id());
 	conn.db()(stmnt);
+	project->set_owner(*user);
 	commiter.commit();
 	return ok();
 }
