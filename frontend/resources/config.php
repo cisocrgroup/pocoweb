@@ -13,6 +13,7 @@ $config = array(
 			"split_project"  => "/books/%d/split",
 			"assign_project" => "/books/%d/assign",
 			"finish_project" => "/books/%d/finish",
+			"remove_project" => "/books/%d",
 			"get_users"      => "/users",
 			"delete_user"    => "/users/%d",
 			"get_first_page" => "/books/%d/pages/first",
