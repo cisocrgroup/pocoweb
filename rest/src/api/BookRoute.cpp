@@ -150,7 +150,9 @@ Route::Response BookRoute::impl(HttpPost, const Request& req, int bid) const {
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpGet, const Request& req, int bid,
 				const std::string& c) const {
-	if (strcasestr(c.data(), "download") == 0) {
+	CROW_LOG_DEBUG << "(BookRoute) project id: " << bid
+		       << ", command: " << c;
+	if (strcmp(c.data(), "download") == 0) {
 		return download(req, bid);
 	} else {
 		return not_found();
