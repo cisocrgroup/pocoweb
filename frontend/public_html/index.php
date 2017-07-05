@@ -36,7 +36,17 @@ if (isset($_GET["upload"])) {
 } else if (isset($_GET["remove"])) {
 	frontend_render_error_div("Not implemented yet: remove project $_GET[pid]");
 } else if (isset($_GET["download"])) {
-	frontend_render_error_div("Not implemented yet: download project $_GET[pid]");
+	$pid = $_GET["pid"];
+	$api = backend_download_project($pid);
+	$status = $api->get_http_status_code();
+	if ($status != 200) {
+		frontend_render_error_div("Could not download project #$pid: $status");
+	} else {
+		$link = $api->get_response()["archive"];
+		frontend_render_success_div("Successfully prepared project #$pid for download");
+		frontend_render_info_div("You can download the <a type=\"application/zip\" " .
+			"href=\"$link\">project</a> now");
+	}
 } else if (isset($_GET["finish"])) {
 	$pid = $_GET["pid"];
 	$api = backend_finish_project($pid);
