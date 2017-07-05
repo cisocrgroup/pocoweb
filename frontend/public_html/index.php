@@ -45,7 +45,7 @@ if (isset($_GET["upload"])) {
 		$link = $api->get_response()["archive"];
 		frontend_render_success_div("Successfully prepared project #$pid for download");
 		frontend_render_info_div("You can download the <a type=\"application/zip\" " .
-			"href=\"$link\">project</a> now");
+			"href=\"$link\" download>project</a> now");
 	}
 } else if (isset($_GET["finish"])) {
 	$pid = $_GET["pid"];
