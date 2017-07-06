@@ -9,6 +9,9 @@
 #include "Line.hpp"
 #include "Page.hpp"
 #include "Project.hpp"
+#include "WagnerFischer.hpp"
+#include "parser/PageParser.hpp"
+#include "parser/ParserPage.hpp"
 #include "utils/Error.hpp"
 #include "utils/ScopeGuard.hpp"
 
@@ -66,15 +69,15 @@ void Archiver::write_gt_file(const Line& line, const Path& to) const {
 void Archiver::copy_files(const Path& dir) const {
 	assert(project_);
 	const auto base = project_->origin().data.dir;
+	WagnerFischer wf;
 	for (const auto& page : *project_) {
-		if (page->has_ocr_path()) {
-			copy_to_tmp_dir(page->ocr, dir);
-		}
-		if (page->has_img_path()) {
-			copy_to_tmp_dir(page->img, dir);
-		}
+		const auto pp =
+		    make_page_parser(page->file_type, page->ocr)->parse();
+
 		for (const auto& line : *page) {
 			if (line->has_img_path()) {
+				wf.set_gt(line->wcor());
+				pp->get(line->id()).correct(wf);
 				const auto img =
 				    copy_to_tmp_dir(line->img, dir);
 				if (write_gt_files_) {
@@ -83,6 +86,12 @@ void Archiver::copy_files(const Path& dir) const {
 					write_gt_file(*line, tmp);
 				}
 			}
+		}
+		if (page->has_ocr_path()) {
+			copy_to_tmp_dir(page->ocr, dir);
+		}
+		if (page->has_img_path()) {
+			copy_to_tmp_dir(page->img, dir);
 		}
 	}
 }

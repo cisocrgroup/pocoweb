@@ -7,6 +7,7 @@
 namespace pcw {
 class Project;
 class Line;
+
 class Archiver {
        public:
 	using Path = boost::filesystem::path;
