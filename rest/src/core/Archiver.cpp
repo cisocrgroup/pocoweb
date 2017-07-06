@@ -24,24 +24,30 @@ Archiver::Path Archiver::operator()() const {
 	assert(project_);
 	const auto archive = project_->origin().data.dir / archive_name();
 	const auto dir = project_->origin().data.dir / archive.stem();
-	const ScopeGuard deltmpdir([&dir]() { fs::remove_all(dir); });
+	ScopeGuard deltmpdir([&dir]() { fs::remove_all(dir); });
 	ScopeGuard delarchive([&archive]() { fs::remove(archive); });
 	copy_files(dir);
 	zip(dir, archive);
 	delarchive.dismiss();
-	// do *not* dismiss deltmpdir; it is removed all the time.
+	// do *not* dismiss deltmpdir; it should be removed all the time.
 	return archive;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void Archiver::zip(const Path& dir, const Path& archive) const {
-	const auto command =
-	    "zip -qq -r " + archive.string() + " " + dir.string();
+	const auto old = fs::current_path();
+	ScopeGuard restoreold([&old]() { fs::current_path(old); });
+	auto new__ = dir.parent_path();
+	fs::current_path(new__);
+	const auto command = "zip -qq -r " + archive.filename().string() + " " +
+			     dir.filename().string();
 	CROW_LOG_DEBUG << "(Archiver) zip command: " << command;
-	auto err = system(command.data());
+	const auto err = system(command.data());
 	if (err)
 		THROW(Error, "Cannot unzip file: `", command, "` returned ",
 		      err);
+	// do *not* dismiss restoreold, since we want to change back to the old
+	// working directory.
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,30 +65,34 @@ void Archiver::copy_files(const Path& dir) const {
 	assert(project_);
 	const auto base = project_->origin().data.dir;
 	for (const auto& page : *project_) {
-		const auto s1 = page->ocr;
-		const auto s2 = page->img;
-		const auto b1 = remove_common_base_path(s1.parent_path(), base);
-		const auto b2 = remove_common_base_path(s2.parent_path(), base);
-		const auto t1 = dir / b1 / s1.filename();
-		const auto t2 = dir / b2 / s2.filename();
-		fs::create_directories(dir / b1);
-		fs::create_directories(dir / b2);
-		copy(s1, t1);
-		copy(s2, t2);
+		if (page->has_ocr_path()) {
+			copy_to_tmp_dir(page->ocr, dir);
+		}
+		if (page->has_img_path()) {
+			copy_to_tmp_dir(page->img, dir);
+		}
 		for (const auto& line : *page) {
-			const auto sx = line->img;
-			const auto bx =
-			    remove_common_base_path(sx.parent_path(), base);
-			const auto tx = dir / bx / sx.filename();
-			fs::create_directories(dir / bx);
-			copy(sx, tx);
-			if (write_gt_files_) {
-				auto tz = tx;
-				tz.replace_extension(".gt.txt");
-				write_gt_file(*line, tz);
+			if (line->has_img_path()) {
+				const auto img =
+				    copy_to_tmp_dir(line->img, dir);
+				if (write_gt_files_) {
+					auto tmp = img;
+					tmp.replace_extension(".gt.txt");
+					write_gt_file(*line, tmp);
+				}
 			}
 		}
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Archiver::Path Archiver::copy_to_tmp_dir(const Path& source,
+					 const Path& tmpdir) {
+	const auto base = remove_common_base_path(source.parent_path(), tmpdir);
+	const auto target = tmpdir / base / source.filename();
+	fs::create_directories(tmpdir / base);
+	copy(source, target);
+	return target;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
