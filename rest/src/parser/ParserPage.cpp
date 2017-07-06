@@ -1,9 +1,11 @@
 #include "ParserPage.hpp"
+#include <crow/logging.h>
 #include <utf8.h>
 #include <fstream>
 #include <iostream>
 #include "core/Page.hpp"
 #include "core/WagnerFischer.hpp"
+#include "core/util.hpp"
 
 using namespace pcw;
 
@@ -11,6 +13,9 @@ using namespace pcw;
 size_t ParserLine::correct(WagnerFischer& wf) {
 	wf.set_ocr(wstring());
 	const auto lev = wf();
+	// CROW_LOG_DEBUG << "(ParserLine)  id: " << line(0)->id();
+	// CROW_LOG_DEBUG << "(ParserLine) ocr: " << utf8(wf.ocr());
+	// CROW_LOG_DEBUG << "(ParserLine) cor: " << utf8(wf.gt());
 	wf.correct(*this);
 	return lev;
 }
