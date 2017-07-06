@@ -433,6 +433,7 @@ function frontend_render_page_header($page) {
 	$nextpageid = $page["nextPageId"];
 	$prevpageid = $page["prevPageId"];
 	$pid = $page["projectId"];
+	echo '<div class="container-fluid">';
 	echo '<div id="page-header" class="navbar navbar-nav" data-spy="affix" data-offset-top="141">', "\n";
 	// navigation buttons
 	frontend_render_page_navigation_buttons($pid, $prevpageid, TRUE);
@@ -445,6 +446,7 @@ function frontend_render_page_header($page) {
 	echo '</button>', "\n";
 	echo '</span>', "\n";
 	echo '<input type="text" class="form-control centered" placeholder="Search"/>', "\n";
+	echo '</div>', "\n";
 	echo '</div>', "\n";
 	echo '</div>', "\n";
 }

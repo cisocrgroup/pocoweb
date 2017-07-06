@@ -3,6 +3,7 @@
 #include <boost/filesystem.hpp>
 #include <regex>
 #include "BookRoute.hpp"
+#include "core/Archiver.hpp"
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/Package.hpp"
 #include "core/Page.hpp"
@@ -150,7 +151,9 @@ Route::Response BookRoute::impl(HttpPost, const Request& req, int bid) const {
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpGet, const Request& req, int bid,
 				const std::string& c) const {
-	if (strcasestr(c.data(), "download") == 0) {
+	CROW_LOG_DEBUG << "(BookRoute) project id: " << bid
+		       << ", command: " << c;
+	if (strcmp(c.data(), "download") == 0) {
 		return download(req, bid);
 	} else {
 		return not_found();
@@ -249,10 +252,22 @@ void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-[[noreturn]] Route::Response BookRoute::download(const Request& req,
-						 int bid) const {
-	CROW_LOG_DEBUG << "(BookRoute::download) body: " << req.body;
-	THROW(Error, "BookRoute::download: not implemented");
+Route::Response BookRoute::download(const Request& req, int bid) const {
+	CROW_LOG_DEBUG << "(BookRoute::download) downloading project id: "
+		       << bid;
+	auto conn = connection();
+	const auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
+	session->has_permission_or_throw(conn, bid, Permissions::Read);
+	const auto project = session->find(conn, bid);
+	if (not project) THROW(NotFound, "cannot find project id: ", bid);
+	Archiver archiver(*project, true);
+	auto ar = archiver();
+	Json j;
+	j["archive"] = ar.string();
+	return j;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

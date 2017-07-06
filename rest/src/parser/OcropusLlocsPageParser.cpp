@@ -1,89 +1,75 @@
+#include "OcropusLlocsPageParser.hpp"
+#include <crow/logging.h>
 #include <boost/filesystem/operations.hpp>
 #include <boost/foreach.hpp>
-#include <iostream>
 #include <cstring>
 #include <fstream>
+#include <iostream>
 #include <regex>
-#include "pugixml.hpp"
-#include "ParserPage.hpp"
-#include "OcropusLlocsPageParser.hpp"
-#include "OcropusLlocsParserPage.hpp"
 #include "OcropusLlocsParserLine.hpp"
-#include "utils/Error.hpp"
-#include "core/Page.hpp"
-#include "core/Line.hpp"
+#include "OcropusLlocsParserPage.hpp"
+#include "ParserPage.hpp"
 #include "core/Box.hpp"
+#include "core/Line.hpp"
+#include "core/Page.hpp"
 #include "core/util.hpp"
+#include "pugixml.hpp"
+#include "utils/Error.hpp"
 
 namespace fs = boost::filesystem;
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 OcropusLlocsPageParser::OcropusLlocsPageParser(Path path)
-	: dir_(std::move(path))
-	, id_(std::stoi(dir_.filename().string(), nullptr, 10))
-	, done_(false)
-{
-	assert(fs::is_directory(dir_));
+    : dir_(path), id_(0), done_(false) {
+	if (not fs::is_directory(dir_))
+		THROW(Error, "(OcropusLlocsPageParser) not a directory: ",
+		      dir_);
+	CROW_LOG_DEBUG << "(OcropusLlocsPageParser) dir: " << dir_;
+	id_ = std::stoi(path.filename().string(), nullptr, 16);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ParserPagePtr
-OcropusLlocsPageParser::parse()
-{
+ParserPagePtr OcropusLlocsPageParser::parse() {
 	assert(not done_);
-	done_ = true; // one page per directory
+	done_ = true;  // one page per directory
 	return parse_page();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ParserPagePtr
-OcropusLlocsPageParser::parse_page() const
-{
-	std::vector<std::pair<Path, Path>> llocs;
+ParserPagePtr OcropusLlocsPageParser::parse_page() const {
+	std::vector<PathPair> llocs;
 	fs::directory_iterator b(dir_), e;
-	BOOST_FOREACH(const auto& file, std::make_pair(b, e)) {
-		auto pair = get_path_pair(file);
+	BOOST_FOREACH (const auto& file, std::make_pair(b, e)) {
+		const auto pair = get_path_pair(file);
 		if (pair) {
 			llocs.push_back(*pair);
 		}
 	}
-	std::sort(begin(llocs), end(llocs));
+	std::sort(begin(llocs), end(llocs),
+		  [](const auto& a, const auto& b) { return a.img < b.img; });
 	auto page = std::make_shared<OcropusLlocsParserPage>(id_);
 	for (int i = 0; i < static_cast<int>(llocs.size()); ++i) {
 		page->lines().push_back(
-			std::make_shared<OcropusLlocsParserLine>(
-				i + 1,
-				llocs[i].first,
-				llocs[i].second
-			)
-		);
+		    std::make_shared<OcropusLlocsParserLine>(
+			i + 1, llocs[i].llocs, llocs[i].img));
 	}
+	page->ocr = dir_;
+	page->file_type = FileType::Llocs;
 	return page;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 boost::optional<OcropusLlocsPageParser::PathPair>
-OcropusLlocsPageParser::get_path_pair(const Path& file)
-{
-	if (fs::is_regular_file(file) and file.extension() == ".llocs") {
-		auto img = file;
-		for (const auto ext: {".png", ".jpg", ".jpeg", ".tif", ".tiff"}) {
-			img.replace_extension(ext);
-			if (fs::is_regular_file(img))
-				return std::make_pair(file, img);
-			img.replace_extension(".dew");
-			img += ext;
-			if (fs::is_regular_file(img))
-				return std::make_pair(file, img);
-			img.replace_extension();
-			img.replace_extension(".bin");
-			img += ext;
-			if (fs::is_regular_file(img))
-				return std::make_pair(file, img);
-			img.replace_extension();
-		}
+OcropusLlocsPageParser::get_path_pair(const Path& file) {
+	// match on png image files
+	if (fs::is_regular_file(file) and file.extension() == ".png") {
+		auto llocs = file.parent_path() /
+			     file.stem().replace_extension(".llocs");
+		if (fs::is_regular_file(llocs)) return PathPair{llocs, file};
+		CROW_LOG_WARNING
+		    << "(OcropusLlocsPageParser) cannot find llocs file for: "
+		    << file << " (" << llocs << ")";
 	}
 	return {};
 }
-

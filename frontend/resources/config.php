@@ -14,6 +14,7 @@ $config = array(
 			"assign_project" => "/books/%d/assign",
 			"finish_project" => "/books/%d/finish",
 			"remove_project" => "/books/%d",
+			"download_project" => "/books/%d/download",
 			"get_users"      => "/users",
 			"delete_user"    => "/users/%d",
 			"get_first_page" => "/books/%d/pages/first",

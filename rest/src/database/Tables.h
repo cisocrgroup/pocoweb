@@ -490,6 +490,22 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
+    struct Filetype
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "filetype";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T filetype;
+            T& operator()() { return filetype; }
+            const T& operator()() const { return filetype; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
+    };
     struct Pleft
     {
       struct _alias_t
@@ -561,6 +577,7 @@ namespace tables
                Pages_::Pageid,
                Pages_::Imagepath,
                Pages_::Ocrpath,
+               Pages_::Filetype,
                Pages_::Pleft,
                Pages_::Ptop,
                Pages_::Pright,

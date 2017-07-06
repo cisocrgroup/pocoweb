@@ -1,23 +1,21 @@
 // #include <boost/log/trivial.hpp>
-#include <boost/algorithm/string/predicate.hpp>
+#include "Config.hpp"
 #include <crow/logging.h>
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <regex>
 #include <thread>
-#include "utils/Error.hpp"
 #include "Logger.hpp"
-#include "Config.hpp"
+#include "utils/Error.hpp"
 
 #ifndef PCW_CONFIG_EXPANSION_MAX_RUNS
-#	define PCW_CONFIG_EXPANSION_MAX_RUNS 1000
-#endif // PCW_CONFIG_EXPANSION_MAX_RUNS
+#define PCW_CONFIG_EXPANSION_MAX_RUNS 1000
+#endif  // PCW_CONFIG_EXPANSION_MAX_RUNS
 
 using PluginsConfig = std::unordered_map<std::string, pcw::Ptree>;
 
 ////////////////////////////////////////////////////////////////////////////////
-static std::string
-get_val(const pcw::Ptree& ptree, const std::string& var)
-{
+static std::string get_val(const pcw::Ptree& ptree, const std::string& var) {
 	auto val = getenv(var.data());
 	if (val)
 		return val;
@@ -26,24 +24,22 @@ get_val(const pcw::Ptree& ptree, const std::string& var)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-static void
-expand_variables(pcw::Ptree& ptree)
-{
+static void expand_variables(pcw::Ptree& ptree) {
 	static const std::regex var{R"(\$[({](.+)[})])"};
 	std::smatch m;
 	size_t runs = 0;
 again:
 	if (runs++ >= PCW_CONFIG_EXPANSION_MAX_RUNS)
 		THROW(pcw::Error, "Maximal number of expansion runs exeeded ",
-				"(Recursion in a variable?): ", runs);
-	for (auto& p: ptree) {
-		for (auto& pair: p.second) {
+		      "(Recursion in a variable?): ", runs);
+	for (auto& p : ptree) {
+		for (auto& pair : p.second) {
 			if (not std::regex_search(pair.second.data(), m, var))
 				continue;
 			auto expand = get_val(ptree, m[1]);
-			auto res = std::regex_replace(pair.second.data(),
-					var, expand,
-					std::regex_constants::format_first_only);
+			auto res = std::regex_replace(
+			    pair.second.data(), var, expand,
+			    std::regex_constants::format_first_only);
 			p.second.put(pair.first, res);
 			goto again;
 		}
@@ -51,14 +47,12 @@ again:
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-static PluginsConfig
-get_plugins(const pcw::Ptree& ptree)
-{
+static PluginsConfig get_plugins(const pcw::Ptree& ptree) {
 	static const std::regex plugin{R"(^plugin[-_](.*)$)",
-		std::regex_constants::icase};
+				       std::regex_constants::icase};
 	PluginsConfig plugins;
 	std::smatch m;
-	for (const auto& config: ptree) {
+	for (const auto& config : ptree) {
 		if (std::regex_search(config.first, m, plugin)) {
 			plugins.emplace(m[1], config.second);
 		}
@@ -67,9 +61,7 @@ get_plugins(const pcw::Ptree& ptree)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-static int
-get_log_level(const std::string& level)
-{
+static int get_log_level(const std::string& level) {
 	if (boost::iequals(level, "debug"))
 		return static_cast<int>(crow::LogLevel::Debug);
 	if (boost::iequals(level, "info"))
@@ -86,9 +78,7 @@ get_log_level(const std::string& level)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Config
-pcw::Config::load(const std::string& file)
-{
+pcw::Config pcw::Config::load(const std::string& file) {
 	std::ifstream is(file);
 	if (not is.good())
 		throw std::system_error(errno, std::system_category(), file);
@@ -96,60 +86,42 @@ pcw::Config::load(const std::string& file)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Config
-pcw::Config::load(std::istream& is)
-{
+pcw::Config pcw::Config::load(std::istream& is) {
 	Ptree ptree;
 	boost::property_tree::read_ini(is, ptree);
 	expand_variables(ptree);
 	const auto detach = ptree.get<bool>("daemon.detach");
-	const std::string logfile = detach ?
-		ptree.get<std::string>("log.file") :
-		"/dev/stderr";
+	const std::string logfile =
+	    detach ? ptree.get<std::string>("log.file") : "/dev/stderr";
 	auto threads = ptree.get<int>("daemon.threads");
 	threads = threads < 1 ? std::thread::hardware_concurrency() : threads;
 
 	return {
-			{
-				ptree.get<std::string>("db.user"),
-				ptree.get<std::string>("db.host"),
-				ptree.get<std::string>("db.pass"),
-				ptree.get<std::string>("db.db"),
-				ptree.get<int>("db.connections"),
-				ptree.get<bool>("db.debug")
-			},
-			{
-				ptree.get<std::string>("daemon.host"),
-				ptree.get<std::string>("daemon.user"),
-				ptree.get<std::string>("daemon.basedir"),
-				ptree.get<int>("daemon.port"),
-				threads,
-				detach
-			},
-			{
-				logfile,
-				get_log_level(ptree.get<std::string>("log.level"))
-			},
-			{
-				get_plugins(ptree),
-			},
+	    {ptree.get<std::string>("db.user"),
+	     ptree.get<std::string>("db.host"),
+	     ptree.get<std::string>("db.pass"), ptree.get<std::string>("db.db"),
+	     ptree.get<int>("db.connections"), ptree.get<bool>("db.debug")},
+	    {ptree.get<std::string>("daemon.host"),
+	     ptree.get<std::string>("daemon.user"),
+	     ptree.get<std::string>("daemon.basedir"),
+	     ptree.get<int>("daemon.port"), threads, detach},
+	    {logfile, get_log_level(ptree.get<std::string>("log.level"))},
+	    {
+		get_plugins(ptree),
+	    },
 	};
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const pcw::Ptree&
-pcw::Config::Plugins::operator[](const std::string& p) const noexcept
-{
+const pcw::Ptree& pcw::Config::Plugins::operator[](const std::string& p) const
+    noexcept {
 	static const Ptree nothing;
 	auto i = configs.find(p);
 	return i == end(configs) ? nothing : i->second;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-pcw::Config::setup_logging() const
-{
+void pcw::Config::setup_logging() const {
 	static crow::CerrLogHandler cerrlogger;
 	static Syslogger syslogger;
 	if (daemon.detach)
@@ -160,9 +132,7 @@ pcw::Config::setup_logging() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-pcw::Config::LOG() const
-{
+void pcw::Config::LOG() const {
 	CROW_LOG_INFO << "db.user:        " << this->db.user;
 	CROW_LOG_INFO << "db.host:        " << this->db.host;
 	CROW_LOG_INFO << "db.pass:        " << this->db.pass;
@@ -180,10 +150,10 @@ pcw::Config::LOG() const
 	CROW_LOG_INFO << "log.file:       " << this->log.file;
 	CROW_LOG_INFO << "log.level:      " << this->log.level;
 
-	for (const auto& p: this->plugins.configs) {
-		for (const auto& q: p.second) {
-			CROW_LOG_INFO << "plugins." << p.first << "."
-				<< q.first << ": " << q.second.data();
+	for (const auto& p : this->plugins.configs) {
+		for (const auto& q : p.second) {
+			CROW_LOG_INFO << "plugins." << p.first << "." << q.first
+				      << ": " << q.second.data();
 		}
 	}
 }

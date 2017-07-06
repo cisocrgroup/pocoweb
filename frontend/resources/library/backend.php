@@ -138,6 +138,17 @@ function backend_remove_project($pid) {
 	return $api;
 }
 
+function backend_get_download_project_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["download_project"], $pid);
+}
+
+function backend_download_project($pid) {
+	$api = new Api(backend_get_download_project_route($pid));
+	$api->get_request();
+	return $api;
+}
+
 function backend_get_nth_page_route($pid, $p) {
 	global $config;
 	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["get_nth_page"], $pid, $p);
