@@ -82,12 +82,16 @@ void Archiver::copy_files(const Path& dir) const {
 		for (const auto& line : *page) {
 			if (line->has_img_path()) {
 				wf.set_gt(line->wcor());
-				pp->get(line->id()).correct(wf);
+				// page parser starts with 0,
+				// line ids start at 1.
+				assert(line->id() > 0);
+				pp->get(line->id() - 1).correct(wf);
 				const auto img =
 				    copy_to_tmp_dir(line->img, dir);
 				if (write_gt_files_) {
-					auto tmp = img;
-					tmp.replace_extension(".gt.txt");
+					auto tmp = img.parent_path() /
+						   img.stem().replace_extension(
+						       ".gt.txt");
 					write_gt_file(*line, tmp);
 				}
 			}
