@@ -136,6 +136,7 @@ void BookDirectoryBuilder::setup_img_and_ocr_files(Page& page) const {
 	auto do_copy = [this](const auto& path) {
 		auto to = dir_ / remove_common_base_path(path, tmp_dir());
 		fs::create_directories(to.parent_path());
+		// do not attempt to copy ocropus directories
 		if (not fs::is_directory(path)) {
 			copy(path, to);
 		}
@@ -159,6 +160,7 @@ void BookDirectoryBuilder::make_line_img_files(const Path& pagedir,
 			THROW(Error, "(BookDirectoryBuilder) Cannot read img ",
 			      page.img);
 	}
+	const bool copy_llocs = page.file_type == FileType::Llocs;
 	for (auto& line : page) {
 		if (not line->has_img_path() and not pix) {
 			CROW_LOG_WARNING
@@ -171,10 +173,21 @@ void BookDirectoryBuilder::make_line_img_files(const Path& pagedir,
 			fs::create_directories(pagedir);
 			write_line_img_file(pix.get(), *line);
 		} else if (line->has_img_path()) {
-			auto to = dir_ /
-				  remove_common_base_path(line->img, tmp_dir());
+			const auto to = dir_ / remove_common_base_path(
+						   line->img, tmp_dir());
 			fs::create_directories(to.parent_path());
 			copy(line->img, to);
+			if (copy_llocs) {
+				const auto llocsfile =
+				    line->img.stem().replace_extension(
+					".llocs");
+				const auto fromllocs =
+				    line->img.parent_path() / llocsfile;
+				const auto tollocs =
+				    to.parent_path() / llocsfile;
+				copy(fromllocs, tollocs);
+			}
+			// update line image file
 			line->img = to;
 		}
 	}
