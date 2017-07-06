@@ -21,7 +21,9 @@ class OcropusLlocsPageParser : public PageParser {
 	virtual ParserPagePtr parse() override;
 
        private:
-	using PathPair = std::pair<Path, Path>;
+	struct PathPair {
+		Path llocs, img;
+	};
 	ParserPagePtr parse_page() const;
 
 	static boost::optional<PathPair> get_path_pair(const Path& file);

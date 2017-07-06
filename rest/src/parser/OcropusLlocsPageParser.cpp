@@ -38,20 +38,21 @@ ParserPagePtr OcropusLlocsPageParser::parse() {
 
 ////////////////////////////////////////////////////////////////////////////////
 ParserPagePtr OcropusLlocsPageParser::parse_page() const {
-	std::vector<std::pair<Path, Path>> llocs;
+	std::vector<PathPair> llocs;
 	fs::directory_iterator b(dir_), e;
 	BOOST_FOREACH (const auto& file, std::make_pair(b, e)) {
-		auto pair = get_path_pair(file);
+		const auto pair = get_path_pair(file);
 		if (pair) {
 			llocs.push_back(*pair);
 		}
 	}
-	std::sort(begin(llocs), end(llocs));
+	std::sort(begin(llocs), end(llocs),
+		  [](const auto& a, const auto& b) { return a.img < b.img; });
 	auto page = std::make_shared<OcropusLlocsParserPage>(id_);
 	for (int i = 0; i < static_cast<int>(llocs.size()); ++i) {
 		page->lines().push_back(
 		    std::make_shared<OcropusLlocsParserLine>(
-			i + 1, llocs[i].first, llocs[i].second));
+			i + 1, llocs[i].llocs, llocs[i].img));
 	}
 	page->ocr = dir_;
 	page->file_type = FileType::Llocs;
@@ -61,24 +62,14 @@ ParserPagePtr OcropusLlocsPageParser::parse_page() const {
 ////////////////////////////////////////////////////////////////////////////////
 boost::optional<OcropusLlocsPageParser::PathPair>
 OcropusLlocsPageParser::get_path_pair(const Path& file) {
-	if (fs::is_regular_file(file) and file.extension() == ".llocs") {
-		auto img = file;
-		for (const auto ext :
-		     {".png", ".jpg", ".jpeg", ".tif", ".tiff"}) {
-			img.replace_extension(ext);
-			if (fs::is_regular_file(img))
-				return std::make_pair(file, img);
-			img.replace_extension(".dew");
-			img += ext;
-			if (fs::is_regular_file(img))
-				return std::make_pair(file, img);
-			img.replace_extension();
-			img.replace_extension(".bin");
-			img += ext;
-			if (fs::is_regular_file(img))
-				return std::make_pair(file, img);
-			img.replace_extension();
-		}
+	// match on png image files
+	if (fs::is_regular_file(file) and file.extension() == ".png") {
+		auto llocs = file.parent_path() /
+			     file.stem().replace_extension(".llocs");
+		if (fs::is_regular_file(llocs)) return PathPair{llocs, file};
+		CROW_LOG_WARNING
+		    << "(OcropusLlocsPageParser) cannot find llocs file for: "
+		    << file << " (" << llocs << ")";
 	}
 	return {};
 }
