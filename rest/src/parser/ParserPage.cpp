@@ -20,6 +20,7 @@ PagePtr ParserPage::page() const {
 	auto page = std::make_shared<Page>(id, box);
 	page->ocr = ocr;
 	page->img = img;
+	page->file_type = file_type;
 	const auto n = size();
 	for (auto i = 0U; i < n; ++i) {
 		auto id = static_cast<int>(i + 1);

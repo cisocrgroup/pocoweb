@@ -7,6 +7,7 @@
 #include "core/Box.hpp"
 
 namespace pcw {
+enum class FileType;
 class Page;
 class Line;
 class WagnerFischer;
@@ -55,6 +56,7 @@ class ParserPage : public std::enable_shared_from_this<ParserPage> {
 
 	Box box;
 	Path ocr, img;
+	FileType file_type;
 	int id;
 };
 }
