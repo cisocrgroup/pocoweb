@@ -28,6 +28,7 @@ enum class FileType {
 	// Page,
 };
 std::string file_type_to_string(FileType type);
+FileType file_type_from_string(const std::string& type);
 FileType get_file_type(const Path& path);
 FileType get_xml_file_type(const Path& path);
 PageParserPtr make_page_parser(const Path& path);
