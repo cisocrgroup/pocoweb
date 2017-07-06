@@ -38,6 +38,8 @@ void Archiver::zip(const Path& dir, const Path& archive) const {
 	const auto old = fs::current_path();
 	ScopeGuard restoreold([&old]() { fs::current_path(old); });
 	auto new__ = dir.parent_path();
+	// change into the directory to fix file paths in the resulting zip
+	// archive.
 	fs::current_path(new__);
 	const auto command = "zip -qq -r " + archive.filename().string() + " " +
 			     dir.filename().string();
