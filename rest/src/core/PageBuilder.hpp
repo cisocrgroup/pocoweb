@@ -5,27 +5,27 @@
 #include <memory>
 
 namespace pcw {
-	class Box;
-	class Line;
-	class Page;
-	using PageSptr = std::shared_ptr<Page>;
-	using Path = boost::filesystem::path;
+class Box;
+class Line;
+class Page;
+using PageSptr = std::shared_ptr<Page>;
+using Path = boost::filesystem::path;
 
-	class PageBuilder {
-	public:
-		PageBuilder(): page_() {reset();}
+class PageBuilder {
+       public:
+	PageBuilder() : page_() { reset(); }
 
-		PageBuilder& reset();
-		const PageBuilder& append(Line& line) const;
-		const PageBuilder& set_id(int pageid) const;
-		const PageBuilder& set_image_path(Path img) const;
-		const PageBuilder& set_ocr_path(Path ocr) const;
-		const PageBuilder& set_box(Box box) const;
-		PageSptr build() const;
+	PageBuilder& reset();
+	const PageBuilder& append(Line& line) const;
+	const PageBuilder& set_id(int pageid) const;
+	const PageBuilder& set_image_path(Path img) const;
+	const PageBuilder& set_ocr_path(Path ocr) const;
+	const PageBuilder& set_box(Box box) const;
+	PageSptr build() const;
 
-	private:
-		PageSptr page_;
-	};
+       private:
+	PageSptr page_;
+};
 }
 
-#endif //pcw_LineBuilder_hpp__
+#endif  // pcw_LineBuilder_hpp__
