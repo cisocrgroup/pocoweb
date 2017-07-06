@@ -10,6 +10,7 @@ class Line;
 class Page;
 using PageSptr = std::shared_ptr<Page>;
 using Path = boost::filesystem::path;
+enum class FileType;
 
 class PageBuilder {
        public:
@@ -21,6 +22,7 @@ class PageBuilder {
 	const PageBuilder& set_image_path(Path img) const;
 	const PageBuilder& set_ocr_path(Path ocr) const;
 	const PageBuilder& set_box(Box box) const;
+	const PageBuilder& set_file_type(FileType filetype) const;
 	PageSptr build() const;
 
        private:

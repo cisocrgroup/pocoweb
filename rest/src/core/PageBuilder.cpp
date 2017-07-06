@@ -54,6 +54,13 @@ const PageBuilder& PageBuilder::set_box(Box box) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+const PageBuilder& PageBuilder::set_file_type(FileType filetype) const {
+	assert(page_);
+	page_->file_type = filetype;
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 PageSptr PageBuilder::build() const {
 	assert(page_);
 	return page_;
