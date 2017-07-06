@@ -33,6 +33,9 @@ FileType get_file_type(const Path& path);
 FileType get_xml_file_type(const Path& path);
 PageParserPtr make_page_parser(const Path& path);
 PageParserPtr make_page_parser(FileType type, const Path& path);
+
+std::string utf8(const std::wstring& str);
+std::wstring utf8(const std::string& str);
 }
 
 #endif  // pcw_util_hpp__

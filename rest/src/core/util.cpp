@@ -1,6 +1,7 @@
 #include "util.hpp"
 #include <openssl/sha.h>
 #include <unistd.h>
+#include <utf8.h>
 #include <algorithm>
 #include <cassert>
 #include <cstring>
@@ -236,4 +237,17 @@ pcw::PageParserPtr pcw::make_page_parser(FileType type, const Path& ocr) {
 		default:
 			THROW(BadRequest, "(util) Cannot parse file: ", ocr);
 	}
+}
+////////////////////////////////////////////////////////////////////////////////
+std::string pcw::utf8(const std::wstring& str) {
+	std::string res;
+	utf8::utf32to8(begin(str), end(str), std::back_inserter(res));
+	return res;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::wstring pcw::utf8(const std::string& str) {
+	std::wstring res;
+	utf8::utf8to32(begin(str), end(str), std::back_inserter(res));
+	return res;
 }
