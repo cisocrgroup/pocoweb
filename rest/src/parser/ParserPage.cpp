@@ -1,16 +1,14 @@
-#include <iostream>
-#include <fstream>
+#include "ParserPage.hpp"
 #include <utf8.h>
+#include <fstream>
+#include <iostream>
 #include "core/Page.hpp"
 #include "core/WagnerFischer.hpp"
-#include "ParserPage.hpp"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-size_t
-ParserLine::correct(WagnerFischer& wf)
-{
+size_t ParserLine::correct(WagnerFischer& wf) {
 	wf.set_ocr(wstring());
 	const auto lev = wf();
 	wf.correct(*this);
@@ -18,9 +16,7 @@ ParserLine::correct(WagnerFischer& wf)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-PagePtr
-ParserPage::page() const
-{
+PagePtr ParserPage::page() const {
 	auto page = std::make_shared<Page>(id, box);
 	page->ocr = ocr;
 	page->img = img;
