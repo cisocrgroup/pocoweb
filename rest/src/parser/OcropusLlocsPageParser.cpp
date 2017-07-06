@@ -1,4 +1,5 @@
 #include "OcropusLlocsPageParser.hpp"
+#include <crow/logging.h>
 #include <boost/filesystem/operations.hpp>
 #include <boost/foreach.hpp>
 #include <cstring>
@@ -20,10 +21,12 @@ using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 OcropusLlocsPageParser::OcropusLlocsPageParser(Path path)
-    : dir_(std::move(path)),
-      id_(std::stoi(dir_.filename().string(), nullptr, 10)),
-      done_(false) {
-	assert(fs::is_directory(dir_));
+    : dir_(path), id_(0), done_(false) {
+	if (not fs::is_directory(dir_))
+		THROW(Error, "(OcropusLlocsPageParser) not a directory: ",
+		      dir_);
+	CROW_LOG_DEBUG << "(OcropusLlocsPageParser) dir: " << dir_;
+	id_ = std::stoi(path.filename().string(), nullptr, 16);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -50,6 +53,7 @@ ParserPagePtr OcropusLlocsPageParser::parse_page() const {
 		    std::make_shared<OcropusLlocsParserLine>(
 			i + 1, llocs[i].first, llocs[i].second));
 	}
+	page->ocr = dir_;
 	page->file_type = FileType::Llocs;
 	return page;
 }

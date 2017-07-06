@@ -71,6 +71,11 @@ void Archiver::copy_files(const Path& dir) const {
 	const auto base = project_->origin().data.dir;
 	WagnerFischer wf;
 	for (const auto& page : *project_) {
+		if (not page->has_ocr_path()) {
+			CROW_LOG_WARNING << "(Archiver) page id: " << page->id()
+					 << " has no associated ocr path";
+			continue;
+		}
 		const auto pp =
 		    make_page_parser(page->file_type, page->ocr)->parse();
 
@@ -87,7 +92,7 @@ void Archiver::copy_files(const Path& dir) const {
 				}
 			}
 		}
-		if (page->has_ocr_path()) {
+		if (not fs::is_directory(page->ocr)) {
 			copy_to_tmp_dir(page->ocr, dir);
 		}
 		if (page->has_img_path()) {
