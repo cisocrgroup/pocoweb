@@ -7,6 +7,7 @@
 #include "Book.hpp"
 #include "Box.hpp"
 #include "Line.hpp"
+#include "util.hpp"
 
 namespace pcw {
 class Project;
@@ -21,7 +22,13 @@ class Page : private std::vector<LinePtr>,
 	using Base = std::vector<LinePtr>;
 	using value_type = Base::value_type;
 
-	Page(int id = 0, Box b = {}) : box(b), ocr(), img(), book_(), id_(id) {}
+	Page(int id = 0, Box b = {})
+	    : box(b),
+	      ocr(),
+	      img(),
+	      file_type(FileType::Other),
+	      book_(),
+	      id_(id) {}
 
 	using Base::begin;
 	using Base::end;
@@ -55,6 +62,7 @@ class Page : private std::vector<LinePtr>,
 
 	Box box;
 	Path ocr, img;
+	FileType file_type;
 
        private:
 	std::weak_ptr<const Book> book_;
