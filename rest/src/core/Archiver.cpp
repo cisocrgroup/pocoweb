@@ -89,7 +89,9 @@ void Archiver::copy_files(const Path& dir) const {
 Archiver::Path Archiver::archive_name() const noexcept {
 	static const auto delre = std::regex(R"([<>:"'/\\|?*]+)");
 	static const auto replre = std::regex(R"(\s+)");
-	auto basename = project_->origin().data.author + "_" +
+	assert(project_);
+	auto basename = project_->origin().data.dir.filename().string() + "_" +
+			project_->origin().data.author + "_" +
 			project_->origin().data.title + "_" +
 			std::to_string(project_->origin().data.year) + ".zip";
 	basename = std::regex_replace(basename, delre, "");
