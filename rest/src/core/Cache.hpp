@@ -25,6 +25,7 @@ class Cache : private std::list<std::shared_ptr<T>> {
 		return Base::size();
 	}
 	size_t max_size() const noexcept { return n_; }
+	void del(int id);
 	void put(value_type t);
 	template <class G>
 	value_type get(int id, G g);
@@ -50,6 +51,18 @@ template <class T>
 void pcw::Cache<T>::put(value_type t) {
 	Lock lock(mutex_);
 	put_impl(std::move(t));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template <class T>
+void pcw::Cache<T>::del(int id) {
+	Lock lock(mutex_);
+	using std::begin;
+	using std::end;
+	auto i = std::find_if(begin(*this), end(*this), [id](const auto& ptr) {
+		return ptr and ptr->id() == id;
+	});
+	if (i != end(*this)) this->erase(i);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

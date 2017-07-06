@@ -7,6 +7,10 @@
 
 namespace pcw {
 
+namespace detail {
+template <class Db>
+bool all_projects_are_finished(Db& db, int userid, int pid);
+}
 enum class Permissions {
 	Read,
 	Write,
@@ -20,6 +24,18 @@ enum class Permissions {
 template <class Db>
 bool has_permission(Db& db, int userid, bool admin, int projectid,
 		    Permissions perm);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template <class Db>
+bool pcw::detail::all_projects_are_finished(Db& db, int userid, int bookid) {
+	using namespace sqlpp;
+	tables::Projects p;
+	auto pids = db(select(p.owner).from(p).where(p.origin == bookid));
+	for (const auto& pid : pids) {
+		if (static_cast<int>(pid.owner) != userid) return false;
+	}
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +59,12 @@ bool pcw::has_permission(Db& db, int userid, bool admin, int projectid,
 			return not entry->is_book();
 		// Only admins can remove books and projects
 		case Permissions::Remove:
-			return admin;
+			if (not admin) return false;
+			if (entry->is_book())
+				return detail::all_projects_are_finished(
+				    db, userid, projectid);
+			else
+				return true;
 		// Only admins can split books (and not projects)
 		case Permissions::Split:
 			return admin and entry->is_book();

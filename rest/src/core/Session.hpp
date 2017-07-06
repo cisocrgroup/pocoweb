@@ -61,6 +61,7 @@ class Session {
 		expiration_date_ = std::move(tp);
 	}
 	void set_cookies(crow::response& response) const noexcept;
+	void uncache_project(int pid) const;
 
 	template <class R, class P>
 	void set_expiration_date_from_now(

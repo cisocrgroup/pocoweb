@@ -127,6 +127,17 @@ function backend_finish_project($pid) {
 	return $api;
 }
 
+function backend_get_remove_project_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["remove_project"], $pid);
+}
+
+function backend_remove_project($pid) {
+	$api = new Api(backend_get_remove_project_route($pid));
+	$api->delete_request();
+	return $api;
+}
+
 function backend_get_nth_page_route($pid, $p) {
 	global $config;
 	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["get_nth_page"], $pid, $p);

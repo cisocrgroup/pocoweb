@@ -1,5 +1,6 @@
 #include "core/Book.hpp"
 #include <crow.h>
+#include <boost/filesystem.hpp>
 #include <regex>
 #include "BookRoute.hpp"
 #include "core/BookDirectoryBuilder.hpp"
@@ -29,7 +30,7 @@ void BookRoute::Register(App& app) {
 	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_1)
 	    .methods("GET"_method, "POST"_method)(*this);
 	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_2)
-	    .methods("GET"_method, "POST"_method)(*this);
+	    .methods("GET"_method, "POST"_method, "DELETE"_method)(*this);
 	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_3)
 	    .methods("GET"_method, "POST"_method)(*this);
 }
@@ -165,8 +166,6 @@ Route::Response BookRoute::impl(HttpPost, const Request& req, int bid,
 		return split(req, bid);
 	} else if (strcmp(c.data(), "assign") == 0) {
 		return assign(req, bid);
-	} else if (strcmp(c.data(), "remove") == 0) {
-		return remove(req, bid);
 	} else if (strcmp(c.data(), "finish") == 0) {
 		return finish(req, bid);
 	} else {
@@ -175,10 +174,78 @@ Route::Response BookRoute::impl(HttpPost, const Request& req, int bid,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-[[noreturn]] Route::Response BookRoute::remove(const Request& req,
-					       int bid) const {
-	CROW_LOG_DEBUG << "(BookRoute::remove) body: " << req.body;
-	THROW(Error, "BookRoute::download: not implemented");
+Route::Response BookRoute::impl(HttpDelete, const Request& req, int bid) const {
+	auto conn = connection();
+	const auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
+	session->has_permission_or_throw(conn, bid, Permissions::Remove);
+	const auto project = session->find(conn, bid);
+	if (not project)
+		THROW(NotFound, "cannot remove project: no such project id: ",
+		      bid);
+	if (project->is_book())
+		remove_book(conn, *session, project->origin());
+	else
+		remove_project(conn, *session, *project);
+	return ok();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void BookRoute::remove_project(MysqlConnection& conn, const Session& session,
+			       const Project& project) const {
+	assert(not project.is_book());
+	CROW_LOG_DEBUG << "(BookRoute) removing project id: " << project.id();
+	MysqlCommiter commiter(conn);
+	remove_project_impl(conn, project.id());
+	session.uncache_project(project.id());
+	commiter.commit();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void BookRoute::remove_project_impl(MysqlConnection& conn, int pid) const {
+	using namespace sqlpp;
+	tables::Projects p;
+	tables::ProjectPages pp;
+	conn.db()(remove_from(pp).where(pp.projectid == pid));
+	conn.db()(remove_from(p).where(p.projectid == pid));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
+			    const Book& book) const {
+	assert(book.is_book());
+	CROW_LOG_DEBUG << "(BookRoute) removing book id: " << book.id();
+	using namespace sqlpp;
+	tables::Projects p;
+	tables::Textlines l;
+	tables::Contents c;
+	tables::Pages pgs;
+	MysqlCommiter commiter(conn);
+	auto pids = conn.db()(
+	    select(p.projectid, p.owner).from(p).where(p.origin == book.id()));
+	for (const auto& pid : pids) {
+		if (static_cast<int>(pid.owner) != session.user().id()) {
+			THROW(Forbidden, "cannot delete book: project id: ",
+			      pid.projectid, " is not finished");
+		}
+		remove_project_impl(conn, pid.projectid);
+		session.uncache_project(pid.projectid);
+	}
+	conn.db()(remove_from(c).where(c.bookid == book.id()));
+	conn.db()(remove_from(l).where(l.bookid == book.id()));
+	conn.db()(remove_from(pgs).where(pgs.bookid == book.id()));
+	const auto dir = book.data.dir;
+	CROW_LOG_INFO << "(BookRoute) removing directory: " << dir;
+	boost::system::error_code ec;
+	boost::filesystem::remove_all(dir, ec);
+	if (ec)
+		CROW_LOG_WARNING
+		    << "(BookRoute) cannot remove directory: " << dir << ": "
+		    << ec.message();
+	session.uncache_project(book.id());
+	commiter.commit();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
