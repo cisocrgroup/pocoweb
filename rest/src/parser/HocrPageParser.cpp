@@ -4,6 +4,7 @@
 #include <regex>
 #include "HocrParserLine.hpp"
 #include "XmlParserPage.hpp"
+#include "core/util.hpp"
 #include "hocr.hpp"
 #include "pugixml.hpp"
 #include "utils/Error.hpp"
@@ -39,6 +40,7 @@ bool HocrPageParser::begin(Xml::Node& node) {
 	page_->ocr = path_;
 	page_->img = hocr::get_img(node);
 	page_->box = hocr::get_box(node);
+	page_->file_type = FileType::Hocr;
 	return true;
 }
 

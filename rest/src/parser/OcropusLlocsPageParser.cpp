@@ -50,6 +50,7 @@ ParserPagePtr OcropusLlocsPageParser::parse_page() const {
 		    std::make_shared<OcropusLlocsParserLine>(
 			i + 1, llocs[i].first, llocs[i].second));
 	}
+	page->file_type = FileType::Llocs;
 	return page;
 }
 
