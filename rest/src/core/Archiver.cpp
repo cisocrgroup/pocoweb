@@ -10,8 +10,10 @@
 #include "Page.hpp"
 #include "Project.hpp"
 #include "utils/Error.hpp"
+#include "utils/ScopeGuard.hpp"
 
 using namespace pcw;
+namespace fs = boost::filesystem;
 
 ////////////////////////////////////////////////////////////////////////////////
 Archiver::Archiver(const Project& project, bool write_gt_files)
@@ -20,17 +22,26 @@ Archiver::Archiver(const Project& project, bool write_gt_files)
 ////////////////////////////////////////////////////////////////////////////////
 Archiver::Path Archiver::operator()() const {
 	assert(project_);
-	const auto ar = project_->origin().data.dir / archive_name();
-	const auto dir = project_->origin().data.dir / ar.stem();
+	const auto archive = project_->origin().data.dir / archive_name();
+	const auto dir = project_->origin().data.dir / archive.stem();
+	const ScopeGuard deltmpdir([&dir]() { fs::remove_all(dir); });
+	ScopeGuard delarchive([&archive]() { fs::remove(archive); });
 	copy_files(dir);
-	const auto command = "zip -qq -r " + ar.string() + " " + dir.string();
+	zip(dir, archive);
+	delarchive.dismiss();
+	// do *not* dismiss deltmpdir; it is removed all the time.
+	return archive;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void Archiver::zip(const Path& dir, const Path& archive) const {
+	const auto command =
+	    "zip -qq -r " + archive.string() + " " + dir.string();
 	CROW_LOG_DEBUG << "(Archiver) zip command: " << command;
 	auto err = system(command.data());
 	if (err)
 		THROW(Error, "Cannot unzip file: `", command, "` returned ",
 		      err);
-	boost::filesystem::remove_all(dir);
-	return ar;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,8 +65,8 @@ void Archiver::copy_files(const Path& dir) const {
 		const auto b2 = remove_common_base_path(s2.parent_path(), base);
 		const auto t1 = dir / b1 / s1.filename();
 		const auto t2 = dir / b2 / s2.filename();
-		boost::filesystem::create_directories(dir / b1);
-		boost::filesystem::create_directories(dir / b2);
+		fs::create_directories(dir / b1);
+		fs::create_directories(dir / b2);
 		copy(s1, t1);
 		copy(s2, t2);
 		for (const auto& line : *page) {
@@ -63,7 +74,7 @@ void Archiver::copy_files(const Path& dir) const {
 			const auto bx =
 			    remove_common_base_path(sx.parent_path(), base);
 			const auto tx = dir / bx / sx.filename();
-			boost::filesystem::create_directories(dir / bx);
+			fs::create_directories(dir / bx);
 			copy(sx, tx);
 			if (write_gt_files_) {
 				auto tz = tx;
@@ -90,11 +101,11 @@ Archiver::Path Archiver::archive_name() const noexcept {
 void Archiver::copy(const Path& from, const Path& to) {
 	CROW_LOG_DEBUG << "(Archiver) copying " << from << " to " << to;
 	boost::system::error_code ec;
-	boost::filesystem::create_hard_link(from, to, ec);
+	fs::create_hard_link(from, to, ec);
 	if (ec) {  // could not create hard link; try copy
 		CROW_LOG_WARNING << "Could not create hardlink from " << from
 				 << " to " << to << ": " << ec.message();
-		boost::filesystem::copy_file(from, to, ec);
+		fs::copy_file(from, to, ec);
 		if (ec) {
 			THROW(Error, "(Archiver) Cannot copy ", from.string(),
 			      " to ", to.string(), ": ", ec.message());

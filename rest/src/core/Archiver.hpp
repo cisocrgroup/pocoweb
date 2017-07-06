@@ -14,6 +14,7 @@ class Archiver {
 	Path operator()() const;
 
        private:
+	void zip(const Path& dir, const Path& archive) const;
 	void copy_files(const Path& dir) const;
 	void write_gt_file(const Line& line, const Path& to) const;
 	Path archive_name() const noexcept;
