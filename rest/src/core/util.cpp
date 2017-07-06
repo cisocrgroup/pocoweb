@@ -181,6 +181,26 @@ std::string pcw::file_type_to_string(FileType type) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+pcw::FileType pcw::file_type_from_string(const std::string& type) {
+	if (type == "Other") {
+		return FileType::Other;
+	} else if (type == "Image") {
+		return FileType::Img;
+	} else if (type == "AltoXML") {
+		return FileType::AltoXml;
+	} else if (type == "AbbyyXML") {
+		return FileType::AbbyyXml;
+	} else if (type == "hOCR") {
+		return FileType::Hocr;
+	} else if (type == "llocs") {
+		return FileType::Llocs;
+	} else if (type == "METS/MOTS") {
+		return FileType::Mets;
+	}
+	throw std::runtime_error("Invalid FileType: " + type);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 pcw::FileType pcw::get_file_type(const Path& path) {
 	static const std::regex hocr{
 	    R"(\.((html?)|(hocr))$)", std::regex_constants::icase};
