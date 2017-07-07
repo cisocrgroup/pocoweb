@@ -102,6 +102,12 @@ loggedin() {
 	expect "GET $url" $want $(code $res)
 }
 
+logout() {
+	local url="/logout"
+	local res=$(curl_get $url)
+	expect "GET $url" 200 $(code $res)
+}
+
 upload() {
 	local p=$1
 	local a=$2
@@ -194,5 +200,9 @@ get_book $bid "year" 1603
 get_book $bid "uri" "http://example.org"
 get_book $bid "description" "desc"
 remove_book $bid
+logout
+## not reset sid. User should still *not* be logged in
+loggedin $name 403
+
 
 exit $error
