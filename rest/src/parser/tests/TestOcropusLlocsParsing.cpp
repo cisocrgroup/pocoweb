@@ -2,9 +2,11 @@
 #define BOOST_TEST_MODULE OcropusLlocsTest
 
 #include <boost/test/unit_test.hpp>
+#include <fstream>
 #include <functional>
 #include <iostream>
 #include <vector>
+#include "core/Line.hpp"
 #include "core/WagnerFischer.hpp"
 #include "parser/OcropusLlocsPageParser.hpp"
 #include "parser/OcropusLlocsParserPage.hpp"
@@ -67,11 +69,20 @@ BOOST_AUTO_TEST_CASE(CorrectionTest) {
 
 	// write and read;
 	TmpDir tmp;
-	page->write(tmp);
+	page->write(tmp / "1");
 
-	OcropusLlocsPageParser p2(
-	    tmp /
-	    std::dynamic_pointer_cast<OcropusLlocsParserPage>(page)->dir());
+	// page->write only writes the llocs files.
+	// the parser needs the png files.
+	for (auto i = 0U; i < 3; ++i) {
+		const auto& line = page->get(i);
+		std::ofstream os(
+		    (tmp / "1" / line.line(i)->img.filename()).string());
+		BOOST_REQUIRE(os.good());
+		os << "data\n";
+		os.close();
+	}
+
+	OcropusLlocsPageParser p2(tmp / "1");
 	page = p2.parse();
 	BOOST_REQUIRE(page != nullptr);
 	BOOST_REQUIRE(page->size() == 3);
