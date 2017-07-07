@@ -51,13 +51,9 @@ Route::Response Login::login(const Request& req, const std::string& name,
 		return internal_server_error();
 	}
 	SessionLock lock(*session);
-	using namespace std::literals::chrono_literals;
-	session->set_expiration_date_from_now(24h);
-	auto response = ok();
-	session->set_cookies(response);
-	CROW_LOG_INFO << "(Login) login successfull for user: " << name
-		      << ", sid: " << session->id();
-	return response;
+	Json json;
+	json["sid"] = session->id();
+	return json;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -77,7 +73,7 @@ Route::Response Login::impl(HttpGet, const Request& req) const {
 	auto session = find_session(req);
 	if (not session) {
 		CROW_LOG_ERROR << "(Login) not logged in";
-		return bad_request();
+		return forbidden();
 	}
 	SessionLock lock(*session);
 	Json j;
