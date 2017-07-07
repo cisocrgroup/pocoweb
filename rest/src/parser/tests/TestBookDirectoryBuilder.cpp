@@ -1,6 +1,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE BookDirectoryBuilderTest
 
+#include <crow/logging.h>
 #include <boost/test/unit_test.hpp>
 #include <fstream>
 #include <functional>
@@ -14,7 +15,11 @@
 using namespace pcw;
 
 struct Fixture {
-	Fixture() : tmpdir(), builder(tmpdir.dir()) {}
+	Fixture() : tmpdir(), builder(tmpdir.dir()) {
+		// static crow::CerrLogHandler cerrlogger;
+		// crow::logger::setHandler(&cerrlogger);
+		// crow::logger::setLogLevel(crow::LogLevel::Debug);
+	}
 	TmpDir tmpdir;
 	BookDirectoryBuilder builder;
 	void add_zip_file(const char* file) {
