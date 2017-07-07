@@ -61,6 +61,7 @@ pcw::Route::Response pcw::CrtpRoute<T>::operator()(const Request& req,
 			CROW_LOG_DEBUG << "(CrtpRoute) Response: " << kv.first
 				       << "=" << kv.second;
 		}
+		CROW_LOG_DEBUG << "(CrtpRoute) Response BODY: " << res.body;
 		return res;
 	} catch (const Error& e) {
 		CROW_LOG_ERROR << e.what();

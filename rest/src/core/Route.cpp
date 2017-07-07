@@ -27,7 +27,6 @@ SessionPtr Route::new_session(const User& user) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 SessionPtr Route::find_session(const crow::request& request) const {
-	CROW_LOG_DEBUG << "(Route::find_session) SID ...";
 	const auto sid = request.get_header_value("Authorization");
 	CROW_LOG_DEBUG << "(Route::find_session) SID: `" << sid << "` ("
 		       << sid.size() << ")";

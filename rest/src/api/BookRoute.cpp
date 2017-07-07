@@ -63,6 +63,7 @@ Route::Response BookRoute::impl(HttpGet, const Request& req) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpPost, const Request& req) const {
+	CROW_LOG_INFO << "(BookRoute) body: " << req.body;
 	auto conn = connection();
 	auto session = this->session(req);
 	assert(conn);
@@ -70,20 +71,21 @@ Route::Response BookRoute::impl(HttpPost, const Request& req) const {
 	SessionLock lock(*session);
 	session->has_permission_or_throw(conn, 0, Permissions::Create);
 	// create new bookdir
-	const std::string file = req.url_params.get("file");
 	BookDirectoryBuilder dir(config());
 	ScopeGuard sg([&dir]() { dir.remove(); });
 	CROW_LOG_INFO << "(BookRoute) BookDirectoryBuilder: " << dir.dir();
-	if (file.empty())  // raw upload of zip file in body
+	const auto json = crow::json::load(req.body);
+	if (json.has("file")) {
+		dir.add_zip_file_path(json["file"].s());
+	} else {
 		dir.add_zip_file_content(extract_content(req));
-	else  // insert uploaded file
-		dir.add_zip_file_path(file);
+	}
 	auto book = dir.build();
 	if (not book) THROW(Error, "Could not build book");
 	// update book data
 	CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
-	auto json = crow::json::load(req.body);
-	update_book_data(*book, session->user(), json);
+	book->set_owner(session->user());
+	update_book_data(*book, json);
 	// insert book into database
 	CROW_LOG_INFO << "(BookRoute) Inserting new book into database";
 	MysqlCommiter commiter(conn);
@@ -99,15 +101,14 @@ Route::Response BookRoute::impl(HttpPost, const Request& req) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void BookRoute::update_book_data(Book& book, const User& user,
+void BookRoute::update_book_data(Book& book,
 				 const crow::json::rvalue& data) const {
-	book.set_owner(user);
-	if (data["author"].s().size()) book.data.author = data["author"].s();
-	if (data["title"].s().size()) book.data.title = data["title"].s();
-	if (data["language"].s().size()) book.data.lang = data["language"].s();
-	if (data["year"].i()) book.data.year = data["year"].i();
-	if (data["uri"].s().size()) book.data.uri = data["uri"].s();
-	if (data["description"].s().size())
+	if (data.has("author")) book.data.author = data["author"].s();
+	if (data.has("title")) book.data.title = data["title"].s();
+	if (data.has("language")) book.data.lang = data["language"].s();
+	if (data.has("year")) book.data.year = data["year"].i();
+	if (data.has("uri")) book.data.uri = data["uri"].s();
+	if (data.has("description"))
 		book.data.description = data["description"].s();
 }
 
@@ -141,7 +142,7 @@ Route::Response BookRoute::impl(HttpPost, const Request& req, int bid) const {
 	if (not view->is_book())
 		THROW(BadRequest, "cannot set parameters of project id: ", bid);
 	const auto book = std::dynamic_pointer_cast<Book>(view);
-	update_book_data(*book, session->user(), data);
+	update_book_data(*book, data);
 	MysqlCommiter commiter(conn);
 	update_book(conn.db(), *book);
 	commiter.commit();
