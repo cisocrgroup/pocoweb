@@ -19,8 +19,8 @@ using namespace pcw;
 namespace fs = boost::filesystem;
 
 ////////////////////////////////////////////////////////////////////////////////
-Archiver::Archiver(const Project& project, bool write_gt_files)
-    : project_(project.shared_from_this()), write_gt_files_(write_gt_files) {}
+Archiver::Archiver(const Project& project)
+    : project_(project.shared_from_this()) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 Archiver::Path Archiver::operator()() const {
@@ -87,12 +87,10 @@ void Archiver::copy_files(const Path& dir) const {
 				pp->get(line->id() - 1).correct(wf);
 				const auto img =
 				    copy_to_tmp_dir(line->img, dir);
-				if (write_gt_files_) {
-					auto tmp = img.parent_path() /
-						   img.stem().replace_extension(
-						       ".gt.txt");
-					write_gt_file(*line, tmp);
-				}
+				auto tmp =
+				    img.parent_path() /
+				    img.stem().replace_extension(".gt.txt");
+				write_gt_file(*line, tmp);
 			}
 		}
 		if (not fs::is_directory(page->ocr)) {

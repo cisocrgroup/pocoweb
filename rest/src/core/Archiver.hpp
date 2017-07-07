@@ -11,7 +11,7 @@ class Line;
 class Archiver {
        public:
 	using Path = boost::filesystem::path;
-	Archiver(const Project& p, bool write_gt_files);
+	Archiver(const Project& p);
 	Path operator()() const;
 
        private:
@@ -24,7 +24,6 @@ class Archiver {
 	static void copy(const Path& from, const Path& to);
 
 	const std::shared_ptr<const Project> project_;
-	const bool write_gt_files_;
 };
 }
 #endif  // pcw_Archiver_hpp__

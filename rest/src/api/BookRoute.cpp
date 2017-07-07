@@ -263,7 +263,7 @@ Route::Response BookRoute::download(const Request& req, int bid) const {
 	session->has_permission_or_throw(conn, bid, Permissions::Read);
 	const auto project = session->find(conn, bid);
 	if (not project) THROW(NotFound, "cannot find project id: ", bid);
-	Archiver archiver(*project, true);
+	Archiver archiver(*project);
 	auto ar = archiver();
 	Json j;
 	j["archive"] = ar.string();
