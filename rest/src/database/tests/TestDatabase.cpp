@@ -169,8 +169,8 @@ BOOST_AUTO_TEST_CASE(InsertBook) {
 	    "description,lang) VALUES('author','title','directory',2017,"
 	    "'uri',0,'description','language')");
 	db.expect(
-	    "INSERT INTO pages (bookid,pageid,imagepath,ocrpath,pleft,"
-	    "ptop,pright,pbottom) VALUES(0,1,'image','ocr',1,2,3,4)");
+	    "INSERT INTO pages (bookid,pageid,imagepath,ocrpath,filetype,pleft,"
+	    "ptop,pright,pbottom) VALUES(0,1,'image','ocr','Other',1,2,3,4)");
 	db.expect(
 	    "INSERT INTO textlines (bookid,pageid,lineid,imagepath,lleft,"
 	    "ltop,lright,lbottom) VALUES(0,1,1,'image',2,3,4,5)");
