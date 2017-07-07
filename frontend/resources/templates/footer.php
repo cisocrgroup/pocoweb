@@ -1,4 +1,4 @@
-<div class="row">
+<div class="col-md-12">
 <footer class="footer">
 	<div class="text-muted footer-line text-center">
 		<a href="#">Back to top <span class="glyphicon glyphicon-menu-up"/></a>
@@ -15,6 +15,7 @@
 	</div>
 </footer>
 </div>
+
 </div>
 </div>
 </div>

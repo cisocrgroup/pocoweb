@@ -5,7 +5,11 @@ require_once(TEMPLATES_PATH . "/header.php");
 <div class="col-md-9">
 <!-- documentation -->
 <h1 class="page-header" id="documentation">Documentation</h1>
-<p><span class="glyphicon glyphicon-ban-circle"/>&nbsp;Coming soon...</p>
+<p>
+PoCoWeb is a web-based postcorrection System for OCR documents.
+It is loosely based on <a href="www.example.org">PoCoTo</a>.
+</p>
+
 <!-- User management -->
 <h2 class="page-header" id="user-management">User management</h2>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vestibulum justo vitae imperdiet varius. Fusce finibus nisl lectus, a scelerisque erat sollicitudin ut. Ut accumsan tellus sit amet volutpat accumsan. Nunc sit amet leo ante. Proin turpis orci, ultricies mattis porttitor eu, cursus quis ligula. Suspendisse tincidunt ac sem ultrices imperdiet. Fusce quam tellus, ullamcorper sit amet erat id, sagittis feugiat erat.</p>
@@ -28,9 +32,9 @@ require_once(TEMPLATES_PATH . "/header.php");
 <p>Suspendisse ac odio at velit cursus vehicula placerat vel dui. Quisque luctus dapibus ante ac efficitur. Duis convallis auctor nisi, quis commodo dolor dictum eget. Phasellus maximus elit ante, ut placerat orci dictum nec. Vestibulum ornare aliquam metus, vel placerat tortor. Sed euismod ex vel nisl posuere tempor. Mauris ut nisi venenatis, aliquet diam at, vulputate libero. Donec vulputate, elit dictum mattis dapibus, ligula ante varius velit, vel ornare elit leo ut felis. Integer neque ante, feugiat id molestie eu, sagittis eu augue. Vivamus fringilla ligula nec finibus imperdiet. Maecenas vestibulum lorem eget felis mattis ornare. Proin pulvinar in tellus eget ornare.</p>
 <p>Nunc vestibulum tellus purus, ac accumsan risus consectetur id. Ut nibh erat, faucibus eget viverra sit amet, congue quis tortor. Etiam ornare vehicula accumsan. Curabitur consectetur rhoncus lorem eu scelerisque. Nam ipsum urna, rutrum sed aliquet at, pretium et tellus. Pellentesque eu hendrerit augue, ut condimentum sapien. Duis maximus, orci blandit placerat auctor, nibh neque fringilla lacus, quis viverra velit ipsum at quam. Donec vehicula sagittis ornare. Fusce quis suscipit quam, eget auctor ipsum. Morbi aliquam eu nulla vel volutpat.</p>
 </div>
-<div class="col-md-3">
 <!-- navigation -->
-<nav class="bs-docs-sidebar hidden-print hidden-sm hidden-xs affix">
+<div class="col-md-3">
+<nav class="bs-docs-sidebar hidden-print hidden-sm hidden-xs affix" data-spy="affix" data-offset-top="250">
 <ul class="nav bs-docs-sidenav">
 <li class><a href="#documentation">Documentation</a></li>
 <li class><a href="#user-management">User management</a></li>
