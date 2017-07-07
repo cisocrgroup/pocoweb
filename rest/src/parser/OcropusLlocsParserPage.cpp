@@ -6,6 +6,7 @@
 #include <sstream>
 #include <stdexcept>
 #include "core/Line.hpp"
+#include "llocs.hpp"
 
 using namespace pcw;
 
@@ -19,25 +20,22 @@ OcropusLlocsParserPage::OcropusLlocsParserPage(int iid) : dir_() {
 
 ////////////////////////////////////////////////////////////////////////////////
 void OcropusLlocsParserPage::write(const Path& path) const {
-	auto base = path / dir_;
-	boost::filesystem::create_directory(base);
+	boost::filesystem::create_directories(path);
 	int i = 0;
 	for (const auto& line : lines()) {
-		write(++i, *line, base);
+		write(++i, *line, path);
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void OcropusLlocsParserPage::write(int id, const ParserLine& line,
 				   const Path& base) {
-	auto l = line.line(id);
-	auto img = base / l->img.filename();
-	auto llocs = img.replace_extension(".llocs");
+	const auto l = line.line(id);
+	const auto llocs = get_llocs_from_png(base / l->img.filename());
 	std::wofstream os(llocs.string());
 	if (not os.good())
 		throw std::system_error(errno, std::system_category(),
 					llocs.string());
-	copy(l->img, base / l->img.filename());
 	for (const auto& c : l->chars()) {
 		auto cc = c.get_cor();
 		if (cc) {
