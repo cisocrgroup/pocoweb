@@ -68,4 +68,38 @@ BOOST_AUTO_TEST_CASE(Ocropus) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(Alto) {
+	add_zip_file("misc/data/test/rollenhagen_reysen_1603.zip");
+	auto book = builder.build();
+	BOOST_REQUIRE(book);
+	BOOST_CHECK_EQUAL(book->size(), 3);
+
+	// first page
+	const auto p1 = book->find(1);
+	BOOST_REQUIRE(p1);
+	auto line = p1->find(1);
+	BOOST_REQUIRE(line);
+	BOOST_CHECK_EQUAL(line->ocr(), "Vnd daſſelb im Bluthroten Felde/");
+
+	// second page
+	const auto p2 = book->find(2);
+	BOOST_REQUIRE(p2);
+	line = p2->find(6);
+	BOOST_REQUIRE(line);
+	BOOST_CHECK_EQUAL(line->ocr(), "vnd des Jndianiſchen Landes/ auch von");
+
+	// third page
+	const auto p3 = book->find(3);
+	BOOST_REQUIRE(p2);
+	line = p3->find(14);
+	BOOST_REQUIRE(line);
+	BOOST_CHECK_EQUAL(
+	    line->ocr(), "in je einem Land ſo viel ſeltzame wunder wehrẽ/ wen");
+
+	// no such page
+	const auto p4 = book->find(4);
+	BOOST_REQUIRE(not p4);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
