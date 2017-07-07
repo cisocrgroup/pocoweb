@@ -24,7 +24,6 @@ class SessionStore {
 	void delete_session(const std::string& sid);
 	auto begin() const { return sessions_.begin(); }
 	auto end() const { return sessions_.end(); }
-	void clear_expired_sessions();
 
        private:
 	using Sessions = std::unordered_map<std::string, SessionSptr>;

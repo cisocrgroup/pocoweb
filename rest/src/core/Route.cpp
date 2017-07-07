@@ -27,11 +27,11 @@ SessionPtr Route::new_session(const User& user) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 SessionPtr Route::find_session(const crow::request& request) const {
-	auto sid = get_cookie(request, "pcw-sid");
-	CROW_LOG_DEBUG << "(Route) searching for sid: " << sid;
-	if (not sid) return nullptr;
+	auto sid = request.url_params.get("sid");
+	if (sid or strlen(sid) != Session::SESSION_ID_LENGTH) return nullptr;
+	CROW_LOG_DEBUG << "(Route) SID: " << sid;
 	assert(session_store_);
-	return session_store_->find_session(*sid);
+	return session_store_->find_session(sid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
