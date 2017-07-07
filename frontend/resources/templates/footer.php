@@ -1,3 +1,4 @@
+<div class="col-md-12">
 <footer class="footer">
 	<div class="text-muted footer-line text-center">
 		<a href="#">Back to top <span class="glyphicon glyphicon-menu-up"/></a>
@@ -13,6 +14,8 @@
 		This website uses cookies.
 	</div>
 </footer>
+</div>
+
 </div>
 </div>
 </div>
