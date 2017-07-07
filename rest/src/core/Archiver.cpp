@@ -103,12 +103,20 @@ void Archiver::copy_files(const Path& dir) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Archiver::Path Archiver::copy_to_tmp_dir(const Path& source,
-					 const Path& tmpdir) {
+Archiver::Path Archiver::get_tmp_file(const Path& source, const Path& tmpdir) {
 	const auto base = remove_common_base_path(source.parent_path(), tmpdir);
 	const auto target = tmpdir / base / source.filename();
-	fs::create_directories(tmpdir / base);
-	copy(source, target);
+	return target;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Archiver::Path Archiver::copy_to_tmp_dir(const Path& source,
+					 const Path& tmpdir) {
+	const auto target = get_tmp_file(source, tmpdir);
+	fs::create_directories(target.parent_path());
+	boost::system::error_code ec;
+	hard_link_or_copy(source, target, ec);
+	if (ec) THROW(Error, "(Archiver) cannot copy ", source, " to ", target);
 	return target;
 }
 
@@ -124,22 +132,6 @@ Archiver::Path Archiver::archive_name() const noexcept {
 	basename = std::regex_replace(basename, delre, "");
 	basename = std::regex_replace(basename, replre, "_");
 	return basename;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void Archiver::copy(const Path& from, const Path& to) {
-	CROW_LOG_DEBUG << "(Archiver) copying " << from << " to " << to;
-	boost::system::error_code ec;
-	fs::create_hard_link(from, to, ec);
-	if (ec) {  // could not create hard link; try copy
-		CROW_LOG_WARNING << "Could not create hardlink from " << from
-				 << " to " << to << ": " << ec.message();
-		fs::copy_file(from, to, ec);
-		if (ec) {
-			THROW(Error, "(Archiver) Cannot copy ", from.string(),
-			      " to ", to.string(), ": ", ec.message());
-		}
-	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
