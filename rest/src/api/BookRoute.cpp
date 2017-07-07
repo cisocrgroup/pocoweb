@@ -1,6 +1,7 @@
 #include "core/Book.hpp"
 #include <crow.h>
 #include <boost/filesystem.hpp>
+#include <random>
 #include <regex>
 #include "BookRoute.hpp"
 #include "core/Archiver.hpp"
