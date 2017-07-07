@@ -141,7 +141,7 @@ BookConstructor::find_matching_img_file(const Path& path) const noexcept {
 	});
 	if (f == end(img_))
 		CROW_LOG_WARNING
-		    << "(BookConstructor) Could not find image file for path: "
+		    << "(BookConstructor) cannot find image file for path: "
 		    << path;
 	return f;
 }
