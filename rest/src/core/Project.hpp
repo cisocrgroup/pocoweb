@@ -23,7 +23,7 @@ class Project : private std::vector<PagePtr>,
 	virtual ~Project() noexcept = default;
 	virtual const Book& origin() const noexcept = 0;
 	virtual const User& owner() const noexcept = 0;
-	virtual void set_owner(const User&) noexcept = 0;
+	virtual void set_owner(const User&) = 0;
 	int id() const noexcept { return id_; }
 	void set_id(int id);
 	bool is_book() const noexcept {

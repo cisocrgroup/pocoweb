@@ -30,7 +30,7 @@ class Book : public Project {
 	virtual ~Book() noexcept override = default;
 	virtual const Book& origin() const noexcept override { return *this; }
 	virtual const User& owner() const noexcept override { return *owner_; }
-	virtual void set_owner(const User& user) noexcept override;
+	virtual void set_owner(const User& user) override;
 
 	BookData data;
 
