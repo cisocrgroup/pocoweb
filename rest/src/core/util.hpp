@@ -36,6 +36,9 @@ PageParserPtr make_page_parser(FileType type, const Path& path);
 
 std::string utf8(const std::wstring& str);
 std::wstring utf8(const std::string& str);
+void hard_link_or_copy(const Path& from, const Path& to);
+void hard_link_or_copy(const Path& from, const Path& to,
+		       boost::system::error_code& ec) noexcept;
 }
 
 #endif  // pcw_util_hpp__

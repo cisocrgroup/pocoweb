@@ -1,8 +1,10 @@
 #include "util.hpp"
+#include <crow/logging.h>
 #include <openssl/sha.h>
 #include <unistd.h>
 #include <utf8.h>
 #include <algorithm>
+#include <boost/filesystem/operations.hpp>
 #include <cassert>
 #include <cstring>
 #include <cstring>
@@ -250,4 +252,27 @@ std::wstring pcw::utf8(const std::string& str) {
 	std::wstring res;
 	utf8::utf8to32(begin(str), end(str), std::back_inserter(res));
 	return res;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void pcw::hard_link_or_copy(const Path& from, const Path& to) {
+	boost::system::error_code ec;
+	hard_link_or_copy(from, to, ec);
+	if (ec) {
+		throw std::system_error(ec.value(), std::system_category(),
+					to.string());
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void pcw::hard_link_or_copy(const Path& from, const Path& to,
+			    boost::system::error_code& ec) noexcept {
+	boost::filesystem::create_hard_link(from, to, ec);
+	if (ec) {  // could not create hard link; try copy
+		CROW_LOG_WARNING << "(hard_link_or_copy) Could not "
+				    "create hardlink from "
+				 << from << " to " << to << ": "
+				 << ec.message();
+		boost::filesystem::copy_file(from, to, ec);
+	}
 }
