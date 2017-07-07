@@ -93,9 +93,7 @@ void Archiver::copy_files(const Path& dir) const {
 				write_gt_file(*line, tmp);
 			}
 		}
-		if (not fs::is_directory(page->ocr)) {
-			copy_to_tmp_dir(page->ocr, dir);
-		}
+		pp->write(get_tmp_file(page->ocr, dir));
 		if (page->has_img_path()) {
 			copy_to_tmp_dir(page->img, dir);
 		}
