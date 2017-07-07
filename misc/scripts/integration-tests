@@ -14,6 +14,7 @@ curlopt=
 errors=0
 spid=0
 json=
+sid=
 
 finish() {
 	# echo removing $cookies
@@ -38,18 +39,24 @@ expect() {
 	if [ "$want" != "$got" ]; then
 		((error++))
 		printf "%-60s" "$url"
-		echo -ne $fail
-		echo " [want=$want; got=$got]"
+		echo -e "$fail    [want=$want; got=$got]"
 	else
 		printf "%-60s" "$url"
-		echo -ne $success
-		echo " [want=got=$want]"
+		echo -e "$success [want=got=$want]"
 	fi
 }
 
-run_curl() {
+get_curl() {
 	curl $curlopt --silent -v -w '%%RESPONSE_CODE=%{http_code}%%' \
-		-b $cookies -c $cookies \
+		-H "Authorization: $sid" \
+		-g -6 http://[$host]:$port$1
+}
+
+post_curl() {
+	curl $curlopt --silent -v -w '%%RESPONSE_CODE=%{http_code}%%' \
+		-H "Content-Type: application/json" \
+		-H "Authorization: $sid" \
+		-X POST -d $2 \
 		-g -6 http://[$host]:$port$1
 }
 
@@ -69,19 +76,21 @@ json_get_field() {
 # API TEST FUNCTIONS
 #
 login() {
-	name=$1
-	pass=$2
-	want=$3
-	url="/login/user/$name/pass/$pass"
-	res=$(run_curl $url)
+	local name=$1
+	local pass=$2
+	local want=$3
+	local post="{\"name\":\"$name\",\"pass\":\"$pass\"}"
+	local url="/login"
+	local res=$(post_curl $url $post)
 	expect $url $want $(get_code $res)
+	sid=$(json_get_field "sid" $(get_json $res))
 }
 
 loggedin() {
-	name=$1
-	want=$2
-	url="/login/user/$name"
-	res=$(run_curl $url)
+	local name=$1
+	local want=$2
+	local url="/login"
+	local res=$(get_curl $url)
 	expect $url $want $(get_code $res)
 }
 
@@ -90,7 +99,7 @@ upload() {
 	want=$2
 	url="/books"
 	curlopt="--form upload=@$path"
-	res=$(run_curl $url)
+	res=$(get_curl $url)
 	curlopt=""
 	expect $url $want $(get_code $res)
 	json=$(get_json $res)
@@ -102,11 +111,15 @@ update_book() {
 	val=$3
 	curlopt="-XPOST"
 	url="/books/$id?$key=$val"
-	res=$(run_curl $url)
+	res=$(get_curl $url)
 	curlopt=""
 	expect $url 200 $(get_code $res)
 	expect "update bookid=$id \"$key\" to $val" $val $(json_get_field $key $(get_json $res))
 }
+
+# remove_book() {
+#
+# }
 
 #
 # START OF SCRIPT
@@ -119,16 +132,24 @@ fi
 
 trap finish EXIT
 start_server
+sid=""
 login $name $pass 200
 loggedin $name 200
+sid=""
 login "invalid" "invalid" 403
+sid=""
 loggedin "invalid" 403
-upload misc/data/test/hobbes-ocropus.zip 201
-bookid=$(json_get_field "id" $json)
-update_book $bookid "title" "Leviathan"
-update_book $bookid "author" "Hobbes"
-update_book $bookid "year" "1668"
-update_book $bookid "description" "Hobbes-Leviathan"
-update_book $bookid "uri" "some/uri"
+sid=""
+login $name $pass 200
+loggedin $name 200
+
+# upload misc/data/test/hobbes-ocropus.zip 201
+# bookid=$(json_get_field "id" $json)
+# update_book $bookid "title" "Leviathan"
+# update_book $bookid "author" "Hobbes"
+# update_book $bookid "year" "1668"
+# update_book $bookid "description" "Hobbes-Leviathan"
+# update_book $bookid "uri" "some/uri"
+# remove_book $bookid "uri" "some/uri"
 
 exit $error
