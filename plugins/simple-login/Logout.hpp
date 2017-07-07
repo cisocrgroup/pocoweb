@@ -17,8 +17,6 @@ class Logout : public CrtpRoute<Logout> {
 	Response impl(HttpGet, const Request& request) const;
 
        private:
-	Response login(const Request& req, const std::string& name,
-		       const std::string& pass) const;
 	static const char* route_;
 	static const char* name_;
 };
