@@ -12,7 +12,7 @@ SessionSptr SessionStore::new_session(const User& user, AppCacheSptr cache) {
 	SessionSptr session = nullptr;
 	Lock lock(mutex_);
 	// TODO: Do something more sensitive here
-	if (sessions_.size() > THRESHOLD) sessions_.clear();
+	if (sessions_.size() >= THRESHOLD) sessions_.clear();
 	while (not session) {
 		session = std::make_shared<Session>(user, cache);
 		auto i = sessions_.find(session->id());

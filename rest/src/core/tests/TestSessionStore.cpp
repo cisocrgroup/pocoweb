@@ -58,22 +58,13 @@ BOOST_AUTO_TEST_CASE(FindMultipleSessions) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(ClearExpiredSessions) {
+BOOST_AUTO_TEST_CASE(SessionStoreClears) {
 	using namespace std::literals::chrono_literals;
-	for (auto i = 0; i < 10; ++i) {
+	for (auto i = 0U; i < (2 * SessionStore::THRESHOLD); ++i) {
 		auto session = session_store.new_session(*user, nullptr);
-		if (i % 2 == 0) {
-			session->set_expiration_date_from_now(2h);
-		} else {
-			session->set_expiration_date(
-			    std::chrono::system_clock::now() - 2h);
-		}
+		BOOST_CHECK(session_store.size() <= SessionStore::THRESHOLD);
+		BOOST_CHECK(session != nullptr);
 	}
-	BOOST_CHECK_EQUAL(session_store.size(), 10);
-	session_store.clear_expired_sessions();
-	BOOST_CHECK_EQUAL(session_store.size(), 5);
-	for (const auto& x : session_store)
-		BOOST_CHECK(not x.second->has_expired());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
