@@ -14,6 +14,7 @@
 #include "Config.hpp"
 #include "Page.hpp"
 #include "Pix.hpp"
+#include "parser/llocs.hpp"
 #include "util.hpp"
 #include "utils/Error.hpp"
 
@@ -160,7 +161,6 @@ void BookDirectoryBuilder::make_line_img_files(const Path& pagedir,
 			THROW(Error, "(BookDirectoryBuilder) Cannot read img ",
 			      page.img);
 	}
-	const bool copy_llocs = page.file_type == FileType::Llocs;
 	for (auto& line : page) {
 		if (not line->has_img_path() and not pix) {
 			CROW_LOG_WARNING
@@ -168,7 +168,10 @@ void BookDirectoryBuilder::make_line_img_files(const Path& pagedir,
 			    << page.ocr;
 		} else if (not line->has_img_path() and pix) {
 			line->img = pagedir / path_from_id(line->id());
-			// we use png as output format
+			// we use png as single output format,
+			// since it is supported by most web browsers
+			// and is also the main image format that
+			// ocoropus supports.
 			line->img.replace_extension(".png");
 			fs::create_directories(pagedir);
 			write_line_img_file(pix.get(), *line);
@@ -177,14 +180,11 @@ void BookDirectoryBuilder::make_line_img_files(const Path& pagedir,
 						   line->img, tmp_dir());
 			fs::create_directories(to.parent_path());
 			copy(line->img, to);
-			if (copy_llocs) {
-				const auto llocsfile =
-				    line->img.stem().replace_extension(
-					".llocs");
+			// copy additional llocs files
+			if (page.file_type == FileType::Llocs) {
 				const auto fromllocs =
-				    line->img.parent_path() / llocsfile;
-				const auto tollocs =
-				    to.parent_path() / llocsfile;
+				    get_llocs_from_png(line->img);
+				const auto tollocs = get_llocs_from_png(to);
 				copy(fromllocs, tollocs);
 			}
 			// update line image file

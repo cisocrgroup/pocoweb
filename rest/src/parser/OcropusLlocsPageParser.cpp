@@ -13,6 +13,7 @@
 #include "core/Line.hpp"
 #include "core/Page.hpp"
 #include "core/util.hpp"
+#include "llocs.hpp"
 #include "pugixml.hpp"
 #include "utils/Error.hpp"
 
@@ -62,10 +63,9 @@ ParserPagePtr OcropusLlocsPageParser::parse_page() const {
 ////////////////////////////////////////////////////////////////////////////////
 boost::optional<OcropusLlocsPageParser::PathPair>
 OcropusLlocsPageParser::get_path_pair(const Path& file) {
-	// match on png image files
+	// match on .png image files that have an associated .llocs file
 	if (fs::is_regular_file(file) and file.extension() == ".png") {
-		auto llocs = file.parent_path() /
-			     file.stem().replace_extension(".llocs");
+		const auto llocs = get_llocs_from_png(file);
 		if (fs::is_regular_file(llocs)) return PathPair{llocs, file};
 		CROW_LOG_WARNING
 		    << "(OcropusLlocsPageParser) cannot find llocs file for: "
