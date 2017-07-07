@@ -16,6 +16,9 @@ using SessionStoreSptr = std::shared_ptr<SessionStore>;
 
 class SessionStore {
        public:
+	// after THRESHOLD SESSIONS are in the store,
+	// *all* sessions are deleted.
+	static const size_t THRESHOLD = 5000;
 	SessionStore();
 	size_t size() const noexcept { return sessions_.size(); }
 	bool empty() const noexcept { return sessions_.empty(); }
