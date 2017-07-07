@@ -78,7 +78,6 @@ void Archiver::copy_files(const Path& dir) const {
 		}
 		const auto pp =
 		    make_page_parser(page->file_type, page->ocr)->parse();
-
 		for (const auto& line : *page) {
 			if (line->has_img_path()) {
 				wf.set_gt(line->wcor());
