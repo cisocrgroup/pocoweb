@@ -282,10 +282,12 @@ function frontend_upload_project_archive($post, $file) {
 }
 
 function frontend_render_users_div() {
-	global $user;
-	if ($user["admin"]) {
+	global $USER;
+	if ($USER != NULL && $USER["admin"]) {
 		frontend_render_create_new_user_div();
 		frontend_render_users_table_div();
+	} else {
+		frontend_render_warning_div("You are not allowed to do user administration");
 	}
 }
 

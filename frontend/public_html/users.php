@@ -3,7 +3,6 @@ require_once("../resources/config.php");
 require_once(LIBRARY_PATH . "/frontend.php");
 require_once(LIBRARY_PATH . "/backend.php");
 require_once(TEMPLATES_PATH . "/header.php");
-global $user;
 if (isset($_GET["create"])) {
 	backend_create_user($_POST);
 	frontend_render_success_div("Successfully created new user");
@@ -11,10 +10,11 @@ if (isset($_GET["create"])) {
 	backend_delete_user($_GET["uid"]);
 	frontend_render_success_div("Successfully deleted user id: $_GET[uid]");
 }
-if ($user === NULL) {
+global $USER;
+if ($USER === NULL) {
 	frontend_render_info_div("Welcome to PoCoWeb. Please <a href='login.php'>login</a>");
-} else if (!$user["admin"]) {
-	frontend_render_info_div("You are not allowed to do user administration");
+} else if (!$USER["admin"]) {
+	frontend_render_warning_div("You are not allowed to do user administration");
 } else {
 	frontend_render_users_div();
 }
