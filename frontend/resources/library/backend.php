@@ -289,11 +289,11 @@ function backend_get_page($pid, $p) {
 function backend_get_upload_project_route($file) {
 	global $config;
 	return $config["backend"]["url"] .
-		$config["backend"]["routes"]["upload_project"] .
-		"?file=" . urlencode($file);
+		$config["backend"]["routes"]["upload_project"];
 }
 
 function backend_upload_project($post, $name, $file) {
+	$post["file"] = $file;
 	$api = new Api(backend_get_upload_project_route($file));
 	global $SID;
 	$api->set_session_id($SID);
