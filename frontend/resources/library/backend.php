@@ -92,8 +92,9 @@ function backend_get_logout_route() {
 }
 
 function backend_logout() {
+	global $SID;
 	$api = new Api(backend_get_logout_route());
-	$api->set_session_id(backend_get_session_cookie());
+	$api->set_session_id($SID);
 	$api->get_request();
 	return $api;
 }
@@ -114,6 +115,8 @@ function backend_get_projects_route() {
 
 function backend_get_projects() {
 	$api = new Api(backend_get_projects_route());
+	global $SID;
+	$api->set_session_id($SID);
 	$api->get_request();
 	return $api;
 }
@@ -126,6 +129,8 @@ function backend_get_users_route() {
 
 function backend_get_users() {
 	$api = new Api(backend_get_users_route());
+	global $SID;
+	$api->set_session_id($SID);
 	$api->get_request();
 	return $api;
 }
@@ -137,6 +142,8 @@ function backend_create_user($post) {
 		$post["admin"] = false;
 	}
 	$api = new Api(backend_get_users_route());
+	global $SID;
+	$api->set_session_id($SID);
 	$api->post_request($post);
 	return $api;
 }
@@ -149,6 +156,8 @@ function backend_get_delete_user_route($uid) {
 
 function backend_delete_user($uid) {
 	$api = new Api(backend_get_delete_user_route($uid));
+	global $SID;
+	$api->set_session_id($SID);
 	$api->delete_request();
 	return $api;
 }
@@ -166,6 +175,8 @@ function backend_split_project($pid, $post) {
 		$data["random"] = false;
 	}
 	$api = new Api(backend_get_split_project_route($pid));
+	global $SID;
+	$api->set_session_id($SID);
 	$api->post_request($data);
 	return $api;
 }
@@ -178,6 +189,8 @@ function backend_get_assign_project_route($pid) {
 function backend_assign_project($pid, $post) {
 	$data = array("name" => $post["assign-user-name"]);
 	$api = new Api(backend_get_assign_project_route($pid));
+	global $SID;
+	$api->set_session_id($SID);
 	$api->post_request($data);
 	return $api;
 }
@@ -190,6 +203,8 @@ function backend_get_finish_project_route($pid) {
 function backend_finish_project($pid) {
 	$data = array();
 	$api = new Api(backend_get_finish_project_route($pid));
+	global $SID;
+	$api->set_session_id($SID);
 	$api->post_request($data);
 	return $api;
 }
@@ -201,6 +216,8 @@ function backend_get_remove_project_route($pid) {
 
 function backend_remove_project($pid) {
 	$api = new Api(backend_get_remove_project_route($pid));
+	global $SID;
+	$api->set_session_id($SID);
 	$api->delete_request();
 	return $api;
 }
@@ -212,6 +229,8 @@ function backend_get_download_project_route($pid) {
 
 function backend_download_project($pid) {
 	$api = new Api(backend_get_download_project_route($pid));
+	global $SID;
+	$api->set_session_id($SID);
 	$api->get_request();
 	return $api;
 }
@@ -239,6 +258,8 @@ function backend_get_correct_line_route($pid, $p, $lid) {
 function backend_correct_line($pid, $p, $lid, $d) {
 	$data = array('d' => $d);
 	$api = new Api(backend_get_correct_line_route($pid, $p, $lid));
+	global $SID;
+	$api->set_session_id($SID);
 	$api->post_request($data);
 	return $api;
 }
@@ -246,14 +267,20 @@ function backend_correct_line($pid, $p, $lid, $d) {
 function backend_get_page($pid, $p) {
 	if ($p === "first") {
 		$api = new Api(backend_get_first_page_route($pid));
+		global $SID;
+		$api->set_session_id($SID);
 		$api->get_request();
 		return $api;
 	} else if ($p == "last") {
 		$api = new Api(backend_get_last_page_route($pid));
+		global $SID;
+		$api->set_session_id($SID);
 		$api->get_request();
 		return $api;
 	} else {
 		$api = new Api(backend_get_nth_page_route($pid, $p));
+		global $SID;
+		$api->set_session_id($SID);
 		$api->get_request();
 		return $api;
 	}
@@ -268,6 +295,8 @@ function backend_get_upload_project_route($file) {
 
 function backend_upload_project($post, $name, $file) {
 	$api = new Api(backend_get_upload_project_route($file));
+	global $SID;
+	$api->set_session_id($SID);
 	$api->post_request($post);
 	return $api;
 }
