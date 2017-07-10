@@ -14,9 +14,9 @@ namespace pcw {
 	class Searcher {
 	public:
 		Searcher(): Searcher(nullptr) {}
-		Searcher(Project& project);
+		Searcher(const Project& project);
 
-		void set_project(Project& project) noexcept;
+		void set_project(const Project& project) noexcept;
 		bool match_words() const noexcept
 		{
 			return match_words_;
@@ -41,12 +41,12 @@ namespace pcw {
 		std::vector<LineSptr> find_impl(F f) const;
 
 	private:
-		Searcher(ProjectSptr p)
+		Searcher(std::shared_ptr<const Project> p)
 			: project_(std::move(p))
 		  	, match_words_(true)
 		  	, ignore_case_(true)
 		{}
-		ProjectSptr project_;
+		std::shared_ptr<const Project> project_;
 		bool match_words_, ignore_case_;
 	};
 }

@@ -6,11 +6,11 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-Searcher::Searcher(Project& project): Searcher(project.shared_from_this()) {}
+Searcher::Searcher(const Project& project): Searcher(project.shared_from_this()) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-Searcher::set_project(Project& project) noexcept
+Searcher::set_project(const Project& project) noexcept
 {
 	project_ = project.shared_from_this();
 }
