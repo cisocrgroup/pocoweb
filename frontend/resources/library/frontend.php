@@ -20,8 +20,8 @@ function frontend_render_login_div() {
 }
 
 function frontend_render_projects_div() {
-	global $user;
-	if ($user["admin"]) {
+	global $USER;
+	if ($USER != NULL && $USER["admin"]) {
 		frontend_render_upload_new_project_div();
 		frontend_render_project_table_div(true);
 	} else {
