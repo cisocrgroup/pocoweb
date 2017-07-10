@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="css/main.css"/>
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <script src="js/utils.js"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
     <title>PoCoWeb - Post Correction Web</title>
 </head>
