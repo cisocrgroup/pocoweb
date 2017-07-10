@@ -27,6 +27,6 @@ void Package::set_origin(const Book& book) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void Package::set_owner(const User& owner) noexcept {
+void Package::set_owner(const User& owner) {
 	owner_ = owner.shared_from_this();
 }

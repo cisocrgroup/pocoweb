@@ -39,8 +39,7 @@ class BookRoute : public CrtpRoute<BookRoute> {
 	Response finish(const Request& req, int bid) const;
 	Response assign(const Request& req, int bid) const;
 	Response split(const Request& req, int bid) const;
-	void update_book_data(Book& book, const User& user,
-			      const crow::json::rvalue& data) const;
+	void update_book_data(Book& book, const crow::json::rvalue& data) const;
 	void split_random(const Book& book,
 			  std::vector<ProjectPtr>& projs) const;
 	void split_sequencial(const Book& book,

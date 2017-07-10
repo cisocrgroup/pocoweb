@@ -43,29 +43,18 @@ class Session {
        public:
 	using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 	using Lock = std::lock_guard<Session>;
+	static const size_t SESSION_ID_LENGTH = 16;
 
 	Session(const User& user, AppCacheSptr cache = nullptr);
 
 	const std::string& id() const noexcept { return sid_; }
 	const User& user() const noexcept { return *user_; }
-	const TimePoint& expiration_date() const noexcept {
-		return expiration_date_;
-	}
 	void lock() noexcept { mutex_.lock(); }
 	void unlock() noexcept { mutex_.unlock(); }
 	void set_cache(AppCacheSptr cache) noexcept {
 		cache_ = std::move(cache);
 	}
-	bool has_expired() const noexcept;
-	void set_expiration_date(TimePoint tp) noexcept {
-		expiration_date_ = std::move(tp);
-	}
-	void set_cookies(crow::response& response) const noexcept;
 	void uncache_project(int pid) const;
-
-	template <class R, class P>
-	void set_expiration_date_from_now(
-	    const std::chrono::duration<R, P>& d) noexcept;
 
 	template <class Db>
 	inline ProjectSptr find(Connection<Db>& c, int bookid) const;
@@ -121,24 +110,10 @@ class Session {
 	const std::string sid_;
 	const ConstUserSptr user_;
 	AppCacheSptr cache_;
-	TimePoint expiration_date_;
 	Mutex mutex_;
 	mutable ProjectSptr project_;
 	mutable PagePtr page_;
 };
-
-void set_cookie(crow::response& response, const std::string& key,
-		const std::string& val,
-		const Session::TimePoint& expires) noexcept;
-boost::optional<std::string> get_cookie(const crow::request& request,
-					const std::string& key) noexcept;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template <class R, class P>
-void pcw::Session::set_expiration_date_from_now(
-    const std::chrono::duration<R, P>& d) noexcept {
-	set_expiration_date(std::chrono::system_clock::now() + d);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -13,10 +13,12 @@ class Api {
 		global $config;
 		$sid = $config["cookies"]["sid"];
 		if (isset($_COOKIE[$sid])) {
-			curl_setopt($this->curl, CURLOPT_COOKIE, $sid . "=" . $_COOKIE[$sid]);
+			curl_setopt($this->curl, CURLOPT_COOKIE, $sid .
+				"=" . $_COOKIE[$sid]);
 		}
 		curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, TRUE);
-		curl_setopt($this->curl, CURLOPT_HEADERFUNCTION, 'header_callback');
+		curl_setopt($this->curl,
+			CURLOPT_HEADERFUNCTION, 'header_callback');
 	}
 
 	public function get_request() {
@@ -37,6 +39,7 @@ class Api {
 			error_log("[Api] could not connect to: $this->url");
 			return FALSE;
 		}
+		$this->json = json_decode($res, TRUE);
 		return TRUE;
 	}
 
@@ -50,6 +53,10 @@ class Api {
 		} else {
 			return TRUE;
 		}
+	}
+
+	public function set_session_id($sid) {
+		curl_setopt($this->curl, CURLOPT_HTTPHEADER, array("Authorization: $sid"));
 	}
 
 	public function get_http_status_code() {

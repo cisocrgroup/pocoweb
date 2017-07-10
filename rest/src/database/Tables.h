@@ -504,7 +504,7 @@ namespace tables
             const T& operator()() const { return filetype; }
           };
       };
-      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
     };
     struct Pleft
     {

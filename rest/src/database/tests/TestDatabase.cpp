@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE(InsertBook) {
 	    "'uri',0,'description','language')");
 	db.expect(
 	    "INSERT INTO pages (bookid,pageid,imagepath,ocrpath,filetype,pleft,"
-	    "ptop,pright,pbottom) VALUES(0,1,'image','ocr','Other',1,2,3,4)");
+	    "ptop,pright,pbottom) VALUES(0,1,'image','ocr',0,1,2,3,4)");
 	db.expect(
 	    "INSERT INTO textlines (bookid,pageid,lineid,imagepath,lleft,"
 	    "ltop,lright,lbottom) VALUES(0,1,1,'image',2,3,4,5)");

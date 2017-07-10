@@ -26,6 +26,8 @@ enum class FileType {
 	Llocs,
 	Mets,
 	// Page,
+	Min = Other,
+	Max = Mets,
 };
 std::string file_type_to_string(FileType type);
 FileType file_type_from_string(const std::string& type);

@@ -1,8 +1,19 @@
 <?php
+# global api version, user name and session id (if logged in)
+global $USER;
+$USER = NULL;
+global $SID;
+$SID = "";
+global $API;
+$API = "";
+
+# global configuration
+global $config;
 $config = array(
 	"frontend" => array(
 		"debug" => true,
 	),
+
 	"backend" => array(
 		"url"    => "http://pocoweb.cis.lmu.de/rest",
 		"routes" => array(
@@ -28,17 +39,22 @@ $config = array(
 			"upload_dir" => "/tmp",
 		),
 	),
+
 	"cookies" => array(
-		"name" => "pcw-user",
-		"sid"  => "pcw-sid",
+		"name"    => "pcw-user",
+		"sid"     => "pcw-sid",
+		"expires" => 8 * 60 * 60, // expires after 8 hours
+		"domain"  => "pocoweb.cis.lmu.de",
 	),
 );
 defined("LIBRARY_PATH") or define("LIBRARY_PATH", realpath(dirname(__FILE__)) . "/library");
 
 defined("TEMPLATES_PATH") or define("TEMPLATES_PATH", realpath(dirname(__FILE__)) . "/templates");
 
-ini_set("error_reporting", true);
-ini_set("display_errors", "On");
+if ($config["frontend"]["debug"]) {
+	ini_set("error_reporting", true);
+	ini_set("display_errors", "On");
+}
 error_reporting(E_ALL|E_STRCT);
 
 ?>

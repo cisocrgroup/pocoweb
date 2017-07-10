@@ -21,6 +21,15 @@ namespace pcw {
 struct ProjectEntry;
 
 namespace detail {
+template <class Row>
+FileType to_file_type(const Row& row) {
+	const auto ft = static_cast<int>(row.filetype);
+	if (ft < static_cast<int>(FileType::Min) or
+	    ft > static_cast<int>(FileType::Max))
+		throw std::logic_error("invalid file type");
+	return static_cast<FileType>(ft);
+}
+
 template <class U>
 UserSptr make_user(const U& users) {
 	return std::make_shared<User>(users.name, Password(users.passwd),
@@ -327,7 +336,7 @@ void pcw::detail::insert_page(Db& db, P& p, Q& q, R& r, const Page& page) {
 	p.params.pageid = page.id();
 	p.params.imagepath = page.img.string();
 	p.params.ocrpath = page.ocr.string();
-	p.params.filetype = file_type_to_string(page.file_type);
+	p.params.filetype = static_cast<int>(page.file_type);
 	p.params.pleft = page.box.left();
 	p.params.ptop = page.box.top();
 	p.params.pright = page.box.right();
@@ -538,7 +547,7 @@ void pcw::detail::select_pages(Db& db, const BookBuilder& builder, int bookid) {
 				  static_cast<int>(row.pright),
 				  static_cast<int>(row.pbottom)});
 		pbuilder.set_id(row.pageid);
-		pbuilder.set_file_type(file_type_from_string(row.filetype));
+		pbuilder.set_file_type(detail::to_file_type(row));
 		detail::select_lines(db, pbuilder, bookid, row.pageid);
 		builder.append(*pbuilder.build());
 	}

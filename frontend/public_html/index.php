@@ -61,8 +61,8 @@ if (isset($_GET["upload"])) {
 		frontend_render_success_div("Successfully finished project #$pid");
 	}
 }
-global $user;
-if ($user !== NULL) {
+global $USER;
+if ($USER !== NULL) {
 	frontend_render_projects_div();
 } else {
 	frontend_render_info_div("Welcome to PoCoWeb. Please <a href='login.php'>login</a>");

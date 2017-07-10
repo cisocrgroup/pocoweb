@@ -41,29 +41,38 @@
 <?php
 require_once(dirname(dirname(__FILE__)) . "/config.php");
 require_once(LIBRARY_PATH . "/backend.php");
-global $user;
-$api = backend_get_login_name();
-$status = $api->get_http_status_code();
-if ($status == 200) {
-	$user = $api->get_response();
-} else {
-	$user = NULL;
-}
-if ($user !== NULL) {
+backend_setup_globals();
+global $USER;
+if ($USER !== NULL) {
 	echo '<li><p class="navbar-text">Logged in as user: ',
-		$user["name"], '</p></li>', "\n";
+		$USER["name"], '</p></li>', "\n";
 	echo '<li><a href="logout.php">Logout</a></li>', "\n";
 } else {
     echo('<li><a href="login.php">Login</a></li>');
 }
-$api = backend_get_api_version();
-$status = $api->get_http_status_code();
 $version = '<span class="glyphicon glyphicon-warning-sign"/>';
-if ($status == 200) {
-	$version = $api->get_response()["version"];
+global $API;
+if ($API != "") {
+	$version = $API;
 }
 echo '<li><p class="navbar-text">Api-Version: ', $version, '</p></li>';
 ?>
 		    </ul>
     </div>
 </div>
+<?php
+require_once(LIBRARY_PATH . "/frontend.php");
+global $config;
+global $USER;
+global $API;
+global $SID;
+if ($config["frontend"]["debug"]) {
+	frontend_render_info_div("GLOBAL API:  $API");
+	frontend_render_info_div("GLOBAL SID:  $SID");
+	if ($USER != NULL) {
+		frontend_render_info_div("GLOBAL USER: $USER[name] &lt;$USER[email]&gt;");
+	} else {
+		frontend_render_info_div("GLOBAL USER: NULL");
+	}
+}
+?>
