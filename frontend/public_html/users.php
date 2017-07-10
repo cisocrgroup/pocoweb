@@ -4,8 +4,17 @@ require_once(LIBRARY_PATH . "/frontend.php");
 require_once(LIBRARY_PATH . "/backend.php");
 require_once(TEMPLATES_PATH . "/header.php");
 if (isset($_GET["create"])) {
-	backend_create_user($_POST);
-	frontend_render_success_div("Successfully created new user");
+	if ($_POST["pass"] != $_POST["pass2"]) {
+		frontend_render_error_div("Error: could not create user $_POST[name]: passwords do not match");
+	} else {
+		$api = backend_create_user($_POST);
+		$status = $api->get_http_status_code();
+		if ($status == 200) {
+			frontend_render_success_div("Successfully created new user");
+		} else {
+			frontend_render_error_div("Error: could not create user: $status");
+		}
+	}
 } else if (isset($_GET["delete"]) and isset($_GET["uid"])) {
 	backend_delete_user($_GET["uid"]);
 	frontend_render_success_div("Successfully deleted user id: $_GET[uid]");
