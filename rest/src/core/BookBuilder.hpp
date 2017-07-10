@@ -5,6 +5,7 @@
 #include <memory>
 
 namespace pcw {
+	class BookData;
 	class Book;
 	using BookSptr = std::shared_ptr<Book>;
 	class User;
@@ -19,6 +20,7 @@ namespace pcw {
 		const BookBuilder& append(Page& page) const;
 		const BookBuilder& append_text(const std::string& str) const;
 		const BookBuilder& append_text(const std::wstring& str) const;
+		const BookBuilder& set_book_data(BookData data) const;
 		const BookBuilder& set_author(std::string author) const;
 		const BookBuilder& set_title(std::string title) const;
 		const BookBuilder& set_description(std::string desc) const;
@@ -31,6 +33,9 @@ namespace pcw {
 		BookSptr build() const;
 
 	private:
+		static bool has_unique_page_ids(const Book& book);
+		static void reorder_pages(Book& book);
+
 		BookSptr book_;
 	};
 }

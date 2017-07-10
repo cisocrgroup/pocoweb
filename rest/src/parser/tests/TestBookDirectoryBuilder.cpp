@@ -1,20 +1,24 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE BookDirectoryBuilderTest
 
+#include <crow/logging.h>
 #include <boost/test/unit_test.hpp>
+#include <fstream>
 #include <functional>
 #include <iostream>
-#include <fstream>
 #include <vector>
-#include "utils/TmpDir.hpp"
-#include "core/BookDirectoryBuilder.hpp"
 #include "core/Book.hpp"
+#include "core/BookDirectoryBuilder.hpp"
 #include "core/Page.hpp"
+#include "utils/TmpDir.hpp"
 
 using namespace pcw;
 
 struct Fixture {
-	Fixture(): tmpdir(), builder(tmpdir.dir()) {
+	Fixture() : tmpdir(), builder(tmpdir.dir()) {
+		// static crow::CerrLogHandler cerrlogger;
+		// crow::logger::setHandler(&cerrlogger);
+		// crow::logger::setLogLevel(crow::LogLevel::Debug);
 	}
 	TmpDir tmpdir;
 	BookDirectoryBuilder builder;
@@ -23,12 +27,10 @@ struct Fixture {
 		is >> std::noskipws;
 		BOOST_REQUIRE(is.good());
 		std::string content;
-		std::copy(
-			std::istream_iterator<char>(is),
-			std::istream_iterator<char>(),
-			std::back_inserter(content)
-		);
-		builder.add_zip_file(content);
+		std::copy(std::istream_iterator<char>(is),
+			  std::istream_iterator<char>(),
+			  std::back_inserter(content));
+		builder.add_zip_file_content(content);
 	}
 };
 
@@ -36,8 +38,7 @@ struct Fixture {
 BOOST_FIXTURE_TEST_SUITE(BookDirectoryBuilderTest, Fixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Ocropus)
-{
+BOOST_AUTO_TEST_CASE(Ocropus) {
 	add_zip_file("misc/data/test/hobbes-ocropus.zip");
 	auto book = builder.build();
 	BOOST_REQUIRE(book);
@@ -48,10 +49,9 @@ BOOST_AUTO_TEST_CASE(Ocropus)
 	BOOST_REQUIRE(p1);
 	auto line = p1->find(0x27);
 	BOOST_REQUIRE(line);
-	BOOST_CHECK_EQUAL(
-		line->ocr(),
-		"ſlanti Finis alicujus propoſiti. Contrà, imaginatiotarda Defectum ani-"
-	);
+	BOOST_CHECK_EQUAL(line->ocr(),
+			  "ſlanti Finis alicujus propoſiti. Contrà, "
+			  "imaginatiotarda Defectum ani-");
 
 	// page 100
 	auto p2 = book->find(100);
@@ -59,13 +59,46 @@ BOOST_AUTO_TEST_CASE(Ocropus)
 	line = p2->find(0x8);
 	BOOST_REQUIRE(line);
 	BOOST_CHECK_EQUAL(
-		line->ocr(),
-		"ea contribuere quæ ad Pacem & Deſenſionem ſuam neceſſaria ſunt,"
-	);
+	    line->ocr(),
+	    "ea contribuere quæ ad Pacem & Deſenſionem ſuam neceſſaria ſunt,");
 
 	// no such page
 	auto p3 = book->find(200);
 	BOOST_REQUIRE(not p3);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(Alto) {
+	add_zip_file("misc/data/test/rollenhagen_reysen_1603.zip");
+	auto book = builder.build();
+	BOOST_REQUIRE(book);
+	BOOST_CHECK_EQUAL(book->size(), 3);
+
+	// first page
+	const auto p1 = book->find(1);
+	BOOST_REQUIRE(p1);
+	auto line = p1->find(1);
+	BOOST_REQUIRE(line);
+	BOOST_CHECK_EQUAL(line->ocr(), "Vnd daſſelb im Bluthroten Felde/");
+
+	// second page
+	const auto p2 = book->find(2);
+	BOOST_REQUIRE(p2);
+	line = p2->find(6);
+	BOOST_REQUIRE(line);
+	BOOST_CHECK_EQUAL(line->ocr(), "vnd des Jndianiſchen Landes/ auch von");
+
+	// third page
+	const auto p3 = book->find(3);
+	BOOST_REQUIRE(p2);
+	line = p3->find(14);
+	BOOST_REQUIRE(line);
+	BOOST_CHECK_EQUAL(
+	    line->ocr(), "in je einem Land ſo viel ſeltzame wunder wehrẽ/ wen");
+
+	// no such page
+	const auto p4 = book->find(4);
+	BOOST_REQUIRE(not p4);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

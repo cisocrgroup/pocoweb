@@ -1,3 +1,4 @@
+#include <crow/logging.h>
 #include "utils/Error.hpp"
 #include "Book.hpp"
 #include "Page.hpp"
@@ -6,17 +7,42 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-template<class It> static It
+template<class It>
+static It
 find(It b, It e, int id) noexcept
 {
 	return std::find_if(b, e, [id](const auto& page) {
 		assert(page);
+		CROW_LOG_DEBUG << "(Project) find_page(" << id << "): " << page->id();
 		return page->id() == id;
 	});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template<class It> static PagePtr
+template<class It>
+static PagePtr
+find_next(It i, It e, size_t n) noexcept
+{
+	if (static_cast<typename It::difference_type>(n) < std::distance(i, e)) {
+		return *(i + n);
+	}
+	return nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class It>
+static PagePtr
+find_prev(It b, It i, size_t n) noexcept
+{
+	if (static_cast<typename It::difference_type>(n) <= std::distance(b, i)) {
+		return *(i - n);
+	}
+	return nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class It>
+static PagePtr
 find_page(It b, It e, int id) noexcept
 {
 	auto i = find(b, e, id);
@@ -49,14 +75,14 @@ Project::next(int pageid, int val) const noexcept
 	const auto b = begin();
 	const auto e = end();
 	const auto i = ::find(b, e, pageid);
-	const auto amount = static_cast<size_t>(std::abs(val));
 
 	if (i != e) {
-		const auto n = static_cast<size_t>(std::distance(b, i));
-		if (val < 0 and amount <= n) {
-			return *(std::prev(i, amount));
-		} else if (0 <= val and amount <= n) {
-			return *(std::next(i, amount));
+		if (val > 0) {
+			return find_next(i, e, std::abs(val));
+		} else if (val < 0) {
+			return find_prev(b, i, std::abs(val));
+		} else {
+			return *i;
 		}
 	}
 	return nullptr;
@@ -76,8 +102,8 @@ std::ostream&
 pcw::operator<<(std::ostream& os, const Project& proj)
 {
 	if (proj.is_book()) {
-		return os << proj.origin().author << " <"
-			  << proj.origin().title << "> ["
+		return os << proj.origin().data.author << " <"
+			  << proj.origin().data.title << "> ["
 			  << proj.origin().id() << "]";
 	} else {
 		return os << proj.origin() << " {" << proj.id() << "}";

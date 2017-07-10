@@ -14,6 +14,8 @@ curlopt=
 errors=0
 spid=0
 json=
+sid=
+bid=
 
 finish() {
 	# echo removing $cookies
@@ -37,31 +39,44 @@ expect() {
 	got=$3
 	if [ "$want" != "$got" ]; then
 		((error++))
-		printf "%-60s" "$url"
-		echo -ne $fail
-		echo " [want=$want; got=$got]"
+		printf "%-30s" "$url"
+		echo -e "$fail    [want=$want; got=$got]"
 	else
-		printf "%-60s" "$url"
-		echo -ne $success
-		echo " [want=got=$want]"
+		printf "%-30s" "$url"
+		echo -e "$success [want=got=$want]"
 	fi
 }
 
-run_curl() {
+curl_get() {
 	curl $curlopt --silent -v -w '%%RESPONSE_CODE=%{http_code}%%' \
-		-b $cookies -c $cookies \
+		-H "Authorization: $sid" \
 		-g -6 http://[$host]:$port$1
 }
 
-get_code() {
+curl_post() {
+	curl $curlopt --silent -v -w '%%RESPONSE_CODE=%{http_code}%%' \
+		-H "Content-Type: application/json" \
+		-H "Authorization: $sid" \
+		-X POST -d $2 \
+		-g -6 http://[$host]:$port$1
+}
+
+curl_delete() {
+	curl $curlopt --silent -v -w '%%RESPONSE_CODE=%{http_code}%%' \
+		-H "Authorization: $sid" \
+		-X DELETE \
+		-g -6 http://[$host]:$port$1
+}
+
+code() {
 	sed -e 's/.*%RESPONSE_CODE=\([0-9][0-9]*\)%.*/\1/g' <<< $1
 }
 
-get_json() {
+json() {
 	sed -e 's/\(.*\)%RESPONSE_CODE=[0-9][0-9]*%\(.*\)/\1\2/g' <<< $1
 }
 
-json_get_field() {
+json_get() {
 	sed -e "s/.*\"$1\":\([^,]*\).*/\1/g" <<< $2 | tr -d '"{}'
 }
 
@@ -69,43 +84,70 @@ json_get_field() {
 # API TEST FUNCTIONS
 #
 login() {
-	name=$1
-	pass=$2
-	want=$3
-	url="/login/user/$name/pass/$pass"
-	res=$(run_curl $url)
-	expect $url $want $(get_code $res)
+	local name=$1
+	local pass=$2
+	local want=$3
+	local post="{\"name\":\"$name\",\"pass\":\"$pass\"}"
+	local url="/login"
+	local res=$(curl_post $url $post)
+	expect "POST $url" $want $(code $res)
+	sid=$(json_get "sid" $(json $res))
 }
 
 loggedin() {
-	name=$1
-	want=$2
-	url="/login/user/$name"
-	res=$(run_curl $url)
-	expect $url $want $(get_code $res)
+	local name=$1
+	local want=$2
+	local url="/login"
+	local res=$(curl_get $url)
+	expect "GET $url" $want $(code $res)
+}
+
+logout() {
+	local url="/logout"
+	local res=$(curl_get $url)
+	expect "GET $url" 200 $(code $res)
 }
 
 upload() {
-	path=$1
-	want=$2
-	url="/books"
-	curlopt="--form upload=@$path"
-	res=$(run_curl $url)
-	curlopt=""
-	expect $url $want $(get_code $res)
-	json=$(get_json $res)
+	local p=$1
+	local a=$2
+	local t=$3
+	local want=$4
+	local url="/books"
+	local post="{\"author\":\"$a\",\"title\":\"$t\",\"file\":\"$p\"}"
+	local res=$(curl_post $url $post)
+	expect "POST $url" $want $(code $res)
+	expect "author=$a" $a $(json_get "author" $(json $res))
+	expect "title=$t" $t $(json_get "title" $(json $res))
+	bid=$(json_get "id" $(json $res))
+}
+
+get_book() {
+	local id=$1
+	local key=$2
+	local val=$3
+	local url="/books/$id"
+	local res=$(curl_get $url)
+	expect $url 200 $(code $res)
+	expect "$key=$val" $val "$(json_get $key $(json $res))"
 }
 
 update_book() {
-	id=$1
-	key=$2
-	val=$3
-	curlopt="-XPOST"
-	url="/books/$id?$key=$val"
-	res=$(run_curl $url)
-	curlopt=""
-	expect $url 200 $(get_code $res)
-	expect "update bookid=$id \"$key\" to $val" $val $(json_get_field $key $(get_json $res))
+	local id=$1
+	local key=$2
+	local val=$3
+	local url="/books/$id"
+	local post="{\"$key\":\"$val\"}"
+	local res=$(curl_post $url $post)
+	expect $url 200 $(code $res)
+	expect "$key=$val" $val "$(json_get $key $(json $res))"
+}
+
+remove_book() {
+	local id=$1
+	local url="/books/$id"
+	local res=$(curl_delete $url)
+	expect "DELETE $url" 200 $(code $res)
 }
 
 #
@@ -119,16 +161,48 @@ fi
 
 trap finish EXIT
 start_server
+sid=""
 login $name $pass 200
 loggedin $name 200
+sid=""
 login "invalid" "invalid" 403
+sid=""
 loggedin "invalid" 403
-upload misc/data/test/hobbes-ocropus.zip 201
-bookid=$(json_get_field "id" $json)
-update_book $bookid "title" "Leviathan"
-update_book $bookid "author" "Hobbes"
-update_book $bookid "year" "1668"
-update_book $bookid "description" "Hobbes-Leviathan"
-update_book $bookid "uri" "some/uri"
+sid=""
+login $name $pass 200
+loggedin $name 200
+## HOBBES
+upload misc/data/test/hobbes-ocropus.zip "hobbes" "leviathan" 201
+update_book $bid "title" "Leviathan"
+update_book $bid "author" "Hobbes"
+update_book $bid "language" "Latin"
+update_book $bid "year" 1668
+update_book $bid "uri" "http://example.org"
+update_book $bid "description" "desc"
+get_book $bid "title" "Leviathan"
+get_book $bid "author" "Hobbes"
+get_book $bid "language" "Latin"
+get_book $bid "year" 1668
+get_book $bid "uri" "http://example.org"
+get_book $bid "description" "desc"
+remove_book $bid
+## ROLLENHAGEN
+upload misc/data/test/rollenhagen_reysen_1603.zip "rollenhagen" "reysen" 201
+update_book $bid "title" "Reysen"
+update_book $bid "author" "Rollenhagen"
+update_book $bid "language" "German"
+update_book $bid "year" 1603
+update_book $bid "uri" "http://example.org"
+update_book $bid "description" "desc"
+get_book $bid "title" "Reysen"
+get_book $bid "author" "Rollenhagen"
+get_book $bid "year" 1603
+get_book $bid "uri" "http://example.org"
+get_book $bid "description" "desc"
+remove_book $bid
+logout
+## not reset sid. User should still *not* be logged in
+loggedin $name 403
+
 
 exit $error

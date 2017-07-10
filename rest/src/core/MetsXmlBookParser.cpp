@@ -62,11 +62,11 @@ MetsXmlBookParser::for_each(XmlNode& node)
 	assert(book_);
 	if (equal(node.parent().name(), "trpDocMetadata")) {
 		if (equal(node.name(), "author"))
-			book_->author = node.child_value();
+			book_->data.author = node.child_value();
 		else if (equal(node.name(), "title"))
-			book_->title = node.child_value();
+			book_->data.title = node.child_value();
 		else if (equal(node.name(), "desc"))
-			book_->description = node.child_value();
+			book_->data.description = node.child_value();
 	} else if (is_flocat(node)) {
 		ids_[node.parent().attribute("ID").value()] = {
 			attr_value_ns(node.parent(), "MIMETYPE"),

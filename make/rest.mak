@@ -1,57 +1,59 @@
-CORE_OBJS += rest/src/core/WagnerFischer.o
-CORE_OBJS += rest/src/core/MetsXmlBookParser.o
-CORE_OBJS += rest/src/core/BookDirectoryBuilder.o
-CORE_OBJS += rest/src/core/BookConstructor.o
-CORE_OBJS += rest/src/core/ProjectBuilder.o
+CORE_OBJS += rest/src/core/App.o
+CORE_OBJS += rest/src/core/Archiver.o
+CORE_OBJS += rest/src/core/Book.o
 CORE_OBJS += rest/src/core/BookBuilder.o
-CORE_OBJS += rest/src/core/PageBuilder.o
-CORE_OBJS += rest/src/core/LineBuilder.o
+CORE_OBJS += rest/src/core/BookConstructor.o
+CORE_OBJS += rest/src/core/BookDirectoryBuilder.o
 CORE_OBJS += rest/src/core/BookFixer.o
 CORE_OBJS += rest/src/core/Box.o
-CORE_OBJS += rest/src/core/Book.o
-CORE_OBJS += rest/src/core/Corrector.o
-CORE_OBJS += rest/src/core/Project.o
-CORE_OBJS += rest/src/core/Package.o
-CORE_OBJS += rest/src/core/Searcher.o
-CORE_OBJS += rest/src/core/PackageBuilder.o
 CORE_OBJS += rest/src/core/Config.o
-CORE_OBJS += rest/src/core/Profile.o
-CORE_OBJS += rest/src/core/Password.o
-CORE_OBJS += rest/src/core/Route.o
-CORE_OBJS += rest/src/core/App.o
+CORE_OBJS += rest/src/core/Corrector.o
 CORE_OBJS += rest/src/core/Line.o
-CORE_OBJS += rest/src/core/User.o
+CORE_OBJS += rest/src/core/LineBuilder.o
+CORE_OBJS += rest/src/core/MetsXmlBookParser.o
+CORE_OBJS += rest/src/core/Package.o
+CORE_OBJS += rest/src/core/PackageBuilder.o
+CORE_OBJS += rest/src/core/PageBuilder.o
+CORE_OBJS += rest/src/core/Password.o
+CORE_OBJS += rest/src/core/Profile.o
+CORE_OBJS += rest/src/core/Project.o
+CORE_OBJS += rest/src/core/ProjectBuilder.o
+CORE_OBJS += rest/src/core/Route.o
+CORE_OBJS += rest/src/core/Searcher.o
 CORE_OBJS += rest/src/core/Session.o
 CORE_OBJS += rest/src/core/SessionStore.o
+CORE_OBJS += rest/src/core/User.o
+CORE_OBJS += rest/src/core/WagnerFischer.o
 CORE_OBJS += rest/src/core/XmlFile.o
-CORE_OBJS += rest/src/core/util.o
-CORE_OBJS += rest/src/core/jsonify.o
 CORE_OBJS += rest/src/core/docxml.o
+CORE_OBJS += rest/src/core/jsonify.o
+CORE_OBJS += rest/src/core/util.o
 
 API_OBJS += rest/src/api/VersionRoute.o
 API_OBJS += rest/src/api/BookRoute.o
 API_OBJS += rest/src/api/PageRoute.o
 API_OBJS += rest/src/api/LineRoute.o
+API_OBJS += rest/src/api/UserRoute.o
 
+PARSER_OBJS += rest/src/parser/AbbyyXmlPageParser.o
+PARSER_OBJS += rest/src/parser/AbbyyXmlParserLine.o
+PARSER_OBJS += rest/src/parser/AltoXmlPageParser.o
+PARSER_OBJS += rest/src/parser/AltoXmlParserLine.o
+PARSER_OBJS += rest/src/parser/HocrPageParser.o
+PARSER_OBJS += rest/src/parser/HocrParserLine.o
+PARSER_OBJS += rest/src/parser/OcropusLlocsPageParser.o
+PARSER_OBJS += rest/src/parser/OcropusLlocsParserLine.o
+PARSER_OBJS += rest/src/parser/OcropusLlocsParserPage.o
 PARSER_OBJS += rest/src/parser/ParserPage.o
 PARSER_OBJS += rest/src/parser/Xml.o
 PARSER_OBJS += rest/src/parser/XmlParserPage.o
-PARSER_OBJS += rest/src/parser/AltoXmlParserLine.o
-PARSER_OBJS += rest/src/parser/AltoXmlPageParser.o
-PARSER_OBJS += rest/src/parser/AbbyyXmlParserLine.o
-PARSER_OBJS += rest/src/parser/AbbyyXmlPageParser.o
-PARSER_OBJS += rest/src/parser/OcropusLlocsParserLine.o
-PARSER_OBJS += rest/src/parser/OcropusLlocsPageParser.o
-PARSER_OBJS += rest/src/parser/OcropusLlocsParserPage.o
 PARSER_OBJS += rest/src/parser/hocr.o
-PARSER_OBJS += rest/src/parser/HocrPageParser.o
-PARSER_OBJS += rest/src/parser/HocrParserLine.o
+PARSER_OBJS += rest/src/parser/llocs.o
 
 LIBS += lib/libpcwcore.a
 LIBS += lib/libpcwparser.a
 LIBS += lib/libpcwapi.a
 MAINS += pcwd
-MAINS += pcwc
 
 lib/libpcwcore.a: $(CORE_OBJS) | $(MODS) mkdir-lib
 	$(AR) rcs $@ $^
@@ -62,8 +64,6 @@ lib/libpcwparser.a: $(PARSER_OBJS) | $(MODS) $(VENDS) mkdir-lib
 
 pcwd: rest/src/pcwd.cpp $(LIBS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
-pcwc: rest/src/pcwc.cpp $(LIBS)
-	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -lcurl
 
 rest/src/database/Tables.h: modules/sqlpp11/scripts/ddl2cpp db/tables.sql
 	$^ rest/src/database/Tables tables

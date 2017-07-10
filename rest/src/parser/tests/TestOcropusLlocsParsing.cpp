@@ -2,20 +2,22 @@
 #define BOOST_TEST_MODULE OcropusLlocsTest
 
 #include <boost/test/unit_test.hpp>
+#include <fstream>
 #include <functional>
 #include <iostream>
 #include <vector>
-#include "utils/TmpDir.hpp"
+#include "core/Line.hpp"
 #include "core/WagnerFischer.hpp"
+#include "parser/OcropusLlocsPageParser.hpp"
 #include "parser/OcropusLlocsParserPage.hpp"
 #include "parser/ParserPage.hpp"
 #include "parser/XmlParserPage.hpp"
-#include "parser/OcropusLlocsPageParser.hpp"
+#include "utils/TmpDir.hpp"
 
 using namespace pcw;
 
 struct Fixture {
-	Fixture(): page() {
+	Fixture() : page() {
 		OcropusLlocsPageParser parser("misc/data/test/llocs-test/0001");
 		BOOST_REQUIRE(parser.has_next());
 		page = parser.parse();
@@ -30,8 +32,7 @@ struct Fixture {
 BOOST_FIXTURE_TEST_SUITE(OcropusLlocsTest, Fixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(ParsingTest)
-{
+BOOST_AUTO_TEST_CASE(ParsingTest) {
 	Box box;
 	BOOST_CHECK_EQUAL(page->get(0).string(), "ab cd ef");
 	BOOST_CHECK_EQUAL(page->get(0).box, box);
@@ -42,8 +43,7 @@ BOOST_AUTO_TEST_CASE(ParsingTest)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(CorrectionTest)
-{
+BOOST_AUTO_TEST_CASE(CorrectionTest) {
 	WagnerFischer wf;
 
 	// first line
@@ -69,9 +69,20 @@ BOOST_AUTO_TEST_CASE(CorrectionTest)
 
 	// write and read;
 	TmpDir tmp;
-	page->write(tmp);
+	page->write(tmp / "1");
 
-	OcropusLlocsPageParser p2(tmp / std::dynamic_pointer_cast<OcropusLlocsParserPage>(page)->dir());
+	// page->write only writes the llocs files.
+	// the parser needs the png files.
+	for (auto i = 0U; i < 3; ++i) {
+		const auto& line = page->get(i);
+		std::ofstream os(
+		    (tmp / "1" / line.line(i)->img.filename()).string());
+		BOOST_REQUIRE(os.good());
+		os << "data\n";
+		os.close();
+	}
+
+	OcropusLlocsPageParser p2(tmp / "1");
 	page = p2.parse();
 	BOOST_REQUIRE(page != nullptr);
 	BOOST_REQUIRE(page->size() == 3);

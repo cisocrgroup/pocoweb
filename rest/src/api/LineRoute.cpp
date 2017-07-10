@@ -2,17 +2,17 @@
 #include <crow.h>
 #include <unicode/uchar.h>
 #include <utf8.h>
+#include "LineRoute.hpp"
+#include "core/Book.hpp"
+#include "core/BookDirectoryBuilder.hpp"
+#include "core/Package.hpp"
+#include "core/Page.hpp"
+#include "core/Session.hpp"
+#include "core/User.hpp"
+#include "core/WagnerFischer.hpp"
+#include "core/jsonify.hpp"
 #include "utils/Error.hpp"
 #include "utils/ScopeGuard.hpp"
-#include "core/jsonify.hpp"
-#include "core/User.hpp"
-#include "core/Page.hpp"
-#include "core/Book.hpp"
-#include "core/Session.hpp"
-#include "LineRoute.hpp"
-#include "core/Package.hpp"
-#include "core/BookDirectoryBuilder.hpp"
-#include "core/WagnerFischer.hpp"
 
 #define LINE_ROUTE_ROUTE "/books/<int>/pages/<int>/lines/<int>"
 
@@ -51,11 +51,11 @@ LineRoute::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
 Route::Response
 LineRoute::impl(HttpPost, const Request& req, int bid, int pid, int lid) const
 {
-	Data data;
-	data.correction = req.url_params.get("correction");
-	data.partial = req.url_params.get("partial");
-	if (not data.correction)
-		return bad_request();
+	CROW_LOG_DEBUG << "(LineRoute) body: " << req.body;
+	auto json = crow::json::load(req.body);
+	if (not json["d"].s().size())
+		THROW(BadRequest, "missing data for book id: ",
+				bid, ", page id: ", pid, ", line id: ", lid);
 
 	auto conn = connection();
 	auto session = this->session(req);
@@ -67,24 +67,25 @@ LineRoute::impl(HttpPost, const Request& req, int bid, int pid, int lid) const
 	if (not line)
 		THROW(NotFound, "Cannot find book id: ", bid,
 				" page id: ", pid, " line id: ", lid);
-	return correct(conn, *line, data);
+	return correct(conn, *line, json);
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-LineRoute::correct(MysqlConnection& conn, Line& line, const Data& data) const
+LineRoute::correct(MysqlConnection& conn, Line& line, const crow::json::rvalue& json) const
 {
-
+	assert(json["d"].s().size());
+	const std::string correction = json["d"].s();
 	WagnerFischer wf;
-	wf.set_gt(data.correction);
+	wf.set_gt(correction);
 	wf.set_ocr(line);
-	auto lev = wf();
-
-	CROW_LOG_DEBUG << "(LineRoute) correction: " << data.correction;
+	const auto lev = wf();
+	CROW_LOG_DEBUG << "(LineRoute) correction: " << correction;
 	CROW_LOG_DEBUG << "(LineRoute) line.cor(): " << line.cor();
 	CROW_LOG_DEBUG << "(LineRoute) line.ocr(): " << line.ocr();
-	CROW_LOG_DEBUG << "(LineRoute)        lev: " << lev << "\n";
+	CROW_LOG_DEBUG << "(LineRoute)        lev: " << lev;
+
 	wf.correct(line);
 	log(wf);
 
@@ -92,8 +93,8 @@ LineRoute::correct(MysqlConnection& conn, Line& line, const Data& data) const
 	update_line(conn.db(), line);
 	commiter.commit();
 
-	Json json;
-	return json << line;
+	Json j;
+	return j << line;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

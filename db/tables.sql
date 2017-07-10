@@ -1,16 +1,17 @@
 /*drop database if exists pocweb;*/
 create database if not exists pocoweb
-  default character set utf8
-  default collate utf8_general_ci;
+default character set utf8
+default collate utf8_general_ci;
 use pocoweb;
 
 drop table if exists users;
 create table users (
-       userid int not null unique primary key auto_increment,
-       name varchar(50) not null unique,
-       email varchar(50) not null,
-       institute varchar(50) not null,
-       passwd varchar(100) not null
+	userid int not null unique primary key auto_increment,
+	name varchar(50) not null unique,
+	email varchar(50) not null,
+	institute varchar(50) not null,
+	passwd varchar(100) not null,
+	admin boolean not null
 );
 
 drop table if exists books;
@@ -29,7 +30,8 @@ drop table if exists projects;
 create table projects (
 	projectid int not null unique primary key auto_increment,
 	origin int,
-	owner int references users(userid)
+	owner int references users(userid),
+	pages int
 );
 
 drop table if exists project_pages;
@@ -45,6 +47,7 @@ create table pages (
 	pageid int,
 	imagepath varchar(255) not null,
 	ocrpath varchar(255) not null,
+	filetype int,
 	pleft int,
 	ptop int,
 	pright int,

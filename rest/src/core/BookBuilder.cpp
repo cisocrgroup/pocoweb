@@ -1,3 +1,4 @@
+#include <set>
 #include <utf8.h>
 #include "LineBuilder.hpp"
 #include "PageBuilder.hpp"
@@ -22,8 +23,29 @@ BookBuilder::append(Page& page) const
 	assert(book_);
 	book_->push_back(page);
 	assert(not book_->empty());
-	book_->back()->id_ = static_cast<int>(book_->size());
+	// Set page id only if page id = 0
+	if (not book_->back()->id_) {
+		const auto n = book_->size();
+		if (n == 1) {
+			book_->back()->id_ = 1;
+		} else {
+			// assume current_page_id = prev_page_id + 1
+			assert(n > 1);
+			auto prev_page = *(book_->begin() + (n-2));
+			assert(prev_page);
+			book_->back()->id_ = prev_page->id_ + 1;
+		}
+	}
 	book_->back()->book_ = book_;
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const BookBuilder&
+BookBuilder::set_book_data(BookData data) const
+{
+	assert(book_);
+	book_->data = std::move(data);
 	return *this;
 }
 
@@ -32,7 +54,7 @@ const BookBuilder&
 BookBuilder::set_author(std::string author) const
 {
 	assert(book_);
-	book_->author = std::move(author);
+	book_->data.author = std::move(author);
 	return *this;
 }
 
@@ -41,7 +63,7 @@ const BookBuilder&
 BookBuilder::set_title(std::string title) const
 {
 	assert(book_);
-	book_->title = std::move(title);
+	book_->data.title = std::move(title);
 	return *this;
 }
 
@@ -50,7 +72,7 @@ const BookBuilder&
 BookBuilder::set_description(std::string description) const
 {
 	assert(book_);
-	book_->description = std::move(description);
+	book_->data.description = std::move(description);
 	return *this;
 }
 
@@ -59,7 +81,7 @@ const BookBuilder&
 BookBuilder::set_uri(std::string uri) const
 {
 	assert(book_);
-	book_->uri = std::move(uri);
+	book_->data.uri = std::move(uri);
 	return *this;
 }
 
@@ -68,7 +90,7 @@ const BookBuilder&
 BookBuilder::set_language(std::string language) const
 {
 	assert(book_);
-	book_->lang = std::move(language);
+	book_->data.lang = std::move(language);
 	return *this;
 }
 
@@ -77,7 +99,7 @@ const BookBuilder&
 BookBuilder::set_directory(Path directory) const
 {
 	assert(book_);
-	book_->dir = std::move(directory);
+	book_->data.dir = std::move(directory);
 	return *this;
 }
 
@@ -86,7 +108,7 @@ const BookBuilder&
 BookBuilder::set_year(int year) const
 {
 	assert(book_);
-	book_->year = year;
+	book_->data.year = year;
 	return *this;
 }
 
@@ -113,7 +135,47 @@ BookSptr
 BookBuilder::build() const
 {
 	assert(book_);
+	// Handle cases where multiple ocr pages have
+	// the same page sequence number set in the ocr files.
+	if (not has_unique_page_ids(*book_)) {
+		reorder_pages(*book_);
+	}
 	return book_;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool
+BookBuilder::has_unique_page_ids(const Book& book)
+{
+	std::set<int> ids;
+	for (const auto& page: book) {
+		if (ids.count(page->id()))
+			return false;
+		ids.insert(page->id());
+	}
+	return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+BookBuilder::reorder_pages(Book& book)
+{
+	// skip empty books
+	if (book.empty())
+		return;
+	static const auto cmp = [](const PagePtr& a, const PagePtr& b) {
+		assert(a);
+		assert(b);
+		return a->ocr.filename().stem() < b->ocr.filename().stem();
+	};
+	// sort by ocr file name
+	std::sort(begin(book), end(book), cmp);
+	// set ids from 1 to n
+	int id = 1;
+	for (auto& page: book) {
+		assert(page);
+		page->id_ = id++;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -15,15 +15,18 @@ namespace pcw {
 	class Project;
 	using ProjectPtr = std::shared_ptr<Project>;
 	class Book;
+	struct BookData;
 	class Page;
 	class Line;
 	class Box;
 	class Profile;
+	class User;
 	struct Suggestion;
 	struct Pattern;
 
 	using Json = crow::json::wvalue;
 	Json& operator<<(Json& j, const std::vector<ProjectPtr>& books);
+	Json& operator<<(Json& j, const BookData& data);
 	Json& operator<<(Json& j, const Project& project);
 	Json& operator<<(Json& j, const Page& page);
 	Json& operator<<(Json& j, const Line& line);
@@ -32,6 +35,7 @@ namespace pcw {
 	Json& operator<<(Json& j, const Suggestion& sugg);
 	Json& operator<<(Json& j, const std::vector<Suggestion>& suggs);
 	Json& operator<<(Json& j, const std::map<Pattern, std::vector<Suggestion>>& x);
+	Json& operator<<(Json& j, const User& user);
 }
 
 #endif // pcw_jsonify_hpp__

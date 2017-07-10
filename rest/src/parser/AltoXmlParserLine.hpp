@@ -10,7 +10,7 @@ namespace pcw {
 	public:
 		using Node = pugi::xml_node;
 
-		AltoXmlParserLine(Node node);
+		AltoXmlParserLine(Node node, bool explicit_spaces_ = true);
 
 		virtual ~AltoXmlParserLine() noexcept override = default;
 		virtual void end_wagner_fischer() override;
@@ -50,10 +50,14 @@ namespace pcw {
 		static Iterator find_end_of_token(Iterator b, Iterator e) noexcept;
 		static Char make_copy(Char& c);
 		static Node merge(Node& a, const Node& b);
+		static bool is_space(const Node& node) noexcept;
+		static bool is_string(const Node& node) noexcept;
+		static bool is_hyphen(const Node& node) noexcept;
 
 		std::vector<Char> chars_;
 		Node node_;
 		bool needs_update_;
+		const bool explicit_spaces_;
 	};
 }
 

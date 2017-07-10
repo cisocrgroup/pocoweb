@@ -17,13 +17,24 @@ ProjectBuilder::reset()
 
 ////////////////////////////////////////////////////////////////////////////////
 ProjectBuilder&
-ProjectBuilder::set_book(const Book& book)
+ProjectBuilder::set_origin(const Book& book)
 {
 	assert(project_);
 	book_ = std::static_pointer_cast<const Book>(book.shared_from_this());
 	project_->set_origin(*book_);
 	project_->set_owner(book.owner());
 	assert(book_);
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const ProjectBuilder&
+ProjectBuilder::set_project_id(int pid) const
+{
+	assert(book_);
+	assert(project_);
+	project_->set_id(pid);
+	assert(project_->id() == pid);
 	return *this;
 }
 

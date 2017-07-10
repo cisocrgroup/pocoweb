@@ -12,9 +12,12 @@ namespace pcw {
 
 	class User: public std::enable_shared_from_this<User> {
 	public:
-		User(std::string n, Password pass, std::string e, std::string i, int id);
-		User(std::string n, const std::string& p, std::string e, std::string i, int id);
+		User(std::string n, Password pass, std::string e, std::string i, int id,
+				bool admin = false);
+		User(std::string n, const std::string& p, std::string e, std::string i, int id,
+				bool admin = false);
 		int id() const noexcept {return id_;}
+		bool admin() const noexcept {return admin_;}
 
 		const std::string name;
 		const Password password;
@@ -22,6 +25,7 @@ namespace pcw {
 
 	private:
 		const int id_;
+		const bool admin_;
 	};
 	std::ostream& operator<<(std::ostream& os, const User& user);
 }

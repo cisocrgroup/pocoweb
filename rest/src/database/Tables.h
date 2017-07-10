@@ -90,6 +90,22 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
+    struct Admin
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "admin";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T admin;
+            T& operator()() { return admin; }
+            const T& operator()() const { return admin; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::boolean, sqlpp::tag::require_insert>;
+    };
   }
 
   struct Users: sqlpp::table_t<Users,
@@ -97,7 +113,8 @@ namespace tables
                Users_::Name,
                Users_::Email,
                Users_::Institute,
-               Users_::Passwd>
+               Users_::Passwd,
+               Users_::Admin>
   {
     struct _alias_t
     {
@@ -317,12 +334,29 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
     };
+    struct Pages
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "pages";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T pages;
+            T& operator()() { return pages; }
+            const T& operator()() const { return pages; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
   }
 
   struct Projects: sqlpp::table_t<Projects,
                Projects_::Projectid,
                Projects_::Origin,
-               Projects_::Owner>
+               Projects_::Owner,
+               Projects_::Pages>
   {
     struct _alias_t
     {
@@ -456,6 +490,22 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
+    struct Filetype
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "filetype";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T filetype;
+            T& operator()() { return filetype; }
+            const T& operator()() const { return filetype; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
     struct Pleft
     {
       struct _alias_t
@@ -527,6 +577,7 @@ namespace tables
                Pages_::Pageid,
                Pages_::Imagepath,
                Pages_::Ocrpath,
+               Pages_::Filetype,
                Pages_::Pleft,
                Pages_::Ptop,
                Pages_::Pright,

@@ -25,15 +25,16 @@ namespace pcw {
 		using OcrFiles = std::map<Path, FileType>;
 		using FilePair = OcrFiles::value_type;
 		using ImgFiles = std::vector<Path>;
-		struct BookData {
+		struct BookInfo {
 			std::vector<PagePtr> pages;
-			std::string author, title, description, uri;
+			std::string author, title, description, uri, lang;
 			Path dir;
 			int year;
 		};
-		BookData parse_book_data() const;
-		static BookPtr build(const BookData& data);
+		BookInfo parse_book_info() const;
 		ImgFiles::const_iterator find_matching_img_file(const Path& ocr) const noexcept;
+		void set_img_file(Page& page) const;
+		static BookPtr build(const BookInfo& info);
 		static void order_pages(std::vector<PagePtr>& pages) noexcept;
 		static void fix_indizes(std::vector<PagePtr>& pages) noexcept;
 

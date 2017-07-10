@@ -1,8 +1,8 @@
 PEX_OBJS += plugins/example/example.o
 
-PSLOG_OBJS += plugins/simple-login/CreateUser.o
 PSLOG_OBJS += plugins/simple-login/DeleteUser.o
 PSLOG_OBJS += plugins/simple-login/Login.o
+PSLOG_OBJS += plugins/simple-login/Logout.o
 PSLOG_OBJS += plugins/simple-login/UpdateUser.o
 PSLOG_OBJS += plugins/simple-login/simple-login.o
 

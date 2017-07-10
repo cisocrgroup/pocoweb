@@ -22,6 +22,7 @@ namespace pcw {
 		const LineBuilder& append(wchar_t o, wchar_t c, int r, double conf) const;
 		const LineBuilder& set_image_path(Path img) const;
 		const LineBuilder& set_box(Box box) const;
+		const LineBuilder& set_id(int lineid) const;
 		LineSptr build() const;
 
 	private:
