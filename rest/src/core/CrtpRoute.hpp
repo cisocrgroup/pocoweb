@@ -62,7 +62,7 @@ pcw::Route::Response pcw::CrtpRoute<T>::operator()(const Request& req,
 				       << "=" << kv.second;
 		}
 		CROW_LOG_DEBUG << "(CrtpRoute) Response BODY: " << res.body;
-		CROW_INFO_DEBUG << "(CrtpRoute) Response CODE: " << res.code;
+		CROW_LOG_INFO << "(CrtpRoute) Response CODE: " << res.code;
 		CROW_LOG_DEBUG << "(CrtpRoute) Response JSON: "
 			       << crow::json::dump(res.json_value);
 		return res;
