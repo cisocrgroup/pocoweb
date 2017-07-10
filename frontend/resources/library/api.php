@@ -17,8 +17,8 @@ class Api {
 				"=" . $_COOKIE[$sid]);
 		}
 		curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, TRUE);
-		curl_setopt($this->curl,
-			CURLOPT_HEADERFUNCTION, 'header_callback');
+		# curl_setopt($this->curl,
+		# 	CURLOPT_HEADERFUNCTION, 'header_callback');
 	}
 
 	public function get_request() {
@@ -82,18 +82,18 @@ class Api {
 	}
 }
 
-function header_callback($curl, $header_line) {
-	if (preg_match('/^Set-Cookie:\s*(.*)$/mi', $header_line, $m)) {
-		$cookie = utils_parse_http_cookie($m[1]);
-		foreach ($cookie["cookies"] as $key => $val) {
-			if (!setcookie($key, $val, $cookie["expires"],
-				$cookie["path"], $cookie["domain"])) {
-				error_log("[Api] could not set cookie $key=$val; " .
-					"expires=$cookie[expires]; $cookie[path]; $cookie[domain];");
-			}
-		}
-	}
-	return strlen($header_line);
-}
+# function header_callback($curl, $header_line) {
+# 	if (preg_match('/^Set-Cookie:\s*(.*)$/mi', $header_line, $m)) {
+# 		$cookie = utils_parse_http_cookie($m[1]);
+# 		foreach ($cookie["cookies"] as $key => $val) {
+# 			if (!setcookie($key, $val, $cookie["expires"],
+# 				$cookie["path"], $cookie["domain"])) {
+# 				error_log("[Api] could not set cookie $key=$val; " .
+# 					"expires=$cookie[expires]; $cookie[path]; $cookie[domain];");
+# 			}
+# 		}
+# 	}
+# 	return strlen($header_line);
+# }
 
 ?>
