@@ -447,7 +447,9 @@ function frontend_render_page_header($page) {
 	echo '<span class="glyphicon glyphicon-search centered"/>', "\n";
 	echo '</button>', "\n";
 	echo '</span>', "\n";
-	echo '<input type="text" class="form-control centered" placeholder="Search"/>', "\n";
+	echo '<input id="concordance-search" ',
+		'type="text" class="form-control centered" ',
+		'placeholder="Search"/>', "\n";
 	echo '</div>', "\n";
 	echo '</div>', "\n";
 	echo '</div>', "\n";
@@ -516,7 +518,7 @@ function frontend_render_page_line_div($pid, $p, $line) {
 	$d = $line["cor"];
 	$inputclass = '';
 	if ($line["isCorrected"]) {
-		$inputclass = 'class="corrected-line"';
+		$inputclass = 'class="corrected-line" ';
 	}
 	echo '<div class="line-view" title="', $text, '">';
 	// echo '<a class="line-anchor" id="', $anchor, '"></a>';
@@ -527,8 +529,11 @@ function frontend_render_page_line_div($pid, $p, $line) {
 		'height="25"',
 		' />';
 	echo '<br/>';
-	echo '<input name="lines[', $anchor, ']" type="text" size="', strlen($d), '" value="', $d, '"',
-		$inputclass, '/>';
+	echo '<input name="lines[', $anchor, ']" type="text" size="', strlen($d), '" value="', $d, '" ',
+		$inputclass,
+		'id="', $anchor, '" ',
+		'onclick="messageSelectWordFromInputElement(this.id);"',
+		'/>';
 	echo '<button class="btn btn-default" title="', "upload line #$lid", '" type="submit" formaction="',
 		"page.php?u=$anchor&p=$p&pid=$pid", '">';
 	echo '<span class="glyphicon glyphicon-upload" />';

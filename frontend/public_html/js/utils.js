@@ -26,3 +26,21 @@ $(function() {
 	});
 
 });
+
+function getSelectedWordFromInputElement(elem) {
+	if (elem !== null && elem.tagName === "INPUT" && elem.type === "text") {
+		var b = elem.selectionStart;
+		var e = elem.selectionEnd;
+		if ((e - b) > 0) {
+			return elem.value.substring(b, e);
+		}
+	}
+	return null;
+}
+
+function messageSelectWordFromInputElement(id) {
+	var selection = getSelectedWordFromInputElement(document.getElementById(id));
+	if (selection !== null) {
+		document.getElementById("concordance-search").value = selection;
+	}
+}
