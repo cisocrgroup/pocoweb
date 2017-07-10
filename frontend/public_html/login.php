@@ -13,10 +13,8 @@ if ($user !== NULL) {
 	}
 	$api = backend_login($_POST["name"], $_POST["pass"]);
 	$status = $api->get_http_status_code();
-	echo "status: $status <br/>";
 	switch ($status) {
 	case "200":
-		var_dump($api->get_response());
 		backend_set_session_cookie($api->get_response()["sid"]);
 		backend_set_global_session_id();
 		require(TEMPLATES_PATH . "/header.php");
