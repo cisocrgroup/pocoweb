@@ -11,6 +11,10 @@ div.line-view:hover {
 	top: 5px;
 }
 
+#page-header {
+	background: white;
+}
+
 a.line-anchor {
     display: block;
     position: relative;
