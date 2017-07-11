@@ -442,14 +442,16 @@ function frontend_render_page_header($page) {
 	frontend_render_page_navigation_buttons($pid, $nextpageid, FALSE);
 	// search
 	echo '<div class="input-group centered">', "\n";
-	echo '<span class="input-group-btn">', "\n";
-	echo '<button class="btn btn-default centered" type="button">', "\n";
-	echo '<span class="glyphicon glyphicon-search centered"/>', "\n";
-	echo '</button>', "\n";
-	echo '</span>', "\n";
 	echo '<input id="concordance-search" ',
 		'type="text" class="form-control centered" ',
 		'placeholder="Search"/>', "\n";
+	echo '<span class="input-group-btn">', "\n";
+	echo '<button id="concordance-search-button" class="btn btn-default centered" type="button">', "\n";
+	echo 'Show 0 occurences';
+	// echo '<span class="glyphicon glyphicon-search centered"/>', "\n";
+	// echo '<span id="concordance-number">&nbsp;[0]</span>', "\n";
+	echo '</button>', "\n";
+	echo '</span>', "\n";
 	echo '</div>', "\n";
 	echo '</div>', "\n";
 	echo '</div>', "\n";
@@ -510,6 +512,7 @@ function frontend_render_page($page) {
 }
 
 function frontend_render_page_line_div($pid, $p, $line) {
+	global $SID;
 	$lid = $line["id"];
 	$imgfile = $line["imgFile"];
 	$file = basename($imgfile);
@@ -532,7 +535,7 @@ function frontend_render_page_line_div($pid, $p, $line) {
 	echo '<input name="lines[', $anchor, ']" type="text" size="', strlen($d), '" value="', $d, '" ',
 		$inputclass,
 		'id="', $anchor, '" ',
-		'onclick="messageSelectWordFromInputElement(this.id);"',
+		'onclick=\'messageSelectWordFromInputElement("', $SID, '", ', $pid, ', this.id);\'',
 		'/>';
 	echo '<button class="btn btn-default" title="', "upload line #$lid", '" type="submit" formaction="',
 		"page.php?u=$anchor&p=$p&pid=$pid", '">';
