@@ -8,6 +8,7 @@
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/Package.hpp"
 #include "core/Page.hpp"
+#include "core/Searcher.hpp"
 #include "core/Session.hpp"
 #include "core/User.hpp"
 #include "core/WagnerFischer.hpp"
@@ -157,6 +158,8 @@ Route::Response BookRoute::impl(HttpGet, const Request& req, int bid,
 		       << ", command: " << c;
 	if (strcmp(c.data(), "download") == 0) {
 		return download(req, bid);
+	} else if (strcmp(c.data(), "search") == 0) {
+		return search(req, bid);
 	} else {
 		return not_found();
 	}
@@ -269,6 +272,39 @@ Route::Response BookRoute::download(const Request& req, int bid) const {
 	auto ar = archiver();
 	Json j;
 	j["archive"] = ar.string();
+	return j;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response BookRoute::search(const Request& req, int bid) const {
+	const auto q = req.url_params.get("q");
+	if (not q or strlen(q) <= 0) {
+		THROW(BadRequest, "invalid query string");
+	}
+	CROW_LOG_DEBUG << "(BookRoute::search) searching project id: " << bid
+		       << " q: " << q;
+	auto conn = connection();
+	const auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
+	session->has_permission_or_throw(conn, bid, Permissions::Read);
+	const auto project = session->find(conn, bid);
+	if (not project) THROW(NotFound, "cannot find project id: ", bid);
+	Searcher searcher(*project);
+	const auto lines = searcher.find(q);
+	CROW_LOG_DEBUG << "(BookRoute::search) found " << lines.size()
+		       << " lines for q='" << q << "'";
+	Json j;
+	size_t i = 0;
+	j["query"] = q;
+	j["projectid"] = bid;
+	j["n"] = lines.size();
+	for (const auto& line : lines) {
+		j["lines"][i]["lineid"] = line->id();
+		j["lines"][i]["pageid"] = line->page().id();
+		++i;
+	}
 	return j;
 }
 
