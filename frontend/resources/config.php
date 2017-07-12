@@ -36,6 +36,7 @@ $config = array(
 			"get_nth_page"     => "/books/%d/pages/%d",
 			"correct_line"     => "/books/%d/pages/%d/lines/%d",
 			"upload_project"   => "/books",
+			"search"           => "/books/%d/search?q=%s",
 		),
 	),
 	"cookies" => array(
@@ -54,5 +55,4 @@ if ($config["frontend"]["debug"]) {
 	ini_set("display_errors", "On");
 }
 error_reporting(E_ALL|E_STRCT);
-
 ?>
