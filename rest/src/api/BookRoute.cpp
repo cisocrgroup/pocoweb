@@ -292,20 +292,29 @@ Route::Response BookRoute::search(const Request& req, int bid) const {
 	const auto project = session->find(conn, bid);
 	if (not project) THROW(NotFound, "cannot find project id: ", bid);
 	Searcher searcher(*project);
-	const auto lines = searcher.find(q);
-	CROW_LOG_DEBUG << "(BookRoute::search) found " << lines.size()
-		       << " lines for q='" << q << "'";
-	Json j;
+	const auto matches = searcher.find(q);
+	CROW_LOG_DEBUG << "(BookRoute::search) found " << matches.size()
+		       << " matches for q='" << q << "'";
+	Json json;
 	size_t i = 0;
-	j["query"] = q;
-	j["projectid"] = bid;
-	j["n"] = lines.size();
-	for (const auto& line : lines) {
-		j["lines"][i]["lineid"] = line->id();
-		j["lines"][i]["pageid"] = line->page().id();
+	size_t words = 0;
+	json["query"] = q;
+	json["projectid"] = bid;
+	json["nlines"] = matches.size();
+	json["nwords"] = words;
+	for (const auto& m : matches) {
+		json["lines"][i]["lineid"] = m.first->id();
+		json["lines"][i]["pageid"] = m.first->page().id();
+		size_t j = 0;
+		for (const auto& token : m.second) {
+			json["lines"][i]["matches"][j] << token;
+			j++;
+			words++;
+		}
 		++i;
 	}
-	return j;
+	json["nwords"] = words;
+	return json;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
