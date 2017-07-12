@@ -307,7 +307,7 @@ function frontend_render_create_new_user_div() {
 	echo '</div>', "\n";
 	// Institute
 	echo '<div class="form-group">', "\n";
-	echo '<label for="institute">Insitute</label>', "\n";
+	echo '<label for="institute">Institute</label>', "\n";
 	echo '<input name="institute" type="text" placeholder="Institute" class="form-control"/>', "\n";
 	echo '</div>', "\n";
 	// Password 1
