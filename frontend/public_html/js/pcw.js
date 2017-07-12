@@ -67,7 +67,7 @@ function getNumberOfConcordances(sid, pid, q, callback) {
 	};
 	var url =
 	    sprintf(config.backend.url + config.backend.routes.search, pid, q);
-	console.log("url: " + url);
+	// console.log("url: " + url);
 	http.open("GET", url, true);
 	http.setRequestHeader("Authorization", sid);
 	http.send(null);
@@ -88,12 +88,12 @@ function messageSelectWordFromInputElement(sid, pid, id) {
 	var selection =
 	    getSelectedWordFromInputElement(document.getElementById(id));
 	if (selection !== null) {
-		console.log("selection: " + selection);
+		// console.log("selection: " + selection);
 		document.getElementById("concordance-search").value = selection;
 		getNumberOfConcordances(sid, pid, selection, function(res) {
-			console.log("res: " + res);
+			// console.log("res: " + res);
 			var n = res.n;
-			console.log("n: " + n);
+			// console.log("n: " + n);
 			var searchbutton = document.getElementById(
 			    "concordance-search-button");
 			if (n == 1) {
