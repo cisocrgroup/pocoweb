@@ -36,6 +36,28 @@ $(function() {
 
 });
 
+function sprintf(fmt) {
+	var res = "";
+	var j = 1;
+	for (i = 0; i < fmt.length; i++) {
+		if (fmt[i] == '%') {
+			if ((i + 1) < fmt.length) {
+				i++;
+				if (fmt[i] == '%') {
+					res += '%';
+				} else {
+					res += arguments[j++];
+				}
+			} else {
+				res += fmt[i];
+			}
+		} else {
+			res += fmt[i];
+		}
+	}
+	return res;
+}
+
 function getNumberOfConcordances(sid, pid, q, callback) {
 	var http = new XMLHttpRequest();
 	http.onreadystatechange = function() {
@@ -43,10 +65,10 @@ function getNumberOfConcordances(sid, pid, q, callback) {
 			callback(JSON.parse(http.responseText));
 		}
 	};
-	http.open(
-	    "GET",
-	    "http://pocoweb.cis.lmu.de/rest/books/" + pid + "/search?q=" + q,
-	    true);
+	var url =
+	    sprintf(config.backend.url + config.backend.routes.search, pid, q);
+	console.log("url: " + url);
+	http.open("GET", url, true);
 	http.setRequestHeader("Authorization", sid);
 	http.send(null);
 }
