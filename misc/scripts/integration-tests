@@ -34,15 +34,15 @@ start_server() {
 }
 
 expect() {
-	url="$1:"
-	want=$2
-	got=$3
+	local url="$1:"
+	local want=$2
+	local got=$3
 	if [ "$want" != "$got" ]; then
 		((error++))
-		printf "%-30s" "$url"
+		printf "%-50s" "$url"
 		echo -e "$fail    [want=$want; got=$got]"
 	else
-		printf "%-30s" "$url"
+		printf "%-50s" "$url"
 		echo -e "$success [want=got=$want]"
 	fi
 }
@@ -150,6 +150,18 @@ remove_book() {
 	expect "DELETE $url" 200 $(code $res)
 }
 
+count_book() {
+	local id=$1
+	local q=$2
+	local want=$3
+	local url="/books/$id/search"
+	curlopt="-G --data-urlencode q=$2 --data-urlencode c=true"
+	local res=$(curl_get $url)
+	expect "GET $url" 200 $(code $res)
+	expect "GET $url" $want $(json_get "nwords" $(json $res))
+	curlopt=""
+}
+
 #
 # START OF SCRIPT
 #
@@ -185,6 +197,10 @@ get_book $bid "language" "Latin"
 get_book $bid "year" 1668
 get_book $bid "uri" "http://example.org"
 get_book $bid "description" "desc"
+count_book $bid "Bomine" 1
+count_book $bid "Cæſaris" 1
+count_book $bid "CANNOTFINDME" 0
+count_book $bid "ſunt" 9
 remove_book $bid
 ## ROLLENHAGEN
 upload misc/data/test/rollenhagen_reysen_1603.zip "rollenhagen" "reysen" 201
