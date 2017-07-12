@@ -1,6 +1,7 @@
 #ifndef pcw_Searcher_hpp__
 #define pcw_Searcher_hpp__
 
+#include <map>
 #include <memory>
 #include <vector>
 #include "Line.hpp"
@@ -8,47 +9,49 @@
 #include "Project.hpp"
 
 namespace pcw {
-using LineSptr = std::shared_ptr<Line>;
-using ProjectSptr = std::shared_ptr<Project>;
-
 class Searcher {
        public:
+	using ConstLineSptr = std::shared_ptr<const Line>;
+	using Matches = std::map<ConstLineSptr, std::vector<Token>>;
 	Searcher() : Searcher(nullptr) {}
 	Searcher(const Project& project);
 
-	void set_project(const Project& project) noexcept;
-	bool match_words() const noexcept { return match_words_; }
-	void set_match_words(bool m = true) noexcept { match_words_ = m; }
+	void set_ignore_case(bool ic = true) { ignore_case_ = ic; }
 	bool ignore_case() const noexcept { return ignore_case_; }
-	void set_ignore_case(bool i = true) noexcept { ignore_case_ = i; }
-
-	std::vector<LineSptr> find(const std::wstring& str) const;
-	std::vector<LineSptr> find(const std::string& str) const;
+	void set_project(const Project& project) noexcept;
+	Matches find(const std::wstring& str) const;
+	Matches find(const std::string& str) const;
 
 	template <class F>
-	std::vector<LineSptr> find_impl(F f) const;
+	Matches find_impl(F f) const;
 
        private:
 	Searcher(std::shared_ptr<const Project> p)
-	    : project_(std::move(p)), match_words_(true), ignore_case_(true) {}
+	    : project_(std::move(p)), ignore_case_(true) {}
 	std::shared_ptr<const Project> project_;
-	bool match_words_, ignore_case_;
+	bool ignore_case_;
 };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 template <class F>
-inline std::vector<pcw::LineSptr> pcw::Searcher::find_impl(F f) const {
+inline pcw::Searcher::Matches pcw::Searcher::find_impl(F f) const {
 	if (not project_) return {};
-	std::vector<pcw::LineSptr> res;
+	Matches matches;
 	for (const auto& page : *project_) {
 		if (page) {
 			for (const auto& line : *page) {
-				if (line and f(*line)) res.push_back(line);
+				if (line) {
+					line->each_token([&](const auto& t) {
+						if (f(t))
+							matches[line].push_back(
+							    t);
+					});
+				}
 			}
 		}
 	}
-	return res;
+	return matches;
 }
 
 #endif  // pcw_Searcher_hpp__

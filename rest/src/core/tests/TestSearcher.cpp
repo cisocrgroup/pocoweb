@@ -33,10 +33,11 @@ struct SearcherFixture {
 		    "Mögen hätt ich schon gewollt,\n"
 		    "aber dürfen\n"
 		    "hab ich mich nicht getraut.\n");
-		// builder.append_text(
-		//     "ſunt Alexcandri aut Cæſaris credere recuſarem, non puto
-		//     "
-		//     "illos merito");
+		builder.append_text(
+		    "ſunt Alexcandri aut Cæſaris credere recuſarem, non "
+		    "puto "
+		    "illos merito\nſunt ad Bellum, parata habeant. Sed Civibus "
+		    "data ſunt à Natura\naſunt ſunta ſſuntſ.");
 		book = builder.build();
 		searcher.set_project(*book);
 	}
@@ -46,73 +47,75 @@ struct SearcherFixture {
 BOOST_FIXTURE_TEST_SUITE(Searcher, SearcherFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(TestDefaults) {
-	BOOST_CHECK(searcher.match_words());
-	BOOST_CHECK(searcher.ignore_case());
-}
+BOOST_AUTO_TEST_CASE(TestDefaults) { BOOST_CHECK(searcher.ignore_case()); }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(TestNoResults) {
-	auto res = searcher.find_impl([](const auto&) { return false; });
+	const auto res = searcher.find_impl([](const auto&) { return false; });
 	BOOST_CHECK_EQUAL(res.size(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(TestAllResults) {
-	auto res = searcher.find_impl([](const auto&) { return true; });
-	BOOST_CHECK_EQUAL(res.size(), 6);
+	const auto res = searcher.find_impl([](const auto&) { return true; });
+	BOOST_CHECK_EQUAL(res.size(), 9);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(TestSearchByPageId) {
-	auto res = searcher.find_impl(
-	    [](const auto& line) { return line.page().id() == 1; });
+	const auto res = searcher.find_impl(
+	    [](const auto& token) { return token.line->page().id() == 1; });
 	BOOST_CHECK_EQUAL(res.size(), 3);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(TestSearchByLineId) {
-	auto res =
-	    searcher.find_impl([](const auto& line) { return line.id() == 1; });
-	BOOST_CHECK_EQUAL(res.size(), 2);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(TestSearchByRegex_first_page) {
-	auto res = searcher.find("first page");
+	const auto res = searcher.find_impl(
+	    [](const auto& token) { return token.line->id() == 1; });
 	BOOST_CHECK_EQUAL(res.size(), 3);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(TestSearchByRegex_nothing) {
-	auto res = searcher.find("nothing");
+	const auto res = searcher.find("nothing");
 	BOOST_CHECK_EQUAL(res.size(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(TestSearchByRegexIgnoreCase) {
-	auto res = searcher.find("mögen");
+	const auto res = searcher.find("mögen");
 	BOOST_CHECK_EQUAL(res.size(), 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(TestSearchByRegexDoNotIgnoreCase) {
 	searcher.set_ignore_case(false);
-	auto res = searcher.find("mögen");
+	const auto res = searcher.find("mögen");
 	BOOST_CHECK_EQUAL(res.size(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(TestSearchByRegexMatchOnWordBoundaries) {
-	auto res = searcher.find("s.*n");  // matches schon but *not* second ...
+BOOST_AUTO_TEST_CASE(TestSearchByRegexMatchAtLineBeginIgnoreCase) {
+	const auto res = searcher.find("this");
+	BOOST_CHECK_EQUAL(res.size(), 3);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestSearchByRegexMatchAtLineBegin) {
+	const auto res = searcher.find("This");
+	BOOST_CHECK_EQUAL(res.size(), 3);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestSearchWithLigatureAE) {
+	const auto res = searcher.find("Cæſaris");
 	BOOST_CHECK_EQUAL(res.size(), 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(TestSearchByRegexMatchFullLines) {
-	searcher.set_match_words(false);
-	auto res = searcher.find("s.*n");
-	BOOST_CHECK_EQUAL(res.size(), 4);
+BOOST_AUTO_TEST_CASE(TestSearchWithLongS) {
+	const auto res = searcher.find("ſunt");
+	BOOST_CHECK_EQUAL(res.size(), 2);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
