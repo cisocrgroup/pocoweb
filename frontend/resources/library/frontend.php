@@ -258,7 +258,7 @@ function frontend_upload_project_archive($post, $file) {
 		frontend_render_error_div("Could not upload archive: error: $file[error]");
 		return;
 	}
-	if ($file["size"] > $config["backend"]["upload"]["max_size"]) {
+	if ($file["size"] > $config["frontend"]["upload"]["max_size"]) {
 		frontend_render_error_div("Could not upload archive: file too big");
 		return;
 	}
