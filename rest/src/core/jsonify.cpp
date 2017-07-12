@@ -27,7 +27,7 @@ pcw::Json& pcw::operator<<(Json& json, const BookData& data) {
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json& pcw::operator<<(Json& json, const Project& view) {
-	json["id"] = view.origin().id();
+	json["projectId"] = view.origin().id();
 	json["isBook"] = view.is_book();
 	json << view.origin().data;
 
@@ -45,7 +45,8 @@ pcw::Json& pcw::operator<<(Json& json, const Project& view) {
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json& pcw::operator<<(Json& json, const Page& page) {
-	json["id"] = page.id();
+	json["pageId"] = page.id();
+	json["projectId"] = page.book().id();
 	json["box"] << page.box;
 	json["ocrFile"] = page.ocr.native();
 	json["imgFile"] = page.img.native();
@@ -60,7 +61,9 @@ pcw::Json& pcw::operator<<(Json& json, const Page& page) {
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json& pcw::operator<<(Json& json, const Line& line) {
-	json["id"] = line.id();
+	json["lineId"] = line.id();
+	json["pageId"] = line.page().id();
+	json["projectId"] = line.page().book().id();
 	json["box"] << line.box;
 	json["imgFile"] = line.img.native();
 	json["cor"] = line.cor();
@@ -69,11 +72,13 @@ pcw::Json& pcw::operator<<(Json& json, const Line& line) {
 	json["confidences"] = line.confidences();
 	json["averageConfidence"] = line.average_conf();
 	json["isCorrected"] = line.is_corrected();
-	size_t i = 0;
-	line.each_token([&i, &json](const auto& token) {
-		json["tokens"][i] << token;
-		++i;
-	});
+	// do *not* show words of each line
+	// /books/id/page/id/lines/id/tokens will give all tokens of a line
+	// size_t i = 0;
+	// line.each_token([&i, &json](const auto& token) {
+	// 	json["tokens"][i] << token;
+	// 	++i;
+	// });
 	return json;
 }
 
@@ -126,7 +131,7 @@ pcw::Json& pcw::operator<<(
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json& pcw::operator<<(Json& json, const Profile& profile) {
-	json["book"] = profile.book().id();
+	json["projectId"] = profile.book().id();
 	json["suggestions"] << profile.suggestions();
 	json["histPatterns"] << profile.calc_hist_patterns();
 	json["ocrPatterns"] << profile.calc_ocr_patterns();

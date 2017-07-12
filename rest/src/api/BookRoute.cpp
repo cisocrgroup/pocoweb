@@ -299,12 +299,11 @@ Route::Response BookRoute::search(const Request& req, int bid) const {
 	size_t i = 0;
 	size_t words = 0;
 	json["query"] = q;
-	json["projectid"] = bid;
-	json["nlines"] = matches.size();
-	json["nwords"] = words;
+	json["projectId"] = bid;
+	json["nLines"] = matches.size();
+	json["nWords"] = words;
 	for (const auto& m : matches) {
-		json["lines"][i]["lineid"] = m.first->id();
-		json["lines"][i]["pageid"] = m.first->page().id();
+		json["lines"][i]["line"] << *m.first;
 		size_t j = 0;
 		for (const auto& token : m.second) {
 			json["lines"][i]["matches"][j] << token;
@@ -313,7 +312,7 @@ Route::Response BookRoute::search(const Request& req, int bid) const {
 		}
 		++i;
 	}
-	json["nwords"] = words;
+	json["nWords"] = words;
 	return json;
 }
 
