@@ -215,6 +215,8 @@ get_book $bid "author" "Rollenhagen"
 get_book $bid "year" 1603
 get_book $bid "uri" "http://example.org"
 get_book $bid "description" "desc"
+count_book $bid "von" 6
+count_book $bid "CANNOTFINDME" 0
 remove_book $bid
 logout
 ## not reset sid. User should still *not* be logged in
