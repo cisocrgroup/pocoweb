@@ -71,14 +71,20 @@ pcw::Json& pcw::operator<<(Json& json, const Line& line) {
 	json["isCorrected"] = line.is_corrected();
 	size_t i = 0;
 	line.each_token([&i, &json](const auto& token) {
-		json["tokens"][i]["isCorrected"] = token.is_corrected();
-		json["tokens"][i]["ocr"] = token.ocr();
-		json["tokens"][i]["cor"] = token.cor();
-		json["tokens"][i]["confidence"] = token.average_conf();
-		json["tokens"][i]["box"] << token.box;
-		json["tokens"][i]["isNormal"] = token.is_normal();
+		json["tokens"][i] << token;
 		++i;
 	});
+	return json;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Json& pcw::operator<<(Json& json, const Token& token) {
+	json = token.is_corrected();
+	json = token.ocr();
+	json = token.cor();
+	json = token.average_conf();
+	json << token.box;
+	json = token.is_normal();
 	return json;
 }
 
