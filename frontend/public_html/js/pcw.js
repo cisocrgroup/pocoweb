@@ -92,7 +92,7 @@ function messageSelectWordFromInputElement(sid, pid, id) {
 		document.getElementById("concordance-search").value = selection;
 		getNumberOfConcordances(sid, pid, selection, function(res) {
 			// console.log("res: " + res);
-			var n = res.n;
+			var n = res.nwords;
 			// console.log("n: " + n);
 			var searchbutton = document.getElementById(
 			    "concordance-search-button");
