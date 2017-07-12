@@ -397,9 +397,9 @@ function frontend_render_page_view_div($pid, $p, $u, $post) {
 	} else {
 		$page = $api->get_response();
 		echo '<div id="page-view">', "\n";
-		frontend_render_page_header($page);
-		frontend_render_page_heading($page);
-		frontend_render_page($page);
+		frontend_render_page_header_div($page);
+		frontend_render_page_heading_div($page);
+		frontend_render_page_div($page);
 		echo '</div>', "\n";
 	}
 }
@@ -431,7 +431,7 @@ function frontend_update_lines($u, $lines) {
 	}
 }
 
-function frontend_render_page_header($page) {
+function frontend_render_page_header_div($page) {
 	$nextpageid = $page["nextPageId"];
 	$prevpageid = $page["prevPageId"];
 	$pid = $page["projectId"];
@@ -443,10 +443,12 @@ function frontend_render_page_header($page) {
 	// search
 	echo '<div class="input-group centered">', "\n";
 	echo '<input id="concordance-search" ',
-		'type="text" class="form-control centered" ',
+		'type="text" class="form-control centered disabled" ',
 		'placeholder="Search"/>', "\n";
 	echo '<span class="input-group-btn">', "\n";
-	echo '<button id="concordance-search-button" class="btn btn-default centered" type="button">', "\n";
+	echo '<button id="concordance-search-button" class="btn btn-default centered" type="button"',
+		'onclick="window.location.href=\'concordance.php?pid=', $pid, '\'"',
+		 '>', "\n";
 	echo 'Show 0 occurences';
 	// echo '<span class="glyphicon glyphicon-search centered"/>', "\n";
 	// echo '<span id="concordance-number">&nbsp;[0]</span>', "\n";
@@ -491,17 +493,17 @@ function frontend_render_page_navigation_buttons($pid, $p, $left) {
 	echo '</button>', "\n";
 }
 
-function frontend_render_page_heading($page) {
+function frontend_render_page_heading_div($page) {
 	echo '<div id="page-heading">', "\n";
-	echo "<p><h2>Project #$page[projectId], page #$page[id]</h2></p>\n";
+	echo "<p><h2>Project #$page[projectId], page #$page[pageId]</h2></p>\n";
 	echo '</div>', "\n";
 }
 
-function frontend_render_page($page) {
+function frontend_render_page_div($page) {
 	echo '<div id="page-view">';
 	echo '<form method="post">';
 	foreach ($page["lines"] as $line) {
-		frontend_render_page_line_div($page["projectId"], $page["id"], $line);
+		frontend_render_page_line_div($line);
 	}
 	echo '<button class="btn btn-primary" type="submit" title="', "upload page #$page[id]",
 		'" formaction="', "page.php?u=all&p=$page[id]&pid=$page[projectId]", '">';
@@ -511,9 +513,11 @@ function frontend_render_page($page) {
 	echo '</div>';
 }
 
-function frontend_render_page_line_div($pid, $p, $line) {
+function frontend_render_page_line_div($line) {
 	global $SID;
-	$lid = $line["id"];
+	$lid = $line["lineId"];
+	$p = $line["pageId"];
+	$pid = $line["projectId"];
 	$imgfile = $line["imgFile"];
 	$file = basename($imgfile);
 	$text = "line $lid, $file";
@@ -542,6 +546,28 @@ function frontend_render_page_line_div($pid, $p, $line) {
 	echo '<span class="glyphicon glyphicon-upload" />';
 	echo '</button>';
 	echo '</div>';
+}
+
+function frontend_render_concordance_div($pid, $q) {
+	$api = backend_get_concordance($pid, $q);
+	$status = $api->get_http_status_code();
+	if ($status == 200) {
+		$matches = $api->get_response();
+		if ($matches != NULL) {
+			$page = array("lines" => array());
+			foreach ($matches["lines"] as $line) {
+				array_push($page["lines"], $line["line"]);
+			}
+			echo '<div id="concordance-view">', "\n";
+			echo '<div id="concordance-heading">', "\n";
+			echo "<p><h2>Concordance view for '", urldecode($q), "'</h2></p>\n";
+			echo '</div>', "\n";
+			frontend_render_page_div($page);
+			echo '</div>', "\n";
+		}
+	} else {
+		frontend_render_error_div("Error: backend returned: $status");
+	}
 }
 
 function frontend_render_success_div($msg) {

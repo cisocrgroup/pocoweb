@@ -300,4 +300,19 @@ function backend_upload_project($post, $name, $file) {
 	$api->post_request($post);
 	return $api;
 }
+
+function backend_get_search_route($pid, $q) {
+	global $config;
+	return sprintf($config["backend"]["url"] .
+		$config["backend"]["routes"]["search"],
+		$pid, urlencode($q));
+}
+
+function backend_get_concordance($pid, $q) {
+	global $SID;
+	$api = new Api(backend_get_search_route($pid, $q));
+	$api->set_session_id($SID);
+	$api->get_request();
+	return $api;
+}
 ?>

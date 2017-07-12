@@ -91,18 +91,21 @@ function messageSelectWordFromInputElement(sid, pid, id) {
 		// console.log("selection: " + selection);
 		document.getElementById("concordance-search").value = selection;
 		getNumberOfConcordances(sid, pid, selection, function(res) {
-			// console.log("res: " + res);
-			var n = res.nwords;
-			// console.log("n: " + n);
 			var searchbutton = document.getElementById(
 			    "concordance-search-button");
-			if (n == 1) {
-				searchbutton.innerHTML =
-				    "Show " + n + " occurrence";
-			} else {
-				searchbutton.innerHTML =
-				    "Show " + n + " occurrences";
-			}
+			setupConcordanceSearchButton(pid, searchbutton, res);
 		});
 	}
+}
+
+function setupConcordanceSearchButton(pid, button, obj) {
+	var n = obj.nWords;
+	if (n == 1) {
+		button.innerHTML = "Show " + n + " occurrence";
+	} else {
+		button.innerHTML = "Show " + n + " occurrences";
+	}
+	button.setAttribute(
+	    "onclick", "window.location.href='concordance.php?pid=" + pid +
+		"&q=" + encodeURI(obj.query) + "'");
 }
