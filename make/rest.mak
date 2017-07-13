@@ -21,6 +21,7 @@ CORE_OBJS += rest/src/core/ProjectBuilder.o
 CORE_OBJS += rest/src/core/Route.o
 CORE_OBJS += rest/src/core/Searcher.o
 CORE_OBJS += rest/src/core/Session.o
+CORE_OBJS += rest/src/core/SessionDirectory.o
 CORE_OBJS += rest/src/core/SessionStore.o
 CORE_OBJS += rest/src/core/User.o
 CORE_OBJS += rest/src/core/WagnerFischer.o
