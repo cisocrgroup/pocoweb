@@ -38,6 +38,8 @@ class Line;
 using LineSptr = std::shared_ptr<Line>;
 class Session;
 using SessionLock = std::lock_guard<Session>;
+class SessionDirectory;
+using ConstSessionDirectoryPtr = std::unique_ptr<const SessionDirectory>;
 
 class Session {
        public:
@@ -49,6 +51,7 @@ class Session {
 
 	const std::string& id() const noexcept { return sid_; }
 	const User& user() const noexcept { return *user_; }
+	const SessionDirectory& directory() const noexcept { return *dir_; }
 	void lock() noexcept { mutex_.lock(); }
 	void unlock() noexcept { mutex_.unlock(); }
 	void set_cache(AppCacheSptr cache) noexcept {
@@ -109,6 +112,8 @@ class Session {
 
 	const std::string sid_;
 	const ConstUserSptr user_;
+	const ConstSessionDirectoryPtr dir_;
+
 	AppCacheSptr cache_;
 	Mutex mutex_;
 	mutable ProjectSptr project_;

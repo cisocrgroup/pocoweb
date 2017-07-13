@@ -1,4 +1,5 @@
 #include "Session.hpp"
+#include "SessionDirectory.hpp"
 #include "SessionStore.hpp"
 
 using namespace pcw;
