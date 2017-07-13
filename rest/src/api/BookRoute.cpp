@@ -303,10 +303,10 @@ Route::Response BookRoute::search(const Request& req, int bid) const {
 	json["nLines"] = matches.size();
 	json["nWords"] = words;
 	for (const auto& m : matches) {
-		json["lines"][i]["line"] << *m.first;
+		json["matches"][i]["line"] << *m.first;
 		size_t j = 0;
 		for (const auto& token : m.second) {
-			json["lines"][i]["matches"][j] << token;
+			json["matches"][i]["matches"][j] << token;
 			j++;
 			words++;
 		}
