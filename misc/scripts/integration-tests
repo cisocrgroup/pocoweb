@@ -223,7 +223,7 @@ remove_book $bid
 
 # logout
 logout
-## not reset sid. User should still *not* be logged in
+## $sid was not reset -- user should still *not* be logged in
 loggedin $name 403
 
 
