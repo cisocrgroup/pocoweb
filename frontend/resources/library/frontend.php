@@ -515,6 +515,7 @@ function frontend_render_page_div($page) {
 
 function frontend_render_page_line_div($line) {
 	global $SID;
+	global $config;
 	$lid = $line["lineId"];
 	$p = $line["pageId"];
 	$pid = $line["projectId"];
@@ -533,7 +534,7 @@ function frontend_render_page_line_div($line) {
 		'alt="', $text, '"',
 		'title="', $text, '"',
 		'width="auto"',
-		'height="25"',
+		'height="', $config["frontend"]["image"]["line_image_height"], '"',
 		' />';
 	echo '<br/>';
 	echo '<input name="lines[', $anchor, ']" type="text" size="', strlen($d), '" value="', $d, '" ',

@@ -16,6 +16,9 @@ $config = array(
 			"max_size"   => 2 * 1024 * 1024 * 1024, // 2gb
 			"upload_dir" => "/tmp",
 		),
+		"image" => array(
+			"line_image_height" => 25,
+		),
 	),
 	"backend" => array(
 		"url"    => "http://pocoweb.cis.lmu.de/rest",
