@@ -1,5 +1,8 @@
 #include "SessionDirectory.hpp"
 #include <boost/filesystem/operations.hpp>
+#include "Book.hpp"
+#include "Line.hpp"
+#include "Page.hpp"
 #include "Session.hpp"
 
 using namespace pcw;
@@ -25,6 +28,48 @@ void SessionDirectory::close() const noexcept {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+std::tuple<Path, Path, Path> SessionDirectory::create_split_images(
+    const Line& line, int x, int w) {
+	const auto basedir = line.page().book().data.dir.parent_path() / sid_;
+	if (not dirs_.count(basedir)) {
+		init(basedir);
+		dirs_.insert(basedir);
+	}
+	if (x < 0 or x > line.box.right() or (x + w) > line.box.right())
+		THROW(Error, "(SessionDirectory) Invalid coordinates");
+	PixPtr pix;
+	pix.reset(pixRead(line.img.string().data()));
+	if (not pix)
+		THROW(Error, "(SessionDirectory) cannot read image file: ",
+		      line.img);
+	const auto projectid = line.page().book().id();
+	const auto pageid = line.page().id();
+	const auto lineid = line.id();
+	const auto splitdir = basedir / "split-images";
+	init(splitdir);
+
+	const auto basefilename = std::to_string(projectid) + "-" +
+				  std::to_string(pageid) + "-" +
+				  std::to_string(lineid) + "-" +
+				  std::to_string(x) + "-" + std::to_string(w);
+	std::tuple<Path, Path, Path> res;
+	std::get<0>(res) =
+	    write_split_image(0, x, *pix, splitdir / (basefilename + "-l.png"));
+	std::get<1>(res) = write_split_image(
+	    x, x + w, *pix, splitdir / (basefilename + "-m.png"));
+	std::get<2>(res) = write_split_image(
+	    x + w, pix->w, *pix, splitdir / (basefilename + "-r.png"));
+	return res;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Path SessionDirectory::write_split_image(int f, int t, const PIX& pix,
+					 const Path& path) const {
+	return path;
+}
+////////////////////////////////////////////////////////////////////////////////
 void SessionDirectory::init(const Path& dir) const {
-	boost::filesystem::create_directories(dir);
+	if (not boost::filesystem::exists(dir)) {
+		boost::filesystem::create_directories(dir);
+	}
 }
