@@ -19,6 +19,7 @@ class OcropusLlocsParserLine : public ParserLine {
 
        private:
 	void init();
+	void init_box();
 
 	LinePtr line_;
 	Path llocs_;

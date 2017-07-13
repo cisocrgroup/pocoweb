@@ -4,6 +4,7 @@
 #include <iostream>
 #include <regex>
 #include "core/Line.hpp"
+#include "core/Pix.hpp"
 #include "utils/Error.hpp"
 
 using namespace pcw;
@@ -66,4 +67,19 @@ void OcropusLlocsParserLine::init() {
 		line_->append(c, cut, conf);
 	}
 	is.close();
+	init_box();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void OcropusLlocsParserLine::init_box() {
+	PixPtr pix;
+	pix.reset(pixRead(line_->img.string().data()));
+	if (not pix)
+		THROW(Error,
+		      "(OcropusLlocsParserLine) cannot read image file: ",
+		      line_->img);
+	line_->box.set_left(0);
+	line_->box.set_top(0);
+	line_->box.set_right(static_cast<int>(pix->w));
+	line_->box.set_bottom(static_cast<int>(pix->h));
 }
