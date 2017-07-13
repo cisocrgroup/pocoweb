@@ -84,12 +84,12 @@ pcw::Json& pcw::operator<<(Json& json, const Line& line) {
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json& pcw::operator<<(Json& json, const Token& token) {
-	json = token.is_corrected();
-	json = token.ocr();
-	json = token.cor();
-	json = token.average_conf();
-	json << token.box;
-	json = token.is_normal();
+	json["isCorrected"] = token.is_corrected();
+	json["ocr"] = token.ocr();
+	json["cor"] = token.cor();
+	json["averageConf"] = token.average_conf();
+	json["box"] << token.box;
+	json["isNormal"] = token.is_normal();
 	return json;
 }
 
