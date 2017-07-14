@@ -28,7 +28,7 @@ void SessionDirectory::close() const noexcept {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::tuple<Path, Path, Path> SessionDirectory::create_split_images(
+SessionDirectory::SplitImagePaths SessionDirectory::create_split_images(
     const Line& line, int x, int w) {
 	const auto basedir = line.page().book().data.dir.parent_path() / sid_;
 	if (not dirs_.count(basedir)) {
@@ -52,21 +52,24 @@ std::tuple<Path, Path, Path> SessionDirectory::create_split_images(
 				  std::to_string(pageid) + "-" +
 				  std::to_string(lineid) + "-" +
 				  std::to_string(x) + "-" + std::to_string(w);
-	std::tuple<Path, Path, Path> res;
-	std::get<0>(res) =
+	SplitImagePaths paths;
+	std::get<0>(paths) =
 	    write_split_image(0, x, *pix, splitdir / (basefilename + "-l.png"));
-	std::get<1>(res) = write_split_image(
+	std::get<1>(paths) = write_split_image(
 	    x, x + w, *pix, splitdir / (basefilename + "-m.png"));
-	std::get<2>(res) = write_split_image(
+	std::get<2>(paths) = write_split_image(
 	    x + w, pix->w, *pix, splitdir / (basefilename + "-r.png"));
-	return res;
+	return paths;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Path SessionDirectory::write_split_image(int f, int t, const PIX& pix,
-					 const Path& path) const {
+SessionDirectory::OptPath SessionDirectory::write_split_image(
+    int f, int t, const PIX& pix, const Path& path) const {
+	assert(f >= 0 and f <= static_cast<int>(pix.w));
+	assert(t >= 0 and f <= static_cast<int>(pix.w));
 	return path;
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 void SessionDirectory::init(const Path& dir) const {
 	if (not boost::filesystem::exists(dir)) {
