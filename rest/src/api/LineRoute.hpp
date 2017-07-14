@@ -11,6 +11,7 @@ class rvalue;
 
 namespace pcw {
 class WagnerFischer;
+struct Token;
 
 class LineRoute : public CrtpRoute<LineRoute> {
        public:
@@ -25,13 +26,14 @@ class LineRoute : public CrtpRoute<LineRoute> {
 		      int lid) const;
 	Response impl(HttpPost, const Request& req, int bid, int pid,
 		      int lid) const;
-	[[noreturn]] Response impl(HttpPost, const Request& req, int bid,
-				   int pid, int lid,
-				   const std::string& str) const;
+	Response impl(HttpPost, const Request& req, int bid, int pid, int lid,
+		      const std::string& str) const;
 
        private:
 	Response correct(MysqlConnection& conn, Line& line,
 			 const crow::json::rvalue& data) const;
+	Response create_split_images(const Session& session, const Line& line,
+				     int tokenid) const;
 	void log(const WagnerFischer& wf) const;
 	static void print_with_dotted_circles(const std::wstring& str,
 					      std::string& u8);

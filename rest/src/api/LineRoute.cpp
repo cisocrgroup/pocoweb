@@ -8,6 +8,7 @@
 #include "core/Package.hpp"
 #include "core/Page.hpp"
 #include "core/Session.hpp"
+#include "core/SessionDirectory.hpp"
 #include "core/User.hpp"
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
@@ -117,8 +118,46 @@ void LineRoute::print_with_dotted_circles(const std::wstring& str,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-[[noreturn]] Route::Response LineRoute::impl(HttpPost, const Request& req,
-					     int bid, int pid, int lid,
-					     const std::string& str) const {
-	THROW(Error, "(LineRoute) not implemented");
+Route::Response LineRoute::impl(HttpPost, const Request& req, int bid, int pid,
+				int lid, const std::string& str) const {
+	if (str != "create-split-images") return not_found();
+	const auto json = crow::json::load(req.body);
+	if (json["projectId"].i() != bid or json["pageId"].i() != pid or
+	    json["lineId"].i() != lid)
+		THROW(BadRequest,
+		      "(LineRoute) post ids do not match request uri");
+	auto conn = connection();
+	const auto session = this->session(req);
+	assert(conn);
+	assert(session);
+	SessionLock lock(*session);
+	session->has_permission_or_throw(conn, bid, Permissions::Read);
+	const auto line = session->find(conn, bid, pid, lid);
+	if (not line) THROW(NotFound, "(LineRoute) cannot find line");
+	return create_split_images(*session, *line, json["tokenId"].i());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response LineRoute::create_split_images(const Session& session,
+					       const Line& line,
+					       int tokenid) const {
+	boost::optional<Token> token;
+	line.each_token([&](const auto& t) {
+		if (t.id == tokenid) token = t;
+
+	});
+	if (not token) THROW(NotFound, "(LineRoute) cannot find token");
+	const auto split_images = session.directory().create_split_images(
+	    line, token->box.left(), token->box.right());
+	Json json;
+	json["leftImg"] = nullptr;
+	json["middleImg"] = nullptr;
+	json["rightImg"] = nullptr;
+	if (std::get<0>(split_images))
+		json["leftImg"] = std::get<0>(split_images)->string();
+	if (std::get<1>(split_images))
+		json["middleImg"] = std::get<1>(split_images)->string();
+	if (std::get<2>(split_images))
+		json["rightImg"] = std::get<2>(split_images)->string();
+	return json;
 }

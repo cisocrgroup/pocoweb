@@ -51,8 +51,7 @@ class Session {
 
 	const std::string& id() const noexcept { return sid_; }
 	const User& user() const noexcept { return *user_; }
-	SessionDirectory& directory() noexcept { return *dir_; }
-	const SessionDirectory& directory() const noexcept { return *dir_; }
+	SessionDirectory& directory() const noexcept { return *dir_; }
 	void lock() noexcept { mutex_.lock(); }
 	void unlock() noexcept { mutex_.unlock(); }
 	void set_cache(AppCacheSptr cache) noexcept {
