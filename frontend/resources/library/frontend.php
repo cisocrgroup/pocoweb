@@ -502,15 +502,15 @@ function frontend_render_page_heading_div($page) {
 
 function frontend_render_page_div($page) {
 	echo '<div id="page-view">';
-	echo '<form method="post">';
+	// echo '<form method="post">';
 	foreach ($page["lines"] as $line) {
 		frontend_render_page_line_div($line);
 	}
-	echo '<button class="btn btn-primary" type="submit" title="', "upload page #$page[id]",
-		'" formaction="', "page.php?u=all&p=$page[id]&pid=$page[projectId]", '">';
-	echo '<span class="glyphicon glyphicon-upload"/>';
-	echo '</button>';
-	echo '</form>';
+	// echo '<button class="btn btn-primary" type="submit" title="', "upload page #$page[id]",
+	// 	'" formaction="', "page.php?u=all&p=$page[id]&pid=$page[projectId]", '">';
+	// echo '<span class="glyphicon glyphicon-upload"/>';
+	// echo '</button>';
+	// echo '</form>';
 	echo '</div>';
 }
 
@@ -527,7 +527,7 @@ function frontend_render_page_line_div($line) {
 	$d = $line["cor"];
 	$inputclass = '';
 	if ($line["isCorrected"]) {
-		$inputclass = 'class="corrected-line" ';
+		$inputclass = ' corrected-line';
 	}
 	echo '<div class="line-view" title="', $text, '">';
 	// echo '<a class="line-anchor" id="', $anchor, '"></a>';
@@ -538,15 +538,18 @@ function frontend_render_page_line_div($line) {
 		'height="', $config["frontend"]["image"]["line_image_height"], '"',
 		' />';
 	echo '<br/>';
-	echo '<input name="lines[', $anchor, ']" type="text" size="', strlen($d), '" value="', $d, '" ',
-		$inputclass,
-		'id="', $anchor, '" ',
+	echo '<div class="input-group">', "\n";
+	echo '<input id="', $anchor, '" class="form-control', $inputclass,
+		'" type="text" size="', strlen($d), '" value="', $d, '" ',
 		'onclick=\'messageSelectWordFromInputElement("', $SID, '", ', $pid, ', this.id);\'',
-		'/>';
-	echo '<button class="btn btn-default" title="', "upload line #$lid", '" type="submit" formaction="',
-		"page.php?u=$anchor&p=$p&pid=$pid", '">';
+		'/>', "\n";
+	echo '<span class="input-group-btn">', "\n";
+	echo '<button id="', $anchor, '-btn" class="btn btn-default" title="correct line #',
+		$lid, '" onclick=\'correctLine("', $SID, '", "', $anchor, '");\' >', "\n";
 	echo '<span class="glyphicon glyphicon-upload" />';
-	echo '</button>';
+	echo '</button>', "\n";
+	echo '</span>', "\n";
+	echo '</div>', "\n";
 	echo '</div>';
 }
 

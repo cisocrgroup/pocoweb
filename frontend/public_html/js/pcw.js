@@ -67,7 +67,8 @@ function getNumberOfConcordances(sid, pid, q, callback) {
 	};
 	var url =
 	    sprintf(config.backend.url + config.backend.routes.search, pid, q);
-	// console.log("url: " + url);
+	console.log(
+	    "requesting concordances from url: " + url + " [" + sid + "]");
 	http.open("GET", url, true);
 	http.setRequestHeader("Authorization", sid);
 	http.send(null);
@@ -88,7 +89,6 @@ function messageSelectWordFromInputElement(sid, pid, id) {
 	var selection =
 	    getSelectedWordFromInputElement(document.getElementById(id));
 	if (selection !== null) {
-		// console.log("selection: " + selection);
 		document.getElementById("concordance-search").value = selection;
 		getNumberOfConcordances(sid, pid, selection, function(res) {
 			var searchbutton = document.getElementById(
@@ -101,11 +101,46 @@ function messageSelectWordFromInputElement(sid, pid, id) {
 function setupConcordanceSearchButton(pid, button, obj) {
 	var n = obj.nWords;
 	if (n == 1) {
-		button.innerHTML = "Show " + n + " occurrence of " + obj.query;
+		button.innerHTML =
+		    "Show " + n + " occurrence of '" + obj.query + "'";
 	} else {
-		button.innerHTML = "Show " + n + " occurrences of " + obj.query;
+		button.innerHTML =
+		    "Show " + n + " occurrences of '" + obj.query + "'";
 	}
 	button.setAttribute(
 	    "onclick", "window.location.href='concordance.php?pid=" + pid +
 		"&q=" + encodeURI(obj.query) + "'");
+}
+
+function getIds(anchor) {
+	return anchor.split('-');
+}
+
+function correctLine(sid, anchor) {
+	var correction = document.getElementById(anchor).value;
+	var ids = getIds(anchor);
+	sendCorrectionToServer(
+	    sid, ids[0], ids[1], ids[2], correction, function(res) {
+		    var elem = document.getElementById(anchor);
+		    elem.value = res.cor;
+		    elem.className += " corrected-line";
+	    });
+}
+
+function sendCorrectionToServer(sid, pid, p, lid, correction, callback) {
+	var http = new XMLHttpRequest();
+	http.onreadystatechange = function() {
+		if (http.readyState == 4 && http.status == 200) {
+			callback(JSON.parse(http.responseText));
+		}
+	};
+	var url = sprintf(
+	    config.backend.url + config.backend.routes["correct_line"], pid, p,
+	    lid);
+	console.log("sending correction to url: " + url + " [" + sid + "]");
+	http.open("POST", url, true);
+	http.setRequestHeader("Authorization", sid);
+	http.setRequestHeader(
+	    "Content-type", "application/json; charset=UTF-8");
+	http.send(JSON.stringify({"d": correction}));
 }
