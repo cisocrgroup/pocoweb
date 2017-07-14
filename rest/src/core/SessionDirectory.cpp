@@ -63,7 +63,7 @@ SessionDirectory::SplitImagePaths SessionDirectory::create_split_images(
 
 ////////////////////////////////////////////////////////////////////////////////
 SessionDirectory::OptPath SessionDirectory::write_split_image(
-    int f, int t, PIX& pix, const Path& path) const {
+    int f, int t, PIX& pix, const Path& path) {
 	assert(f >= 0 and f <= static_cast<int>(pix.w));
 	assert(t >= 0 and f <= static_cast<int>(pix.w));
 	assert(f <= t);

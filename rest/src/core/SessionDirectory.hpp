@@ -22,8 +22,8 @@ class SessionDirectory {
        private:
 	void init(const Path& dir) const;
 	void close() const noexcept;
-	OptPath write_split_image(int f, int t, PIX& pix,
-				  const Path& path) const;
+	static OptPath write_split_image(int f, int t, PIX& pix,
+					 const Path& path);
 	std::set<Path> dirs_;
 	const std::string sid_;
 };
