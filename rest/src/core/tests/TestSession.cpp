@@ -7,6 +7,7 @@
 #include "core/BookBuilder.hpp"
 #include "core/ProjectBuilder.hpp"
 #include "core/Session.hpp"
+#include "core/SessionDirectory.hpp"
 #include "core/User.hpp"
 #include "database/ConnectionPool.hpp"
 #include "utils/MockDb.h"
