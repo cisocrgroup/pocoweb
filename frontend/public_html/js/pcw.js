@@ -85,28 +85,30 @@ function getSelectedWordFromInputElement(elem) {
 	return null;
 }
 
-function messageSelectWordFromInputElement(sid, pid, id) {
+function messageSelectWordFromInputElement(sid, anchor) {
+	ids = getIds(anchor);
 	var selection =
-	    getSelectedWordFromInputElement(document.getElementById(id));
+	    getSelectedWordFromInputElement(document.getElementById(anchor));
 	if (selection !== null) {
-		document.getElementById("concordance-search").value = selection;
-		getNumberOfConcordances(sid, pid, selection, function(res) {
-			var searchbutton = document.getElementById(
-			    "concordance-search-button");
-			setupConcordanceSearchButton(pid, searchbutton, res);
+		document.getElementById("concordance-search-btn").value =
+		    selection;
+		getNumberOfConcordances(sid, ids[0], selection, function(res) {
+			var searchbutton =
+			    document.getElementById("concordance-search-btn");
+			setupConcordanceSearchButton(ids[0], searchbutton, res);
 		});
 	}
 }
 
 function setupConcordanceSearchButton(pid, button, obj) {
 	var n = obj.nWords;
+	var occurrences = "occurrences";
 	if (n == 1) {
-		button.innerHTML =
-		    "Show " + n + " occurrence of '" + obj.query + "'";
-	} else {
-		button.innerHTML =
-		    "Show " + n + " occurrences of '" + obj.query + "'";
+		occurrences = "occurrence";
 	}
+
+	button.innerHTML = "Show concordance of '" + obj.query + "' (" + n +
+	    " " + occurrences + ")";
 	button.setAttribute(
 	    "onclick", "window.location.href='concordance.php?pid=" + pid +
 		"&q=" + encodeURI(obj.query) + "'");
