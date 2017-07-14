@@ -67,6 +67,7 @@ SessionDirectory::OptPath SessionDirectory::write_split_image(
     int f, int t, const PIX& pix, const Path& path) const {
 	assert(f >= 0 and f <= static_cast<int>(pix.w));
 	assert(t >= 0 and f <= static_cast<int>(pix.w));
+	assert(f <= t);
 	return path;
 }
 
