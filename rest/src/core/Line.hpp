@@ -97,6 +97,7 @@ class Line : public std::enable_shared_from_this<Line> {
 	friend struct Token;
 	friend struct Char;
 };
+
 struct Token {
 	Token() = default;
 

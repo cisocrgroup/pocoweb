@@ -246,9 +246,13 @@ void Line::each_token(std::function<void(const Token&)> f) const {
 	int id = 0;
 
 	for (auto i = b; i != e;) {
-		auto j = next(i, e);
+		const auto j = next(i, e);
 		token.box.set_left(i != b ? std::prev(i)->cut : 0);
-		token.box.set_right(j != e ? j->cut : this->box.right());
+		if (j == e or std::next(j) == e) {
+			token.box.set_right(this->box.right());
+		} else {
+			token.box.set_right(std::next(j)->cut);
+		}
 		token.begin = i;
 		token.end = j;
 		token.id = ++id;
