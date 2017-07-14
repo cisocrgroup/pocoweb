@@ -88,6 +88,7 @@ pcw::Json& pcw::operator<<(Json& json, const Token& token) {
 	json["pageId"] = token.line->page().id();
 	json["lineId"] = token.line->id();
 	json["offset"] = token.offset();
+	json["tokenId"] = token.id;
 	json["isCorrected"] = token.is_corrected();
 	json["ocr"] = token.ocr();
 	json["cor"] = token.cor();
