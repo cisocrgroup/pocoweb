@@ -436,7 +436,8 @@ function frontend_render_page_header_div($page) {
 	$prevpageid = $page["prevPageId"];
 	$pid = $page["projectId"];
 	echo '<div class="container-fluid">';
-	echo '<div id="page-header" class="navbar navbar-nav" data-spy="affix" data-offset-top="141">', "\n";
+	echo '<div id="page-header" class="navbar navbar-nav col-md-12"',
+		'data-spy="affix" data-offset-top="141">', "\n";
 	// navigation buttons
 	frontend_render_page_navigation_buttons($pid, $prevpageid, TRUE);
 	frontend_render_page_navigation_buttons($pid, $nextpageid, FALSE);
@@ -549,21 +550,74 @@ function frontend_render_page_line_div($line) {
 	echo '</div>';
 }
 
+function frontend_get_subimage_div($src, $x, $y, $w, $h) {
+	return "<div style=\"background-image:url($src);background-repeat:no-repeat;" .
+		"background-position:-${x}px ${y}px;width:${w}px;height:${h}px;\"></div>";
+}
+
+function frontend_render_concordance_match_div($line, $word) {
+	global $config;
+	$api = backend_get_split_images($word);
+	$status = $api->get_http_status_code();
+	if ($status != 200) {
+		frontend_render_error_div("Could not get split images: server returned: $status");
+		return;
+	}
+	$height = $config["frontend"]["image"]["line_image_height"];
+	$linecor = preg_split('//u', $line["cor"], -1, PREG_SPLIT_NO_EMPTY);
+	$wordcor = preg_split('//u', $word["cor"], -1, PREG_SPLIT_NO_EMPTY);
+	$offset = $word["offset"];
+	echo '<div class="row">';
+	$images = $api->get_response();
+	echo '<div class="col-md-5 col-xs-4">';
+	if ($images["leftImg"] != NULL) {
+		echo '<img src="', $images["leftImg"],
+			'" width="auto" height="', $height, '"/>', "\n";
+		// echo '<label>', array_splice($linecor, 0, $offset), '</label>', "\n";
+		echo '<br/>';
+		echo '<label>', "foobar", '</label>', "\n";
+	}
+	echo '</div>';
+	echo '<div class="col-md-2 col-xs-2">';
+	if ($images["middleImg"] != NULL) {
+		echo '<img src="', $images["middleImg"],
+			'" width="auto" height="', $height, '"/>', "\n";
+		echo '<br/>';
+		echo '<label>', "foobar", '</label>', "\n";
+	}
+	echo '</div>';
+		echo '<div class="col-md-5 col-xs-4">';
+	if ($images["rightImg"] != NULL) {
+		echo '<img src="', $images["rightImg"],
+			'" width="auto" height="', $height, '"/>', "\n";
+		echo '<br/>';
+		echo '<label>', "foobar", '</label>', "\n";
+	}
+		echo '</div>';
+	echo '</div>';
+}
+
 function frontend_render_concordance_div($pid, $q) {
 	$api = backend_get_concordance($pid, $q);
 	$status = $api->get_http_status_code();
 	if ($status == 200) {
 		$matches = $api->get_response();
 		if ($matches != NULL) {
-			$page = array("lines" => array());
-			foreach ($matches["lines"] as $line) {
-				array_push($page["lines"], $line["line"]);
-			}
-			echo '<div id="concordance-view">', "\n";
+			# $page = array("lines" => array());
+			# foreach ($matches["lines"] as $line) {
+			# 	array_push($page["lines"], $line["line"]);
+			# }
+			echo '<div id="concordance-view" class="container-fluid">', "\n";
 			echo '<div id="concordance-heading">', "\n";
 			echo "<p><h2>Concordance view for '", urldecode($q), "'</h2></p>\n";
 			echo '</div>', "\n";
-			frontend_render_page_div($page);
+			foreach ($matches["matches"] as $match) {
+				$line = $match["line"];
+				foreach ($match["matches"] as $word) {
+					frontend_render_concordance_match_div($line, $word);
+				}
+			}
+			// frontend_render_page_div($page);
 			echo '</div>', "\n";
 		}
 	} else {

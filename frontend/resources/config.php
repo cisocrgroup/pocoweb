@@ -40,6 +40,7 @@ $config = array(
 			"correct_line"     => "/books/%d/pages/%d/lines/%d",
 			"upload_project"   => "/books",
 			"search"           => "/books/%d/search?q=%s",
+			"split_images"     => "/books/%d/pages/%d/lines/%d/create-split-images",
 		),
 	),
 	"cookies" => array(
