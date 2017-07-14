@@ -4,7 +4,7 @@
 
 using namespace pcw;
 ////////////////////////////////////////////////////////////////////////////////
-SessionStore::SessionStore() : sessions_(), mutex_() {}
+SessionStore::SessionStore() : sessions_(), id_register_(), mutex_() {}
 
 ////////////////////////////////////////////////////////////////////////////////
 SessionSptr SessionStore::new_session(const User& user, AppCacheSptr cache) {
@@ -13,18 +13,26 @@ SessionSptr SessionStore::new_session(const User& user, AppCacheSptr cache) {
 	SessionSptr session = nullptr;
 	Lock lock(mutex_);
 	// TODO: Do something more sensitive here
-	if (sessions_.size() >= THRESHOLD) sessions_.clear();
+	if (sessions_.size() >= THRESHOLD) {
+		sessions_.clear();
+		id_register_.clear();
+	}
 	while (not session) {
 		session = std::make_shared<Session>(user, cache);
-		auto i = sessions_.find(session->id());
-		if (i == end(sessions_)) {
-			sessions_.emplace_hint(i, session->id(), session);
+		// Session id and directory id must be unique.
+		// You cannot use the same id for sessions and their
+		// directories, since SessionDirectories leak their id to the
+		// public api.
+		if (not id_register_.count(session->id()) and
+		    not id_register_.count(session->directory().id())) {
+			id_register_.insert(session->id());
+			id_register_.insert(session->directory().id());
+			sessions_.emplace(session->id(), session);
 			return session;
 		}
 		session = nullptr;
 	}
-	assert(false);
-	return nullptr;
+	throw std::logic_error("(SessionStore) cannot create new session");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,12 +49,12 @@ void SessionStore::delete_session(const std::string& sid) {
 	using std::begin;
 	using std::end;
 	Lock lock(mutex_);
-	const auto b = begin(sessions_);
-	const auto e = end(sessions_);
-	for (auto i = b; i != e; ++i) {
-		if (i->second->id() == sid) {
-			sessions_.erase(i);
-			break;
-		}
+	const auto i = sessions_.find(sid);
+	if (i != end(sessions_)) {
+		const auto session = i->second;
+		assert(session);
+		sessions_.erase(i);
+		id_register_.erase(session->id());
+		id_register_.erase(session->directory().id());
 	}
 }

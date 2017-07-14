@@ -17,6 +17,7 @@ class SessionDirectory {
 
 	SessionDirectory(const std::string& sid);
 	~SessionDirectory() noexcept;
+	const std::string& id() const noexcept { return sid_; }
 	SplitImagePaths create_split_images(const Line& line, int x, int w);
 
        private:
