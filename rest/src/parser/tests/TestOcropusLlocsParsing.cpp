@@ -8,6 +8,7 @@
 #include <vector>
 #include "core/Line.hpp"
 #include "core/WagnerFischer.hpp"
+#include "core/util.hpp"
 #include "parser/OcropusLlocsPageParser.hpp"
 #include "parser/OcropusLlocsParserPage.hpp"
 #include "parser/ParserPage.hpp"
@@ -72,19 +73,17 @@ BOOST_AUTO_TEST_CASE(CorrectionTest) {
 	page->write(tmp / "1");
 
 	// page->write only writes the llocs files.
-	// the parser needs the png files.
+	// the parser needs the png files. So copy them.
 	for (auto i = 0U; i < 3; ++i) {
 		const auto& line = page->get(i);
-		std::ofstream os(
-		    (tmp / "1" / line.line(i)->img.filename()).string());
-		BOOST_REQUIRE(os.good());
-		os << "data\n";
-		os.close();
+		const auto to = tmp / "1" / line.line(i)->img.filename();
+		hard_link_or_copy(line.line(i)->img, to);
 	}
 
 	OcropusLlocsPageParser p2(tmp / "1");
 	page = p2.parse();
 	BOOST_REQUIRE(page != nullptr);
+	std::cout << "size: " << page->size();
 	BOOST_REQUIRE(page->size() == 3);
 
 	// std::cerr << "0: " << page->get(0).string() << "\n";
