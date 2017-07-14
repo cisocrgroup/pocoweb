@@ -20,10 +20,14 @@ class LineRoute : public CrtpRoute<LineRoute> {
 	virtual const char* name() const noexcept override { return name_; }
 
 	pcw_crtp_route_def_impl__(int, int, int);
+	pcw_crtp_route_def_impl__(int, int, int, const std::string&);
 	Response impl(HttpGet, const Request& req, int bid, int pid,
 		      int lid) const;
 	Response impl(HttpPost, const Request& req, int bid, int pid,
 		      int lid) const;
+	[[noreturn]] Response impl(HttpPost, const Request& req, int bid,
+				   int pid, int lid,
+				   const std::string& str) const;
 
        private:
 	Response correct(MysqlConnection& conn, Line& line,

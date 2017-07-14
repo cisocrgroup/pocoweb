@@ -14,18 +14,20 @@
 #include "utils/Error.hpp"
 #include "utils/ScopeGuard.hpp"
 
-#define LINE_ROUTE_ROUTE "/books/<int>/pages/<int>/lines/<int>"
+#define LINE_ROUTE_ROUTE_1 "/books/<int>/pages/<int>/lines/<int>"
+#define LINE_ROUTE_ROUTE_2 "/books/<int>/pages/<int>/lines/<int>/<string>"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* LineRoute::route_ = LINE_ROUTE_ROUTE;
+const char* LineRoute::route_ = LINE_ROUTE_ROUTE_2 "," LINE_ROUTE_ROUTE_2;
 const char* LineRoute::name_ = "LineRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
 void LineRoute::Register(App& app) {
-	CROW_ROUTE(app, LINE_ROUTE_ROUTE)
+	CROW_ROUTE(app, LINE_ROUTE_ROUTE_1)
 	    .methods("POST"_method, "GET"_method)(*this);
+	CROW_ROUTE(app, LINE_ROUTE_ROUTE_2).methods("POST"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -112,4 +114,11 @@ void LineRoute::print_with_dotted_circles(const std::wstring& str,
 				       std::back_inserter(u8));
 		utf8::utf32to8(&c, &c + 1, std::back_inserter(u8));
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+[[noreturn]] Route::Response LineRoute::impl(HttpPost, const Request& req,
+					     int bid, int pid, int lid,
+					     const std::string& str) const {
+	THROW(Error, "(LineRoute) not implemented");
 }
