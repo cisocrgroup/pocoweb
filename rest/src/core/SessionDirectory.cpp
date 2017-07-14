@@ -29,13 +29,13 @@ void SessionDirectory::close() const noexcept {
 
 ////////////////////////////////////////////////////////////////////////////////
 SessionDirectory::SplitImagePaths SessionDirectory::create_split_images(
-    const Line& line, int x, int w) {
+    const Line& line, int x1, int x2) {
 	const auto basedir = line.page().book().data.dir.parent_path() / sid_;
 	if (not dirs_.count(basedir)) {
 		init(basedir);
 		dirs_.insert(basedir);
 	}
-	if (x < 0 or x > line.box.right() or (x + w) > line.box.right())
+	if (x1 < 0 or x1 > line.box.right() or x2 > line.box.right())
 		THROW(Error, "(SessionDirectory) Invalid coordinates");
 	PixPtr pix{pixRead(line.img.string().data())};
 	if (not pix)
@@ -50,14 +50,14 @@ SessionDirectory::SplitImagePaths SessionDirectory::create_split_images(
 	const auto basefilename = std::to_string(projectid) + "-" +
 				  std::to_string(pageid) + "-" +
 				  std::to_string(lineid) + "-" +
-				  std::to_string(x) + "-" + std::to_string(w);
+				  std::to_string(x1) + "-" + std::to_string(x2);
 	SplitImagePaths paths;
-	std::get<0>(paths) =
-	    write_split_image(0, x, *pix, splitdir / (basefilename + "-l.png"));
+	std::get<0>(paths) = write_split_image(
+	    0, x1, *pix, splitdir / (basefilename + "-l.png"));
 	std::get<1>(paths) = write_split_image(
-	    x, x + w, *pix, splitdir / (basefilename + "-m.png"));
+	    x1, x2, *pix, splitdir / (basefilename + "-m.png"));
 	std::get<2>(paths) = write_split_image(
-	    x + w, pix->w, *pix, splitdir / (basefilename + "-r.png"));
+	    x2, pix->w, *pix, splitdir / (basefilename + "-r.png"));
 	return paths;
 }
 
