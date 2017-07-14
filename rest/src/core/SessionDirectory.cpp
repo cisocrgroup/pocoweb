@@ -37,8 +37,7 @@ SessionDirectory::SplitImagePaths SessionDirectory::create_split_images(
 	}
 	if (x < 0 or x > line.box.right() or (x + w) > line.box.right())
 		THROW(Error, "(SessionDirectory) Invalid coordinates");
-	PixPtr pix;
-	pix.reset(pixRead(line.img.string().data()));
+	PixPtr pix{pixRead(line.img.string().data())};
 	if (not pix)
 		THROW(Error, "(SessionDirectory) cannot read image file: ",
 		      line.img);
@@ -64,10 +63,21 @@ SessionDirectory::SplitImagePaths SessionDirectory::create_split_images(
 
 ////////////////////////////////////////////////////////////////////////////////
 SessionDirectory::OptPath SessionDirectory::write_split_image(
-    int f, int t, const PIX& pix, const Path& path) const {
+    int f, int t, PIX& pix, const Path& path) const {
 	assert(f >= 0 and f <= static_cast<int>(pix.w));
 	assert(t >= 0 and f <= static_cast<int>(pix.w));
 	assert(f <= t);
+	if ((t - f) <= 0) return {};
+	BOX box;
+	box.x = f;
+	box.y = 0;
+	box.w = t - f;
+	box.h = pix.h;
+	PixPtr tmp{pixClipRectangle(&pix, &box, nullptr)};
+	if (not tmp)
+		THROW(Error, "(SessionDirectory) Cannot create image: ", path);
+	if (pixWrite(path.string().data(), tmp.get(), IFF_PNG))
+		THROW(Error, "(SessionDirectory) Cannot write image: ", path);
 	return path;
 }
 
