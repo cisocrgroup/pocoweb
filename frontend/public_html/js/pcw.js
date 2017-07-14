@@ -101,9 +101,9 @@ function messageSelectWordFromInputElement(sid, pid, id) {
 function setupConcordanceSearchButton(pid, button, obj) {
 	var n = obj.nWords;
 	if (n == 1) {
-		button.innerHTML = "Show " + n + " occurrence";
+		button.innerHTML = "Show " + n + " occurrence of " + obj.query;
 	} else {
-		button.innerHTML = "Show " + n + " occurrences";
+		button.innerHTML = "Show " + n + " occurrences of " + obj.query;
 	}
 	button.setAttribute(
 	    "onclick", "window.location.href='concordance.php?pid=" + pid +
