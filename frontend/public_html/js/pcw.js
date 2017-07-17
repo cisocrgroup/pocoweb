@@ -88,15 +88,15 @@ function getSelectedWordFromInputElement(elem) {
 }
 
 function messageSelectWordFromInputElement(sid, anchor) {
-	ids = getIds(anchor);
+	var ids = getIds(anchor);
 	var selection =
 	    getSelectedWordFromInputElement(document.getElementById(anchor));
 	if (selection !== null) {
-		document.getElementById("concordance-search-btn").value =
+		document.getElementById("concordance-search-label").value =
 		    selection;
 		getNumberOfConcordances(sid, ids[0], selection, function(res) {
 			var searchbutton =
-			    document.getElementById("concordance-search-btn");
+			    document.getElementById("concordance-search-label");
 			setupConcordanceSearchButton(ids[0], searchbutton, res);
 		});
 	}
@@ -108,12 +108,11 @@ function setupConcordanceSearchButton(pid, button, obj) {
 	if (n == 1) {
 		occurrences = "occurrence";
 	}
-
 	button.innerHTML = "Show concordance of '" + obj.query + "' (" + n +
 	    " " + occurrences + ")";
-	button.setAttribute(
-	    "onclick", "window.location.href='concordance.php?pid=" + pid +
-		"&q=" + encodeURI(obj.query) + "'");
+	button.parentNode.setAttribute(
+	    "href",
+	    "concordance.php?pid=" + pid + "&q=" + encodeURI(obj.query));
 }
 
 function getIds(anchor) {
@@ -147,4 +146,27 @@ function sendCorrectionToServer(sid, pid, p, lid, correction, callback) {
 	http.setRequestHeader(
 	    "Content-type", "application/json; charset=UTF-8");
 	http.send(JSON.stringify({"d": correction}));
+}
+
+var PCW = {};
+PCW.correctAllLines = function(sid) {
+	console.log("correctAllLines [" + sid + "]");
+	const regex = /(\d+)-(\d+)-(\d+)/;
+	// iterate over all input nodes
+	var items = document.getElementsByTagName("input");
+	var ids = [];
+	for (var i = 0; i < items.length; i++) {
+		if (regex.test(items[i].id)) {
+			ids = getIds(items[i].id);
+			sendCorrectionToServer(
+			    sid, ids[0], ids[1], ids[2], items[i].value,
+			    function(res) {
+				    var elem = document.getElementById(
+					res.projectId + "-" + res.pageId + "-" +
+					res.lineId);
+				    elem.value = res.cor;
+				    elem.classNmae += " corrected-line";
+			    });
+		}
+	}
 }
