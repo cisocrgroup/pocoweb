@@ -62,6 +62,7 @@ echo '<li><p class="navbar-text">Api-Version: ', $version, '</p></li>';
     </div>
 </div>
 <?php
+/*
 require_once(LIBRARY_PATH . "/frontend.php");
 global $config;
 global $USER;
@@ -76,4 +77,5 @@ if ($config["frontend"]["debug"]) {
 		frontend_render_info_div("GLOBAL USER: NULL");
 	}
 }
+ */
 ?>
