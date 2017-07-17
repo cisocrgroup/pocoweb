@@ -40,10 +40,10 @@ function sprintf(fmt) {
 	var res = "";
 	var j = 1;
 	for (i = 0; i < fmt.length; i++) {
-		if (fmt[i] == '%') {
+		if (fmt[i] === '%') {
 			if ((i + 1) < fmt.length) {
 				i++;
-				if (fmt[i] == '%') {
+				if (fmt[i] === '%') {
 					res += '%';
 				} else {
 					res += arguments[j++];
@@ -61,8 +61,11 @@ function sprintf(fmt) {
 function getNumberOfConcordances(sid, pid, q, callback) {
 	var http = new XMLHttpRequest();
 	http.onreadystatechange = function() {
-		if (http.readyState == 4 && http.status == 200) {
+		if (http.readyState === 4 && http.status === 200) {
 			callback(JSON.parse(http.responseText));
+		} else if (http.readyState === 4 && http.status !== 200) {
+			console.error(
+			    "backend returned status: " + http.status);
 		}
 	};
 	var url =
@@ -105,7 +108,7 @@ function messageSelectWordFromInputElement(sid, anchor) {
 function setupConcordanceSearchButton(pid, button, obj) {
 	var n = obj.nWords;
 	var occurrences = "occurrences";
-	if (n == 1) {
+	if (n === 1) {
 		occurrences = "occurrence";
 	}
 	button.innerHTML = "Show concordance of '" + obj.query + "' (" + n +
@@ -133,8 +136,11 @@ function correctLine(sid, anchor) {
 function sendCorrectionToServer(sid, pid, p, lid, correction, callback) {
 	var http = new XMLHttpRequest();
 	http.onreadystatechange = function() {
-		if (http.readyState == 4 && http.status == 200) {
+		if (http.readyState === 4 && http.status === 200) {
 			callback(JSON.parse(http.responseText));
+		} else if (http.readyState === 4 && http.status !== 200) {
+			console.error(
+			    "backend returned status: " + http.status);
 		}
 	};
 	var url = sprintf(
