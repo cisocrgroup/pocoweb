@@ -533,7 +533,8 @@ function frontend_render_concordance_line_div($line, $word) {
 	$offset = $word["offset"];
 	$link = "page.php?u=none&pid=$line[projectId]&p=$line[pageId]" .
 		"#line-anchor-$line[projectId]-$line[pageId]-$line[lineId]";
-	echo '<div class="row">';
+	$anchor="$word[projectId]-$word[pageId]-$word[lineId]-$word[tokenId]";
+	echo '<div id="concordance-line" class="row">';
 	$images = $api->get_response();
 	echo '<div class="col-md-5 col-xs-4">';
 	if ($images["leftImg"] != NULL) {
@@ -558,12 +559,15 @@ function frontend_render_concordance_line_div($line, $word) {
 		echo '<br/>';
 		echo '<div class="input-group">', "\n";
 		echo '<span class="input-group-addon">';
-        	echo '<input type="checkbox" aria-label="...">';
+		echo '<input id="concordance-token-checkbox-', $anchor, '" ',
+			'type="checkbox" aria-label="...">';
       		echo '</span>';
-		echo '<input id="foobar" class="form-control" type="text" value="',
+		echo '<input id="concordance-token-input-', $anchor, '" ',
+			'class="form-control" type="text" value="',
 			implode("", $wordcor), '" />';
 		echo '<span class="input-group-btn">', "\n";
-		echo '<button id="foobar" class="btn btn-default" title="correct token" >', "\n";
+		echo '<button id="concordance-token-btn-', $anchor, '" ',
+			'class="btn btn-default" title="correct token" >', "\n";
 		echo '<span class="glyphicon glyphicon-upload" />';
 		echo '</button>';
 		echo '</span>';
@@ -594,15 +598,22 @@ function frontend_render_concordance_header_div() {
 	// correction
 	echo '<ul class="nav navbar-nav">', "\n";
 	echo '<li>';
-	echo '<form class="navbar-form">';
+	echo '<form class="navbar-form" action="javascript:void(0);" ',
+		'onSubmit="">';
 	echo '<div class="input-group">', "\n";
-	echo '<span class="input-group-addon">';
-	echo '<input type="checkbox" title="Select all tokens" aria-label="...">';
+	echo '<span class="input-group-btn">';
+	echo '<button id="foobar" class="btn btn-default" title="Toggle selection" ',
+		'onclick="PCW.toggleSelectionOfConcordanceTokens()">';
+	echo 'Toggle selection';
+	echo '</button>';
 	echo '</span>';
-	echo '<input id="foobar" class="form-control" type="text" placeholder="Correction"/>';
+	echo '<input id="global-correction-suggestion" ',
+		'class="form-control" type="text" placeholder="Correction"/>';
 	echo '<span class="input-group-btn">', "\n";
-	echo '<button id="foobar" class="btn btn-default" title="Correct selected tokens" >', "\n";
-	echo '<span class="glyphicon glyphicon-upload" />';
+	echo '<button id="foobar" class="btn btn-default" title="Correct selected tokens" ',
+		'onclick=\'PCW.setCorrectionSuggestionForAllSelectedConcordanceTokens();\'', ">\n";
+	// echo '<span class="glyphicon glyphicon-upload" />';
+	echo 'Correct selected tokens';
 	echo '</button>';
 	echo '</span>';
 	echo '</div>';
@@ -612,12 +623,17 @@ function frontend_render_concordance_header_div() {
 	echo '<ul class="nav navbar-nav">';
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" ',
-		'aria-haspopup="true" aria-expanded="false">Correction suggestions<span class="caret"></span></a>';
+		'aria-haspopup="true" aria-expanded="false">',
+		'Correction suggestions<span class="caret"></span></a>';
         echo '<ul class="dropdown-menu">';
-        echo '<li><a href="#">Correction suggestion #1</a></li>';
-        echo '<li><a href="#">Correction suggestion #2</a></li>';
-        echo '<li><a href="#">Correction suggestion #3</a></li>';
-        echo '<li><a href="#">Correction suggestion #4</a></li>';
+	echo '<li><a onclick=\'PCW.setGlobalCorrectionSuggestion("#1");\' ',
+		'href="#">Correction suggestion #1</a></li>', "\n";
+	echo '<li><a onclick=\'PCW.setGlobalCorrectionSuggestion("#2");\' ',
+		'href="#">Correction suggestion #2</a></li>', "\n";
+	echo '<li><a onclick=\'PCW.setGlobalCorrectionSuggestion("#3");\' ',
+		'href="#">Correction suggestion #3</a></li>', "\n";
+	echo '<li><a onclick=\'PCW.setGlobalCorrectionSuggestion("#4");\' ',
+		'href="#">Correction suggestion #4</a></li>', "\n";
         // echo '<li role="separator" class="divider"></li>';
         echo '</ul>';
         echo '</li>';

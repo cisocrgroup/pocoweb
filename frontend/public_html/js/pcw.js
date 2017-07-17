@@ -175,4 +175,41 @@ PCW.correctAllLines = function(sid) {
 			    });
 		}
 	}
-}
+};
+
+PCW.toggleSelectionOfConcordanceTokens = function() {
+	var items = document.getElementsByTagName("input");
+	for (var i = 0; i < items.length; i++) {
+		if (items[i].type === "checkbox") {
+			items[i].checked = !items[i].checked;
+		}
+	}
+};
+
+PCW.setGlobalCorrectionSuggestion = function(suggestion) {
+	var elem = document.getElementById("global-correction-suggestion");
+	if (elem !== null) {
+		elem.value = suggestion;
+	}
+};
+
+PCW.setCorrectionSuggestionForAllSelectedConcordanceTokens = function() {
+	var suggestion =
+	    document.getElementById("global-correction-suggestion");
+	var items = document.getElementsByTagName("input");
+	const regex = /concordance-token-input-(\d+-\d+-\d+-\d+)/;
+	if (suggestion != null) {
+		for (var i = 0; i < items.length; i++) {
+			var m = regex.exec(items[i].id);
+			if (m !== null && m.length > 0) {
+				if (document
+					.getElementById(
+					    "concordance-token-checkbox-" +
+					    m[1])
+					.checked) {
+					items[i].value = suggestion.value;
+				}
+			}
+		}
+	}
+};
