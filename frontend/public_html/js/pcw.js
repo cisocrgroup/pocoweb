@@ -78,7 +78,7 @@ function getSelectedWordFromInputElement(elem) {
 	if (elem !== null && elem.tagName === "INPUT" && elem.type === "text") {
 		var b = elem.selectionStart;
 		var e = elem.selectionEnd;
-		const regex = /^\W*(.*?)\W*$/u;
+		const regex = XRegExp('^\\PL*(.*?)\\PL*$');
 		if ((e - b) > 0) {
 			var m = regex.exec(elem.value.substring(b, e));
 			return m[1];
