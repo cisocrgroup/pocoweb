@@ -480,7 +480,7 @@ function frontend_render_page_line_div($line) {
 		$inputclass = ' corrected-line';
 	}
 	// echo '<div id="', $anchor, '" class="line-view" title="', $text, '">';
-	echo '<div class="line-view" title="', $text, '">';
+	echo '<div class="text-image-line" title="', $text, '">';
 	echo '<a class="line-anchor" id="line-anchor-', $anchor, '"></a>';
 	echo '<img src="', $imgfile, '"',
 		'alt="', $text, '"',
@@ -534,7 +534,7 @@ function frontend_render_concordance_line_div($line, $word) {
 	$link = "page.php?u=none&pid=$line[projectId]&p=$line[pageId]" .
 		"#line-anchor-$line[projectId]-$line[pageId]-$line[lineId]";
 	$anchor="$word[projectId]-$word[pageId]-$word[lineId]-$word[tokenId]";
-	echo '<div id="concordance-line" class="row">';
+	echo '<div class="text-image-line row">';
 	$images = $api->get_response();
 	echo '<div class="col-md-5 col-xs-4">';
 	if ($images["leftImg"] != NULL) {

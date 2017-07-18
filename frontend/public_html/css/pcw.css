@@ -45,13 +45,21 @@ input.corrected-line {
 a.invisible-link:link {
 	text-decoration: none;
 }
+
 a.invisible-link:visited {
 	text-decoration: none;
 }
+
 a.invisible-links:hover {
 	text-decoration: none;
 }
-#concordance-line {
+
+div.text-image-line {
 	margin-top: 20px;
 	margin-bottom: 20px;
+	padding: 5px;
+}
+
+div.text-image-line:hover {
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
 }
