@@ -222,8 +222,7 @@ void Line::noop(size_t i) {
 static Line::CharIterator next(Line::CharIterator i, Line::CharIterator e) {
 	if (i != e) {
 		// we need find_if_not in order to handle deletions (which are
-		// both
-		// considered part of words and separators) correctly.
+		// both considered part of words and separators) correctly.
 		if (i->is_word())
 			return std::find_if_not(
 			    i, e, [](const auto& c) { return c.is_word(); });
@@ -247,7 +246,11 @@ void Line::each_token(std::function<void(const Token&)> f) const {
 
 	for (auto i = b; i != e;) {
 		const auto j = next(i, e);
-		token.box.set_left(i != b ? std::prev(i)->cut : 0);
+		if (i != b) {
+			token.box.set_left(std::prev(i)->cut + 1);
+		} else {
+			token.box.set_left(this->box.left());
+		}
 		if (j == e or std::next(j) == e) {
 			token.box.set_right(this->box.right());
 		} else {

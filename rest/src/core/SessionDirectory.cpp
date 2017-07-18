@@ -4,6 +4,8 @@
 #include "Line.hpp"
 #include "Page.hpp"
 #include "Session.hpp"
+#include "crow/json.h"
+#include "jsonify.hpp"
 
 using namespace pcw;
 
@@ -51,6 +53,16 @@ SessionDirectory::SplitImagePaths SessionDirectory::create_split_images(
 				  std::to_string(pageid) + "-" +
 				  std::to_string(lineid) + "-" +
 				  std::to_string(x1) + "-" + std::to_string(x2);
+	CROW_LOG_DEBUG << "(SessionDirectory) writing split image line: "
+		       << line.box.left() << " " << line.box.top() << " "
+		       << line.box.right() << " " << line.box.bottom()
+		       << ", token: " << x1 << " " << x2;
+	line.each_token([](const auto& token) {
+		Json json;
+		json << token.box;
+		CROW_LOG_DEBUG << "(SessionDirectory) " << token.cor() << ": "
+			       << crow::json::dump(json);
+	});
 	SplitImagePaths paths;
 	std::get<0>(paths) = write_split_image(
 	    0, x1, *pix, splitdir / (basefilename + "-l.png"));
