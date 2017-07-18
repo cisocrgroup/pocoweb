@@ -224,11 +224,12 @@ static Line::CharIterator next(Line::CharIterator i, Line::CharIterator e) {
 		// we need find_if_not in order to handle deletions (which are
 		// both considered part of words and separators) correctly.
 		if (i->is_word())
-			return std::find_if_not(
-			    i, e, [](const auto& c) { return c.is_word(); });
+			return std::find_if_not(i + 1, e, [](const auto& c) {
+				return c.is_word();
+			});
 		else
 			return std::find_if_not(
-			    i, e, [](const auto& c) { return c.is_sep(); });
+			    i + 1, e, [](const auto& c) { return c.is_sep(); });
 	}
 	return e;
 }
@@ -243,19 +244,18 @@ void Line::each_token(std::function<void(const Token&)> f) const {
 	const auto e = end(chars_);
 	const auto b = begin(chars_);
 	int id = 0;
+	auto leftcut = this->box.left();
 
 	for (auto i = b; i != e;) {
 		const auto j = next(i, e);
-		if (i != b) {
-			token.box.set_left(std::prev(i)->cut + 1);
-		} else {
-			token.box.set_left(this->box.left());
-		}
-		if (j == e or std::next(j) == e) {
+		assert(j != i);
+		token.box.set_left(leftcut);
+		if (j == e) {
 			token.box.set_right(this->box.right());
 		} else {
-			token.box.set_right(std::next(j)->cut);
+			token.box.set_right(j->cut);
 		}
+		leftcut = std::prev(j)->cut + 1;
 		token.begin = i;
 		token.end = j;
 		token.id = ++id;
@@ -333,7 +333,8 @@ bool Char::is_word() const noexcept {
 ////////////////////////////////////////////////////////////////////////////////
 bool Char::is_sep() const noexcept {
 	auto c = get_cor();
-	// c=0 means deletion and is considered to be part of a separator.
+	// c=0 means deletion and is considered to be part of a
+	// separator.
 	return c ? not isword(c) : true;
 }
 
