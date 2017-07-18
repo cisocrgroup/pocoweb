@@ -68,7 +68,6 @@ void AltoXmlParserLine::end_wagner_fischer() {
 		}
 		i = eot;
 	}
-
 	for (auto n = node_.first_child(); n != last;) {
 		auto next = n.next_sibling();
 		n.parent().remove_child(n);
@@ -160,7 +159,6 @@ void AltoXmlParserLine::set(size_t pos, wchar_t c) {
 	// std::cerr << "(AltoXmlParserLine) set pos: " << pos << " " << c <<
 	// "\n";
 	assert(pos < chars_.size());
-
 	auto type =
 	    isspace(c) ? Type::Space : Type::Char;  // don't care about hyphens
 	chars_[pos].type = type;
@@ -177,14 +175,14 @@ void AltoXmlParserLine::init_string(const pugi::xml_node& node) {
 	const auto len = strlen(token);
 	// handle implicit spaces
 	if (not explicit_spaces_ and not chars_.empty()) {
-		Box box;
-		box.set_left(chars_.back().box.right());
-		box.set_right(box.left());
-		box.set_top(box.top());
-		box.set_bottom(box.bottom());
-		auto sp = node.parent().insert_child_after("SP", node);
-		set_box(box, sp);
-		chars_.emplace_back(L' ', sp, Type::Space, 1.0, box);
+		Box wbox;
+		wbox.set_left(chars_.back().box.right() + 1);
+		wbox.set_right(box.left() - 1);
+		wbox.set_top(box.top());
+		wbox.set_bottom(box.bottom());
+		auto sp = node.parent().insert_child_before("SP", node);
+		set_box(wbox, sp);
+		chars_.emplace_back(L' ', sp, Type::Space, 1.0, wbox);
 	}
 	std::wstring wstr;
 	utf8::utf8to32(token, token + len, std::back_inserter(wstr));
