@@ -13,18 +13,6 @@ Box::Box(int l, int t, int r, int b)
       bottom_(std::max(0, b)) {}
 
 ///////////////////////////////////////////////////////////////////////////////
-void Box::set_left(int l) noexcept { left_ = std::max(0, l); }
-
-///////////////////////////////////////////////////////////////////////////////
-void Box::set_top(int t) noexcept { top_ = std::max(0, t); }
-
-///////////////////////////////////////////////////////////////////////////////
-void Box::set_right(int r) noexcept { right_ = std::max(0, r); }
-
-///////////////////////////////////////////////////////////////////////////////
-void Box::set_bottom(int b) noexcept { bottom_ = std::max(0, b); }
-
-///////////////////////////////////////////////////////////////////////////////
 Box& Box::increase_left(int d) noexcept {
 	left_ = std::max(0, left_ - d);  // d can be smaller than 0
 	return *this;
@@ -81,4 +69,17 @@ std::vector<Box> Box::split(int n) const {
 		x0 += w;
 	}
 	return splits;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool Box::is_within(const Box& other) const noexcept {
+	if (left_ < other.left_) return false;
+	if (left_ > other.right_) return false;
+	if (right_ < other.left_) return false;
+	if (right_ > other.right_) return false;
+	if (top_ < other.top_) return false;
+	if (top_ > other.bottom_) return false;
+	if (bottom_ < other.top_) return false;
+	if (bottom_ > other.bottom_) return false;
+	return true;
 }

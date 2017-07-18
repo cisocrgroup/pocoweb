@@ -12,10 +12,11 @@ class Box {
 	int right() const noexcept { return right_; }
 	int top() const noexcept { return top_; }
 	int bottom() const noexcept { return bottom_; }
-	void set_left(int x) noexcept;
-	void set_right(int x) noexcept;
-	void set_top(int x) noexcept;
-	void set_bottom(int x) noexcept;
+	void set_left(int l) noexcept { left_ = std::max(0, l); }
+	void set_top(int t) noexcept { top_ = std::max(0, t); }
+	void set_right(int r) noexcept { right_ = std::max(0, r); }
+	void set_bottom(int b) noexcept { bottom_ = std::max(0, b); }
+
 	int width() const noexcept { return right_ - left_; }
 	int height() const noexcept { return bottom_ - top_; }
 
@@ -28,6 +29,7 @@ class Box {
 	Box& operator+=(const Box& other);
 
 	std::vector<Box> split(int n) const;
+	bool is_within(const Box& other) const noexcept;
 
        private:
 	int left_, top_, right_, bottom_;

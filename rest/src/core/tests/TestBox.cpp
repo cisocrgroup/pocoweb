@@ -166,10 +166,16 @@ BOOST_AUTO_TEST_CASE(AdditionMixed) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(IncrementalAddition)
-{
-	auto box = Box{10, 10, 12, 12} +
-		Box{8, 8, 13, 15} +
-		Box{10, 7, 15, 13};
+BOOST_AUTO_TEST_CASE(IncrementalAddition) {
+	auto box = Box{10, 10, 12, 12} + Box{8, 8, 13, 15} + Box{10, 7, 15, 13};
 	BOOST_CHECK_EQUAL(box, Box(8, 7, 15, 15));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(IsWithin) {
+	const Box b1{0, 0, 10, 10};
+	BOOST_CHECK(b1.is_within(b1));
+	BOOST_CHECK(Box(1, 1, 9, 9).is_within(b1));
+	BOOST_CHECK(not Box(1, 1, 11, 10).is_within(b1));
+	BOOST_CHECK(not Box(10, 10, 12, 12).is_within(b1));
 }
