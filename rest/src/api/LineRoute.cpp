@@ -147,8 +147,8 @@ Route::Response LineRoute::create_split_images(const Session& session,
 
 	});
 	if (not token) THROW(NotFound, "(LineRoute) cannot find token");
-	const auto split_images = session.directory().create_split_images(
-	    line, token->box.left(), token->box.right());
+	const auto split_images =
+	    session.directory().create_split_images(line, token->box);
 	Json json;
 	json["leftImg"] = nullptr;
 	json["middleImg"] = nullptr;
