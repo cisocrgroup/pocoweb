@@ -37,7 +37,6 @@ class Corrector {
 	void correct(Line& line, const std::wstring& gt, bool partial);
 	void correct(Line& line, const std::wregex& pat,
 		     const std::wstring& repl);
-
 	WagnerFischer wf_;
 	ProjectPtr view_;
 };
