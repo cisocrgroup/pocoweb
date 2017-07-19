@@ -104,6 +104,14 @@ size_t WagnerFischer::operator()() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+size_t WagnerFischer::operator()(size_t b, size_t n) {
+	assert((b + n) <= ocr_.size());
+	// update gt: ...xxx...
+	gt_ = ocr_.substr(0, b) + gt_ + ocr_.substr(b + n);
+	return (*this)();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 size_t WagnerFischer::getMin(size_t i, size_t j) const noexcept {
 	assert(i > 0);
 	assert(j > 0);

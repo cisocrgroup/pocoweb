@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(Ocr) {
 	BOOST_CHECK_EQUAL(line->cor(), gt);
 	BOOST_CHECK_EQUAL(line->chars().back().cut, 100);
 	BOOST_CHECK(line->average_conf() > .8);
-	BOOST_CHECK(line->is_corrected());
+	BOOST_CHECK(line->is_fully_corrected());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -50,35 +50,35 @@ BOOST_AUTO_TEST_CASE(Tokens) {
 
 	BOOST_CHECK(tokens[0].is_normal());
 	BOOST_CHECK_EQUAL(tokens[0].cor(), "ꝑfectũ");
-	BOOST_CHECK(tokens[0].is_corrected());
+	BOOST_CHECK(tokens[0].is_fully_corrected());
 
 	BOOST_CHECK(not tokens[1].is_normal());
 	BOOST_CHECK_EQUAL(tokens[1].cor(), " ");
-	BOOST_CHECK(tokens[1].is_corrected());
+	BOOST_CHECK(tokens[1].is_fully_corrected());
 
 	BOOST_CHECK(tokens[2].is_normal());
 	BOOST_CHECK_EQUAL(tokens[2].cor(), "eſt");
-	BOOST_CHECK(tokens[2].is_corrected());
+	BOOST_CHECK(tokens[2].is_fully_corrected());
 
 	BOOST_CHECK(not tokens[3].is_normal());
 	BOOST_CHECK_EQUAL(tokens[3].cor(), ": ");
-	BOOST_CHECK(tokens[3].is_corrected());
+	BOOST_CHECK(tokens[3].is_fully_corrected());
 
 	BOOST_CHECK(tokens[4].is_normal());
 	BOOST_CHECK_EQUAL(tokens[4].cor(), "quidq̉d");
-	BOOST_CHECK(tokens[4].is_corrected());
+	BOOST_CHECK(tokens[4].is_fully_corrected());
 
 	BOOST_CHECK(not tokens[5].is_normal());
 	BOOST_CHECK_EQUAL(tokens[5].cor(), " ");
-	BOOST_CHECK(tokens[5].is_corrected());
+	BOOST_CHECK(tokens[5].is_fully_corrected());
 
 	BOOST_CHECK(tokens[6].is_normal());
 	BOOST_CHECK_EQUAL(tokens[6].cor(), "tempꝰ");
-	BOOST_CHECK(tokens[6].is_corrected());
+	BOOST_CHECK(tokens[6].is_fully_corrected());
 
 	BOOST_CHECK(not tokens[7].is_normal());
 	BOOST_CHECK_EQUAL(tokens[7].cor(), " ·");
-	BOOST_CHECK(tokens[7].is_corrected());
+	BOOST_CHECK(tokens[7].is_fully_corrected());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -88,19 +88,19 @@ BOOST_AUTO_TEST_CASE(Words) {
 
 	BOOST_CHECK(words[0].is_normal());
 	BOOST_CHECK_EQUAL(words[0].cor(), "ꝑfectũ");
-	BOOST_CHECK(words[0].is_corrected());
+	BOOST_CHECK(words[0].is_fully_corrected());
 
 	BOOST_CHECK(words[1].is_normal());
 	BOOST_CHECK_EQUAL(words[1].cor(), "eſt");
-	BOOST_CHECK(words[1].is_corrected());
+	BOOST_CHECK(words[1].is_fully_corrected());
 
 	BOOST_CHECK(words[2].is_normal());
 	BOOST_CHECK_EQUAL(words[2].cor(), "quidq̉d");
-	BOOST_CHECK(words[2].is_corrected());
+	BOOST_CHECK(words[2].is_fully_corrected());
 
 	BOOST_CHECK(words[3].is_normal());
 	BOOST_CHECK_EQUAL(words[3].cor(), "tempꝰ");
-	BOOST_CHECK(words[3].is_corrected());
+	BOOST_CHECK(words[3].is_fully_corrected());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
