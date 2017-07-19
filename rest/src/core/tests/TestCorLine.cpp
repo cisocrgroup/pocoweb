@@ -15,7 +15,7 @@ struct Fixture {
 	static const char* ocr;
 	static const Box box;
 
-	Fixture(): line(std::make_shared<Line>(1, box)), wf() {
+	Fixture() : line(std::make_shared<Line>(1, box)), wf() {
 		line->append(ocr, 0, 100, 0.8);
 		BOOST_REQUIRE(not line->empty());
 		wf.set_gt(gt);
@@ -35,8 +35,7 @@ const Box Fixture::box{0, 0, 100, 20};
 BOOST_FIXTURE_TEST_SUITE(CorLineTest, Fixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Ocr)
-{
+BOOST_AUTO_TEST_CASE(Ocr) {
 	BOOST_CHECK_EQUAL(line->ocr(), ocr);
 	BOOST_CHECK_EQUAL(line->cor(), gt);
 	BOOST_CHECK_EQUAL(line->chars().back().cut, 100);
@@ -45,8 +44,7 @@ BOOST_AUTO_TEST_CASE(Ocr)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Tokens)
-{
+BOOST_AUTO_TEST_CASE(Tokens) {
 	auto tokens = line->tokens();
 	BOOST_REQUIRE_EQUAL(tokens.size(), 8);
 
@@ -84,8 +82,7 @@ BOOST_AUTO_TEST_CASE(Tokens)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Words)
-{
+BOOST_AUTO_TEST_CASE(Words) {
 	auto words = line->words();
 	BOOST_REQUIRE_EQUAL(words.size(), 4);
 
