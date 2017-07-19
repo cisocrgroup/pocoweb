@@ -40,19 +40,13 @@ Route::Response CorrectionRoute::impl(HttpPost, const Request& req) const {
 		THROW(BadRequest,
 		      "(CorrectionRoute) missing correction in POST data");
 	const auto tid = get<int>(json, "tokenId");
-	auto conn = connection();
-	const auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
-	session->has_permission_or_throw(conn, *pid, Permissions::Write);
-	const auto line = session->find(conn, *pid, *p, *lid);
-	if (not line) THROW(NotFound, "could not find requested line");
 
+	auto obj = new_line_session(req, *pid, *p, *lid);
+	obj.session().assert_permission(obj.conn(), *pid, Permissions::Write);
 	if (tid) {
-		return impl(conn, *line, *tid, *c);
+		return impl(obj.conn(), obj.data(), *tid, *c);
 	} else {
-		return impl(conn, *line, *c);
+		return impl(obj.conn(), obj.data(), *c);
 	}
 }
 

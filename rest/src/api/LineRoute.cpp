@@ -60,7 +60,7 @@ Route::Response LineRoute::impl(HttpPost, const Request& req, int bid, int pid,
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
-	session->has_permission_or_throw(conn, bid, Permissions::Read);
+	session->assert_permission(conn, bid, Permissions::Read);
 	const auto line = session->find(conn, bid, pid, lid);
 	if (not line) THROW(NotFound, "(LineRoute) cannot find line");
 	return create_split_images(*session, *line, json["tokenId"].i());
