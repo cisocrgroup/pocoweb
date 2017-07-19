@@ -71,8 +71,8 @@ pcw::Json& pcw::operator<<(Json& json, const Line& line) {
 	json["cuts"] = line.cuts();
 	json["confidences"] = line.confidences();
 	json["averageConfidence"] = line.average_conf();
-	json["isPartiallyCorrected"] = line.is_fully_corrected();
-	json["isFullyCorrected"] = line.is_partially_corrected();
+	json["isFullyCorrected"] = line.is_fully_corrected();
+	json["isPartiallyCorrected"] = line.is_partially_corrected();
 	// do *not* show words of each line
 	// /books/id/page/id/lines/id/tokens will give all tokens of a line
 	// size_t i = 0;
@@ -90,8 +90,8 @@ pcw::Json& pcw::operator<<(Json& json, const Token& token) {
 	json["lineId"] = token.line->id();
 	json["offset"] = token.offset();
 	json["tokenId"] = token.id;
-	json["isPartiallyCorrected"] = token.is_fully_corrected();
-	json["isFullyCorrected"] = token.is_partially_corrected();
+	json["isFullyCorrected"] = token.is_fully_corrected();
+	json["isPartiallyCorrected"] = token.is_partially_corrected();
 	json["ocr"] = token.ocr();
 	json["cor"] = token.cor();
 	json["averageConf"] = token.average_conf();
