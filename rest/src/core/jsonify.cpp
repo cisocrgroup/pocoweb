@@ -71,7 +71,8 @@ pcw::Json& pcw::operator<<(Json& json, const Line& line) {
 	json["cuts"] = line.cuts();
 	json["confidences"] = line.confidences();
 	json["averageConfidence"] = line.average_conf();
-	json["isCorrected"] = line.is_corrected();
+	json["isFullyCorrected"] = line.is_fully_corrected();
+	json["isPartiallyCorrected"] = line.is_partially_corrected();
 	// do *not* show words of each line
 	// /books/id/page/id/lines/id/tokens will give all tokens of a line
 	// size_t i = 0;
@@ -89,7 +90,8 @@ pcw::Json& pcw::operator<<(Json& json, const Token& token) {
 	json["lineId"] = token.line->id();
 	json["offset"] = token.offset();
 	json["tokenId"] = token.id;
-	json["isCorrected"] = token.is_corrected();
+	json["isFullyCorrected"] = token.is_fully_corrected();
+	json["isPartiallyCorrected"] = token.is_partially_corrected();
 	json["ocr"] = token.ocr();
 	json["cor"] = token.cor();
 	json["averageConf"] = token.average_conf();
@@ -151,4 +153,48 @@ pcw::Json& pcw::operator<<(Json& j, const User& user) {
 	j["id"] = user.id();
 	j["admin"] = user.admin();
 	return j;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool pcw::get(const RJson& j, const char* key, bool& res) noexcept {
+	if (j.has(key)) {
+		switch (j[key].t()) {
+			case crow::json::type::True:
+				res = true;
+				return true;
+			case crow::json::type::False:
+				res = false;
+				return true;
+			default:
+				return false;
+		}
+	}
+	return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool pcw::get(const RJson& j, const char* key, int& res) noexcept {
+	if (j.has(key) and j[key].t() == crow::json::type::Number) {
+		res = j[key].i();
+		return true;
+	}
+	return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool pcw::get(const RJson& j, const char* key, double& res) noexcept {
+	if (j.has(key) and j[key].t() == crow::json::type::Number) {
+		res = j[key].d();
+		return true;
+	}
+	return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool pcw::get(const RJson& j, const char* key, std::string& res) noexcept {
+	if (j.has(key) and j[key].t() == crow::json::type::String) {
+		res = j[key].s();
+		return true;
+	}
+	return false;
 }

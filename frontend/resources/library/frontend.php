@@ -77,29 +77,31 @@ function frontend_render_admin_project_table_row($project, $users) {
 	echo '<td title="actions">';
 	echo '<div class="input-group">';
 	// open project button
-	echo '<span class="input-group-btn">';
+	echo '<div class="btn-group" role="group">', "\n";
+	// echo '<span class="input-group-btn">';
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'page.php?u=none&p=first&pid=', $pid, '\'"',
 		' title="open project #', $pid, '">';
-	echo '<span class="glyphicon glyphicon-ok"/>';
+	echo '<span class="glyphicon glyphicon-open"/>';
 	echo '</button>';
-	echo '</span>';
+	// echo '</span>';
 	// remove project button
-	echo '<span class="input-group-btn">';
+	// echo '<span class="input-group-btn">';
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'index.php?remove&pid=', $pid, '\'"',
 		' title="remove project #', $pid, '">';
 	echo '<span class="glyphicon glyphicon-remove"/>';
 	echo '</button>';
-	echo '</span>';
+	// echo '</span>';
 	// download project button
-	echo '<span class="input-group-btn">';
+	// echo '<span class="input-group-btn">';
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'index.php?download&pid=', $pid, '\'"',
 		' title="download project #', $pid, '">';
 	echo '<span class="glyphicon glyphicon-download"/>';
 	echo '</button>';
-	echo '</span>';
+	// echo '</span>';
+	echo '</div>';
 	// other buttons
 	if ($project["isBook"]) {
 		echo '<form method="post" class="form-inline" ',
@@ -387,9 +389,6 @@ function frontend_render_users_table_header() {
 }
 
 function frontend_render_page_view_div($pid, $p, $u, $post) {
-	if (isset($post["lines"])) {
-		frontend_update_lines($u, $post["lines"]);
-	}
 	$api = backend_get_page($pid, $p);
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
@@ -400,34 +399,8 @@ function frontend_render_page_view_div($pid, $p, $u, $post) {
 		frontend_render_page_header_div($page);
 		frontend_render_page_heading_div($page);
 		frontend_render_page_div($page);
+		frontend_render_page_correct_all_div($page);
 		echo '</div>', "\n";
-	}
-}
-
-function frontend_update_lines($u, $lines) {
-	if ($u === "none") {
-		return;
-	}
-	$oklines = "";
-	$errorlines = "";
-	foreach ($lines as $key => $val) {
-		if (preg_match('/(\d+)-(\d+)-(\d+)/', $key, $m)) {
-			if ($u === "all" || $u === $key) {
-				$api = backend_correct_line($m[1], $m[2], $m[3], $val);
-				$status = $api->get_http_status_code();
-				if ($status == 200) {
-					$oklines .= "#$m[3] ";
-				} else {
-					$errorlines .= "#$m[3]($status) ";
-				}
-			}
-		}
-	}
-	if (strlen($errorlines) > 0) {
-		frontend_render_error_div("Error updating lines: $errorlines");
-	}
-	if (strlen($oklines) > 0) {
-		frontend_render_success_div("Successfully updated lines: $oklines");
 	}
 }
 
@@ -435,63 +408,45 @@ function frontend_render_page_header_div($page) {
 	$nextpageid = $page["nextPageId"];
 	$prevpageid = $page["prevPageId"];
 	$pid = $page["projectId"];
-	echo '<div class="container-fluid">';
-	echo '<div id="page-header" class="navbar navbar-nav col-md-12"',
-		'data-spy="affix" data-offset-top="141">', "\n";
-	// navigation buttons
-	frontend_render_page_navigation_buttons($pid, $prevpageid, TRUE);
-	frontend_render_page_navigation_buttons($pid, $nextpageid, FALSE);
-	// search
-	echo '<div class="input-group centered">', "\n";
-	echo '<input id="concordance-search" ',
-		'type="text" class="form-control centered disabled" ',
-		'placeholder="Search"/>', "\n";
-	echo '<span class="input-group-btn">', "\n";
-	echo '<button id="concordance-search-button" class="btn btn-default centered" type="button"',
-		'onclick="window.location.href=\'concordance.php?pid=', $pid, '\'"',
-		 '>', "\n";
-	echo 'Show 0 occurences';
-	// echo '<span class="glyphicon glyphicon-search centered"/>', "\n";
-	// echo '<span id="concordance-number">&nbsp;[0]</span>', "\n";
-	echo '</button>', "\n";
-	echo '</span>', "\n";
-	echo '</div>', "\n";
-	echo '</div>', "\n";
-	echo '</div>', "\n";
-}
-
-function frontend_render_page_navigation_buttons($pid, $p, $left) {
-	$btnclass = "btn btn-default";
-	$spanclass = "glyphicon";
-	$ospanclass = "glyphicon";
-	$title = "go to page #$p";
-	$dir = "";
-	if ($left) {
-		$btnclass .= " pull-left";
-		$spanclass .= ' glyphicon-step-backward';
-		$ospanclass .= ' glyphicon-fast-backward';
-		$dir = "first";
-	} else {
-		$btnclass .= " pull-right";
-		$spanclass .= ' glyphicon-step-forward';
-		$ospanclass .= ' glyphicon-fast-forward';
-		$dir = "last";
-	}
-	if ($p <= 0) {
-		$btnclass .= " disabled";
-	}
-	echo '<button class="', $btnclass, '" type="button" ',
-		'onclick="window.location.href=\'page.php?u=none&p=',
-		$dir, '&pid=', $pid, '\'"',
-		'title="go to ', $dir, ' page">', "\n";
-	echo '<span class="', $ospanclass, '"/>', "\n";
-	echo '</button>', "\n";
-	echo '<button class="', $btnclass, '" type="button" ',
-		'onclick="window.location.href=\'page.php?u=none&p=',
-		$p, '&pid=', $pid, '\'"',
-		'title="', $title, '">', "\n";
-	echo '<span class="', $spanclass, '"/>', "\n";
-	echo '</button>', "\n";
+	echo '<nav class="navbar navbar-static-top" id="page-header" ',
+		'data-spy="affix" data-offset-top="197"', '>', "\n";
+	echo '<div class="container-fluid">', "\n";
+	echo '<div class="collapse navbar-collapse">', "\n";
+	// prev page and first page
+	echo '<ul class="nav navbar-nav">', "\n";
+	echo '<li><a href="page.php?u=none&p=first&pid=', $pid,
+		'" title="got to first page">',
+		'<span class="glyphicon glyphicon-fast-backward"/>',
+		// 'Go to first page',
+		'</a></li>';
+	echo '<li><a href="page.php?u=none&p=', $prevpageid, '&pid=', $pid,
+		'" title="got to previous page #', $prevpageid, '">',
+		'<span class="glyphicon glyphicon-step-backward"/>',
+		// 'Go to prev page',
+		'</a></li>';
+	echo '</ul>';
+	// concordance search
+	echo '<ul class="nav navbar-nav">', "\n";
+	echo '<li><a href="#">',
+		'<label id="concordance-search-label">Show concordance of \'\' (0 occurences)</label>',
+		'</li></a>', "\n";
+	echo '</ul>';
+	// nextpage and last page
+	echo '<ul class="nav navbar-nav">', "\n";
+	echo '<li><a href="page.php?u=none&p=', $nextpageid, '&pid=', $pid,
+		'" title="got to next page #', $nextpageid, '">',
+		'<span class="glyphicon glyphicon-step-forward"/>',
+		// 'Go to next page',
+		'</a></li>';
+	echo '<li><a href="page.php?u=none&p=last&pid=', $pid,
+		'" title="got to last page">',
+		'<span class="glyphicon glyphicon-fast-forward"/>',
+		// 'Go to last page',
+		'</a></li>';
+	echo '</ul>';
+	echo '</div>';
+	echo '</div>';
+	echo '</nav>';
 }
 
 function frontend_render_page_heading_div($page) {
@@ -502,15 +457,10 @@ function frontend_render_page_heading_div($page) {
 
 function frontend_render_page_div($page) {
 	echo '<div id="page-view">';
-	echo '<form method="post">';
+	// echo '<form method="post">';
 	foreach ($page["lines"] as $line) {
 		frontend_render_page_line_div($line);
 	}
-	echo '<button class="btn btn-primary" type="submit" title="', "upload page #$page[id]",
-		'" formaction="', "page.php?u=all&p=$page[id]&pid=$page[projectId]", '">';
-	echo '<span class="glyphicon glyphicon-upload"/>';
-	echo '</button>';
-	echo '</form>';
 	echo '</div>';
 }
 
@@ -526,11 +476,14 @@ function frontend_render_page_line_div($line) {
 	$anchor = "$pid-$p-$lid";
 	$d = $line["cor"];
 	$inputclass = '';
-	if ($line["isCorrected"]) {
-		$inputclass = 'class="corrected-line" ';
+	if ($line["isFullyCorrected"]) {
+		$inputclass = ' fully-corrected-line';
+	} else if ($line["isPartiallyCorrected"]) {
+		$inputclass = ' partially-corrected-line';
 	}
-	echo '<div class="line-view" title="', $text, '">';
-	// echo '<a class="line-anchor" id="', $anchor, '"></a>';
+	// echo '<div id="', $anchor, '" class="line-view" title="', $text, '">';
+	echo '<div class="text-image-line" title="', $text, '">';
+	echo '<a class="line-anchor" id="line-anchor-', $anchor, '"></a>';
 	echo '<img src="', $imgfile, '"',
 		'alt="', $text, '"',
 		'title="', $text, '"',
@@ -538,15 +491,28 @@ function frontend_render_page_line_div($line) {
 		'height="', $config["frontend"]["image"]["line_image_height"], '"',
 		' />';
 	echo '<br/>';
-	echo '<input name="lines[', $anchor, ']" type="text" size="', strlen($d), '" value="', $d, '" ',
-		$inputclass,
-		'id="', $anchor, '" ',
-		'onclick=\'messageSelectWordFromInputElement("', $SID, '", ', $pid, ', this.id);\'',
-		'/>';
-	echo '<button class="btn btn-default" title="', "upload line #$lid", '" type="submit" formaction="',
-		"page.php?u=$anchor&p=$p&pid=$pid", '">';
+	echo '<div class="input-group">', "\n";
+	echo '<input id="', $anchor, '" class="form-control', $inputclass,
+		'" type="text" size="', strlen($d), '" value="', $d, '" ',
+		'onclick=\'messageSelectWordFromInputElement("', $SID, '", "', $anchor, '");\'',
+		'/>', "\n";
+	echo '<span class="input-group-btn">', "\n";
+	echo '<button id="', $anchor, '-btn" class="btn btn-default" title="correct line #',
+		$lid, '" onclick=\'correctLine("', $SID, '", "', $anchor, '");\' >', "\n";
 	echo '<span class="glyphicon glyphicon-upload" />';
-	echo '</button>';
+	echo '</button>', "\n";
+	echo '</span>', "\n";
+	echo '</div>', "\n";
+	echo '</div>';
+}
+
+function frontend_render_page_correct_all_div($page) {
+	global $SID;
+	echo '<div id="correct-all-lines">', "\n";
+	echo '<button id="correct-all-lines-btn" class="btn btn-default" title="correct all lines"',
+		'onclick=\'PCW.correctAllLines("', $SID, '");\'>';
+	echo 'Correct all';
+	echo '</button', "\n";
 	echo '</div>';
 }
 
@@ -555,8 +521,9 @@ function frontend_get_subimage_div($src, $x, $y, $w, $h) {
 		"background-position:-${x}px ${y}px;width:${w}px;height:${h}px;\"></div>";
 }
 
-function frontend_render_concordance_match_div($line, $word) {
+function frontend_render_concordance_line_div($line, $word) {
 	global $config;
+	global $SID;
 	$api = backend_get_split_images($word);
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
@@ -567,34 +534,118 @@ function frontend_render_concordance_match_div($line, $word) {
 	$linecor = preg_split('//u', $line["cor"], -1, PREG_SPLIT_NO_EMPTY);
 	$wordcor = preg_split('//u', $word["cor"], -1, PREG_SPLIT_NO_EMPTY);
 	$offset = $word["offset"];
-	echo '<div class="row">';
+	$link = "page.php?u=none&pid=$line[projectId]&p=$line[pageId]" .
+		"#line-anchor-$line[projectId]-$line[pageId]-$line[lineId]";
+	$anchor="$word[projectId]-$word[pageId]-$word[lineId]-$word[tokenId]";
+	echo '<div class="text-image-line row">';
 	$images = $api->get_response();
 	echo '<div class="col-md-5 col-xs-4">';
 	if ($images["leftImg"] != NULL) {
+		echo '<a class="invisible=link" href="', $link, '">';
 		echo '<img src="', $images["leftImg"],
-			'" width="auto" height="', $height, '"/>', "\n";
-		// echo '<label>', array_splice($linecor, 0, $offset), '</label>', "\n";
+			'" width="auto" height="', $height,
+			'"/>', "\n";
 		echo '<br/>';
-		echo '<label>', "foobar", '</label>', "\n";
+		echo '<label>',
+			implode("", array_slice($linecor, 0, $offset)),
+			'</label>', "\n";
+		echo '</a>', "\n";
 	}
 	echo '</div>';
 	echo '<div class="col-md-2 col-xs-2">';
 	if ($images["middleImg"] != NULL) {
+		echo '<a class="invisible=link" href="', $link, '">';
 		echo '<img src="', $images["middleImg"],
-			'" width="auto" height="', $height, '"/>', "\n";
+			'" width="auto" height="', $height,
+			'"/>', "\n";
+		echo '</a>', "\n";
 		echo '<br/>';
-		echo '<label>', "foobar", '</label>', "\n";
-	}
-	echo '</div>';
-		echo '<div class="col-md-5 col-xs-4">';
-	if ($images["rightImg"] != NULL) {
-		echo '<img src="', $images["rightImg"],
-			'" width="auto" height="', $height, '"/>', "\n";
-		echo '<br/>';
-		echo '<label>', "foobar", '</label>', "\n";
-	}
+		echo '<div class="input-group">', "\n";
+		echo '<span class="input-group-addon">';
+		echo '<input id="concordance-token-checkbox-', $anchor, '" ',
+			'type="checkbox" aria-label="...">';
+      		echo '</span>';
+		echo '<input id="concordance-token-input-', $anchor, '" ',
+			'class="form-control" type="text" value="',
+			implode("", $wordcor), '" />';
+		echo '<span class="input-group-btn">', "\n";
+		echo '<button id="concordance-token-btn-', $anchor, '" ',
+			'class="btn btn-default" title="correct token" ',
+			'onclick=\'PCW.correctWord("', $SID, '","', $anchor, '");\' >',
+			"\n";
+		echo '<span class="glyphicon glyphicon-upload" />';
+		echo '</button>';
+		echo '</span>';
 		echo '</div>';
+	}
 	echo '</div>';
+	echo '<div class="col-md-5 col-xs-4">';
+	if ($images["rightImg"] != NULL) {
+		echo '<a class="invisible=link" href="', $link, '">';
+		echo '<img src="', $images["rightImg"],
+			'" width="auto" height="', $height,
+			'"/>', "\n";
+		echo '<br/>';
+		echo '<label>',
+			implode("", array_slice($linecor, $offset + count($wordcor))),
+			'</label>', "\n";
+		echo '</a>', "\n";
+	}
+	echo '</div>';
+	echo '</div>';
+}
+
+function frontend_render_concordance_header_div() {
+	echo '<nav class="navbar navbar-static-top" id="page-header" ',
+		'data-spy="affix" data-offset-top="197"', '>', "\n";
+	echo '<div class="container-fluid">', "\n";
+	echo '<div class="collapse navbar-collapse">', "\n";
+	// correction
+	echo '<ul class="nav navbar-nav">', "\n";
+	echo '<li>';
+	echo '<form class="navbar-form" action="javascript:void(0);" ',
+		'onSubmit="">';
+	echo '<div class="input-group">', "\n";
+	echo '<span class="input-group-btn">';
+	echo '<button id="foobar" class="btn btn-default" title="Toggle selection" ',
+		'onclick="PCW.toggleSelectionOfConcordanceTokens()">';
+	echo 'Toggle selection';
+	echo '</button>';
+	echo '</span>';
+	echo '<input id="global-correction-suggestion" ',
+		'class="form-control" type="text" placeholder="Correction"/>';
+	echo '<span class="input-group-btn">', "\n";
+	echo '<button id="foobar" class="btn btn-default" title="Correct selected tokens" ',
+		'onclick=\'PCW.setCorrectionSuggestionForAllSelectedConcordanceTokens();\'', ">\n";
+	// echo '<span class="glyphicon glyphicon-upload" />';
+	echo 'Correct selected tokens';
+	echo '</button>';
+	echo '</span>';
+	echo '</div>';
+	echo '</form>';
+	echo '</li>';
+	echo '</ul>';
+	echo '<ul class="nav navbar-nav">';
+	echo '<li class="dropdown">';
+	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" ',
+		'aria-haspopup="true" aria-expanded="false">',
+		'Correction suggestions<span class="caret"></span></a>';
+        echo '<ul class="dropdown-menu">';
+	echo '<li><a onclick=\'PCW.setGlobalCorrectionSuggestion("#1");\' ',
+		'href="#">Correction suggestion #1</a></li>', "\n";
+	echo '<li><a onclick=\'PCW.setGlobalCorrectionSuggestion("#2");\' ',
+		'href="#">Correction suggestion #2</a></li>', "\n";
+	echo '<li><a onclick=\'PCW.setGlobalCorrectionSuggestion("#3");\' ',
+		'href="#">Correction suggestion #3</a></li>', "\n";
+	echo '<li><a onclick=\'PCW.setGlobalCorrectionSuggestion("#4");\' ',
+		'href="#">Correction suggestion #4</a></li>', "\n";
+        // echo '<li role="separator" class="divider"></li>';
+        echo '</ul>';
+        echo '</li>';
+	echo '</ul>';
+	echo '</div>';
+	echo '</div>';
+	echo '</nav>';
 }
 
 function frontend_render_concordance_div($pid, $q) {
@@ -603,21 +654,17 @@ function frontend_render_concordance_div($pid, $q) {
 	if ($status == 200) {
 		$matches = $api->get_response();
 		if ($matches != NULL) {
-			# $page = array("lines" => array());
-			# foreach ($matches["lines"] as $line) {
-			# 	array_push($page["lines"], $line["line"]);
-			# }
 			echo '<div id="concordance-view" class="container-fluid">', "\n";
+			frontend_render_concordance_header_div();
 			echo '<div id="concordance-heading">', "\n";
 			echo "<p><h2>Concordance view for '", urldecode($q), "'</h2></p>\n";
 			echo '</div>', "\n";
 			foreach ($matches["matches"] as $match) {
 				$line = $match["line"];
 				foreach ($match["matches"] as $word) {
-					frontend_render_concordance_match_div($line, $word);
+					frontend_render_concordance_line_div($line, $word);
 				}
 			}
-			// frontend_render_page_div($page);
 			echo '</div>', "\n";
 		}
 	} else {

@@ -82,8 +82,8 @@ class Session {
 	inline bool has_permission(Connection<Db>& c, int projectid,
 				   Permissions perm) const;
 	template <class Db>
-	inline void has_permission_or_throw(Connection<Db>& c, int projectid,
-					    Permissions perm) const;
+	inline void assert_permission(Connection<Db>& c, int projectid,
+				      Permissions perm) const;
 
        private:
 	using Mutex = std::mutex;
@@ -307,9 +307,8 @@ bool pcw::Session::has_permission(Connection<Db>& c, int projectid,
 
 ////////////////////////////////////////////////////////////////////////////////
 template <class Db>
-inline void pcw::Session::has_permission_or_throw(Connection<Db>& c,
-						  int projectid,
-						  Permissions perm) const {
+inline void pcw::Session::assert_permission(Connection<Db>& c, int projectid,
+					    Permissions perm) const {
 	if (not has_permission(c, projectid, perm))
 		THROW(Forbidden, "Permission denied for project id: ",
 		      projectid);

@@ -24,19 +24,12 @@ class LineRoute : public CrtpRoute<LineRoute> {
 	pcw_crtp_route_def_impl__(int, int, int, const std::string&);
 	Response impl(HttpGet, const Request& req, int bid, int pid,
 		      int lid) const;
-	Response impl(HttpPost, const Request& req, int bid, int pid,
-		      int lid) const;
 	Response impl(HttpPost, const Request& req, int bid, int pid, int lid,
 		      const std::string& str) const;
 
        private:
-	Response correct(MysqlConnection& conn, Line& line,
-			 const crow::json::rvalue& data) const;
 	Response create_split_images(const Session& session, const Line& line,
 				     int tokenid) const;
-	void log(const WagnerFischer& wf) const;
-	static void print_with_dotted_circles(const std::wstring& str,
-					      std::string& u8);
 
 	static const char* route_;
 	static const char* name_;

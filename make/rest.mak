@@ -30,11 +30,12 @@ CORE_OBJS += rest/src/core/docxml.o
 CORE_OBJS += rest/src/core/jsonify.o
 CORE_OBJS += rest/src/core/util.o
 
-API_OBJS += rest/src/api/VersionRoute.o
 API_OBJS += rest/src/api/BookRoute.o
-API_OBJS += rest/src/api/PageRoute.o
+API_OBJS += rest/src/api/CorrectionRoute.o
 API_OBJS += rest/src/api/LineRoute.o
+API_OBJS += rest/src/api/PageRoute.o
 API_OBJS += rest/src/api/UserRoute.o
+API_OBJS += rest/src/api/VersionRoute.o
 
 PARSER_OBJS += rest/src/parser/AbbyyXmlPageParser.o
 PARSER_OBJS += rest/src/parser/AbbyyXmlParserLine.o

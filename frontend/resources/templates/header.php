@@ -13,6 +13,7 @@
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/pcw.js"></script>
 	<script type="text/javascript" src="js/config.js"></script>
+	<script type="text/javascript" src="https://unpkg.com/xregexp@3.2.0/xregexp-all.js"></script>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
     <title>PoCoWeb - Post Correction Web</title>
 </head>
@@ -62,6 +63,7 @@ echo '<li><p class="navbar-text">Api-Version: ', $version, '</p></li>';
     </div>
 </div>
 <?php
+/*
 require_once(LIBRARY_PATH . "/frontend.php");
 global $config;
 global $USER;
@@ -76,4 +78,5 @@ if ($config["frontend"]["debug"]) {
 		frontend_render_info_div("GLOBAL USER: NULL");
 	}
 }
+ */
 ?>

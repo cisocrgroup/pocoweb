@@ -16,8 +16,14 @@ using namespace pcw;
 Line::Line(int i, Box b) : box(b), img(), chars_(), page_(), id_(i), ofs_() {}
 
 ////////////////////////////////////////////////////////////////////////////////
-bool Line::is_corrected() const noexcept {
+bool Line::is_fully_corrected() const noexcept {
 	return std::all_of(begin(chars_), end(chars_),
+			   [](const auto& c) { return c.is_corrected(); });
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool Line::is_partially_corrected() const noexcept {
+	return std::any_of(begin(chars_), end(chars_),
 			   [](const auto& c) { return c.is_corrected(); });
 }
 
@@ -222,14 +228,14 @@ void Line::noop(size_t i) {
 static Line::CharIterator next(Line::CharIterator i, Line::CharIterator e) {
 	if (i != e) {
 		// we need find_if_not in order to handle deletions (which are
-		// both
-		// considered part of words and separators) correctly.
+		// both considered part of words and separators) correctly.
 		if (i->is_word())
-			return std::find_if_not(
-			    i, e, [](const auto& c) { return c.is_word(); });
+			return std::find_if_not(i + 1, e, [](const auto& c) {
+				return c.is_word();
+			});
 		else
 			return std::find_if_not(
-			    i, e, [](const auto& c) { return c.is_sep(); });
+			    i + 1, e, [](const auto& c) { return c.is_sep(); });
 	}
 	return e;
 }
@@ -244,15 +250,18 @@ void Line::each_token(std::function<void(const Token&)> f) const {
 	const auto e = end(chars_);
 	const auto b = begin(chars_);
 	int id = 0;
+	auto leftcut = this->box.left();
 
 	for (auto i = b; i != e;) {
 		const auto j = next(i, e);
-		token.box.set_left(i != b ? std::prev(i)->cut : 0);
-		if (j == e or std::next(j) == e) {
+		assert(j != i);
+		token.box.set_left(leftcut);
+		if (j == e) {
 			token.box.set_right(this->box.right());
 		} else {
-			token.box.set_right(std::next(j)->cut);
+			token.box.set_right(prev(j)->cut);
 		}
+		leftcut = std::prev(j)->cut;
 		token.begin = i;
 		token.end = j;
 		token.id = ++id;
@@ -330,7 +339,8 @@ bool Char::is_word() const noexcept {
 ////////////////////////////////////////////////////////////////////////////////
 bool Char::is_sep() const noexcept {
 	auto c = get_cor();
-	// c=0 means deletion and is considered to be part of a separator.
+	// c=0 means deletion and is considered to be part of a
+	// separator.
 	return c ? not isword(c) : true;
 }
 
@@ -428,8 +438,14 @@ std::string Token::ocr() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool Token::is_corrected() const {
+bool Token::is_fully_corrected() const noexcept {
 	return std::all_of(begin, end,
+			   [](const Char& c) { return c.is_corrected(); });
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool Token::is_partially_corrected() const noexcept {
+	return std::any_of(begin, end,
 			   [](const Char& c) { return c.is_corrected(); });
 }
 
