@@ -523,6 +523,7 @@ function frontend_get_subimage_div($src, $x, $y, $w, $h) {
 
 function frontend_render_concordance_line_div($line, $word) {
 	global $config;
+	global $SID;
 	$api = backend_get_split_images($word);
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
@@ -569,7 +570,9 @@ function frontend_render_concordance_line_div($line, $word) {
 			implode("", $wordcor), '" />';
 		echo '<span class="input-group-btn">', "\n";
 		echo '<button id="concordance-token-btn-', $anchor, '" ',
-			'class="btn btn-default" title="correct token" >', "\n";
+			'class="btn btn-default" title="correct token" ',
+			'onclick=\'PCW.correctWord("', $SID, '","', $anchor, '");\' >',
+			"\n";
 		echo '<span class="glyphicon glyphicon-upload" />';
 		echo '</button>';
 		echo '</span>';

@@ -122,18 +122,21 @@ function getIds(anchor) {
 	return anchor.split('-');
 }
 
+function toId(ids) {
+	return ids.join('-');
+};
+
 function correctLine(sid, anchor) {
 	var correction = document.getElementById(anchor).value;
 	var ids = getIds(anchor);
-	sendCorrectionToServer(
-	    sid, ids[0], ids[1], ids[2], correction, function(res) {
-		    var elem = document.getElementById(anchor);
-		    elem.value = res.cor;
-		    elem.className += " corrected-line";
-	    });
+	correctLineImpl(sid, ids[0], ids[1], ids[2], correction, function(res) {
+		var elem = document.getElementById(anchor);
+		elem.value = res.cor;
+		elem.className += " corrected-line";
+	});
 }
 
-function sendCorrectionToServer(sid, pid, p, lid, correction, callback) {
+function correctLineImpl(sid, pid, p, lid, correction, callback) {
 	var http = new XMLHttpRequest();
 	http.onreadystatechange = function() {
 		if (http.readyState === 4 && http.status === 200) {
@@ -143,9 +146,7 @@ function sendCorrectionToServer(sid, pid, p, lid, correction, callback) {
 			    "backend returned status: " + http.status);
 		}
 	};
-	var url = sprintf(
-	    config.backend.url + config.backend.routes["correct_line"], pid, p,
-	    lid);
+	var url = config.backend.url + config.backend.routes["correct_line"];
 	console.log("sending correction to url: " + url + " [" + sid + "]");
 	http.open("POST", url, true);
 	http.setRequestHeader("Authorization", sid);
@@ -170,14 +171,20 @@ PCW.correctAllLines = function(sid) {
 	for (var i = 0; i < items.length; i++) {
 		if (regex.test(items[i].id)) {
 			ids = getIds(items[i].id);
-			sendCorrectionToServer(
+			correctLineImpl(
 			    sid, ids[0], ids[1], ids[2], items[i].value,
 			    function(res) {
 				    var elem = document.getElementById(
 					res.projectId + "-" + res.pageId + "-" +
 					res.lineId);
 				    elem.value = res.cor;
-				    elem.classNmae += " corrected-line";
+				    if (res.isFullyCorrected) {
+					    elem.className +=
+						" fully-corrected-line";
+				    } else if (res.isPartiallyCorrected) {
+					    elem.className +=
+						" partially-corrected-line";
+				    }
 			    });
 		}
 	}
@@ -218,4 +225,48 @@ PCW.setCorrectionSuggestionForAllSelectedConcordanceTokens = function() {
 			}
 		}
 	}
+};
+
+PCW.correctWordImpl = function(sid, pid, p, lid, tid, correction, callback) {
+	var http = new XMLHttpRequest();
+	http.onreadystatechange = function() {
+		if (http.readyState === 4 && http.status === 200) {
+			callback(JSON.parse(http.responseText));
+		} else if (http.readyState === 4 && http.status !== 200) {
+			console.error(
+			    "backend returned status: " + http.status);
+		}
+	};
+	var url = config.backend.url + config.backend.routes["correct_line"];
+	console.log("sending correction to url: " + url + " [" + sid + "]");
+	http.open("POST", url, true);
+	http.setRequestHeader("Authorization", sid);
+	http.setRequestHeader(
+	    "Content-type", "application/json; charset=UTF-8");
+	const data = {
+		"correction": correction,
+		"projectId": parseInt(pid),
+		"pageId": parseInt(p),
+		"lineId": parseInt(lid),
+		"tokenId": parseInt(tid)
+	};
+	http.send(JSON.stringify(data));
+};
+
+PCW.correctWord = function(sid, id) {
+	const ids = getIds(id);
+	const correction =
+	    document.getElementById("concordance-token-input-" + id).value;
+
+	PCW.correctWordImpl(
+	    sid, ids[0], ids[1], ids[2], ids[3], correction, function(res) {
+		    const elem = document.getElementById(
+			'concordance-token-input-' + id);
+		    elem.value = res.cor;
+		    if (res.isFullyCorrected) {
+			    elem.className += " fully-corrected-line";
+		    } else if (re.isPartiallyCorrected) {
+			    elem.className == " partially-corrected-line";
+		    }
+	    });
 };
