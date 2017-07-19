@@ -2,6 +2,11 @@ PCW_API_VERSION_MAJOR := 0
 PCW_API_VERSION_MINOR := 1
 PCW_API_VERSION_PATCH := 0
 
+DESTDIR ?=
+PREFIX ?= /usr/local
+BINDIR := $(PREFIX)/bin
+LIBDIR := $(PREFIX)/lib
+
 CXX ?= g++
 
 CXXFLAGS := -MP -MD -std=gnu++14 -Wall -Werror -fpic
@@ -23,6 +28,7 @@ CXXFLAGS += -isystem modules/pugixml/src
 CXXFLAGS += -DPCW_API_VERSION_MAJOR=$(PCW_API_VERSION_MAJOR)
 CXXFLAGS += -DPCW_API_VERSION_MINOR=$(PCW_API_VERSION_MINOR)
 CXXFLAGS += -DPCW_API_VERSION_PATCH=$(PCW_API_VERSION_PATCH)
+CXXFLAGS += -DPCW_DESTDIR=$(DESTDIR)
 
 LDFLAGS += -Llib
 LDFLAGS += -lpcwcore -lpcwapi -lpcwparser -lpugixml
@@ -38,11 +44,6 @@ LDFLAGS += -lcrypto
 LDFLAGS += -lcrypt
 LDFLAGS += -lsqlpp-mysql
 LDFLAGS += -lmysqlclient
-
-PREFIX ?= /usr/local
-BINDIR := $(PREFIX)/bin
-LIBDIR := $(PREFIX)/lib
-DISTDIR ?=
 
 PCW_DB_HOST ?= localhost
 PCW_DB_USER ?= pocoweb
@@ -74,7 +75,7 @@ make/cache.mak: Makefile make/config.mak
 	@echo "PREFIX := $(PREFIX)" >> $@
 	@echo "BINDIR := $(BINDIR)" >> $@
 	@echo "LIBDIR := $(LIBDIR)" >> $@
-	@echo "DISTDIR := $(DISTDIR)" >> $@
+	@echo "DESTDIR := $(DESTDIR)" >> $@
 	@echo "PCW_DB_HOST := $(PCW_DB_HOST)" >> $@
 	@echo "PCW_DB_USER := $(PCW_DB_USER)" >> $@
 	@echo "PCW_DB_PASS := $(PCW_DB_PASS)" >> $@
