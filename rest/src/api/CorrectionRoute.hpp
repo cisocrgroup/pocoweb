@@ -4,6 +4,7 @@
 #include "core/CrtpRoute.hpp"
 
 namespace pcw {
+class Line;
 class CorrectionRoute : public CrtpRoute<CorrectionRoute> {
        public:
 	virtual ~CorrectionRoute() noexcept override = default;
@@ -15,6 +16,11 @@ class CorrectionRoute : public CrtpRoute<CorrectionRoute> {
 	Response impl(HttpPost, const Request& req) const;
 
        private:
+	Response impl(MysqlConnection& conn, Line& line,
+		      const std::string& c) const;
+	Response impl(MysqlConnection& conn, Line& line, int tid,
+		      const std::string& c) const;
+	static void update_line(MysqlConnection& conn, const Line& line);
 	static const char* route_;
 	static const char* name_;
 };
