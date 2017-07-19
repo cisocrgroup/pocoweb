@@ -70,7 +70,7 @@ Route::Response BookRoute::impl(HttpPost, const Request& req) const {
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
-	session->has_permission_or_throw(conn, 0, Permissions::Create);
+	session->assert_permission(conn, 0, Permissions::Create);
 	// create new bookdir
 	BookDirectoryBuilder dir(config());
 	ScopeGuard sg([&dir]() { dir.remove(); });
@@ -120,7 +120,7 @@ Route::Response BookRoute::impl(HttpGet, const Request& req, int bid) const {
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
-	session->has_permission_or_throw(conn, bid, Permissions::Read);
+	session->assert_permission(conn, bid, Permissions::Read);
 	auto book = session->find(conn, bid);
 	if (not book) THROW(NotFound, "Could not find project id: ", bid);
 	assert(book);
@@ -137,7 +137,7 @@ Route::Response BookRoute::impl(HttpPost, const Request& req, int bid) const {
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
-	session->has_permission_or_throw(conn, bid, Permissions::Write);
+	session->assert_permission(conn, bid, Permissions::Write);
 	const auto view = session->find(conn, bid);
 	if (not view) THROW(NotFound, "cannot project id: ", bid);
 	if (not view->is_book())
@@ -188,7 +188,7 @@ Route::Response BookRoute::impl(HttpDelete, const Request& req, int bid) const {
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
-	session->has_permission_or_throw(conn, bid, Permissions::Remove);
+	session->assert_permission(conn, bid, Permissions::Remove);
 	const auto project = session->find(conn, bid);
 	if (not project)
 		THROW(NotFound, "cannot remove project: no such project id: ",
@@ -265,7 +265,7 @@ Route::Response BookRoute::download(const Request& req, int bid) const {
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
-	session->has_permission_or_throw(conn, bid, Permissions::Read);
+	session->assert_permission(conn, bid, Permissions::Read);
 	const auto project = session->find(conn, bid);
 	if (not project) THROW(NotFound, "cannot find project id: ", bid);
 	Archiver archiver(*project);
@@ -288,7 +288,7 @@ Route::Response BookRoute::search(const Request& req, int bid) const {
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
-	session->has_permission_or_throw(conn, bid, Permissions::Read);
+	session->assert_permission(conn, bid, Permissions::Read);
 	const auto project = session->find(conn, bid);
 	if (not project) THROW(NotFound, "cannot find project id: ", bid);
 	Searcher searcher(*project);
@@ -325,7 +325,7 @@ Route::Response BookRoute::finish(const Request& req, int bid) const {
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
-	session->has_permission_or_throw(conn, bid, Permissions::Finish);
+	session->assert_permission(conn, bid, Permissions::Finish);
 	const auto project = session->find(conn, bid);
 	if (not project)
 		THROW(NotFound, "cannot finish project: no such project id: ",
@@ -363,7 +363,7 @@ Route::Response BookRoute::assign(const Request& req, int bid) const {
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
-	session->has_permission_or_throw(conn, bid, Permissions::Assign);
+	session->assert_permission(conn, bid, Permissions::Assign);
 	const auto project = session->find(conn, bid);
 	if (not project)
 		THROW(NotFound, "cannot not find project: no such project id: ",
@@ -397,7 +397,7 @@ Route::Response BookRoute::split(const Request& req, int bid) const {
 	assert(conn);
 	assert(session);
 	SessionLock lock(*session);
-	session->has_permission_or_throw(conn, bid, Permissions::Split);
+	session->assert_permission(conn, bid, Permissions::Split);
 	auto proj = session->find(conn, bid);
 	assert(proj);
 	if (not proj->is_book())
