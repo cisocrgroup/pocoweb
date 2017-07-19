@@ -1,10 +1,12 @@
 #ifndef pcw_CorrectionRoute_hpp__
 #define pcw_CorrectionRoute_hpp__
 
+#include <boost/optional.hpp>
 #include "core/CrtpRoute.hpp"
 
 namespace pcw {
 class Line;
+struct Token;
 class CorrectionRoute : public CrtpRoute<CorrectionRoute> {
        public:
 	virtual ~CorrectionRoute() noexcept override = default;
@@ -20,6 +22,7 @@ class CorrectionRoute : public CrtpRoute<CorrectionRoute> {
 		      const std::string& c) const;
 	Response impl(MysqlConnection& conn, Line& line, int tid,
 		      const std::string& c) const;
+	static boost::optional<Token> find_token(const Line& line, int tid);
 	static void update_line(MysqlConnection& conn, const Line& line);
 	static const char* route_;
 	static const char* name_;

@@ -30,7 +30,8 @@ class Line : public std::enable_shared_from_this<Line> {
 
 	bool empty() const noexcept { return chars_.empty(); }
 	size_t size() const noexcept { return chars_.size(); }
-	bool is_corrected() const noexcept;
+	bool is_fully_corrected() const noexcept;
+	bool is_partially_corrected() const noexcept;
 	std::wstring wocr() const;
 	std::string ocr() const;
 	std::wstring wcor() const;
@@ -111,8 +112,10 @@ struct Token {
 	std::string cor() const;
 	std::string ocr() const;
 	uint64_t unique_id() const noexcept;
-	bool is_corrected() const;
+	bool is_fully_corrected() const noexcept;
+	bool is_partially_corrected() const noexcept;
 	bool is_normal() const;
+	size_t size() const noexcept { return std::distance(begin, end); }
 	size_t offset() const noexcept {
 		return std::distance(line->chars_.begin(), begin);
 	}

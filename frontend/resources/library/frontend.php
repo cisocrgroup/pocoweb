@@ -476,8 +476,10 @@ function frontend_render_page_line_div($line) {
 	$anchor = "$pid-$p-$lid";
 	$d = $line["cor"];
 	$inputclass = '';
-	if ($line["isCorrected"]) {
-		$inputclass = ' corrected-line';
+	if ($line["isFullyCorrected"]) {
+		$inputclass = ' fully-corrected-line';
+	} else if ($line["isPartiallyCorrected"]) {
+		$inputclass = ' partially-corrected-line';
 	}
 	// echo '<div id="', $anchor, '" class="line-view" title="', $text, '">';
 	echo '<div class="text-image-line" title="', $text, '">';
