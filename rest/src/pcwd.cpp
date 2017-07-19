@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "api/BookRoute.hpp"
+#include "api/CorrectionRoute.hpp"
 #include "api/LineRoute.hpp"
 #include "api/PageRoute.hpp"
 #include "api/UserRoute.hpp"
@@ -49,6 +50,7 @@ void run(App& app) {
 	app.Register(std::make_unique<pcw::PageRoute>());
 	app.Register(std::make_unique<pcw::LineRoute>());
 	app.Register(std::make_unique<pcw::UserRoute>());
+	app.Register(std::make_unique<pcw::CorrectionRoute>());
 	app.run();
 }
 
