@@ -16,8 +16,14 @@ using namespace pcw;
 Line::Line(int i, Box b) : box(b), img(), chars_(), page_(), id_(i), ofs_() {}
 
 ////////////////////////////////////////////////////////////////////////////////
-bool Line::is_corrected() const noexcept {
+bool Line::is_fully_corrected() const noexcept {
 	return std::all_of(begin(chars_), end(chars_),
+			   [](const auto& c) { return c.is_corrected(); });
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool Line::is_partially_corrected() const noexcept {
+	return std::any_of(begin(chars_), end(chars_),
 			   [](const auto& c) { return c.is_corrected(); });
 }
 
@@ -432,8 +438,14 @@ std::string Token::ocr() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool Token::is_corrected() const {
+bool Token::is_fully_corrected() const noexcept {
 	return std::all_of(begin, end,
+			   [](const Char& c) { return c.is_corrected(); });
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool Token::is_partially_corrected() const noexcept {
+	return std::any_of(begin, end,
 			   [](const Char& c) { return c.is_corrected(); });
 }
 
