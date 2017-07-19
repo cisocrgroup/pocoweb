@@ -152,3 +152,47 @@ pcw::Json& pcw::operator<<(Json& j, const User& user) {
 	j["admin"] = user.admin();
 	return j;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+bool pcw::get(const RJson& j, const char* key, bool& res) noexcept {
+	if (j.has(key)) {
+		switch (j[key].t()) {
+			case crow::json::type::True:
+				res = true;
+				return true;
+			case crow::json::type::False:
+				res = false;
+				return true;
+			default:
+				return false;
+		}
+	}
+	return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool pcw::get(const RJson& j, const char* key, int& res) noexcept {
+	if (j.has(key) and j[key].t() == crow::json::type::Number) {
+		res = j[key].i();
+		return true;
+	}
+	return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool pcw::get(const RJson& j, const char* key, double& res) noexcept {
+	if (j.has(key) and j[key].t() == crow::json::type::Number) {
+		res = j[key].d();
+		return true;
+	}
+	return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool pcw::get(const RJson& j, const char* key, std::string& res) noexcept {
+	if (j.has(key) and j[key].t() == crow::json::type::String) {
+		res = j[key].s();
+		return true;
+	}
+	return false;
+}

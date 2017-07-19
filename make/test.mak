@@ -7,6 +7,7 @@ CORE_TESTS += rest/src/core/tests/TestBox.test
 CORE_TESTS += rest/src/core/tests/TestCache.test
 CORE_TESTS += rest/src/core/tests/TestCorLine.test
 CORE_TESTS += rest/src/core/tests/TestCorrector.test
+CORE_TESTS += rest/src/core/tests/TestJson.test
 CORE_TESTS += rest/src/core/tests/TestLine.test
 CORE_TESTS += rest/src/core/tests/TestLineBuilder.test
 CORE_TESTS += rest/src/core/tests/TestOcrLine.test
