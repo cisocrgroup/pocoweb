@@ -29,10 +29,13 @@ a.line-anchor {
 	/*visibility: hidden;*/
 }
 
-input.corrected-line {
+input.partially-corrected-line {
 	background-color: lightgrey;
 }
 
+input.fully-corrected-line {
+	background-color: #dff0d8;
+}
 .affix {
 	top: 0;
 	width: 100%;
