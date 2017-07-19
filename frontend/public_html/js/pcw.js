@@ -151,7 +151,13 @@ function sendCorrectionToServer(sid, pid, p, lid, correction, callback) {
 	http.setRequestHeader("Authorization", sid);
 	http.setRequestHeader(
 	    "Content-type", "application/json; charset=UTF-8");
-	http.send(JSON.stringify({"d": correction}));
+	const data = {
+		"correction": correction,
+		"projectId": parseInt(pid),
+		"pageId": parseInt(p),
+		"lineId": parseInt(lid)
+	};
+	http.send(JSON.stringify(data));
 }
 
 var PCW = {};
