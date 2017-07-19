@@ -253,9 +253,9 @@ void Line::each_token(std::function<void(const Token&)> f) const {
 		if (j == e) {
 			token.box.set_right(this->box.right());
 		} else {
-			token.box.set_right(j->cut);
+			token.box.set_right(prev(j)->cut);
 		}
-		leftcut = std::prev(j)->cut + 1;
+		leftcut = std::prev(j)->cut;
 		token.begin = i;
 		token.end = j;
 		token.id = ++id;
