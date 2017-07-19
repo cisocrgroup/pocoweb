@@ -1,18 +1,18 @@
-#include <boost/filesystem/operations.hpp>
 #include <grp.h>
 #include <pwd.h>
+#include <boost/filesystem/operations.hpp>
 #include <iostream>
 #include <vector>
-#include "crow.h"
+#include "api/BookRoute.hpp"
+#include "api/LineRoute.hpp"
+#include "api/PageRoute.hpp"
+#include "api/UserRoute.hpp"
+#include "api/VersionRoute.hpp"
 #include "core/App.hpp"
 #include "core/Config.hpp"
 #include "core/Plugin.hpp"
 #include "core/Route.hpp"
-#include "api/VersionRoute.hpp"
-#include "api/BookRoute.hpp"
-#include "api/PageRoute.hpp"
-#include "api/LineRoute.hpp"
-#include "api/UserRoute.hpp"
+#include "crow.h"
 
 using namespace pcw;
 using AppPtr = std::unique_ptr<App>;
@@ -23,9 +23,7 @@ static void change_user_and_group(const Config& config);
 static void create_base_directory(const Config& config);
 
 ////////////////////////////////////////////////////////////////////////////////
-int
-main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
 	try {
 		return run(argc, argv);
 	} catch (const std::exception& e) {
@@ -35,18 +33,14 @@ main(int argc, char** argv)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-int
-run(int argc, char** argv)
-{
+int run(int argc, char** argv) {
 	auto app = get_app(argc, argv);
 	run(*app);
 	return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-run(App& app)
-{
+void run(App& app) {
 	change_user_and_group(app.config());
 	create_base_directory(app.config());
 	app.register_plugins();
@@ -59,9 +53,7 @@ run(App& app)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-change_user_and_group(const Config& config)
-{
+void change_user_and_group(const Config& config) {
 	const auto user = config.daemon.user.data();
 	errno = 0;
 	const auto pw = getpwnam(user);
@@ -72,17 +64,18 @@ change_user_and_group(const Config& config)
 
 	// set processes uid and gid
 	if (setuid(pw->pw_uid) != 0)
-		throw std::system_error(errno, std::system_category(), "setuid");
+		throw std::system_error(errno, std::system_category(),
+					"setuid");
 	if (setgid(pw->pw_gid) != 0)
-		throw std::system_error(errno, std::system_category(), "setgid");
+		throw std::system_error(errno, std::system_category(),
+					"setgid");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-AppPtr
-get_app(int argc, char** argv)
-{
+AppPtr get_app(int argc, char** argv) {
 	if (argc != 2)
-		throw std::runtime_error("Usage: " + std::string(argv[0]) + " <config>");
+		throw std::runtime_error("Usage: " + std::string(argv[0]) +
+					 " <config>");
 	auto app = std::make_unique<pcw::App>(argv[1]);
 	app->config().setup_logging();
 	app->config().LOG();
@@ -90,13 +83,12 @@ get_app(int argc, char** argv)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-create_base_directory(const Config& config)
-{
+void create_base_directory(const Config& config) {
 	boost::system::error_code ec;
-	if (not boost::filesystem::create_directories(config.daemon.basedir, ec)
-			and ec.value() != 0) {
+	if (not boost::filesystem::create_directories(config.daemon.basedir,
+						      ec) and
+	    ec.value() != 0) {
 		throw std::system_error(ec.value(), std::system_category(),
-				config.daemon.basedir);
+					config.daemon.basedir);
 	}
 }
