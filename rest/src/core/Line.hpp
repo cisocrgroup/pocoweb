@@ -115,6 +115,7 @@ struct Token {
 	bool is_fully_corrected() const noexcept;
 	bool is_partially_corrected() const noexcept;
 	bool is_normal() const;
+	size_t size() const noexcept { return std::distance(begin, end); }
 	size_t offset() const noexcept {
 		return std::distance(line->chars_.begin(), begin);
 	}
