@@ -71,12 +71,7 @@ Route::Response CorrectionRoute::impl(MysqlConnection& conn, Line& line,
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response CorrectionRoute::impl(MysqlConnection& conn, Line& line,
 				      int tid, const std::string& c) const {
-	boost::optional<Token> token;
-	line.each_token([&](const auto& t) {
-		if (t.id == tid) {
-			token = t;
-		}
-	});
+	auto token = find_token(line, tid);
 	if (not token) {
 		THROW(NotFound, "(CorrectionRoute) cannot find ",
 		      line.page().book().id(), "-", line.page().id(), "-",
@@ -93,9 +88,26 @@ Route::Response CorrectionRoute::impl(MysqlConnection& conn, Line& line,
 	CROW_LOG_DEBUG << "(CorrectionRoute) line.ocr(): " << line.ocr();
 	CROW_LOG_DEBUG << "(CorrectionRoute)        lev: " << lev;
 	wf.correct(line, b, n);
+	token = find_token(line, tid);
+	if (not token) {
+		THROW(Error, "(CorrectionRoute) cannot find token ",
+		      line.page().book().id(), "-", line.page().id(), "-",
+		      line.id(), "-", tid, " after correction");
+	}
 	update_line(conn, line);
 	Json j;
-	return j << line;
+	return j << *token;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+boost::optional<Token> CorrectionRoute::find_token(const Line& line, int tid) {
+	boost::optional<Token> token;
+	line.each_token([&](const auto& t) {
+		if (t.id == tid) {
+			token = t;
+		}
+	});
+	return token;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
