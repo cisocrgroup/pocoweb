@@ -1,5 +1,6 @@
 [Unit]
 Description=pocowebd the pocoweb rest daemon
+Documentation=http://pocoweb.cis.lmu.de/documentation.php
 
 [Service]
 PIDFile=/var/run/pocowebd.pid
