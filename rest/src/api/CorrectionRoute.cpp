@@ -2,6 +2,7 @@
 #include <crow.h>
 #include <crow/json.h>
 #include <database/Database.hpp>
+#include "core/Corrector.hpp"
 #include "core/Line.hpp"
 #include "core/Session.hpp"
 #include "core/WagnerFischer.hpp"
@@ -70,7 +71,31 @@ Route::Response CorrectionRoute::impl(MysqlConnection& conn, Line& line,
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response CorrectionRoute::impl(MysqlConnection& conn, Line& line,
 				      int tid, const std::string& c) const {
-	return internal_server_error();
+	boost::optional<Token> token;
+	line.each_token([&](const auto& t) {
+		if (t.id == tid) {
+			token = t;
+		}
+	});
+	if (not token) {
+		THROW(NotFound, "(CorrectionRoute) cannot find ",
+		      line.page().book().id(), "-", line.page().id(), "-",
+		      line.id(), "-", tid);
+	}
+	WagnerFischer wf;
+	wf.set_ocr(line);
+	wf.set_gt(c);
+	const auto b = token->offset();
+	const auto n = token->size();
+	const auto lev = wf(b, n);
+	CROW_LOG_DEBUG << "(CorrectionRoute) correction: " << c;
+	CROW_LOG_DEBUG << "(CorrectionRoute) line.cor(): " << line.cor();
+	CROW_LOG_DEBUG << "(CorrectionRoute) line.ocr(): " << line.ocr();
+	CROW_LOG_DEBUG << "(CorrectionRoute)        lev: " << lev;
+	wf.correct(line, b, n);
+	update_line(conn, line);
+	Json j;
+	return j << line;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
