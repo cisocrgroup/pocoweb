@@ -44,6 +44,7 @@ Route::Response CorrectionRoute::impl(HttpPost, const Request& req) const {
 	const auto session = this->session(req);
 	assert(conn);
 	assert(session);
+	SessionLock lock(*session);
 	session->has_permission_or_throw(conn, *pid, Permissions::Write);
 	const auto line = session->find(conn, *pid, *p, *lid);
 	if (not line) THROW(NotFound, "could not find requested line");
