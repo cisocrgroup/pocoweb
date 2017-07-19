@@ -1,5 +1,8 @@
 #include <grp.h>
 #include <pwd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <boost/filesystem/operations.hpp>
 #include <iostream>
 #include <vector>
@@ -21,6 +24,7 @@ static void run(App& app);
 static AppPtr get_app(int argc, char** argv);
 static void change_user_and_group(const Config& config);
 static void create_base_directory(const Config& config);
+static const char* find_config_file(int argc, char** argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char** argv) {
@@ -73,10 +77,7 @@ void change_user_and_group(const Config& config) {
 
 ////////////////////////////////////////////////////////////////////////////////
 AppPtr get_app(int argc, char** argv) {
-	if (argc != 2)
-		throw std::runtime_error("Usage: " + std::string(argv[0]) +
-					 " <config>");
-	auto app = std::make_unique<pcw::App>(argv[1]);
+	auto app = std::make_unique<pcw::App>(find_config_file(argc, argv));
 	app->config().setup_logging();
 	app->config().LOG();
 	return app;
@@ -91,4 +92,32 @@ void create_base_directory(const Config& config) {
 		throw std::system_error(ec.value(), std::system_category(),
 					config.daemon.basedir);
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+const char* find_config_file(int argc, char** argv) {
+	// if a config file is given use it.
+	if (argc > 1) {
+		std::cerr << "(pcwd) using config file: " << argv[1] << "\n";
+		return argv[1];
+	}
+	// search for possible default config files.
+	static const char* files[] = {
+#ifdef PCW_DESTDIR
+	    PCW_DESTDIR "/etc/pcwd.ini",
+#else   // PCWD_DESTDIR
+	    "/etc/pcwd.ini",
+#endif  // PCW_DESTDIR
+	    "./pcwd.ini",
+	};
+	struct stat s;
+	for (const auto file : files) {
+		std::cerr << "(pcwd) trying config file: " << file << "\n";
+		if (stat(file, &s) == 0) {
+			std::cerr << "(pcwd) using config file: " << file
+				  << "\n";
+			return file;
+		}
+	}
+	throw std::runtime_error("Cannot find config file");
 }
