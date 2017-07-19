@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <numeric>
 #include "Line.hpp"
+#include "core/util.hpp"
 
 using namespace pcw;
 

@@ -77,7 +77,7 @@ std::ostream& operator<<(std::ostream& os, const WagnerFischer::Table& t);
 ////////////////////////////////////////////////////////////////////////////////
 template <class T>
 inline void pcw::WagnerFischer::correct(T& t, size_t b, size_t n) const {
-	correct_impl(b, n, t);
+	correct_impl(b, b + n, t);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
