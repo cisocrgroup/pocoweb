@@ -22,33 +22,10 @@ function backend_set_global_session_id() {
 	$SID = backend_get_session_cookie();
 }
 
-function backend_set_global_api_version() {
-	global $API;
-	$api = backend_get_api_version();
-	if ($api->get_http_status_code() == 200) {
-		$API = $api->get_response()["version"];
-	} else {
-		$API = "";
-	}
-}
-
 function backend_setup_globals() {
-	backend_set_global_api_version();
 	// session id must be set before the user.
 	backend_set_global_session_id();
 	backend_set_global_user();
-}
-
-function backend_get_api_version_route() {
-	global $config;
-	return $config["backend"]["url"] .
-		$config["backend"]["routes"]["api_version"];
-}
-
-function backend_get_api_version() {
-	$api = new Api(backend_get_api_version_route());
-	$api->get_request();
-	return $api;
 }
 
 function backend_get_login_route() {

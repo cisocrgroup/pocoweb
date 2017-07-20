@@ -1,11 +1,9 @@
 <?php
-# global api version, user name and session id (if logged in)
+# global user name and session id (if logged in)
 global $USER;
 $USER = NULL;
 global $SID;
 $SID = "";
-global $API;
-$API = "";
 
 # global configuration
 global $config;

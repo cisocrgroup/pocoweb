@@ -18,6 +18,7 @@
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
     <title>PoCoWeb - Post Correction Web</title>
 </head>
+<!-- <body onload='pcw.setApiVersion();pcw.setLoggedInUser();'> -->
 <body onload='pcw.setApiVersion();'>
 <div class="container-fluid">
     <div id="pocweb-header">
@@ -39,7 +40,12 @@
 			}
 			?>
 		    </ul>
-		    <ul class="nav navbar-nav navbar-right">
+			<ul class="nav navbar-nav navbar-right">
+			<!-- MAYBE Later ...
+				<li id='pcw-login'>
+					<a href="login.php">Login</a>
+				</li>
+			-->
 <?php
 require_once(dirname(dirname(__FILE__)) . "/config.php");
 require_once(LIBRARY_PATH . "/backend.php");
