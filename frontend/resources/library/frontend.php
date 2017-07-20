@@ -498,7 +498,7 @@ function frontend_render_page_line_div($line) {
 		'/>', "\n";
 	echo '<span class="input-group-btn">', "\n";
 	echo '<button id="', $anchor, '-btn" class="btn btn-default" title="correct line #',
-		$lid, '" onclick=\'correctLine("', $SID, '", "', $anchor, '");\' >', "\n";
+		$lid, '" onclick=\'PCW.correctLine("', $anchor, '");\' >', "\n";
 	echo '<span class="glyphicon glyphicon-upload" />';
 	echo '</button>', "\n";
 	echo '</span>', "\n";

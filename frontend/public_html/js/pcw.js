@@ -130,42 +130,6 @@ function toId(ids) {
 	return ids.join('-');
 };
 
-function correctLine(sid, anchor) {
-	var correction = document.getElementById(anchor).value;
-	var ids = getIds(anchor);
-	correctLineImpl(sid, ids[0], ids[1], ids[2], correction, function(res) {
-		var elem = document.getElementById(anchor);
-		elem.value = res.cor;
-		elem.className += " corrected-line";
-	});
-}
-
-function correctLineImpl(sid, pid, p, lid, correction, callback) {
-	var http = new XMLHttpRequest();
-	http.onreadystatechange = function() {
-		if (http.readyState === 4 && http.status === 200) {
-			callback(JSON.parse(http.responseText));
-		} else if (http.readyState === 4 && http.status !== 200) {
-			console.error(
-			    "backend returned status: " + http.status);
-		}
-	};
-	var url =
-	    PCW.config.backend.url + PCW.config.backend.routes["correct_line"];
-	console.log("sending correction to url: " + url + " [" + sid + "]");
-	http.open("POST", url, true);
-	http.setRequestHeader("Authorization", sid);
-	http.setRequestHeader(
-	    "Content-type", "application/json; charset=UTF-8");
-	const data = {
-		"correction": correction,
-		"projectId": parseInt(pid),
-		"pageId": parseInt(p),
-		"lineId": parseInt(lid)
-	};
-	http.send(JSON.stringify(data));
-}
-
 PCW.correctAllLines = function(sid) {
 	console.log("correctAllLines [" + sid + "]");
 	const regex = /(\d+)-(\d+)-(\d+)/;
@@ -263,6 +227,15 @@ PCW.setApiVersion = function() {
 	});
 };
 
+PCW.setupCorrectedInputField = function(elem, res) {
+	elem.value = res.cor;
+	if (res.isFullyCorrected) {
+		elem.className += " fully-corrected-line";
+	} else if (res.isPartiallyCorrected) {
+		elem.className += " partially-corrected-line";
+	}
+};
+
 PCW.correctWord = function(anchor) {
 	const ids = getIds(anchor);
 	const inputid = "concordance-token-input-" + anchor;
@@ -271,12 +244,20 @@ PCW.correctWord = function(anchor) {
 	api.sid = PCW.getSid();
 	api.setupForCorrectWord(ids[0], ids[1], ids[2], ids[3], correction);
 	api.run(function(res) {
-		const elem = document.getElementById(inputid);
+		var elem = document.getElementById(inputid);
 		elem.value = res.cor;
-		if (res.isFullyCorrected) {
-			elem.className += " fully-corrected-line";
-		} else {
-			elem.className += " partially-corrected-line";
-		}
+		PCW.setupCorrectedInputField(elem, res);
+	});
+};
+
+PCW.correctLine = function(anchor) {
+	const ids = getIds(anchor);
+	const correction = document.getElementById(anchor).value;
+	var api = Object.create(PCW.Api);
+	api.sid = PCW.getSid();
+	api.setupForCorrectLine(ids[0], ids[1], ids[2], correction);
+	api.run(function(res) {
+		var elem = document.getElementById(anchor);
+		PCW.setupCorrectedInputField(elem, res);
 	});
 };

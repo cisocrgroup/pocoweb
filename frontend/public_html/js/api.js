@@ -43,6 +43,14 @@ PCW.Api = {
 		    PCW.config.backend.routes['correct_line'];
 		this.expectStatus = 200;
 	},
+	setupForCorrectLine: function(pid, p, lid, c) {
+		this.method = "POST";
+		this.post =
+		    {projectId: pid, pageId: p, lineId: lid, correction: c};
+		this.url = PCW.config.backend.url +
+		    PCW.config.backend.routes['correct_line'];
+		this.expectStatus = 200;
+	},
 	run: function(callback) {
 		var http = new XMLHttpRequest();
 		var that = this;
