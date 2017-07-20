@@ -11,14 +11,15 @@
     <link rel="stylesheet" type="text/css" href="css/pcw.css"/>
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/pcw.js"></script>
 	<script type="text/javascript" src="js/config.js"></script>
+    <script type="text/javascript" src="js/pcw.js"></script>
+    <script type="text/javascript" src="js/api.js"></script>
 	<script type="text/javascript" src="https://unpkg.com/xregexp@3.2.0/xregexp-all.js"></script>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
     <title>PoCoWeb - Post Correction Web</title>
 </head>
-
-<body>
+<!-- <body onload='pcw.setApiVersion();pcw.setLoggedInUser();'> -->
+<body onload='pcw.setApiVersion();'>
 <div class="container-fluid">
     <div id="pocweb-header">
     <div class="row">
@@ -39,7 +40,12 @@
 			}
 			?>
 		    </ul>
-		    <ul class="nav navbar-nav navbar-right">
+			<ul class="nav navbar-nav navbar-right">
+			<!-- MAYBE Later ...
+				<li id='pcw-login'>
+					<a href="login.php">Login</a>
+				</li>
+			-->
 <?php
 require_once(dirname(dirname(__FILE__)) . "/config.php");
 require_once(LIBRARY_PATH . "/backend.php");
@@ -52,14 +58,13 @@ if ($USER !== NULL) {
 } else {
     echo('<li><a href="login.php">Login</a></li>');
 }
-$version = '<span class="glyphicon glyphicon-warning-sign"/>';
-global $API;
-if ($API != "") {
-	$version = $API;
-}
-echo '<li><p class="navbar-text">Api-Version: ', $version, '</p></li>';
 ?>
-		    </ul>
+			<li>
+				<p id="pcw-api-version" class="navbar-text">
+					Api-Version: <span class="glyphicon glyphicon-warning-sign"/>
+				</p>
+			</li>
+		</ul>
     </div>
 </div>
 <?php

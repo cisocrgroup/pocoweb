@@ -36,161 +36,15 @@ $(function() {
 
 });
 
-function sprintf(fmt) {
-	var res = "";
-	var j = 1;
-	for (i = 0; i < fmt.length; i++) {
-		if (fmt[i] === '%') {
-			if ((i + 1) < fmt.length) {
-				i++;
-				if (fmt[i] === '%') {
-					res += '%';
-				} else {
-					res += arguments[j++];
-				}
-			} else {
-				res += fmt[i];
-			}
-		} else {
-			res += fmt[i];
-		}
+pcw.getIds = function(anchor) {
+	var ids = anchor.split('-');
+	for (var i = 0; i < ids.length; i++) {
+		ids[i] = parseInt(ids[i]);
 	}
-	return res;
-}
-
-function getNumberOfConcordances(sid, pid, q, callback) {
-	var http = new XMLHttpRequest();
-	http.onreadystatechange = function() {
-		if (http.readyState === 4 && http.status === 200) {
-			callback(JSON.parse(http.responseText));
-		} else if (http.readyState === 4 && http.status !== 200) {
-			console.error(
-			    "backend returned status: " + http.status);
-		}
-	};
-	var url =
-	    sprintf(config.backend.url + config.backend.routes.search, pid, q);
-	console.log(
-	    "requesting concordances from url: " + url + " [" + sid + "]");
-	http.open("GET", url, true);
-	http.setRequestHeader("Authorization", sid);
-	http.send(null);
-}
-
-function getSelectedWordFromInputElement(elem) {
-	if (elem !== null && elem.tagName === "INPUT" && elem.type === "text") {
-		var b = elem.selectionStart;
-		var e = elem.selectionEnd;
-		const regex = XRegExp('^\\PL*(.*?)\\PL*$');
-		if ((e - b) > 0) {
-			var m = regex.exec(elem.value.substring(b, e));
-			return m[1];
-		}
-	}
-	return null;
-}
-
-function messageSelectWordFromInputElement(sid, anchor) {
-	var ids = getIds(anchor);
-	var selection =
-	    getSelectedWordFromInputElement(document.getElementById(anchor));
-	if (selection !== null) {
-		document.getElementById("concordance-search-label").value =
-		    selection;
-		getNumberOfConcordances(sid, ids[0], selection, function(res) {
-			var searchbutton =
-			    document.getElementById("concordance-search-label");
-			setupConcordanceSearchButton(ids[0], searchbutton, res);
-		});
-	}
-}
-
-function setupConcordanceSearchButton(pid, button, obj) {
-	var n = obj.nWords;
-	var occurrences = "occurrences";
-	if (n === 1) {
-		occurrences = "occurrence";
-	}
-	button.innerHTML = "Show concordance of '" + obj.query + "' (" + n +
-	    " " + occurrences + ")";
-	button.parentNode.setAttribute(
-	    "href",
-	    "concordance.php?pid=" + pid + "&q=" + encodeURI(obj.query));
-}
-
-function getIds(anchor) {
-	return anchor.split('-');
-}
-
-function toId(ids) {
-	return ids.join('-');
+	return ids;
 };
 
-function correctLine(sid, anchor) {
-	var correction = document.getElementById(anchor).value;
-	var ids = getIds(anchor);
-	correctLineImpl(sid, ids[0], ids[1], ids[2], correction, function(res) {
-		var elem = document.getElementById(anchor);
-		elem.value = res.cor;
-		elem.className += " corrected-line";
-	});
-}
-
-function correctLineImpl(sid, pid, p, lid, correction, callback) {
-	var http = new XMLHttpRequest();
-	http.onreadystatechange = function() {
-		if (http.readyState === 4 && http.status === 200) {
-			callback(JSON.parse(http.responseText));
-		} else if (http.readyState === 4 && http.status !== 200) {
-			console.error(
-			    "backend returned status: " + http.status);
-		}
-	};
-	var url = config.backend.url + config.backend.routes["correct_line"];
-	console.log("sending correction to url: " + url + " [" + sid + "]");
-	http.open("POST", url, true);
-	http.setRequestHeader("Authorization", sid);
-	http.setRequestHeader(
-	    "Content-type", "application/json; charset=UTF-8");
-	const data = {
-		"correction": correction,
-		"projectId": parseInt(pid),
-		"pageId": parseInt(p),
-		"lineId": parseInt(lid)
-	};
-	http.send(JSON.stringify(data));
-}
-
-var PCW = {};
-PCW.correctAllLines = function(sid) {
-	console.log("correctAllLines [" + sid + "]");
-	const regex = /(\d+)-(\d+)-(\d+)/;
-	// iterate over all input nodes
-	var items = document.getElementsByTagName("input");
-	var ids = [];
-	for (var i = 0; i < items.length; i++) {
-		if (regex.test(items[i].id)) {
-			ids = getIds(items[i].id);
-			correctLineImpl(
-			    sid, ids[0], ids[1], ids[2], items[i].value,
-			    function(res) {
-				    var elem = document.getElementById(
-					res.projectId + "-" + res.pageId + "-" +
-					res.lineId);
-				    elem.value = res.cor;
-				    if (res.isFullyCorrected) {
-					    elem.className +=
-						" fully-corrected-line";
-				    } else if (res.isPartiallyCorrected) {
-					    elem.className +=
-						" partially-corrected-line";
-				    }
-			    });
-		}
-	}
-};
-
-PCW.toggleSelectionOfConcordanceTokens = function() {
+pcw.toggleSelectionOfConcordanceTokens = function() {
 	var items = document.getElementsByTagName("input");
 	for (var i = 0; i < items.length; i++) {
 		if (items[i].type === "checkbox") {
@@ -199,14 +53,14 @@ PCW.toggleSelectionOfConcordanceTokens = function() {
 	}
 };
 
-PCW.setGlobalCorrectionSuggestion = function(suggestion) {
+pcw.setGlobalCorrectionSuggestion = function(suggestion) {
 	var elem = document.getElementById("global-correction-suggestion");
 	if (elem !== null) {
 		elem.value = suggestion;
 	}
 };
 
-PCW.setCorrectionSuggestionForAllSelectedConcordanceTokens = function() {
+pcw.setCorrectionSuggestionForAllSelectedConcordanceTokens = function() {
 	var suggestion =
 	    document.getElementById("global-correction-suggestion");
 	var items = document.getElementsByTagName("input");
@@ -227,46 +81,156 @@ PCW.setCorrectionSuggestionForAllSelectedConcordanceTokens = function() {
 	}
 };
 
-PCW.correctWordImpl = function(sid, pid, p, lid, tid, correction, callback) {
-	var http = new XMLHttpRequest();
-	http.onreadystatechange = function() {
-		if (http.readyState === 4 && http.status === 200) {
-			callback(JSON.parse(http.responseText));
-		} else if (http.readyState === 4 && http.status !== 200) {
-			console.error(
-			    "backend returned status: " + http.status);
+pcw.getSidImpl = function() {
+	const name = "pcw-sid=";
+	var cookies = document.cookie.split(';');
+	for (var i = 0; i < cookies.length; i++) {
+		var c = cookies[i];
+		while (c.charAt(0) == ' ') {
+			c = c.substring(1, c.length);
 		}
-	};
-	var url = config.backend.url + config.backend.routes["correct_line"];
-	console.log("sending correction to url: " + url + " [" + sid + "]");
-	http.open("POST", url, true);
-	http.setRequestHeader("Authorization", sid);
-	http.setRequestHeader(
-	    "Content-type", "application/json; charset=UTF-8");
-	const data = {
-		"correction": correction,
-		"projectId": parseInt(pid),
-		"pageId": parseInt(p),
-		"lineId": parseInt(lid),
-		"tokenId": parseInt(tid)
-	};
-	http.send(JSON.stringify(data));
+		if (c.indexOf(name) == 0) {
+			return c.substring(name.length, c.length);
+		}
+		return null;
+	}
 };
 
-PCW.correctWord = function(sid, id) {
-	const ids = getIds(id);
-	const correction =
-	    document.getElementById("concordance-token-input-" + id).value;
+pcw.getSid = function() {
+	var sid = pcw.config.sid || pcw.getSidImpl();
+	pcw.config.sid = sid;
+	return sid;
+};
 
-	PCW.correctWordImpl(
-	    sid, ids[0], ids[1], ids[2], ids[3], correction, function(res) {
-		    const elem = document.getElementById(
-			'concordance-token-input-' + id);
-		    elem.value = res.cor;
-		    if (res.isFullyCorrected) {
-			    elem.className += " fully-corrected-line";
-		    } else if (re.isPartiallyCorrected) {
-			    elem.className == " partially-corrected-line";
-		    }
-	    });
+pcw.setApiVersion = function() {
+	api = Object.create(pcw.Api);
+	api.setupForGetVersion();
+	api.run(function(res) {
+		const elem = document.getElementById('pcw-api-version');
+		if (elem !== null) {
+			elem.innerHTML = 'Api-Version: ' + res.version;
+		}
+	});
+};
+
+pcw.setLoggedInUserImpl = function(user) {
+	console.log("user: " + JSON.stringify(user));
+	var elem = document.getElementById('pcw-login');
+	var li1 = document.createElement("li");
+	var li2 = document.createElement("li");
+	var p = document.createElement("p");
+	var a = document.createElement("a");
+	var t1 = document.createTextNode("Logged in as user: " + user.name);
+	var t2 = document.createTextNode("Logout");
+	p.className = "navbar-text";
+	a.href = "logout.php";
+	p.appendChild(t1);
+	a.appendChild(t2);
+	li1.appendChild(p);
+	li2.appendChild(a);
+	elem.parentNode.insertBefore(li1, elem);
+	elem.parentNode.insertBefore(li2, elem);
+	elem.parentNode.removeChild(elem);
+	pcw.config.user = user;
+};
+
+pcw.setLoggedInUser = function() {
+	var user = pcw.config.user || null;
+	if (user === null) {
+		var api = Object.create(pcw.Api);
+		api.sid = pcw.getSid();
+		api.setupForGetLoggedInUser();
+		api.run(pcw.setLoggedInUserImpl);
+	} else {
+		pcw.setLoggedInUserImpl(user);
+	}
+};
+
+pcw.setupCorrectedInputField = function(elem, res) {
+	elem.value = res.cor;
+	if (res.isFullyCorrected) {
+		elem.className += " fully-corrected-line";
+	} else if (res.isPartiallyCorrected) {
+		elem.className += " partially-corrected-line";
+	}
+};
+
+pcw.correctWord = function(anchor) {
+	const ids = pcw.getIds(anchor);
+	const inputid = "concordance-token-input-" + anchor;
+	const correction = document.getElementById(inputid).value;
+	var api = Object.create(pcw.Api);
+	api.sid = pcw.getSid();
+	api.setupForCorrectWord(ids[0], ids[1], ids[2], ids[3], correction);
+	api.run(function(res) {
+		var elem = document.getElementById(inputid);
+		elem.value = res.cor;
+		pcw.setupCorrectedInputField(elem, res);
+	});
+};
+
+pcw.correctLine = function(anchor) {
+	const ids = pcw.getIds(anchor);
+	const correction = document.getElementById(anchor).value;
+	var api = Object.create(pcw.Api);
+	api.sid = pcw.getSid();
+	api.setupForCorrectLine(ids[0], ids[1], ids[2], correction);
+	api.run(function(res) {
+		var elem = document.getElementById(anchor);
+		pcw.setupCorrectedInputField(elem, res);
+	});
+};
+
+pcw.correctAllLines = function(sid) {
+	const regex = /(\d+)-(\d+)-(\d+)/;
+	// iterate over all input nodes
+	var items = document.getElementsByTagName("input");
+	var ids = [];
+	for (var i = 0; i < items.length; i++) {
+		if (regex.test(items[i].id)) {
+			ids = pcw.getIds(items[i].id);
+			pcw.correctLine(items[i].id);
+		}
+	}
+};
+
+pcw.getSelectedWordFromInputElement = function(elem) {
+	if (elem !== null && elem.tagName === "INPUT" && elem.type === "text") {
+		var b = elem.selectionStart;
+		var e = elem.selectionEnd;
+		// we need unicode aware regexes to handle words like `ſunt` ...
+		const regex = XRegExp('^\\PL*(.*?)\\PL*$');
+		if ((e - b) > 0) {
+			var m = regex.exec(elem.value.substring(b, e));
+			return m[1];
+		}
+	}
+	return null;
+};
+
+pcw.displayConcordance = function(anchor) {
+	const pid = pcw.getIds(anchor)[0];
+	const selection = pcw.getSelectedWordFromInputElement(
+	    document.getElementById(anchor));
+	if (selection !== null) {
+		document.getElementById("concordance-search-label").value =
+		    selection;
+		var api = Object.create(pcw.Api);
+		api.sid = pcw.getSid();
+		api.setupForGetConcordance(pid, selection);
+		api.run(function(res) {
+			var searchButton =
+			    document.getElementById('concordance-search-label');
+			const n = res.nWords;
+			var ocs = "occurrences";
+			if (n === 1) {
+				ocs = "occurrence";
+			}
+			searchButton.innerHTML = 'Show concordance of "' +
+			    res.query + '" (' + n + ' ' + ocs + ')';
+			searchButton.parentNode.setAttribute(
+			    "href", "concordance.php?pid=" + pid + "&q=" +
+				encodeURI(res.query));
+		});
+	}
 };
