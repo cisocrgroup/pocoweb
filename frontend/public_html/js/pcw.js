@@ -196,7 +196,7 @@ PCW.displayConcordance = function(anchor) {
 			searchButton.innerHTML = 'Show concordance of "' +
 			    res.query + '" (' + n + ' ' + ocs + ')';
 			searchButton.parentNode.setAttribute(
-			    "href", "conordance.php?pid=" + pid + "&q=" +
+			    "href", "concordance.php?pid=" + pid + "&q=" +
 				encodeURI(res.query));
 		});
 	}
