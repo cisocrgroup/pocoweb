@@ -494,7 +494,7 @@ function frontend_render_page_line_div($line) {
 	echo '<div class="input-group">', "\n";
 	echo '<input id="', $anchor, '" class="form-control', $inputclass,
 		'" type="text" size="', strlen($d), '" value="', $d, '" ',
-		'onclick=\'messageSelectWordFromInputElement("', $SID, '", "', $anchor, '");\'',
+		'onclick=\'PCW.displayConcordance("', $anchor, '");\'',
 		'/>', "\n";
 	echo '<span class="input-group-btn">', "\n";
 	echo '<button id="', $anchor, '-btn" class="btn btn-default" title="correct line #',

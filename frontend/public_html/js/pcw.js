@@ -36,88 +36,6 @@ $(function() {
 
 });
 
-function sprintf(fmt) {
-	var res = "";
-	var j = 1;
-	for (i = 0; i < fmt.length; i++) {
-		if (fmt[i] === '%') {
-			if ((i + 1) < fmt.length) {
-				i++;
-				if (fmt[i] === '%') {
-					res += '%';
-				} else {
-					res += arguments[j++];
-				}
-			} else {
-				res += fmt[i];
-			}
-		} else {
-			res += fmt[i];
-		}
-	}
-	return res;
-}
-
-function getNumberOfConcordances(sid, pid, q, callback) {
-	var http = new XMLHttpRequest();
-	http.onreadystatechange = function() {
-		if (http.readyState === 4 && http.status === 200) {
-			callback(JSON.parse(http.responseText));
-		} else if (http.readyState === 4 && http.status !== 200) {
-			console.error(
-			    "backend returned status: " + http.status);
-		}
-	};
-	var url = sprintf(
-	    PCW.config.backend.url + PCW.config.backend.routes.search, pid, q);
-	console.log(
-	    "requesting concordances from url: " + url + " [" + sid + "]");
-	http.open("GET", url, true);
-	http.setRequestHeader("Authorization", sid);
-	http.send(null);
-}
-
-function getSelectedWordFromInputElement(elem) {
-	if (elem !== null && elem.tagName === "INPUT" && elem.type === "text") {
-		var b = elem.selectionStart;
-		var e = elem.selectionEnd;
-		const regex = XRegExp('^\\PL*(.*?)\\PL*$');
-		if ((e - b) > 0) {
-			var m = regex.exec(elem.value.substring(b, e));
-			return m[1];
-		}
-	}
-	return null;
-}
-
-function messageSelectWordFromInputElement(sid, anchor) {
-	var ids = getIds(anchor);
-	var selection =
-	    getSelectedWordFromInputElement(document.getElementById(anchor));
-	if (selection !== null) {
-		document.getElementById("concordance-search-label").value =
-		    selection;
-		getNumberOfConcordances(sid, ids[0], selection, function(res) {
-			var searchbutton =
-			    document.getElementById("concordance-search-label");
-			setupConcordanceSearchButton(ids[0], searchbutton, res);
-		});
-	}
-}
-
-function setupConcordanceSearchButton(pid, button, obj) {
-	var n = obj.nWords;
-	var occurrences = "occurrences";
-	if (n === 1) {
-		occurrences = "occurrence";
-	}
-	button.innerHTML = "Show concordance of '" + obj.query + "' (" + n +
-	    " " + occurrences + ")";
-	button.parentNode.setAttribute(
-	    "href",
-	    "concordance.php?pid=" + pid + "&q=" + encodeURI(obj.query));
-}
-
 function getIds(anchor) {
 	var ids = anchor.split('-');
 	for (var i = 0; i < ids.length; i++) {
@@ -244,5 +162,46 @@ PCW.correctAllLines = function(sid) {
 			ids = getIds(items[i].id);
 			PCW.correctLine(items[i].id);
 		}
+	}
+};
+
+PCW.getSelectedWordFromInputElement = function(elem) {
+	if (elem !== null && elem.tagName === "INPUT" && elem.type === "text") {
+		var b = elem.selectionStart;
+		var e = elem.selectionEnd;
+		// we need unicode aware regexes to handle words like `ſunt` ...
+		const regex = XRegExp('^\\PL*(.*?)\\PL*$');
+		if ((e - b) > 0) {
+			var m = regex.exec(elem.value.substring(b, e));
+			return m[1];
+		}
+	}
+	return null;
+};
+
+PCW.displayConcordance = function(anchor) {
+	const pid = getIds(anchor)[0];
+	const selection = PCW.getSelectedWordFromInputElement(
+	    document.getElementById(anchor));
+	if (selection !== null) {
+		document.getElementById("concordance-search-label").value =
+		    selection;
+		var api = Object.create(PCW.Api);
+		api.sid = PCW.getSid();
+		api.setupForGetConcordance(pid, selection);
+		api.run(function(res) {
+			var searchButton =
+			    document.getElementById('concordance-search-label');
+			const n = res.nWords;
+			var ocs = "occurrences";
+			if (n === 1) {
+				ocs = "occurrence";
+			}
+			searchButton.innerHTML = 'Show concordance of "' +
+			    res.query + '" (' + n + ' ' + ocs + ')';
+			searchButton.parentNode.setAttribute(
+			    "href", "conordance.php?pid=" + pid + "&q=" +
+				encodeURI(res.query));
+		});
 	}
 };

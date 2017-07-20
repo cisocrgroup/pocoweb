@@ -51,6 +51,15 @@ PCW.Api = {
 		    PCW.config.backend.routes['correct_line'];
 		this.expectStatus = 200;
 	},
+	setupForGetConcordance: function(pid, q) {
+		this.method = "GET";
+		this.post = null;
+		this.url =
+		    PCW.config.backend.url + PCW.config.backend.routes.search;
+		this.url = this.url.replace('%d', pid);
+		this.url = this.url.replace('%s', q);
+		this.expectStatus = 200;
+	},
 	run: function(callback) {
 		var http = new XMLHttpRequest();
 		var that = this;
