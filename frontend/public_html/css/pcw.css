@@ -30,7 +30,7 @@ a.line-anchor {
 }
 
 input.partially-corrected-line {
-	background-color: lightgrey;
+	background-color: #fcf8e3;
 }
 
 input.fully-corrected-line {
