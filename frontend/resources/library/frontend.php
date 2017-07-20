@@ -571,7 +571,7 @@ function frontend_render_concordance_line_div($line, $word) {
 		echo '<span class="input-group-btn">', "\n";
 		echo '<button id="concordance-token-btn-', $anchor, '" ',
 			'class="btn btn-default" title="correct token" ',
-			'onclick=\'PCW.correctWord("', $SID, '","', $anchor, '");\' >',
+			'onclick=\'PCW.correctWord("', $anchor, '");\' >',
 			"\n";
 		echo '<span class="glyphicon glyphicon-upload" />';
 		echo '</button>';

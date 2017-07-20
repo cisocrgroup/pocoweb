@@ -119,7 +119,11 @@ function setupConcordanceSearchButton(pid, button, obj) {
 }
 
 function getIds(anchor) {
-	return anchor.split('-');
+	var ids = anchor.split('-');
+	for (var i = 0; i < ids.length; i++) {
+		ids[i] = parseInt(ids[i]);
+	}
+	return ids;
 }
 
 function toId(ids) {
@@ -227,52 +231,7 @@ PCW.setCorrectionSuggestionForAllSelectedConcordanceTokens = function() {
 	}
 };
 
-PCW.correctWordImpl = function(sid, pid, p, lid, tid, correction, callback) {
-	var http = new XMLHttpRequest();
-	http.onreadystatechange = function() {
-		if (http.readyState === 4 && http.status === 200) {
-			callback(JSON.parse(http.responseText));
-		} else if (http.readyState === 4 && http.status !== 200) {
-			console.error(
-			    "backend returned status: " + http.status);
-		}
-	};
-	var url =
-	    PCW.config.backend.url + PCW.config.backend.routes["correct_line"];
-	console.log("sending correction to url: " + url + " [" + sid + "]");
-	http.open("POST", url, true);
-	http.setRequestHeader("Authorization", sid);
-	http.setRequestHeader(
-	    "Content-type", "application/json; charset=UTF-8");
-	const data = {
-		"correction": correction,
-		"projectId": parseInt(pid),
-		"pageId": parseInt(p),
-		"lineId": parseInt(lid),
-		"tokenId": parseInt(tid)
-	};
-	http.send(JSON.stringify(data));
-};
-
-PCW.correctWord = function(sid, id) {
-	const ids = getIds(id);
-	const correction =
-	    document.getElementById("concordance-token-input-" + id).value;
-
-	PCW.correctWordImpl(
-	    sid, ids[0], ids[1], ids[2], ids[3], correction, function(res) {
-		    const elem = document.getElementById(
-			'concordance-token-input-' + id);
-		    elem.value = res.cor;
-		    if (res.isFullyCorrected) {
-			    elem.className += " fully-corrected-line";
-		    } else if (re.isPartiallyCorrected) {
-			    elem.className == " partially-corrected-line";
-		    }
-	    });
-};
-
-PCW.getSid = function() {
+PCW.getSidImpl = function() {
 	const name = "pcw-sid=";
 	var cookies = document.cookie.split(';');
 	for (var i = 0; i < cookies.length; i++) {
@@ -287,6 +246,12 @@ PCW.getSid = function() {
 	}
 };
 
+PCW.getSid = function() {
+	var sid = PCW.config.sid || PCW.getSidImpl();
+	PCW.config.sid = sid;
+	return sid;
+};
+
 PCW.setApiVersion = function() {
 	api = Object.create(PCW.Api);
 	api.setupForGetVersion();
@@ -294,6 +259,24 @@ PCW.setApiVersion = function() {
 		const elem = document.getElementById('pcw-api-version');
 		if (elem !== null) {
 			elem.innerHTML = 'Api-Version: ' + res.version;
+		}
+	});
+};
+
+PCW.correctWord = function(anchor) {
+	const ids = getIds(anchor);
+	const inputid = "concordance-token-input-" + anchor;
+	const correction = document.getElementById(inputid).value;
+	var api = Object.create(PCW.Api);
+	api.sid = PCW.getSid();
+	api.setupForCorrectWord(ids[0], ids[1], ids[2], ids[3], correction);
+	api.run(function(res) {
+		const elem = document.getElementById(inputid);
+		elem.value = res.cor;
+		if (res.isFullyCorrected) {
+			elem.className += " fully-corrected-line";
+		} else {
+			elem.className += " partially-corrected-line";
 		}
 	});
 };

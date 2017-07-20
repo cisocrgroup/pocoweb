@@ -30,6 +30,19 @@ PCW.Api = {
 		    PCW.config.backend.routes['api_version'];
 		this.expectStatus = 200;
 	},
+	setupForCorrectWord: function(pid, p, lid, tid, c) {
+		this.method = "POST";
+		this.post = {
+			projectId: pid,
+			pageId: p,
+			lineId: lid,
+			tokenId: tid,
+			correction: c
+		};
+		this.url = PCW.config.backend.url +
+		    PCW.config.backend.routes['correct_line'];
+		this.expectStatus = 200;
+	},
 	run: function(callback) {
 		var http = new XMLHttpRequest();
 		var that = this;
@@ -52,6 +65,10 @@ PCW.Api = {
 		this.log(
 		    "sending request: " + this.formatRequest() + " data: " +
 		    JSON.stringify(this.post));
-		http.send(this.post);
+		if (this.method === "POST" && this.post !== null) {
+			http.send(JSON.stringify(this.post));
+		} else {
+			http.send(null);
+		}
 	}
 };
