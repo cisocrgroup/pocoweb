@@ -494,11 +494,11 @@ function frontend_render_page_line_div($line) {
 	echo '<div class="input-group">', "\n";
 	echo '<input id="', $anchor, '" class="form-control', $inputclass,
 		'" type="text" size="', strlen($d), '" value="', $d, '" ',
-		'onclick=\'PCW.displayConcordance("', $anchor, '");\'',
+		'onclick=\'pcw.displayConcordance("', $anchor, '");\'',
 		'/>', "\n";
 	echo '<span class="input-group-btn">', "\n";
 	echo '<button id="', $anchor, '-btn" class="btn btn-default" title="correct line #',
-		$lid, '" onclick=\'PCW.correctLine("', $anchor, '");\' >', "\n";
+		$lid, '" onclick=\'pcw.correctLine("', $anchor, '");\' >', "\n";
 	echo '<span class="glyphicon glyphicon-upload" />';
 	echo '</button>', "\n";
 	echo '</span>', "\n";
@@ -510,7 +510,7 @@ function frontend_render_page_correct_all_div($page) {
 	global $SID;
 	echo '<div id="correct-all-lines">', "\n";
 	echo '<button id="correct-all-lines-btn" class="btn btn-default" title="correct all lines"',
-		'onclick=\'PCW.correctAllLines("', $SID, '");\'>';
+		'onclick=\'pcw.correctAllLines("', $SID, '");\'>';
 	echo 'Correct all';
 	echo '</button', "\n";
 	echo '</div>';
@@ -571,7 +571,7 @@ function frontend_render_concordance_line_div($line, $word) {
 		echo '<span class="input-group-btn">', "\n";
 		echo '<button id="concordance-token-btn-', $anchor, '" ',
 			'class="btn btn-default" title="correct token" ',
-			'onclick=\'PCW.correctWord("', $anchor, '");\' >',
+			'onclick=\'pcw.correctWord("', $anchor, '");\' >',
 			"\n";
 		echo '<span class="glyphicon glyphicon-upload" />';
 		echo '</button>';
@@ -608,7 +608,7 @@ function frontend_render_concordance_header_div() {
 	echo '<div class="input-group">', "\n";
 	echo '<span class="input-group-btn">';
 	echo '<button id="foobar" class="btn btn-default" title="Toggle selection" ',
-		'onclick="PCW.toggleSelectionOfConcordanceTokens()">';
+		'onclick="pcw.toggleSelectionOfConcordanceTokens()">';
 	echo 'Toggle selection';
 	echo '</button>';
 	echo '</span>';
@@ -616,7 +616,7 @@ function frontend_render_concordance_header_div() {
 		'class="form-control" type="text" placeholder="Correction"/>';
 	echo '<span class="input-group-btn">', "\n";
 	echo '<button id="foobar" class="btn btn-default" title="Correct selected tokens" ',
-		'onclick=\'PCW.setCorrectionSuggestionForAllSelectedConcordanceTokens();\'', ">\n";
+		'onclick=\'pcw.setCorrectionSuggestionForAllSelectedConcordanceTokens();\'', ">\n";
 	// echo '<span class="glyphicon glyphicon-upload" />';
 	echo 'Correct selected tokens';
 	echo '</button>';
@@ -631,13 +631,13 @@ function frontend_render_concordance_header_div() {
 		'aria-haspopup="true" aria-expanded="false">',
 		'Correction suggestions<span class="caret"></span></a>';
         echo '<ul class="dropdown-menu">';
-	echo '<li><a onclick=\'PCW.setGlobalCorrectionSuggestion("#1");\' ',
+	echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#1");\' ',
 		'href="#">Correction suggestion #1</a></li>', "\n";
-	echo '<li><a onclick=\'PCW.setGlobalCorrectionSuggestion("#2");\' ',
+	echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#2");\' ',
 		'href="#">Correction suggestion #2</a></li>', "\n";
-	echo '<li><a onclick=\'PCW.setGlobalCorrectionSuggestion("#3");\' ',
+	echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#3");\' ',
 		'href="#">Correction suggestion #3</a></li>', "\n";
-	echo '<li><a onclick=\'PCW.setGlobalCorrectionSuggestion("#4");\' ',
+	echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#4");\' ',
 		'href="#">Correction suggestion #4</a></li>', "\n";
         // echo '<li role="separator" class="divider"></li>';
         echo '</ul>';

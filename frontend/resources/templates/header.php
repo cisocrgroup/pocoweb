@@ -18,7 +18,7 @@
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
     <title>PoCoWeb - Post Correction Web</title>
 </head>
-<body onload='PCW.setApiVersion();'>
+<body onload='pcw.setApiVersion();'>
 <div class="container-fluid">
     <div id="pocweb-header">
     <div class="row">

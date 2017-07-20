@@ -36,7 +36,7 @@ $(function() {
 
 });
 
-PCW.getIds = function(anchor) {
+pcw.getIds = function(anchor) {
 	var ids = anchor.split('-');
 	for (var i = 0; i < ids.length; i++) {
 		ids[i] = parseInt(ids[i]);
@@ -44,7 +44,7 @@ PCW.getIds = function(anchor) {
 	return ids;
 };
 
-PCW.toggleSelectionOfConcordanceTokens = function() {
+pcw.toggleSelectionOfConcordanceTokens = function() {
 	var items = document.getElementsByTagName("input");
 	for (var i = 0; i < items.length; i++) {
 		if (items[i].type === "checkbox") {
@@ -53,14 +53,14 @@ PCW.toggleSelectionOfConcordanceTokens = function() {
 	}
 };
 
-PCW.setGlobalCorrectionSuggestion = function(suggestion) {
+pcw.setGlobalCorrectionSuggestion = function(suggestion) {
 	var elem = document.getElementById("global-correction-suggestion");
 	if (elem !== null) {
 		elem.value = suggestion;
 	}
 };
 
-PCW.setCorrectionSuggestionForAllSelectedConcordanceTokens = function() {
+pcw.setCorrectionSuggestionForAllSelectedConcordanceTokens = function() {
 	var suggestion =
 	    document.getElementById("global-correction-suggestion");
 	var items = document.getElementsByTagName("input");
@@ -81,7 +81,7 @@ PCW.setCorrectionSuggestionForAllSelectedConcordanceTokens = function() {
 	}
 };
 
-PCW.getSidImpl = function() {
+pcw.getSidImpl = function() {
 	const name = "pcw-sid=";
 	var cookies = document.cookie.split(';');
 	for (var i = 0; i < cookies.length; i++) {
@@ -96,14 +96,14 @@ PCW.getSidImpl = function() {
 	}
 };
 
-PCW.getSid = function() {
-	var sid = PCW.config.sid || PCW.getSidImpl();
-	PCW.config.sid = sid;
+pcw.getSid = function() {
+	var sid = pcw.config.sid || pcw.getSidImpl();
+	pcw.config.sid = sid;
 	return sid;
 };
 
-PCW.setApiVersion = function() {
-	api = Object.create(PCW.Api);
+pcw.setApiVersion = function() {
+	api = Object.create(pcw.Api);
 	api.setupForGetVersion();
 	api.run(function(res) {
 		const elem = document.getElementById('pcw-api-version');
@@ -113,7 +113,7 @@ PCW.setApiVersion = function() {
 	});
 };
 
-PCW.setupCorrectedInputField = function(elem, res) {
+pcw.setupCorrectedInputField = function(elem, res) {
 	elem.value = res.cor;
 	if (res.isFullyCorrected) {
 		elem.className += " fully-corrected-line";
@@ -122,46 +122,46 @@ PCW.setupCorrectedInputField = function(elem, res) {
 	}
 };
 
-PCW.correctWord = function(anchor) {
-	const ids = PCW.getIds(anchor);
+pcw.correctWord = function(anchor) {
+	const ids = pcw.getIds(anchor);
 	const inputid = "concordance-token-input-" + anchor;
 	const correction = document.getElementById(inputid).value;
-	var api = Object.create(PCW.Api);
-	api.sid = PCW.getSid();
+	var api = Object.create(pcw.Api);
+	api.sid = pcw.getSid();
 	api.setupForCorrectWord(ids[0], ids[1], ids[2], ids[3], correction);
 	api.run(function(res) {
 		var elem = document.getElementById(inputid);
 		elem.value = res.cor;
-		PCW.setupCorrectedInputField(elem, res);
+		pcw.setupCorrectedInputField(elem, res);
 	});
 };
 
-PCW.correctLine = function(anchor) {
-	const ids = PCW.getIds(anchor);
+pcw.correctLine = function(anchor) {
+	const ids = pcw.getIds(anchor);
 	const correction = document.getElementById(anchor).value;
-	var api = Object.create(PCW.Api);
-	api.sid = PCW.getSid();
+	var api = Object.create(pcw.Api);
+	api.sid = pcw.getSid();
 	api.setupForCorrectLine(ids[0], ids[1], ids[2], correction);
 	api.run(function(res) {
 		var elem = document.getElementById(anchor);
-		PCW.setupCorrectedInputField(elem, res);
+		pcw.setupCorrectedInputField(elem, res);
 	});
 };
 
-PCW.correctAllLines = function(sid) {
+pcw.correctAllLines = function(sid) {
 	const regex = /(\d+)-(\d+)-(\d+)/;
 	// iterate over all input nodes
 	var items = document.getElementsByTagName("input");
 	var ids = [];
 	for (var i = 0; i < items.length; i++) {
 		if (regex.test(items[i].id)) {
-			ids = PCW.getIds(items[i].id);
-			PCW.correctLine(items[i].id);
+			ids = pcw.getIds(items[i].id);
+			pcw.correctLine(items[i].id);
 		}
 	}
 };
 
-PCW.getSelectedWordFromInputElement = function(elem) {
+pcw.getSelectedWordFromInputElement = function(elem) {
 	if (elem !== null && elem.tagName === "INPUT" && elem.type === "text") {
 		var b = elem.selectionStart;
 		var e = elem.selectionEnd;
@@ -175,15 +175,15 @@ PCW.getSelectedWordFromInputElement = function(elem) {
 	return null;
 };
 
-PCW.displayConcordance = function(anchor) {
-	const pid = PCW.getIds(anchor)[0];
-	const selection = PCW.getSelectedWordFromInputElement(
+pcw.displayConcordance = function(anchor) {
+	const pid = pcw.getIds(anchor)[0];
+	const selection = pcw.getSelectedWordFromInputElement(
 	    document.getElementById(anchor));
 	if (selection !== null) {
 		document.getElementById("concordance-search-label").value =
 		    selection;
-		var api = Object.create(PCW.Api);
-		api.sid = PCW.getSid();
+		var api = Object.create(pcw.Api);
+		api.sid = pcw.getSid();
 		api.setupForGetConcordance(pid, selection);
 		api.run(function(res) {
 			var searchButton =

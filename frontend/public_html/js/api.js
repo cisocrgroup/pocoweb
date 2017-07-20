@@ -6,7 +6,7 @@ if (typeof Object.create !== 'function') {
 	};
 }
 
-PCW.Api = {
+pcw.Api = {
 	sid: "",
 	post: null,
 	url: "",
@@ -19,15 +19,15 @@ PCW.Api = {
 		console.error(this.formatRequest() + " returned: " + status);
 	},
 	log: function(msg) {
-		if (PCW.config.frontend.debug) {
+		if (pcw.config.frontend.debug) {
 			console.log("(Api) " + msg);
 		}
 	},
 	setupForGetVersion: function() {
 		this.method = "GET";
 		this.post = null;
-		this.url = PCW.config.backend.url +
-		    PCW.config.backend.routes['api_version'];
+		this.url = pcw.config.backend.url +
+		    pcw.config.backend.routes['api_version'];
 		this.expectStatus = 200;
 	},
 	setupForCorrectWord: function(pid, p, lid, tid, c) {
@@ -39,23 +39,23 @@ PCW.Api = {
 			tokenId: tid,
 			correction: c
 		};
-		this.url = PCW.config.backend.url +
-		    PCW.config.backend.routes['correct_line'];
+		this.url = pcw.config.backend.url +
+		    pcw.config.backend.routes['correct_line'];
 		this.expectStatus = 200;
 	},
 	setupForCorrectLine: function(pid, p, lid, c) {
 		this.method = "POST";
 		this.post =
 		    {projectId: pid, pageId: p, lineId: lid, correction: c};
-		this.url = PCW.config.backend.url +
-		    PCW.config.backend.routes['correct_line'];
+		this.url = pcw.config.backend.url +
+		    pcw.config.backend.routes['correct_line'];
 		this.expectStatus = 200;
 	},
 	setupForGetConcordance: function(pid, q) {
 		this.method = "GET";
 		this.post = null;
 		this.url =
-		    PCW.config.backend.url + PCW.config.backend.routes.search;
+		    pcw.config.backend.url + pcw.config.backend.routes.search;
 		this.url = this.url.replace('%d', pid);
 		this.url = this.url.replace('%s', q);
 		this.expectStatus = 200;
