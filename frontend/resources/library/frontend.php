@@ -390,9 +390,9 @@ function frontend_render_users_table_header() {
 
 function frontend_get_correction_class($obj) {
 	if ($obj["isFullyCorrected"]) {
-		return " fully-corrected-line";
+		return " fully-corrected";
 	} else if ($obj["isPartiallyCorrected"]) {
-		return " partially-corrected-line";
+		return " partially-corrected";
 	}
 	return "";
 }
