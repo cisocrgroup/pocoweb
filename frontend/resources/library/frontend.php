@@ -388,6 +388,16 @@ function frontend_render_users_table_header() {
 	echo '</tr>', "\n";
 }
 
+function frontend_get_correction_class($obj) {
+	if ($obj["isFullyCorrected"]) {
+		return " fully-corrected-line";
+	} else if ($obj["isPartiallyCorrected"]) {
+		return " partially-corrected-line";
+	}
+	return "";
+}
+
+
 function frontend_render_page_view_div($pid, $p, $u, $post) {
 	$api = backend_get_page($pid, $p);
 	$status = $api->get_http_status_code();
@@ -475,13 +485,7 @@ function frontend_render_page_line_div($line) {
 	$text = "line $lid, $file";
 	$anchor = "$pid-$p-$lid";
 	$d = $line["cor"];
-	$inputclass = '';
-	if ($line["isFullyCorrected"]) {
-		$inputclass = ' fully-corrected-line';
-	} else if ($line["isPartiallyCorrected"]) {
-		$inputclass = ' partially-corrected-line';
-	}
-	// echo '<div id="', $anchor, '" class="line-view" title="', $text, '">';
+	$inputclass = frontend_get_correction_class($line);
 	echo '<div class="text-image-line" title="', $text, '">';
 	echo '<a class="line-anchor" id="line-anchor-', $anchor, '"></a>';
 	echo '<img src="', $imgfile, '"',
@@ -554,6 +558,7 @@ function frontend_render_concordance_line_div($line, $word) {
 	echo '</div>';
 	echo '<div class="col-md-2 col-xs-2">';
 	if ($images["middleImg"] != NULL) {
+		$inputclass = frontend_get_correction_class($word);
 		echo '<a class="invisible=link" href="', $link, '">';
 		echo '<img src="', $images["middleImg"],
 			'" width="auto" height="', $height,
@@ -566,7 +571,7 @@ function frontend_render_concordance_line_div($line, $word) {
 			'type="checkbox" aria-label="...">';
       		echo '</span>';
 		echo '<input id="concordance-token-input-', $anchor, '" ',
-			'class="form-control" type="text" value="',
+			'class="form-control', $inputclass, '" type="text" value="',
 			implode("", $wordcor), '" />';
 		echo '<span class="input-group-btn">', "\n";
 		echo '<button id="concordance-token-btn-', $anchor, '" ',
