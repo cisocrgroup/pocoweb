@@ -113,6 +113,39 @@ pcw.setApiVersion = function() {
 	});
 };
 
+pcw.setLoggedInUserImpl = function(user) {
+	console.log("user: " + JSON.stringify(user));
+	var elem = document.getElementById('pcw-login');
+	var li1 = document.createElement("li");
+	var li2 = document.createElement("li");
+	var p = document.createElement("p");
+	var a = document.createElement("a");
+	var t1 = document.createTextNode("Logged in as user: " + user.name);
+	var t2 = document.createTextNode("Logout");
+	p.className = "navbar-text";
+	a.href = "logout.php";
+	p.appendChild(t1);
+	a.appendChild(t2);
+	li1.appendChild(p);
+	li2.appendChild(a);
+	elem.parentNode.insertBefore(li1, elem);
+	elem.parentNode.insertBefore(li2, elem);
+	elem.parentNode.removeChild(elem);
+	pcw.config.user = user;
+};
+
+pcw.setLoggedInUser = function() {
+	var user = pcw.config.user || null;
+	if (user === null) {
+		var api = Object.create(pcw.Api);
+		api.sid = pcw.getSid();
+		api.setupForGetLoggedInUser();
+		api.run(pcw.setLoggedInUserImpl);
+	} else {
+		pcw.setLoggedInUserImpl(user);
+	}
+};
+
 pcw.setupCorrectedInputField = function(elem, res) {
 	elem.value = res.cor;
 	if (res.isFullyCorrected) {

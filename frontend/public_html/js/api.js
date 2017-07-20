@@ -30,6 +30,13 @@ pcw.Api = {
 		    pcw.config.backend.routes['api_version'];
 		this.expectStatus = 200;
 	},
+	setupForGetLoggedInUser: function() {
+		this.method = "GET";
+		this.post = null;
+		this.url =
+		    pcw.config.backend.url + pcw.config.backend.routes.login;
+		this.expectStatus = 200;
+	},
 	setupForCorrectWord: function(pid, p, lid, tid, c) {
 		this.method = "POST";
 		this.post = {
