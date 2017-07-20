@@ -38,6 +38,8 @@ class Line;
 using LineSptr = std::shared_ptr<Line>;
 class Session;
 using SessionLock = std::lock_guard<Session>;
+class SessionDirectory;
+using SessionDirectoryPtr = std::unique_ptr<SessionDirectory>;
 
 class Session {
        public:
@@ -49,6 +51,7 @@ class Session {
 
 	const std::string& id() const noexcept { return sid_; }
 	const User& user() const noexcept { return *user_; }
+	SessionDirectory& directory() const noexcept { return *dir_; }
 	void lock() noexcept { mutex_.lock(); }
 	void unlock() noexcept { mutex_.unlock(); }
 	void set_cache(AppCacheSptr cache) noexcept {
@@ -79,8 +82,8 @@ class Session {
 	inline bool has_permission(Connection<Db>& c, int projectid,
 				   Permissions perm) const;
 	template <class Db>
-	inline void has_permission_or_throw(Connection<Db>& c, int projectid,
-					    Permissions perm) const;
+	inline void assert_permission(Connection<Db>& c, int projectid,
+				      Permissions perm) const;
 
        private:
 	using Mutex = std::mutex;
@@ -109,6 +112,8 @@ class Session {
 
 	const std::string sid_;
 	const ConstUserSptr user_;
+	const SessionDirectoryPtr dir_;
+
 	AppCacheSptr cache_;
 	Mutex mutex_;
 	mutable ProjectSptr project_;
@@ -302,9 +307,8 @@ bool pcw::Session::has_permission(Connection<Db>& c, int projectid,
 
 ////////////////////////////////////////////////////////////////////////////////
 template <class Db>
-inline void pcw::Session::has_permission_or_throw(Connection<Db>& c,
-						  int projectid,
-						  Permissions perm) const {
+inline void pcw::Session::assert_permission(Connection<Db>& c, int projectid,
+					    Permissions perm) const {
 	if (not has_permission(c, projectid, perm))
 		THROW(Forbidden, "Permission denied for project id: ",
 		      projectid);

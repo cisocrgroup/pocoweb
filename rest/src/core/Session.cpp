@@ -5,6 +5,7 @@
 #include <regex>
 #include "AppCache.hpp"
 #include "Cache.hpp"
+#include "SessionDirectory.hpp"
 #include "User.hpp"
 #include "util.hpp"
 
@@ -14,6 +15,7 @@ using namespace pcw;
 Session::Session(const User& user, AppCacheSptr cache)
     : sid_(gensessionid(SESSION_ID_LENGTH)),
       user_(user.shared_from_this()),
+      dir_(std::make_unique<SessionDirectory>(gensessionid(SESSION_ID_LENGTH))),
       cache_(std::move(cache)),
       mutex_(),
       project_(),

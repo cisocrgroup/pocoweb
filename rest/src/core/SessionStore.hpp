@@ -4,6 +4,7 @@
 #include <memory>
 #include <mutex>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace pcw {
 class User;
@@ -30,10 +31,12 @@ class SessionStore {
 
        private:
 	using Sessions = std::unordered_map<std::string, SessionSptr>;
+	using IdRegister = std::unordered_set<std::string>;
 	using Mutex = std::mutex;
 	using Lock = std::lock_guard<Mutex>;
 
 	Sessions sessions_;
+	IdRegister id_register_;
 	mutable Mutex mutex_;
 };
 }

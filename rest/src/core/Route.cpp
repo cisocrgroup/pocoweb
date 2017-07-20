@@ -50,6 +50,71 @@ void Route::delete_session(const Session& session) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+Route::ProjectSessionObject Route::new_project_session(const Request& req,
+						       int pid) const {
+	const auto session = find_session(req);
+	if (not session) {
+		THROW(Forbidden, "(Route) not logged in");
+	}
+	auto conn = connection();
+	if (not conn) {
+		THROW(Error, "(Route) cannot load connection");
+	}
+	return ProjectSessionObject{
+	    session, std::move(conn), [&](const auto& obj) {
+		    const auto proj = obj.session().find(conn, pid);
+		    if (not proj) {
+			    THROW(NotFound, "(Route) cannot find ", pid);
+		    }
+		    return proj;
+	    }};
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::PageSessionObject Route::new_page_session(const Request& req, int pid,
+						 int p) const {
+	const auto session = find_session(req);
+	if (not session) {
+		THROW(Forbidden, "(Route) not logged in");
+	}
+	auto conn = connection();
+	if (not conn) {
+		THROW(Error, "(Route) cannot load connection");
+	}
+	return PageSessionObject{
+	    session, std::move(conn), [&](const auto& obj) {
+		    const auto page = obj.session().find(conn, pid, p);
+		    if (not page) {
+			    THROW(NotFound, "(Route) cannot find ", pid, "-",
+				  p);
+		    }
+		    return page;
+	    }};
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::LineSessionObject Route::new_line_session(const Request& req, int pid,
+						 int p, int lid) const {
+	const auto session = find_session(req);
+	if (not session) {
+		THROW(Forbidden, "(Route) not logged in");
+	}
+	auto conn = connection();
+	if (not conn) {
+		THROW(Error, "(Route) cannot load connection");
+	}
+	return LineSessionObject{
+	    session, std::move(conn), [&](const auto& obj) {
+		    const auto line = obj.session().find(conn, pid, p, lid);
+		    if (not line) {
+			    THROW(NotFound, "(Route) cannot find ", pid, "-", p,
+				  "-", lid);
+		    }
+		    return line;
+	    }};
+}
+
+////////////////////////////////////////////////////////////////////////////////
 std::string Route::extract_content(const crow::request& request) {
 	static const std::string ContentType{"Content-Type"};
 	static const std::regex BoundaryRegex{R"(boundary=(.*);?$)"};
