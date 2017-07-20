@@ -156,8 +156,8 @@ pcw::Json& pcw::operator<<(Json& j, const User& user) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool pcw::get(const RJson& j, const char* key, bool& res) {
-	if (j.has(key)) {
+bool pcw::get(const RJson& j, const char* key, bool& res) noexcept {
+	if (j.t() == crow::json::type::Object and j.has(key)) {
 		switch (j[key].t()) {
 			case crow::json::type::True:
 				res = true;
@@ -173,8 +173,9 @@ bool pcw::get(const RJson& j, const char* key, bool& res) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool pcw::get(const RJson& j, const char* key, int& res) {
-	if (j.has(key) and j[key].t() == crow::json::type::Number) {
+bool pcw::get(const RJson& j, const char* key, int& res) noexcept {
+	if (j.t() == crow::json::type::Object and j.has(key) and
+	    j[key].t() == crow::json::type::Number) {
 		res = j[key].i();
 		return true;
 	}
@@ -182,8 +183,9 @@ bool pcw::get(const RJson& j, const char* key, int& res) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool pcw::get(const RJson& j, const char* key, double& res) {
-	if (j.has(key) and j[key].t() == crow::json::type::Number) {
+bool pcw::get(const RJson& j, const char* key, double& res) noexcept {
+	if (j.t() == crow::json::type::Object and j.has(key) and
+	    j[key].t() == crow::json::type::Number) {
 		res = j[key].d();
 		return true;
 	}
@@ -191,8 +193,9 @@ bool pcw::get(const RJson& j, const char* key, double& res) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool pcw::get(const RJson& j, const char* key, std::string& res) {
-	if (j.has(key) and j[key].t() == crow::json::type::String) {
+bool pcw::get(const RJson& j, const char* key, std::string& res) noexcept {
+	if (j.t() == crow::json::type::Object and j.has(key) and
+	    j[key].t() == crow::json::type::String) {
 		res = j[key].s();
 		return true;
 	}
