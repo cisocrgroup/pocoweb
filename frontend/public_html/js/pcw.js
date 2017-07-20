@@ -68,8 +68,8 @@ function getNumberOfConcordances(sid, pid, q, callback) {
 			    "backend returned status: " + http.status);
 		}
 	};
-	var url =
-	    sprintf(PCW.config.backend.url + PCW.config.backend.routes.search, pid, q);
+	var url = sprintf(
+	    PCW.config.backend.url + PCW.config.backend.routes.search, pid, q);
 	console.log(
 	    "requesting concordances from url: " + url + " [" + sid + "]");
 	http.open("GET", url, true);
@@ -146,7 +146,8 @@ function correctLineImpl(sid, pid, p, lid, correction, callback) {
 			    "backend returned status: " + http.status);
 		}
 	};
-	var url = PCW.config.backend.url + PCW.config.backend.routes["correct_line"];
+	var url =
+	    PCW.config.backend.url + PCW.config.backend.routes["correct_line"];
 	console.log("sending correction to url: " + url + " [" + sid + "]");
 	http.open("POST", url, true);
 	http.setRequestHeader("Authorization", sid);
@@ -236,7 +237,8 @@ PCW.correctWordImpl = function(sid, pid, p, lid, tid, correction, callback) {
 			    "backend returned status: " + http.status);
 		}
 	};
-	var url = PCW.config.backend.url + PCW.config.backend.routes["correct_line"];
+	var url =
+	    PCW.config.backend.url + PCW.config.backend.routes["correct_line"];
 	console.log("sending correction to url: " + url + " [" + sid + "]");
 	http.open("POST", url, true);
 	http.setRequestHeader("Authorization", sid);
@@ -268,4 +270,15 @@ PCW.correctWord = function(sid, id) {
 			    elem.className == " partially-corrected-line";
 		    }
 	    });
+};
+
+PCW.setApiVersion = function() {
+	api = Object.create(PCW.Api);
+	api.setupForGetVersion();
+	api.run(function(res) {
+		const elem = document.getElementById('pcw-api-version');
+		if (elem !== null) {
+			elem.innerHTML = 'Api-Version: ' + res.version;
+		}
+	});
 };
