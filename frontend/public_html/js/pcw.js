@@ -130,34 +130,6 @@ function toId(ids) {
 	return ids.join('-');
 };
 
-PCW.correctAllLines = function(sid) {
-	console.log("correctAllLines [" + sid + "]");
-	const regex = /(\d+)-(\d+)-(\d+)/;
-	// iterate over all input nodes
-	var items = document.getElementsByTagName("input");
-	var ids = [];
-	for (var i = 0; i < items.length; i++) {
-		if (regex.test(items[i].id)) {
-			ids = getIds(items[i].id);
-			correctLineImpl(
-			    sid, ids[0], ids[1], ids[2], items[i].value,
-			    function(res) {
-				    var elem = document.getElementById(
-					res.projectId + "-" + res.pageId + "-" +
-					res.lineId);
-				    elem.value = res.cor;
-				    if (res.isFullyCorrected) {
-					    elem.className +=
-						" fully-corrected-line";
-				    } else if (res.isPartiallyCorrected) {
-					    elem.className +=
-						" partially-corrected-line";
-				    }
-			    });
-		}
-	}
-};
-
 PCW.toggleSelectionOfConcordanceTokens = function() {
 	var items = document.getElementsByTagName("input");
 	for (var i = 0; i < items.length; i++) {
@@ -260,4 +232,17 @@ PCW.correctLine = function(anchor) {
 		var elem = document.getElementById(anchor);
 		PCW.setupCorrectedInputField(elem, res);
 	});
+};
+
+PCW.correctAllLines = function(sid) {
+	const regex = /(\d+)-(\d+)-(\d+)/;
+	// iterate over all input nodes
+	var items = document.getElementsByTagName("input");
+	var ids = [];
+	for (var i = 0; i < items.length; i++) {
+		if (regex.test(items[i].id)) {
+			ids = getIds(items[i].id);
+			PCW.correctLine(items[i].id);
+		}
+	}
 };
