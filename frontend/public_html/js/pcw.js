@@ -36,16 +36,12 @@ $(function() {
 
 });
 
-function getIds(anchor) {
+PCW.getIds = function(anchor) {
 	var ids = anchor.split('-');
 	for (var i = 0; i < ids.length; i++) {
 		ids[i] = parseInt(ids[i]);
 	}
 	return ids;
-}
-
-function toId(ids) {
-	return ids.join('-');
 };
 
 PCW.toggleSelectionOfConcordanceTokens = function() {
@@ -127,7 +123,7 @@ PCW.setupCorrectedInputField = function(elem, res) {
 };
 
 PCW.correctWord = function(anchor) {
-	const ids = getIds(anchor);
+	const ids = PCW.getIds(anchor);
 	const inputid = "concordance-token-input-" + anchor;
 	const correction = document.getElementById(inputid).value;
 	var api = Object.create(PCW.Api);
@@ -141,7 +137,7 @@ PCW.correctWord = function(anchor) {
 };
 
 PCW.correctLine = function(anchor) {
-	const ids = getIds(anchor);
+	const ids = PCW.getIds(anchor);
 	const correction = document.getElementById(anchor).value;
 	var api = Object.create(PCW.Api);
 	api.sid = PCW.getSid();
@@ -159,7 +155,7 @@ PCW.correctAllLines = function(sid) {
 	var ids = [];
 	for (var i = 0; i < items.length; i++) {
 		if (regex.test(items[i].id)) {
-			ids = getIds(items[i].id);
+			ids = PCW.getIds(items[i].id);
 			PCW.correctLine(items[i].id);
 		}
 	}
@@ -180,7 +176,7 @@ PCW.getSelectedWordFromInputElement = function(elem) {
 };
 
 PCW.displayConcordance = function(anchor) {
-	const pid = getIds(anchor)[0];
+	const pid = PCW.getIds(anchor)[0];
 	const selection = PCW.getSelectedWordFromInputElement(
 	    document.getElementById(anchor));
 	if (selection !== null) {
