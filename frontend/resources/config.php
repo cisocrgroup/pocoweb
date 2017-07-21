@@ -19,8 +19,9 @@ $config = array(
 		),
 	),
 	"backend" => array(
-		"url"    => "http://pocoweb.cis.lmu.de/rest",
-		"routes" => array(
+		"url"            => "http://pocoweb.cis.lmu.de/rest",
+		"profilerWaitMs" => 30000,
+		"routes"         => array(
 			"api_version"      => "/api-version",
 			"login"            => "/login",
 			"logout"           => "/logout",
@@ -39,6 +40,7 @@ $config = array(
 			"upload_project"   => "/books",
 			"search"           => "/books/%d/search?q=%s",
 			"split_images"     => "/books/%d/pages/%d/lines/%d/create-split-images",
+			"orderProfile"     => "/profile/%d",
 		),
 	),
 	"cookies" => array(

@@ -60,6 +60,13 @@ BOOST_AUTO_TEST_CASE(Explanation) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestEmptyHistPattern) {
+	cand = Candidate(
+	    "Homine:{homine+[]}+ocr[(h:b,0)],voteWeight=1,levDistance=1");
+	BOOST_CHECK_EQUAL(cand.explanation().hist, "homine");
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
 
 struct ProfileFixture {
@@ -68,12 +75,14 @@ struct ProfileFixture {
 			if (token.ocr() == "thorm")
 				builder.add_candidate_string(
 				    token,
-				    "thurm:{thurm+[(t:th,1)]}+ocr[(u:o,3)],"
+				    "thurm:{thurm+[(t:th,1)]}+ocr[(u:o,"
+				    "3)],"
 				    "voteWeight=0.03,levDistance=1");
 			else if (token.ocr() == "vnn")
 				builder.add_candidate_string(
 				    token,
-				    "unn:{unn+[(nd:nn,1)]}+ocr[(u:v,0)],"
+				    "unn:{unn+[(nd:nn,1)]}+ocr[(u:v,0)]"
+				    ","
 				    "voteWeight=0.04,levDistance=1");
 			else if (token.ocr() == "maver")
 				builder.add_candidate_string(

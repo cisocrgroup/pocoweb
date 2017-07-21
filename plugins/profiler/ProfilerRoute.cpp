@@ -35,7 +35,11 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req,
 	assert(book);
 
 	Lock lock(*mutex_);
+	for (const auto& x : *jobs_) {
+		CROW_LOG_DEBUG << "(ProfilerRoute) job id: " << x.first;
+	}
 	if (is_running_job_id(book->id())) {
+		CROW_LOG_DEBUG << "(ProfilerRoute) running job: " << book->id();
 		using namespace std::chrono_literals;
 		auto amount = 2s;
 		auto future = jobs_->find(bid);
@@ -55,7 +59,9 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req,
 			return accepted();
 		}
 	} else {  // no such job
-		return not_implemented();
+		CROW_LOG_DEBUG << "(ProfilerRoute) not a running job: "
+			       << book->id();
+		return not_found();
 	}
 }
 
@@ -63,23 +69,34 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req,
 ProfilerRoute::Response ProfilerRoute::handle_new_profile(
     const Request& req, const Result& res) const {
 	auto profile = std::move(res.get());
-	return not_implemented();
+	for (const auto& s : profile.suggestions()) {
+		CROW_LOG_DEBUG << "(ProfilerRoute) Suggestion: " << s.cand.cor()
+			       << ": " << s.cand.explanation_string();
+	}
+	return ok();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 ProfilerRoute::Response ProfilerRoute::impl(HttpPost, const Request& req,
 					    int bid) const {
 	// query book
+	CROW_LOG_DEBUG << "(ProfilerRoute) order profile for project id: "
+		       << bid;
 	auto book = get_book(req, bid);
 	assert(book);
+	CROW_LOG_DEBUG << "(ProfilerRoute) profiling book id: " << book->id();
 
 	Lock lock(*mutex_);
 	if (not is_running_job_id(book->id())) {
+		CROW_LOG_DEBUG << "(ProfilerRoute) new job: " << book->id();
 		jobs_->emplace(book->id(),
 			       std::async(std::launch::async, [book]() {
 				       auto profiler = get_profiler(book);
 				       return profiler->profile();
 			       }));
+	} else {
+		CROW_LOG_DEBUG << "(ProfilerRoute) job already running: "
+			       << book->id();
 	}
 	return accepted();
 }
@@ -94,17 +111,18 @@ ProfilerUptr ProfilerRoute::get_profiler(ConstBookSptr book) {
 
 ////////////////////////////////////////////////////////////////////////////////
 ConstBookSptr ProfilerRoute::get_book(const Request& req, int bid) const {
-	auto conn = connection();
-	auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	pcw::SessionLock sessionlock(*session);
-	auto view = session->find(conn, bid);
-
-	if (not view) THROW(pcw::NotFound, "Cannot find book id: ", bid);
-	auto book = std::dynamic_pointer_cast<const pcw::Book>(
-	    view->origin().shared_from_this());
+	CROW_LOG_DEBUG << "(ProfilerRoute) getting session object";
+	auto obj = this->new_project_session(req, bid);
+	CROW_LOG_DEBUG << "(ProfilerRoute) got session object";
+	const auto book = std::dynamic_pointer_cast<const pcw::Book>(
+	    obj.data().origin().shared_from_this());
+	CROW_LOG_DEBUG << "(ProfilerRoute) getting book";
 	if (not book)
-		THROW(pcw::NotFound, "Cannot find origin of book id: ", bid);
+		THROW(pcw::Error, "Cannot determine origin of project id: ",
+		      bid);
+	CROW_LOG_DEBUG << "(ProfilerRoute) got book";
+	obj.session().assert_permission(obj.conn(), book->id(),
+					pcw::Permissions::Write);
+	CROW_LOG_DEBUG << "(ProfilerRoute) returning book";
 	return book;
 }

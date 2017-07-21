@@ -111,7 +111,7 @@ pcw.getSid = function() {
 pcw.setApiVersion = function() {
 	api = Object.create(pcw.Api);
 	api.setupForGetVersion();
-	api.run(function(res) {
+	api.run(function(status, res) {
 		const elem = document.getElementById('pcw-api-version');
 		if (elem !== null) {
 			elem.innerHTML = 'Api-Version: ' + res.version;
@@ -119,8 +119,9 @@ pcw.setApiVersion = function() {
 	});
 };
 
-pcw.setLoggedInUserImpl = function(user) {
-	console.log("user: " + JSON.stringify(user));
+pcw.setLoggedInUserImpl = function(status, user) {
+	pcw.log("status: " + status);
+	pcw.log("user: " + JSON.stringify(user));
 	var elem = document.getElementById('pcw-login');
 	var li1 = document.createElement("li");
 	var li2 = document.createElement("li");
@@ -168,7 +169,7 @@ pcw.correctWord = function(anchor) {
 	var api = Object.create(pcw.Api);
 	api.sid = pcw.getSid();
 	api.setupForCorrectWord(ids[0], ids[1], ids[2], ids[3], correction);
-	api.run(function(res) {
+	api.run(function(status, res) {
 		var elem = document.getElementById(inputid);
 		elem.value = res.cor;
 		pcw.setupCorrectedInputField(elem, res);
@@ -181,7 +182,7 @@ pcw.correctLine = function(anchor) {
 	var api = Object.create(pcw.Api);
 	api.sid = pcw.getSid();
 	api.setupForCorrectLine(ids[0], ids[1], ids[2], correction);
-	api.run(function(res) {
+	api.run(function(status, res) {
 		var elem = document.getElementById(anchor);
 		pcw.setupCorrectedInputField(elem, res);
 	});
@@ -224,7 +225,7 @@ pcw.displayConcordance = function(anchor) {
 		var api = Object.create(pcw.Api);
 		api.sid = pcw.getSid();
 		api.setupForGetConcordance(pid, selection);
-		api.run(function(res) {
+		api.run(function(status, res) {
 			var searchButton =
 			    document.getElementById('concordance-search-label');
 			const n = res.nWords;
@@ -243,4 +244,31 @@ pcw.displayConcordance = function(anchor) {
 
 pcw.orderProfile = function(pid) {
 	pcw.log("ordering profile for project #" + pid);
+	var api = Object.create(pcw.Api);
+	api.sid = pcw.getSid();
+	api.setupForOrderProfile(pid);
+	api.run(async function(status, res) {
+		var sleep = function(ms) {
+			return new Promise(resolve => setTimeout(resolve, ms));
+		};
+		pcw.log("ordered profile for project #" + pid);
+		pcw.log("waiting for profiler to finish");
+		var done = false;
+		do {
+			await sleep(pcw.config.backend.profilerWaitMs);
+			pcw.log("checking if profiler has finished already");
+			api.setupForGetProfile(pid);
+			api.onError = function(status) {
+				console.error("response: " + status);
+				done = true;
+			};
+			api.run(function(s, res) {
+				pcw.log("profiler response: " + s);
+				if (s === 200) {
+					pcw.log("profiling is done");
+					done = true;
+				}
+			});
+		} while (done !== true);
+	});
 };
