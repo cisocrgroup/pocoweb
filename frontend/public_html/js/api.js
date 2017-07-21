@@ -11,7 +11,7 @@ pcw.Api = {
 	post: null,
 	url: "",
 	method: "GET",
-	expectStatus: 200,
+	acceptedStatuses: [200],
 	formatRequest: function() {
 		return this.method + " " + this.url + " [" + this.sid + "]";
 	},
@@ -23,19 +23,27 @@ pcw.Api = {
 			console.log("(Api) " + msg);
 		}
 	},
+	accept: function(status) {
+		for (var i = 0; i < this.acceptedStatuses.length; i++) {
+			if (this.acceptedStatuses[i] === status) {
+				return true;
+			}
+		}
+		return false;
+	},
 	setupForGetVersion: function() {
 		this.method = "GET";
 		this.post = null;
 		this.url = pcw.config.backend.url +
 		    pcw.config.backend.routes['api_version'];
-		this.expectStatus = 200;
+		this.acceptedStatuses = [200];
 	},
 	setupForGetLoggedInUser: function() {
 		this.method = "GET";
 		this.post = null;
 		this.url =
 		    pcw.config.backend.url + pcw.config.backend.routes.login;
-		this.expectStatus = 200;
+		this.acceptedStatuses = [200];
 	},
 	setupForCorrectWord: function(pid, p, lid, tid, c) {
 		this.method = "POST";
@@ -48,7 +56,7 @@ pcw.Api = {
 		};
 		this.url = pcw.config.backend.url +
 		    pcw.config.backend.routes['correct_line'];
-		this.expectStatus = 200;
+		this.acceptedStatuses = [200];
 	},
 	setupForCorrectLine: function(pid, p, lid, c) {
 		this.method = "POST";
@@ -56,7 +64,7 @@ pcw.Api = {
 		    {projectId: pid, pageId: p, lineId: lid, correction: c};
 		this.url = pcw.config.backend.url +
 		    pcw.config.backend.routes['correct_line'];
-		this.expectStatus = 200;
+		this.acceptedStatuses = [200];
 	},
 	setupForGetConcordance: function(pid, q) {
 		this.method = "GET";
@@ -71,13 +79,18 @@ pcw.Api = {
 		var http = new XMLHttpRequest();
 		var that = this;
 		http.onreadystatechange = function() {
-			if (http.readyState === 4 &&
-			    http.status === that.expectStatus) {
+			if (http.readyState === 4 && that.accept(http.status)) {
 				that.log(
 				    that.formatRequest() + " returned: " +
 				    http.status + " data: " +
 				    http.responseText);
-				callback(JSON.parse(http.responseText));
+				if (http.responseText.length > 0) {
+					callback(
+					    http.status,
+					    JSON.parse(http.responseText));
+				} else {
+					callback(http.staus, {});
+				}
 			} else if (http.readyState === 4) {
 				that.onError(http.status);
 			}
