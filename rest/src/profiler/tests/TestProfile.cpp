@@ -59,12 +59,22 @@ BOOST_AUTO_TEST_CASE(Explanation) {
 	BOOST_CHECK_EQUAL(e.ocrp.patterns[1].pos, 2U);
 }
 
-// ////////////////////////////////////////////////////////////////////////////////
-// BOOST_AUTO_TEST_CASE(TestEmptyHistPattern) {
-// 	cand = pcw::Candidate(
-// 	    "Homine:{homine+[]}+ocr[(h:b,0)],voteWeight=1,levDistance=1");
-// 	BOOST_CHECK_EQUAL(cand.explanation().hist, "homine");
-// }
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestIntegerVoteWeight) {
+	cand = pcw::Candidate(
+	    "Homine:{homine+[]}+ocr[(h:b,0)],voteWeight=1,levDistance=1");
+	BOOST_CHECK_EQUAL(cand.cor(), "Homine");
+	BOOST_CHECK_EQUAL(cand.lev(), 1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestScientificVoteWeight) {
+	cand = pcw::Candidate(
+	    "moſtra:{mostra+[(s:ſ,2)]}+ocr[(m:n,0)],voteWeight=3.97962e-10,"
+	    "levDistance=1");
+	BOOST_CHECK_EQUAL(cand.cor(), "moſtra");
+	BOOST_CHECK_EQUAL(cand.lev(), 1);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()

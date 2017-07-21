@@ -47,7 +47,7 @@ Explanation::Explanation(const std::string& expr) : hist(), histp(), ocrp() {
 Candidate::Candidate(const std::string& expr) : cor_(), expl_(), w_(), lev_() {
 	static const std::regex candre{
 	    R"((.*):(\{.*\+\[.*\]\}\+ocr\[.*\]),)"
-	    R"(voteWeight=(\d*[.,]\d+),)"
+	    R"(voteWeight=([-0-9.,eE]+),)"
 	    R"(levDistance=(\d+))"};
 	std::smatch m;
 	if (not std::regex_match(expr, m, candre))
