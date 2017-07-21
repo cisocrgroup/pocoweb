@@ -31,8 +31,8 @@ CXXFLAGS += -DPCW_API_VERSION_PATCH=$(PCW_API_VERSION_PATCH)
 CXXFLAGS += -DPCW_DESTDIR=$(DESTDIR)
 
 LDFLAGS += -Llib
-LDFLAGS += -lpcwcore -lpcwapi -lpcwparser -lpugixml
-LDFLAGS += -lpcwcore -lpcwapi -lpcwparser -lpugixml # do it two times
+LDFLAGS += -lpcwcore -lpcwprofiler -lpcwapi -lpcwparser -lpugixml
+LDFLAGS += -lpcwcore -lpcwprofiler -lpcwapi -lpcwparser -lpugixml # do it two times
 LDFLAGS += -ldl
 LDFLAGS += -lssl
 LDFLAGS += -llept

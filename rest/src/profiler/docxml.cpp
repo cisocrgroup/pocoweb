@@ -1,8 +1,8 @@
 #include "docxml.hpp"
 #include <sstream>
-#include "Page.hpp"
 #include "Profile.hpp"
-#include "Project.hpp"
+#include "core/Page.hpp"
+#include "core/Project.hpp"
 
 using namespace pcw;
 

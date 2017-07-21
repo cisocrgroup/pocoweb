@@ -30,10 +30,16 @@ struct Config {
 		const int level;
 	} log;
 
+	const struct Profiler {
+		const std::string backend;
+		const bool local;
+	} profiler;
+
 	const struct Plugins {
 		const std::unordered_map<std::string, Ptree> configs;
 		const Ptree& operator[](const std::string& p) const noexcept;
 	} plugins;
+
 	void LOG() const;
 };
 }

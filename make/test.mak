@@ -14,7 +14,6 @@ CORE_TESTS += rest/src/core/tests/TestOcrLine.test
 CORE_TESTS += rest/src/core/tests/TestPackageBuilder.test
 CORE_TESTS += rest/src/core/tests/TestPageBuilder.test
 CORE_TESTS += rest/src/core/tests/TestPassword.test
-CORE_TESTS += rest/src/core/tests/TestProfile.test
 CORE_TESTS += rest/src/core/tests/TestProjectBuilder.test
 CORE_TESTS += rest/src/core/tests/TestSearcher.test
 CORE_TESTS += rest/src/core/tests/TestSession.test
@@ -26,14 +25,16 @@ DATABASE_TESTS += rest/src/database/tests/TestDatabase.test
 DATABASE_TESTS += rest/src/database/tests/TestConnectionPool.test
 DATABASE_TESTS += rest/src/database/tests/TestDatabaseGuard.test
 
-PARSER_TESTS += rest/src/parser/tests/TestDocXml.test
 PARSER_TESTS += rest/src/parser/tests/TestAltoXmlParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestAbbyyXmlParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestOcropusLlocsParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestHocrParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestBookDirectoryBuilder.test
 
-TESTS = $(UTILS_TESTS) $(CORE_TESTS) $(DATABASE_TESTS) $(PARSER_TESTS)
+PROFILER_TESTS += rest/src/profiler/tests/TestProfile.test
+PROFILER_TESTS += rest/src/profiler/tests/TestDocXml.test
+
+TESTS = $(UTILS_TESTS) $(CORE_TESTS) $(DATABASE_TESTS) $(PARSER_TESTS) $(PROFILER_TESTS)
 %.test: %.cpp $(LIBS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
 

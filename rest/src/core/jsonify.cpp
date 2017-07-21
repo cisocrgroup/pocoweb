@@ -2,7 +2,6 @@
 #include <crow/json.h>
 #include "Box.hpp"
 #include "Page.hpp"
-#include "Profile.hpp"
 #include "User.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -108,40 +107,6 @@ pcw::Json& pcw::operator<<(Json& json, const Box& box) {
 	json["bottom"] = box.bottom();
 	json["width"] = box.width();
 	json["height"] = box.height();
-	return json;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-pcw::Json& pcw::operator<<(Json& json, const Suggestion& sugg) {
-	json["cor"] = sugg.cand.cor();
-	json["ocr"] = sugg.token.cor();
-	return json;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-pcw::Json& pcw::operator<<(Json& json, const std::vector<Suggestion>& suggs) {
-	size_t i = 0;
-	for (const auto& s : suggs) {
-		json["suggestions"][i++] << s;
-	}
-	return json;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-pcw::Json& pcw::operator<<(
-    Json& json, const std::map<Pattern, std::vector<Suggestion>>& x) {
-	for (const auto& p : x) {
-		json[p.first.cor + ":" + p.first.ocr] << p.second;
-	}
-	return json;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-pcw::Json& pcw::operator<<(Json& json, const Profile& profile) {
-	json["projectId"] = profile.book().id();
-	json["suggestions"] << profile.suggestions();
-	json["histPatterns"] << profile.calc_hist_patterns();
-	json["ocrPatterns"] << profile.calc_ocr_patterns();
 	return json;
 }
 

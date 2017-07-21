@@ -6,8 +6,8 @@
 #include "core/Book.hpp"
 #include "core/Line.hpp"
 #include "core/Page.hpp"
-#include "core/Profile.hpp"
-#include "core/docxml.hpp"
+#include "profiler/Profile.hpp"
+#include "profiler/docxml.hpp"
 #include "utils/Error.hpp"
 #include "utils/TmpDir.hpp"
 
@@ -59,12 +59,12 @@ BOOST_AUTO_TEST_CASE(Explanation) {
 	BOOST_CHECK_EQUAL(e.ocrp.patterns[1].pos, 2U);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(TestEmptyHistPattern) {
-	cand = Candidate(
-	    "Homine:{homine+[]}+ocr[(h:b,0)],voteWeight=1,levDistance=1");
-	BOOST_CHECK_EQUAL(cand.explanation().hist, "homine");
-}
+// ////////////////////////////////////////////////////////////////////////////////
+// BOOST_AUTO_TEST_CASE(TestEmptyHistPattern) {
+// 	cand = pcw::Candidate(
+// 	    "Homine:{homine+[]}+ocr[(h:b,0)],voteWeight=1,levDistance=1");
+// 	BOOST_CHECK_EQUAL(cand.explanation().hist, "homine");
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()

@@ -10,6 +10,7 @@
 #include "api/CorrectionRoute.hpp"
 #include "api/LineRoute.hpp"
 #include "api/PageRoute.hpp"
+#include "api/ProfilerRoute.hpp"
 #include "api/UserRoute.hpp"
 #include "api/VersionRoute.hpp"
 #include "core/App.hpp"
@@ -55,6 +56,7 @@ void run(App& app) {
 	app.Register(std::make_unique<pcw::LineRoute>());
 	app.Register(std::make_unique<pcw::UserRoute>());
 	app.Register(std::make_unique<pcw::CorrectionRoute>());
+	app.Register(std::make_unique<pcw::ProfilerRoute>());
 	app.run();
 }
 

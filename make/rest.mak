@@ -15,7 +15,6 @@ CORE_OBJS += rest/src/core/Package.o
 CORE_OBJS += rest/src/core/PackageBuilder.o
 CORE_OBJS += rest/src/core/PageBuilder.o
 CORE_OBJS += rest/src/core/Password.o
-CORE_OBJS += rest/src/core/Profile.o
 CORE_OBJS += rest/src/core/Project.o
 CORE_OBJS += rest/src/core/ProjectBuilder.o
 CORE_OBJS += rest/src/core/Route.o
@@ -26,7 +25,6 @@ CORE_OBJS += rest/src/core/SessionStore.o
 CORE_OBJS += rest/src/core/User.o
 CORE_OBJS += rest/src/core/WagnerFischer.o
 CORE_OBJS += rest/src/core/XmlFile.o
-CORE_OBJS += rest/src/core/docxml.o
 CORE_OBJS += rest/src/core/jsonify.o
 CORE_OBJS += rest/src/core/util.o
 
@@ -34,6 +32,7 @@ API_OBJS += rest/src/api/BookRoute.o
 API_OBJS += rest/src/api/CorrectionRoute.o
 API_OBJS += rest/src/api/LineRoute.o
 API_OBJS += rest/src/api/PageRoute.o
+API_OBJS += rest/src/api/ProfilerRoute.o
 API_OBJS += rest/src/api/UserRoute.o
 API_OBJS += rest/src/api/VersionRoute.o
 
@@ -52,8 +51,15 @@ PARSER_OBJS += rest/src/parser/XmlParserPage.o
 PARSER_OBJS += rest/src/parser/hocr.o
 PARSER_OBJS += rest/src/parser/llocs.o
 
+PROFILER_OBJS += rest/src/profiler/LocalProfiler.o
+PROFILER_OBJS += rest/src/profiler/Profile.o
+PROFILER_OBJS += rest/src/profiler/Profiler.o
+PROFILER_OBJS += rest/src/profiler/RemoteProfiler.o
+PROFILER_OBJS += rest/src/profiler/docxml.o
+
 LIBS += lib/libpcwcore.a
 LIBS += lib/libpcwparser.a
+LIBS += lib/libpcwprofiler.a
 LIBS += lib/libpcwapi.a
 MAINS += pcwd
 
@@ -63,6 +69,8 @@ lib/libpcwapi.a: $(API_OBJS) | $(MODS) $(VENDS) mkdir-lib
 	$(AR) rcs $@ $^
 lib/libpcwparser.a: $(PARSER_OBJS) | $(MODS) $(VENDS) mkdir-lib
 	$(AR) rcs $@ $^
+lib/libpcwprofiler.a: $(PROFILER_OBJS) | $(MODS) $(VENDS) mkdir-lib
+	$(AR) rcs $@ $^
 
 pcwd: rest/src/pcwd.cpp $(LIBS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
@@ -70,6 +78,6 @@ pcwd: rest/src/pcwd.cpp $(LIBS)
 rest/src/database/Tables.h: modules/sqlpp11/scripts/ddl2cpp db/tables.sql
 	$^ rest/src/database/Tables tables
 
-DEPS += $(patsubst %.o,%.d,$(CORE_OBJS) $(API_OBJS) $(PARSER_OBJS) $(PUGI_OBJS))
+DEPS += $(patsubst %.o,%.d,$(CORE_OBJS) $(API_OBJS) $(PARSER_OBJS) $(PROFILER_OBJS) $(PUGI_OBJS))
 DEPS += $(patsubst %,%.d,$(MAINS))
 ALL += $(LIBS) $(MAINS)

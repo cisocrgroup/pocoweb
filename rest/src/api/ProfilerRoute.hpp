@@ -2,6 +2,7 @@
 #define profiler_ProfilerRoute_hpp__
 
 #include <crow/logging.h>
+#include <future>
 #include <memory>
 #include <mutex>
 #include "core/CrtpRoute.hpp"
@@ -12,14 +13,11 @@ using ConstBookSptr = std::shared_ptr<const Book>;
 class Profile;
 template <class T>
 class Maybe;
-}
-
-namespace profiler {
-using ConstBookSptr = pcw::ConstBookSptr;
+using ConstBookSptr = ConstBookSptr;
 class Profiler;
 using ProfilerUptr = std::unique_ptr<Profiler>;
 
-class ProfilerRoute : public pcw::CrtpRoute<ProfilerRoute> {
+class ProfilerRoute : public CrtpRoute<ProfilerRoute> {
        public:
 	ProfilerRoute();
 
@@ -35,16 +33,15 @@ class ProfilerRoute : public pcw::CrtpRoute<ProfilerRoute> {
 	using Mutex = std::mutex;
 	using MutexPtr = std::shared_ptr<Mutex>;
 	using Lock = std::lock_guard<Mutex>;
-	using Jobs =
-	    std::unordered_map<int, std::future<pcw::Maybe<pcw::Profile>>>;
+	using Jobs = std::unordered_map<int, std::future<Maybe<Profile>>>;
 	using JobsPtr = std::shared_ptr<Jobs>;
-	using Result = pcw::Maybe<pcw::Profile>;
+	using Result = Maybe<Profile>;
 
 	bool is_running_job_id(int id) const noexcept {
 		return jobs_->count(id);
 	}
 	ConstBookSptr get_book(const Request& req, int bid) const;
-	static ProfilerUptr get_profiler(ConstBookSptr book);
+	ProfilerUptr get_profiler(ConstBookSptr book) const;
 	Response handle_new_profile(const Request& req,
 				    const Result& res) const;
 

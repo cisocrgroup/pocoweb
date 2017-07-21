@@ -22,10 +22,7 @@ class Page;
 class Line;
 struct Token;
 class Box;
-class Profile;
 class User;
-struct Suggestion;
-struct Pattern;
 
 using Json = crow::json::wvalue;
 using RJson = crow::json::rvalue;
@@ -36,10 +33,6 @@ Json& operator<<(Json& j, const Page& page);
 Json& operator<<(Json& j, const Line& line);
 Json& operator<<(Json& j, const Token& token);
 Json& operator<<(Json& j, const Box& box);
-Json& operator<<(Json& j, const Profile& profile);
-Json& operator<<(Json& j, const Suggestion& sugg);
-Json& operator<<(Json& j, const std::vector<Suggestion>& suggs);
-Json& operator<<(Json& j, const std::map<Pattern, std::vector<Suggestion>>& x);
 Json& operator<<(Json& j, const User& user);
 
 template <class T>

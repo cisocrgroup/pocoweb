@@ -1,17 +1,17 @@
-#include "core/Profile.hpp"
+#include "profiler/Profile.hpp"
 #include <crow/app.h>
-#include "Config.hpp"
-#include "LocalProfiler.hpp"
 #include "ProfilerRoute.hpp"
-#include "RemoteProfiler.hpp"
 #include "core/App.hpp"
 #include "core/Book.hpp"
+#include "core/Config.hpp"
 #include "core/Session.hpp"
+#include "profiler/LocalProfiler.hpp"
+#include "profiler/RemoteProfiler.hpp"
 #include "utils/Maybe.hpp"
 
 #define PROFILER_ROUTE_ROUTE "/profile/<int>"
 
-using namespace profiler;
+using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 const char* ProfilerRoute::route_ = PROFILER_ROUTE_ROUTE;
@@ -90,7 +90,7 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpPost, const Request& req,
 	if (not is_running_job_id(book->id())) {
 		CROW_LOG_DEBUG << "(ProfilerRoute) new job: " << book->id();
 		jobs_->emplace(book->id(),
-			       std::async(std::launch::async, [book]() {
+			       std::async(std::launch::async, [&]() {
 				       auto profiler = get_profiler(book);
 				       return profiler->profile();
 			       }));
@@ -102,11 +102,12 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpPost, const Request& req,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProfilerUptr ProfilerRoute::get_profiler(ConstBookSptr book) {
-	if (Config::get().local())
-		return std::make_unique<LocalProfiler>(book);
-	else
+ProfilerUptr ProfilerRoute::get_profiler(ConstBookSptr book) const {
+	if (config().profiler.local) {
+		return std::make_unique<LocalProfiler>(book, config());
+	} else {
 		return std::make_unique<RemoteProfiler>(book);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -114,15 +115,14 @@ ConstBookSptr ProfilerRoute::get_book(const Request& req, int bid) const {
 	CROW_LOG_DEBUG << "(ProfilerRoute) getting session object";
 	auto obj = this->new_project_session(req, bid);
 	CROW_LOG_DEBUG << "(ProfilerRoute) got session object";
-	const auto book = std::dynamic_pointer_cast<const pcw::Book>(
+	const auto book = std::dynamic_pointer_cast<const Book>(
 	    obj.data().origin().shared_from_this());
 	CROW_LOG_DEBUG << "(ProfilerRoute) getting book";
 	if (not book)
-		THROW(pcw::Error, "Cannot determine origin of project id: ",
-		      bid);
+		THROW(Error, "Cannot determine origin of project id: ", bid);
 	CROW_LOG_DEBUG << "(ProfilerRoute) got book";
 	obj.session().assert_permission(obj.conn(), book->id(),
-					pcw::Permissions::Write);
+					Permissions::Write);
 	CROW_LOG_DEBUG << "(ProfilerRoute) returning book";
 	return book;
 }
