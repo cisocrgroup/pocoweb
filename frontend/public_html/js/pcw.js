@@ -36,6 +36,12 @@ $(function() {
 
 });
 
+pcw.log = function(msg) {
+	if (pcw.config.frontend.debug) {
+		console.log("(pcw) " + msg);
+	}
+};
+
 pcw.getIds = function(anchor) {
 	var ids = anchor.split('-');
 	for (var i = 0; i < ids.length; i++) {
@@ -233,4 +239,8 @@ pcw.displayConcordance = function(anchor) {
 				encodeURI(res.query));
 		});
 	}
+};
+
+pcw.orderProfile = function(pid) {
+	pcw.log("ordering profile for project #" + pid);
 };

@@ -100,6 +100,11 @@ function frontend_render_admin_project_table_row($project, $users) {
 		' title="download project #', $pid, '">';
 	echo '<span class="glyphicon glyphicon-download"/>';
 	echo '</button>';
+	echo '<button class="btn btn-default"',
+		' onclick="pcw.orderProfile(', $pid, ');"',
+		' title="order profile for project #', $pid, '">';
+	echo '<span class="glyphicon glyphicon-glass"/>';
+	echo '</button>';
 	// echo '</span>';
 	echo '</div>';
 	// other buttons
