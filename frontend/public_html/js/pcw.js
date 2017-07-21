@@ -247,28 +247,7 @@ pcw.orderProfile = function(pid) {
 	var api = Object.create(pcw.Api);
 	api.sid = pcw.getSid();
 	api.setupForOrderProfile(pid);
-	api.run(async function(status, res) {
-		var sleep = function(ms) {
-			return new Promise(resolve => setTimeout(resolve, ms));
-		};
+	api.run(function(status, res) {
 		pcw.log("ordered profile for project #" + pid);
-		pcw.log("waiting for profiler to finish");
-		var done = false;
-		do {
-			await sleep(pcw.config.backend.profilerWaitMs);
-			pcw.log("checking if profiler has finished already");
-			api.setupForGetProfile(pid);
-			api.onError = function(status) {
-				console.error("response: " + status);
-				done = true;
-			};
-			api.run(function(s, res) {
-				pcw.log("profiler response: " + s);
-				if (s === 200) {
-					pcw.log("profiling is done");
-					done = true;
-				}
-			});
-		} while (done !== true);
 	});
 };

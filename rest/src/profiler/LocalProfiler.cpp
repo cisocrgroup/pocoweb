@@ -77,15 +77,17 @@ void LocalProfiler::write_docxml() const {
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string LocalProfiler::profiler_command() const {
-	return backend_.string() + " --adaptive" + " --config " +
-	       profiler_config() + " --sourceFormat DocXML" + " --sourceFile " +
-	       outfile_.string() + " --out_doc " + infile_.string() +
+	return backend_.string() + "/Profiler/build/bin/profiler" +
+	       " --adaptive" + " --config " + profiler_config() +
+	       " --sourceFormat DocXML" + " --sourceFile " + outfile_.string() +
+	       " --out_doc " + infile_.string() +
 	       " 2>&1";  // redirect stderr to stdout
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string LocalProfiler::profiler_config() const {
-	return (backend_ / (book().data.lang + ".ini")).string();
+	return (backend_ / "profiler-backend" / (book().data.lang + ".ini"))
+	    .string();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

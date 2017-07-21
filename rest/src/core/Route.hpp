@@ -114,6 +114,9 @@ class Route {
 	MysqlConnection connection() const noexcept {
 		return connection_pool_->get_connection();
 	}
+	const MysqlConnectionPoolSptr& connection_pool() const noexcept {
+		return connection_pool_;
+	}
 	ProjectSessionObject new_project_session(const Request& req,
 						 int pid) const;
 	PageSessionObject new_page_session(const Request& req, int pid,

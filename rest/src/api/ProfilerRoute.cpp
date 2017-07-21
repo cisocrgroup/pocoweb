@@ -19,7 +19,14 @@ const char* ProfilerRoute::name_ = "ProfilerRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
 ProfilerRoute::ProfilerRoute()
-    : mutex_(std::make_unique<Mutex>()), jobs_(std::make_shared<Jobs>()) {}
+    : mutex_(std::make_shared<std::mutex>()),
+      workers_(std::make_shared<std::vector<Worker>>(10)) {}
+
+////////////////////////////////////////////////////////////////////////////////
+ProfilerRoute::~ProfilerRoute() noexcept {
+	CROW_LOG_DEBUG << "(ProfilerRoute) stopping workers ...";
+	CROW_LOG_DEBUG << "(ProfilerRoute) all workers have stopped";
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 void ProfilerRoute::Register(App& app) {
@@ -30,50 +37,7 @@ void ProfilerRoute::Register(App& app) {
 ////////////////////////////////////////////////////////////////////////////////
 ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req,
 					    int bid) const {
-	// query book
-	auto book = get_book(req, bid);
-	assert(book);
-
-	Lock lock(*mutex_);
-	for (const auto& x : *jobs_) {
-		CROW_LOG_DEBUG << "(ProfilerRoute) job id: " << x.first;
-	}
-	if (is_running_job_id(book->id())) {
-		CROW_LOG_DEBUG << "(ProfilerRoute) running job: " << book->id();
-		using namespace std::chrono_literals;
-		auto amount = 2s;
-		auto future = jobs_->find(bid);
-		assert(future != end(*jobs_));
-		auto status = future->second.wait_for(amount);
-		if (status == std::future_status::ready) {  // job is done
-			CROW_LOG_INFO
-			    << "(ProfilerRoute) Job id: " << book->id()
-			    << " done";
-			auto res = future->second.get();  // should not block
-			jobs_->erase(future);		  // remove job
-			return handle_new_profile(req, res);
-		} else {  // job is not done yet
-			CROW_LOG_INFO
-			    << "(ProfilerRoute) Job id: " << book->id()
-			    << " not done yet";
-			return accepted();
-		}
-	} else {  // no such job
-		CROW_LOG_DEBUG << "(ProfilerRoute) not a running job: "
-			       << book->id();
-		return not_found();
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-ProfilerRoute::Response ProfilerRoute::handle_new_profile(
-    const Request& req, const Result& res) const {
-	auto profile = std::move(res.get());
-	for (const auto& s : profile.suggestions()) {
-		CROW_LOG_DEBUG << "(ProfilerRoute) Suggestion: " << s.cand.cor()
-			       << ": " << s.cand.explanation_string();
-	}
-	return ok();
+	return not_implemented();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -85,20 +49,36 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpPost, const Request& req,
 	auto book = get_book(req, bid);
 	assert(book);
 	CROW_LOG_DEBUG << "(ProfilerRoute) profiling book id: " << book->id();
-
-	Lock lock(*mutex_);
-	if (not is_running_job_id(book->id())) {
-		CROW_LOG_DEBUG << "(ProfilerRoute) new job: " << book->id();
-		jobs_->emplace(book->id(),
-			       std::async(std::launch::async, [&]() {
-				       auto profiler = get_profiler(book);
-				       return profiler->profile();
-			       }));
-	} else {
-		CROW_LOG_DEBUG << "(ProfilerRoute) job already running: "
-			       << book->id();
+	auto profiler = get_profiler(book);
+	std::lock_guard<std::mutex> lock(*mutex_);
+	for (auto& worker : *workers_) {
+		if (not worker.running) {
+			worker.running = true;
+			worker.thread =
+			    std::thread([&]() { profile(this, worker, book); });
+			return accepted();
+		}
 	}
-	return accepted();
+	return not_implemented();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void ProfilerRoute::profile(const ProfilerRoute* that, Worker& worker,
+			    ConstBookSptr book) {
+	CROW_LOG_DEBUG << "(ProfilerRoute) starting to profile ...";
+	auto profiler = that->get_profiler(book);
+	auto profile = profiler->profile();
+	CROW_LOG_DEBUG << "(ProfilerRoute) done profiling";
+	try {
+		for (const auto& s : profile.get().suggestions()) {
+			CROW_LOG_DEBUG << "(ProfilerRoute) " << s.cand.cor()
+				       << ": " << s.cand.explanation_string();
+		}
+	} catch (const std::exception& e) {
+		CROW_LOG_ERROR << "(ProfilerRoute) Could not profile book id: "
+			       << book->id() << ": " << e.what();
+	}
+	worker.running = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
