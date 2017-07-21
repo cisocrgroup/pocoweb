@@ -3,22 +3,22 @@
 
 #include <boost/test/unit_test.hpp>
 #include <iostream>
+#include "core/Book.hpp"
+#include "core/Line.hpp"
+#include "core/Page.hpp"
+#include "core/Profile.hpp"
+#include "core/docxml.hpp"
 #include "utils/Error.hpp"
 #include "utils/TmpDir.hpp"
-#include "core/docxml.hpp"
-#include "core/Book.hpp"
-#include "core/Page.hpp"
-#include "core/Line.hpp"
-#include "core/Profile.hpp"
 
 using namespace pcw;
 
 struct CandidateFixture {
 	CandidateFixture()
-		: cand("μυῶνος:{μυῶνος+[(a:b,3)]}+ocr[(υῶ:ε,1)(c:d,2)],"
-				"voteWeight=0.0285641,"
-				"levDistance=2")
-	{}
+	    : cand(
+		  "μυῶνος:{μυῶνος+[(a:b,3)]}+ocr[(υῶ:ε,1)(c:d,2)],"
+		  "voteWeight=0.0285641,"
+		  "levDistance=2") {}
 	Candidate cand;
 };
 
@@ -26,22 +26,20 @@ struct CandidateFixture {
 BOOST_FIXTURE_TEST_SUITE(CandidateTest, CandidateFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Candidate)
-{
+BOOST_AUTO_TEST_CASE(Candidate) {
 	BOOST_CHECK_EQUAL(cand.cor(), "μυῶνος");
 	BOOST_CHECK_CLOSE_FRACTION(cand.weight(), 0.0285641, 0.0001);
 	BOOST_CHECK_EQUAL(cand.lev(), 2);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(CandidateError)
-{
-	BOOST_CHECK_THROW(pcw::Candidate tmp("invalid:{foo+[}+ocr[],"), ParseError);
+BOOST_AUTO_TEST_CASE(CandidateError) {
+	BOOST_CHECK_THROW(pcw::Candidate tmp("invalid:{foo+[}+ocr[],"),
+			  ParseError);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Explanation)
-{
+BOOST_AUTO_TEST_CASE(Explanation) {
 	auto e = cand.explanation();
 	BOOST_CHECK_EQUAL(e.hist, "μυῶνος");
 
@@ -65,23 +63,23 @@ BOOST_AUTO_TEST_CASE(Explanation)
 BOOST_AUTO_TEST_SUITE_END()
 
 struct ProfileFixture {
-	ProfileFixture(): book(make_book()), profile(book), builder(book) {
+	ProfileFixture() : book(make_book()), profile(book), builder(book) {
 		book->find(1)->find(1)->each_token([this](const auto& token) {
 			if (token.ocr() == "thorm")
-			builder.add_candidate_string(
-				token,
-				"thurm:{thurm+[(t:th,1)]}+ocr[(u:o,3)],"
-				"voteWeight=0.03,levDistance=1");
+				builder.add_candidate_string(
+				    token,
+				    "thurm:{thurm+[(t:th,1)]}+ocr[(u:o,3)],"
+				    "voteWeight=0.03,levDistance=1");
 			else if (token.ocr() == "vnn")
 				builder.add_candidate_string(
-					token,
-					"unn:{unn+[(nd:nn,1)]}+ocr[(u:v,0)],"
-					"voteWeight=0.04,levDistance=1");
+				    token,
+				    "unn:{unn+[(nd:nn,1)]}+ocr[(u:v,0)],"
+				    "voteWeight=0.04,levDistance=1");
 			else if (token.ocr() == "maver")
 				builder.add_candidate_string(
-					token,
-					"mauer:{mauer+[]}+ocr[(u:v,2)],"
-					"voteWeight=0.04,levDistance=1");
+				    token,
+				    "mauer:{mauer+[]}+ocr[(u:v,2)],"
+				    "voteWeight=0.04,levDistance=1");
 		});
 		profile = builder.build();
 	}
@@ -94,9 +92,9 @@ struct ProfileFixture {
 		book->push_back(*page);
 		return book;
 	}
-	static bool contains(const Profile::Suggestions& s,
-			const char *cor, const char *ocr) {
-		return std::any_of(begin(s), end(s), [ocr,cor](const auto& s) {
+	static bool contains(const Profile::Suggestions& s, const char* cor,
+			     const char* ocr) {
+		return std::any_of(begin(s), end(s), [ocr, cor](const auto& s) {
 			return s.cand.cor() == cor and s.token.ocr() == ocr;
 		});
 	}
@@ -109,8 +107,7 @@ struct ProfileFixture {
 BOOST_FIXTURE_TEST_SUITE(ProfileTest, ProfileFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(Suggestions)
-{
+BOOST_AUTO_TEST_CASE(Suggestions) {
 	BOOST_CHECK_EQUAL(profile.suggestions().size(), 3);
 	BOOST_CHECK(contains(profile.suggestions(), "thurm", "thorm"));
 	BOOST_CHECK(contains(profile.suggestions(), "mauer", "maver"));
@@ -119,8 +116,7 @@ BOOST_AUTO_TEST_CASE(Suggestions)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(OcrPatternsUV)
-{
+BOOST_AUTO_TEST_CASE(OcrPatternsUV) {
 	auto ocrp = profile.calc_ocr_patterns();
 	Pattern p("u", "v");
 	BOOST_CHECK_EQUAL(ocrp.size(), 2);
@@ -132,8 +128,7 @@ BOOST_AUTO_TEST_CASE(OcrPatternsUV)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(OcrPatternsUO)
-{
+BOOST_AUTO_TEST_CASE(OcrPatternsUO) {
 	auto ocrp = profile.calc_ocr_patterns();
 	Pattern p("u", "o");
 	BOOST_CHECK_EQUAL(ocrp.size(), 2);
@@ -143,8 +138,7 @@ BOOST_AUTO_TEST_CASE(OcrPatternsUO)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(OcrPatternsNDNN)
-{
+BOOST_AUTO_TEST_CASE(OcrPatternsNDNN) {
 	auto histp = profile.calc_hist_patterns();
 	Pattern p("nd", "nn");
 	BOOST_CHECK_EQUAL(histp.size(), 2);
@@ -154,8 +148,7 @@ BOOST_AUTO_TEST_CASE(OcrPatternsNDNN)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(OcrPatternsTTH)
-{
+BOOST_AUTO_TEST_CASE(OcrPatternsTTH) {
 	auto histp = profile.calc_hist_patterns();
 	Pattern p("t", "th");
 	BOOST_CHECK_EQUAL(histp.size(), 2);
@@ -165,8 +158,7 @@ BOOST_AUTO_TEST_CASE(OcrPatternsTTH)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(PatternsIO)
-{
+BOOST_AUTO_TEST_CASE(PatternsIO) {
 	TmpDir tmp;
 	auto file = tmp / "doc.xml";
 
@@ -187,4 +179,3 @@ BOOST_AUTO_TEST_CASE(PatternsIO)
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
-
