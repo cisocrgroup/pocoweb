@@ -7,7 +7,6 @@
 #include <memory>
 #include <mutex>
 #include "core/CrtpRoute.hpp"
-#include "profiler/ProfileWorkerThread.hpp"
 
 namespace pcw {
 class Book;

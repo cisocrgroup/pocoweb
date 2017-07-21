@@ -71,8 +71,9 @@ void ProfilerRoute::profile(const ProfilerRoute* that, Worker& worker,
 	CROW_LOG_DEBUG << "(ProfilerRoute) done profiling";
 	try {
 		for (const auto& s : profile.get().suggestions()) {
-			CROW_LOG_DEBUG << "(ProfilerRoute) " << s.cand.cor()
-				       << ": " << s.cand.explanation_string();
+			CROW_LOG_DEBUG << "(ProfilerRoute) [" << s.token.cor()
+				       << "] " << s.cand.cor() << ": "
+				       << s.cand.explanation_string();
 		}
 	} catch (const std::exception& e) {
 		CROW_LOG_ERROR << "(ProfilerRoute) Could not profile book id: "
