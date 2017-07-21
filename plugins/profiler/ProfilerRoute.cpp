@@ -9,7 +9,7 @@
 #include "core/Session.hpp"
 #include "utils/Maybe.hpp"
 
-#define PROFILER_ROUTE_ROUTE "/books/<int>/profile"
+#define PROFILER_ROUTE_ROUTE "/profile/<int>"
 
 using namespace profiler;
 
