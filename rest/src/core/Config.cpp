@@ -107,6 +107,7 @@ pcw::Config pcw::Config::load(std::istream& is) {
 	     ptree.get<int>("daemon.port"), threads, detach},
 	    {logfile, get_log_level(ptree.get<std::string>("log.level"))},
 	    {ptree.get<std::string>("profiler.backend"),
+	     ptree.get<double>("profiler.minweight"),
 	     static_cast<size_t>(ptree.get<int>("profiler.jobs")),
 	     ptree.get<bool>("profiler.local")},
 	    {
