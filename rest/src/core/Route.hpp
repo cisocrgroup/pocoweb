@@ -51,21 +51,21 @@ class SessionObject {
 	SessionObject& operator=(SessionObject&&) = default;
 
 	Session& session() const noexcept { return *session_; }
-	MysqlConnection& conn() noexcept { return conn_; }
+	MysqlConnection& conn() const noexcept { return *conn_; }
 	T& data() const noexcept { return *data_; }
 
        private:
 	template <class F>
 	SessionObject(SessionPtr s, MysqlConnection c, F f)
 	    : session_(s),
-	      conn_(std::move(c)),
+	      conn_(std::make_unique<MysqlConnection>(std::move(c))),
 	      data_(),
 	      session_lock_(std::make_unique<std::lock_guard<Session>>(*s)) {
 		data_ = f(*this);
 	}
 	friend class Route;
 	SessionPtr session_;
-	MysqlConnection conn_;
+	std::unique_ptr<MysqlConnection> conn_;
 	std::shared_ptr<T> data_;
 	std::unique_ptr<std::lock_guard<Session>> session_lock_;
 };

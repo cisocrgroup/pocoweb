@@ -120,37 +120,38 @@ void ProfilerRoute::insert_profile(const Profile& profile,
 	tables::Suggestions suggestions;
 	const auto id = obj.data().origin().id();
 	const auto ts = static_cast<uintmax_t>(std::time(nullptr));
-	auto conn = obj.conn();
-	MysqlCommiter commiter(conn);
-	auto row = conn.db()(select(profiles.bookid, profiles.timestamp)
-				 .from(profiles)
-				 .where(profiles.bookid == id));
+	MysqlCommiter commiter(obj.conn());
+	auto row = obj.conn().db()(select(profiles.bookid, profiles.timestamp)
+				       .from(profiles)
+				       .where(profiles.bookid == id));
 	if (row.empty()) {
-		conn.db()(insert_into(profiles).set(profiles.bookid = id,
-						    profiles.timestamp = ts));
+		obj.conn().db()(insert_into(profiles).set(
+		    profiles.bookid = id, profiles.timestamp = ts));
 	} else {
-		conn.db()(update(profiles)
-			      .set(profiles.timestamp = ts)
-			      .where(profiles.bookid == id));
+		obj.conn().db()(update(profiles)
+				    .set(profiles.timestamp = ts)
+				    .where(profiles.bookid == id));
 	}
 	std::set<std::wstring> seen;
 	for (const auto& s : profile.suggestions()) {
 		if (seen.count(s.first.wcor_lc())) continue;
 		seen.insert(s.first.wcor_lc());
 		const auto etid = static_cast<int>(seen.size());
-		conn.db()(insert_into(errortokens)
-			      .set(errortokens.errortokenid = etid,
-				   errortokens.bookid = id,
-				   errortokens.errortoken = s.first.cor_lc()));
+		obj.conn().db()(
+		    insert_into(errortokens)
+			.set(errortokens.errortokenid = etid,
+			     errortokens.bookid = id,
+			     errortokens.errortoken = s.first.cor_lc()));
 		for (const auto& c : s.second) {
 			if (c.weight() < min_weight) continue;
 			if (c.lev() <= 0) continue;
-			conn.db()(insert_into(suggestions)
-				      .set(suggestions.bookid = id,
-					   suggestions.errortokenid = etid,
-					   suggestions.suggestion = c.cor(),
-					   suggestions.weight = c.weight(),
-					   suggestions.distance = c.lev()));
+			obj.conn().db()(
+			    insert_into(suggestions)
+				.set(suggestions.bookid = id,
+				     suggestions.errortokenid = etid,
+				     suggestions.suggestion = c.cor(),
+				     suggestions.weight = c.weight(),
+				     suggestions.distance = c.lev()));
 			CROW_LOG_DEBUG << "(ProfilerRoute) [" << s.first.cor()
 				       << "] " << c.cor() << ": "
 				       << c.explanation_string() << " ("
