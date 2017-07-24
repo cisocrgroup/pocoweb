@@ -4,8 +4,8 @@
 #include <crow/logging.h>
 #include <future>
 #include <memory>
-#include <memory>
 #include <mutex>
+#include <set>
 #include "core/CrtpRoute.hpp"
 
 namespace pcw {
@@ -32,17 +32,13 @@ class ProfilerRoute : public CrtpRoute<ProfilerRoute> {
 	Response impl(HttpPost, const Request& req, int bid) const;
 
        private:
-	struct Worker {
-		std::thread thread;
-		std::atomic<bool> running;
-	};
+	using Lock = std::lock_guard<std::mutex>;
 	ConstBookSptr get_book(const Request& req, int bid) const;
 	ProfilerUptr get_profiler(ConstBookSptr book) const;
-	static void profile(const ProfilerRoute* that, Worker& worker,
-			    ConstBookSptr book);
+	static void profile(const ProfilerRoute* that, ConstBookSptr book);
 
 	std::shared_ptr<std::mutex> mutex_;
-	std::shared_ptr<std::vector<Worker>> workers_;
+	std::shared_ptr<std::set<int>> jobs_;
 	static const char *route_, *name_;
 };
 }

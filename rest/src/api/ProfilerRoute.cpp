@@ -1,5 +1,6 @@
 #include "profiler/Profile.hpp"
 #include <crow/app.h>
+#include <chrono>
 #include "ProfilerRoute.hpp"
 #include "core/App.hpp"
 #include "core/Book.hpp"
@@ -20,12 +21,22 @@ const char* ProfilerRoute::name_ = "ProfilerRoute";
 ////////////////////////////////////////////////////////////////////////////////
 ProfilerRoute::ProfilerRoute()
     : mutex_(std::make_shared<std::mutex>()),
-      workers_(std::make_shared<std::vector<Worker>>(10)) {}
+      jobs_(std::make_shared<std::set<int>>()) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 ProfilerRoute::~ProfilerRoute() noexcept {
-	CROW_LOG_DEBUG << "(ProfilerRoute) stopping workers ...";
-	CROW_LOG_DEBUG << "(ProfilerRoute) all workers have stopped";
+	CROW_LOG_DEBUG << "(ProfilerRoute) waiting for unfinished jobs ... ";
+	while (true) {
+		Lock lock(*mutex_);
+		if (jobs_->empty()) {
+			break;
+		} else {
+			using namespace std::chrono_literals;
+			// wait untill all detached threads have finished.
+			std::this_thread::sleep_for(2s);
+		}
+	}
+	CROW_LOG_DEBUG << "(ProfilerRoute) all jobs have finished.";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,40 +57,22 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpPost, const Request& req,
 	// query book
 	CROW_LOG_DEBUG << "(ProfilerRoute) order profile for project id: "
 		       << bid;
-	auto book = get_book(req, bid);
+	const auto book = get_book(req, bid);
 	assert(book);
 	CROW_LOG_DEBUG << "(ProfilerRoute) profiling book id: " << book->id();
-	auto profiler = get_profiler(book);
-	std::lock_guard<std::mutex> lock(*mutex_);
-	for (auto& worker : *workers_) {
-		if (not worker.running) {
-			worker.running = true;
-			worker.thread =
-			    std::thread([&]() { profile(this, worker, book); });
-			return accepted();
+	Lock lock(*mutex_);
+	const auto n = config().profiler.jobs;
+	if (jobs_->size() < n) {
+		if (not jobs_->count(book->id())) {
+			jobs_->insert(book->id());
+			std::thread worker(
+			    [this, book]() { profile(this, book); });
+			worker.detach();
 		}
+		return accepted();
 	}
+	// return service_not_available();
 	return not_implemented();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void ProfilerRoute::profile(const ProfilerRoute* that, Worker& worker,
-			    ConstBookSptr book) {
-	CROW_LOG_DEBUG << "(ProfilerRoute) starting to profile ...";
-	auto profiler = that->get_profiler(book);
-	auto profile = profiler->profile();
-	CROW_LOG_DEBUG << "(ProfilerRoute) done profiling";
-	try {
-		for (const auto& s : profile.get().suggestions()) {
-			CROW_LOG_DEBUG << "(ProfilerRoute) [" << s.token.cor()
-				       << "] " << s.cand.cor() << ": "
-				       << s.cand.explanation_string();
-		}
-	} catch (const std::exception& e) {
-		CROW_LOG_ERROR << "(ProfilerRoute) Could not profile book id: "
-			       << book->id() << ": " << e.what();
-	}
-	worker.running = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,4 +99,30 @@ ConstBookSptr ProfilerRoute::get_book(const Request& req, int bid) const {
 					Permissions::Write);
 	CROW_LOG_DEBUG << "(ProfilerRoute) returning book";
 	return book;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void ProfilerRoute::profile(const ProfilerRoute* that, ConstBookSptr book) {
+	try {
+		// remove id from jobs before returning
+		const auto id = book->id();
+		ScopeGuard sg([that, id]() {
+			assert(that);
+			assert(that->mutex_);
+			Lock lock(*that->mutex_);
+			that->jobs_->erase(id);
+		});
+		auto profiler = that->get_profiler(book);
+		auto profile = profiler->profile();
+		CROW_LOG_DEBUG << "(ProfilerRoute) done profiling";
+		for (const auto& s : profile.get().suggestions()) {
+			CROW_LOG_DEBUG << "(ProfilerRoute) [" << s.token.cor()
+				       << "] " << s.cand.cor() << ": "
+				       << s.cand.explanation_string() << " ("
+				       << s.cand.weight() << ")";
+		}
+	} catch (const std::exception& e) {
+		CROW_LOG_ERROR << "(ProfilerRoute) Could not profile book id: "
+			       << book->id() << ": " << e.what();
+	}
 }
