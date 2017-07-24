@@ -906,5 +906,58 @@ namespace tables
       };
     };
   };
+  namespace Profiles_
+  {
+    struct Bookid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "bookid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T bookid;
+            T& operator()() { return bookid; }
+            const T& operator()() const { return bookid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
+    struct Timestamp
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "timestamp";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T timestamp;
+            T& operator()() { return timestamp; }
+            const T& operator()() const { return timestamp; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::bigint, sqlpp::tag::require_insert>;
+    };
+  }
+
+  struct Profiles: sqlpp::table_t<Profiles,
+               Profiles_::Bookid,
+               Profiles_::Timestamp>
+  {
+    struct _alias_t
+    {
+      static constexpr const char _literal[] =  "profiles";
+      using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+      template<typename T>
+      struct _member_t
+      {
+        T profiles;
+        T& operator()() { return profiles; }
+        const T& operator()() const { return profiles; }
+      };
+    };
+  };
 }
 #endif

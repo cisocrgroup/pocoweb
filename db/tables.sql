@@ -83,4 +83,8 @@ create table contents (
 
 drop table if exists bookpermissions;
 
-
+drop table if exists profiles;
+create table profiles (
+	bookid int references books(bookid) primary key,
+	timestamp bigint not null
+);

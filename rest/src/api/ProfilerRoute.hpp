@@ -17,6 +17,7 @@ class Maybe;
 using ConstBookSptr = ConstBookSptr;
 class Profiler;
 using ProfilerUptr = std::unique_ptr<Profiler>;
+class Profile;
 
 class ProfilerRoute : public CrtpRoute<ProfilerRoute> {
        public:
@@ -33,9 +34,11 @@ class ProfilerRoute : public CrtpRoute<ProfilerRoute> {
 
        private:
 	using Lock = std::lock_guard<std::mutex>;
-	ConstBookSptr get_book(const Request& req, int bid) const;
 	ProfilerUptr get_profiler(ConstBookSptr book) const;
-	static void profile(const ProfilerRoute* that, ConstBookSptr book);
+	static void profile(const ProfilerRoute* that,
+			    ProjectSessionObject obj);
+	static void insert_profile(const Profile& profile,
+				   ProjectSessionObject& obj);
 
 	std::shared_ptr<std::mutex> mutex_;
 	std::shared_ptr<std::set<int>> jobs_;

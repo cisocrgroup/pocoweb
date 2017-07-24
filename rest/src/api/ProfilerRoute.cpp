@@ -6,6 +6,7 @@
 #include "core/Book.hpp"
 #include "core/Config.hpp"
 #include "core/Session.hpp"
+#include "database/Tables.h"
 #include "profiler/LocalProfiler.hpp"
 #include "profiler/RemoteProfiler.hpp"
 #include "utils/Maybe.hpp"
@@ -57,16 +58,15 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpPost, const Request& req,
 	// query book
 	CROW_LOG_DEBUG << "(ProfilerRoute) order profile for project id: "
 		       << bid;
-	const auto book = get_book(req, bid);
-	assert(book);
-	CROW_LOG_DEBUG << "(ProfilerRoute) profiling book id: " << book->id();
 	Lock lock(*mutex_);
 	const auto n = config().profiler.jobs;
+	auto obj = new_project_session(req, bid);
+	obj.session().assert_permission(obj.conn(), bid, Permissions::Write);
 	if (jobs_->size() < n) {
-		if (not jobs_->count(book->id())) {
-			jobs_->insert(book->id());
+		if (not jobs_->count(obj.data().origin().id())) {
+			jobs_->insert(obj.data().origin().id());
 			std::thread worker(
-			    [this, book]() { profile(this, book); });
+			    [&]() { profile(this, std::move(obj)); });
 			worker.detach();
 		}
 		return accepted();
@@ -85,34 +85,21 @@ ProfilerUptr ProfilerRoute::get_profiler(ConstBookSptr book) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ConstBookSptr ProfilerRoute::get_book(const Request& req, int bid) const {
-	CROW_LOG_DEBUG << "(ProfilerRoute) getting session object";
-	auto obj = this->new_project_session(req, bid);
-	CROW_LOG_DEBUG << "(ProfilerRoute) got session object";
-	const auto book = std::dynamic_pointer_cast<const Book>(
-	    obj.data().origin().shared_from_this());
-	CROW_LOG_DEBUG << "(ProfilerRoute) getting book";
-	if (not book)
-		THROW(Error, "Cannot determine origin of project id: ", bid);
-	CROW_LOG_DEBUG << "(ProfilerRoute) got book";
-	obj.session().assert_permission(obj.conn(), book->id(),
-					Permissions::Write);
-	CROW_LOG_DEBUG << "(ProfilerRoute) returning book";
-	return book;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void ProfilerRoute::profile(const ProfilerRoute* that, ConstBookSptr book) {
+void ProfilerRoute::profile(const ProfilerRoute* that,
+			    ProjectSessionObject obj) {
 	try {
 		// remove id from jobs before returning
-		const auto id = book->id();
+		const auto id = obj.data().id();
 		ScopeGuard sg([that, id]() {
 			assert(that);
 			assert(that->mutex_);
 			Lock lock(*that->mutex_);
 			that->jobs_->erase(id);
 		});
-		auto profiler = that->get_profiler(book);
+		auto profiler =
+		    that->get_profiler(std::dynamic_pointer_cast<const Book>(
+			obj.data().origin().shared_from_this()));
+		CROW_LOG_DEBUG << "(ProfilerRoute) profiling ...";
 		auto profile = profiler->profile();
 		CROW_LOG_DEBUG << "(ProfilerRoute) done profiling";
 		for (const auto& s : profile.get().suggestions()) {
@@ -121,8 +108,31 @@ void ProfilerRoute::profile(const ProfilerRoute* that, ConstBookSptr book) {
 				       << s.cand.explanation_string() << " ("
 				       << s.cand.weight() << ")";
 		}
+		insert_profile(profile.get(), obj);
 	} catch (const std::exception& e) {
 		CROW_LOG_ERROR << "(ProfilerRoute) Could not profile book id: "
-			       << book->id() << ": " << e.what();
+			       << obj.data().origin().id() << ": " << e.what();
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void ProfilerRoute::insert_profile(const Profile& profile,
+				   ProjectSessionObject& obj) {
+	using namespace sqlpp;
+	tables::Profiles profiles;
+	const auto id = obj.data().origin().id();
+	const auto ts = static_cast<uintmax_t>(std::time(nullptr));
+	MysqlCommiter commiter(obj.conn());
+	auto row = obj.conn().db()(select(profiles.bookid, profiles.timestamp)
+				       .from(profiles)
+				       .where(profiles.bookid == id));
+	if (row.empty()) {
+		obj.conn().db()(insert_into(profiles).set(
+		    profiles.bookid = id, profiles.timestamp = ts));
+	} else {
+		obj.conn().db()(update(profiles)
+				    .set(profiles.timestamp = ts)
+				    .where(profiles.bookid == id));
+	}
+	commiter.commit();
 }
