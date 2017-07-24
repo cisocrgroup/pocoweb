@@ -107,6 +107,7 @@ pcw::Config pcw::Config::load(std::istream& is) {
 	     ptree.get<int>("daemon.port"), threads, detach},
 	    {logfile, get_log_level(ptree.get<std::string>("log.level"))},
 	    {ptree.get<std::string>("profiler.backend"),
+	     static_cast<size_t>(ptree.get<int>("profiler.jobs")),
 	     ptree.get<bool>("profiler.local")},
 	    {
 		get_plugins(ptree),
@@ -153,6 +154,7 @@ void pcw::Config::LOG() const {
 	CROW_LOG_INFO << "log.level:        " << this->log.level;
 
 	CROW_LOG_INFO << "profiler.backend: " << this->profiler.backend;
+	CROW_LOG_INFO << "profiler.jobs:    " << this->profiler.jobs;
 	CROW_LOG_INFO << "profiler.local:   " << this->profiler.local;
 	for (const auto& p : this->plugins.configs) {
 		for (const auto& q : p.second) {

@@ -32,6 +32,7 @@ struct Config {
 
 	const struct Profiler {
 		const std::string backend;
+		const size_t jobs;
 		const bool local;
 	} profiler;
 
