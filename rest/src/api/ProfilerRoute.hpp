@@ -38,7 +38,8 @@ class ProfilerRoute : public CrtpRoute<ProfilerRoute> {
 	static void profile(const ProfilerRoute* that,
 			    ProjectSessionObject obj);
 	static void insert_profile(const Profile& profile,
-				   ProjectSessionObject& obj);
+				   ProjectSessionObject& obj,
+				   double min_weight);
 
 	std::shared_ptr<std::mutex> mutex_;
 	std::shared_ptr<std::set<int>> jobs_;
