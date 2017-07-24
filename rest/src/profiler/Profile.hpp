@@ -4,10 +4,12 @@
 #include <boost/filesystem/path.hpp>
 #include <regex>
 #include <unordered_map>
+#include "core/Book.hpp"
 #include "core/Line.hpp"
+#include "core/Page.hpp"
+#include "core/Project.hpp"
 
 namespace pcw {
-class Book;
 using ConstBookSptr = std::shared_ptr<const Book>;
 using Path = boost::filesystem::path;
 struct Char;
@@ -68,14 +70,25 @@ struct Pattern {
 static inline bool operator==(const Pattern& lhs, const Pattern& rhs) noexcept {
 	return std::tie(lhs.ocr, lhs.cor) == std::tie(rhs.ocr, rhs.cor);
 }
+
 static inline bool operator<(const Pattern& lhs, const Pattern& rhs) noexcept {
 	return std::tie(lhs.ocr, lhs.cor) < std::tie(rhs.ocr, rhs.cor);
 }
 
+static inline bool operator<(const Token& a, const Token& b) noexcept {
+	const auto lhs =
+	    std::make_tuple(a.line->page().book().id(), a.line->page().id(),
+			    a.line->id(), a.id);
+	const auto rhs =
+	    std::make_tuple(b.line->page().book().id(), b.line->page().id(),
+			    b.line->id(), b.id);
+	return lhs < rhs;
+}
+
 class Profile {
        public:
-	using Suggestions = std::vector<Suggestion>;
-	using Patterns = std::map<Pattern, Suggestions>;
+	using Suggestions = std::map<Token, std::vector<Candidate>>;
+	using Patterns = std::map<Pattern, std::vector<Suggestion>>;
 
 	Profile(ConstBookSptr book) : suggestions_(), book_(std::move(book)) {}
 

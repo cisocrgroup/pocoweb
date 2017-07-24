@@ -74,9 +74,11 @@ std::wstring Candidate::wcor() const {
 Profile::Patterns Profile::calc_ocr_patterns() const {
 	Patterns ps;
 	for (const auto& s : suggestions_) {
-		auto expl = s.cand.explanation();
-		for (const auto& ocrp : expl.ocrp.patterns) {
-			ps[ocrp].push_back(s);
+		for (const auto& cand : s.second) {
+			const auto expl = cand.explanation();
+			for (const auto& ocrp : expl.ocrp.patterns) {
+				ps[ocrp].emplace_back(cand, s.first);
+			}
 		}
 	}
 	return ps;
@@ -86,9 +88,11 @@ Profile::Patterns Profile::calc_ocr_patterns() const {
 Profile::Patterns Profile::calc_hist_patterns() const {
 	Patterns ps;
 	for (const auto& s : suggestions_) {
-		auto expl = s.cand.explanation();
-		for (const auto& histp : expl.histp.patterns) {
-			ps[histp].push_back(s);
+		for (const auto& cand : s.second) {
+			const auto expl = cand.explanation();
+			for (const auto& histp : expl.histp.patterns) {
+				ps[histp].emplace_back(cand, s.first);
+			}
 		}
 	}
 	return ps;
@@ -110,7 +114,8 @@ void ProfileBuilder::init() {
 				auto id = token.unique_id();
 				// std::cerr << "ADDING TOKEN:    " <<
 				// token.ocr() << "\n";
-				// std::cerr << "ADDING TOKEN ID: " << id <<
+				// std::cerr << "ADDING TOKEN ID: " <<
+				// id <<
 				// "\n";
 				tokens_[id] = token;
 			});
@@ -144,8 +149,10 @@ void ProfileBuilder::add_candidates_from_file(const Path& path) {
 		auto id = std::stoll(t.node().child("ext_id").child_value());
 		auto token = tokens_[id];
 		// std::cerr << "TOKEN ID:   " << id << "\n";
-		// std::cerr << "TOKEN LINE: " << token.line.get() << "\n";
-		// std::cerr << "TOKEN ID:   " << token.unique_id() << "\n";
+		// std::cerr << "TOKEN LINE: " << token.line.get() <<
+		// "\n";
+		// std::cerr << "TOKEN ID:   " << token.unique_id() <<
+		// "\n";
 		if (not token.line or not token.unique_id())
 			THROW(ParseError, "Invalid token id: ", id);
 		auto cs = t.node().select_nodes(".//cand");
@@ -168,5 +175,5 @@ void ProfileBuilder::add_candidate(const Token& token, const Candidate& cand) {
 	if (not token.line or not token.unique_id())
 		THROW(ParseError, "Encountered empty token for candidate: ",
 		      cand.cor());
-	suggestions_.emplace_back(cand, token);
+	suggestions_[token].push_back(cand);
 }
