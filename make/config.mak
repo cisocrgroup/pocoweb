@@ -50,7 +50,7 @@ PCW_DB_USER ?= pocoweb
 PCW_DB_PASS ?= pocoweb1998
 PCW_DB ?= pocoweb
 PCW_DB_CONNECTIONS ?= 10
-PCW_DB_DEBUG ?= true
+PCW_DB_DEBUG ?= false
 
 PCW_API_USER ?= pocoweb
 PCW_API_PASS ?= pocoweb123
