@@ -102,5 +102,7 @@ create table suggestions (
 	bookid int references errortokens(bookid),
 	errortokenid int references errortokens(errortokenid),
 	suggestion varchar(50) not null,
+	weight double,
+	distance int,
 	primary key(bookid, errortokenid, suggestion)
 );

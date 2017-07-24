@@ -1079,12 +1079,46 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
+    struct Weight
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "weight";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T weight;
+            T& operator()() { return weight; }
+            const T& operator()() const { return weight; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::floating_point, sqlpp::tag::can_be_null>;
+    };
+    struct Distance
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "distance";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T distance;
+            T& operator()() { return distance; }
+            const T& operator()() const { return distance; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
   }
 
   struct Suggestions: sqlpp::table_t<Suggestions,
                Suggestions_::Bookid,
                Suggestions_::Errortokenid,
-               Suggestions_::Suggestion>
+               Suggestions_::Suggestion,
+               Suggestions_::Weight,
+               Suggestions_::Distance>
   {
     struct _alias_t
     {
