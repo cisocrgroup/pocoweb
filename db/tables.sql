@@ -88,3 +88,19 @@ create table profiles (
 	bookid int references books(bookid) primary key,
 	timestamp bigint not null
 );
+
+drop table if exists errortokens;
+create table errortokens (
+	bookid int references profiles(bookid),
+	errortokenid int not null,
+	errortoken varchar(50) not null,
+	primary key (bookid, errortokenid)
+);
+
+drop table if exists suggestions;
+create table suggestions (
+	bookid int references errortokens(bookid),
+	errortokenid int references errortokens(errortokenid),
+	suggestion varchar(50) not null,
+	primary key(bookid, errortokenid, suggestion)
+);
