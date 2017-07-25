@@ -35,11 +35,11 @@ class ProfilerRoute : public CrtpRoute<ProfilerRoute> {
        private:
 	using Lock = std::lock_guard<std::mutex>;
 	ProfilerUptr get_profiler(ConstBookSptr book) const;
-	static void profile(const ProfilerRoute* that,
-			    ProjectSessionObject obj);
-	static void insert_profile(const Profile& profile,
-				   ProjectSessionObject& obj,
-				   double min_weight);
+	// static void profile(const ProfilerRoute* that,
+	// 		    ProjectSessionObject obj) noexcept;
+	// static void insert_profile(const Profile& profile,
+	// 			   ProjectSessionObject& obj,
+	// 			   double min_weight);
 
 	std::shared_ptr<std::mutex> mutex_;
 	std::shared_ptr<std::set<int>> jobs_;

@@ -33,15 +33,9 @@ void LineRoute::Register(App& app) {
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response LineRoute::impl(HttpGet, const Request& req, int bid, int pid,
 				int lid) const {
-	auto conn = connection();
-	auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
-
-	auto line = session->find(conn, bid, pid, lid);
-	if (not line) return not_found();
-	assert(line);
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	auto line = session->must_find(conn, bid, pid, lid);
 	Json j;
 	return j << *line;
 }
@@ -55,14 +49,10 @@ Route::Response LineRoute::impl(HttpPost, const Request& req, int bid, int pid,
 	    json["lineId"].i() != lid)
 		THROW(BadRequest,
 		      "(LineRoute) post ids do not match request uri");
-	auto conn = connection();
-	const auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
 	session->assert_permission(conn, bid, Permissions::Read);
-	const auto line = session->find(conn, bid, pid, lid);
-	if (not line) THROW(NotFound, "(LineRoute) cannot find line");
+	const auto line = session->must_find(conn, bid, pid, lid);
 	return create_split_images(*session, *line, json["tokenId"].i());
 }
 

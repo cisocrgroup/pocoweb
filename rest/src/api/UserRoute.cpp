@@ -27,12 +27,8 @@ void UserRoute::Register(App& app) {
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response UserRoute::impl(HttpGet, const Request& req) const {
-	auto conn = connection();
-	assert(conn);
-	auto session = this->session(req);
-	if (not session) THROW(BadRequest, "could not find session");
-	assert(session);
-	SessionLock lock(*session);
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
 	if (not session->user().admin()) {
 		THROW(Forbidden, "only admins can list users");
 	}
@@ -50,11 +46,8 @@ Route::Response UserRoute::impl(HttpGet, const Request& req) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response UserRoute::impl(HttpPost, const Request& req) const {
-	auto conn = connection();
-	assert(conn);
-	auto session = this->session(req);
-	if (not session) THROW(BadRequest, "could not find session");
-	SessionLock lock(*session);
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
 	if (not session->user().admin())
 		THROW(Forbidden, "only admins can create new users");
 	CROW_LOG_DEBUG << "(UserRoute) body: " << req.body;
@@ -77,11 +70,8 @@ Route::Response UserRoute::impl(HttpPost, const Request& req) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response UserRoute::impl(HttpDelete, const Request& req, int uid) const {
-	auto conn = connection();
-	assert(conn);
-	auto session = this->session(req);
-	if (not session) THROW(BadRequest, "could not find session");
-	SessionLock lock(*session);
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
 	if (not session->user().admin())
 		THROW(Forbidden, "only admins can create new users");
 	auto user = select_user(conn.db(), uid);

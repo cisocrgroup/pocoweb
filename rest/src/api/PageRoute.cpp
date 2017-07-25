@@ -40,34 +40,23 @@ void PageRoute::Register(App& app) {
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response PageRoute::impl(HttpGet, const Request& req, int bid,
 				int pid) const {
-	auto conn = connection();
-	auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	session->assert_permission(conn, bid, Permissions::Read);
 	CROW_LOG_DEBUG << "(PageRoute) searching for book id: " << bid
 		       << " page id: " << pid;
-	auto project = session->find(conn, bid);
-	auto page = session->find(conn, bid, pid);
-	if (not page or not project) return not_found();
-	assert(page);
-	assert(project);
+	const auto page = session->must_find(conn, bid, pid);
 	Json j;
-	return print(j, *page, *project);
+	return print(j, *page, page->book());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response PageRoute::impl(HttpGet, const Request& req, int bid) const {
-	auto conn = connection();
-	auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
-
-	auto book = session->find(conn, bid);
-	CROW_LOG_DEBUG << "(PageRoute) found book id: " << book->id();
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	auto book = session->must_find(conn, bid);
+	CROW_LOG_DEBUG << "(PageRoute) found project id: " << book->id();
 	bool first = false;
-	if (not book) return not_found();
 	if (strcasestr(req.url.data(), "/first"))
 		first = true;
 	else if (strcasestr(req.url.data(), "/last"))
@@ -75,7 +64,7 @@ Route::Response PageRoute::impl(HttpGet, const Request& req, int bid) const {
 	else
 		return bad_request();
 	if (book->empty()) return not_found();
-	CROW_LOG_DEBUG << "(PageRoute) book id: " << book->id()
+	CROW_LOG_DEBUG << "(PageRoute) project id: " << book->id()
 		       << " size: " << book->size();
 	for (const auto p : *book) {
 		CROW_LOG_DEBUG << "(PageRoute) page id: " << p->id();
@@ -83,12 +72,12 @@ Route::Response PageRoute::impl(HttpGet, const Request& req, int bid) const {
 
 	Json j;
 	if (first) {
-		CROW_LOG_DEBUG << "(PageRoute) bookid: " << book->id()
+		CROW_LOG_DEBUG << "(PageRoute) project id: " << book->id()
 			       << " pageid: " << book->front()->id()
 			       << " lines: " << book->front()->size();
 		return print(j, *book->front(), *book);
 	} else {
-		CROW_LOG_DEBUG << "(PageRoute) bookid: " << book->id()
+		CROW_LOG_DEBUG << "(PageRoute) project id: " << book->id()
 			       << " pageid: " << book->back()->id()
 			       << " lines: " << book->back()->size();
 		return print(j, *book->back(), *book);
@@ -98,14 +87,9 @@ Route::Response PageRoute::impl(HttpGet, const Request& req, int bid) const {
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response PageRoute::impl(HttpGet, const Request& req, int bid, int pid,
 				int val) const {
-	auto conn = connection();
-	auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
-
-	auto book = session->find(conn, bid);
-	if (not book) return not_found();
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	auto book = session->must_find(conn, bid);
 	if (strcasestr(req.url.data(), "/next/"))
 		return next(*book, pid, std::abs(val));
 	else if (strcasestr(req.url.data(), "/prev/"))
