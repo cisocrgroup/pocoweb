@@ -4,8 +4,7 @@ default character set utf8
 default collate utf8_general_ci;
 use pocoweb;
 
-drop table if exists users;
-create table users (
+create table if not exists users (
 	userid int not null unique primary key auto_increment,
 	name varchar(50) not null unique,
 	email varchar(50) not null,
@@ -14,8 +13,7 @@ create table users (
 	admin boolean not null
 );
 
-drop table if exists books;
-create table books (
+create table if not exists books (
 	bookid int not null unique references projects(projectid),
 	year int,
 	title varchar(100) not null,
@@ -26,23 +24,20 @@ create table books (
 	lang varchar(50) not null
 );
 
-drop table if exists projects;
-create table projects (
+create table if not exists projects (
 	projectid int not null unique primary key auto_increment,
 	origin int,
 	owner int references users(userid),
 	pages int
 );
 
-drop table if exists project_pages;
-create table project_pages (
+create table if not exists project_pages (
 	projectid int not null references projects(projectid),
 	pageid int not null references pages(pageid),
 	primary key (projectid, pageid)
 );
 
-drop table if exists pages;
-create table pages (
+create table if not exists pages (
 	bookid int references books(bookid),
 	pageid int,
 	imagepath varchar(255) not null,
@@ -55,8 +50,7 @@ create table pages (
 	primary key (bookid, pageid)
 );
 
-drop table if exists textlines;
-create table textlines (
+create table if not exists textlines (
 	bookid int references books(bookid),
 	pageid int references pages(pageid),
 	lineid int,
@@ -68,8 +62,7 @@ create table textlines (
 	primary key (bookid, pageid, lineid)
 );
 
-drop table if exists contents;
-create table contents (
+create table if not exists contents (
 	bookid int references books(bookid),
 	pageid int references pages(pageid),
 	lineid int references textlines(lineid),
@@ -81,28 +74,24 @@ create table contents (
 	primary key (bookid, pageid, lineid, seq)
 );
 
-drop table if exists bookpermissions;
 
-drop table if exists profiles;
-create table profiles (
-	bookid int references books(bookid) primary key,
-	timestamp bigint not null
+create table if not exists profiles (
+	bookid int references books(bookid),
+	timestamp bigint not null,
+	primary key (bookid)
 );
 
-drop table if exists errortokens;
-create table errortokens (
+create table if not exists errortokens (
 	bookid int references profiles(bookid),
 	errortokenid int not null,
 	errortoken varchar(50) not null,
 	primary key (bookid, errortokenid)
 );
 
-drop table if exists suggestions;
-create table suggestions (
+create table if not exists suggestions (
 	bookid int references errortokens(bookid),
 	errortokenid int references errortokens(errortokenid),
 	suggestion varchar(50) not null,
-	weight double,
-	distance int,
-	primary key(bookid, errortokenid, suggestion)
+	weight double not null,
+	distance int not null
 );

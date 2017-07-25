@@ -21,12 +21,7 @@ void Logout::Register(App& app) {
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response Logout::impl(HttpGet, const Request& req) const {
-	auto session = find_session(req);
-	if (not session) {
-		CROW_LOG_ERROR << "(Logout) not logged in";
-		return bad_request();
-	}
-	SessionLock lock(*session);
+	LockedSession session(must_find_session(req));
 	delete_session(*session);
 	return ok();
 }

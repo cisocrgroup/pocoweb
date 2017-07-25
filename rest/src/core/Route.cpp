@@ -36,9 +36,9 @@ SessionPtr Route::find_session(const crow::request& request) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-SessionPtr Route::session(const crow::request& request) const {
+SessionPtr Route::must_find_session(const crow::request& request) const {
 	auto session = find_session(request);
-	if (not session) THROW(Forbidden, "Not logged in");
+	if (not session) THROW(Forbidden, "(Route) Not logged in");
 	return session;
 }
 
@@ -50,68 +50,18 @@ void Route::delete_session(const Session& session) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::ProjectSessionObject Route::new_project_session(const Request& req,
-						       int pid) const {
-	const auto session = find_session(req);
-	if (not session) {
-		THROW(Forbidden, "(Route) not logged in");
-	}
-	auto conn = connection();
-	if (not conn) {
-		THROW(Error, "(Route) cannot load connection");
-	}
-	return ProjectSessionObject{
-	    session, std::move(conn), [&](const auto& obj) {
-		    const auto proj = obj.session().find(conn, pid);
-		    if (not proj) {
-			    THROW(NotFound, "(Route) cannot find ", pid);
-		    }
-		    return proj;
-	    }};
+MysqlConnection Route::must_get_connection() const {
+	auto connection = get_connection();
+	if (not connection)
+		THROW(ServiceNotAvailable,
+		      "(Route) cannot find a valid database connection");
+	return std::move(connection);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::PageSessionObject Route::new_page_session(const Request& req, int pid,
-						 int p) const {
-	const auto session = find_session(req);
-	if (not session) {
-		THROW(Forbidden, "(Route) not logged in");
-	}
-	auto conn = connection();
-	if (not conn) {
-		THROW(Error, "(Route) cannot load connection");
-	}
-	return PageSessionObject{
-	    session, std::move(conn), [&](const auto& obj) {
-		    const auto page = obj.session().find(conn, pid, p);
-		    if (not page) {
-			    THROW(NotFound, "(Route) cannot find ", pid, "-",
-				  p);
-		    }
-		    return page;
-	    }};
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Route::LineSessionObject Route::new_line_session(const Request& req, int pid,
-						 int p, int lid) const {
-	const auto session = find_session(req);
-	if (not session) {
-		THROW(Forbidden, "(Route) not logged in");
-	}
-	auto conn = connection();
-	if (not conn) {
-		THROW(Error, "(Route) cannot load connection");
-	}
-	return LineSessionObject{
-	    session, std::move(conn), [&](const auto& obj) {
-		    const auto line = obj.session().find(conn, pid, p, lid);
-		    if (not line) {
-			    THROW(NotFound, "(Route) cannot find ", pid, "-", p,
-				  "-", lid);
-		    }
-		    return line;
-	    }};
+MysqlConnection Route::get_connection() const {
+	assert(connection_pool_);
+	return connection_pool_->get_connection();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

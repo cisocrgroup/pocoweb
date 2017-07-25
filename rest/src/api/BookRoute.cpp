@@ -40,13 +40,10 @@ void BookRoute::Register(App& app) {
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpGet, const Request& req) const {
-	auto conn = connection();
-	auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
 	// no permissions check since all loaded projectes are owned by the user
-	auto projects = select_all_projects(conn.db(), session->user());
+	const auto projects = select_all_projects(conn.db(), session->user());
 	CROW_LOG_DEBUG << "(BookRoute) Loaded " << projects.size()
 		       << " projects";
 	Json j;
@@ -65,14 +62,11 @@ Route::Response BookRoute::impl(HttpGet, const Request& req) const {
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpPost, const Request& req) const {
 	CROW_LOG_INFO << "(BookRoute) body: " << req.body;
-	auto conn = connection();
-	auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
 	session->assert_permission(conn, 0, Permissions::Create);
 	// create new bookdir
-	BookDirectoryBuilder dir(config());
+	BookDirectoryBuilder dir(get_config());
 	ScopeGuard sg([&dir]() { dir.remove(); });
 	CROW_LOG_INFO << "(BookRoute) BookDirectoryBuilder: " << dir.dir();
 	const auto json = crow::json::load(req.body);
@@ -115,15 +109,10 @@ void BookRoute::update_book_data(Book& book,
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpGet, const Request& req, int bid) const {
-	auto conn = connection();
-	auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
 	session->assert_permission(conn, bid, Permissions::Read);
-	auto book = session->find(conn, bid);
-	if (not book) THROW(NotFound, "Could not find project id: ", bid);
-	assert(book);
+	auto book = session->must_find(conn, bid);
 	Json j;
 	return j << *book;
 }
@@ -132,14 +121,10 @@ Route::Response BookRoute::impl(HttpGet, const Request& req, int bid) const {
 Route::Response BookRoute::impl(HttpPost, const Request& req, int bid) const {
 	CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
 	auto data = crow::json::load(req.body);
-	auto conn = connection();
-	auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
 	session->assert_permission(conn, bid, Permissions::Write);
-	const auto view = session->find(conn, bid);
-	if (not view) THROW(NotFound, "cannot project id: ", bid);
+	const auto view = session->must_find(conn, bid);
 	if (not view->is_book())
 		THROW(BadRequest, "cannot set parameters of project id: ", bid);
 	const auto book = std::dynamic_pointer_cast<Book>(view);
@@ -183,16 +168,10 @@ Route::Response BookRoute::impl(HttpPost, const Request& req, int bid,
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpDelete, const Request& req, int bid) const {
-	auto conn = connection();
-	const auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
+	const LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
 	session->assert_permission(conn, bid, Permissions::Remove);
-	const auto project = session->find(conn, bid);
-	if (not project)
-		THROW(NotFound, "cannot remove project: no such project id: ",
-		      bid);
+	const auto project = session->must_find(conn, bid);
 	if (project->is_book())
 		remove_book(conn, *session, project->origin());
 	else
@@ -260,14 +239,10 @@ void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
 Route::Response BookRoute::download(const Request& req, int bid) const {
 	CROW_LOG_DEBUG << "(BookRoute::download) downloading project id: "
 		       << bid;
-	auto conn = connection();
-	const auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
+	auto conn = must_get_connection();
+	const LockedSession session(must_find_session(req));
 	session->assert_permission(conn, bid, Permissions::Read);
-	const auto project = session->find(conn, bid);
-	if (not project) THROW(NotFound, "cannot find project id: ", bid);
+	const auto project = session->must_find(conn, bid);
 	Archiver archiver(*project);
 	auto ar = archiver();
 	Json j;
@@ -283,14 +258,10 @@ Route::Response BookRoute::search(const Request& req, int bid) const {
 	}
 	CROW_LOG_DEBUG << "(BookRoute::search) searching project id: " << bid
 		       << " q: " << q;
-	auto conn = connection();
-	const auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
+	const LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
 	session->assert_permission(conn, bid, Permissions::Read);
-	const auto project = session->find(conn, bid);
-	if (not project) THROW(NotFound, "cannot find project id: ", bid);
+	const auto project = session->must_find(conn, bid);
 	Searcher searcher(*project);
 	const auto matches = searcher.find(q);
 	CROW_LOG_DEBUG << "(BookRoute::search) found " << matches.size()
@@ -320,16 +291,10 @@ Route::Response BookRoute::search(const Request& req, int bid) const {
 Route::Response BookRoute::finish(const Request& req, int bid) const {
 	CROW_LOG_DEBUG << "(BookRoute::finish) body: " << req.body;
 	const auto data = crow::json::load(req.body);
-	auto conn = connection();
-	const auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
+	auto conn = must_get_connection();
+	const LockedSession session(must_find_session(req));
 	session->assert_permission(conn, bid, Permissions::Finish);
-	const auto project = session->find(conn, bid);
-	if (not project)
-		THROW(NotFound, "cannot finish project: no such project id: ",
-		      bid);
+	const auto project = session->must_find(conn, bid);
 	const auto pentry = pcw::select_project_entry(conn.db(), bid);
 	if (not pentry)
 		THROW(Error, "cannot finish project: no such project id: ",
@@ -358,16 +323,10 @@ Route::Response BookRoute::finish(const Request& req, int bid) const {
 Route::Response BookRoute::assign(const Request& req, int bid) const {
 	CROW_LOG_DEBUG << "(BookRoute::assign) body: " << req.body;
 	const auto data = crow::json::load(req.body);
-	auto conn = connection();
-	const auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
+	auto conn = must_get_connection();
+	const LockedSession session(must_find_session(req));
 	session->assert_permission(conn, bid, Permissions::Assign);
-	const auto project = session->find(conn, bid);
-	if (not project)
-		THROW(NotFound, "cannot not find project: no such project id: ",
-		      bid);
+	const auto project = session->must_find(conn, bid);
 	UserPtr user = nullptr;
 	if (data.has("id"))
 		user = session->find_user(conn, data["id"].i());
@@ -392,14 +351,10 @@ Route::Response BookRoute::assign(const Request& req, int bid) const {
 Route::Response BookRoute::split(const Request& req, int bid) const {
 	CROW_LOG_DEBUG << "(BookRoute::split) body: " << req.body;
 	auto data = crow::json::load(req.body);
-	auto conn = connection();
-	auto session = this->session(req);
-	assert(conn);
-	assert(session);
-	SessionLock lock(*session);
+	auto conn = must_get_connection();
+	LockedSession session(must_find_session(req));
 	session->assert_permission(conn, bid, Permissions::Split);
-	auto proj = session->find(conn, bid);
-	assert(proj);
+	auto proj = session->must_find(conn, bid);
 	if (not proj->is_book())
 		THROW(BadRequest,
 		      "cannot split project: only books can be split");

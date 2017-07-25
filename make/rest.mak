@@ -75,8 +75,11 @@ lib/libpcwprofiler.a: $(PROFILER_OBJS) | $(MODS) $(VENDS) mkdir-lib
 pcwd: rest/src/pcwd.cpp $(LIBS)
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
 
-rest/src/database/Tables.h: modules/sqlpp11/scripts/ddl2cpp db/tables.sql
+rest/src/database/Tables.h: modules/sqlpp11/scripts/ddl2cpp db/tables.sql.tmp
 	$^ rest/src/database/Tables tables
+# ddl2cpp does not handle `create table if not exists foo`
+db/tables.sql.tmp: db/tables.sql
+	sed -e '/create/ s/if\s\s*not\s\s*exists\s*//' $< > $@
 
 DEPS += $(patsubst %.o,%.d,$(CORE_OBJS) $(API_OBJS) $(PARSER_OBJS) $(PROFILER_OBJS) $(PUGI_OBJS))
 DEPS += $(patsubst %,%.d,$(MAINS))

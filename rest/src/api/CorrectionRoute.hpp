@@ -18,10 +18,10 @@ class CorrectionRoute : public CrtpRoute<CorrectionRoute> {
 	Response impl(HttpPost, const Request& req) const;
 
        private:
-	Response impl(MysqlConnection& conn, Line& line,
-		      const std::string& c) const;
-	Response impl(MysqlConnection& conn, Line& line, int tid,
-		      const std::string& c) const;
+	Response correct(MysqlConnection& conn, Line& line,
+			 const std::string& c) const;
+	Response correct(MysqlConnection& conn, Line& line, int tid,
+			 const std::string& c) const;
 	static boost::optional<Token> find_token(const Line& line, int tid);
 	static void update_line(MysqlConnection& conn, const Line& line);
 	static const char* route_;

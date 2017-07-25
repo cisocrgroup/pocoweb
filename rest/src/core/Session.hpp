@@ -37,9 +37,23 @@ using PageSptr = std::shared_ptr<Page>;
 class Line;
 using LineSptr = std::shared_ptr<Line>;
 class Session;
-using SessionLock = std::lock_guard<Session>;
+using SessionPtr = std::shared_ptr<Session>;
 class SessionDirectory;
 using SessionDirectoryPtr = std::unique_ptr<SessionDirectory>;
+
+class LockedSession {
+       public:
+	LockedSession(SessionPtr session)
+	    : session_(session), lock_(*session) {}
+	Session* operator->() noexcept { return session_.get(); }
+	const Session* operator->() const noexcept { return session_.get(); }
+	Session& operator*() noexcept { return *session_; }
+	const Session& operator*() const noexcept { return *session_; }
+
+       private:
+	SessionPtr session_;
+	std::lock_guard<Session> lock_;
+};
 
 class Session {
        public:
@@ -69,6 +83,14 @@ class Session {
 	template <class Db>
 	inline LineSptr find(Connection<Db>& c, int bookid, int pageid,
 			     int lineid) const;
+	template <class Db>
+	inline ProjectSptr must_find(Connection<Db>& c, int bookid) const;
+	template <class Db>
+	inline PageSptr must_find(Connection<Db>& c, int bookid,
+				  int pageid) const;
+	template <class Db>
+	inline LineSptr must_find(Connection<Db>& c, int bookid, int pageid,
+				  int lineid) const;
 	template <class Db>
 	inline void insert_project(Connection<Db>& c, Project& view) const;
 	template <class Db>
@@ -123,6 +145,15 @@ class Session {
 
 ////////////////////////////////////////////////////////////////////////////////
 template <class Db>
+pcw::ProjectSptr pcw::Session::must_find(Connection<Db>& c, int bookid) const {
+	auto p = find(c, bookid);
+	if (not p)
+		THROW(NotFound, "(Session) cannot find project id: ", bookid);
+	return p;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template <class Db>
 pcw::ProjectSptr pcw::Session::find(Connection<Db>& c, int bookid) const {
 	if (project_ and project_->id() == bookid) return project_;
 
@@ -146,6 +177,17 @@ std::vector<pcw::ProjectSptr> pcw::Session::select_all_projects(
 
 ////////////////////////////////////////////////////////////////////////////////
 template <class Db>
+pcw::PageSptr pcw::Session::must_find(Connection<Db>& c, int bookid,
+				      int pageid) const {
+	auto p = find(c, bookid, pageid);
+	if (not p)
+		THROW(NotFound, "(Session) cannot find project id: ", bookid,
+		      ", page id: ", pageid);
+	return p;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template <class Db>
 pcw::PageSptr pcw::Session::find(Connection<Db>& c, int bookid,
 				 int pageid) const {
 	if (page_ and page_->id() == pageid and project_ and
@@ -161,6 +203,17 @@ pcw::PageSptr pcw::Session::find(Connection<Db>& c, int bookid,
 		}
 	}
 	return nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template <class Db>
+pcw::LineSptr pcw::Session::must_find(Connection<Db>& c, int bookid, int pageid,
+				      int lineid) const {
+	auto l = find(c, bookid, pageid, lineid);
+	if (not l)
+		THROW(NotFound, "(Session) cannot find project id: ", bookid,
+		      ", page id: ", pageid, ", line id: ", lineid);
+	return l;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

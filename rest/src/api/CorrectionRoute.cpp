@@ -42,18 +42,20 @@ Route::Response CorrectionRoute::impl(HttpPost, const Request& req) const {
 		      "(CorrectionRoute) missing correction in POST data");
 	const auto tid = get<int>(json, "tokenId");
 
-	auto obj = new_line_session(req, *pid, *p, *lid);
-	obj.session().assert_permission(obj.conn(), *pid, Permissions::Write);
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	session->assert_permission(conn, *pid, Permissions::Write);
+	auto line = session->must_find(conn, *pid, *p, *lid);
 	if (tid) {
-		return impl(obj.conn(), obj.data(), *tid, *c);
+		return correct(conn, *line, *tid, *c);
 	} else {
-		return impl(obj.conn(), obj.data(), *c);
+		return correct(conn, *line, *c);
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response CorrectionRoute::impl(MysqlConnection& conn, Line& line,
-				      const std::string& c) const {
+Route::Response CorrectionRoute::correct(MysqlConnection& conn, Line& line,
+					 const std::string& c) const {
 	WagnerFischer wf;
 	wf.set_gt(c);
 	wf.set_ocr(line);
@@ -69,8 +71,8 @@ Route::Response CorrectionRoute::impl(MysqlConnection& conn, Line& line,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response CorrectionRoute::impl(MysqlConnection& conn, Line& line,
-				      int tid, const std::string& c) const {
+Route::Response CorrectionRoute::correct(MysqlConnection& conn, Line& line,
+					 int tid, const std::string& c) const {
 	auto token = find_token(line, tid);
 	if (not token) {
 		THROW(NotFound, "(CorrectionRoute) cannot find ",
