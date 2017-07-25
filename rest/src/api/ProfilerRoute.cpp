@@ -20,21 +20,18 @@ const char* ProfilerRoute::route_ = PROFILER_ROUTE_ROUTE;
 const char* ProfilerRoute::name_ = "ProfilerRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
+// cannot initialize jobs here, since get_config() is not set after all routes
+// have been registered.
 ProfilerRoute::ProfilerRoute()
-    : mutex_(std::make_shared<std::mutex>()),
-      jobs_(std::make_shared<std::set<int>>()) {}
+    : mutex_(std::make_shared<std::mutex>()), jobs_() {}
 
 ////////////////////////////////////////////////////////////////////////////////
 ProfilerRoute::~ProfilerRoute() noexcept {
 	CROW_LOG_DEBUG << "(ProfilerRoute) waiting for unfinished jobs ... ";
-	while (true) {
-		Lock lock(*mutex_);
-		if (jobs_->empty()) {
-			break;
-		} else {
-			using namespace std::chrono_literals;
-			// wait untill all detached threads have finished.
-			std::this_thread::sleep_for(2s);
+	std::lock_guard<std::mutex> lock(*mutex_);
+	for (auto& job : *jobs_) {
+		if (job.t.joinable()) {
+			job.t.join();
 		}
 	}
 	CROW_LOG_DEBUG << "(ProfilerRoute) all jobs have finished.";
@@ -42,6 +39,9 @@ ProfilerRoute::~ProfilerRoute() noexcept {
 
 ////////////////////////////////////////////////////////////////////////////////
 void ProfilerRoute::Register(App& app) {
+	// setup jobs (Register() is called after each route has been set up).
+	// must be called before the route is registered.
+	jobs_ = std::make_shared<std::vector<Job>>(get_config().profiler.jobs);
 	CROW_ROUTE(app, PROFILER_ROUTE_ROUTE)
 	    .methods("GET"_method, "POST"_method)(*this);
 }
@@ -58,24 +58,35 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpPost, const Request& req,
 	// query book
 	CROW_LOG_DEBUG << "(ProfilerRoute) order profile for project id: "
 		       << bid;
-	Lock lock(*mutex_);
-	const auto n = get_config().profiler.jobs;
 	LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
 	session->assert_permission(conn, bid, Permissions::Write);
-	auto project = session->must_find(conn, bid);
-	if (jobs_->size() < n) {
-		if (not jobs_->count(bid)) {
-			// jobs_->insert(obj.data().origin().id());
-			// std::thread worker(
-			//     [&]() { profile(this, std::move(obj)); });
-			// worker.detach();
-			// profile(this, std::move(obj));
-		}
-		// return accepted();
+	const auto project = session->must_find(conn, bid);
+	const auto book = std::dynamic_pointer_cast<const Book>(
+	    project->origin().shared_from_this());
+	if (not book) {
+		THROW(Error,
+		      "(ProfilerRoute) Cannot get origin of "
+		      "book id: ",
+		      bid);
 	}
-	// return service_not_available();
-	return not_implemented();
+	// lock the jobs
+	std::lock_guard<std::mutex> lock(*mutex_);
+	auto job = find_free_job(book->id());
+	// no more threads possible
+	if (not job) return service_not_available();
+	// there is already a running job
+	if (job->running) return accepted();
+	// wait for the job's thread
+	if (job->t.joinable()) job->t.join();
+	job->id = book->id();
+	job->t = std::thread([=]() {
+		job->running = true;
+		// profile does not throw!
+		profile(this, book);
+		job->running = false;
+	});
+	return accepted();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -87,91 +98,87 @@ ProfilerUptr ProfilerRoute::get_profiler(ConstBookSptr book) const {
 	}
 }
 
-// ////////////////////////////////////////////////////////////////////////////////
-// void ProfilerRoute::profile(const ProfilerRoute* that,
-// 			    ProjectSessionObject obj) noexcept {
-// 	try {
-// 		// remove id from jobs before returning
-// 		const auto id = obj.data().id();
-// 		ScopeGuard sg([that, id]() {
-// 			assert(that);
-// 			assert(that->mutex_);
-// 			// Lock lock(*that->mutex_);
-// 			that->jobs_->erase(id);
-// 		});
-// 		CROW_LOG_DEBUG << "(ProfilerRoute) profiling ...";
-// 		auto profiler =
-// 		    that->get_profiler(std::dynamic_pointer_cast<const Book>(
-// 			obj.data().origin().shared_from_this()));
-// 		auto profile = profiler->profile();
-// 		insert_profile(profile.get(), obj,
-// 			       that->config().profiler.min_weight);
-// 		CROW_LOG_DEBUG << "(ProfilerRoute) done profiling";
-// 	} catch (const std::exception& e) {
-// 		CROW_LOG_ERROR << "(ProfilerRoute) Could not profile book id: "
-// 			       << obj.data().origin().id() << ": " << e.what();
-// 	} catch (...) {
-// 		CROW_LOG_ERROR << "(ProfilerRoute) Unkown error";
-// 	}
-// }
-//
-// ////////////////////////////////////////////////////////////////////////////////
-// void ProfilerRoute::insert_profile(const Profile& profile,
-// 				   ProjectSessionObject& obj,
-// 				   double min_weight) {
-// 	using namespace sqlpp;
-// 	tables::Profiles profiles;
-// 	tables::Errortokens errortokens;
-// 	tables::Suggestions suggestions;
-// 	const auto id = obj.data().origin().id();
-// 	const auto ts = static_cast<uintmax_t>(std::time(nullptr));
-// 	MysqlCommiter commiter(obj.conn());
-// 	auto row = obj.conn().db()(select(profiles.bookid, profiles.timestamp)
-// 				       .from(profiles)
-// 				       .where(profiles.bookid == id));
-// 	// new profile with a new timestamp
-// 	if (row.empty()) {
-// 		obj.conn().db()(insert_into(profiles).set(
-// 		    profiles.bookid = id, profiles.timestamp = ts));
-// 	} else {
-// 		obj.conn().db()(update(profiles)
-// 				    .set(profiles.timestamp = ts)
-// 				    .where(profiles.bookid == id));
-// 	}
-// 	// remove old profiles (if possible)
-// 	obj.conn().db()(
-// 	    remove_from(errortokens).where(errortokens.bookid == id));
-// 	obj.conn().db()(
-// 	    remove_from(suggestions).where(suggestions.bookid == id));
-// 	// insert new profile
-// 	std::set<std::wstring> seen;
-// 	for (const auto& s : profile.suggestions()) {
-// 		if (seen.count(s.first.wcor_lc())) continue;
-// 		seen.insert(s.first.wcor_lc());
-// 		const auto etid = static_cast<int>(seen.size());
-// 		obj.conn().db()(
-// 		    insert_into(errortokens)
-// 			.set(errortokens.errortokenid = etid,
-// 			     errortokens.bookid = id,
-// 			     errortokens.errortoken = s.first.cor_lc()));
-// 		for (const auto& c : s.second) {
-// 			if (c.weight() < min_weight) continue;
-// 			if (c.lev() <= 0) continue;
-// 			CROW_LOG_DEBUG << "(ProfilerRoute) [" << s.first.cor()
-// 				       << "] " << c.cor() << ": "
-// 				       << c.explanation_string() << " ("
-// 				       << c.weight() << ")";
-// 			CROW_LOG_DEBUG << "(ProfilerRoute) inserting: " << id
-// 				       << "-" << etid << "-" << c.cor() << "-"
-// 				       << c.weight() << "-" << c.lev();
-// 			obj.conn().db()(
-// 			    insert_into(suggestions)
-// 				.set(suggestions.bookid = id,
-// 				     suggestions.errortokenid = etid,
-// 				     suggestions.suggestion = c.cor(),
-// 				     suggestions.weight = c.weight(),
-// 				     suggestions.distance = c.lev()));
-// 		}
-// 	}
-// 	commiter.commit();
-// }
+////////////////////////////////////////////////////////////////////////////////
+ProfilerRoute::Job* ProfilerRoute::find_free_job(int id) const noexcept {
+	// jobs must be locked!
+	// search for already running job;
+	for (auto& job : *jobs_) {
+		if (job.id == id and not job.running) {
+			return &job;
+		}
+	}
+	for (auto& job : *jobs_) {
+		if (not job.running) {
+			return &job;
+		}
+	}
+	return nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void ProfilerRoute::profile(const ProfilerRoute* that,
+			    ConstBookSptr book) noexcept {
+	try {
+		CROW_LOG_DEBUG << "(ProfilerRoute) profiling ...";
+		auto profiler = that->get_profiler(book);
+		auto profile = profiler->profile();
+		insert_profile(that, profile.get());
+		CROW_LOG_DEBUG << "(ProfilerRoute) done profiling";
+	} catch (const std::exception& e) {
+		CROW_LOG_ERROR << "(ProfilerRoute) Could not profile book id: "
+			       << book->id() << ": " << e.what();
+	} catch (...) {
+		CROW_LOG_ERROR << "(ProfilerRoute) Unkown error";
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void ProfilerRoute::insert_profile(const ProfilerRoute* that,
+				   const Profile& profile) {
+	using namespace sqlpp;
+	tables::Profiles profiles;
+	tables::Errortokens errortokens;
+	tables::Suggestions suggestions;
+	auto conn = that->must_get_connection();
+	const auto id = profile.book().id();
+	const auto ts = static_cast<uintmax_t>(std::time(nullptr));
+	const auto min_weight = that->get_config().profiler.min_weight;
+	MysqlCommiter commiter(conn);
+	// remove old profiles (if possible)
+	conn.db()(remove_from(errortokens).where(errortokens.bookid == id));
+	conn.db()(remove_from(suggestions).where(suggestions.bookid == id));
+	conn.db()(remove_from(profiles).where(profiles.bookid == id));
+	// insert new profile timestamp
+	conn.db()(insert_into(profiles).set(profiles.bookid = id,
+					    profiles.timestamp = ts));
+
+	// insert new profile
+	std::set<std::wstring> seen;
+	for (const auto& s : profile.suggestions()) {
+		if (seen.count(s.first.wcor_lc())) continue;
+		seen.insert(s.first.wcor_lc());
+		const auto etid = static_cast<int>(seen.size());
+		conn.db()(insert_into(errortokens)
+			      .set(errortokens.errortokenid = etid,
+				   errortokens.bookid = id,
+				   errortokens.errortoken = s.first.cor_lc()));
+		for (const auto& c : s.second) {
+			if (c.weight() < min_weight) continue;
+			if (c.lev() <= 0) continue;
+			CROW_LOG_DEBUG << "(ProfilerRoute) [" << s.first.cor()
+				       << "] " << c.cor() << ": "
+				       << c.explanation_string() << " ("
+				       << c.weight() << ")";
+			CROW_LOG_DEBUG << "(ProfilerRoute) inserting: " << id
+				       << "-" << etid << "-" << c.cor() << "-"
+				       << c.weight() << "-" << c.lev();
+			conn.db()(insert_into(suggestions)
+				      .set(suggestions.bookid = id,
+					   suggestions.errortokenid = etid,
+					   suggestions.suggestion = c.cor(),
+					   suggestions.weight = c.weight(),
+					   suggestions.distance = c.lev()));
+		}
+	}
+	commiter.commit();
+}

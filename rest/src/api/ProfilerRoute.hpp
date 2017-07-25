@@ -33,16 +33,21 @@ class ProfilerRoute : public CrtpRoute<ProfilerRoute> {
 	Response impl(HttpPost, const Request& req, int bid) const;
 
        private:
+	struct Job {
+		std::thread t;
+		int id;
+		std::atomic<bool> running;
+	};
 	using Lock = std::lock_guard<std::mutex>;
 	ProfilerUptr get_profiler(ConstBookSptr book) const;
-	// static void profile(const ProfilerRoute* that,
-	// 		    ProjectSessionObject obj) noexcept;
-	// static void insert_profile(const Profile& profile,
-	// 			   ProjectSessionObject& obj,
-	// 			   double min_weight);
+	Job* find_free_job(int id) const noexcept;
+	static void profile(const ProfilerRoute* that,
+			    ConstBookSptr book) noexcept;
+	static void insert_profile(const ProfilerRoute* that,
+				   const Profile& profile);
 
 	std::shared_ptr<std::mutex> mutex_;
-	std::shared_ptr<std::set<int>> jobs_;
+	std::shared_ptr<std::vector<Job>> jobs_;
 	static const char *route_, *name_;
 };
 }
