@@ -229,15 +229,13 @@ function backend_get_first_page_route($pid) {
 
 function backend_get_correct_line_route($pid, $p, $lid) {
 	global $config;
-	return $config["backend"]["url"] . $config["backend"]["routes"]["correct_line"];
+	return sprintf($config["backend"]["url"] .
+		$config["backend"]["routes"]["correctLine"], $pid, $p, $lid);
 }
 
 function backend_correct_line($pid, $p, $lid, $d) {
 	$data = array(
 		'correction' => $d,
-		'projectId' => $pid,
-		'pageId' => $p,
-		'lineId' => $lid,
 	);
 	$api = new Api(backend_get_correct_line_route($pid, $p, $lid));
 	global $SID;

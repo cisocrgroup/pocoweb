@@ -35,7 +35,7 @@ pcw.Api = {
 		this.method = "GET";
 		this.post = null;
 		this.url = pcw.config.backend.url +
-		    pcw.config.backend.routes['api_version'];
+		    pcw.config.backend.routes.apiVersion;
 		this.acceptedStatuses = [200];
 	},
 	setupForGetLoggedInUser: function() {
@@ -47,23 +47,23 @@ pcw.Api = {
 	},
 	setupForCorrectWord: function(pid, p, lid, tid, c) {
 		this.method = "POST";
-		this.post = {
-			projectId: pid,
-			pageId: p,
-			lineId: lid,
-			tokenId: tid,
-			correction: c
-		};
 		this.url = pcw.config.backend.url +
-		    pcw.config.backend.routes['correct_line'];
+		    pcw.config.backend.routes.correctWord;
+		this.url = this.url.replace('%d', pid);
+		this.url = this.url.replace('%d', p);
+		this.url = this.url.replace('%d', lid);
+		this.url = this.url.replace('%d', tid);
+		this.post = {correction: c};
 		this.acceptedStatuses = [200];
 	},
 	setupForCorrectLine: function(pid, p, lid, c) {
 		this.method = "POST";
-		this.post =
-		    {projectId: pid, pageId: p, lineId: lid, correction: c};
+		this.post = {correction: c};
 		this.url = pcw.config.backend.url +
-		    pcw.config.backend.routes['correct_line'];
+		    pcw.config.backend.routes.correctLine;
+		this.url = this.url.replace('%d', pid);
+		this.url = this.url.replace('%d', p);
+		this.url = this.url.replace('%d', lid);
 		this.acceptedStatuses = [200];
 	},
 	setupForGetConcordance: function(pid, q) {
