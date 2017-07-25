@@ -111,10 +111,23 @@ struct ProfileFixture {
 		book->push_back(*page);
 		return book;
 	}
-	static bool contains(const Profile::Suggestions& s, const char* cor,
+	static bool contains(const Profile::Suggestions& ss, const char* cor,
 			     const char* ocr) {
-		return std::any_of(begin(s), end(s), [ocr, cor](const auto& s) {
-			return s.cand.cor() == cor and s.token.ocr() == ocr;
+		for (const auto& s : ss) {
+			if (s.first.ocr() == ocr) {
+				for (const auto c : s.second) {
+					if (c.cor() == cor) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	static bool contains(const std::vector<Suggestion> ss, const char* cor,
+			     const char* ocr) {
+		return std::any_of(begin(ss), end(ss), [=](const auto& s) {
+			return s.token.ocr() == ocr and s.cand.cor() == cor;
 		});
 	}
 	ConstBookSptr book;
