@@ -93,6 +93,5 @@ create table if not exists suggestions (
 	errortokenid int references errortokens(errortokenid),
 	suggestion varchar(50) not null,
 	weight double not null,
-	distance int not null,
-	primary key(bookid, errortokenid, suggestion)
+	distance int not null
 );
