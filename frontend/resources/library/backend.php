@@ -101,7 +101,7 @@ function backend_get_projects() {
 function backend_get_users_route() {
 	global $config;
 	return $config["backend"]["url"] .
-		$config["backend"]["routes"]["get_users"];
+		$config["backend"]["routes"]["getUsers"];
 }
 
 function backend_get_users() {
@@ -128,7 +128,7 @@ function backend_create_user($post) {
 function backend_get_delete_user_route($uid) {
 	global $config;
 	return sprintf($config["backend"]["url"] .
-		$config["backend"]["routes"]["delete_user"], $uid);
+		$config["backend"]["routes"]["deleteUser"], $uid);
 }
 
 function backend_delete_user($uid) {
@@ -141,7 +141,7 @@ function backend_delete_user($uid) {
 
 function backend_get_split_project_route($pid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["split_project"], $pid);
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["splitProject"], $pid);
 }
 
 function backend_split_project($pid, $post) {
@@ -160,7 +160,7 @@ function backend_split_project($pid, $post) {
 
 function backend_get_assign_project_route($pid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["assign_project"], $pid);
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["assignProject"], $pid);
 }
 
 function backend_assign_project($pid, $post) {
@@ -174,7 +174,7 @@ function backend_assign_project($pid, $post) {
 
 function backend_get_finish_project_route($pid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["finish_project"], $pid);
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["finishProject"], $pid);
 }
 
 function backend_finish_project($pid) {
@@ -188,7 +188,7 @@ function backend_finish_project($pid) {
 
 function backend_get_remove_project_route($pid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["remove_project"], $pid);
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["removeProject"], $pid);
 }
 
 function backend_remove_project($pid) {
@@ -201,7 +201,7 @@ function backend_remove_project($pid) {
 
 function backend_get_download_project_route($pid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["download_project"], $pid);
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["downloadProject"], $pid);
 }
 
 function backend_download_project($pid) {
@@ -214,17 +214,17 @@ function backend_download_project($pid) {
 
 function backend_get_nth_page_route($pid, $p) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["get_nth_page"], $pid, $p);
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["getNthPage"], $pid, $p);
 }
 
 function backend_get_last_page_route($pid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["get_last_page"], $pid);
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["getLastPage"], $pid);
 }
 
 function backend_get_first_page_route($pid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["get_first_page"], $pid);
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["getFirstPage"], $pid);
 }
 
 function backend_get_correct_line_route($pid, $p, $lid) {
@@ -269,7 +269,7 @@ function backend_get_page($pid, $p) {
 function backend_get_upload_project_route($file) {
 	global $config;
 	return $config["backend"]["url"] .
-		$config["backend"]["routes"]["upload_project"];
+		$config["backend"]["routes"]["uploadProject"];
 }
 
 function backend_upload_project($post, $name, $file) {
@@ -299,7 +299,7 @@ function backend_get_concordance($pid, $q) {
 function backend_get_split_images_route($pid, $p, $lid) {
 	global $config;
 	return sprintf($config["backend"]["url"] .
-		$config["backend"]["routes"]["split_images"],
+		$config["backend"]["routes"]["splitImages"],
 		$pid, $p, $lid);
 }
 
