@@ -14,8 +14,12 @@ class CorrectionRoute : public CrtpRoute<CorrectionRoute> {
 	virtual const char* route() const noexcept override { return route_; }
 	virtual const char* name() const noexcept override { return name_; }
 
-	pcw_crtp_route_def_impl__();
-	Response impl(HttpPost, const Request& req) const;
+	pcw_crtp_route_def_impl__(int, int, int);
+	pcw_crtp_route_def_impl__(int, int, int, int);
+	Response impl(HttpPost, const Request& req, int pid, int p,
+		      int lid) const;
+	Response impl(HttpPost, const Request& req, int pid, int p, int lid,
+		      int tid) const;
 
        private:
 	Response correct(MysqlConnection& conn, Line& line,

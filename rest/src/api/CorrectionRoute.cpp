@@ -8,49 +8,49 @@
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
 
-#define CORRECTION_ROUTE_ROUTE "/correction"
+#define CORRECTION_ROUTE_ROUTE_1 "/books/<int>/pages/<int>/lines/<int>/correct"
+#define CORRECTION_ROUTE_ROUTE_2 \
+	"/books/<int>/pages/<int>/lines/<int>/words/<int>/correct"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* CorrectionRoute::route_ = CORRECTION_ROUTE_ROUTE;
+const char* CorrectionRoute::route_ =
+    CORRECTION_ROUTE_ROUTE_1 "," CORRECTION_ROUTE_ROUTE_2;
 const char* CorrectionRoute::name_ = "CorrectionRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
 void CorrectionRoute::Register(App& app) {
-	CROW_ROUTE(app, CORRECTION_ROUTE_ROUTE).methods("POST"_method)(*this);
+	CROW_ROUTE(app, CORRECTION_ROUTE_ROUTE_1).methods("POST"_method)(*this);
+	CROW_ROUTE(app, CORRECTION_ROUTE_ROUTE_2).methods("POST"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response CorrectionRoute::impl(HttpPost, const Request& req) const {
+Route::Response CorrectionRoute::impl(HttpPost, const Request& req, int pid,
+				      int p, int lid) const {
 	const auto json = crow::json::load(req.body);
-	const auto pid = get<int>(json, "projectId");
-	if (not pid)
-		THROW(BadRequest,
-		      "(CorrectionRoute) missing projectId in POST data");
-	const auto p = get<int>(json, "pageId");
-	if (not p)
-		THROW(BadRequest,
-		      "(CorrectionRoute) missing pageId in POST data");
-	const auto lid = get<int>(json, "lineId");
-	if (not lid)
-		THROW(BadRequest,
-		      "(CorrectionRoute) missing lineId in POST data");
 	const auto c = get<std::string>(json, "correction");
 	if (not c)
-		THROW(BadRequest,
-		      "(CorrectionRoute) missing correction in POST data");
-	const auto tid = get<int>(json, "tokenId");
-
+		THROW(BadRequest, "(CorrectionRoute) missing correction data");
 	LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
-	session->assert_permission(conn, *pid, Permissions::Write);
-	auto line = session->must_find(conn, *pid, *p, *lid);
-	if (tid) {
-		return correct(conn, *line, *tid, *c);
-	} else {
-		return correct(conn, *line, *c);
-	}
+	session->assert_permission(conn, pid, Permissions::Write);
+	auto line = session->must_find(conn, pid, p, lid);
+	return correct(conn, *line, *c);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response CorrectionRoute::impl(HttpPost, const Request& req, int pid,
+				      int p, int lid, int tid) const {
+	const auto json = crow::json::load(req.body);
+	const auto c = get<std::string>(json, "correction");
+	if (not c)
+		THROW(BadRequest, "(CorrectionRoute) missing correction data");
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	session->assert_permission(conn, pid, Permissions::Write);
+	auto line = session->must_find(conn, pid, p, lid);
+	return correct(conn, *line, tid, *c);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
