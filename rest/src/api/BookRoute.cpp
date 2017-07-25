@@ -161,8 +161,14 @@ void BookRoute::remove_project_impl(MysqlConnection& conn, int pid) const {
 	using namespace sqlpp;
 	tables::Projects p;
 	tables::ProjectPages pp;
+	tables::Profiles ppp;
+	tables::Suggestions s;
+	tables::Errortokens e;
 	conn.db()(remove_from(pp).where(pp.projectid == pid));
 	conn.db()(remove_from(p).where(p.projectid == pid));
+	conn.db()(remove_from(ppp).where(ppp.bookid == pid));
+	conn.db()(remove_from(s).where(s.bookid == pid));
+	conn.db()(remove_from(e).where(e.bookid == pid));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -175,6 +181,9 @@ void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
 	tables::Textlines l;
 	tables::Contents c;
 	tables::Pages pgs;
+	tables::Profiles ppp;
+	tables::Suggestions s;
+	tables::Errortokens e;
 	MysqlCommiter commiter(conn);
 	auto pids = conn.db()(
 	    select(p.projectid, p.owner).from(p).where(p.origin == book.id()));
@@ -189,6 +198,9 @@ void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
 	conn.db()(remove_from(c).where(c.bookid == book.id()));
 	conn.db()(remove_from(l).where(l.bookid == book.id()));
 	conn.db()(remove_from(pgs).where(pgs.bookid == book.id()));
+	conn.db()(remove_from(ppp).where(ppp.bookid == book.id()));
+	conn.db()(remove_from(s).where(s.bookid == book.id()));
+	conn.db()(remove_from(e).where(e.bookid == book.id()));
 	const auto dir = book.data.dir;
 	CROW_LOG_INFO << "(BookRoute) removing directory: " << dir;
 	boost::system::error_code ec;
