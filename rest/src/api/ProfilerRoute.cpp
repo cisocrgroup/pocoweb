@@ -6,6 +6,7 @@
 #include "core/Book.hpp"
 #include "core/Config.hpp"
 #include "core/Session.hpp"
+#include "core/jsonify.hpp"
 #include "database/Tables.h"
 #include "profiler/LocalProfiler.hpp"
 #include "profiler/RemoteProfiler.hpp"
@@ -49,7 +50,48 @@ void ProfilerRoute::Register(App& app) {
 ////////////////////////////////////////////////////////////////////////////////
 ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req,
 					    int bid) const {
-	return not_implemented();
+	CROW_LOG_DEBUG << "(ProfilerRoute) lookup profile for project id: "
+		       << bid;
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	session->assert_permission(conn, bid, Permissions::Read);
+	const auto project = session->must_find(conn, bid);
+	// the project does exist. If no profile is found, this indicates not a
+	// 404 but simply an empty profile.
+	using namespace sqlpp;
+	tables::Profiles p;
+	const auto row =
+	    conn.db()(select(p.timestamp).from(p).where(p.bookid == bid));
+	const auto q = req.url_params.get("q");
+	Json j;
+	j["projectId"] = bid;
+	j["suggestions"] = ;
+	if (row.empty()) {
+		j["profiled"] = false;
+		j["timestamp"] = 0;
+	} else {
+		j["profiled"] = true;
+		j["timestamp"] = row.front().timestamp;
+		if (q and strlen(q) >= 0) {
+			tables::Suggestions s;
+			tables::Errortokens e;
+			auto sss =
+			    conn.db()(select(s.suggestion, s.weight, s.distance)
+					  .from(s.join(e).on(s.errortokenid ==
+							     e.errortokenid))
+					  .where(e.errortoken == q));
+			size_t i = 0;
+			j["query"] = q;
+			for (const auto& ss : sss) {
+				j["suggestions"][i]["weight"] = ss.weight;
+				j["suggestions"][i]["suggestion"] =
+				    ss.suggestion;
+				j["suggestions"][i]["distance"] = ss.distance;
+				i++;
+			}
+		}
+	}
+	return j;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -72,7 +72,7 @@ pcw.Api = {
 		this.url =
 		    pcw.config.backend.url + pcw.config.backend.routes.search;
 		this.url = this.url.replace('%d', pid);
-		this.url = this.url.replace('%s', q);
+		this.url = this.url.replace('%s', encodeURI(q));
 		this.acceptedStatuses = [200];
 	},
 	setupForOrderProfile: function(pid) {
@@ -84,14 +84,15 @@ pcw.Api = {
 		// 202 -> accepted
 		this.acceptedStatuses = [202];
 	},
-	setupForGetProfile: function(pid) {
+	setupForGetSuggestions: function(pid, q) {
 		this.method = "GET";
 		this.post = null;
 		this.url = pcw.config.backend.url +
-		    pcw.config.backend.routes.orderProfile;
+		    pcw.config.backend.routes.getSuggestions;
 		this.url = this.url.replace('%d', pid);
-		// 202 -> accepted, 200 -> ok (=done)
-		this.acceptedStatuses = [202, 200];
+		this.url = this.url.replace('%s', encodeURI(q));
+		// 202 -> accepted
+		this.acceptedStatuses = [200];
 	},
 	run: function(callback) {
 		var http = new XMLHttpRequest();

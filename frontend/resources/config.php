@@ -42,6 +42,7 @@ $config = array(
 			"search"           => "/books/%d/search?q=%s",
 			"splitImages"      => "/books/%d/pages/%d/lines/%d/split-images",
 			"orderProfile"     => "/books/%d/profile",
+			"getSuggestions"   => "/books/%d/profile?q=%s",
 		),
 	),
 	"cookies" => array(

@@ -239,6 +239,7 @@ pcw.displayConcordance = function(anchor) {
 			    "href", "concordance.php?pid=" + pid + "&q=" +
 				encodeURI(res.query));
 		});
+		pcw.getSuggestions(pid, selection);
 	}
 };
 
@@ -250,4 +251,29 @@ pcw.orderProfile = function(pid) {
 	api.run(function(status, res) {
 		pcw.log("ordered profile for project #" + pid);
 	});
+};
+
+pcw.getSuggestions = function(pid, q) {
+	pcw.log("getting suggestions for project #" + pid + " q=" + q);
+	var api = Object.create(pcw.Api);
+	api.sid = pcw.getSid();
+	api.setupForGetSuggestions(pid, q);
+	api.run(function(status, res) {
+		pcw.log("timestamp: " + pcw.timestampToISO8601(res.timestamp));
+		suggs = res.suggestions || [];
+		suggs.sort(function(a, b) { return b.weight - a.weight; });
+		for (var i = 0; i < suggs.length; i++) {
+			pcw.log(
+			    "suggestion: \"" + suggs[i].suggestion +
+			    "\", weight: " + suggs[i].weight + ", distance: " +
+			    suggs[i].distance);
+		}
+	});
+};
+
+pcw.timestampToISO8601 = function(ts) {
+	date = new Date(ts * 1000);
+	return date.getFullYear() + "-" + date.getMonth() + "-" +
+	    date.getDay() + "T" + date.getHours() + ":" + date.getMinutes() +
+	    ":" + date.getSeconds() + "Z";
 };
