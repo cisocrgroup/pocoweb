@@ -19,13 +19,11 @@
 
 #define BOOK_ROUTE_ROUTE_1 "/books"
 #define BOOK_ROUTE_ROUTE_2 "/books/<int>"
-#define BOOK_ROUTE_ROUTE_3 "/books/<int>/<string>"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* BookRoute::route_ =
-    BOOK_ROUTE_ROUTE_1 "," BOOK_ROUTE_ROUTE_2 "," BOOK_ROUTE_ROUTE_3;
+const char* BookRoute::route_ = BOOK_ROUTE_ROUTE_1 "," BOOK_ROUTE_ROUTE_2;
 const char* BookRoute::name_ = "BookRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,8 +32,6 @@ void BookRoute::Register(App& app) {
 	    .methods("GET"_method, "POST"_method)(*this);
 	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_2)
 	    .methods("GET"_method, "POST"_method, "DELETE"_method)(*this);
-	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_3)
-	    .methods("GET"_method, "POST"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -137,36 +133,6 @@ Route::Response BookRoute::impl(HttpPost, const Request& req, int bid) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response BookRoute::impl(HttpGet, const Request& req, int bid,
-				const std::string& c) const {
-	CROW_LOG_DEBUG << "(BookRoute) project id: " << bid
-		       << ", command: " << c;
-	if (strcmp(c.data(), "download") == 0) {
-		return download(req, bid);
-	} else if (strcmp(c.data(), "search") == 0) {
-		return search(req, bid);
-	} else {
-		return not_found();
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Route::Response BookRoute::impl(HttpPost, const Request& req, int bid,
-				const std::string& c) const {
-	CROW_LOG_DEBUG << "(BookRoute) project id: " << bid
-		       << ", command: " << c;
-	if (strcmp(c.data(), "split") == 0) {
-		return split(req, bid);
-	} else if (strcmp(c.data(), "assign") == 0) {
-		return assign(req, bid);
-	} else if (strcmp(c.data(), "finish") == 0) {
-		return finish(req, bid);
-	} else {
-		return not_found();
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpDelete, const Request& req, int bid) const {
 	const LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
@@ -233,197 +199,4 @@ void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
 		    << ec.message();
 	session.uncache_project(book.id());
 	commiter.commit();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Route::Response BookRoute::download(const Request& req, int bid) const {
-	CROW_LOG_DEBUG << "(BookRoute::download) downloading project id: "
-		       << bid;
-	auto conn = must_get_connection();
-	const LockedSession session(must_find_session(req));
-	session->assert_permission(conn, bid, Permissions::Read);
-	const auto project = session->must_find(conn, bid);
-	Archiver archiver(*project);
-	auto ar = archiver();
-	Json j;
-	j["archive"] = ar.string();
-	return j;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Route::Response BookRoute::search(const Request& req, int bid) const {
-	const auto q = req.url_params.get("q");
-	if (not q or strlen(q) <= 0) {
-		THROW(BadRequest, "invalid query string");
-	}
-	CROW_LOG_DEBUG << "(BookRoute::search) searching project id: " << bid
-		       << " q: " << q;
-	const LockedSession session(must_find_session(req));
-	auto conn = must_get_connection();
-	session->assert_permission(conn, bid, Permissions::Read);
-	const auto project = session->must_find(conn, bid);
-	Searcher searcher(*project);
-	const auto matches = searcher.find(q);
-	CROW_LOG_DEBUG << "(BookRoute::search) found " << matches.size()
-		       << " matches for q='" << q << "'";
-	Json json;
-	size_t i = 0;
-	size_t words = 0;
-	json["query"] = q;
-	json["projectId"] = bid;
-	json["nLines"] = matches.size();
-	json["nWords"] = words;
-	for (const auto& m : matches) {
-		json["matches"][i]["line"] << *m.first;
-		size_t j = 0;
-		for (const auto& token : m.second) {
-			json["matches"][i]["matches"][j] << token;
-			j++;
-			words++;
-		}
-		++i;
-	}
-	json["nWords"] = words;
-	return json;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Route::Response BookRoute::finish(const Request& req, int bid) const {
-	CROW_LOG_DEBUG << "(BookRoute::finish) body: " << req.body;
-	const auto data = crow::json::load(req.body);
-	auto conn = must_get_connection();
-	const LockedSession session(must_find_session(req));
-	session->assert_permission(conn, bid, Permissions::Finish);
-	const auto project = session->must_find(conn, bid);
-	const auto pentry = pcw::select_project_entry(conn.db(), bid);
-	if (not pentry)
-		THROW(Error, "cannot finish project: no such project id: ",
-		      bid);
-	const auto oentry =
-	    pcw::select_project_entry(conn.db(), pentry->origin);
-	if (not oentry)
-		THROW(Error, "cannot finish project: no such project id: ",
-		      pentry->origin);
-	const auto owner = session->find_user(conn, oentry->owner);
-	if (not owner)
-		THROW(Error, "cannot finish project: no such user id: ",
-		      oentry->owner);
-	using namespace sqlpp;
-	tables::Projects p;
-	MysqlCommiter commiter(conn);
-	conn.db()(update(p)
-		      .set(p.owner = owner->id())
-		      .where(p.projectid == project->id()));
-	project->set_owner(*owner);
-	commiter.commit();
-	return ok();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Route::Response BookRoute::assign(const Request& req, int bid) const {
-	CROW_LOG_DEBUG << "(BookRoute::assign) body: " << req.body;
-	const auto data = crow::json::load(req.body);
-	auto conn = must_get_connection();
-	const LockedSession session(must_find_session(req));
-	session->assert_permission(conn, bid, Permissions::Assign);
-	const auto project = session->must_find(conn, bid);
-	UserPtr user = nullptr;
-	if (data.has("id"))
-		user = session->find_user(conn, data["id"].i());
-	else if (data.has("name"))
-		user = session->find_user(conn, data["name"].s());
-	else
-		THROW(BadRequest, "cannot find user: missing user information");
-	if (not user) THROW(BadRequest, "cannot find user: no such user");
-	MysqlCommiter commiter(conn);
-	using namespace sqlpp;
-	tables::Projects projects;
-	auto stmnt = update(projects)
-			 .set(projects.owner = user->id())
-			 .where(projects.projectid == project->id());
-	conn.db()(stmnt);
-	project->set_owner(*user);
-	commiter.commit();
-	return ok();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Route::Response BookRoute::split(const Request& req, int bid) const {
-	CROW_LOG_DEBUG << "(BookRoute::split) body: " << req.body;
-	auto data = crow::json::load(req.body);
-	auto conn = must_get_connection();
-	LockedSession session(must_find_session(req));
-	session->assert_permission(conn, bid, Permissions::Split);
-	auto proj = session->must_find(conn, bid);
-	if (not proj->is_book())
-		THROW(BadRequest,
-		      "cannot split project: only books can be split");
-	if (proj->owner().id() != session->user().id())
-		THROW(Forbidden, "cannot split book: permission denied");
-	const auto n = data["n"].i();
-	if (n <= 0 or static_cast<size_t>(n) > proj->size())
-		THROW(BadRequest, "cannot split book: invalid split number: ",
-		      n);
-	std::vector<ProjectPtr> projs(n);
-	std::generate(begin(projs), end(projs), [&]() {
-		return std::make_shared<Package>(0, session->user(),
-						 proj->origin());
-	});
-	// project is a book so it's origin() points to itself
-	if (data.has("random") and data["random"].b())
-		split_random(proj->origin(), projs);
-	else
-		split_sequencial(proj->origin(), projs);
-	MysqlCommiter commiter(conn);
-	for (const auto& p : projs) {
-		assert(p);
-		insert_project(conn.db(), *p);
-	}
-	commiter.commit();
-	Json j;
-	return j << projs;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void BookRoute::split_random(const Book& book,
-			     std::vector<ProjectPtr>& projs) const {
-	assert(projs.size() <= book.size());
-	std::vector<PagePtr> tmp_pages(book.size());
-	std::copy(begin(book), end(book), begin(tmp_pages));
-	// std::random_device rd;
-	std::mt19937 g(genseed());
-	std::shuffle(begin(tmp_pages), end(tmp_pages), g);
-	const auto n = projs.size();
-	for (auto i = 0U; i < tmp_pages.size(); ++i) {
-		assert(projs[i % n]);
-		projs[i % n]->push_back(*tmp_pages[i]);
-	}
-	for (auto& p : projs) {
-		assert(p);
-		std::sort(begin(*p), end(*p), [](const auto& a, const auto& b) {
-			assert(a);
-			assert(b);
-			return a->id() < b->id();
-		});
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void BookRoute::split_sequencial(const Book& book,
-				 std::vector<ProjectPtr>& projs) const {
-	assert(projs.size() <= book.size());
-	const auto n = projs.size();
-	const auto d = book.size() / n;
-	auto r = book.size() % n;
-	std::vector<PagePtr> tmp_pages(book.size());
-	std::copy(begin(book), end(book), begin(tmp_pages));
-	size_t o = 0;
-	for (auto i = 0U; i < n; ++i) {
-		assert(projs[i]);
-		for (auto j = 0U; j < (d + r); ++j) {
-			projs[i]->push_back(*tmp_pages[j + o]);
-		}
-		o += (d + r);
-		if (r > 0) --r;
-	}
 }

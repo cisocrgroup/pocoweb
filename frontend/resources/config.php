@@ -40,7 +40,7 @@ $config = array(
 			"upload_project"   => "/books",
 			"search"           => "/books/%d/search?q=%s",
 			"split_images"     => "/books/%d/pages/%d/lines/%d/create-split-images",
-			"orderProfile"     => "/profile/%d",
+			"orderProfile"     => "/books/%d/profile",
 		),
 	),
 	"cookies" => array(

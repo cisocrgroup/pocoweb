@@ -1,5 +1,5 @@
-#ifndef pcw_BookRoute_hpp__
-#define pcw_BookRoute_hpp__
+#ifndef pcw_SearchRoute_hpp__
+#define pcw_SearchRoute_hpp__
 
 #include "core/CrtpRoute.hpp"
 
@@ -14,20 +14,25 @@ class Book;
 class Project;
 using ProjectPtr = std::shared_ptr<Project>;
 
-class BookRoute : public CrtpRoute<BookRoute> {
+class SearchRoute : public CrtpRoute<SearchRoute> {
        public:
-	virtual ~BookRoute() noexcept override = default;
+	virtual ~SearchRoute() noexcept override = default;
 	virtual void Register(App& app) override;
 	virtual const char* route() const noexcept override { return route_; }
 	virtual const char* name() const noexcept override { return name_; }
 
 	pcw_crtp_route_def_impl__();
 	pcw_crtp_route_def_impl__(int);
+	pcw_crtp_route_def_impl__(int, std::string);
 	Response impl(HttpPost, const Request& req) const;
 	Response impl(HttpGet, const Request& req) const;
 	Response impl(HttpGet, const Request& req, int bid) const;
 	Response impl(HttpPost, const Request& req, int bid) const;
 	Response impl(HttpDelete, const Request& req, int bid) const;
+	Response impl(HttpGet, const Request& req, int bid,
+		      const std::string& c) const;
+	Response impl(HttpPost, const Request& req, int bid,
+		      const std::string& c) const;
 
        private:
 	Response download(const Request& req, int bid) const;
@@ -51,4 +56,4 @@ class BookRoute : public CrtpRoute<BookRoute> {
 };
 }
 
-#endif  // pcw_BookRoute_hpp__
+#endif  // pcw_SearchRoute_hpp__

@@ -11,7 +11,7 @@
 #include "profiler/RemoteProfiler.hpp"
 #include "utils/Maybe.hpp"
 
-#define PROFILER_ROUTE_ROUTE "/profile/<int>"
+#define PROFILER_ROUTE_ROUTE "/books/<int>/profile"
 
 using namespace pcw;
 
