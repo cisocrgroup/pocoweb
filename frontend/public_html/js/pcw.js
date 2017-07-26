@@ -272,8 +272,15 @@ pcw.getSuggestions = function(pid, q) {
 };
 
 pcw.timestampToISO8601 = function(ts) {
-	date = new Date(ts * 1000);
-	return date.getFullYear() + "-" + date.getMonth() + "-" +
-	    date.getDay() + "T" + date.getHours() + ":" + date.getMinutes() +
-	    ":" + date.getSeconds() + "Z";
+	var fmtnum = function(n) {
+		if (n < 10) {
+			return "0" + n;
+		} else {
+			return n;
+		}
+	};
+	var date = new Date(ts * 1000);
+	return date.getFullYear() + "-" + fmtnum(date.getMonth()) + "-" +
+	    fmtnum(date.getDate()) + "T" + fmtnum(date.getHours()) + ":" +
+	    fmtnum(date.getMinutes()) + ":" + fmtnum(date.getSeconds()) + "Z";
 };
