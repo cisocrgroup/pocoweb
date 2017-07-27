@@ -18,6 +18,8 @@ using ConstBookSptr = ConstBookSptr;
 class Profiler;
 using ProfilerUptr = std::unique_ptr<Profiler>;
 class Profile;
+class Candidate;
+class Token;
 
 class ProfilerRoute : public CrtpRoute<ProfilerRoute> {
        public:

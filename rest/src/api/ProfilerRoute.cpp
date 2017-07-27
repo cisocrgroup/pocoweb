@@ -7,6 +7,7 @@
 #include "core/Config.hpp"
 #include "core/Session.hpp"
 #include "core/jsonify.hpp"
+#include "core/util.hpp"
 #include "database/Tables.h"
 #include "profiler/LocalProfiler.hpp"
 #include "profiler/RemoteProfiler.hpp"
@@ -65,7 +66,7 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req,
 	const auto q = req.url_params.get("q");
 	Json j;
 	j["projectId"] = bid;
-	j["suggestions"] = ;
+	j["suggestions"] = crow::json::rvalue(crow::json::type::List);
 	if (row.empty()) {
 		j["profiled"] = false;
 		j["timestamp"] = 0;
@@ -73,19 +74,23 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req,
 		j["profiled"] = true;
 		j["timestamp"] = row.front().timestamp;
 		if (q and strlen(q) >= 0) {
+			std::string query = q;
+			const auto cap = get_capitalization(query);
+			to_lower(query);
 			tables::Suggestions s;
 			tables::Errortokens e;
 			auto sss =
 			    conn.db()(select(s.suggestion, s.weight, s.distance)
 					  .from(s.join(e).on(s.errortokenid ==
 							     e.errortokenid))
-					  .where(e.errortoken == q));
+					  .where(e.errortoken == query));
 			size_t i = 0;
 			j["query"] = q;
 			for (const auto& ss : sss) {
+				std::string sugg = ss.suggestion;
+				apply_capitalization(cap, sugg);
 				j["suggestions"][i]["weight"] = ss.weight;
-				j["suggestions"][i]["suggestion"] =
-				    ss.suggestion;
+				j["suggestions"][i]["suggestion"] = sugg;
 				j["suggestions"][i]["distance"] = ss.distance;
 				i++;
 			}
@@ -206,14 +211,11 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 				   errortokens.errortoken = s.first.cor_lc()));
 		for (const auto& c : s.second) {
 			if (c.weight() < min_weight) continue;
-			if (c.lev() <= 0) continue;
+			// if (c.lev() <= 0) continue;
 			CROW_LOG_DEBUG << "(ProfilerRoute) [" << s.first.cor()
 				       << "] " << c.cor() << ": "
 				       << c.explanation_string() << " ("
-				       << c.weight() << ")";
-			CROW_LOG_DEBUG << "(ProfilerRoute) inserting: " << id
-				       << "-" << etid << "-" << c.cor() << "-"
-				       << c.weight() << "-" << c.lev();
+				       << c.lev() << ", " << c.weight() << ")";
 			conn.db()(insert_into(suggestions)
 				      .set(suggestions.bookid = id,
 					   suggestions.errortokenid = etid,
