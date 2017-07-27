@@ -446,6 +446,25 @@ function frontend_render_page_header_div($page) {
 		'<label id="concordance-search-label">Show concordance of \'\' (0 occurences)</label>',
 		'</li></a>', "\n";
 	echo '</ul>';
+	// suggestions
+	echo '<ul class="nav navbar-nav">', "\n";
+	echo '<li class="dropdown">'; //  disabled">';
+	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" ',
+		'aria-haspopup="true" aria-expanded="false">',
+		'Correction suggestions<span class="caret"></span></a>';
+        echo '<ul id="pcw-suggestions-dropdown" class="dropdown-menu">';
+	// echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#1");\' ',
+	// 	'href="#">Correction suggestion #1</a></li>', "\n";
+	// echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#2");\' ',
+	// 	'href="#">Correction suggestion #2</a></li>', "\n";
+	// echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#3");\' ',
+	// 	'href="#">Correction suggestion #3</a></li>', "\n";
+	// echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#4");\' ',
+	// 	'href="#">Correction suggestion #4</a></li>', "\n";
+        // echo '<li role="separator" class="divider"></li>';
+        echo '</ul>';
+        echo '</li>';
+	echo '</ul>';
 	// nextpage and last page
 	echo '<ul class="nav navbar-nav">', "\n";
 	echo '<li><a href="page.php?u=none&p=', $nextpageid, '&pid=', $pid,
