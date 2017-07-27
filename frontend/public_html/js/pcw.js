@@ -156,6 +156,8 @@ pcw.setLoggedInUser = function() {
 pcw.setupCorrectedInputField = function(elem, res) {
 	if (elem === null) return;
 	elem.value = res.cor;
+	elem.className.replace(/ *fully-corrected-line/, '');
+	elem.className.replace(/ *partially-corrected-line/, '');
 	if (res.isFullyCorrected) {
 		elem.className += " fully-corrected-line";
 	} else if (res.isPartiallyCorrected) {
