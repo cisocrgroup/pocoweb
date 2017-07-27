@@ -154,11 +154,21 @@ pcw.setLoggedInUser = function() {
 };
 
 pcw.setupCorrectedInputField = function(elem, res) {
+	if (elem === null) return;
 	elem.value = res.cor;
 	if (res.isFullyCorrected) {
 		elem.className += " fully-corrected-line";
 	} else if (res.isPartiallyCorrected) {
 		elem.className += " partially-corrected-line";
+	}
+	pcw.redraw(elem);
+};
+
+pcw.redraw = function(elem) {
+	if (elem !== null) {
+		// does not seem to work :(
+		elem.style.display = 'none';
+		elem.style.display = 'block';
 	}
 };
 
