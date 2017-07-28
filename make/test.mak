@@ -36,26 +36,20 @@ PROFILER_TESTS += rest/src/profiler/tests/TestProfile.test
 PROFILER_TESTS += rest/src/profiler/tests/TestDocXml.test
 
 TESTS = $(UTILS_TESTS) $(CORE_TESTS) $(DATABASE_TESTS) $(PARSER_TESTS) $(PROFILER_TESTS)
-%.test: %.cpp $(LIBS)
+RUN_TESTS = $(patsubst %.test,%.run,$(TESTS))
+%.test: %.o
 	$(call ECHO,$@)
 	$V $(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
-
-test: $(TESTS)
-	@errors=0;\
-	for test in $(TESTS); do \
-		$$test > /dev/null 2>&1; \
-		res=$$?; \
-		if [ $$res -ne 0 ]; then \
-			errors=$$((errors + 1)); \
-			printf "%-60s \033[0;31mFAIL\033[0m\n" "$$test:";\
-		else \
-			printf "%-60s \033[0;32mSUCCESS\033[0m\n" "$$test:";\
-		fi \
-	done ;\
-	if [ $$errors -ne 0 ]; then \
-		echo "\033[0;31m$$errors FAILURE(S)\033[0m" ;\
-		exit $$errors ;\
+%.run: %.test
+	@$< > /dev/null 2>&1; \
+	res=$$?; \
+	if [ $$res -ne 0 ]; then \
+		printf "%-60s \033[0;31mFAIL\033[0m\n" "$@:"; \
+		exit 1; \
+	else \
+		printf "%-60s \033[0;32mSUCCESS\033[0m\n" "$@:"; \
 	fi
+test: $(RUN_TESTS)
 
 DEPS += $(patsubst %.test,%.d,$(TESTS))
 .PHONY: test
