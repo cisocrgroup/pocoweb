@@ -77,7 +77,7 @@ Profile::Patterns Profile::calc_ocr_patterns() const {
 		for (const auto& cand : s.second) {
 			const auto expl = cand.explanation();
 			for (const auto& ocrp : expl.ocrp.patterns) {
-				ps[ocrp].emplace_back(cand, s.first);
+				ps[ocrp].emplace(cand, s.first);
 			}
 		}
 	}
@@ -91,7 +91,7 @@ Profile::Patterns Profile::calc_hist_patterns() const {
 		for (const auto& cand : s.second) {
 			const auto expl = cand.explanation();
 			for (const auto& histp : expl.histp.patterns) {
-				ps[histp].emplace_back(cand, s.first);
+				ps[histp].emplace(cand, s.first);
 			}
 		}
 	}
@@ -99,8 +99,14 @@ Profile::Patterns Profile::calc_hist_patterns() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+size_t Profile::count(const std::string& str) const noexcept {
+	auto f = counts_.find(str);
+	return f != end(counts_) ? f->second : 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 ProfileBuilder::ProfileBuilder(ConstBookSptr book)
-    : tokens_(), suggestions_(), book_(std::move(book)) {
+    : tokens_(), counts_(), suggestions_(), book_(std::move(book)) {
 	init();
 }
 
@@ -126,6 +132,7 @@ void ProfileBuilder::init() {
 ////////////////////////////////////////////////////////////////////////////////
 void ProfileBuilder::clear() {
 	suggestions_.clear();
+	counts_.clear();
 	// book remains untouched
 	// tokens remains untouched
 }
@@ -134,6 +141,7 @@ void ProfileBuilder::clear() {
 Profile ProfileBuilder::build() const {
 	Profile profile{book_};
 	profile.suggestions_ = this->suggestions_;
+	profile.counts_ = this->counts_;
 	return profile;
 }
 
@@ -145,9 +153,11 @@ void ProfileBuilder::add_candidates_from_file(const Path& path) {
 		THROW(ParseError, "Could not parse file ", path, ": ",
 		      ok.description());
 	auto ts = doc.document_element().select_nodes(".//token");
+	bool newtok = false;
 	for (const auto& t : ts) {
 		auto id = std::stoll(t.node().child("ext_id").child_value());
 		auto token = tokens_[id];
+		newtok = true;
 		// std::cerr << "TOKEN ID:   " << id << "\n";
 		// std::cerr << "TOKEN LINE: " << token.line.get() <<
 		// "\n";
@@ -157,23 +167,28 @@ void ProfileBuilder::add_candidates_from_file(const Path& path) {
 			THROW(ParseError, "Invalid token id: ", id);
 		auto cs = t.node().select_nodes(".//cand");
 		for (const auto& c : cs) {
-			add_candidate_string(token, c.node().child_value());
+			add_candidate_string(token, c.node().child_value(),
+					     newtok);
+			newtok = false;
 		}
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void ProfileBuilder::add_candidate_string(const Token& token,
-					  const std::string& str) {
+					  const std::string& str, bool newtok) {
 	if (not token.line or not token.unique_id())
-		THROW(ParseError, "Invalid token for expressin: ", str);
-	add_candidate(token, Candidate(str));
+		THROW(ParseError, "Invalid token for expression: ", str);
+	add_candidate(token, Candidate(str), newtok);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ProfileBuilder::add_candidate(const Token& token, const Candidate& cand) {
+void ProfileBuilder::add_candidate(const Token& token, const Candidate& cand,
+				   bool newtok) {
 	if (not token.line or not token.unique_id())
 		THROW(ParseError, "Encountered empty token for candidate: ",
 		      cand.cor());
-	suggestions_[token].push_back(cand);
+	const auto str = token.cor_lc();
+	suggestions_[str].insert(cand);
+	if (newtok) counts_[str]++;
 }

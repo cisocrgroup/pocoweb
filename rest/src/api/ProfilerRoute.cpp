@@ -200,22 +200,20 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 					    profiles.timestamp = ts));
 
 	// insert new profile
-	std::set<std::wstring> seen;
+	int etid = 0;
 	for (const auto& s : profile.suggestions()) {
-		if (seen.count(s.first.wcor_lc())) continue;
-		seen.insert(s.first.wcor_lc());
-		const auto etid = static_cast<int>(seen.size());
+		etid++;
 		conn.db()(insert_into(errortokens)
 			      .set(errortokens.errortokenid = etid,
 				   errortokens.bookid = id,
-				   errortokens.errortoken = s.first.cor_lc()));
+				   errortokens.errortoken = s.first));
 		for (const auto& c : s.second) {
 			if (c.weight() < min_weight) continue;
 			// if (c.lev() <= 0) continue;
-			CROW_LOG_DEBUG << "(ProfilerRoute) [" << s.first.cor()
-				       << "] " << c.cor() << ": "
-				       << c.explanation_string() << " ("
-				       << c.lev() << ", " << c.weight() << ")";
+			CROW_LOG_DEBUG
+			    << "(ProfilerRoute) [" << s.first << "] " << c.cor()
+			    << ": " << c.explanation_string() << " (" << c.lev()
+			    << ", " << c.weight() << ")";
 			conn.db()(insert_into(suggestions)
 				      .set(suggestions.bookid = id,
 					   suggestions.errortokenid = etid,

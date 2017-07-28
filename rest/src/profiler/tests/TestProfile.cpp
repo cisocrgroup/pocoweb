@@ -80,25 +80,33 @@ BOOST_AUTO_TEST_CASE(TestScientificVoteWeight) {
 BOOST_AUTO_TEST_SUITE_END()
 
 struct ProfileFixture {
-	ProfileFixture() : book(make_book()), profile(book), builder(book) {
+	ProfileFixture()
+	    : book(make_book()),
+	      profile(book),
+	      builder(book),
+	      expressions(),
+	      candidates() {
+		expressions = {
+		    {"thorm",
+		     "thurm:{thurm+[(t:th,1)]}+ocr[(u:o,"
+		     "3)],"
+		     "voteWeight=0.03,levDistance=1"},
+		    {"vnn",
+		     "unn:{unn+[(nd:nn,1)]}+ocr[(u:v,0)]"
+		     ","
+		     "voteWeight=0.04,levDistance=1"},
+		    {"maver",
+		     "mauer:{mauer+[]}+ocr[(u:v,2)],"
+		     "voteWeight=0.04,levDistance=1"},
+		};
+		for (const auto& e : expressions) {
+			candidates[e.first] = Candidate(e.second);
+		}
 		book->find(1)->find(1)->each_token([this](const auto& token) {
-			if (token.ocr() == "thorm")
-				builder.add_candidate_string(
-				    token,
-				    "thurm:{thurm+[(t:th,1)]}+ocr[(u:o,"
-				    "3)],"
-				    "voteWeight=0.03,levDistance=1");
-			else if (token.ocr() == "vnn")
-				builder.add_candidate_string(
-				    token,
-				    "unn:{unn+[(nd:nn,1)]}+ocr[(u:v,0)]"
-				    ","
-				    "voteWeight=0.04,levDistance=1");
-			else if (token.ocr() == "maver")
-				builder.add_candidate_string(
-				    token,
-				    "mauer:{mauer+[]}+ocr[(u:v,2)],"
-				    "voteWeight=0.04,levDistance=1");
+			auto f = expressions.find(token.ocr());
+			if (f != end(expressions)) {
+				builder.add_candidate_string(token, f->second);
+			}
 		});
 		profile = builder.build();
 	}
@@ -106,33 +114,17 @@ struct ProfileFixture {
 		auto book = std::make_shared<Book>(1);
 		auto page = std::make_shared<Page>(1);
 		auto line = std::make_shared<Line>(1);
-		line->append("maver thüre vnn thorm", 0, 100, 0.8);
+		line->append("maver thüre vnn vnn vnn thorm thorm", 0, 100,
+			     0.8);
 		page->push_back(line);
 		book->push_back(*page);
 		return book;
 	}
-	static bool contains(const Profile::Suggestions& ss, const char* cor,
-			     const char* ocr) {
-		for (const auto& s : ss) {
-			if (s.first.ocr() == ocr) {
-				for (const auto c : s.second) {
-					if (c.cor() == cor) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-	static bool contains(const std::vector<Suggestion> ss, const char* cor,
-			     const char* ocr) {
-		return std::any_of(begin(ss), end(ss), [=](const auto& s) {
-			return s.token.ocr() == ocr and s.cand.cor() == cor;
-		});
-	}
 	ConstBookSptr book;
 	Profile profile;
 	ProfileBuilder builder;
+	std::map<std::string, std::string> expressions;
+	std::map<std::string, Candidate> candidates;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -140,11 +132,21 @@ BOOST_FIXTURE_TEST_SUITE(ProfileTest, ProfileFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(Suggestions) {
-	BOOST_CHECK_EQUAL(profile.suggestions().size(), 3);
-	BOOST_CHECK(contains(profile.suggestions(), "thurm", "thorm"));
-	BOOST_CHECK(contains(profile.suggestions(), "mauer", "maver"));
-	BOOST_CHECK(contains(profile.suggestions(), "unn", "vnn"));
-	BOOST_CHECK(not contains(profile.suggestions(), "thüre", "thüre"));
+	auto suggestions = profile.suggestions();
+	BOOST_CHECK_EQUAL(suggestions.size(), 3);
+	BOOST_CHECK(suggestions["thorm"].count(candidates["thorm"]));
+	BOOST_CHECK(suggestions["maver"].count(candidates["maver"]));
+	BOOST_CHECK(suggestions["vnn"].count(candidates["vnn"]));
+	BOOST_CHECK(suggestions["thüre"].empty());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(Counts) {
+	BOOST_CHECK_EQUAL(profile.count("thorm"), 2);
+	BOOST_CHECK_EQUAL(profile.count("maver"), 1);
+	BOOST_CHECK_EQUAL(profile.count("vnn"), 3);
+	BOOST_CHECK_EQUAL(profile.count("thüre"), 0);
+	BOOST_CHECK_EQUAL(profile.count("something-else"), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -154,9 +156,10 @@ BOOST_AUTO_TEST_CASE(OcrPatternsUV) {
 	BOOST_CHECK_EQUAL(ocrp.size(), 2);
 	BOOST_REQUIRE(ocrp.count(p));
 	BOOST_CHECK_EQUAL(ocrp[p].size(), 2);
-	BOOST_CHECK(contains(ocrp[p], "mauer", "maver"));
-	BOOST_CHECK(contains(ocrp[p], "unn", "vnn"));
-	BOOST_CHECK(not contains(ocrp[p], "thurm", "thorm"));
+	BOOST_CHECK(ocrp[p].count(Suggestion(candidates["maver"], "maver")));
+	BOOST_CHECK(ocrp[p].count(Suggestion(candidates["vnn"], "vnn")));
+	BOOST_CHECK(
+	    not ocrp[p].count(Suggestion(candidates["thorm"], "thorm")));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -166,7 +169,10 @@ BOOST_AUTO_TEST_CASE(OcrPatternsUO) {
 	BOOST_CHECK_EQUAL(ocrp.size(), 2);
 	BOOST_REQUIRE(ocrp.count(p));
 	BOOST_CHECK_EQUAL(ocrp[p].size(), 1);
-	BOOST_CHECK(contains(ocrp[p], "thurm", "thorm"));
+	BOOST_CHECK(
+	    not ocrp[p].count(Suggestion(candidates["maver"], "maver")));
+	BOOST_CHECK(not ocrp[p].count(Suggestion(candidates["vnn"], "vnn")));
+	BOOST_CHECK(ocrp[p].count(Suggestion(candidates["thorm"], "thorm")));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -176,7 +182,11 @@ BOOST_AUTO_TEST_CASE(OcrPatternsNDNN) {
 	BOOST_CHECK_EQUAL(histp.size(), 2);
 	BOOST_REQUIRE(histp.count(p));
 	BOOST_CHECK_EQUAL(histp[p].size(), 1);
-	BOOST_CHECK(contains(histp[p], "unn", "vnn"));
+	BOOST_CHECK(
+	    not histp[p].count(Suggestion(candidates["maver"], "maver")));
+	BOOST_CHECK(histp[p].count(Suggestion(candidates["vnn"], "vnn")));
+	BOOST_CHECK(
+	    not histp[p].count(Suggestion(candidates["thorm"], "thorm")));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -186,7 +196,10 @@ BOOST_AUTO_TEST_CASE(OcrPatternsTTH) {
 	BOOST_CHECK_EQUAL(histp.size(), 2);
 	BOOST_REQUIRE(histp.count(p));
 	BOOST_CHECK_EQUAL(histp[p].size(), 1);
-	BOOST_CHECK(contains(histp[p], "thurm", "thorm"));
+	BOOST_CHECK(
+	    not histp[p].count(Suggestion(candidates["maver"], "maver")));
+	BOOST_CHECK(not histp[p].count(Suggestion(candidates["vnn"], "vnn")));
+	BOOST_CHECK(histp[p].count(Suggestion(candidates["thorm"], "thorm")));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
