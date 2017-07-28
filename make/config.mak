@@ -2,6 +2,7 @@ PCW_API_VERSION_MAJOR := 0
 PCW_API_VERSION_MINOR := 2
 PCW_API_VERSION_PATCH := 0
 
+V ?= @
 DESTDIR ?=
 PREFIX ?= /usr/local
 BINDIR := $(PREFIX)/bin
@@ -31,8 +32,8 @@ CXXFLAGS += -DPCW_API_VERSION_PATCH=$(PCW_API_VERSION_PATCH)
 CXXFLAGS += -DPCW_DESTDIR=$(DESTDIR)
 
 LDFLAGS += -Llib
-LDFLAGS += -lpcwcore -lpcwprofiler -lpcwapi -lpcwparser -lpugixml
-LDFLAGS += -lpcwcore -lpcwprofiler -lpcwapi -lpcwparser -lpugixml # do it two times
+LDFLAGS += -lpcw
+LDFLAGS += -lpugixml
 LDFLAGS += -ldl
 LDFLAGS += -lssl
 LDFLAGS += -llept
@@ -57,10 +58,19 @@ PCW_API_PASS ?= pocoweb123
 PCW_API_EMAIL ?= pocoweb@cis.lmu.de
 PCW_API_INSTITUTE ?= CIS
 
+ECHO = @echo "[\033[0;32m$1\033[0m]"
+%.o: %.cpp
+	$(call ECHO,$@)
+	$V $(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ -c $<
+mkdir-%:
+	$(call ECHO,$(subst -,/,$*))
+	@mkdir -p $(subst -,/,$*)
+dbg-%:; @echo $*: ${$*}
+
 -include make/cache.mak
 
 make/cache.mak: Makefile make/config.mak
-	@echo "Generating $@"
+	$(call ECHO,$@)
 	@echo "#" > $@
 	@echo "# cache.mak" >> $@
 	@echo "# created: `date`" >> $@
@@ -88,7 +98,7 @@ make/cache.mak: Makefile make/config.mak
 	@echo "PCW_API_INSTITUTE := $(PCW_API_INSTITUTE)" >> $@
 
 config.ini: misc/default/config.def.ini make/cache.mak
-	@echo "Generating $@"
+	$(call ECHO,$@)
 	@sed -e 's/$$[({]PCW_DB_HOST[})]/$(PCW_DB_HOST)/g' \
 	     -e 's/$$[({]PCW_DB_USER[})]/$(PCW_DB_USER)/g' \
 	     -e 's/$$[({]PCW_DB_PASS[})]/$(PCW_DB_PASS)/g' \

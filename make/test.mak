@@ -37,7 +37,8 @@ PROFILER_TESTS += rest/src/profiler/tests/TestDocXml.test
 
 TESTS = $(UTILS_TESTS) $(CORE_TESTS) $(DATABASE_TESTS) $(PARSER_TESTS) $(PROFILER_TESTS)
 %.test: %.cpp $(LIBS)
-	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
+	$(call ECHO,$@)
+	$V $(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
 
 test: $(TESTS)
 	@errors=0;\

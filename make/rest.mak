@@ -63,29 +63,22 @@ PROFILER_OBJS += rest/src/profiler/Profiler.o
 PROFILER_OBJS += rest/src/profiler/RemoteProfiler.o
 PROFILER_OBJS += rest/src/profiler/docxml.o
 
-LIBS += lib/libpcwcore.a
-LIBS += lib/libpcwparser.a
-LIBS += lib/libpcwprofiler.a
-LIBS += lib/libpcwapi.a
+LIBS += lib/libpcw.a
 MAINS += pcwd
 
-lib/libpcwcore.a: $(CORE_OBJS) | $(MODS) mkdir-lib
-	$(AR) rcs $@ $^
-lib/libpcwapi.a: $(API_OBJS) | $(MODS) $(VENDS) mkdir-lib
-	$(AR) rcs $@ $^
-lib/libpcwparser.a: $(PARSER_OBJS) | $(MODS) $(VENDS) mkdir-lib
-	$(AR) rcs $@ $^
-lib/libpcwprofiler.a: $(PROFILER_OBJS) | $(MODS) $(VENDS) mkdir-lib
-	$(AR) rcs $@ $^
-
-pcwd: rest/src/pcwd.cpp $(LIBS)
-	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
-
+lib/libpcw.a: $(CORE_OBJS) $(API_OBJS) $(PROFILER_OBJS) $(PARSER_OBJS) | $(MODS) mkdir-lib
+	$(call ECHO,$@)
+	$V $(AR) rcs $@ $^
+pcwd: rest/src/pcwd.o $(LIBS)
+	$(call ECHO,$@)
+	$V $(CXX) $(CXXFLAGS) $< $(LDFLAGS) -o $@
 rest/src/database/Tables.h: modules/sqlpp11/scripts/ddl2cpp db/tables.sql.tmp
-	$^ rest/src/database/Tables tables
+	$(call ECHO,$@)
+	@$^ rest/src/database/Tables tables
 # ddl2cpp does not handle `create table if not exists foo`
 db/tables.sql.tmp: db/tables.sql
-	sed -e '/create/ s/if\s\s*not\s\s*exists\s*//' $< > $@
+	$(call ECHO,$@)
+	@sed -e '/create/ s/if\s\s*not\s\s*exists\s*//' $< > $@
 
 DEPS += $(patsubst %.o,%.d,$(CORE_OBJS) $(API_OBJS) $(PARSER_OBJS) $(PROFILER_OBJS) $(PUGI_OBJS))
 DEPS += $(patsubst %,%.d,$(MAINS))
