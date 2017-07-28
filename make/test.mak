@@ -37,17 +37,17 @@ PROFILER_TESTS += rest/src/profiler/tests/TestDocXml.test
 
 TESTS = $(UTILS_TESTS) $(CORE_TESTS) $(DATABASE_TESTS) $(PARSER_TESTS) $(PROFILER_TESTS)
 RUN_TESTS = $(patsubst %.test,%.run,$(TESTS))
-%.test: %.o
+%.test: %.o $(LIBS)
 	$(call ECHO,$@)
 	$V $(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
 %.run: %.test
 	@$< > /dev/null 2>&1; \
 	res=$$?; \
 	if [ $$res -ne 0 ]; then \
-		printf "%-60s \033[0;31mFAIL\033[0m\n" "$@:"; \
+		echo "[\033[0;31m$@\033[0m]"; \
 		exit 1; \
 	else \
-		printf "%-60s \033[0;32mSUCCESS\033[0m\n" "$@:"; \
+		echo "[\033[0;32m$@\033[0m]"; \
 	fi
 test: $(RUN_TESTS)
 

@@ -62,9 +62,7 @@ ECHO = @echo "[\033[0;32m$1\033[0m]"
 %.o: %.cpp
 	$(call ECHO,$@)
 	$V $(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ -c $<
-mkdir-%:
-	$(call ECHO,$(subst -,/,$*))
-	@mkdir -p $(subst -,/,$*)
+mkdir-%:; @mkdir -p $(subst -,/,$*)
 dbg-%:; @echo $*: ${$*}
 
 -include make/cache.mak
