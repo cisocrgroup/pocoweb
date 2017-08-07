@@ -1,5 +1,5 @@
-#ifndef profiler_ProfilerRoute_hpp__
-#define profiler_ProfilerRoute_hpp__
+#ifndef pcw_ProfilerRoute_hpp__
+#define pcw_ProfilerRoute_hpp__
 
 #include <crow/logging.h>
 #include <future>
@@ -54,4 +54,4 @@ class ProfilerRoute : public CrtpRoute<ProfilerRoute> {
 };
 }
 
-#endif  // profiler_ProfilerRoute_hpp__
+#endif  // pcw_ProfilerRoute_hpp__

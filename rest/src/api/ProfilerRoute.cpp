@@ -12,6 +12,7 @@
 #include "profiler/LocalProfiler.hpp"
 #include "profiler/RemoteProfiler.hpp"
 #include "utils/Maybe.hpp"
+#include "utils/UniqueIdMap.hpp"
 
 #define PROFILER_ROUTE_ROUTE "/books/<int>/profile"
 
@@ -74,23 +75,35 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req,
 		j["profiled"] = true;
 		j["timestamp"] = row.front().timestamp;
 		if (q and strlen(q) >= 0) {
+			tables::Types t;
 			std::string query = q;
+			j["query"] = q;
 			const auto cap = get_capitalization(query);
 			to_lower(query);
+			const auto qidrow =
+			    conn.db()(select(t.typid).from(t).where(
+				t.bookid == bid && t.string == query));
+			if (qidrow.empty()) return j;
+			const auto qid = qidrow.front().typid;
 			tables::Suggestions s;
-			tables::Errortokens e;
-			auto sss =
-			    conn.db()(select(s.suggestion, s.weight, s.distance)
-					  .from(s.join(e).on(s.errortokenid ==
-							     e.errortokenid))
-					  .where(e.errortoken == query));
+			// tables::Errorpatterns e;
+			auto sss = conn.db()(
+			    select(s.suggestionid, s.weight, s.distance)
+				.from(s)
+				.where(s.typid == qid));
 			size_t i = 0;
-			j["query"] = q;
+			j["typeid"] = qid;
 			for (const auto& ss : sss) {
-				std::string sugg = ss.suggestion;
+				std::string sugg =
+				    conn.db()(select(t.string).from(t).where(
+						  t.typid == ss.suggestionid))
+					.front()
+					.string;
 				apply_capitalization(cap, sugg);
-				j["suggestions"][i]["weight"] = ss.weight;
+				j["suggestions"][i]["suggestionid"] =
+				    ss.suggestionid;
 				j["suggestions"][i]["suggestion"] = sugg;
+				j["suggestions"][i]["weight"] = ss.weight;
 				j["suggestions"][i]["distance"] = ss.distance;
 				i++;
 			}
@@ -183,30 +196,28 @@ void ProfilerRoute::profile(const ProfilerRoute* that,
 void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 				   const Profile& profile) {
 	using namespace sqlpp;
-	tables::Profiles profiles;
-	tables::Errortokens errortokens;
-	tables::Suggestions suggestions;
+	tables::Profiles p;
+	tables::Errorpatterns e;
+	tables::Types t;
+	tables::Suggestions stab;
 	auto conn = that->must_get_connection();
 	const auto id = profile.book().id();
 	const auto ts = static_cast<uintmax_t>(std::time(nullptr));
 	const auto min_weight = that->get_config().profiler.min_weight;
 	MysqlCommiter commiter(conn);
 	// remove old profiles (if possible)
-	conn.db()(remove_from(errortokens).where(errortokens.bookid == id));
-	conn.db()(remove_from(suggestions).where(suggestions.bookid == id));
-	conn.db()(remove_from(profiles).where(profiles.bookid == id));
+	conn.db()(remove_from(p).where(p.bookid == id));
+	conn.db()(remove_from(stab).where(stab.bookid == id));
+	conn.db()(remove_from(t).where(t.bookid == id));
+	conn.db()(remove_from(e).where(e.bookid == id));
 	// insert new profile timestamp
-	conn.db()(insert_into(profiles).set(profiles.bookid = id,
-					    profiles.timestamp = ts));
-
+	conn.db()(insert_into(p).set(p.bookid = id, p.timestamp = ts));
 	// insert new profile
-	int etid = 0;
+	UniqueIdMap<std::string> typeids;
 	for (const auto& s : profile.suggestions()) {
-		etid++;
-		conn.db()(insert_into(errortokens)
-			      .set(errortokens.errortokenid = etid,
-				   errortokens.bookid = id,
-				   errortokens.errortoken = s.first));
+		const auto firstid = typeids[s.first].first;  // always a new id
+		conn.db()(insert_into(t).set(t.bookid = id, t.typid = firstid,
+					     t.string = s.first));
 		for (const auto& c : s.second) {
 			if (c.weight() < min_weight) continue;
 			// if (c.lev() <= 0) continue;
@@ -214,12 +225,18 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 			    << "(ProfilerRoute) [" << s.first << "] " << c.cor()
 			    << ": " << c.explanation_string() << " (" << c.lev()
 			    << ", " << c.weight() << ")";
-			conn.db()(insert_into(suggestions)
-				      .set(suggestions.bookid = id,
-					   suggestions.errortokenid = etid,
-					   suggestions.suggestion = c.cor(),
-					   suggestions.weight = c.weight(),
-					   suggestions.distance = c.lev()));
+			int secondid;
+			bool newid;
+			std::tie(secondid, newid) = typeids[c.cor()];
+			if (newid) {
+				conn.db()(insert_into(t).set(
+				    t.bookid = id, t.typid = secondid,
+				    t.string = c.cor()));
+			}
+			conn.db()(insert_into(stab).set(
+			    stab.bookid = id, stab.typid = firstid,
+			    stab.suggestionid = secondid,
+			    stab.weight = c.weight(), stab.distance = c.lev()));
 		}
 	}
 	commiter.commit();
