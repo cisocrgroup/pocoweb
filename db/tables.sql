@@ -74,6 +74,12 @@ create table if not exists contents (
 	primary key (bookid, pageid, lineid, seq)
 );
 
+create table if not exists types (
+	bookid int references books(bookid),
+	typid int,
+	string varchar(50),
+	primary key (bookid, typid)
+);
 
 create table if not exists profiles (
 	bookid int references books(bookid),
@@ -81,17 +87,20 @@ create table if not exists profiles (
 	primary key (bookid)
 );
 
-create table if not exists errortokens (
-	bookid int references profiles(bookid),
-	errortokenid int not null,
-	errortoken varchar(50) not null,
-	primary key (bookid, errortokenid)
+/* (3 * 4)^ + 1^^ + (3 * 4)^ = 25*/
+/* ^: max utf length of a pattern with maximal 3 characters */
+/* ^^: lenght of separator `:` */
+create table if not exists errorpatterns (
+	bookid int references suggestions(bookid),
+	pattern varchar(25),
+	typid int references suggestions(typid),
+	suggestionid int references suggesttions(suggestionid)
 );
 
 create table if not exists suggestions (
-	bookid int references errortokens(bookid),
-	errortokenid int references errortokens(errortokenid),
-	suggestion varchar(50) not null,
+	bookid int references types(bookid),
+	typid int references types(typid),
+	suggestionid int references types(typid),
 	weight double not null,
 	distance int not null
 );
