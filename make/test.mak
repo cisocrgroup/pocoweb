@@ -1,6 +1,7 @@
 UTILS_TESTS += rest/src/utils/tests/TestError.test
 UTILS_TESTS += rest/src/utils/tests/TestMaybe.test
 UTILS_TESTS += rest/src/utils/tests/TestScopeGuard.test
+UTILS_TESTS += rest/src/utils/tests/TestUniqueIdMap.test
 
 CORE_TESTS += rest/src/core/tests/TestBookBuilder.test
 CORE_TESTS += rest/src/core/tests/TestBox.test
