@@ -17,7 +17,8 @@ LocalProfiler::LocalProfiler(ConstBookSptr book, const Config& config)
       tmpdir_(),
       backend_(config.profiler.backend),
       outfile_(tmpdir_ / "out.xml"),
-      infile_(tmpdir_ / "in.xml") {}
+      infile_(tmpdir_ / "in.xml"),
+      debug_(config.profiler.debug) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 Profile LocalProfiler::do_profile() {
@@ -55,6 +56,15 @@ Profile LocalProfiler::read_profile() const {
 	ProfileBuilder builder(
 	    std::dynamic_pointer_cast<const Book>(book().shared_from_this()));
 	builder.add_candidates_from_file(infile_);
+	if (debug_) {  // write tmp-profile if debugging is enabled
+		boost::system::error_code ec;
+		hard_link_or_copy(infile_, "profile-tmp.xml", ec);
+		if (ec) {
+			CROW_LOG_WARNING
+			    << "(LocalProfiler) could not create profile-tmp: "
+			    << ec.message();
+		}
+	}
 	CROW_LOG_DEBUG << "(LocalProfiler) Done reading profile file "
 		       << infile_;
 	return builder.build();

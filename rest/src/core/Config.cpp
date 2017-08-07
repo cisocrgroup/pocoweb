@@ -109,7 +109,8 @@ pcw::Config pcw::Config::load(std::istream& is) {
 	    {ptree.get<std::string>("profiler.backend"),
 	     ptree.get<double>("profiler.minweight"),
 	     static_cast<size_t>(ptree.get<int>("profiler.jobs")),
-	     ptree.get<bool>("profiler.local")},
+	     ptree.get<bool>("profiler.local"),
+	     ptree.get<bool>("profiler.debug")},
 	    {
 		get_plugins(ptree),
 	    },

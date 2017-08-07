@@ -26,6 +26,7 @@ class LocalProfiler : public Profiler {
 
 	const TmpDir tmpdir_;
 	const Path backend_, outfile_, infile_;
+	const bool debug_;
 };
 }
 
