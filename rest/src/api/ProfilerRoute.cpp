@@ -215,23 +215,31 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 	// insert new profile
 	UniqueIdMap<std::string> typeids;
 	for (const auto& s : profile.suggestions()) {
-		const auto firstid = typeids[s.first].first;  // always a new id
-		conn.db()(insert_into(t).set(t.bookid = id, t.typid = firstid,
-					     t.string = s.first));
+		bool isnew;
+		int firstid;
+		std::tie(firstid, isnew) = typeids[s.first];
+		if (isnew) {
+			conn.db()(insert_into(t).set(t.bookid = id,
+						     t.typid = firstid,
+						     t.string = s.first));
+		}
 		for (const auto& c : s.second) {
 			if (c.weight() < min_weight) continue;
 			// if (c.lev() <= 0) continue;
-			CROW_LOG_DEBUG
-			    << "(ProfilerRoute) [" << s.first << "] " << c.cor()
-			    << ": " << c.explanation_string() << " (" << c.lev()
-			    << ", " << c.weight() << ")";
+			auto correction = c.cor();
+			to_lower(correction);
+			CROW_LOG_DEBUG << "(ProfilerRoute) [" << s.first << "] "
+				       << correction << ": "
+				       << c.explanation_string() << " ("
+				       << c.lev() << ", " << c.weight() << ")";
 			int secondid;
-			bool newid;
-			std::tie(secondid, newid) = typeids[c.cor()];
-			if (newid) {
+			std::tie(secondid, isnew) = typeids[correction];
+			CROW_LOG_DEBUG << "(ProfilerRoute) isnew: " << isnew
+				       << " secondid: " << secondid;
+			if (isnew) {
 				conn.db()(insert_into(t).set(
 				    t.bookid = id, t.typid = secondid,
-				    t.string = c.cor()));
+				    t.string = correction));
 			}
 			conn.db()(insert_into(stab).set(
 			    stab.bookid = id, stab.typid = firstid,
