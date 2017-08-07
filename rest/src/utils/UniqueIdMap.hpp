@@ -5,21 +5,21 @@
 
 namespace pcw {
 template <class T>
-class UniqueIdMap : private std::map<T, int> {
-       private:
-	using base = std::map<T, int>;
-
+class UniqueIdMap {
        public:
 	std::pair<int, bool> operator[](const T& t) {
-		auto i = base::find(t);
-		auto isnew = false;
-		if (i == base::end()) {
-			auto newid = static_cast<int>(base::size()) + 1;
-			i = base::emplace_hint(i, t, newid);
-			isnew = true;
+		auto i = map_.find(t);
+		if (i == end(map_)) {
+			const auto newid = static_cast<int>(map_.size()) + 1;
+			map_.emplace_hint(i, t, newid);
+			return {newid, true};
+		} else {
+			return {i->second, false};
 		}
-		return {i->second, isnew};
 	}
+
+       private:
+	std::map<T, int> map_;
 };
 }
 #endif  // pcw_UniqueIdMap_hpp__
