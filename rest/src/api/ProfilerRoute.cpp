@@ -237,6 +237,17 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 			    stab.bookid = id, stab.typid = firstid,
 			    stab.suggestionid = secondid,
 			    stab.weight = c.weight(), stab.distance = c.lev()));
+			for (const auto& p : c.explanation().ocrp.patterns) {
+				if (not p.empty()) {
+					auto pattern = std::string(p.left) +
+						       ":" +
+						       std::string(p.right);
+					conn.db()(insert_into(e).set(
+					    e.pattern = pattern, e.bookid = id,
+					    e.typid = firstid,
+					    e.suggestionid = secondid));
+				}
+			}
 		}
 	}
 	commiter.commit();
