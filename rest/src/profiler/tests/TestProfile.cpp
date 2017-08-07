@@ -45,17 +45,17 @@ BOOST_AUTO_TEST_CASE(Explanation) {
 
 	// hist patterns
 	BOOST_REQUIRE_EQUAL(e.histp.patterns.size(), 1U);
-	BOOST_CHECK_EQUAL(e.histp.patterns[0].cor, "a");
-	BOOST_CHECK_EQUAL(e.histp.patterns[0].ocr, "b");
+	BOOST_CHECK_EQUAL(e.histp.patterns[0].left, "a");
+	BOOST_CHECK_EQUAL(e.histp.patterns[0].right, "b");
 	BOOST_CHECK_EQUAL(e.histp.patterns[0].pos, 3U);
 
 	// ocr patterns
 	BOOST_REQUIRE_EQUAL(e.ocrp.patterns.size(), 2U);
-	BOOST_CHECK_EQUAL(e.ocrp.patterns[0].cor, "υῶ");
-	BOOST_CHECK_EQUAL(e.ocrp.patterns[0].ocr, "ε");
+	BOOST_CHECK_EQUAL(e.ocrp.patterns[0].left, "υῶ");
+	BOOST_CHECK_EQUAL(e.ocrp.patterns[0].right, "ε");
 	BOOST_CHECK_EQUAL(e.ocrp.patterns[0].pos, 1U);
-	BOOST_CHECK_EQUAL(e.ocrp.patterns[1].cor, "c");
-	BOOST_CHECK_EQUAL(e.ocrp.patterns[1].ocr, "d");
+	BOOST_CHECK_EQUAL(e.ocrp.patterns[1].left, "c");
+	BOOST_CHECK_EQUAL(e.ocrp.patterns[1].right, "d");
 	BOOST_CHECK_EQUAL(e.ocrp.patterns[1].pos, 2U);
 }
 

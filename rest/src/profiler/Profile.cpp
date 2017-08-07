@@ -9,13 +9,13 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-PatternExpr::PatternExpr(std::ssub_match mm) : ocr(), cor(), pos() {
+PatternExpr::PatternExpr(std::ssub_match mm) : left(), right(), pos() {
 	static const std::regex patternre{R"((.*):(.*),(\d+))"};
 	std::smatch m;
 	if (not std::regex_match(mm.first, mm.second, m, patternre))
 		THROW(ParseError, "Invalid pattern expression: ", mm);
-	ocr = m[2];
-	cor = m[1];
+	left = m[1];
+	right = m[2];
 	pos = std::stoul(m[3]);
 }
 

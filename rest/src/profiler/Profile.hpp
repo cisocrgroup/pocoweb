@@ -20,9 +20,9 @@ struct PatternExpr {
 	PatternExpr() = default;
 	PatternExpr(std::ssub_match mm);
 	bool empty() const noexcept {
-		return ocr.length() == 0 and cor.length() == 0;
+		return left.length() == 0 and right.length() == 0;
 	}
-	std::ssub_match ocr, cor;
+	std::ssub_match left, right;
 	size_t pos;
 };
 
@@ -68,18 +68,18 @@ struct Suggestion {
 };
 
 struct Pattern {
-	Pattern(const PatternExpr& e) : ocr(e.ocr), cor(e.cor) {}
+	Pattern(const PatternExpr& e) : left(e.left), right(e.right) {}
 	Pattern(std::string c, std::string o)
-	    : ocr(std::move(o)), cor(std::move(c)) {}
-	std::string ocr, cor;
+	    : left(std::move(c)), right(std::move(o)) {}
+	std::string left, right;
 };
 
 static inline bool operator==(const Pattern& lhs, const Pattern& rhs) noexcept {
-	return std::tie(lhs.ocr, lhs.cor) == std::tie(rhs.ocr, rhs.cor);
+	return std::tie(lhs.right, lhs.left) == std::tie(rhs.right, rhs.left);
 }
 
 static inline bool operator<(const Pattern& lhs, const Pattern& rhs) noexcept {
-	return std::tie(lhs.ocr, lhs.cor) < std::tie(rhs.ocr, rhs.cor);
+	return std::tie(lhs.right, lhs.left) < std::tie(rhs.right, rhs.left);
 }
 
 inline bool operator==(const Candidate& a, const Candidate& b) noexcept {
