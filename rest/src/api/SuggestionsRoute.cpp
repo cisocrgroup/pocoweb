@@ -90,9 +90,9 @@ SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request& req,
 		    conn.db()(select(all_of(s), t1.string.as(tokstr),
 				     t2.string.as(suggstr))
 				  .from(s.join(t1)
-					    .on(t1.typid == s.suggestionid)
+					    .on(t1.typid == s.typid)
 					    .join(t2)
-					    .on(t2.typid == s.typid))
+					    .on(t2.typid == s.suggestionid))
 				  .where(s.bookid == bid));
 		size_t i = 0;
 		for (const auto& row : rows) {
