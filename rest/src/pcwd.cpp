@@ -19,6 +19,7 @@
 #include "api/SplitRoute.hpp"
 #include "api/UserRoute.hpp"
 #include "api/VersionRoute.hpp"
+#include "api/SuggestionsRoute.hpp"
 #include "core/App.hpp"
 #include "core/Config.hpp"
 #include "core/Plugin.hpp"
@@ -69,6 +70,7 @@ void run(App& app) {
 	app.Register(std::make_unique<pcw::SplitRoute>());
 	app.Register(std::make_unique<pcw::UserRoute>());
 	app.Register(std::make_unique<pcw::VersionRoute>());
+	app.Register(std::make_unique<pcw::SuggestionsRoute>());
 	app.run();
 }
 
