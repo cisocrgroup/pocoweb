@@ -1047,21 +1047,37 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
     };
-    struct Pattern
+    struct Pageid
     {
       struct _alias_t
       {
-        static constexpr const char _literal[] =  "pattern";
+        static constexpr const char _literal[] =  "pageid";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
         template<typename T>
         struct _member_t
           {
-            T pattern;
-            T& operator()() { return pattern; }
-            const T& operator()() const { return pattern; }
+            T pageid;
+            T& operator()() { return pageid; }
+            const T& operator()() const { return pageid; }
           };
       };
-      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::can_be_null>;
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
+    struct Lineid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "lineid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T lineid;
+            T& operator()() { return lineid; }
+            const T& operator()() const { return lineid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
     };
     struct Typid
     {
@@ -1095,13 +1111,31 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
     };
+    struct Pattern
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "pattern";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T pattern;
+            T& operator()() { return pattern; }
+            const T& operator()() const { return pattern; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::can_be_null>;
+    };
   }
 
   struct Errorpatterns: sqlpp::table_t<Errorpatterns,
                Errorpatterns_::Bookid,
-               Errorpatterns_::Pattern,
+               Errorpatterns_::Pageid,
+               Errorpatterns_::Lineid,
                Errorpatterns_::Typid,
-               Errorpatterns_::Suggestionid>
+               Errorpatterns_::Suggestionid,
+               Errorpatterns_::Pattern>
   {
     struct _alias_t
     {
@@ -1130,6 +1164,38 @@ namespace tables
             T bookid;
             T& operator()() { return bookid; }
             const T& operator()() const { return bookid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
+    struct Pageid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "pageid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T pageid;
+            T& operator()() { return pageid; }
+            const T& operator()() const { return pageid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
+    struct Lineid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "lineid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T lineid;
+            T& operator()() { return lineid; }
+            const T& operator()() const { return lineid; }
           };
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
@@ -1202,6 +1268,8 @@ namespace tables
 
   struct Suggestions: sqlpp::table_t<Suggestions,
                Suggestions_::Bookid,
+               Suggestions_::Pageid,
+               Suggestions_::Lineid,
                Suggestions_::Typid,
                Suggestions_::Suggestionid,
                Suggestions_::Weight,

@@ -77,7 +77,7 @@ Profile::Patterns Profile::calc_ocr_patterns() const {
 		for (const auto& cand : s.second) {
 			const auto expl = cand.explanation();
 			for (const auto& ocrp : expl.ocrp.patterns) {
-				ps[ocrp].emplace(cand, s.first);
+				ps[ocrp].emplace(cand, s.first.cor());
 			}
 		}
 	}
@@ -91,7 +91,7 @@ Profile::Patterns Profile::calc_hist_patterns() const {
 		for (const auto& cand : s.second) {
 			const auto expl = cand.explanation();
 			for (const auto& histp : expl.histp.patterns) {
-				ps[histp].emplace(cand, s.first);
+				ps[histp].emplace(cand, s.first.cor());
 			}
 		}
 	}
@@ -99,14 +99,8 @@ Profile::Patterns Profile::calc_hist_patterns() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-size_t Profile::count(const std::string& str) const noexcept {
-	auto f = counts_.find(str);
-	return f != end(counts_) ? f->second : 0;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 ProfileBuilder::ProfileBuilder(ConstBookSptr book)
-    : tokens_(), counts_(), suggestions_(), book_(std::move(book)) {
+    : tokens_(), suggestions_(), book_(std::move(book)) {
 	init();
 }
 
@@ -132,7 +126,6 @@ void ProfileBuilder::init() {
 ////////////////////////////////////////////////////////////////////////////////
 void ProfileBuilder::clear() {
 	suggestions_.clear();
-	counts_.clear();
 	// book remains untouched
 	// tokens remains untouched
 }
@@ -141,7 +134,6 @@ void ProfileBuilder::clear() {
 Profile ProfileBuilder::build() const {
 	Profile profile{book_};
 	profile.suggestions_ = this->suggestions_;
-	profile.counts_ = this->counts_;
 	return profile;
 }
 
@@ -188,7 +180,12 @@ void ProfileBuilder::add_candidate(const Token& token, const Candidate& cand,
 	if (not token.line or not token.unique_id())
 		THROW(ParseError, "Encountered empty token for candidate: ",
 		      cand.cor());
-	const auto str = token.cor_lc();
-	suggestions_[str].insert(cand);
-	if (newtok) counts_[str]++;
+	// skip adaptive artifacts of the profiler:
+	// <wOCR>Bomine</wOCR>
+	// <wOCR_lc>bomine</wOCR_lc>
+	// <wCorr>Homine</wCorr>
+	// <cand>Homine:{homine+[]}+ocr[(h:b,0)],voteWeight=1,levDistance=1</cand>
+	if (cand.lev() > 0 and cand.cor() != token.cor()) {
+		suggestions_[token].insert(cand);
+	}
 }

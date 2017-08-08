@@ -57,59 +57,21 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req,
 	LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
 	session->assert_permission(conn, bid, Permissions::Read);
-	const auto project = session->must_find(conn, bid);
-	// the project does exist. If no profile is found, this indicates not a
-	// 404 but simply an empty profile.
-	using namespace sqlpp;
-	tables::Profiles p;
-	const auto row =
-	    conn.db()(select(p.timestamp).from(p).where(p.bookid == bid));
-	const auto q = req.url_params.get("q");
 	Json j;
 	j["projectId"] = bid;
+	j["profiled"] = false;
+	j["timestamp"] = 0;
 	j["suggestions"] = crow::json::rvalue(crow::json::type::List);
-	if (row.empty()) {
-		j["profiled"] = false;
-		j["timestamp"] = 0;
-	} else {
+	using namespace sqlpp;
+	tables::Profiles p;
+	const auto profile =
+	    conn.db()(select(p.timestamp).from(p).where(p.bookid == bid));
+	if (not profile.empty()) {
 		j["profiled"] = true;
-		j["timestamp"] = row.front().timestamp;
-		if (q and strlen(q) >= 0) {
-			tables::Types t;
-			std::string query = q;
-			j["query"] = q;
-			const auto cap = get_capitalization(query);
-			to_lower(query);
-			const auto qidrow =
-			    conn.db()(select(t.typid).from(t).where(
-				t.bookid == bid && t.string == query));
-			if (qidrow.empty()) return j;
-			const auto qid = qidrow.front().typid;
-			tables::Suggestions s;
-			// tables::Errorpatterns e;
-			auto sss = conn.db()(
-			    select(s.suggestionid, s.weight, s.distance)
-				.from(s)
-				.where(s.typid == qid));
-			size_t i = 0;
-			j["typeid"] = qid;
-			for (const auto& ss : sss) {
-				std::string sugg =
-				    conn.db()(select(t.string).from(t).where(
-						  t.typid == ss.suggestionid))
-					.front()
-					.string;
-				apply_capitalization(cap, sugg);
-				j["suggestions"][i]["suggestionid"] =
-				    ss.suggestionid;
-				j["suggestions"][i]["suggestion"] = sugg;
-				j["suggestions"][i]["weight"] = ss.weight;
-				j["suggestions"][i]["distance"] = ss.distance;
-				i++;
-			}
-		}
+		j["timestamp"] = profile.front().timestamp;
+		return j;
 	}
-	return j;
+	return not_found();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -217,33 +179,33 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 	for (const auto& s : profile.suggestions()) {
 		bool isnew;
 		int firstid;
-		std::tie(firstid, isnew) = typeids[s.first];
+		// use lower case for tokens. Suggestions keep their casing.
+		// searches are case insensitive. but you will get the right
+		// cased suggestion for each candidate.
+		std::tie(firstid, isnew) = typeids[s.first.cor_lc()];
 		if (isnew) {
 			conn.db()(insert_into(t).set(t.bookid = id,
 						     t.typid = firstid,
-						     t.string = s.first));
+						     t.string = s.first.cor()));
 		}
 		for (const auto& c : s.second) {
 			if (c.weight() < min_weight) continue;
-			// if (c.lev() <= 0) continue;
-			auto correction = c.cor();
-			to_lower(correction);
-			CROW_LOG_DEBUG << "(ProfilerRoute) [" << s.first << "] "
-				       << correction << ": "
+			CROW_LOG_DEBUG << "(ProfilerRoute) [" << s.first.cor()
+				       << "] " << c.cor() << ": "
 				       << c.explanation_string() << " ("
 				       << c.lev() << ", " << c.weight() << ")";
 			int secondid;
-			std::tie(secondid, isnew) = typeids[correction];
-			CROW_LOG_DEBUG << "(ProfilerRoute) isnew: " << isnew
-				       << " secondid: " << secondid;
+			std::tie(secondid, isnew) = typeids[c.cor()];
 			if (isnew) {
 				conn.db()(insert_into(t).set(
 				    t.bookid = id, t.typid = secondid,
-				    t.string = correction));
+				    t.string = c.cor()));
 			}
 			conn.db()(insert_into(stab).set(
-			    stab.bookid = id, stab.typid = firstid,
-			    stab.suggestionid = secondid,
+			    stab.bookid = id,
+			    stab.pageid = s.first.line->page().id(),
+			    stab.lineid = s.first.line->id(),
+			    stab.typid = firstid, stab.suggestionid = secondid,
 			    stab.weight = c.weight(), stab.distance = c.lev()));
 			for (const auto& p : c.explanation().ocrp.patterns) {
 				if (not p.empty()) {
@@ -251,7 +213,11 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 						       ":" +
 						       std::string(p.right);
 					conn.db()(insert_into(e).set(
-					    e.pattern = pattern, e.bookid = id,
+					    e.bookid = id,
+					    e.pageid =
+						s.first.line->page().id(),
+					    e.lineid = s.first.line->id(),
+					    e.pattern = pattern,
 					    e.typid = firstid,
 					    e.suggestionid = secondid));
 				}

@@ -37,8 +37,9 @@ API_OBJS += rest/src/api/LineRoute.o
 API_OBJS += rest/src/api/PageRoute.o
 API_OBJS += rest/src/api/ProfilerRoute.o
 API_OBJS += rest/src/api/SearchRoute.o
-API_OBJS += rest/src/api/SplitRoute.o
 API_OBJS += rest/src/api/SplitImagesRoute.o
+API_OBJS += rest/src/api/SplitRoute.o
+API_OBJS += rest/src/api/SuggestionsRoute.o
 API_OBJS += rest/src/api/UserRoute.o
 API_OBJS += rest/src/api/VersionRoute.o
 
@@ -78,7 +79,8 @@ rest/src/database/Tables.h: modules/sqlpp11/scripts/ddl2cpp db/tables.sql.tmp
 # ddl2cpp does not handle `create table if not exists foo`
 db/tables.sql.tmp: db/tables.sql
 	$(call ECHO,$@)
-	@sed -e '/create/ s/if\s\s*not\s\s*exists\s*//' $< > $@
+	@sed -e '/create/ s/if\s\s*not\s\s*exists\s*//' \
+		-e 's#/\*.*\*/##' $< > $@
 
 DEPS += $(patsubst %.o,%.d,$(CORE_OBJS) $(API_OBJS) $(PARSER_OBJS) $(PROFILER_OBJS) $(PUGI_OBJS))
 DEPS += $(patsubst %,%.d,$(MAINS))

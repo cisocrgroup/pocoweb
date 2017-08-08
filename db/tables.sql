@@ -91,14 +91,18 @@ create table if not exists profiles (
 /* ^: max utf length of a pattern with maximal 3 characters */
 /* ^^: lenght of separator `:` */
 create table if not exists errorpatterns (
-	bookid int references suggestions(bookid),
-	pattern varchar(25),
+	bookid int references types(bookid),
+	pageid int references pages(pageid),
+	lineid int references textlines(lineid),
 	typid int references suggestions(typid),
-	suggestionid int references suggesttions(suggestionid)
+	suggestionid int references suggesttions(suggestionid),
+	pattern varchar(25)
 );
 
 create table if not exists suggestions (
 	bookid int references types(bookid),
+	pageid int references pages(pageid),
+	lineid int references textlines(lineid),
 	typid int references types(typid),
 	suggestionid int references types(typid),
 	weight double not null,

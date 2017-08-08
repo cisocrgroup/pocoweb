@@ -92,6 +92,14 @@ inline bool operator<(const Candidate& a, const Candidate& b) noexcept {
 	       std::tie(b.w_, b.lev_, b.cor_, b.expl_);
 }
 
+inline bool operator==(const Token& a, const Token& b) noexcept {
+	return a.unique_id() == b.unique_id();
+}
+
+inline bool operator<(const Token& a, const Token& b) noexcept {
+	return a.unique_id() < b.unique_id();
+}
+
 static inline bool operator==(const Suggestion& a,
 			      const Suggestion& b) noexcept {
 	return std::tie(a.cand, a.ocr) == std::tie(b.cand, b.ocr);
@@ -104,19 +112,17 @@ static inline bool operator<(const Suggestion& a,
 
 class Profile {
        public:
-	using Suggestions = std::map<std::string, std::set<Candidate>>;
+	using Suggestions = std::map<Token, std::set<Candidate>>;
 	using Patterns = std::map<Pattern, std::set<Suggestion>>;
 
 	Profile(ConstBookSptr book) : suggestions_(), book_(std::move(book)) {}
 
 	const Book& book() const noexcept { return *book_; }
 	const Suggestions& suggestions() const noexcept { return suggestions_; }
-	size_t count(const std::string& str) const noexcept;
 	Patterns calc_ocr_patterns() const;
 	Patterns calc_hist_patterns() const;
 
        private:
-	std::map<std::string, size_t> counts_;
 	Suggestions suggestions_;
 	ConstBookSptr book_;
 
@@ -138,7 +144,6 @@ class ProfileBuilder {
 	void init();
 
 	std::unordered_map<int64_t, Token> tokens_;
-	std::map<std::string, size_t> counts_;
 	Profile::Suggestions suggestions_;
 	ConstBookSptr book_;
 };

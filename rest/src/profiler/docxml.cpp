@@ -134,23 +134,14 @@ DocXmlNode& pcw::operator<<(DocXmlNode& node, const Box& box) {
 ////////////////////////////////////////////////////////////////////////////////
 void append_candidates(pugi::xml_node& node, const Token& token,
 		       const Profile::Suggestions& suggs) {
-	const auto str = token.cor_lc();
-	const auto cap = get_capitalization(token.wcor());
-	std::string cand;
-	for (const auto& s : suggs) {
-		if (s.first == str) {
-			for (const auto& c : s.second) {
-				auto tmp = node.append_child();
-				tmp.set_name("cand");
-				apply_capitalization(cap, cand);
-				std::string expr =
-				    cand + ":" + c.explanation_string() +
-				    ",voteWeight=" +
-				    std::to_string(c.weight()) +
-				    ",levDistance=" + std::to_string(c.lev());
-				tmp.append_child(pugi::node_pcdata)
-				    .set_value(expr.data());
-			}
-		}
+	auto s = suggs.find(token);
+	if (s == end(suggs)) return;
+	for (const auto& c : s->second) {
+		auto tmp = node.append_child();
+		tmp.set_name("cand");
+		std::string expr = c.cor() + ":" + c.explanation_string() +
+				   ",voteWeight=" + std::to_string(c.weight()) +
+				   ",levDistance=" + std::to_string(c.lev());
+		tmp.append_child(pugi::node_pcdata).set_value(expr.data());
 	}
 }
