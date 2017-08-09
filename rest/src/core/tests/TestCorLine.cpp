@@ -104,4 +104,14 @@ BOOST_AUTO_TEST_CASE(Words) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(MultipleCorrectionWithTheSame) {
+	for (auto i = 0; i < 10; i++) {
+		wf.set_gt(gt);
+		wf.set_ocr(*line);
+		wf.correct(*line);
+		BOOST_CHECK_EQUAL(line->cor(), gt);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
