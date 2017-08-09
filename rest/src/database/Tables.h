@@ -1200,6 +1200,22 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
     };
+    struct Tokenid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "tokenid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T tokenid;
+            T& operator()() { return tokenid; }
+            const T& operator()() const { return tokenid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
+    };
     struct Typid
     {
       struct _alias_t
@@ -1270,6 +1286,7 @@ namespace tables
                Suggestions_::Bookid,
                Suggestions_::Pageid,
                Suggestions_::Lineid,
+               Suggestions_::Tokenid,
                Suggestions_::Typid,
                Suggestions_::Suggestionid,
                Suggestions_::Weight,

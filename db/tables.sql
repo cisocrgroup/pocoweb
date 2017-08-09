@@ -103,6 +103,7 @@ create table if not exists suggestions (
 	bookid int references types(bookid),
 	pageid int references pages(pageid),
 	lineid int references textlines(lineid),
+	tokenid int not null,
 	typid int references types(typid),
 	suggestionid int references types(typid),
 	weight double not null,
