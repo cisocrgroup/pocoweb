@@ -28,7 +28,7 @@ class ParserLine {
 	virtual void erase(size_t i) = 0;
 	virtual void set(size_t i, wchar_t c) = 0;
 	virtual void noop(size_t) {}
-	virtual void begin_wagner_fischer() {}
+	virtual void begin_wagner_fischer(size_t, size_t) {}
 	virtual void end_wagner_fischer() {}
 	virtual std::wstring wstring() const = 0;
 	virtual std::string string() const = 0;

@@ -98,8 +98,8 @@ inline void pcw::WagnerFischer::correct(T& t, bool partial) const {
 template <class T>
 void pcw::WagnerFischer::correct_impl(size_t b, size_t e, T& t) const {
 	int ofs = 0;
-	t.begin_wagner_fischer();
-	for (size_t i = b; i != e; ++i) {
+	t.begin_wagner_fischer(b, e);
+	for (size_t i = b; i < e; ++i) {
 		correct_at(i, ofs, t);
 	}
 	t.end_wagner_fischer();

@@ -156,7 +156,13 @@ double Line::average_conf() const noexcept {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void Line::begin_wagner_fischer() noexcept { ofs_ = 0; }
+void Line::begin_wagner_fischer(size_t b, size_t e) noexcept {
+	e = std::min(e, chars_.size());
+	assert(b <= chars_.size());
+	assert(e <= chars_.size());
+	reset(begin(chars_) + b, begin(chars_) + e);
+	ofs_ = 0;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 void Line::set(size_t i, wchar_t c) {
@@ -313,14 +319,9 @@ void Line::reset(CharIterator b, CharIterator e) {
 	tmp.reserve(chars_.size());
 	std::copy(cbegin(chars_), b, std::back_inserter(tmp));
 	std::for_each(b, e, [&tmp](const auto& c) {
-		if (c.is_deletion()) {
-			tmp.emplace_back(c.ocr, 0, c.cut, c.conf);
-		} else if (c.is_insertion()) {
-			// skip insertions
-		} else {
+		if (c.ocr != 0) {
 			tmp.emplace_back(c.ocr, 0, c.cut, c.conf);
 		}
-
 	});
 	std::copy(e, cend(chars_), std::back_inserter(tmp));
 	std::swap(chars_, tmp);

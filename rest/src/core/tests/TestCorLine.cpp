@@ -104,7 +104,36 @@ BOOST_AUTO_TEST_CASE(Words) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_SUITE_END()
+
+struct MultipleCorrectionsFixture {
+	static const char* gt;
+	static const char* ocr;
+	static const Box box;
+
+	MultipleCorrectionsFixture()
+	    : line(std::make_shared<Line>(1, box)), wf() {
+		line->append(ocr, 0, 100, 0.8);
+		BOOST_REQUIRE(not line->empty());
+		wf.set_gt(gt);
+		wf.set_ocr(*line);
+		BOOST_CHECK_EQUAL(wf(), 11);
+	}
+	LinePtr line;
+	WagnerFischer wf;
+};
+
+const char* MultipleCorrectionsFixture::gt = "ꝑfectũ eſt: quidq̉d tempꝰ ·";
+const char* MultipleCorrectionsFixture::ocr = "pectũeſt: quioo te mp";
+const Box MultipleCorrectionsFixture::box{0, 0, 100, 20};
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_FIXTURE_TEST_SUITE(MultipleCorrectionsTest, MultipleCorrectionsFixture)
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(LineResetAll) {
+	const auto len = line->size();
+	wf.correct(*line);
 	BOOST_CHECK_EQUAL(line->ocr(), ocr);
 	BOOST_CHECK_EQUAL(line->cor(), gt);
 	BOOST_CHECK(line->is_fully_corrected());
@@ -112,11 +141,13 @@ BOOST_AUTO_TEST_CASE(LineResetAll) {
 	BOOST_CHECK_EQUAL(line->ocr(), ocr);
 	BOOST_CHECK_EQUAL(line->cor(), ocr);
 	BOOST_CHECK(not line->is_fully_corrected());
+	BOOST_CHECK_EQUAL(line->size(), len);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(LineResetWord) {
-	auto words = line->words();
+	wf.correct(*line);
+	const auto words = line->words();
 	BOOST_REQUIRE_EQUAL(words.size(), 4);
 	line->reset(words[2].begin, words[2].end);
 	BOOST_CHECK_EQUAL(line->ocr(), ocr);
@@ -131,7 +162,8 @@ BOOST_AUTO_TEST_CASE(LineResetWord) {
 BOOST_AUTO_TEST_CASE(MultipleCorrectionWithTheSame) {
 	for (auto i = 0; i < 10; i++) {
 		wf.set_gt(gt);
-		wf.set_ocr(*line);
+		wf.set_ocr(line->ocr());
+		BOOST_CHECK_EQUAL(wf(), 11);
 		wf.correct(*line);
 		BOOST_CHECK_EQUAL(line->cor(), gt);
 	}

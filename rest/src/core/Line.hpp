@@ -59,7 +59,7 @@ class Line : public std::enable_shared_from_this<Line> {
 	void append(wchar_t o, wchar_t c, int r, double conf);
 
 	// interface for WagnerFischer correction
-	void begin_wagner_fischer() noexcept;
+	void begin_wagner_fischer(size_t b, size_t e) noexcept;
 	void insert(size_t i, wchar_t c);
 	void erase(size_t i);
 	void set(size_t i, wchar_t c);
