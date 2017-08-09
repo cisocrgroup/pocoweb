@@ -132,6 +132,13 @@ get_book() {
 	expect "$key=$val" $val $(json_get $key $(json "$res"))
 }
 
+check_book_does_not_exist() {
+	local id=$1
+	local url="/books/$id"
+	local res=$(curl_get $url)
+	expect $url 404 $(code $res)
+}
+
 update_book() {
 	local id=$1
 	local key=$2
@@ -204,6 +211,7 @@ count_book $bid "Cæſaris" 1
 count_book $bid "CANNOTFINDME" 0
 count_book $bid "ſunt" 9
 remove_book $bid
+check_book_does_not_exist $bid
 ## ROLLENHAGEN
 upload misc/data/test/rollenhagen_reysen_1603.zip "rollenhagen" "reysen" 201
 update_book $bid "title" "Reysen"
@@ -220,6 +228,7 @@ get_book $bid "description" "desc"
 count_book $bid "von" 6
 count_book $bid "CANNOTFINDME" 0
 remove_book $bid
+check_book_does_not_exist $bid
 
 # logout
 logout
