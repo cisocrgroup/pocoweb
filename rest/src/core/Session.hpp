@@ -280,6 +280,8 @@ pcw::BookSptr pcw::Session::cached_find_book(Connection<Db>& c,
 					     int bookid) const {
 	if (cache_)
 		return cache_->books.get(bookid, [&](int id) {
+			CROW_LOG_DEBUG << "(Session) loading book id: "
+				       << bookid;
 			return pcw::select_book(c.db(), *user_, bookid);
 		});
 	else
@@ -363,8 +365,8 @@ template <class Db>
 inline void pcw::Session::assert_permission(Connection<Db>& c, int projectid,
 					    Permissions perm) const {
 	if (not has_permission(c, projectid, perm))
-		THROW(Forbidden, "Permission denied for project id: ",
-		      projectid);
+		THROW(Forbidden, "Permission denied for user: ", user().name,
+		      " [", user().admin(), "] for project id: ", projectid);
 }
 
 #endif  // pcw_Session_hpp__
