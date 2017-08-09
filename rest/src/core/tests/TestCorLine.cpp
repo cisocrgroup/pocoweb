@@ -121,6 +121,8 @@ BOOST_AUTO_TEST_CASE(LineResetWord) {
 	line->reset(words[2].begin, words[2].end);
 	BOOST_CHECK_EQUAL(line->ocr(), ocr);
 	BOOST_CHECK_EQUAL(line->cor(), "ꝑfectũ eſt: quioo tempꝰ ·");
+	BOOST_CHECK(line->is_partially_corrected());
+	BOOST_CHECK(not line->is_fully_corrected());
 }
 
 // const char* Fixture::gt = "ꝑfectũ eſt: quidq̉d tempꝰ ·";
