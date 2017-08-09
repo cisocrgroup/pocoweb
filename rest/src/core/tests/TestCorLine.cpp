@@ -104,6 +104,28 @@ BOOST_AUTO_TEST_CASE(Words) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(LineResetAll) {
+	BOOST_CHECK_EQUAL(line->ocr(), ocr);
+	BOOST_CHECK_EQUAL(line->cor(), gt);
+	BOOST_CHECK(line->is_fully_corrected());
+	line->reset_all();
+	BOOST_CHECK_EQUAL(line->ocr(), ocr);
+	BOOST_CHECK_EQUAL(line->cor(), ocr);
+	BOOST_CHECK(not line->is_fully_corrected());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(LineResetWord) {
+	auto words = line->words();
+	BOOST_REQUIRE_EQUAL(words.size(), 4);
+	line->reset(words[2].begin, words[2].end);
+	BOOST_CHECK_EQUAL(line->ocr(), ocr);
+	BOOST_CHECK_EQUAL(line->cor(), "ꝑfectũ eſt: quioo tempꝰ ·");
+}
+
+// const char* Fixture::gt = "ꝑfectũ eſt: quidq̉d tempꝰ ·";
+// const char* Fixture::ocr = "pectũeſt: quioo te mp";
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(MultipleCorrectionWithTheSame) {
 	for (auto i = 0; i < 10; i++) {
 		wf.set_gt(gt);

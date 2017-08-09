@@ -307,6 +307,25 @@ int64_t Line::unique_id(int bid, int pid, int lid, int tid) noexcept {
 	return static_cast<int64_t>(id);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+void Line::reset(CharIterator b, CharIterator e) {
+	Chars tmp;
+	tmp.reserve(chars_.size());
+	std::copy(cbegin(chars_), b, std::back_inserter(tmp));
+	std::for_each(b, e, [&tmp](const auto& c) {
+		if (c.is_deletion()) {
+			tmp.emplace_back(c.ocr, 0, c.cut, c.conf);
+		} else if (c.is_insertion()) {
+			// skip insertions
+		} else {
+			tmp.emplace_back(c.ocr, 0, c.cut, c.conf);
+		}
+
+	});
+	std::copy(e, cend(chars_), std::back_inserter(tmp));
+	std::swap(chars_, tmp);
+}
+
 //
 // CHAR
 //
