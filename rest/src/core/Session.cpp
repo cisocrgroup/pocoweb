@@ -43,5 +43,12 @@ void Session::cache(User& user) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 void Session::uncache_project(int pid) const {
-	if (cache_) cache_->projects.del(pid);
+	// remove cached project and page (to be sure) from session
+	if (project_ and project_->id() == pid) {
+		page_ = nullptr;
+		project_ = nullptr;
+	}
+	if (cache_) {
+		cache_->projects.del(pid);
+	}
 }
