@@ -1,24 +1,22 @@
-#include "SuggestionsRoute.hpp"
+#include "ErrorPatternsRoute.hpp"
 #include <crow/app.h>
-#include <chrono>
 #include "core/App.hpp"
 #include "core/Book.hpp"
 #include "core/Config.hpp"
 #include "core/Session.hpp"
 #include "core/jsonify.hpp"
 #include "core/util.hpp"
-#include "database/Tables.h"
 
-#define PROFILER_ROUTE_ROUTE "/books/<int>/suggestions"
+#define PROFILER_ROUTE_ROUTE "/books/<int>/error-patterns"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* SuggestionsRoute::route_ = PROFILER_ROUTE_ROUTE;
-const char* SuggestionsRoute::name_ = "SuggestionsRoute";
+const char* ErrorPatternsRoute::route_ = PROFILER_ROUTE_ROUTE;
+const char* ErrorPatternsRoute::name_ = "ErrorPatternsRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
-void SuggestionsRoute::Register(App& app) {
+void ErrorPatternsRoute::Register(App& app) {
 	CROW_ROUTE(app, PROFILER_ROUTE_ROUTE).methods("GET"_method)(*this);
 }
 
@@ -27,10 +25,11 @@ SQLPP_ALIAS_PROVIDER(t2_alias);
 SQLPP_ALIAS_PROVIDER(suggstr);
 SQLPP_ALIAS_PROVIDER(tokstr);
 ////////////////////////////////////////////////////////////////////////////////
-SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request& req,
-						  int bid) const {
-	CROW_LOG_DEBUG
-	    << "(SuggestionsRoute) lookup suggestions for project id: " << bid;
+ErrorPatternsRoute::Response ErrorPatternsRoute::impl(HttpGet,
+						      const Request& req,
+						      int bid) const {
+	CROW_LOG_DEBUG << "(ErrorPatternsRoute) lookup profile for project id: "
+		       << bid;
 	LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
 	session->assert_permission(conn, bid, Permissions::Read);
@@ -58,37 +57,49 @@ SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request& req,
 		to_lower(query);
 		tables::Types t;
 		tables::Suggestions s;
-		// lookup typid of query token
-		const auto qidrow = conn.db()(select(t.typid).from(t).where(
-		    t.bookid == bid and t.string == query));
-		if (qidrow.empty()) {
-			return j;
-		}
-		const auto qid = qidrow.front().typid;
-		auto rows =
-		    conn.db()(select(all_of(s), all_of(t))
-				  .from(s.join(t).on(t.typid == s.suggestionid))
-				  .where(s.typid == qid and s.bookid == bid));
+		tables::Errorpatterns e;
+		auto t1 = t.as(t1_alias);
+		auto t2 = t.as(t2_alias);
+		auto rows = conn.db()(
+		    select(all_of(s), e.pattern, t1.string.as(tokstr),
+			   t2.string.as(suggstr))
+			.from(e.join(s)
+				  .on(e.bookid == s.bookid and
+				      e.pageid == s.pageid and
+				      e.lineid == s.lineid and
+				      e.tokenid == s.tokenid)
+				  .join(t1)
+				  .on(t1.typid == s.typid)
+				  .join(t2)
+				  .on(t2.typid == s.suggestionid))
+			.where(e.pattern == query and s.bookid == bid));
 		size_t i = 0;
 		for (const auto& row : rows) {
 			j["suggestions"][i]["lineId"] = row.lineid;
 			j["suggestions"][i]["pageId"] = row.pageid;
 			j["suggestions"][i]["tokenId"] = row.tokenid;
-			j["suggestions"][i]["token"] = query;
-			j["suggestions"][i]["suggestion"] = row.string;
+			j["suggestions"][i]["token"] = row.tokstr;
+			j["suggestions"][i]["suggestion"] = row.suggstr;
 			j["suggestions"][i]["weight"] = row.weight;
 			j["suggestions"][i]["distance"] = row.distance;
+			j["suggestions"][i]["pattern"] = row.pattern;
 			i++;
 		}
 	} else {
 		tables::Types t;
 		tables::Suggestions s;
+		tables::Errorpatterns e;
 		auto t1 = t.as(t1_alias);
 		auto t2 = t.as(t2_alias);
 		auto rows =
-		    conn.db()(select(all_of(s), t1.string.as(tokstr),
+		    conn.db()(select(all_of(s), e.pattern, t1.string.as(tokstr),
 				     t2.string.as(suggstr))
-				  .from(s.join(t1)
+				  .from(e.join(s)
+					    .on(e.bookid == s.bookid and
+						e.pageid == s.pageid and
+						e.lineid == s.lineid and
+						e.tokenid == s.tokenid)
+					    .join(t1)
 					    .on(t1.typid == s.typid)
 					    .join(t2)
 					    .on(t2.typid == s.suggestionid))
@@ -97,11 +108,12 @@ SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request& req,
 		for (const auto& row : rows) {
 			j["suggestions"][i]["lineId"] = row.lineid;
 			j["suggestions"][i]["pageId"] = row.pageid;
-			j["suggestions"][i]["wordId"] = row.tokenid;
+			j["suggestions"][i]["tokenId"] = row.tokenid;
 			j["suggestions"][i]["token"] = row.tokstr;
 			j["suggestions"][i]["suggestion"] = row.suggstr;
 			j["suggestions"][i]["weight"] = row.weight;
 			j["suggestions"][i]["distance"] = row.distance;
+			j["suggestions"][i]["pattern"] = row.pattern;
 			i++;
 		}
 	}

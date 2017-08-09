@@ -205,7 +205,8 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 			    stab.bookid = id,
 			    stab.pageid = s.first.line->page().id(),
 			    stab.lineid = s.first.line->id(),
-			    stab.typid = firstid, stab.suggestionid = secondid,
+			    stab.tokenid = s.first.id, stab.typid = firstid,
+			    stab.suggestionid = secondid,
 			    stab.weight = c.weight(), stab.distance = c.lev()));
 			for (const auto& p : c.explanation().ocrp.patterns) {
 				if (not p.empty()) {
@@ -217,9 +218,8 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 					    e.pageid =
 						s.first.line->page().id(),
 					    e.lineid = s.first.line->id(),
-					    e.pattern = pattern,
-					    e.typid = firstid,
-					    e.suggestionid = secondid));
+					    e.tokenid = s.first.id,
+					    e.pattern = pattern));
 				}
 			}
 		}
