@@ -1079,34 +1079,18 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
     };
-    struct Typid
+    struct Tokenid
     {
       struct _alias_t
       {
-        static constexpr const char _literal[] =  "typid";
+        static constexpr const char _literal[] =  "tokenid";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
         template<typename T>
         struct _member_t
           {
-            T typid;
-            T& operator()() { return typid; }
-            const T& operator()() const { return typid; }
-          };
-      };
-      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
-    };
-    struct Suggestionid
-    {
-      struct _alias_t
-      {
-        static constexpr const char _literal[] =  "suggestionid";
-        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-        template<typename T>
-        struct _member_t
-          {
-            T suggestionid;
-            T& operator()() { return suggestionid; }
-            const T& operator()() const { return suggestionid; }
+            T tokenid;
+            T& operator()() { return tokenid; }
+            const T& operator()() const { return tokenid; }
           };
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
@@ -1133,8 +1117,7 @@ namespace tables
                Errorpatterns_::Bookid,
                Errorpatterns_::Pageid,
                Errorpatterns_::Lineid,
-               Errorpatterns_::Typid,
-               Errorpatterns_::Suggestionid,
+               Errorpatterns_::Tokenid,
                Errorpatterns_::Pattern>
   {
     struct _alias_t

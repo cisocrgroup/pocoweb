@@ -94,8 +94,7 @@ create table if not exists errorpatterns (
 	bookid int references types(bookid),
 	pageid int references pages(pageid),
 	lineid int references textlines(lineid),
-	typid int references suggestions(typid),
-	suggestionid int references suggesttions(suggestionid),
+	tokenid int references suggestions(tokenid),
 	pattern varchar(25)
 );
 
