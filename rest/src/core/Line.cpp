@@ -288,10 +288,10 @@ std::vector<Token> Line::words() const {
 
 ////////////////////////////////////////////////////////////////////////////////
 int64_t Line::unique_id(int bid, int pid, int lid, int tid) noexcept {
-	auto r = static_cast<uint16_t>(static_cast<unsigned int>(bid));
-	auto s = static_cast<uint16_t>(static_cast<unsigned int>(pid));
-	auto t = static_cast<uint16_t>(static_cast<unsigned int>(lid));
-	auto u = static_cast<uint16_t>(static_cast<unsigned int>(tid));
+	const auto r = static_cast<uint16_t>(static_cast<unsigned int>(bid));
+	const auto s = static_cast<uint16_t>(static_cast<unsigned int>(pid));
+	const auto t = static_cast<uint16_t>(static_cast<unsigned int>(lid));
+	const auto u = static_cast<uint16_t>(static_cast<unsigned int>(tid));
 
 	uint64_t id = 0;
 	id |= r;
