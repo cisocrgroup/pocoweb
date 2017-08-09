@@ -107,8 +107,8 @@ void BookRoute::update_book_data(Book& book,
 Route::Response BookRoute::impl(HttpGet, const Request& req, int bid) const {
 	LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
-	session->assert_permission(conn, bid, Permissions::Read);
 	auto book = session->must_find(conn, bid);
+	session->assert_permission(conn, bid, Permissions::Read);
 	Json j;
 	return j << *book;
 }
@@ -187,6 +187,7 @@ void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
 	tables::Suggestions s;
 	tables::Errorpatterns e;
 	tables::Types t;
+	tables::Books b;
 	MysqlCommiter commiter(conn);
 	auto pids = conn.db()(
 	    select(p.projectid, p.owner).from(p).where(p.origin == book.id()));
@@ -205,6 +206,7 @@ void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
 	conn.db()(remove_from(s).where(s.bookid == book.id()));
 	conn.db()(remove_from(e).where(e.bookid == book.id()));
 	conn.db()(remove_from(t).where(t.bookid == book.id()));
+	conn.db()(remove_from(b).where(b.bookid == book.id()));
 	const auto dir = book.data.dir;
 	CROW_LOG_INFO << "(BookRoute) removing directory: " << dir;
 	boost::system::error_code ec;
