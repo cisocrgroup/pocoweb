@@ -8,52 +8,54 @@
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
 
-#define CORRECTION_ROUTE_ROUTE "/correction"
+#define CORRECTION_ROUTE_ROUTE_1 "/books/<int>/pages/<int>/lines/<int>/correct"
+#define CORRECTION_ROUTE_ROUTE_2 \
+	"/books/<int>/pages/<int>/lines/<int>/words/<int>/correct"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* CorrectionRoute::route_ = CORRECTION_ROUTE_ROUTE;
+const char* CorrectionRoute::route_ =
+    CORRECTION_ROUTE_ROUTE_1 "," CORRECTION_ROUTE_ROUTE_2;
 const char* CorrectionRoute::name_ = "CorrectionRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
 void CorrectionRoute::Register(App& app) {
-	CROW_ROUTE(app, CORRECTION_ROUTE_ROUTE).methods("POST"_method)(*this);
+	CROW_ROUTE(app, CORRECTION_ROUTE_ROUTE_1).methods("POST"_method)(*this);
+	CROW_ROUTE(app, CORRECTION_ROUTE_ROUTE_2).methods("POST"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response CorrectionRoute::impl(HttpPost, const Request& req) const {
+Route::Response CorrectionRoute::impl(HttpPost, const Request& req, int pid,
+				      int p, int lid) const {
 	const auto json = crow::json::load(req.body);
-	const auto pid = get<int>(json, "projectId");
-	if (not pid)
-		THROW(BadRequest,
-		      "(CorrectionRoute) missing projectId in POST data");
-	const auto p = get<int>(json, "pageId");
-	if (not p)
-		THROW(BadRequest,
-		      "(CorrectionRoute) missing pageId in POST data");
-	const auto lid = get<int>(json, "lineId");
-	if (not lid)
-		THROW(BadRequest,
-		      "(CorrectionRoute) missing lineId in POST data");
 	const auto c = get<std::string>(json, "correction");
 	if (not c)
-		THROW(BadRequest,
-		      "(CorrectionRoute) missing correction in POST data");
-	const auto tid = get<int>(json, "tokenId");
-
-	auto obj = new_line_session(req, *pid, *p, *lid);
-	obj.session().assert_permission(obj.conn(), *pid, Permissions::Write);
-	if (tid) {
-		return impl(obj.conn(), obj.data(), *tid, *c);
-	} else {
-		return impl(obj.conn(), obj.data(), *c);
-	}
+		THROW(BadRequest, "(CorrectionRoute) missing correction data");
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	session->assert_permission(conn, pid, Permissions::Write);
+	auto line = session->must_find(conn, pid, p, lid);
+	return correct(conn, *line, *c);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response CorrectionRoute::impl(MysqlConnection& conn, Line& line,
-				      const std::string& c) const {
+Route::Response CorrectionRoute::impl(HttpPost, const Request& req, int pid,
+				      int p, int lid, int tid) const {
+	const auto json = crow::json::load(req.body);
+	const auto c = get<std::string>(json, "correction");
+	if (not c)
+		THROW(BadRequest, "(CorrectionRoute) missing correction data");
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	session->assert_permission(conn, pid, Permissions::Write);
+	auto line = session->must_find(conn, pid, p, lid);
+	return correct(conn, *line, tid, *c);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response CorrectionRoute::correct(MysqlConnection& conn, Line& line,
+					 const std::string& c) const {
 	WagnerFischer wf;
 	wf.set_gt(c);
 	wf.set_ocr(line);
@@ -69,8 +71,8 @@ Route::Response CorrectionRoute::impl(MysqlConnection& conn, Line& line,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response CorrectionRoute::impl(MysqlConnection& conn, Line& line,
-				      int tid, const std::string& c) const {
+Route::Response CorrectionRoute::correct(MysqlConnection& conn, Line& line,
+					 int tid, const std::string& c) const {
 	auto token = find_token(line, tid);
 	if (not token) {
 		THROW(NotFound, "(CorrectionRoute) cannot find ",

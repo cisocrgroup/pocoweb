@@ -15,12 +15,10 @@ include make/frontend.mak
 .PHONY: all default
 -include $(DEPS)
 
-mkdir-%:; @mkdir -p $(subst -,/,$*)
-dbg-%:; @echo $*: ${$*}
-
 all: ${ALL}
 
 .PHONY: tags
 tags:
-	@echo "generating tags file"
+	@echo [ $@ ]
+	##@echo "generating tags file"
 	@ctags -R plugins rest modules utils

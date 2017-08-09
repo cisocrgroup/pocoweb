@@ -12,6 +12,8 @@ ext/mysqlpp11/Makefile ext/mysqlpp11/CMakeCache.txt: $(MODS) | mkdir-ext-mysqlpp
 		cd ext/mysqlpp11 && \
 		cmake -DCMAKE_CXX_FLAGS=-fpic ../../modules/sqlpp11-connector-mysql
 lib/libpugixml.a: modules/pugixml/build/pugixml.o | mkdir-lib
-	$(AR) rcs $@ $^
+	$(call ECHO,$@)
+	$V $(AR) rcs $@ $^
 modules/pugixml/build/pugixml.o: modules/pugixml/src/pugixml.cpp | mkdir-modules-pugixml-build
-	$(CXX) $(CXXFLAGS) -c -o $@ $^
+	$(call ECHO,$@)
+	$V $(CXX) $(CXXFLAGS) -c -o $@ $^

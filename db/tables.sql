@@ -4,8 +4,7 @@ default character set utf8
 default collate utf8_general_ci;
 use pocoweb;
 
-drop table if exists users;
-create table users (
+create table if not exists users (
 	userid int not null unique primary key auto_increment,
 	name varchar(50) not null unique,
 	email varchar(50) not null,
@@ -14,8 +13,7 @@ create table users (
 	admin boolean not null
 );
 
-drop table if exists books;
-create table books (
+create table if not exists books (
 	bookid int not null unique references projects(projectid),
 	year int,
 	title varchar(100) not null,
@@ -26,23 +24,20 @@ create table books (
 	lang varchar(50) not null
 );
 
-drop table if exists projects;
-create table projects (
+create table if not exists projects (
 	projectid int not null unique primary key auto_increment,
 	origin int,
 	owner int references users(userid),
 	pages int
 );
 
-drop table if exists project_pages;
-create table project_pages (
+create table if not exists project_pages (
 	projectid int not null references projects(projectid),
 	pageid int not null references pages(pageid),
 	primary key (projectid, pageid)
 );
 
-drop table if exists pages;
-create table pages (
+create table if not exists pages (
 	bookid int references books(bookid),
 	pageid int,
 	imagepath varchar(255) not null,
@@ -55,8 +50,7 @@ create table pages (
 	primary key (bookid, pageid)
 );
 
-drop table if exists textlines;
-create table textlines (
+create table if not exists textlines (
 	bookid int references books(bookid),
 	pageid int references pages(pageid),
 	lineid int,
@@ -68,8 +62,7 @@ create table textlines (
 	primary key (bookid, pageid, lineid)
 );
 
-drop table if exists contents;
-create table contents (
+create table if not exists contents (
 	bookid int references books(bookid),
 	pageid int references pages(pageid),
 	lineid int references textlines(lineid),
@@ -81,6 +74,37 @@ create table contents (
 	primary key (bookid, pageid, lineid, seq)
 );
 
-drop table if exists bookpermissions;
+create table if not exists types (
+	bookid int references books(bookid),
+	typid int,
+	string varchar(50),
+	primary key (bookid, typid)
+);
 
+create table if not exists profiles (
+	bookid int references books(bookid),
+	timestamp bigint not null,
+	primary key (bookid)
+);
 
+/* (3 * 4)^ + 1^^ + (3 * 4)^ = 25*/
+/* ^: max utf length of a pattern with maximal 3 characters */
+/* ^^: lenght of separator `:` */
+create table if not exists errorpatterns (
+	bookid int references types(bookid),
+	pageid int references pages(pageid),
+	lineid int references textlines(lineid),
+	tokenid int references suggestions(tokenid),
+	pattern varchar(25)
+);
+
+create table if not exists suggestions (
+	bookid int references types(bookid),
+	pageid int references pages(pageid),
+	lineid int references textlines(lineid),
+	tokenid int not null,
+	typid int references types(typid),
+	suggestionid int references types(typid),
+	weight double not null,
+	distance int not null
+);

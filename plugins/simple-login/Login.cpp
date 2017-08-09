@@ -28,14 +28,13 @@ Route::Response Login::login(const Request& req, const std::string& name,
 	// check for existing session
 	auto session = find_session(req);
 	if (session) {
-		CROW_LOG_INFO << "(Login) existing session sid: "
-			      << session->id();
+		LockedSession s(session);
+		CROW_LOG_INFO << "(Login) existing session sid: " << s->id();
 		return ok();
 	}
 
 	// create new session
-	auto conn = connection();
-	assert(conn);
+	auto conn = must_get_connection();
 	auto user = select_user(conn.db(), name);
 	if (not user) {
 		CROW_LOG_ERROR << "(Login) invalid user: " << name;
@@ -43,16 +42,16 @@ Route::Response Login::login(const Request& req, const std::string& name,
 	}
 	if (not user->password.authenticate(pass)) {
 		CROW_LOG_ERROR << "(Login) invalid password for user: " << name;
+		return forbidden();
 	}
-
 	session = new_session(*user);
 	if (not session) {
 		CROW_LOG_ERROR << "(Login) could not create new session";
 		return internal_server_error();
 	}
-	SessionLock lock(*session);
+	LockedSession s(session);
 	Json json;
-	json["sid"] = session->id();
+	json["sid"] = s->id();
 	return json;
 }
 
@@ -70,12 +69,7 @@ Route::Response Login::impl(HttpPost, const Request& req) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response Login::impl(HttpGet, const Request& req) const {
-	auto session = find_session(req);
-	if (not session) {
-		CROW_LOG_ERROR << "(Login) not logged in";
-		return forbidden();
-	}
-	SessionLock lock(*session);
+	LockedSession session(must_find_session(req));
 	Json j;
 	return j << session->user();
 }

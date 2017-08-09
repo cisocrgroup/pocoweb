@@ -40,44 +40,11 @@ class SessionStore;
 using SessionStoreSptr = std::shared_ptr<SessionStore>;
 class Route;
 
-template <class T>
-class SessionObject {
-       public:
-	SessionObject() = delete;
-	~SessionObject() noexcept = default;
-	SessionObject(const SessionObject&) = delete;
-	SessionObject& operator=(const SessionObject&) = delete;
-	SessionObject(SessionObject&&) = default;
-	SessionObject& operator=(SessionObject&&) = default;
-
-	Session& session() const noexcept { return *session_; }
-	MysqlConnection& conn() noexcept { return conn_; }
-	T& data() const noexcept { return *data_; }
-
-       private:
-	template <class F>
-	SessionObject(SessionPtr s, MysqlConnection c, F f)
-	    : session_(s),
-	      conn_(std::move(c)),
-	      data_(),
-	      session_lock_(std::make_unique<std::lock_guard<Session>>(*s)) {
-		data_ = f(*this);
-	}
-	friend class Route;
-	SessionPtr session_;
-	MysqlConnection conn_;
-	std::shared_ptr<T> data_;
-	std::unique_ptr<std::lock_guard<Session>> session_lock_;
-};
-
 class Route {
        public:
 	using Response = crow::response;
 	using Request = crow::request;
 	using RoutingParams = crow::routing_params;
-	using ProjectSessionObject = SessionObject<Project>;
-	using PageSessionObject = SessionObject<Page>;
-	using LineSessionObject = SessionObject<Line>;
 
 	static Response ok() noexcept { return Response(200); }
 	static Response created() noexcept { return Response(201); }
@@ -89,6 +56,7 @@ class Route {
 		return Response(500);
 	}
 	static Response not_implemented() noexcept { return Response(501); }
+	static Response service_not_available() { return Response(503); }
 
 	using App = crow::Crow<>;
 	virtual ~Route() noexcept;
@@ -104,22 +72,18 @@ class Route {
 	void set_connection_pool(MysqlConnectionPoolSptr pool) noexcept {
 		connection_pool_ = std::move(pool);
 	}
+	MysqlConnectionPoolSptr get_connection_pool() const noexcept {
+		return connection_pool_;
+	}
 
        protected:
 	SessionPtr new_session(const User& user) const;
-	SessionPtr session(const Request& request) const;
 	SessionPtr find_session(const Request& request) const;
+	SessionPtr must_find_session(const Request& request) const;
 	void delete_session(const Session& session) const;
-	const Config& config() const noexcept { return *config_; }
-	MysqlConnection connection() const noexcept {
-		return connection_pool_->get_connection();
-	}
-	ProjectSessionObject new_project_session(const Request& req,
-						 int pid) const;
-	PageSessionObject new_page_session(const Request& req, int pid,
-					   int p) const;
-	LineSessionObject new_line_session(const Request& req, int pid, int p,
-					   int lid) const;
+	const Config& get_config() const noexcept { return *config_; }
+	MysqlConnection get_connection() const;
+	MysqlConnection must_get_connection() const;
 
 	static std::string extract_content(const crow::request& request);
 

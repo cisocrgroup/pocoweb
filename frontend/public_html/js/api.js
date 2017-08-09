@@ -11,7 +11,7 @@ pcw.Api = {
 	post: null,
 	url: "",
 	method: "GET",
-	expectStatus: 200,
+	acceptedStatuses: [200],
 	formatRequest: function() {
 		return this.method + " " + this.url + " [" + this.sid + "]";
 	},
@@ -23,40 +23,48 @@ pcw.Api = {
 			console.log("(Api) " + msg);
 		}
 	},
+	accept: function(status) {
+		for (var i = 0; i < this.acceptedStatuses.length; i++) {
+			if (this.acceptedStatuses[i] === status) {
+				return true;
+			}
+		}
+		return false;
+	},
 	setupForGetVersion: function() {
 		this.method = "GET";
 		this.post = null;
 		this.url = pcw.config.backend.url +
-		    pcw.config.backend.routes['api_version'];
-		this.expectStatus = 200;
+		    pcw.config.backend.routes.apiVersion;
+		this.acceptedStatuses = [200];
 	},
 	setupForGetLoggedInUser: function() {
 		this.method = "GET";
 		this.post = null;
 		this.url =
 		    pcw.config.backend.url + pcw.config.backend.routes.login;
-		this.expectStatus = 200;
+		this.acceptedStatuses = [200];
 	},
 	setupForCorrectWord: function(pid, p, lid, tid, c) {
 		this.method = "POST";
-		this.post = {
-			projectId: pid,
-			pageId: p,
-			lineId: lid,
-			tokenId: tid,
-			correction: c
-		};
 		this.url = pcw.config.backend.url +
-		    pcw.config.backend.routes['correct_line'];
-		this.expectStatus = 200;
+		    pcw.config.backend.routes.correctWord;
+		this.url = this.url.replace('%d', pid);
+		this.url = this.url.replace('%d', p);
+		this.url = this.url.replace('%d', lid);
+		this.url = this.url.replace('%d', tid);
+		this.post = {correction: c};
+		this.acceptedStatuses = [200];
 	},
 	setupForCorrectLine: function(pid, p, lid, c) {
 		this.method = "POST";
-		this.post =
-		    {projectId: pid, pageId: p, lineId: lid, correction: c};
+		this.post = {correction: c};
 		this.url = pcw.config.backend.url +
-		    pcw.config.backend.routes['correct_line'];
-		this.expectStatus = 200;
+		    pcw.config.backend.routes.correctLine;
+		this.url = this.url.replace('%d', pid);
+		this.url = this.url.replace('%d', p);
+		this.url = this.url.replace('%d', lid);
+		this.acceptedStatuses = [200];
 	},
 	setupForGetConcordance: function(pid, q) {
 		this.method = "GET";
@@ -64,20 +72,44 @@ pcw.Api = {
 		this.url =
 		    pcw.config.backend.url + pcw.config.backend.routes.search;
 		this.url = this.url.replace('%d', pid);
-		this.url = this.url.replace('%s', q);
-		this.expectStatus = 200;
+		this.url = this.url.replace('%s', encodeURI(q));
+		this.acceptedStatuses = [200];
+	},
+	setupForOrderProfile: function(pid) {
+		this.method = "POST";
+		this.post = {};
+		this.url = pcw.config.backend.url +
+		    pcw.config.backend.routes.orderProfile;
+		this.url = this.url.replace('%d', pid);
+		// 202 -> accepted
+		this.acceptedStatuses = [202];
+	},
+	setupForGetSuggestions: function(pid, q) {
+		this.method = "GET";
+		this.post = null;
+		this.url = pcw.config.backend.url +
+		    pcw.config.backend.routes.getSuggestions;
+		this.url = this.url.replace('%d', pid);
+		this.url = this.url.replace('%s', encodeURI(q));
+		// 202 -> accepted
+		this.acceptedStatuses = [200];
 	},
 	run: function(callback) {
 		var http = new XMLHttpRequest();
 		var that = this;
 		http.onreadystatechange = function() {
-			if (http.readyState === 4 &&
-			    http.status === that.expectStatus) {
+			if (http.readyState === 4 && that.accept(http.status)) {
 				that.log(
 				    that.formatRequest() + " returned: " +
 				    http.status + " data: " +
 				    http.responseText);
-				callback(JSON.parse(http.responseText));
+				if (http.responseText.length > 0) {
+					callback(
+					    http.status,
+					    JSON.parse(http.responseText));
+				} else {
+					callback(http.staus, {});
+				}
 			} else if (http.readyState === 4) {
 				that.onError(http.status);
 			}

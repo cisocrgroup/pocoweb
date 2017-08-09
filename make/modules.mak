@@ -7,8 +7,9 @@ MODS += modules/date.gitmodule
 
 .DELETE_ON_ERROR:
 %.gitmodule:
-	flock mod.lock git submodule update --init $*
-	touch $@
-	$(RM) -f mod.lock
+	$(call ECHO,$@)
+	$V flock mod.lock git submodule update --init $*
+	$V touch $@
+	$V $(RM) -f mod.lock
 
 ALL += $(MODS)

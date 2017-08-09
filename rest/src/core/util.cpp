@@ -1,6 +1,7 @@
 #include "util.hpp"
 #include <crow/logging.h>
 #include <openssl/sha.h>
+#include <unicode/uchar.h>
 #include <unistd.h>
 #include <utf8.h>
 #include <algorithm>
@@ -252,6 +253,104 @@ std::wstring pcw::utf8(const std::string& str) {
 	std::wstring res;
 	utf8::utf8to32(begin(str), end(str), std::back_inserter(res));
 	return res;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void pcw::to_upper(std::string& str) {
+	auto wstr = utf8(str);
+	to_upper(wstr);
+	str = utf8(wstr);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void pcw::to_upper(std::wstring& str) noexcept {
+	for (auto& c : str) c = u_toupper(c);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void pcw::to_lower(std::string& str) {
+	auto wstr = utf8(str);
+	to_lower(wstr);
+	str = utf8(wstr);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void pcw::to_lower(std::wstring& str) noexcept {
+	for (auto& c : str) c = u_tolower(c);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+static void set_capitalization_vars(wchar_t c, bool& firstchar,
+				    bool& firstupper, bool& allupper,
+				    bool& alllower) noexcept {
+	const bool upper = (u_charType(c) == U_UPPERCASE_LETTER);
+	if (upper and firstchar) firstupper = true;
+	if (not upper) allupper = false;
+	if (upper) alllower = false;
+	firstchar = false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+static pcw::Capitalization do_get_capitalization(bool firstupper, bool allupper,
+						 bool alllower) noexcept {
+	if (allupper)
+		return pcw::Capitalization::TitleCase;
+	else if (alllower)
+		return pcw::Capitalization::LowerCase;
+	else if (firstupper)
+		return pcw::Capitalization::Capitalized;
+	else  // first char is not upper, not all chars are lower case
+		return pcw::Capitalization::TitleCase;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Capitalization pcw::get_capitalization(const std::wstring& str) noexcept {
+	bool firstchar = true;
+	bool firstupper = false;
+	bool allupper = true;
+	bool alllower = true;
+	for (auto c : str) {
+		set_capitalization_vars(c, firstchar, firstupper, allupper,
+					alllower);
+	}
+	return do_get_capitalization(firstupper, allupper, alllower);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Capitalization pcw::get_capitalization(const std::string& str) {
+	bool firstchar = true;
+	bool firstupper = false;
+	bool allupper = true;
+	bool alllower = true;
+	const auto b = begin(str);
+	const auto e = end(str);
+	using it = utf8::unchecked::iterator<std::string::const_iterator>;
+	std::for_each(it(b), it(e), [&](wchar_t c) {
+		set_capitalization_vars(c, firstchar, firstupper, allupper,
+					alllower);
+	});
+	return do_get_capitalization(firstupper, allupper, alllower);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void pcw::apply_capitalization(Capitalization cap, std::wstring& str) noexcept {
+	if (cap == Capitalization::LowerCase) {
+		to_lower(str);
+	} else if (cap == Capitalization::TitleCase) {
+		to_upper(str);
+	} else {
+		to_lower(str);
+		if (not str.empty()) {
+			str[0] = u_toupper(str[0]);
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void pcw::apply_capitalization(Capitalization cap, std::string& str) noexcept {
+	std::wstring tmp = utf8(str);
+	apply_capitalization(cap, tmp);
+	str = utf8(tmp);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

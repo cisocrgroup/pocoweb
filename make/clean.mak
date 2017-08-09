@@ -4,6 +4,7 @@ clean:
 	$(RM) $(CORE_OBJS)
 	$(RM) $(PARSER_OBJS)
 	$(RM) $(API_OBJS)
+	$(RM) $(PROFILER_OBJS)
 	$(RM) $(PEX_OBJS)
 	$(RM) $(PSLOG_OBJS)
 	$(RM) $(PPROF_OBJS)

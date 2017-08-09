@@ -38,6 +38,16 @@ PageParserPtr make_page_parser(FileType type, const Path& path);
 
 std::string utf8(const std::wstring& str);
 std::wstring utf8(const std::string& str);
+void to_upper(std::string& str);
+void to_upper(std::wstring& str) noexcept;
+void to_lower(std::string& str);
+void to_lower(std::wstring& str) noexcept;
+enum class Capitalization { LowerCase, TitleCase, Capitalized };
+Capitalization get_capitalization(const std::wstring& str) noexcept;
+Capitalization get_capitalization(const std::string& str);
+void apply_capitalization(Capitalization cap, std::wstring& str) noexcept;
+void apply_capitalization(Capitalization cap, std::string& str) noexcept;
+
 void hard_link_or_copy(const Path& from, const Path& to);
 void hard_link_or_copy(const Path& from, const Path& to,
 		       boost::system::error_code& ec) noexcept;

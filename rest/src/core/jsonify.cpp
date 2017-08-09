@@ -2,7 +2,6 @@
 #include <crow/json.h>
 #include "Box.hpp"
 #include "Page.hpp"
-#include "Profile.hpp"
 #include "User.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -112,40 +111,6 @@ pcw::Json& pcw::operator<<(Json& json, const Box& box) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json& pcw::operator<<(Json& json, const Suggestion& sugg) {
-	json["cor"] = sugg.cand.cor();
-	json["ocr"] = sugg.token.cor();
-	return json;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-pcw::Json& pcw::operator<<(Json& json, const std::vector<Suggestion>& suggs) {
-	size_t i = 0;
-	for (const auto& s : suggs) {
-		json["suggestions"][i++] << s;
-	}
-	return json;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-pcw::Json& pcw::operator<<(
-    Json& json, const std::map<Pattern, std::vector<Suggestion>>& x) {
-	for (const auto& p : x) {
-		json[p.first.cor + ":" + p.first.ocr] << p.second;
-	}
-	return json;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-pcw::Json& pcw::operator<<(Json& json, const Profile& profile) {
-	json["projectId"] = profile.book().id();
-	json["suggestions"] << profile.suggestions();
-	json["histPatterns"] << profile.calc_hist_patterns();
-	json["ocrPatterns"] << profile.calc_ocr_patterns();
-	return json;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 pcw::Json& pcw::operator<<(Json& j, const User& user) {
 	j["name"] = user.name;
 	j["email"] = user.email;
@@ -156,7 +121,7 @@ pcw::Json& pcw::operator<<(Json& j, const User& user) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool pcw::get(const RJson& j, const char* key, bool& res) noexcept {
+bool pcw::get(const RJson& j, const char* key, bool& res) {
 	if (j.t() == crow::json::type::Object and j.has(key)) {
 		switch (j[key].t()) {
 			case crow::json::type::True:
@@ -173,7 +138,7 @@ bool pcw::get(const RJson& j, const char* key, bool& res) noexcept {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool pcw::get(const RJson& j, const char* key, int& res) noexcept {
+bool pcw::get(const RJson& j, const char* key, int& res) {
 	if (j.t() == crow::json::type::Object and j.has(key) and
 	    j[key].t() == crow::json::type::Number) {
 		res = j[key].i();
@@ -183,7 +148,7 @@ bool pcw::get(const RJson& j, const char* key, int& res) noexcept {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool pcw::get(const RJson& j, const char* key, double& res) noexcept {
+bool pcw::get(const RJson& j, const char* key, double& res) {
 	if (j.t() == crow::json::type::Object and j.has(key) and
 	    j[key].t() == crow::json::type::Number) {
 		res = j[key].d();
@@ -193,7 +158,7 @@ bool pcw::get(const RJson& j, const char* key, double& res) noexcept {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool pcw::get(const RJson& j, const char* key, std::string& res) noexcept {
+bool pcw::get(const RJson& j, const char* key, std::string& res) {
 	if (j.t() == crow::json::type::Object and j.has(key) and
 	    j[key].t() == crow::json::type::String) {
 		res = j[key].s();

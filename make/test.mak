@@ -1,6 +1,7 @@
 UTILS_TESTS += rest/src/utils/tests/TestError.test
 UTILS_TESTS += rest/src/utils/tests/TestMaybe.test
 UTILS_TESTS += rest/src/utils/tests/TestScopeGuard.test
+UTILS_TESTS += rest/src/utils/tests/TestUniqueIdMap.test
 
 CORE_TESTS += rest/src/core/tests/TestBookBuilder.test
 CORE_TESTS += rest/src/core/tests/TestBox.test
@@ -14,11 +15,11 @@ CORE_TESTS += rest/src/core/tests/TestOcrLine.test
 CORE_TESTS += rest/src/core/tests/TestPackageBuilder.test
 CORE_TESTS += rest/src/core/tests/TestPageBuilder.test
 CORE_TESTS += rest/src/core/tests/TestPassword.test
-CORE_TESTS += rest/src/core/tests/TestProfile.test
 CORE_TESTS += rest/src/core/tests/TestProjectBuilder.test
 CORE_TESTS += rest/src/core/tests/TestSearcher.test
 CORE_TESTS += rest/src/core/tests/TestSession.test
 CORE_TESTS += rest/src/core/tests/TestSessionStore.test
+CORE_TESTS += rest/src/core/tests/TestUtils.test
 CORE_TESTS += rest/src/core/tests/TestWagnerFischer.test
 
 DATABASE_TESTS += rest/src/database/tests/TestTables.test
@@ -26,33 +27,30 @@ DATABASE_TESTS += rest/src/database/tests/TestDatabase.test
 DATABASE_TESTS += rest/src/database/tests/TestConnectionPool.test
 DATABASE_TESTS += rest/src/database/tests/TestDatabaseGuard.test
 
-PARSER_TESTS += rest/src/parser/tests/TestDocXml.test
 PARSER_TESTS += rest/src/parser/tests/TestAltoXmlParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestAbbyyXmlParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestOcropusLlocsParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestHocrParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestBookDirectoryBuilder.test
 
-TESTS = $(UTILS_TESTS) $(CORE_TESTS) $(DATABASE_TESTS) $(PARSER_TESTS)
-%.test: %.cpp $(LIBS)
-	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
+PROFILER_TESTS += rest/src/profiler/tests/TestProfile.test
+PROFILER_TESTS += rest/src/profiler/tests/TestDocXml.test
 
-test: $(TESTS)
-	@errors=0;\
-	for test in $(TESTS); do \
-		$$test > /dev/null 2>&1; \
-		res=$$?; \
-		if [ $$res -ne 0 ]; then \
-			errors=$$((errors + 1)); \
-			printf "%-60s \033[0;31mFAIL\033[0m\n" "$$test:";\
-		else \
-			printf "%-60s \033[0;32mSUCCESS\033[0m\n" "$$test:";\
-		fi \
-	done ;\
-	if [ $$errors -ne 0 ]; then \
-		echo "\033[0;31m$$errors FAILURE(S)\033[0m" ;\
-		exit $$errors ;\
+TESTS = $(UTILS_TESTS) $(CORE_TESTS) $(DATABASE_TESTS) $(PARSER_TESTS) $(PROFILER_TESTS)
+RUN_TESTS = $(patsubst %.test,%.run,$(TESTS))
+%.test: %.o $(LIBS)
+	$(call ECHO,$@)
+	$V $(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
+%.run: %.test
+	@$< > /dev/null 2>&1; \
+	res=$$?; \
+	if [ $$res -ne 0 ]; then \
+		echo "[\033[0;31m$@\033[0m]"; \
+		exit 1; \
+	else \
+		echo "[\033[0;32m$@\033[0m]"; \
 	fi
+test: $(RUN_TESTS)
 
 DEPS += $(patsubst %.test,%.d,$(TESTS))
 .PHONY: test

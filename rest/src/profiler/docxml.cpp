@@ -1,8 +1,8 @@
 #include "docxml.hpp"
 #include <sstream>
-#include "Page.hpp"
 #include "Profile.hpp"
-#include "Project.hpp"
+#include "core/Page.hpp"
+#include "core/Project.hpp"
 
 using namespace pcw;
 
@@ -10,22 +10,22 @@ using namespace pcw;
 struct DocXmlNode : public pugi::xml_node {
        private:
 	DocXmlNode(const pugi::xml_node& node,
-		   const std::vector<Suggestion>* suggs)
+		   const Profile::Suggestions* suggs)
 	    : pugi::xml_node(node), suggestions(suggs) {}
 
        public:
 	static DocXmlNode append_new(DocXmlNode& other) {
-		return DocXmlNode{other.append_child(), other.suggestions};
+		return DocXmlNode(other.append_child(), other.suggestions);
 	}
 	static DocXmlNode append_new(DocXml& other) {
-		return DocXmlNode{other.append_child(), other.suggestions};
+		return DocXmlNode(other.append_child(), other.suggestions);
 	}
-	const std::vector<Suggestion>* suggestions;
+	const Profile::Suggestions* suggestions;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 static void append_candidates(pugi::xml_node& node, const Token& token,
-			      const std::vector<Suggestion>& suggs);
+			      const Profile::Suggestions& suggs);
 
 ////////////////////////////////////////////////////////////////////////////////
 namespace pcw {
@@ -133,18 +133,15 @@ DocXmlNode& pcw::operator<<(DocXmlNode& node, const Box& box) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void append_candidates(pugi::xml_node& node, const Token& token,
-		       const std::vector<Suggestion>& suggs) {
-	auto id = token.unique_id();
-	for (const auto& s : suggs) {
-		if (s.token.unique_id() == id) {
-			auto tmp = node.append_child();
-			tmp.set_name("cand");
-			std::string expr =
-			    s.cand.cor() + ":" + s.cand.explanation_string() +
-			    ",voteWeight=" + std::to_string(s.cand.weight()) +
-			    ",levDistance=" + std::to_string(s.cand.lev());
-			tmp.append_child(pugi::node_pcdata)
-			    .set_value(expr.data());
-		}
+		       const Profile::Suggestions& suggs) {
+	auto s = suggs.find(token);
+	if (s == end(suggs)) return;
+	for (const auto& c : s->second) {
+		auto tmp = node.append_child();
+		tmp.set_name("cand");
+		std::string expr = c.cor() + ":" + c.explanation_string() +
+				   ",voteWeight=" + std::to_string(c.weight()) +
+				   ",levDistance=" + std::to_string(c.lev());
+		tmp.append_child(pugi::node_pcdata).set_value(expr.data());
 	}
 }

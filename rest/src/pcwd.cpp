@@ -6,10 +6,19 @@
 #include <boost/filesystem/operations.hpp>
 #include <iostream>
 #include <vector>
+#include "api/AssignRoute.hpp"
 #include "api/BookRoute.hpp"
 #include "api/CorrectionRoute.hpp"
+#include "api/DownloadRoute.hpp"
+#include "api/ErrorPatternsRoute.hpp"
+#include "api/FinishRoute.hpp"
 #include "api/LineRoute.hpp"
 #include "api/PageRoute.hpp"
+#include "api/ProfilerRoute.hpp"
+#include "api/SearchRoute.hpp"
+#include "api/SplitImagesRoute.hpp"
+#include "api/SplitRoute.hpp"
+#include "api/SuggestionsRoute.hpp"
 #include "api/UserRoute.hpp"
 #include "api/VersionRoute.hpp"
 #include "core/App.hpp"
@@ -49,12 +58,21 @@ void run(App& app) {
 	change_user_and_group(app.config());
 	create_base_directory(app.config());
 	app.register_plugins();
-	app.Register(std::make_unique<pcw::VersionRoute>());
+	app.Register(std::make_unique<pcw::AssignRoute>());
 	app.Register(std::make_unique<pcw::BookRoute>());
-	app.Register(std::make_unique<pcw::PageRoute>());
-	app.Register(std::make_unique<pcw::LineRoute>());
-	app.Register(std::make_unique<pcw::UserRoute>());
 	app.Register(std::make_unique<pcw::CorrectionRoute>());
+	app.Register(std::make_unique<pcw::DownloadRoute>());
+	app.Register(std::make_unique<pcw::ErrorPatternsRoute>());
+	app.Register(std::make_unique<pcw::FinishRoute>());
+	app.Register(std::make_unique<pcw::LineRoute>());
+	app.Register(std::make_unique<pcw::PageRoute>());
+	app.Register(std::make_unique<pcw::ProfilerRoute>());
+	app.Register(std::make_unique<pcw::SearchRoute>());
+	app.Register(std::make_unique<pcw::SplitImagesRoute>());
+	app.Register(std::make_unique<pcw::SplitRoute>());
+	app.Register(std::make_unique<pcw::SuggestionsRoute>());
+	app.Register(std::make_unique<pcw::UserRoute>());
+	app.Register(std::make_unique<pcw::VersionRoute>());
 	app.run();
 }
 
