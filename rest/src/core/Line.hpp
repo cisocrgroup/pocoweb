@@ -59,19 +59,20 @@ class Line : public std::enable_shared_from_this<Line> {
 	void append(wchar_t o, wchar_t c, int r, double conf);
 
 	// interface for WagnerFischer correction
-	void begin_wagner_fischer() noexcept;
+	void begin_wagner_fischer(size_t b, size_t e) noexcept;
 	void insert(size_t i, wchar_t c);
 	void erase(size_t i);
 	void set(size_t i, wchar_t c);
 	void noop(size_t i);
 	void end_wagner_fischer() const noexcept {}
+	void reset(CharIterator b, CharIterator e);
+	void reset_all() { reset(begin(chars_), end(chars_)); }
 
 	Box box;
 	Path img;
 
        private:
 	static int64_t unique_id(int bid, int pid, int lid, int tid) noexcept;
-
 	void divide_cuts(Chars::iterator f, Chars::iterator l);
 
 	template <class It, class F>
