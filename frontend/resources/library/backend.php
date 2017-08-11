@@ -288,7 +288,7 @@ function backend_get_search_route($pid, $q) {
 		$pid, urlencode($q));
 }
 
-function backend_get_concordance($pid, $q) {
+function backend_get_concordance($pid, $q, $isErrorPattern) {
 	global $SID;
 	$api = new Api(backend_get_search_route($pid, $q));
 	$api->set_session_id($SID);

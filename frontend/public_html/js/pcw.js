@@ -42,6 +42,16 @@ pcw.log = function(msg) {
 	}
 };
 
+pcw.onLoad = function() {
+	pcw.setApiVersion();
+};
+
+pcw.onLoadWithPid = function(pid) {
+	pcw.setApiVersion();
+	pcw.setErrorPatternsDropdown(pid);
+	pcw.setErrorTokensDropdown(pid);
+};
+
 pcw.getIds = function(anchor) {
 	var ids = anchor.split('-');
 	for (var i = 0; i < ids.length; i++) {
@@ -283,13 +293,13 @@ pcw.setSuggestionsDropdown = function(pid, selection) {
 		suggs = res.suggestions || [];
 		suggs.sort(function(a, b) { return b.weight - a.weight; });
 		for (var i = 0; i < suggs.length; i++) {
-			pcw.setSuggestionDropdown(
+			pcw.addSuggestsionDropdownItem(
 			    dropdown, suggs[i], selection);
 		}
 	});
 };
 
-pcw.setSuggestionDropdown = function(dropdown, s, selection) {
+pcw.addSuggestsionDropdownItem = function(dropdown, s, selection) {
 	pcw.log(
 	    "suggestion: \"" + s.suggestion + "\", weight: " + s.weight +
 	    ", distance: " + s.distance);
@@ -331,18 +341,111 @@ pcw.orderProfile = function(pid) {
 	});
 };
 
+pcw.setErrorPatternsDropdown = function(pid) {
+	var dropdown = document.getElementById("pcw-error-patterns-dropdown");
+	if (dropdown != null) {
+		pcw.log("setErrorPatternsDropdown");
+		var api = Object.create(pcw.Api);
+		api.sid = pcw.getSid();
+		api.setupForGetAllErrorPatterns(pid);
+		api.run(function(status, res) {
+			var patterns = {};
+			var suggs = res.suggestions || [];
+			for (var i = 0; i < suggs.length; i++) {
+				var id = suggs[i].pageId + '-' +
+				    suggs[i].lineId + '-' + suggs[i].tokenId;
+				var pat = suggs[i].pattern.toLowerCase();
+				var set = patterns[pat] || {};
+				set[id] = true;
+				patterns[pat] = set;
+			}
+			var counts = [];
+			for (p in patterns) {
+				counts.push({
+					pattern: p,
+					count: Object.keys(patterns[p]).length
+				});
+			}
+			counts.sort(function(a, b) {
+				return b.count - a.count;
+			});
+			var onclick = function(pid, c) {
+				return function() {
+					pcw.log(c.pattern + ": " + c.count);
+					var pat = encodeURI(c.pattern);
+					var href = "concordance.php?pid=" +
+					    pid + "&q=" + pat +
+					    "&error-pattern";
+					window.location.href = href;
+				};
+			};
+			for (var i = 0; i < counts.length; i++) {
+				var c = counts[i];
+				var a = pcw.appendErrorCountItem(
+				    dropdown, c.pattern, c.count);
+				a.onclick = onclick(pid, c);
+			}
+		});
+	}
+};
+
+pcw.setErrorTokensDropdown = function(pid) {
+	var dropdown = document.getElementById("pcw-error-tokens-dropdown");
+	if (dropdown != null) {
+		pcw.log("setErrorsDropdown");
+		var api = Object.create(pcw.Api);
+		api.sid = pcw.getSid();
+		api.setupForGetAllSuggestions(pid);
+		api.run(function(status, res) {
+			var tokens = {};
+			var suggs = res.suggestions || [];
+			for (var i = 0; i < suggs.length; i++) {
+				var id = suggs[i].pageId + '-' +
+				    suggs[i].lineId + '-' + suggs[i].tokenId;
+				var tok = suggs[i].token.toLowerCase();
+				var set = tokens[tok] || {};
+				set[id] = true;
+				tokens[tok] = set;
+			}
+			var counts = [];
+			for (p in tokens) {
+				counts.push({
+					token: p,
+					count: Object.keys(tokens[p]).length
+				});
+			}
+			counts.sort(function(a, b) {
+				return b.count - a.count;
+			});
+			var onclick = function(pid, c) {
+				return function() {
+					pcw.log(c.token + ": " + c.count);
+					var pat = encodeURI(c.token);
+					var href = "concordance.php?pid=" +
+					    pid + "&q=" + pat;
+					window.location.href = href;
+				};
+			};
+			for (var i = 0; i < counts.length; i++) {
+				c = counts[i];
+				var a = pcw.appendErrorCountItem(
+				    dropdown, c.token, c.count);
+				a.onclick = onclick(pid, c);
+			}
+		});
+	}
+};
+
+pcw.appendErrorCountItem = function(dropdown, error, count) {
+	var li = document.createElement("li");
+	var a = document.createElement("a");
+	var t = document.createTextNode(error + ": " + count);
+	a.appendChild(t);
+	li.appendChild(a);
+	dropdown.appendChild(li);
+	return a;
+};
+
 pcw.timestampToISO8601 = function(ts) {
-	// var fmtnum = function(n) {
-	// 	if (n < 10) {
-	// 		return "0" + n;
-	// 	} else {
-	// 		return n;
-	// 	}
-	// };
-	// var date = new Date(ts * 1000);
-	// return date.getFullYear() + "-" + fmtnum(date.getMonth()) + "-" +
-	//     fmtnum(date.getDate()) + "T" + fmtnum(date.getHours()) + ":" +
-	//     fmtnum(date.getMinutes()) + ":" + fmtnum(date.getSeconds()) +
-	//     "Z";
 	return new Date(ts * 1000).toUTCString();
 };

@@ -19,7 +19,13 @@
     <title>PoCoWeb - Post Correction Web</title>
 </head>
 <!-- <body onload='pcw.setApiVersion();pcw.setLoggedInUser();'> -->
-<body onload='pcw.setApiVersion();'>
+<?php
+if (isset($_GET["pid"])) {
+	echo '<body onload=\'pcw.onLoadWithPid(', $_GET["pid"], ');\'>', "\n";
+} else {
+	echo '<body onload=\'pcw.onLoad();\'>', "\n";
+}
+?>
 <div class="container-fluid">
     <div id="pocweb-header">
     <div class="row">

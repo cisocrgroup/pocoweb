@@ -402,7 +402,6 @@ function frontend_get_correction_class($obj) {
 	return "";
 }
 
-
 function frontend_render_page_view_div($pid, $p, $u, $post) {
 	$api = backend_get_page($pid, $p);
 	$status = $api->get_http_status_code();
@@ -410,7 +409,7 @@ function frontend_render_page_view_div($pid, $p, $u, $post) {
 		frontend_render_error_div("error: could not load project #$pid, page #$p: $status");
 	} else {
 		$page = $api->get_response();
-		echo '<div id="page-view">', "\n";
+		echo '<div id="page-view" onload=\'pcw.setErrorsDropdown(', $pid, ')\'>', "\n";
 		frontend_render_page_header_div($page);
 		frontend_render_page_heading_div($page);
 		frontend_render_page_div($page);
@@ -453,15 +452,26 @@ function frontend_render_page_header_div($page) {
 		'aria-haspopup="true" aria-expanded="false">',
 		'Correction suggestions<span class="caret"></span></a>';
         echo '<ul id="pcw-suggestions-dropdown" class="dropdown-menu">';
-	// echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#1");\' ',
-	// 	'href="#">Correction suggestion #1</a></li>', "\n";
-	// echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#2");\' ',
-	// 	'href="#">Correction suggestion #2</a></li>', "\n";
-	// echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#3");\' ',
-	// 	'href="#">Correction suggestion #3</a></li>', "\n";
-	// echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#4");\' ',
-	// 	'href="#">Correction suggestion #4</a></li>', "\n";
-        // echo '<li role="separator" class="divider"></li>';
+        echo '</ul>';
+        echo '</li>';
+	echo '</ul>';
+	// error-patterns
+	echo '<ul class="nav navbar-nav">', "\n";
+	echo '<li class="dropdown">'; //  disabled">';
+	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" ',
+		'aria-haspopup="true" aria-expanded="false">',
+		'Error patterns<span class="caret"></span></a>';
+        echo '<ul id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu">';
+        echo '</ul>';
+        echo '</li>';
+	echo '</ul>';
+	// error-tokens
+	echo '<ul class="nav navbar-nav">', "\n";
+	echo '<li class="dropdown">'; //  disabled">';
+	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" ',
+		'aria-haspopup="true" aria-expanded="false">',
+		'Error tokens<span class="caret"></span></a>';
+        echo '<ul id="pcw-error-tokens-dropdown" class="dropdown-menu scrollable-menu">';
         echo '</ul>';
         echo '</li>';
 	echo '</ul>';
@@ -677,8 +687,8 @@ function frontend_render_concordance_header_div() {
 	echo '</nav>';
 }
 
-function frontend_render_concordance_div($pid, $q) {
-	$api = backend_get_concordance($pid, $q);
+function frontend_render_concordance_div($pid, $q, $isErrorPattern) {
+	$api = backend_get_concordance($pid, $q, $isErrorPattern);
 	$status = $api->get_http_status_code();
 	if ($status == 200) {
 		$matches = $api->get_response();
@@ -688,10 +698,12 @@ function frontend_render_concordance_div($pid, $q) {
 			echo '<div id="concordance-heading">', "\n";
 			echo "<p><h2>Concordance view for '", urldecode($q), "'</h2></p>\n";
 			echo '</div>', "\n";
-			foreach ($matches["matches"] as $match) {
-				$line = $match["line"];
-				foreach ($match["matches"] as $word) {
-					frontend_render_concordance_line_div($line, $word);
+			if (isset($matches["matches"])) {
+				foreach ($matches["matches"] as $match) {
+					$line = $match["line"];
+					foreach ($match["matches"] as $word) {
+						frontend_render_concordance_line_div($line, $word);
+					}
 				}
 			}
 			echo '</div>', "\n";

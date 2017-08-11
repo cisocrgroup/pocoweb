@@ -94,6 +94,22 @@ pcw.Api = {
 		// 202 -> accepted
 		this.acceptedStatuses = [200];
 	},
+	setupForGetAllSuggestions: function(pid) {
+		this.method = "GET";
+		this.post = null;
+		this.url = pcw.config.backend.url +
+		    pcw.config.backend.routes.getAllSuggestions;
+		this.url = this.url.replace('%d', pid);
+		this.acceptedStatuses = [200]
+	},
+	setupForGetAllErrorPatterns: function(pid) {
+		this.method = "GET";
+		this.post = null;
+		this.url = pcw.config.backend.url +
+		    pcw.config.backend.routes.getAllErrorPatterns;
+		this.url = this.url.replace('%d', pid);
+		this.acceptedStatuses = [200]
+	},
 	run: function(callback) {
 		var http = new XMLHttpRequest();
 		var that = this;
