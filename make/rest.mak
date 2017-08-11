@@ -76,7 +76,7 @@ pcwd: rest/src/pcwd.o $(LIBS)
 	$V $(CXX) $(CXXFLAGS) $< $(LDFLAGS) -o $@
 rest/src/database/Tables.h: modules/sqlpp11/scripts/ddl2cpp db/tables.sql.tmp
 	$(call ECHO,$@)
-	@$^ rest/src/database/Tables tables
+	$V $^ rest/src/database/Tables tables
 # ddl2cpp does not handle `create table if not exists foo`
 db/tables.sql.tmp: db/tables.sql
 	$(call ECHO,$@)
