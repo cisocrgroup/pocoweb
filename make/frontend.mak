@@ -36,7 +36,7 @@ $(PCW_FRONTEND_DIR)%.html: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$V install $< $@
 $(PCW_FRONTEND_DIR)%.php: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
-	$V php -l $<
+	$V php -l $< > /dev/null
 	$V install -d $(dir $@)
 	$V install $< $@
 
