@@ -3,6 +3,7 @@ PCW_API_VERSION_MINOR := 2
 PCW_API_VERSION_PATCH := 0
 
 V ?= @
+C ?= yes
 DESTDIR ?=
 PREFIX ?= /usr/local
 BINDIR := $(PREFIX)/bin
@@ -58,7 +59,13 @@ PCW_API_PASS ?= pocoweb123
 PCW_API_EMAIL ?= pocoweb@cis.lmu.de
 PCW_API_INSTITUTE ?= CIS
 
-ECHO = @echo "[\033[0;32m$1\033[0m]"
+ECHO = 							\
+	@if [ "$C" = "yes" ]; then 			\
+		echo "[\033[0;32m$1\033[0m]";	\
+	else						\
+		echo "[$1]";				\
+	fi
+
 %.o: %.cpp
 	$(call ECHO,$@)
 	$V $(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ -c $<

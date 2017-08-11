@@ -42,14 +42,7 @@ RUN_TESTS = $(patsubst %.test,%.run,$(TESTS))
 	$(call ECHO,$@)
 	$V $(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
 %.run: %.test
-	@$< > /dev/null 2>&1; \
-	res=$$?; \
-	if [ $$res -ne 0 ]; then \
-		echo "[\033[0;31m$@\033[0m]"; \
-		exit 1; \
-	else \
-		echo "[\033[0;32m$@\033[0m]"; \
-	fi
+	$(call ECHO,$@)
 test: $(RUN_TESTS)
 
 DEPS += $(patsubst %.test,%.d,$(TESTS))
