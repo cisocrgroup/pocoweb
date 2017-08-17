@@ -639,7 +639,6 @@ function frontend_render_concordance_header_div() {
 		'data-spy="affix" data-offset-top="197"', '>', "\n";
 	echo '<div class="container-fluid">', "\n";
 	echo '<div class="collapse navbar-collapse">', "\n";
-	// correction
 	echo '<ul class="nav navbar-nav">', "\n";
 	echo '<li>';
 	echo '<form class="navbar-form" action="javascript:void(0);" ',
@@ -652,35 +651,17 @@ function frontend_render_concordance_header_div() {
 	echo '</button>';
 	echo '</span>';
 	echo '<input id="global-correction-suggestion" ',
-		'class="form-control" type="text" placeholder="Correction"/>';
+		'class="form-control" title="Correction" ',
+		'type="text" placeholder="Correction"/>';
 	echo '<span class="input-group-btn">', "\n";
-	echo '<button id="foobar" class="btn btn-default" title="Correct selected tokens" ',
+	echo '<button id="foobar" class="btn btn-default" title="Set correction" ',
 		'onclick=\'pcw.setCorrectionSuggestionForAllSelectedConcordanceTokens();\'', ">\n";
-	// echo '<span class="glyphicon glyphicon-upload" />';
-	echo 'Correct selected tokens';
+	echo 'Set correction';
 	echo '</button>';
 	echo '</span>';
 	echo '</div>';
 	echo '</form>';
 	echo '</li>';
-	echo '</ul>';
-	echo '<ul class="nav navbar-nav">';
-	echo '<li class="dropdown">';
-	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" ',
-		'aria-haspopup="true" aria-expanded="false">',
-		'Correction suggestions<span class="caret"></span></a>';
-        echo '<ul class="dropdown-menu">';
-	echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#1");\' ',
-		'href="#">Correction suggestion #1</a></li>', "\n";
-	echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#2");\' ',
-		'href="#">Correction suggestion #2</a></li>', "\n";
-	echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#3");\' ',
-		'href="#">Correction suggestion #3</a></li>', "\n";
-	echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#4");\' ',
-		'href="#">Correction suggestion #4</a></li>', "\n";
-        // echo '<li role="separator" class="divider"></li>';
-        echo '</ul>';
-        echo '</li>';
 	echo '</ul>';
 	echo '</div>';
 	echo '</div>';
