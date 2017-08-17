@@ -674,6 +674,10 @@ function frontend_render_concordance_header_div() {
 		'onclick=\'pcw.setCorrectionSuggestionForAllSelectedConcordanceTokens();\'', ">\n";
 	echo 'Set correction';
 	echo '</button>';
+	echo '<button id="foobar" class="btn btn-default" title="Correct selected" ',
+		'onclick=\'pcw.setCorrectionSuggestionForAllSelectedConcordanceTokens();\'', ">\n";
+	echo 'Correct selected';
+	echo '</button>';
 	echo '</span>';
 	echo '</div>';
 	echo '</form>';

@@ -13,6 +13,10 @@
 
 using namespace pcw;
 
+template <class C, class J, class R>
+static void append_patterns(C& conn, J& json, size_t bookid, size_t i,
+			    const R& row);
+
 ////////////////////////////////////////////////////////////////////////////////
 const char* SuggestionsRoute::route_ = PROFILER_ROUTE_ROUTE;
 const char* SuggestionsRoute::name_ = "SuggestionsRoute";
@@ -78,6 +82,7 @@ SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request& req,
 			j["suggestions"][i]["suggestion"] = row.string;
 			j["suggestions"][i]["weight"] = row.weight;
 			j["suggestions"][i]["distance"] = row.distance;
+			append_patterns(conn, j, bid, i, row);
 			i++;
 		}
 	} else {
@@ -102,8 +107,24 @@ SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request& req,
 			j["suggestions"][i]["suggestion"] = row.suggstr;
 			j["suggestions"][i]["weight"] = row.weight;
 			j["suggestions"][i]["distance"] = row.distance;
+			append_patterns(conn, j, bid, i, row);
 			i++;
 		}
 	}
 	return j;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template <class C, class J, class R>
+void append_patterns(C& conn, J& j, size_t bookid, size_t i, const R& row) {
+	tables::Errorpatterns e;
+	auto rs = conn.db()(select(e.pattern).from(e).where(
+	    e.bookid == bookid and e.pageid == row.pageid and
+	    e.lineid == row.lineid and e.tokenid == row.tokenid));
+	j["suggestions"][i]["patterns"] =
+	    crow::json::rvalue(crow::json::type::List);
+	size_t k = 0;
+	for (const auto& r : rs) {
+		j["suggestions"][i]["patterns"][k] = r.pattern;
+	}
 }

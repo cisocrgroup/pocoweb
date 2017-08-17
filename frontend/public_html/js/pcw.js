@@ -306,8 +306,8 @@ pcw.addSuggestsionDropdownItem = function(dropdown, s, selection) {
 	var li = document.createElement("li");
 	var a = document.createElement("a");
 	var t = document.createTextNode(
-	    s.suggestion + " (dist: " + s.distance + ", weight: " +
-	    s.weight.toFixed(2) + ")");
+	    s.suggestion + " (patts: " + s.patterns.join(',') + ", dist: " +
+	    s.distance + ", weight: " + s.weight.toFixed(2) + ")");
 	// a.href = "#";
 	/*a.onClick = "pcw.setSuggestionToSelection(" +
 	    JSON.stringify(selection) + ', "' + s.suggestion + '");';
