@@ -577,7 +577,12 @@ function frontend_render_concordance_line_div($line, $word) {
 	$anchor="$word[projectId]-$word[pageId]-$word[lineId]-$word[tokenId]";
 	echo '<div class="text-image-line row">';
 	$images = $api->get_response();
-	echo '<div class="col-md-5 col-xs-4">';
+	// The three columns are divided 5,3,4.
+	// This makes the left side of the line the biggest and gives enough space
+	// for the token in the middle.
+	// The right side is a little bit smaller but big enough to show the
+	// emidate context of the selected tokens.
+	echo '<div class="col-md-5 col-xs-5">';
 	if ($images["leftImg"] != NULL) {
 		echo '<a class="invisible=link" href="', $link, '">';
 		echo '<img src="', $images["leftImg"],
@@ -590,7 +595,7 @@ function frontend_render_concordance_line_div($line, $word) {
 		echo '</a>', "\n";
 	}
 	echo '</div>';
-	echo '<div class="col-md-2 col-xs-2">';
+	echo '<div class="col-md-3 col-xs-3">';
 	if ($images["middleImg"] != NULL) {
 		$inputclass = frontend_get_correction_class($word);
 		echo '<a class="invisible=link" href="', $link, '">';
@@ -600,25 +605,36 @@ function frontend_render_concordance_line_div($line, $word) {
 		echo '</a>', "\n";
 		echo '<br/>';
 		echo '<div class="input-group">', "\n";
+		// checkbox
 		echo '<span class="input-group-addon">';
 		echo '<input id="concordance-token-checkbox-', $anchor, '" ',
 			'type="checkbox" aria-label="...">';
       		echo '</span>';
+		// input
 		echo '<input id="concordance-token-input-', $anchor, '" ',
 			'class="form-control', $inputclass, '" type="text" value="',
-			implode("", $wordcor), '" />';
-		echo '<span class="input-group-btn">', "\n";
-		echo '<button id="concordance-token-btn-', $anchor, '" ',
-			'class="btn btn-default" title="correct token" ',
-			'onclick=\'pcw.correctWord("', $anchor, '");\' >',
-			"\n";
-		echo '<span class="glyphicon glyphicon-upload" />';
-		echo '</button>';
-		echo '</span>';
+			implode("", $wordcor), '" title="Correction" />', "\n";
+		// dropdown
+		echo '<div class="input-group-btn">', "\n";
+		echo '<button type="button" class="btn btn-default dropdow-toggle" ',
+			'data-toggle="dropdown" aria-haspopup="true" ',
+			'aria-expanded="false" title="Correction suggestions">', "\n";
+		echo '<span class="caret"></span>', "\n";
+		echo '</button>', "\n";
+		echo '<ul class="dropdown-menu">', "\n";
+		echo '<li><a href="#">Correction #1</a></li>', "\n";
+		echo '<li><a href="#">Correction #2</a></li>', "\n";
+		echo '<li><a href="#">Correction #3</a></li>', "\n";
+		echo '</ul>', "\n";
+		// upload
+		echo '<button type="button" class="btn btn-default" title="upload">', "\n";
+		echo '<span class="glyphicon glyphicon-upload"></span>', "\n";
+		echo '</button>', "\n";
+		echo '</div>';
 		echo '</div>';
 	}
 	echo '</div>';
-	echo '<div class="col-md-5 col-xs-4">';
+	echo '<div class="col-md-4 col-xs-4">';
 	if ($images["rightImg"] != NULL) {
 		echo '<a class="invisible=link" href="', $link, '">';
 		echo '<img src="', $images["rightImg"],
