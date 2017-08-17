@@ -621,7 +621,7 @@ function frontend_render_concordance_line_div($line, $word) {
 			'aria-expanded="false" title="Correction suggestions">', "\n";
 		echo '<span class="caret"></span>', "\n";
 		echo '</button>', "\n";
-		echo '<ul class="dropdown-menu">', "\n";
+		echo '<ul class="pull-right dropdown-menu">', "\n";
 		echo '<li><a href="#">Correction #1</a></li>', "\n";
 		echo '<li><a href="#">Correction #2</a></li>', "\n";
 		echo '<li><a href="#">Correction #3</a></li>', "\n";
