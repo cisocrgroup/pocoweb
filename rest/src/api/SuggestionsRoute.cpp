@@ -14,8 +14,10 @@
 using namespace pcw;
 
 template <class C, class J, class R>
-static void append_patterns(C& conn, J& json, size_t bookid, size_t i,
-			    const R& row);
+static void append_suggestions(C& conn, J& j, size_t bookid, R& row);
+template <class C, class J, class R>
+static void lookup_and_append_patterns(C& conn, J& json, size_t bookid,
+				       size_t i, const R& row);
 
 ////////////////////////////////////////////////////////////////////////////////
 const char* SuggestionsRoute::route_ = PROFILER_ROUTE_ROUTE;
@@ -62,6 +64,8 @@ SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request& req,
 		to_lower(query);
 		tables::Types t;
 		tables::Suggestions s;
+		auto t1 = t.as(t1_alias);
+		auto t2 = t.as(t2_alias);
 		// lookup typid of query token
 		const auto qidrow = conn.db()(select(t.typid).from(t).where(
 		    t.bookid == bid and t.string == query));
@@ -70,22 +74,16 @@ SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request& req,
 		}
 		const auto qid = qidrow.front().typid;
 		auto rows =
-		    conn.db()(select(all_of(s), all_of(t))
-				  .from(s.join(t).on(t.typid == s.suggestionid))
-				  .where(s.typid == qid and s.bookid == bid));
-		size_t i = 0;
-		for (const auto& row : rows) {
-			j["suggestions"][i]["lineId"] = row.lineid;
-			j["suggestions"][i]["pageId"] = row.pageid;
-			j["suggestions"][i]["tokenId"] = row.tokenid;
-			j["suggestions"][i]["token"] = query;
-			j["suggestions"][i]["suggestion"] = row.string;
-			j["suggestions"][i]["weight"] = row.weight;
-			j["suggestions"][i]["distance"] = row.distance;
-			append_patterns(conn, j, bid, i, row);
-			i++;
-		}
+		    conn.db()(select(all_of(s), t1.string.as(tokstr),
+				     t2.string.as(suggstr))
+				  .from(s.join(t1)
+					    .on(t1.typid == s.typid)
+					    .join(t2)
+					    .on(t2.typid == s.suggestionid))
+				  .where(s.bookid == bid and s.typid == qid));
+		append_suggestions(conn, j, bid, rows);
 	} else {
+		j["query"] = "";
 		tables::Types t;
 		tables::Suggestions s;
 		auto t1 = t.as(t1_alias);
@@ -98,25 +96,32 @@ SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request& req,
 					    .join(t2)
 					    .on(t2.typid == s.suggestionid))
 				  .where(s.bookid == bid));
-		size_t i = 0;
-		for (const auto& row : rows) {
-			j["suggestions"][i]["lineId"] = row.lineid;
-			j["suggestions"][i]["pageId"] = row.pageid;
-			j["suggestions"][i]["wordId"] = row.tokenid;
-			j["suggestions"][i]["token"] = row.tokstr;
-			j["suggestions"][i]["suggestion"] = row.suggstr;
-			j["suggestions"][i]["weight"] = row.weight;
-			j["suggestions"][i]["distance"] = row.distance;
-			append_patterns(conn, j, bid, i, row);
-			i++;
-		}
+		append_suggestions(conn, j, bid, rows);
 	}
 	return j;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 template <class C, class J, class R>
-void append_patterns(C& conn, J& j, size_t bookid, size_t i, const R& row) {
+void append_suggestions(C& conn, J& j, size_t bookid, R& rs) {
+	size_t i = 0;
+	for (const auto& r : rs) {
+		j["suggestions"][i]["token"] = r.tokstr;
+		j["suggestions"][i]["suggestion"] = r.suggstr;
+		j["suggestions"][i]["lineId"] = r.lineid;
+		j["suggestions"][i]["pageId"] = r.pageid;
+		j["suggestions"][i]["tokenId"] = r.tokenid;
+		j["suggestions"][i]["weight"] = r.weight;
+		j["suggestions"][i]["distance"] = r.distance;
+		lookup_and_append_patterns(conn, j, bookid, i, r);
+		i++;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template <class C, class J, class R>
+void lookup_and_append_patterns(C& conn, J& j, size_t bookid, size_t i,
+				const R& row) {
 	tables::Errorpatterns e;
 	auto rs = conn.db()(select(e.pattern).from(e).where(
 	    e.bookid == bookid and e.pageid == row.pageid and

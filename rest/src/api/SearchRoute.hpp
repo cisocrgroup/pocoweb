@@ -19,7 +19,14 @@ class SearchRoute : public CrtpRoute<SearchRoute> {
 	Response impl(HttpGet, const Request& req, int bid) const;
 
        private:
-	Response search(const Request& req, int bid) const;
+	struct TokenQuery {};
+	struct ErrorPatternQuery {};
+	Response search(const Request& req, const std::string& q, int bid,
+			TokenQuery) const;
+	Response search(const Request& req, const std::string& q, int bid,
+			ErrorPatternQuery) const;
+	static std::string get_query(const Request& req);
+	static bool is_error_pattern_query(const Request& req);
 	static const char* route_;
 	static const char* name_;
 };

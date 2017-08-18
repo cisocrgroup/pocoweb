@@ -10,7 +10,6 @@
 #include "api/BookRoute.hpp"
 #include "api/CorrectionRoute.hpp"
 #include "api/DownloadRoute.hpp"
-#include "api/ErrorPatternsRoute.hpp"
 #include "api/FinishRoute.hpp"
 #include "api/LineRoute.hpp"
 #include "api/PageRoute.hpp"
@@ -62,7 +61,6 @@ void run(App& app) {
 	app.Register(std::make_unique<pcw::BookRoute>());
 	app.Register(std::make_unique<pcw::CorrectionRoute>());
 	app.Register(std::make_unique<pcw::DownloadRoute>());
-	app.Register(std::make_unique<pcw::ErrorPatternsRoute>());
 	app.Register(std::make_unique<pcw::FinishRoute>());
 	app.Register(std::make_unique<pcw::LineRoute>());
 	app.Register(std::make_unique<pcw::PageRoute>());

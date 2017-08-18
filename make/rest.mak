@@ -32,7 +32,6 @@ API_OBJS += rest/src/api/AssignRoute.o
 API_OBJS += rest/src/api/BookRoute.o
 API_OBJS += rest/src/api/CorrectionRoute.o
 API_OBJS += rest/src/api/DownloadRoute.o
-API_OBJS += rest/src/api/ErrorPatternsRoute.o
 API_OBJS += rest/src/api/FinishRoute.o
 API_OBJS += rest/src/api/LineRoute.o
 API_OBJS += rest/src/api/PageRoute.o
