@@ -126,5 +126,6 @@ void append_patterns(C& conn, J& j, size_t bookid, size_t i, const R& row) {
 	size_t k = 0;
 	for (const auto& r : rs) {
 		j["suggestions"][i]["patterns"][k] = r.pattern;
+		k++;
 	}
 }
