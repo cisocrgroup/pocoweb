@@ -28,7 +28,7 @@ $(INSTALL_LOGIN): lib/simple-login.so
 $(INSTALL_CONFIG): misc/default/config.def.ini
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
-	$V install $< $@
+	$V install -m 600 $< $@
 
 $(INSTALL_SERVICE): misc/systemd/pocoweb.service
 	$(call ECHO,$@)
