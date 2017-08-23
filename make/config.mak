@@ -59,11 +59,11 @@ PCW_API_PASS ?= pocoweb123
 PCW_API_EMAIL ?= pocoweb@cis.lmu.de
 PCW_API_INSTITUTE ?= CIS
 
-ECHO = 						\
-	@if [ "$C" = "yes" ]; then 		\
-		echo "[\033[0;32m$1\033[0m]";	\
-	else					\
-		echo "[$1]";			\
+ECHO = 							\
+	@if [ "$C" = "yes" ]; then 			\
+		echo -e "[\033[0;32m$1\033[0m]";	\
+	else						\
+		echo "[$1]";				\
 	fi
 
 %.o: %.cpp
