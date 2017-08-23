@@ -41,9 +41,3 @@ misc/systemd/pocoweb.service: misc/systemd/pocoweb.service.def
 		-e 's#$${PCW_POCOWEB_EXE}#${INSTALL_EXE}#' 		\
 		-e 's#$${PCW_POCOWEB_CONFIG}#${INSTALL_CONFIG}#' 	\
 		$< > $@
-
-	## $V install -d $(DESTDIR)/etc/pocoweb
-	## $V install -d $(DESTDIR)/usr/lib/systemd/system
-	## $V install pcwd $(BINDIR)/pcwd
-	## $V install config.ini $(DESTDIR)/etc/pocoweb/config.ini
-	## $V install misc/systemd/pocoweb.service $(DESTDIR)/usr/lib/systemd/system
