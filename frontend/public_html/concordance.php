@@ -2,7 +2,7 @@
 require_once("../resources/config.php");
 require_once(TEMPLATES_PATH . "/header.php");
 require_once(LIBRARY_PATH . "/frontend.php");
-if (!isset($_GET["q"]) && !isset($_GET["pid"])) {
+if (!isset($_GET["q"]) || !isset($_GET["pid"])) {
 	frontend_render_error_div(
 		"Internal error: invalid or missing parameters");
 } else {

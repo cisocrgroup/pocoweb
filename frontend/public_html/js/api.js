@@ -73,6 +73,7 @@ pcw.Api = {
 		    pcw.config.backend.url + pcw.config.backend.routes.search;
 		this.url = this.url.replace('%d', pid);
 		this.url = this.url.replace('%s', encodeURI(q));
+		this.url = this.url.replace('%d', '0');
 		this.acceptedStatuses = [200];
 	},
 	setupForOrderProfile: function(pid) {
@@ -84,11 +85,11 @@ pcw.Api = {
 		// 202 -> accepted
 		this.acceptedStatuses = [202];
 	},
-	setupForGetSuggestions: function(pid, q) {
+	setupForSearchSuggestions: function(pid, q) {
 		this.method = "GET";
 		this.post = null;
 		this.url = pcw.config.backend.url +
-		    pcw.config.backend.routes.getSuggestions;
+		    pcw.config.backend.routes.searchSuggestions;
 		this.url = this.url.replace('%d', pid);
 		this.url = this.url.replace('%s', encodeURI(q));
 		// 202 -> accepted
@@ -102,12 +103,15 @@ pcw.Api = {
 		this.url = this.url.replace('%d', pid);
 		this.acceptedStatuses = [200]
 	},
-	setupForGetAllErrorPatterns: function(pid) {
+	setupForGetSuggestions: function(pid, p, lid, tid) {
 		this.method = "GET";
 		this.post = null;
 		this.url = pcw.config.backend.url +
-		    pcw.config.backend.routes.getAllErrorPatterns;
+		    pcw.config.backend.routes.getSuggestions;
 		this.url = this.url.replace('%d', pid);
+		this.url = this.url.replace('%d', p);
+		this.url = this.url.replace('%d', lid);
+		this.url = this.url.replace('%d', tid);
 		this.acceptedStatuses = [200]
 	},
 	run: function(callback) {

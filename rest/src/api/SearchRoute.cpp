@@ -71,16 +71,19 @@ Route::Response SearchRoute::search(const Request& req, const std::string& q,
 	session->assert_permission(conn, bid, Permissions::Read);
 	const auto project = session->must_find(conn, bid);
 	tables::Errorpatterns e;
-	auto rows = conn.db()(select(e.lineid, e.tokenid)
-				  .from(e)
-				  .where(e.bookid == bid and e.pattern == q));
-	std::set<std::pair<int, int>> ids;
+	tables::Suggestions s;
+	auto rows =
+	    conn.db()(select(s.pageid, s.lineid, s.tokenid)
+			  .from(s.join(e).on(s.suggestionid == e.suggestionid))
+			  .where(e.bookid == bid and e.pattern == q));
+	std::set<std::tuple<int, int, int>> ids;
 	for (const auto& row : rows) {
-		ids.emplace(row.lineid, row.tokenid);
+		ids.emplace(row.pageid, row.lineid, row.tokenid);
 	}
 	Searcher searcher(*project);
 	const auto matches = searcher.find_impl([&ids](const auto& t) {
-		auto p = std::make_pair(t.line->id(), t.id);
+		auto p =
+		    std::make_tuple(t.line->page().id(), t.line->id(), t.id);
 		return ids.count(p);
 	});
 	CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.size()

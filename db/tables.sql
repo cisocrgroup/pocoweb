@@ -87,24 +87,24 @@ create table if not exists profiles (
 	primary key (bookid)
 );
 
-/* (3 * 4)^ + 1^^ + (3 * 4)^ = 25*/
-/* ^: max utf length of a pattern with maximal 3 characters */
-/* ^^: lenght of separator `:` */
-create table if not exists errorpatterns (
-	bookid int references types(bookid),
-	pageid int references pages(pageid),
-	lineid int references textlines(lineid),
-	tokenid int references suggestions(tokenid),
-	pattern varchar(25)
-);
-
 create table if not exists suggestions (
-	bookid int references types(bookid),
+	suggestionid int not null unique primary key auto_increment,
+	bookid int references books(bookid),
 	pageid int references pages(pageid),
 	lineid int references textlines(lineid),
 	tokenid int not null,
 	typid int references types(typid),
-	suggestionid int references types(typid),
+	suggestiontypid int references types(typid),
 	weight double not null,
 	distance int not null
 );
+
+/* (3 * 4)^ + 1^^ + (3 * 4)^ = 25*/
+/* ^: max utf length of a pattern with maximal 3 characters */
+/* ^^: lenght of separator `:` */
+create table if not exists errorpatterns (
+	suggestionid int references suggestions(suggestionid),
+	bookid int references books(bookid),
+	pattern varchar(25)
+);
+

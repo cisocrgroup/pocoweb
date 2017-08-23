@@ -617,17 +617,17 @@ function frontend_render_concordance_line_div($line, $word) {
 		// dropdown
 		echo '<div class="input-group-btn">', "\n";
 		echo '<button type="button" class="btn btn-default dropdow-toggle" ',
+			'id="concordance-token-dropdown-', $anchor, '" ',
 			'data-toggle="dropdown" aria-haspopup="true" ',
 			'aria-expanded="false" title="Correction suggestions">', "\n";
 		echo '<span class="caret"></span>', "\n";
 		echo '</button>', "\n";
-		echo '<ul class="pull-right dropdown-menu">', "\n";
-		echo '<li><a href="#">Correction #1</a></li>', "\n";
-		echo '<li><a href="#">Correction #2</a></li>', "\n";
-		echo '<li><a href="#">Correction #3</a></li>', "\n";
+		echo '<ul id="concordance-token-suggestions-', $anchor, '" ',
+			'class="pull-right dropdown-menu">', "\n";
 		echo '</ul>', "\n";
 		// upload
-		echo '<button type="button" class="btn btn-default" title="upload">', "\n";
+		echo '<button type="button" class="btn btn-default" title="upload" ',
+			'onclick=\'pcw.correctWord("', $anchor, '");\' >', "\n";
 		echo '<span class="glyphicon glyphicon-upload"></span>', "\n";
 		echo '</button>', "\n";
 		echo '</div>';

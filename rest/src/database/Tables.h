@@ -1029,112 +1029,24 @@ namespace tables
       };
     };
   };
-  namespace Errorpatterns_
-  {
-    struct Bookid
-    {
-      struct _alias_t
-      {
-        static constexpr const char _literal[] =  "bookid";
-        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-        template<typename T>
-        struct _member_t
-          {
-            T bookid;
-            T& operator()() { return bookid; }
-            const T& operator()() const { return bookid; }
-          };
-      };
-      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
-    };
-    struct Pageid
-    {
-      struct _alias_t
-      {
-        static constexpr const char _literal[] =  "pageid";
-        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-        template<typename T>
-        struct _member_t
-          {
-            T pageid;
-            T& operator()() { return pageid; }
-            const T& operator()() const { return pageid; }
-          };
-      };
-      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
-    };
-    struct Lineid
-    {
-      struct _alias_t
-      {
-        static constexpr const char _literal[] =  "lineid";
-        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-        template<typename T>
-        struct _member_t
-          {
-            T lineid;
-            T& operator()() { return lineid; }
-            const T& operator()() const { return lineid; }
-          };
-      };
-      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
-    };
-    struct Tokenid
-    {
-      struct _alias_t
-      {
-        static constexpr const char _literal[] =  "tokenid";
-        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-        template<typename T>
-        struct _member_t
-          {
-            T tokenid;
-            T& operator()() { return tokenid; }
-            const T& operator()() const { return tokenid; }
-          };
-      };
-      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
-    };
-    struct Pattern
-    {
-      struct _alias_t
-      {
-        static constexpr const char _literal[] =  "pattern";
-        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-        template<typename T>
-        struct _member_t
-          {
-            T pattern;
-            T& operator()() { return pattern; }
-            const T& operator()() const { return pattern; }
-          };
-      };
-      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::can_be_null>;
-    };
-  }
-
-  struct Errorpatterns: sqlpp::table_t<Errorpatterns,
-               Errorpatterns_::Bookid,
-               Errorpatterns_::Pageid,
-               Errorpatterns_::Lineid,
-               Errorpatterns_::Tokenid,
-               Errorpatterns_::Pattern>
-  {
-    struct _alias_t
-    {
-      static constexpr const char _literal[] =  "errorpatterns";
-      using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-      template<typename T>
-      struct _member_t
-      {
-        T errorpatterns;
-        T& operator()() { return errorpatterns; }
-        const T& operator()() const { return errorpatterns; }
-      };
-    };
-  };
   namespace Suggestions_
   {
+    struct Suggestionid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "suggestionid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T suggestionid;
+            T& operator()() { return suggestionid; }
+            const T& operator()() const { return suggestionid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::must_not_insert, sqlpp::tag::must_not_update>;
+    };
     struct Bookid
     {
       struct _alias_t
@@ -1215,18 +1127,18 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
     };
-    struct Suggestionid
+    struct Suggestiontypid
     {
       struct _alias_t
       {
-        static constexpr const char _literal[] =  "suggestionid";
+        static constexpr const char _literal[] =  "suggestiontypid";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
         template<typename T>
         struct _member_t
           {
-            T suggestionid;
-            T& operator()() { return suggestionid; }
-            const T& operator()() const { return suggestionid; }
+            T suggestiontypid;
+            T& operator()() { return suggestiontypid; }
+            const T& operator()() const { return suggestiontypid; }
           };
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
@@ -1266,12 +1178,13 @@ namespace tables
   }
 
   struct Suggestions: sqlpp::table_t<Suggestions,
+               Suggestions_::Suggestionid,
                Suggestions_::Bookid,
                Suggestions_::Pageid,
                Suggestions_::Lineid,
                Suggestions_::Tokenid,
                Suggestions_::Typid,
-               Suggestions_::Suggestionid,
+               Suggestions_::Suggestiontypid,
                Suggestions_::Weight,
                Suggestions_::Distance>
   {
@@ -1285,6 +1198,76 @@ namespace tables
         T suggestions;
         T& operator()() { return suggestions; }
         const T& operator()() const { return suggestions; }
+      };
+    };
+  };
+  namespace Errorpatterns_
+  {
+    struct Suggestionid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "suggestionid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T suggestionid;
+            T& operator()() { return suggestionid; }
+            const T& operator()() const { return suggestionid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
+    struct Bookid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "bookid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T bookid;
+            T& operator()() { return bookid; }
+            const T& operator()() const { return bookid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
+    struct Pattern
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "pattern";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T pattern;
+            T& operator()() { return pattern; }
+            const T& operator()() const { return pattern; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::can_be_null>;
+    };
+  }
+
+  struct Errorpatterns: sqlpp::table_t<Errorpatterns,
+               Errorpatterns_::Suggestionid,
+               Errorpatterns_::Bookid,
+               Errorpatterns_::Pattern>
+  {
+    struct _alias_t
+    {
+      static constexpr const char _literal[] =  "errorpatterns";
+      using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+      template<typename T>
+      struct _member_t
+      {
+        T errorpatterns;
+        T& operator()() { return errorpatterns; }
+        const T& operator()() const { return errorpatterns; }
       };
     };
   };
