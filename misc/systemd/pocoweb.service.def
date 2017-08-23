@@ -5,8 +5,8 @@ Requires=
 
 [Service]
 Type=simple
-PIDFile=/var/run/pocoweb.pid
-ExecStart=/usr/local/bin/pcwd /etc/pocoweb/config.ini
+PIDFile=${PCW_POCOWEB_PID_FILE}
+ExecStart=${PCW_POCOWEB_EXE} ${PCW_POCOWEB_CONFIG}
 Restart=true
 
 [Install]
