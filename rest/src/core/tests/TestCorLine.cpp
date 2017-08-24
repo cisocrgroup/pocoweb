@@ -182,14 +182,14 @@ BOOST_AUTO_TEST_CASE(DeBomine) {
 		BOOST_CHECK_EQUAL(line->cor(), "De Bomine.");
 		wf.set_gt("De Homine.");
 		wf.set_ocr(*line);
-		wf.correct(*line);
 		BOOST_CHECK_EQUAL(wf(), 1);
+		wf.correct(*line);
 		BOOST_CHECK_EQUAL(line->ocr(), "De Bomine.");
 		BOOST_CHECK_EQUAL(line->cor(), "De Homine.");
 		wf.set_gt("De Bomine.");
 		wf.set_ocr(*line);
-		wf.correct(*line);
 		BOOST_CHECK_EQUAL(wf(), 0);
+		wf.correct(*line);
 		BOOST_CHECK_EQUAL(line->ocr(), "De Bomine.");
 		BOOST_CHECK_EQUAL(line->cor(), "De Bomine.");
 	}
