@@ -81,9 +81,7 @@ void WagnerFischer::set_ocr(const wchar_t* ocr, size_t n) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void WagnerFischer::set_ocr(const Line& line) {
-	// use the corrected version as well
-	// (if line is not corrected, wcor contains all ocr chars)
-	ocr_ = line.wcor();
+	ocr_ = line.wocr();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
