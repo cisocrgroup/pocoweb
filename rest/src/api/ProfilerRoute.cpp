@@ -102,7 +102,7 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpPost, const Request& req,
 	// wait for the job's thread
 	if (job->t.joinable()) job->t.join();
 	job->id = book->id();
-	job->t = std::thread([=]() {
+	job->t = std::thread([=]() noexcept {
 		job->running = true;
 		// profile does not throw!
 		profile(this, book);
