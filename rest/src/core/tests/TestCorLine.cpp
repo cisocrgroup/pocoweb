@@ -178,17 +178,19 @@ BOOST_AUTO_TEST_CASE(DeBomine) {
 	line->append("De Bomine.", 0, 100, 0.8);
 	WagnerFischer wf;
 	for (auto i = 0; i < 10; i++) {
+		BOOST_CHECK_EQUAL(line->ocr(), "De Bomine.");
+		BOOST_CHECK_EQUAL(line->cor(), "De Bomine.");
 		wf.set_gt("De Homine.");
 		wf.set_ocr(*line);
-		BOOST_CHECK_EQUAL(line->ocr(), "De Bomine");
-		BOOST_CHECK_EQUAL(line->cor(), "De Bomine");
+		wf.correct(*line);
 		BOOST_CHECK_EQUAL(wf(), 1);
 		BOOST_CHECK_EQUAL(line->ocr(), "De Bomine.");
 		BOOST_CHECK_EQUAL(line->cor(), "De Homine.");
 		wf.set_gt("De Bomine.");
 		wf.set_ocr(*line);
+		wf.correct(*line);
 		BOOST_CHECK_EQUAL(wf(), 0);
-		BOOST_CHECK_EQUAL(line->ocr(), "De Bomine");
-		BOOST_CHECK_EQUAL(line->cor(), "De Bomine");
+		BOOST_CHECK_EQUAL(line->ocr(), "De Bomine.");
+		BOOST_CHECK_EQUAL(line->cor(), "De Bomine.");
 	}
 }
