@@ -34,6 +34,7 @@ static AppPtr get_app(int argc, char** argv);
 static void change_user_and_group(const Config& config);
 static void create_base_directory(const Config& config);
 static const char* find_config_file(int argc, char** argv);
+static void write_pidfile(const Config& config);
 
 ////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char** argv) {
@@ -56,6 +57,7 @@ int run(int argc, char** argv) {
 void run(App& app) {
 	change_user_and_group(app.config());
 	create_base_directory(app.config());
+	write_pidfile(app.config());
 	app.register_plugins();
 	app.Register(std::make_unique<pcw::AssignRoute>());
 	app.Register(std::make_unique<pcw::BookRoute>());
@@ -138,4 +140,13 @@ const char* find_config_file(int argc, char** argv) {
 		}
 	}
 	throw std::runtime_error("Cannot find config file");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void write_pidfile(const Config& config) {
+	std::ofstream out(config.log.pidfile);
+	if (out.good()) {
+		out << getpid() << std::endl;
+		out.close();
+	}
 }

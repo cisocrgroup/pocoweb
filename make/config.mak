@@ -59,6 +59,8 @@ PCW_API_PASS ?= pocoweb123
 PCW_API_EMAIL ?= pocoweb@cis.lmu.de
 PCW_API_INSTITUTE ?= CIS
 
+PCW_LOG_PIDFILE ?= /var/run/pocoweb.pid
+
 ECHO = 							\
 	@if [ "$C" = "yes" ]; then 			\
 		echo -e "[\033[0;32m$1\033[0m]";	\
@@ -101,6 +103,7 @@ make/cache.mak: Makefile make/config.mak
 	@echo "PCW_API_PASS:= $(PCW_API_PASS)" >> $@
 	@echo "PCW_API_EMAIL:= $(PCW_API_EMAIL)" >> $@
 	@echo "PCW_API_INSTITUTE := $(PCW_API_INSTITUTE)" >> $@
+	@echo "PCW_LOG_PIDFILE := $(PCW_LOG_PIDFILE)" >> $@
 
 config.ini: misc/default/config.def.ini make/cache.mak
 	$(call ECHO,$@)
@@ -114,6 +117,7 @@ config.ini: misc/default/config.def.ini make/cache.mak
 	     -e 's/$$[({]PCW_API_PASS[})]/$(PCW_API_PASS)/g' \
 	     -e 's/$$[({]PCW_API_EMAIL[})]/$(PCW_API_EMAIL)/g' \
 	     -e 's/$$[({]PCW_API_INSTITUTE[})]/$(PCW_API_INSTITUTE)/g' \
+	     -e 's#$$[({]PCW_LOG_PIDFILE[})]#$(PCW_LOG_PIDFILE)#g' \
 	     $< > $@
 
 ALL += config.ini

@@ -90,9 +90,6 @@ pcw::Config pcw::Config::load(std::istream& is) {
 	Ptree ptree;
 	boost::property_tree::read_ini(is, ptree);
 	expand_variables(ptree);
-	const auto detach = ptree.get<bool>("daemon.detach");
-	const std::string logfile =
-	    detach ? ptree.get<std::string>("log.file") : "/dev/stderr";
 	auto threads = ptree.get<int>("daemon.threads");
 	threads = threads < 1 ? std::thread::hardware_concurrency() : threads;
 
@@ -104,8 +101,9 @@ pcw::Config pcw::Config::load(std::istream& is) {
 	    {ptree.get<std::string>("daemon.host"),
 	     ptree.get<std::string>("daemon.user"),
 	     ptree.get<std::string>("daemon.basedir"),
-	     ptree.get<int>("daemon.port"), threads, detach},
-	    {logfile, get_log_level(ptree.get<std::string>("log.level"))},
+	     ptree.get<int>("daemon.port"), threads, ptree.get<bool>("deamon.detach")},
+	    {ptree.get<std::string>("log.pidfile"),
+			    get_log_level(ptree.get<std::string>("log.level"))},
 	    {ptree.get<std::string>("profiler.backend"),
 	     ptree.get<double>("profiler.minweight"),
 	     static_cast<size_t>(ptree.get<int>("profiler.jobs")),
@@ -152,7 +150,7 @@ void pcw::Config::LOG() const {
 	CROW_LOG_INFO << "daemon.threads:   " << this->daemon.threads;
 	CROW_LOG_INFO << "daemon.detach:    " << this->daemon.detach;
 
-	CROW_LOG_INFO << "log.file:         " << this->log.file;
+	CROW_LOG_INFO << "log.pidfile:      " << this->log.pidfile;
 	CROW_LOG_INFO << "log.level:        " << this->log.level;
 
 	CROW_LOG_INFO << "profiler.backend: " << this->profiler.backend;

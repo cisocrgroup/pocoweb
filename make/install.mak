@@ -37,7 +37,7 @@ $(INSTALL_SERVICE): misc/systemd/pocoweb.service
 
 misc/systemd/pocoweb.service: misc/systemd/pocoweb.service.def
 	$(call ECHO,$@)
-	$V sed  -e 's#$${PCW_POCOWEB_PID_FILE}#/var/run/pocoweb.pid#' 	\
+	$V sed  -e 's#$${PCW_LOG_PIDFILE}#${PCW_LOG_PIDFILE}#' 		\
 		-e 's#$${PCW_POCOWEB_EXE}#${INSTALL_EXE}#' 		\
 		-e 's#$${PCW_POCOWEB_CONFIG}#${INSTALL_CONFIG}#' 	\
 		$< > $@
