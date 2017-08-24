@@ -15,6 +15,7 @@
  * libmysqlcppconn-dev
  * make
  * libssl-dev
+ * libmariadbclient (mariadb is not needed)
 
 # Misc
 ```$ apt-get install g++-5 libbost-dev libmysqlcppconn-dev make libssl-dev```
