@@ -26,7 +26,7 @@ struct Config {
 	} daemon;
 
 	const struct Log {
-		const std::string file;
+		const std::string pidfile;
 		const int level;
 	} log;
 

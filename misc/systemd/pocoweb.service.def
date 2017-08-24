@@ -5,7 +5,7 @@ Requires=
 
 [Service]
 Type=simple
-PIDFile=${PCW_POCOWEB_PID_FILE}
+PIDFile=${PCW_LOG_PIDFILE}
 ExecStart=${PCW_POCOWEB_EXE} ${PCW_POCOWEB_CONFIG}
 Restart=true
 
