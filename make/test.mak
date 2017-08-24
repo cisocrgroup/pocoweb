@@ -43,6 +43,7 @@ RUN_TESTS = $(patsubst %.test,%.run,$(TESTS))
 	$V $(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
 %.run: %.test
 	$(call ECHO,$@)
+	$V $< > /dev/null 2>&1
 test: $(RUN_TESTS)
 
 DEPS += $(patsubst %.test,%.d,$(TESTS))
