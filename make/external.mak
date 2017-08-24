@@ -18,4 +18,4 @@ lib/libpugixml.a: modules/pugixml/build/pugixml.o | mkdir-lib
 	$V $(AR) rcs $@ $^
 modules/pugixml/build/pugixml.o: modules/pugixml/src/pugixml.cpp | mkdir-modules-pugixml-build
 	$(call ECHO,$@)
-	$V $(CXX) $(CXXFLAGS) -c -o $@ $^
+	$V $(CXX) $(patsubst -Wsuggest-override,,$(CXXFLAGS)) -c -o $@ $^
