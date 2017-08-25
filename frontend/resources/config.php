@@ -40,7 +40,7 @@ $config = array(
 			"correctWord"         => "/books/%d/pages/%d/lines/%d/words/%d/correct",
 			"uploadProject"       => "/books",
 			"search"              => "/books/%d/search?q=%s&p=%d",
-			"splitImages"         => "/books/%d/pages/%d/lines/%d/split-images",
+			"splitImages"         => "/books/%d/pages/%d/lines/%d/tokens/%d/split-images",
 			"orderProfile"        => "/books/%d/profile",
 			"searchSuggestions"   => "/books/%d/suggestions?q=%s",
 			"getAllSuggestions"   => "/books/%d/suggestions",
