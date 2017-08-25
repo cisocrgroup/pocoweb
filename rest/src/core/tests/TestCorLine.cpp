@@ -171,3 +171,26 @@ BOOST_AUTO_TEST_CASE(MultipleCorrectionWithTheSame) {
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(DeBomine) {
+	const auto line = std::make_shared<Line>(1, Box{});
+	line->append("De Bomine.", 0, 100, 0.8);
+	WagnerFischer wf;
+	for (auto i = 0; i < 10; i++) {
+		BOOST_CHECK_EQUAL(line->ocr(), "De Bomine.");
+		BOOST_CHECK_EQUAL(line->cor(), "De Bomine.");
+		wf.set_gt("De Homine.");
+		wf.set_ocr(*line);
+		BOOST_CHECK_EQUAL(wf(), 1);
+		wf.correct(*line);
+		BOOST_CHECK_EQUAL(line->ocr(), "De Bomine.");
+		BOOST_CHECK_EQUAL(line->cor(), "De Homine.");
+		wf.set_gt("De Bomine.");
+		wf.set_ocr(*line);
+		BOOST_CHECK_EQUAL(wf(), 0);
+		wf.correct(*line);
+		BOOST_CHECK_EQUAL(line->ocr(), "De Bomine.");
+		BOOST_CHECK_EQUAL(line->cor(), "De Bomine.");
+	}
+}

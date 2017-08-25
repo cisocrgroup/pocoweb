@@ -32,7 +32,6 @@ API_OBJS += rest/src/api/AssignRoute.o
 API_OBJS += rest/src/api/BookRoute.o
 API_OBJS += rest/src/api/CorrectionRoute.o
 API_OBJS += rest/src/api/DownloadRoute.o
-API_OBJS += rest/src/api/ErrorPatternsRoute.o
 API_OBJS += rest/src/api/FinishRoute.o
 API_OBJS += rest/src/api/LineRoute.o
 API_OBJS += rest/src/api/PageRoute.o
@@ -76,7 +75,7 @@ pcwd: rest/src/pcwd.o $(LIBS)
 	$V $(CXX) $(CXXFLAGS) $< $(LDFLAGS) -o $@
 rest/src/database/Tables.h: modules/sqlpp11/scripts/ddl2cpp db/tables.sql.tmp
 	$(call ECHO,$@)
-	@$^ rest/src/database/Tables tables
+	$V $^ rest/src/database/Tables tables
 # ddl2cpp does not handle `create table if not exists foo`
 db/tables.sql.tmp: db/tables.sql
 	$(call ECHO,$@)

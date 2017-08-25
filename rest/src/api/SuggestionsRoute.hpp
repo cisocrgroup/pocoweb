@@ -20,8 +20,16 @@ class SuggestionsRoute : public CrtpRoute<SuggestionsRoute> {
 
 	pcw_crtp_route_def_impl__(int);
 	Response impl(HttpGet, const Request& req, int bid) const;
+	pcw_crtp_route_def_impl__(int, int, int, int);
+	Response impl(HttpGet, const Request& req, int pid, int p, int lid,
+		      int tid) const;
 
        private:
+	Response suggestions(const Request& req, int pid,
+			     const boost::optional<std::string>& q,
+			     bool p) const;
+	static boost::optional<std::string> get_query(const Request& req);
+	static bool is_error_pattern_query(const Request& req);
 	static const char *route_, *name_;
 };
 }

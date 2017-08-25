@@ -4,9 +4,9 @@ Documentation=http://pocoweb.cis.lmu.de/documentation.php
 Requires=
 
 [Service]
-Type=simple
-PIDFile=/var/run/pcwd.pid
-ExecStart=/usr/bin/pcwd
+Type=forking
+PIDFile=${PCW_LOG_PIDFILE}
+ExecStart=${PCW_POCOWEB_EXE} ${PCW_POCOWEB_CONFIG}
 Restart=true
 
 [Install]

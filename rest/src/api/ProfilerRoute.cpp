@@ -102,7 +102,7 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpPost, const Request& req,
 	// wait for the job's thread
 	if (job->t.joinable()) job->t.join();
 	job->id = book->id();
-	job->t = std::thread([=]() {
+	job->t = std::thread([=]() noexcept {
 		job->running = true;
 		// profile does not throw!
 		profile(this, book);
@@ -201,12 +201,12 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 				    t.bookid = id, t.typid = secondid,
 				    t.string = c.cor()));
 			}
-			conn.db()(insert_into(stab).set(
+			const auto sugid = conn.db()(insert_into(stab).set(
 			    stab.bookid = id,
 			    stab.pageid = s.first.line->page().id(),
 			    stab.lineid = s.first.line->id(),
 			    stab.tokenid = s.first.id, stab.typid = firstid,
-			    stab.suggestionid = secondid,
+			    stab.suggestiontypid = secondid,
 			    stab.weight = c.weight(), stab.distance = c.lev()));
 			for (const auto& p : c.explanation().ocrp.patterns) {
 				if (not p.empty()) {
@@ -214,11 +214,8 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 						       ":" +
 						       std::string(p.right);
 					conn.db()(insert_into(e).set(
+					    e.suggestionid = sugid,
 					    e.bookid = id,
-					    e.pageid =
-						s.first.line->page().id(),
-					    e.lineid = s.first.line->id(),
-					    e.tokenid = s.first.id,
 					    e.pattern = pattern));
 				}
 			}

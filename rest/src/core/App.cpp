@@ -114,19 +114,12 @@ App::register_plugins()
 	if (not app_)
 		app_ = std::make_unique<Route::App>();
 	for (const auto& p: config_->plugins.configs) {
-		try {
-			auto path = p.second.get<std::string>("path");
-			CROW_LOG_INFO << "(App) Registering plugin "
-				      << p.first << ": " << path;
-			pcw::Plugin plugin(path);
-			plugin(p.first, *this);
-			plugins_.push_back(std::move(plugin));
-		} catch (const std::exception& e) {
-			// exception includes path of the plugin
-			// in its error message
-			CROW_LOG_ERROR << "(App) Unable to register plugin: "
-				       << e.what();
-		}
+		auto path = p.second.get<std::string>("path");
+		CROW_LOG_INFO << "(App) Registering plugin "
+			      << p.first << ": " << path;
+		pcw::Plugin plugin(path);
+		plugin(p.first, *this);
+		plugins_.push_back(std::move(plugin));
 	}
 }
 

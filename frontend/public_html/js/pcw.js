@@ -42,6 +42,16 @@ pcw.log = function(msg) {
 	}
 };
 
+pcw.onLoad = function() {
+	pcw.setApiVersion();
+};
+
+pcw.onLoadWithPid = function(pid) {
+	pcw.setApiVersion();
+	pcw.setErrorDropdowns(pid);
+	pcw.setCorrectionSuggestions(pid);
+};
+
 pcw.getIds = function(anchor) {
 	var ids = anchor.split('-');
 	for (var i = 0; i < ids.length; i++) {
@@ -277,27 +287,27 @@ pcw.setSuggestionsDropdown = function(pid, selection) {
 	}
 	var api = Object.create(pcw.Api);
 	api.sid = pcw.getSid();
-	api.setupForGetSuggestions(pid, selection.str);
+	api.setupForSearchSuggestions(pid, selection.str);
 	api.run(function(status, res) {
 		pcw.log("timestamp: " + pcw.timestampToISO8601(res.timestamp));
 		suggs = res.suggestions || [];
 		suggs.sort(function(a, b) { return b.weight - a.weight; });
 		for (var i = 0; i < suggs.length; i++) {
-			pcw.setSuggestionDropdown(
+			pcw.addSuggestionDropdownItem(
 			    dropdown, suggs[i], selection);
 		}
 	});
 };
 
-pcw.setSuggestionDropdown = function(dropdown, s, selection) {
+pcw.addSuggestionDropdownItem = function(dropdown, s, selection) {
 	pcw.log(
 	    "suggestion: \"" + s.suggestion + "\", weight: " + s.weight +
 	    ", distance: " + s.distance);
 	var li = document.createElement("li");
 	var a = document.createElement("a");
 	var t = document.createTextNode(
-	    s.suggestion + " (dist: " + s.distance + ", weight: " +
-	    s.weight.toFixed(2) + ")");
+	    s.suggestion + " (patts: " + s.patterns.join(',') + ", dist: " +
+	    s.distance + ", weight: " + s.weight.toFixed(2) + ")");
 	// a.href = "#";
 	/*a.onClick = "pcw.setSuggestionToSelection(" +
 	    JSON.stringify(selection) + ', "' + s.suggestion + '");';
@@ -331,18 +341,153 @@ pcw.orderProfile = function(pid) {
 	});
 };
 
+pcw.setErrorDropdowns = function(pid) {
+	var ddep = document.getElementById("pcw-error-patterns-dropdown");
+	var ddet = document.getElementById("pcw-error-tokens-dropdown");
+	if (ddep === null || ddet === null) {
+		return;
+	}
+	var api = Object.create(pcw.Api);
+	api.sid = pcw.getSid();
+	api.setupForGetAllSuggestions(pid);
+	api.run(function(status, res) {
+		if (ddep !== null) {
+			pcw.setErrorPatternsDropdown(pid, ddep, res);
+		}
+		if (ddet !== null) {
+			pcw.setErrorTokensDropdown(pid, ddet, res);
+		}
+	});
+};
+
+pcw.setErrorPatternsDropdown = function(pid, dropdown, res) {
+	pcw.log("setErrorPatternsDropdown");
+	var patterns = {};
+	var suggs = res.suggestions || [];
+	for (var i = 0; i < suggs.length; i++) {
+		var id = suggs[i].pageId + '-' + suggs[i].lineId + '-' +
+		    suggs[i].tokenId;
+		for (var j = 0; j < suggs[i].patterns.length; j++) {
+			var pat = suggs[i].patterns[j].toLowerCase();
+			var set = patterns[pat] || {};
+			set[i] = true;
+			patterns[pat] = set;
+		}
+	}
+	var counts = [];
+	for (p in patterns) {
+		counts.push(
+		    {pattern: p, count: Object.keys(patterns[p]).length});
+	}
+	counts.sort(function(a, b) { return b.count - a.count; });
+	var onclick = function(pid, c) {
+		return function() {
+			pcw.log(c.pattern + ": " + c.count);
+			var pat = encodeURI(c.pattern);
+			var href = "concordance.php?pid=" + pid + "&q=" + pat +
+			    "&error-pattern";
+			window.location.href = href;
+		};
+	};
+	for (var i = 0; i < counts.length; i++) {
+		var c = counts[i];
+		var a = pcw.appendErrorCountItem(dropdown, c.pattern, c.count);
+		a.onclick = onclick(pid, c);
+	}
+};
+
+pcw.setErrorTokensDropdown = function(pid, dropdown, res) {
+	pcw.log("setErrorsDropdown");
+	var tokens = {};
+	var suggs = res.suggestions || [];
+	for (var i = 0; i < suggs.length; i++) {
+		var id = suggs[i].pageId + '-' + suggs[i].lineId + '-' +
+		    suggs[i].tokenId;
+		var tok = suggs[i].token.toLowerCase();
+		var set = tokens[tok] || {};
+		set[id] = true;
+		tokens[tok] = set;
+	}
+	var counts = [];
+	for (p in tokens) {
+		counts.push({token: p, count: Object.keys(tokens[p]).length});
+	}
+	counts.sort(function(a, b) { return b.count - a.count; });
+	var onclick = function(pid, c) {
+		return function() {
+			pcw.log(c.token + ": " + c.count);
+			var pat = encodeURI(c.token);
+			var href = "concordance.php?pid=" + pid + "&q=" + pat;
+			window.location.href = href;
+		};
+	};
+	for (var i = 0; i < counts.length; i++) {
+		c = counts[i];
+		var a = pcw.appendErrorCountItem(dropdown, c.token, c.count);
+		a.onclick = onclick(pid, c);
+	}
+};
+
+pcw.appendErrorCountItem = function(dropdown, item, count) {
+	var li = document.createElement("li");
+	var a = document.createElement("a");
+	var t = document.createTextNode(item + ": " + count);
+	a.appendChild(t);
+	li.appendChild(a);
+	dropdown.appendChild(li);
+	return a;
+};
+
+pcw.setCorrectionSuggestions = function(pid) {
+	var x = document.getElementsByTagName('button');
+	for (var i = 0; i < x.length; i++) {
+		if (/concordance-token-dropdown-/.test(x[i].id)) {
+			var ids =
+			    pcw.getIds(/\d+-\d+-\d+-\d+/.exec(x[i].id)[0]);
+			pcw.doSetCorrectionSuggestions(
+			    ids[0], ids[1], ids[2], ids[3]);
+		}
+	}
+};
+
+pcw.doSetCorrectionSuggestions = function(pid, p, lid, tid) {
+	var api = Object.create(pcw.Api);
+	api.sid = pcw.getSid();
+	api.setupForGetSuggestions(pid, p, lid, tid);
+	var anchor = pid + '-' + p + '-' + lid + '-' + tid;
+	var input =
+	    document.getElementById('concordance-token-input-' + anchor);
+	var ul =
+	    document.getElementById('concordance-token-suggestions-' + anchor);
+	var checkbox =
+	    document.getElementById('concordance-token-checkbox-' + anchor);
+	var onclick = function(checkbox, input, s) {
+		return function() {
+			checkbox.checked = true;
+			input.value = s.suggestion;
+		};
+	};
+	api.run(function(status, res) {
+		var suggs = res.suggestions || [];
+		for (var i = 0; i < suggs.length; i++) {
+			var a = pcw.addItemToSuggestionsMenu(ul, suggs[i]);
+			a.onclick = onclick(checkbox, input, suggs[i]);
+		}
+	});
+};
+
+pcw.addItemToSuggestionsMenu = function(ul, s) {
+	var li = document.createElement("li");
+	var a = document.createElement("a");
+	var t = document.createTextNode(
+	    s.suggestion + " (patts: " + s.patterns.join(',') + ", dist: " +
+	    s.distance + ", weight: " + s.weight.toFixed(2) + ")");
+	a.appendChild(t);
+	li.appendChild(a);
+	ul.appendChild(li);
+	return a;
+};
+
 pcw.timestampToISO8601 = function(ts) {
-	// var fmtnum = function(n) {
-	// 	if (n < 10) {
-	// 		return "0" + n;
-	// 	} else {
-	// 		return n;
-	// 	}
-	// };
-	// var date = new Date(ts * 1000);
-	// return date.getFullYear() + "-" + fmtnum(date.getMonth()) + "-" +
-	//     fmtnum(date.getDate()) + "T" + fmtnum(date.getHours()) + ":" +
-	//     fmtnum(date.getMinutes()) + ":" + fmtnum(date.getSeconds()) +
-	//     "Z";
 	return new Date(ts * 1000).toUTCString();
 };

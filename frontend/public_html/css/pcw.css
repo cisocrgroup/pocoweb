@@ -68,3 +68,9 @@ div.text-image-line:hover {
 	border-radius: 3px;
 	/*box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);*/
 }
+
+.scrollable-menu {
+    height: auto;
+    max-height: 200px;
+    overflow-x: hidden;
+}

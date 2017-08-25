@@ -10,7 +10,6 @@
 #include "api/BookRoute.hpp"
 #include "api/CorrectionRoute.hpp"
 #include "api/DownloadRoute.hpp"
-#include "api/ErrorPatternsRoute.hpp"
 #include "api/FinishRoute.hpp"
 #include "api/LineRoute.hpp"
 #include "api/PageRoute.hpp"
@@ -33,8 +32,10 @@ static int run(int argc, char** argv);
 static void run(App& app);
 static AppPtr get_app(int argc, char** argv);
 static void change_user_and_group(const Config& config);
+static void detach(const Config& config);
 static void create_base_directory(const Config& config);
 static const char* find_config_file(int argc, char** argv);
+static void write_pidfile(const Config& config);
 
 ////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char** argv) {
@@ -57,12 +58,13 @@ int run(int argc, char** argv) {
 void run(App& app) {
 	change_user_and_group(app.config());
 	create_base_directory(app.config());
+	detach(app.config());
+	write_pidfile(app.config());
 	app.register_plugins();
 	app.Register(std::make_unique<pcw::AssignRoute>());
 	app.Register(std::make_unique<pcw::BookRoute>());
 	app.Register(std::make_unique<pcw::CorrectionRoute>());
 	app.Register(std::make_unique<pcw::DownloadRoute>());
-	app.Register(std::make_unique<pcw::ErrorPatternsRoute>());
 	app.Register(std::make_unique<pcw::FinishRoute>());
 	app.Register(std::make_unique<pcw::LineRoute>());
 	app.Register(std::make_unique<pcw::PageRoute>());
@@ -93,6 +95,16 @@ void change_user_and_group(const Config& config) {
 	if (setgid(pw->pw_gid) != 0)
 		throw std::system_error(errno, std::system_category(),
 					"setgid");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void detach(const Config& config) {
+	if (config.daemon.detach) {
+		if (daemon(0, 0) != 0) {
+			throw std::system_error(errno, std::system_category(),
+					        "daemon");
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -140,4 +152,13 @@ const char* find_config_file(int argc, char** argv) {
 		}
 	}
 	throw std::runtime_error("Cannot find config file");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void write_pidfile(const Config& config) {
+	std::ofstream out(config.log.pidfile);
+	if (out.good()) {
+		out << getpid() << std::endl;
+		out.close();
+	}
 }

@@ -402,7 +402,6 @@ function frontend_get_correction_class($obj) {
 	return "";
 }
 
-
 function frontend_render_page_view_div($pid, $p, $u, $post) {
 	$api = backend_get_page($pid, $p);
 	$status = $api->get_http_status_code();
@@ -410,7 +409,7 @@ function frontend_render_page_view_div($pid, $p, $u, $post) {
 		frontend_render_error_div("error: could not load project #$pid, page #$p: $status");
 	} else {
 		$page = $api->get_response();
-		echo '<div id="page-view">', "\n";
+		echo '<div id="page-view" onload=\'pcw.setErrorsDropdown(', $pid, ')\'>', "\n";
 		frontend_render_page_header_div($page);
 		frontend_render_page_heading_div($page);
 		frontend_render_page_div($page);
@@ -453,15 +452,26 @@ function frontend_render_page_header_div($page) {
 		'aria-haspopup="true" aria-expanded="false">',
 		'Correction suggestions<span class="caret"></span></a>';
         echo '<ul id="pcw-suggestions-dropdown" class="dropdown-menu">';
-	// echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#1");\' ',
-	// 	'href="#">Correction suggestion #1</a></li>', "\n";
-	// echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#2");\' ',
-	// 	'href="#">Correction suggestion #2</a></li>', "\n";
-	// echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#3");\' ',
-	// 	'href="#">Correction suggestion #3</a></li>', "\n";
-	// echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#4");\' ',
-	// 	'href="#">Correction suggestion #4</a></li>', "\n";
-        // echo '<li role="separator" class="divider"></li>';
+        echo '</ul>';
+        echo '</li>';
+	echo '</ul>';
+	// error-patterns
+	echo '<ul class="nav navbar-nav">', "\n";
+	echo '<li class="dropdown">'; //  disabled">';
+	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" ',
+		'aria-haspopup="true" aria-expanded="false">',
+		'Error patterns<span class="caret"></span></a>';
+        echo '<ul id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu">';
+        echo '</ul>';
+        echo '</li>';
+	echo '</ul>';
+	// error-tokens
+	echo '<ul class="nav navbar-nav">', "\n";
+	echo '<li class="dropdown">'; //  disabled">';
+	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" ',
+		'aria-haspopup="true" aria-expanded="false">',
+		'Error tokens<span class="caret"></span></a>';
+        echo '<ul id="pcw-error-tokens-dropdown" class="dropdown-menu scrollable-menu">';
         echo '</ul>';
         echo '</li>';
 	echo '</ul>';
@@ -567,7 +577,12 @@ function frontend_render_concordance_line_div($line, $word) {
 	$anchor="$word[projectId]-$word[pageId]-$word[lineId]-$word[tokenId]";
 	echo '<div class="text-image-line row">';
 	$images = $api->get_response();
-	echo '<div class="col-md-5 col-xs-4">';
+	// The three columns are divided 5,3,4.
+	// This makes the left side of the line the biggest and gives enough space
+	// for the token in the middle.
+	// The right side is a little bit smaller but big enough to show the
+	// emidate context of the selected tokens.
+	echo '<div class="col-md-5 col-xs-5">';
 	if ($images["leftImg"] != NULL) {
 		echo '<a class="invisible=link" href="', $link, '">';
 		echo '<img src="', $images["leftImg"],
@@ -580,7 +595,7 @@ function frontend_render_concordance_line_div($line, $word) {
 		echo '</a>', "\n";
 	}
 	echo '</div>';
-	echo '<div class="col-md-2 col-xs-2">';
+	echo '<div class="col-md-3 col-xs-3">';
 	if ($images["middleImg"] != NULL) {
 		$inputclass = frontend_get_correction_class($word);
 		echo '<a class="invisible=link" href="', $link, '">';
@@ -590,25 +605,36 @@ function frontend_render_concordance_line_div($line, $word) {
 		echo '</a>', "\n";
 		echo '<br/>';
 		echo '<div class="input-group">', "\n";
+		// checkbox
 		echo '<span class="input-group-addon">';
 		echo '<input id="concordance-token-checkbox-', $anchor, '" ',
 			'type="checkbox" aria-label="...">';
       		echo '</span>';
+		// input
 		echo '<input id="concordance-token-input-', $anchor, '" ',
 			'class="form-control', $inputclass, '" type="text" value="',
-			implode("", $wordcor), '" />';
-		echo '<span class="input-group-btn">', "\n";
-		echo '<button id="concordance-token-btn-', $anchor, '" ',
-			'class="btn btn-default" title="correct token" ',
-			'onclick=\'pcw.correctWord("', $anchor, '");\' >',
-			"\n";
-		echo '<span class="glyphicon glyphicon-upload" />';
-		echo '</button>';
-		echo '</span>';
+			implode("", $wordcor), '" title="Correction" />', "\n";
+		// dropdown
+		echo '<div class="input-group-btn">', "\n";
+		echo '<button type="button" class="btn btn-default dropdow-toggle" ',
+			'id="concordance-token-dropdown-', $anchor, '" ',
+			'data-toggle="dropdown" aria-haspopup="true" ',
+			'aria-expanded="false" title="Correction suggestions">', "\n";
+		echo '<span class="caret"></span>', "\n";
+		echo '</button>', "\n";
+		echo '<ul id="concordance-token-suggestions-', $anchor, '" ',
+			'class="pull-right dropdown-menu">', "\n";
+		echo '</ul>', "\n";
+		// upload
+		echo '<button type="button" class="btn btn-default" title="upload" ',
+			'onclick=\'pcw.correctWord("', $anchor, '");\' >', "\n";
+		echo '<span class="glyphicon glyphicon-upload"></span>', "\n";
+		echo '</button>', "\n";
+		echo '</div>';
 		echo '</div>';
 	}
 	echo '</div>';
-	echo '<div class="col-md-5 col-xs-4">';
+	echo '<div class="col-md-4 col-xs-4">';
 	if ($images["rightImg"] != NULL) {
 		echo '<a class="invisible=link" href="', $link, '">';
 		echo '<img src="', $images["rightImg"],
@@ -629,7 +655,6 @@ function frontend_render_concordance_header_div() {
 		'data-spy="affix" data-offset-top="197"', '>', "\n";
 	echo '<div class="container-fluid">', "\n";
 	echo '<div class="collapse navbar-collapse">', "\n";
-	// correction
 	echo '<ul class="nav navbar-nav">', "\n";
 	echo '<li>';
 	echo '<form class="navbar-form" action="javascript:void(0);" ',
@@ -642,43 +667,29 @@ function frontend_render_concordance_header_div() {
 	echo '</button>';
 	echo '</span>';
 	echo '<input id="global-correction-suggestion" ',
-		'class="form-control" type="text" placeholder="Correction"/>';
+		'class="form-control" title="Correction" ',
+		'type="text" placeholder="Correction"/>';
 	echo '<span class="input-group-btn">', "\n";
-	echo '<button id="foobar" class="btn btn-default" title="Correct selected tokens" ',
+	echo '<button id="foobar" class="btn btn-default" title="Set correction" ',
 		'onclick=\'pcw.setCorrectionSuggestionForAllSelectedConcordanceTokens();\'', ">\n";
-	// echo '<span class="glyphicon glyphicon-upload" />';
-	echo 'Correct selected tokens';
+	echo 'Set correction';
+	echo '</button>';
+	echo '<button id="foobar" class="btn btn-default" title="Correct selected" ',
+		'onclick=\'pcw.setCorrectionSuggestionForAllSelectedConcordanceTokens();\'', ">\n";
+	echo 'Correct selected';
 	echo '</button>';
 	echo '</span>';
 	echo '</div>';
 	echo '</form>';
 	echo '</li>';
 	echo '</ul>';
-	echo '<ul class="nav navbar-nav">';
-	echo '<li class="dropdown">';
-	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" ',
-		'aria-haspopup="true" aria-expanded="false">',
-		'Correction suggestions<span class="caret"></span></a>';
-        echo '<ul class="dropdown-menu">';
-	echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#1");\' ',
-		'href="#">Correction suggestion #1</a></li>', "\n";
-	echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#2");\' ',
-		'href="#">Correction suggestion #2</a></li>', "\n";
-	echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#3");\' ',
-		'href="#">Correction suggestion #3</a></li>', "\n";
-	echo '<li><a onclick=\'pcw.setGlobalCorrectionSuggestion("#4");\' ',
-		'href="#">Correction suggestion #4</a></li>', "\n";
-        // echo '<li role="separator" class="divider"></li>';
-        echo '</ul>';
-        echo '</li>';
-	echo '</ul>';
 	echo '</div>';
 	echo '</div>';
 	echo '</nav>';
 }
 
-function frontend_render_concordance_div($pid, $q) {
-	$api = backend_get_concordance($pid, $q);
+function frontend_render_concordance_div($pid, $q, $isErrorPattern) {
+	$api = backend_get_concordance($pid, $q, $isErrorPattern);
 	$status = $api->get_http_status_code();
 	if ($status == 200) {
 		$matches = $api->get_response();
@@ -688,10 +699,12 @@ function frontend_render_concordance_div($pid, $q) {
 			echo '<div id="concordance-heading">', "\n";
 			echo "<p><h2>Concordance view for '", urldecode($q), "'</h2></p>\n";
 			echo '</div>', "\n";
-			foreach ($matches["matches"] as $match) {
-				$line = $match["line"];
-				foreach ($match["matches"] as $word) {
-					frontend_render_concordance_line_div($line, $word);
+			if (isset($matches["matches"])) {
+				foreach ($matches["matches"] as $match) {
+					$line = $match["line"];
+					foreach ($match["matches"] as $word) {
+						frontend_render_concordance_line_div($line, $word);
+					}
 				}
 			}
 			echo '</div>', "\n";
