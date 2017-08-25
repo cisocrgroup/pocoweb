@@ -296,17 +296,18 @@ function backend_get_concordance($pid, $q, $isErrorPattern) {
 	return $api;
 }
 
-function backend_get_split_images_route($pid, $p, $lid) {
+function backend_get_split_images_route($pid, $p, $lid, $tid) {
 	global $config;
 	return sprintf($config["backend"]["url"] .
 		$config["backend"]["routes"]["splitImages"],
-		$pid, $p, $lid);
+		$pid, $p, $lid, $tid);
 }
 
 function backend_get_split_images($word) {
 	global $SID;
 	$api = new Api(backend_get_split_images_route(
-		$word["projectId"], $word["pageId"], $word["lineId"]));
+		$word["projectId"], $word["pageId"],
+		$word["lineId"], $word["tokenId"]));
 	$api->set_session_id($SID);
 	$api->post_request($word);
 	return $api;

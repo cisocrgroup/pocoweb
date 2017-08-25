@@ -20,9 +20,9 @@ class SplitImagesRoute : public CrtpRoute<SplitImagesRoute> {
 	virtual const char* route() const noexcept override { return route_; }
 	virtual const char* name() const noexcept override { return name_; }
 
-	pcw_crtp_route_def_impl__(int, int, int);
-	Response impl(HttpPost, const Request& req, int bid, int pid,
-		      int lid) const;
+	pcw_crtp_route_def_impl__(int, int, int, int);
+	Response impl(HttpGet, const Request& req, int bid, int pid,
+		      int lid, int tid) const;
 
        private:
 	Response create_split_images(const Session& session, const Line& line,

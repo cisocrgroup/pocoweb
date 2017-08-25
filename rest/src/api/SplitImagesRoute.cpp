@@ -16,7 +16,7 @@
 #include "utils/ScopeGuard.hpp"
 
 #define SPLIT_IMAGES_ROUTE_ROUTE \
-	"/books/<int>/pages/<int>/lines/<int>/split-images"
+	"/books/<int>/pages/<int>/lines/<int>/tokens/<int>/split-images"
 
 using namespace pcw;
 
@@ -26,18 +26,18 @@ const char* SplitImagesRoute::name_ = "SplitImagesRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
 void SplitImagesRoute::Register(App& app) {
-	CROW_ROUTE(app, SPLIT_IMAGES_ROUTE_ROUTE).methods("POST"_method)(*this);
+	CROW_ROUTE(app, SPLIT_IMAGES_ROUTE_ROUTE).methods("GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response SplitImagesRoute::impl(HttpPost, const Request& req, int bid,
-				       int pid, int lid) const {
+Route::Response SplitImagesRoute::impl(HttpGet, const Request& req, int bid,
+				       int pid, int lid, int tid) const {
 	const auto json = crow::json::load(req.body);
 	LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
 	session->assert_permission(conn, bid, Permissions::Read);
 	const auto line = session->must_find(conn, bid, pid, lid);
-	return create_split_images(*session, *line, json["tokenId"].i());
+	return create_split_images(*session, *line, tid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
