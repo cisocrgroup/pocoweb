@@ -41,8 +41,8 @@ pcw::Route::Response pcw::CrtpRoute<T>::operator()(const Request& req,
 						  std::forward<Args>(args)...);
 				break;
 			case crow::HTTPMethod::Post:
-				CROW_LOG_DEBUG << "(CrtpRoute) POST BODY: "
-					       << req.body;
+				/*CROW_LOG_DEBUG << "(CrtpRoute) POST BODY: "
+					       << req.body;*/
 				res = that().impl(HttpPost{}, req,
 						  std::forward<Args>(args)...);
 				break;
