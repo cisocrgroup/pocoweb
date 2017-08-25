@@ -57,7 +57,6 @@ Route::Response BookRoute::impl(HttpGet, const Request& req) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpPost, const Request& req) const {
-	CROW_LOG_INFO << "(BookRoute) body: " << req.body;
 	LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
 	session->assert_permission(conn, 0, Permissions::Create);
@@ -65,18 +64,22 @@ Route::Response BookRoute::impl(HttpPost, const Request& req) const {
 	BookDirectoryBuilder dir(get_config());
 	ScopeGuard sg([&dir]() { dir.remove(); });
 	CROW_LOG_INFO << "(BookRoute) BookDirectoryBuilder: " << dir.dir();
-	const auto json = crow::json::load(req.body);
-	if (json.has("file")) {
+	BookSptr book;
+	if (crow::get_header_value(req.headers, "Content-Type") == "application/json") {
+		// CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
+		const auto json = crow::json::load(req.body);
 		dir.add_zip_file_path(json["file"].s());
+		book = dir.build();
+		if (not book) THROW(BadRequest, "Could not build book");
+		book->set_owner(session->user());
+		// update book data
+		update_book_data(*book, json);
 	} else {
 		dir.add_zip_file_content(extract_content(req));
+		book = dir.build();
+		if (not book) THROW(BadRequest, "Could not build book");
+		book->set_owner(session->user());
 	}
-	auto book = dir.build();
-	if (not book) THROW(Error, "Could not build book");
-	// update book data
-	CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
-	book->set_owner(session->user());
-	update_book_data(*book, json);
 	// insert book into database
 	CROW_LOG_INFO << "(BookRoute) Inserting new book into database";
 	MysqlCommiter commiter(conn);
@@ -115,7 +118,7 @@ Route::Response BookRoute::impl(HttpGet, const Request& req, int bid) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpPost, const Request& req, int bid) const {
-	CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
+	// CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
 	auto data = crow::json::load(req.body);
 	LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
