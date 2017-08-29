@@ -312,4 +312,18 @@ function backend_get_split_images($word) {
 	$api->get_request();
 	return $api;
 }
+
+function backend_get_languages_route() {
+	global $config;
+	return $config["backend"]["url"] .
+		$config["backend"]["routes"]["languages"];
+}
+
+function backend_get_languages() {
+	global $SID;
+	$api = new Api(backend_get_languages_route());
+	$api->set_session_id($SID);
+	$api->get_request();
+	return $api;
+}
 ?>

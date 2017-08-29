@@ -241,10 +241,19 @@ function frontend_render_upload_new_project_div() {
 	echo '<input name="year" type="number" min="0" max="2099" ',
 		'step="1" value="2017" class="form-control"/>', "\n";
 	echo '</div>', "\n";
-	// Language
+	// Languages
+	$api = backend_get_languages();
+	echo '<datalist id="languages">', "\n";
+	if ($api->get_http_status_code() == 200) {
+		foreach($api->get_repsonse()["languages"] as $language) {
+			echo '<option value="', $language, '" />', "\n";
+		}
+	}
+	echo '</datalist>', "\n";
 	echo '<div class="form-group">', "\n";
 	echo '<label for="language">Language</label>', "\n";
-	echo '<input name="language" type="text" placeholder="Language" class="form-control"/>', "\n";
+	echo '<input name="language" list="profiler-languages" type="text" ',
+		'placeholder="Language" class="form-control"/>', "\n";
 	echo '</div>', "\n";
 	// upload file
 	echo '<div class="form-group">', "\n";
