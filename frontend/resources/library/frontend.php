@@ -243,9 +243,9 @@ function frontend_render_upload_new_project_div() {
 	echo '</div>', "\n";
 	// Languages
 	$api = backend_get_languages();
-	echo '<datalist id="languages">', "\n";
+	echo '<datalist id="profiler-languages">', "\n";
 	if ($api->get_http_status_code() == 200) {
-		foreach($api->get_repsonse()["languages"] as $language) {
+		foreach($api->get_response()["languages"] as $language) {
 			echo '<option value="', $language, '" />', "\n";
 		}
 	}
