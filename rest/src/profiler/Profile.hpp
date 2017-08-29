@@ -119,10 +119,14 @@ class Profile {
 
 	const Book& book() const noexcept { return *book_; }
 	const Suggestions& suggestions() const noexcept { return suggestions_; }
+	const std::set<std::string> adaptive_tokens() const noexcept {
+		return adaptive_tokens_;
+	}
 	Patterns calc_ocr_patterns() const;
 	Patterns calc_hist_patterns() const;
 
        private:
+	std::set<std::string> adaptive_tokens_;
 	Suggestions suggestions_;
 	ConstBookSptr book_;
 
@@ -143,6 +147,7 @@ class ProfileBuilder {
        private:
 	void init();
 
+	std::set<std::string> adaptive_tokens_;
 	std::unordered_map<int64_t, Token> tokens_;
 	Profile::Suggestions suggestions_;
 	ConstBookSptr book_;

@@ -167,6 +167,7 @@ void BookRoute::remove_project_impl(MysqlConnection& conn, int pid) const {
 	tables::Profiles ppp;
 	tables::Suggestions s;
 	tables::Errorpatterns e;
+	tables::Adaptivetokens a;
 	tables::Types t;
 	conn.db()(remove_from(pp).where(pp.projectid == pid));
 	conn.db()(remove_from(p).where(p.projectid == pid));
@@ -174,6 +175,7 @@ void BookRoute::remove_project_impl(MysqlConnection& conn, int pid) const {
 	conn.db()(remove_from(s).where(s.bookid == pid));
 	conn.db()(remove_from(e).where(e.bookid == pid));
 	conn.db()(remove_from(t).where(t.bookid == pid));
+	conn.db()(remove_from(a).where(a.bookid == pid));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

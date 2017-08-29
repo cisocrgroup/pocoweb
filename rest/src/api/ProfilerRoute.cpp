@@ -163,6 +163,7 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 	tables::Profiles p;
 	tables::Errorpatterns e;
 	tables::Types t;
+	tables::Adaptivetokens a;
 	tables::Suggestions stab;
 	auto conn = that->must_get_connection();
 	const auto id = profile.book().id();
@@ -174,10 +175,12 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 	conn.db()(remove_from(stab).where(stab.bookid == id));
 	conn.db()(remove_from(t).where(t.bookid == id));
 	conn.db()(remove_from(e).where(e.bookid == id));
+	conn.db()(remove_from(a).where(a.bookid == id));
 	// insert new profile timestamp
 	conn.db()(insert_into(p).set(p.bookid = id, p.timestamp = ts));
 	// insert new profile
 	UniqueIdMap<std::string> typeids;
+	// suggestions
 	for (const auto& s : profile.suggestions()) {
 		bool isnew;
 		int firstid;
@@ -222,6 +225,19 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 				}
 			}
 		}
+	}
+	// adaptive tokens
+	for (const auto& s : profile.adaptive_tokens()) {
+		bool isnew;
+		int typid;
+		std::tie(typid, isnew) = typeids[s];
+		if (isnew) {
+			conn.db()(insert_into(t).set(t.bookid = id,
+						     t.typid = typid,
+						     t.string = s));
+		}
+		CROW_LOG_DEBUG << "(ProfilerRoute) adaptive token: " << s;
+		conn.db()(insert_into(a).set(a.bookid = id, a.typid = typid));
 	}
 	commiter.commit();
 }
