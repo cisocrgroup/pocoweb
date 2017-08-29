@@ -6,6 +6,7 @@ FE_FILES += $(PCW_FRONTEND_DIR)/public_html/js/pcw.js
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/css/pcw.css
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/index.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/documentation.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/adaptive.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/users.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/upload.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/page.php

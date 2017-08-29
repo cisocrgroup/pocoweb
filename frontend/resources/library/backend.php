@@ -326,4 +326,18 @@ function backend_get_languages() {
 	$api->get_request();
 	return $api;
 }
+
+function backend_get_adaptive_tokens_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["url"] .
+		$config["backend"]["routes"]["adaptiveTokens"], $pid);
+}
+
+function backend_get_adaptive_tokens($pid) {
+	global $SID;
+	$api = new Api(backend_get_adaptive_tokens_route($pid));
+	$api->set_session_id($SID);
+	$api->get_request();
+	return $api;
+}
 ?>

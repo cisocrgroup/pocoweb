@@ -723,6 +723,20 @@ function frontend_render_concordance_div($pid, $q, $isErrorPattern) {
 	}
 }
 
+function frontend_render_adaptive_tokens_div($pid) {
+	$api = backend_get_adaptive_tokens($pid);
+	$status = $api->get_http_status_code();
+	if ($status != 200) {
+		frontend_render_error_div("backend returned status: $status");
+		return;
+	}
+	echo "<div>\n";
+	for ($api->get_response()["adaptiveTokens"] as $token) {
+		echo '<p>', $token, "</p>\n";
+	}
+	echo "</div>\n";
+}
+
 function frontend_render_success_div($msg) {
 	echo('<div class="container-fluid">');
 	echo('<div class="alert alert-success" role="alert">');
