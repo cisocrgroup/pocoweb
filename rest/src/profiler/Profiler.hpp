@@ -3,6 +3,7 @@
 
 #include <atomic>
 #include <memory>
+#include <vector>
 
 namespace pcw {
 class Book;
@@ -17,10 +18,12 @@ class Profiler {
 	Profiler(ConstBookSptr book) : book_(std::move(book)) {}
 	virtual ~Profiler() noexcept = default;
 	pcw::Maybe<Profile> profile() noexcept;
+	pcw::Maybe<std::vector<std::string>> languages() noexcept;
 	const Book& book() const noexcept { return *book_; }
 
        protected:
 	virtual Profile do_profile() = 0;
+	virtual std::vector<std::string> do_languages() = 0;
 
        private:
 	ConstBookSptr book_;

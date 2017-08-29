@@ -16,6 +16,7 @@ class LocalProfiler : public Profiler {
 
        protected:
 	virtual pcw::Profile do_profile() override;
+	virtual std::vector<std::string> do_languages() override;
 
        private:
 	void run_profiler(const std::string& command) const;

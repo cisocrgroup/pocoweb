@@ -14,12 +14,13 @@
 #include "utils/Maybe.hpp"
 #include "utils/UniqueIdMap.hpp"
 
-#define PROFILER_ROUTE_ROUTE "/books/<int>/profile"
+#define PROFILER_ROUTE_ROUTE_1 "/books/<int>/profile"
+#define PROFILER_ROUTE_ROUTE_2 "/profiler-languages"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* ProfilerRoute::route_ = PROFILER_ROUTE_ROUTE;
+const char* ProfilerRoute::route_ = PROFILER_ROUTE_ROUTE_1 "," PROFILER_ROUTE_ROUTE_2;
 const char* ProfilerRoute::name_ = "ProfilerRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,8 +46,9 @@ void ProfilerRoute::Register(App& app) {
 	// setup jobs (Register() is called after each route has been set up).
 	// must be called before the route is registered.
 	jobs_ = std::make_shared<std::vector<Job>>(get_config().profiler.jobs);
-	CROW_ROUTE(app, PROFILER_ROUTE_ROUTE)
+	CROW_ROUTE(app, PROFILER_ROUTE_ROUTE_1)
 	    .methods("GET"_method, "POST"_method)(*this);
+	CROW_ROUTE(app, PROFILER_ROUTE_ROUTE_2).methods("GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -223,3 +225,18 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 	}
 	commiter.commit();
 }
+
+////////////////////////////////////////////////////////////////////////////////
+ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req) const {
+	CROW_LOG_DEBUG << "(ProfilerRoute) get languages";
+	LockedSession session(must_find_session(req));
+	const auto languages = get_profiler(nullptr)->languages().get();
+	Json j;
+	j["languages"] = crow::json::rvalue(crow::json::type::List);
+	size_t i = 0;
+	for (const auto& language: languages) {
+		j["languages"][i++] = language;
+	}
+	return j;
+}
+
