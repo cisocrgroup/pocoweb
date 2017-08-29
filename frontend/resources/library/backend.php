@@ -309,7 +309,7 @@ function backend_get_split_images($word) {
 		$word["projectId"], $word["pageId"],
 		$word["lineId"], $word["tokenId"]));
 	$api->set_session_id($SID);
-	$api->post_request($word);
+	$api->get_request();
 	return $api;
 }
 ?>
