@@ -33,7 +33,8 @@ function frontend_render_project_table_div($admin) {
 	$api = backend_get_projects();
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
-		frontend_render_error_div("error could not load projects: $status");
+		frontend_render_error_div("error could not load projects: " .
+			backend_get_http_status_info($status));
 	} else {
 		$projects = $api->get_response();
 		if (!isset($projects["books"])) {
@@ -356,7 +357,8 @@ function frontend_render_users_table_div() {
 	$api = backend_get_users();
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
-		frontend_render_error_div("error: could not load users: $status");
+		frontend_render_error_div("error: could not load users: " .
+			backend_get_http_status_info($status));
 	} else {
 		$users = $api->get_response();
 		echo '<div class="container-fluid">', "\n";
@@ -417,7 +419,8 @@ function frontend_render_page_view_div($pid, $p, $u, $post) {
 	$api = backend_get_page($pid, $p);
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
-		frontend_render_error_div("error: could not load project #$pid, page #$p: $status");
+		frontend_render_error_div("error: could not load project #$pid, page #$p: " .
+			backend_get_http_status_info($status));
 	} else {
 		$page = $api->get_response();
 		echo '<div id="page-view" onload=\'pcw.setErrorsDropdown(', $pid, ')\'>', "\n";
@@ -576,7 +579,8 @@ function frontend_render_concordance_line_div($line, $word) {
 	$api = backend_get_split_images($word);
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
-		frontend_render_error_div("Could not get split images: server returned: $status");
+		frontend_render_error_div("Could not get split images: server returned: " .
+			backend_get_http_status_info($status));
 		return;
 	}
 	$height = $config["frontend"]["image"]["line_image_height"];
@@ -721,7 +725,8 @@ function frontend_render_concordance_div($pid, $q, $isErrorPattern) {
 			echo '</div>', "\n";
 		}
 	} else {
-		frontend_render_error_div("Error: backend returned: $status");
+		frontend_render_error_div("Error: backend returned: " .
+			backend_get_http_status_info($status));
 	}
 }
 
@@ -729,7 +734,8 @@ function frontend_render_adaptive_tokens_div($pid) {
 	$api = backend_get_adaptive_tokens($pid);
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
-		frontend_render_error_div("backend returned status: $status");
+		frontend_render_error_div("backend returned status: " .
+			backend_get_http_status_info($status));
 		return;
 	}
 	echo "<div>\n";
