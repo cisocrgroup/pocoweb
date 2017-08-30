@@ -79,28 +79,25 @@ function frontend_render_admin_project_table_row($project, $users) {
 	echo '<div class="input-group">';
 	// open project button
 	echo '<div class="btn-group" role="group">', "\n";
-	// echo '<span class="input-group-btn">';
+	// open project
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'page.php?u=none&p=first&pid=', $pid, '\'"',
 		' title="open project #', $pid, '">';
 	echo '<span class="glyphicon glyphicon-open"/>';
 	echo '</button>';
-	// echo '</span>';
-	// remove project button
-	// echo '<span class="input-group-btn">';
+	// remove project
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'index.php?remove&pid=', $pid, '\'"',
 		' title="remove project #', $pid, '">';
 	echo '<span class="glyphicon glyphicon-remove"/>';
 	echo '</button>';
-	// echo '</span>';
-	// download project button
-	// echo '<span class="input-group-btn">';
+	// download project
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'index.php?download&pid=', $pid, '\'"',
 		' title="download project #', $pid, '">';
 	echo '<span class="glyphicon glyphicon-download"/>';
 	echo '</button>';
+	// order document profile
 	echo '<button class="btn btn-default"',
 		' onclick="pcw.orderProfile(', $pid, ');"',
 		' title="order profile for project #', $pid, '">';
@@ -111,12 +108,6 @@ function frontend_render_admin_project_table_row($project, $users) {
 		' onclick="window.location.href=\'adaptive.php?pid=', $pid, '\'"',
 		' title="list adpative tokens">';
 	echo '<span class="glyphicon glyphicon-link"/>';
-	echo '</button>';
-	// profile project
-	echo '<button class="btn btn-default"',
-		' onclick="pcw.orderProfile(', $pid, ');"',
-		' title="order profile for project #', $pid, '">';
-	echo '<span class="glyphicon glyphicon-glass"/>';
 	echo '</button>';
 	// echo '</span>';
 	echo '</div>';
