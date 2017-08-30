@@ -16,6 +16,9 @@
 
 using namespace pcw;
 
+template<class R>
+static SuspiciousWordsRoute::Response make_response(R& rows, int pid);
+
 ////////////////////////////////////////////////////////////////////////////////
 const char* SuspiciousWordsRoute::route_ =
     SUSPICIOUS_WORDS_ROUTE_ROUTE_1 ","
@@ -33,18 +36,64 @@ void SuspiciousWordsRoute::Register(App& app) {
 ////////////////////////////////////////////////////////////////////////////////
 SuspiciousWordsRoute::Response SuspiciousWordsRoute::impl(HttpGet, const Request& req,
 						  int bid) const {
-	return internal_server_error();
+	CROW_LOG_DEBUG
+	    << "(SuspiciousWordsRoute) lookup suspicious words for project id: "
+	    << bid;
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	session->assert_permission(conn, bid, Permissions::Read);
+	const auto project = session->must_find(conn, bid);
+	tables::Suggestions s;
+	tables::Types t;
+	auto rows = conn.db()(select(t.string, s.pageid, s.lineid, s.tokenid).from(s.join(t).on(s.typid == t.typid)).where(s.topsuggestion == true and s.bookid == bid));
+	return make_response(rows, project->id());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 SuspiciousWordsRoute::Response SuspiciousWordsRoute::impl(HttpGet, const Request& req,
 						  int bid, int pid) const {
-	return internal_server_error();
+	CROW_LOG_DEBUG
+	    << "(SuspiciousWordsRoute) lookup suspicious words for project id: "
+	    << bid;
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	session->assert_permission(conn, bid, Permissions::Read);
+	const auto project = session->must_find(conn, bid);
+	tables::Suggestions s;
+	tables::Types t;
+	auto rows = conn.db()(select(t.string, s.pageid, s.lineid, s.tokenid).from(s.join(t).on(s.typid == t.typid)).where(s.topsuggestion == true and s.bookid == bid and s.pageid == pid));
+	return make_response(rows, project->id());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 SuspiciousWordsRoute::Response SuspiciousWordsRoute::impl(HttpGet, const Request& req,
 						  int bid, int pid, int lid) const {
-	return internal_server_error();
+	CROW_LOG_DEBUG
+	    << "(SuspiciousWordsRoute) lookup suspicious words for project id: "
+	    << bid;
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	session->assert_permission(conn, bid, Permissions::Read);
+	const auto project = session->must_find(conn, bid);
+	tables::Suggestions s;
+	tables::Types t;
+	auto rows = conn.db()(select(t.string, s.pageid, s.lineid, s.tokenid).from(s.join(t).on(t.typid == s.typid)).where(s.topsuggestion == true and s.bookid == bid and s.pageid == pid and s.lineid == lid));
+	return make_response(rows, project->id());
 }
 
+////////////////////////////////////////////////////////////////////////////////
+template<class R>
+SuspiciousWordsRoute::Response make_response(R& rows, int pid) {
+	Json json;
+	size_t i = 0;
+	json["projectId"] = pid;
+	json["suspiciousWords"] = crow::json::rvalue(crow::json::type::List);
+	for (const auto& row : rows) {
+		json["suspiciousWords"][i]["lineId"] = row.lineid;
+		json["suspiciousWords"][i]["pageId"] = row.pageid;
+		json["suspiciousWords"][i]["tokenId"] = row.tokenid;
+		json["suspiciousWords"][i]["string"] = row.string;
+		++i;
+	}
+	return json;
+}

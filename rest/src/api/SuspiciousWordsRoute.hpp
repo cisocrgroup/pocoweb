@@ -9,6 +9,9 @@
 #include "core/CrtpRoute.hpp"
 
 namespace pcw {
+class Token;
+class Line;
+class Project;
 class SuspiciousWordsRoute : public CrtpRoute<SuspiciousWordsRoute> {
        public:
 	SuspiciousWordsRoute() = default;
