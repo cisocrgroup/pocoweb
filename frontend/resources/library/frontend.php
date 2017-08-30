@@ -741,7 +741,9 @@ function frontend_render_adaptive_tokens_div($pid) {
 	echo "<h2>Adaptive token set</h2>\n";
 	echo "<div>\n";
 	foreach ($api->get_response()["adaptiveTokens"] as $token) {
-		echo '<p>', $token, "</p>\n";
+		echo '<div class="col-md-11 col-md-offset-1">';
+		echo $token;
+		echo '</div>', "\n";
 	}
 	echo "</div>\n";
 }
