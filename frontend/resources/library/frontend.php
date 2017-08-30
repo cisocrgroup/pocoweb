@@ -596,7 +596,7 @@ function frontend_render_concordance_line_div($line, $word) {
 	// This makes the left side of the line the biggest and gives enough space
 	// for the token in the middle.
 	// The right side is a little bit smaller but big enough to show the
-	// emidate context of the selected tokens.
+	// immediate context of the selected tokens.
 	echo '<div class="col-md-5 col-xs-5">';
 	if ($images["leftImg"] != NULL) {
 		echo '<a class="invisible=link" href="', $link, '">';
