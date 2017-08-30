@@ -58,7 +58,7 @@ $config = array(
 	"httpStatusInfo" => array(
 		100 => "Continue",
 		101 => "Switching protocols",
-		200 => "OK"
+		200 => "OK",
 		201 => "Created",
 		202 => "Accepted",
 		203 => "Non-Authoritative Information",
@@ -97,7 +97,6 @@ $config = array(
 		503 => "Service Unavailable"
 		504 => "Gateway Timeout",
 		505 => "HTTP Version Not Supported",
-
 	),
 );
 
