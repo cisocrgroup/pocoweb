@@ -207,7 +207,8 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 			    stab.lineid = s.first.line->id(),
 			    stab.tokenid = s.first.id, stab.typid = firstid,
 			    stab.suggestiontypid = secondid,
-			    stab.weight = c.weight(), stab.distance = c.lev()));
+			    stab.weight = c.weight(), stab.distance = c.lev(),
+			    stab.topsuggestion = c.is_top_suggestion(s.second)));
 			for (const auto& p : c.explanation().ocrp.patterns) {
 				if (not p.empty()) {
 					auto pattern = std::string(p.left) +

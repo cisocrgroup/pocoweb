@@ -71,6 +71,17 @@ std::wstring Candidate::wcor() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+bool Candidate::is_top_suggestion(const std::set<Candidate>& cs) const {
+	auto i = std::max_element(begin(cs), end(cs),
+		[](const auto& a, const auto& b) {
+			return a.weight() < b.weight();
+	});
+	if (i == end(cs))
+		return false;
+	return this->weight() >= i->weight();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 Profile::Patterns Profile::calc_ocr_patterns() const {
 	Patterns ps;
 	for (const auto& s : suggestions_) {

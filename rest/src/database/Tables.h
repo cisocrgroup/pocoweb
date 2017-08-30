@@ -1175,6 +1175,22 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
     };
+    struct Topsuggestion
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "topsuggestion";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T topsuggestion;
+            T& operator()() { return topsuggestion; }
+            const T& operator()() const { return topsuggestion; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::boolean, sqlpp::tag::require_insert>;
+    };
   }
 
   struct Suggestions: sqlpp::table_t<Suggestions,
@@ -1186,7 +1202,8 @@ namespace tables
                Suggestions_::Typid,
                Suggestions_::Suggestiontypid,
                Suggestions_::Weight,
-               Suggestions_::Distance>
+               Suggestions_::Distance,
+               Suggestions_::Topsuggestion>
   {
     struct _alias_t
     {
