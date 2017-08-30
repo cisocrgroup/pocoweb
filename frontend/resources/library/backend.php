@@ -34,6 +34,14 @@ function backend_get_login_route() {
 		$config["backend"]["routes"]["login"];
 }
 
+function backend_get_status_info($status) {
+	global $config;
+	if (isset($config["httpStatusInfo"][$status])) {
+		return "$status " . $config["httpStatusInfo"][$status];
+	}
+	return "$status Unknown";
+}
+
 function backend_login($name, $pass) {
 	$data = array("name" => $name, "pass" => $pass);
 	$api = new Api(backend_get_login_route());
