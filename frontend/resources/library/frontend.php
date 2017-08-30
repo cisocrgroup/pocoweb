@@ -106,6 +106,18 @@ function frontend_render_admin_project_table_row($project, $users) {
 		' title="order profile for project #', $pid, '">';
 	echo '<span class="glyphicon glyphicon-glass"/>';
 	echo '</button>';
+	// adaptive tokens
+	echo '<button class="btn btn-default"',
+		' onclick="window.location.href=\'concordance.php?pid=', $pid, '\'"',
+		' title="list adpative tokens">';
+	echo '<span class="glyphicon glyphicon-link"/>';
+	echo '</button>';
+	// profile project
+	echo '<button class="btn btn-default"',
+		' onclick="pcw.orderProfile(', $pid, ');"',
+		' title="order profile for project #', $pid, '">';
+	echo '<span class="glyphicon glyphicon-glass"/>';
+	echo '</button>';
 	// echo '</span>';
 	echo '</div>';
 	// other buttons
