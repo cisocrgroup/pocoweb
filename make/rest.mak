@@ -40,6 +40,7 @@ API_OBJS += rest/src/api/SearchRoute.o
 API_OBJS += rest/src/api/SplitImagesRoute.o
 API_OBJS += rest/src/api/SplitRoute.o
 API_OBJS += rest/src/api/SuggestionsRoute.o
+API_OBJS += rest/src/api/SuspiciousWordsRoute.o
 API_OBJS += rest/src/api/UserRoute.o
 API_OBJS += rest/src/api/VersionRoute.o
 

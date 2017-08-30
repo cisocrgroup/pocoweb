@@ -50,6 +50,7 @@ class Candidate {
 	int lev() const noexcept { return lev_; }
 	Explanation explanation() const { return expl_; }
 	const std::string& explanation_string() const noexcept { return expl_; }
+	bool is_top_suggestion(const std::set<Candidate>& cs) const;
 
        private:
 	std::string cor_;

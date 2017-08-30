@@ -96,7 +96,8 @@ create table if not exists suggestions (
 	typid int references types(typid),
 	suggestiontypid int references types(typid),
 	weight double not null,
-	distance int not null
+	distance int not null,
+	topsuggestion boolean not null
 );
 
 /* (3 * 4)^ + 1^^ + (3 * 4)^ = 25*/
