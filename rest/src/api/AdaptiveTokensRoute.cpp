@@ -28,12 +28,6 @@ void AdaptiveTokensRoute::Register(App& app) {
 	CROW_ROUTE(app, ADAPTIVE_TOKENS_ROUTE_ROUTE).methods("GET"_method)(*this);
 }
 
-SQLPP_ALIAS_PROVIDER(t1_alias);
-SQLPP_ALIAS_PROVIDER(t2_alias);
-SQLPP_ALIAS_PROVIDER(suggstr);
-SQLPP_ALIAS_PROVIDER(tokstr);
-// SQLPP_ALIAS_PROVIDER(esugid);
-
 ////////////////////////////////////////////////////////////////////////////////
 AdaptiveTokensRoute::Response AdaptiveTokensRoute::impl(HttpGet, const Request& req,
 						  int bid) const {
@@ -46,6 +40,7 @@ AdaptiveTokensRoute::Response AdaptiveTokensRoute::impl(HttpGet, const Request& 
 	Json j;
 	tables::Types t;
 	tables::Adaptivetokens a;
+	j["projectId"] = bid;
 	j["adaptiveTokens"] = crow::json::rvalue(crow::json::type::List);
 	auto rows = conn.db()(select(t.string).from(t.join(a).on(t.typid == a.typid and t.bookid == a.bookid)).where(t.bookid == bid));
 	size_t i = 0;
