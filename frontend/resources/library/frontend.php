@@ -731,7 +731,7 @@ function frontend_render_adaptive_tokens_div($pid) {
 		return;
 	}
 	echo "<div>\n";
-	for ($api->get_response()["adaptiveTokens"] as $token) {
+	foreach ($api->get_response()["adaptiveTokens"] as $token) {
 		echo '<p>', $token, "</p>\n";
 	}
 	echo "</div>\n";
