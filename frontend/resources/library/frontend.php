@@ -108,7 +108,7 @@ function frontend_render_admin_project_table_row($project, $users) {
 	echo '</button>';
 	// adaptive tokens
 	echo '<button class="btn btn-default"',
-		' onclick="window.location.href=\'concordance.php?pid=', $pid, '\'"',
+		' onclick="window.location.href=\'adaptive.php?pid=', $pid, '\'"',
 		' title="list adpative tokens">';
 	echo '<span class="glyphicon glyphicon-link"/>';
 	echo '</button>';
