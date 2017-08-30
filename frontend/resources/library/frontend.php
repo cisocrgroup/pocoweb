@@ -243,17 +243,18 @@ function frontend_render_upload_new_project_div() {
 	echo '</div>', "\n";
 	// Languages
 	$api = backend_get_languages();
-	echo '<datalist id="profiler-languages">', "\n";
-	if ($api->get_http_status_code() == 200) {
-		foreach($api->get_response()["languages"] as $language) {
-			echo '<option value="', $language, '" />', "\n";
-		}
-	}
-	echo '</datalist>', "\n";
 	echo '<div class="form-group">', "\n";
 	echo '<label for="language">Language</label>', "\n";
-	echo '<input name="language" list="profiler-languages" type="text" ',
+	echo '<select class="form-control">', "\n";
+	if ($api->get_http_status_code() == 200) {
+		foreach($api->get_response()["languages"] as $language) {
+			echo '<option>', $language, '</option>', "\n";
+		}
+	}
+	echo '</select>', "\n";
+	/*echo '<input name="language" list="profiler-languages" type="text" ',
 		'placeholder="Language" class="form-control"/>', "\n";
+	 */
 	echo '</div>', "\n";
 	// upload file
 	echo '<div class="form-group">', "\n";
