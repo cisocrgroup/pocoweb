@@ -28,6 +28,7 @@ CORE_OBJS += rest/src/core/XmlFile.o
 CORE_OBJS += rest/src/core/jsonify.o
 CORE_OBJS += rest/src/core/util.o
 
+API_OBJS += rest/src/api/AdaptiveTokensRoute.o
 API_OBJS += rest/src/api/AssignRoute.o
 API_OBJS += rest/src/api/BookRoute.o
 API_OBJS += rest/src/api/CorrectionRoute.o

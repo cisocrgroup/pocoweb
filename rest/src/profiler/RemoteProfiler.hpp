@@ -11,6 +11,7 @@ class RemoteProfiler : public Profiler {
 
        protected:
 	virtual Profile do_profile() override;
+	virtual std::vector<std::string> do_languages() override;
 };
 }
 

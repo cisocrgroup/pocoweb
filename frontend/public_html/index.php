@@ -5,6 +5,9 @@ require_once(LIBRARY_PATH . "/backend.php");
 require_once(TEMPLATES_PATH . "/header.php");
 
 if (isset($_GET["upload"])) {
+	/*foreach ($_POST as $key => $val) {
+		frontend_render_info_div("$key = $val");
+	}*/
 	if (isset($_FILES["archive"])) {
 		$_POST["uri"] = "";
 		$_POST["description"] = "";

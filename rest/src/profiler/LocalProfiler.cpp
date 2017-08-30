@@ -1,4 +1,6 @@
 #include "LocalProfiler.hpp"
+#include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
 #include <crow/logging.h>
 #include <cstdlib>
 #include <fstream>
@@ -10,6 +12,7 @@
 #include "utils/Error.hpp"
 
 using namespace pcw;
+namespace fs = boost::filesystem;
 
 ////////////////////////////////////////////////////////////////////////////////
 LocalProfiler::LocalProfiler(ConstBookSptr book, const Config& config)
@@ -98,6 +101,19 @@ std::string LocalProfiler::profiler_command() const {
 std::string LocalProfiler::profiler_config() const {
 	return (backend_ / "profiler-backend" / (book().data.lang + ".ini"))
 	    .string();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::vector<std::string> LocalProfiler::do_languages() {
+	std::vector<std::string> languages;
+	fs::directory_iterator b(backend_ / "profiler-backend"), e;
+	BOOST_FOREACH(const fs::path& p, std::make_pair(b, e)) {
+		if (fs::is_regular_file(p) and p.extension() == ".ini") {
+			languages.push_back(
+				p.filename().replace_extension().string());
+		}
+	}
+	return languages;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -137,6 +137,7 @@ void ProfileBuilder::init() {
 ////////////////////////////////////////////////////////////////////////////////
 void ProfileBuilder::clear() {
 	suggestions_.clear();
+	adaptive_tokens_.clear();
 	// book remains untouched
 	// tokens remains untouched
 }
@@ -145,6 +146,7 @@ void ProfileBuilder::clear() {
 Profile ProfileBuilder::build() const {
 	Profile profile{book_};
 	profile.suggestions_ = this->suggestions_;
+	profile.adaptive_tokens_ = this->adaptive_tokens_;
 	return profile;
 }
 
@@ -174,6 +176,11 @@ void ProfileBuilder::add_candidates_from_file(const Path& path) {
 					     newtok);
 			newtok = false;
 		}
+	}
+	// adaptive tokens
+	auto ats = doc.document_element().select_nodes(".//adaptiveToken");
+	for (const auto& t : ats) {
+		adaptive_tokens_.insert(t.node().child_value());
 	}
 }
 

@@ -33,7 +33,8 @@ function frontend_render_project_table_div($admin) {
 	$api = backend_get_projects();
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
-		frontend_render_error_div("error could not load projects: $status");
+		frontend_render_error_div("error could not load projects: " .
+			backend_get_http_status_info($status));
 	} else {
 		$projects = $api->get_response();
 		if (!isset($projects["books"])) {
@@ -78,32 +79,35 @@ function frontend_render_admin_project_table_row($project, $users) {
 	echo '<div class="input-group">';
 	// open project button
 	echo '<div class="btn-group" role="group">', "\n";
-	// echo '<span class="input-group-btn">';
+	// open project
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'page.php?u=none&p=first&pid=', $pid, '\'"',
 		' title="open project #', $pid, '">';
 	echo '<span class="glyphicon glyphicon-open"/>';
 	echo '</button>';
-	// echo '</span>';
-	// remove project button
-	// echo '<span class="input-group-btn">';
+	// remove project
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'index.php?remove&pid=', $pid, '\'"',
 		' title="remove project #', $pid, '">';
 	echo '<span class="glyphicon glyphicon-remove"/>';
 	echo '</button>';
-	// echo '</span>';
-	// download project button
-	// echo '<span class="input-group-btn">';
+	// download project
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'index.php?download&pid=', $pid, '\'"',
 		' title="download project #', $pid, '">';
 	echo '<span class="glyphicon glyphicon-download"/>';
 	echo '</button>';
+	// order document profile
 	echo '<button class="btn btn-default"',
 		' onclick="pcw.orderProfile(', $pid, ');"',
 		' title="order profile for project #', $pid, '">';
 	echo '<span class="glyphicon glyphicon-glass"/>';
+	echo '</button>';
+	// adaptive tokens
+	echo '<button class="btn btn-default"',
+		' onclick="window.location.href=\'adaptive.php?pid=', $pid, '\'"',
+		' title="list adpative tokens">';
+	echo '<span class="glyphicon glyphicon-link"/>';
 	echo '</button>';
 	// echo '</span>';
 	echo '</div>';
@@ -241,10 +245,20 @@ function frontend_render_upload_new_project_div() {
 	echo '<input name="year" type="number" min="0" max="2099" ',
 		'step="1" value="2017" class="form-control"/>', "\n";
 	echo '</div>', "\n";
-	// Language
+	// Languages
+	$api = backend_get_languages();
 	echo '<div class="form-group">', "\n";
 	echo '<label for="language">Language</label>', "\n";
-	echo '<input name="language" type="text" placeholder="Language" class="form-control"/>', "\n";
+	echo '<select name="language" class="form-control">', "\n";
+	if ($api->get_http_status_code() == 200) {
+		foreach($api->get_response()["languages"] as $language) {
+			echo '<option>', $language, '</option>', "\n";
+		}
+	}
+	echo '</select>', "\n";
+	/*echo '<input name="language" list="profiler-languages" type="text" ',
+		'placeholder="Language" class="form-control"/>', "\n";
+	 */
 	echo '</div>', "\n";
 	// upload file
 	echo '<div class="form-group">', "\n";
@@ -282,7 +296,8 @@ function frontend_upload_project_archive($post, $file) {
 	$api = backend_upload_project($post, $file["name"], $file["tmp_name"]);
 	$status = $api->get_http_status_code();
 	if ($status != 201) {
-		frontend_render_error_div("Could not upload archive: backend returned $status");
+		frontend_render_error_div("Could not upload archive: backend returned " .
+			backend_get_http_status_info($status));
 	} else {
 		frontend_render_success_div("Successfully uploaded new project");
 	}
@@ -345,7 +360,8 @@ function frontend_render_users_table_div() {
 	$api = backend_get_users();
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
-		frontend_render_error_div("error: could not load users: $status");
+		frontend_render_error_div("error: could not load users: " .
+			backend_get_http_status_info($status));
 	} else {
 		$users = $api->get_response();
 		echo '<div class="container-fluid">', "\n";
@@ -406,7 +422,8 @@ function frontend_render_page_view_div($pid, $p, $u, $post) {
 	$api = backend_get_page($pid, $p);
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
-		frontend_render_error_div("error: could not load project #$pid, page #$p: $status");
+		frontend_render_error_div("error: could not load project #$pid, page #$p: " .
+			backend_get_http_status_info($status));
 	} else {
 		$page = $api->get_response();
 		echo '<div id="page-view" onload=\'pcw.setErrorsDropdown(', $pid, ')\'>', "\n";
@@ -565,7 +582,8 @@ function frontend_render_concordance_line_div($line, $word) {
 	$api = backend_get_split_images($word);
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
-		frontend_render_error_div("Could not get split images: server returned: $status");
+		frontend_render_error_div("Could not get split images: server returned: " .
+			backend_get_http_status_info($status));
 		return;
 	}
 	$height = $config["frontend"]["image"]["line_image_height"];
@@ -581,7 +599,7 @@ function frontend_render_concordance_line_div($line, $word) {
 	// This makes the left side of the line the biggest and gives enough space
 	// for the token in the middle.
 	// The right side is a little bit smaller but big enough to show the
-	// emidate context of the selected tokens.
+	// immediate context of the selected tokens.
 	echo '<div class="col-md-5 col-xs-5">';
 	if ($images["leftImg"] != NULL) {
 		echo '<a class="invisible=link" href="', $link, '">';
@@ -710,8 +728,29 @@ function frontend_render_concordance_div($pid, $q, $isErrorPattern) {
 			echo '</div>', "\n";
 		}
 	} else {
-		frontend_render_error_div("Error: backend returned: $status");
+		frontend_render_error_div("Error: backend returned: " .
+			backend_get_http_status_info($status));
 	}
+}
+
+function frontend_render_adaptive_tokens_div($pid) {
+	$api = backend_get_adaptive_tokens($pid);
+	$status = $api->get_http_status_code();
+	if ($status != 200) {
+		frontend_render_error_div("backend returned status: " .
+			backend_get_http_status_info($status));
+		return;
+	}
+	echo "<h2>Adaptive token set</h2>\n";
+	echo "<div>\n";
+	foreach ($api->get_response()["adaptiveTokens"] as $token) {
+		echo '<div class="col-md-11" ',
+			'onclick="window.location.href=\'concordance.php?',
+			'pid=', $pid, '&q=', urlencode($token), '\'">';
+		echo $token;
+		echo '</div>', "\n";
+	}
+	echo "</div>\n";
 }
 
 function frontend_render_success_div($msg) {

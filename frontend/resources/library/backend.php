@@ -34,6 +34,14 @@ function backend_get_login_route() {
 		$config["backend"]["routes"]["login"];
 }
 
+function backend_get_http_status_info($status) {
+	global $config;
+	if (isset($config["httpStatusInfo"][$status])) {
+		return "$status " . $config["httpStatusInfo"][$status];
+	}
+	return "$status Unknown";
+}
+
 function backend_login($name, $pass) {
 	$data = array("name" => $name, "pass" => $pass);
 	$api = new Api(backend_get_login_route());
@@ -308,6 +316,34 @@ function backend_get_split_images($word) {
 	$api = new Api(backend_get_split_images_route(
 		$word["projectId"], $word["pageId"],
 		$word["lineId"], $word["tokenId"]));
+	$api->set_session_id($SID);
+	$api->get_request();
+	return $api;
+}
+
+function backend_get_languages_route() {
+	global $config;
+	return $config["backend"]["url"] .
+		$config["backend"]["routes"]["languages"];
+}
+
+function backend_get_languages() {
+	global $SID;
+	$api = new Api(backend_get_languages_route());
+	$api->set_session_id($SID);
+	$api->get_request();
+	return $api;
+}
+
+function backend_get_adaptive_tokens_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["url"] .
+		$config["backend"]["routes"]["adaptiveTokens"], $pid);
+}
+
+function backend_get_adaptive_tokens($pid) {
+	global $SID;
+	$api = new Api(backend_get_adaptive_tokens_route($pid));
 	$api->set_session_id($SID);
 	$api->get_request();
 	return $api;

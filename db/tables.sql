@@ -109,3 +109,9 @@ create table if not exists errorpatterns (
 	pattern varchar(25)
 );
 
+create table if not exists adaptivetokens (
+	bookid int references books(bookid),
+	typid int references types(typid),
+	primary key (bookid, typid)
+);
+

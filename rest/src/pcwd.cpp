@@ -6,6 +6,7 @@
 #include <boost/filesystem/operations.hpp>
 #include <iostream>
 #include <vector>
+#include "api/AdaptiveTokensRoute.hpp"
 #include "api/AssignRoute.hpp"
 #include "api/BookRoute.hpp"
 #include "api/CorrectionRoute.hpp"
@@ -62,6 +63,7 @@ void run(App& app) {
 	detach(app.config());
 	write_pidfile(app.config());
 	app.register_plugins();
+	app.Register(std::make_unique<pcw::AdaptiveTokensRoute>());
 	app.Register(std::make_unique<pcw::AssignRoute>());
 	app.Register(std::make_unique<pcw::BookRoute>());
 	app.Register(std::make_unique<pcw::CorrectionRoute>());

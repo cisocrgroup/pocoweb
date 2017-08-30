@@ -31,6 +31,8 @@ class ProfilerRoute : public CrtpRoute<ProfilerRoute> {
 	virtual const char* name() const noexcept override { return name_; }
 
 	pcw_crtp_route_def_impl__(int);
+	pcw_crtp_route_def_impl__();
+	Response impl(HttpGet, const Request& req) const;
 	Response impl(HttpGet, const Request& req, int bid) const;
 	Response impl(HttpPost, const Request& req, int bid) const;
 

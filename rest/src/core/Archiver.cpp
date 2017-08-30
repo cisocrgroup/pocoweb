@@ -14,13 +14,14 @@
 #include "parser/ParserPage.hpp"
 #include "utils/Error.hpp"
 #include "utils/ScopeGuard.hpp"
+#include "database/Tables.h"
 
 using namespace pcw;
 namespace fs = boost::filesystem;
 
 ////////////////////////////////////////////////////////////////////////////////
-Archiver::Archiver(const Project& project)
-    : project_(project.shared_from_this()) {}
+Archiver::Archiver(const Project& project, MysqlConnection& conn)
+    : project_(project.shared_from_this()), conn_(conn) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 Archiver::Path Archiver::operator()() const {
@@ -30,6 +31,7 @@ Archiver::Path Archiver::operator()() const {
 	ScopeGuard deltmpdir([&dir]() { fs::remove_all(dir); });
 	ScopeGuard delarchive([&archive]() { fs::remove(archive); });
 	copy_files(dir);
+	write_adaptive_token_set(dir);
 	zip(dir, archive);
 	delarchive.dismiss();
 	// do *not* dismiss deltmpdir; it should be removed all the time.
@@ -98,6 +100,23 @@ void Archiver::copy_files(const Path& dir) const {
 			copy_to_tmp_dir(page->img, dir);
 		}
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void Archiver::write_adaptive_token_set(const Path& dir) const {
+	const auto bookid = project_->id();
+	const auto path = dir / "adaptive_tokens.txt";
+	std::ofstream os(path.string());
+	if (not os.good()) {
+		throw std::system_error(errno, std::system_category(), path.string());
+	}
+	tables::Types t;
+	tables::Adaptivetokens a;
+	auto rows = conn_.db()(select(t.string).from(t.join(a).on(t.typid == a.typid and t.bookid == a.bookid)).where(t.bookid == bookid));
+	for (const auto& row : rows) {
+		os << row.string << "\n";
+	}
+	os.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

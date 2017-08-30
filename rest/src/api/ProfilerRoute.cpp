@@ -14,12 +14,13 @@
 #include "utils/Maybe.hpp"
 #include "utils/UniqueIdMap.hpp"
 
-#define PROFILER_ROUTE_ROUTE "/books/<int>/profile"
+#define PROFILER_ROUTE_ROUTE_1 "/books/<int>/profile"
+#define PROFILER_ROUTE_ROUTE_2 "/profiler-languages"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* ProfilerRoute::route_ = PROFILER_ROUTE_ROUTE;
+const char* ProfilerRoute::route_ = PROFILER_ROUTE_ROUTE_1 "," PROFILER_ROUTE_ROUTE_2;
 const char* ProfilerRoute::name_ = "ProfilerRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,8 +46,9 @@ void ProfilerRoute::Register(App& app) {
 	// setup jobs (Register() is called after each route has been set up).
 	// must be called before the route is registered.
 	jobs_ = std::make_shared<std::vector<Job>>(get_config().profiler.jobs);
-	CROW_ROUTE(app, PROFILER_ROUTE_ROUTE)
+	CROW_ROUTE(app, PROFILER_ROUTE_ROUTE_1)
 	    .methods("GET"_method, "POST"_method)(*this);
+	CROW_ROUTE(app, PROFILER_ROUTE_ROUTE_2).methods("GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -161,6 +163,7 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 	tables::Profiles p;
 	tables::Errorpatterns e;
 	tables::Types t;
+	tables::Adaptivetokens a;
 	tables::Suggestions stab;
 	auto conn = that->must_get_connection();
 	const auto id = profile.book().id();
@@ -172,10 +175,12 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 	conn.db()(remove_from(stab).where(stab.bookid == id));
 	conn.db()(remove_from(t).where(t.bookid == id));
 	conn.db()(remove_from(e).where(e.bookid == id));
+	conn.db()(remove_from(a).where(a.bookid == id));
 	// insert new profile timestamp
 	conn.db()(insert_into(p).set(p.bookid = id, p.timestamp = ts));
 	// insert new profile
 	UniqueIdMap<std::string> typeids;
+	// suggestions
 	for (const auto& s : profile.suggestions()) {
 		bool isnew;
 		int firstid;
@@ -222,5 +227,33 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 			}
 		}
 	}
+	// adaptive tokens
+	for (const auto& s : profile.adaptive_tokens()) {
+		bool isnew;
+		int typid;
+		std::tie(typid, isnew) = typeids[s];
+		if (isnew) {
+			conn.db()(insert_into(t).set(t.bookid = id,
+						     t.typid = typid,
+						     t.string = s));
+		}
+		CROW_LOG_DEBUG << "(ProfilerRoute) adaptive token: " << s;
+		conn.db()(insert_into(a).set(a.bookid = id, a.typid = typid));
+	}
 	commiter.commit();
 }
+
+////////////////////////////////////////////////////////////////////////////////
+ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req) const {
+	CROW_LOG_DEBUG << "(ProfilerRoute) get languages";
+	LockedSession session(must_find_session(req));
+	const auto languages = get_profiler(nullptr)->languages().get();
+	Json j;
+	j["languages"] = crow::json::rvalue(crow::json::type::List);
+	size_t i = 0;
+	for (const auto& language: languages) {
+		j["languages"][i++] = language;
+	}
+	return j;
+}
+
