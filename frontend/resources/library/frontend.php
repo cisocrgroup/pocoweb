@@ -738,6 +738,7 @@ function frontend_render_adaptive_tokens_div($pid) {
 			backend_get_http_status_info($status));
 		return;
 	}
+	echo "<h2>Adaptive token set</h2>\n";
 	echo "<div>\n";
 	foreach ($api->get_response()["adaptiveTokens"] as $token) {
 		echo '<p>', $token, "</p>\n";
