@@ -18,6 +18,7 @@
 #include "api/SplitImagesRoute.hpp"
 #include "api/SplitRoute.hpp"
 #include "api/SuggestionsRoute.hpp"
+#include "api/SuspiciousWordsRoute.hpp"
 #include "api/UserRoute.hpp"
 #include "api/VersionRoute.hpp"
 #include "core/App.hpp"
@@ -73,6 +74,7 @@ void run(App& app) {
 	app.Register(std::make_unique<pcw::SplitImagesRoute>());
 	app.Register(std::make_unique<pcw::SplitRoute>());
 	app.Register(std::make_unique<pcw::SuggestionsRoute>());
+	app.Register(std::make_unique<pcw::SuspiciousWordsRoute>());
 	app.Register(std::make_unique<pcw::UserRoute>());
 	app.Register(std::make_unique<pcw::VersionRoute>());
 	app.run();
