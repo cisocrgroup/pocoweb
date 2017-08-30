@@ -34,7 +34,7 @@ function backend_get_login_route() {
 		$config["backend"]["routes"]["login"];
 }
 
-function backend_get_status_info($status) {
+function backend_get_http_status_info($status) {
 	global $config;
 	if (isset($config["httpStatusInfo"][$status])) {
 		return "$status " . $config["httpStatusInfo"][$status];
