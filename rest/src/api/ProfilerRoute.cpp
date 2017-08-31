@@ -256,9 +256,13 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req) const {
 	else
 		profiler.reset(new RemoteProfiler(nullptr, url));
 
-	const auto languages = get_profiler(nullptr)->languages().get();
 	Json j;
 	j["languages"] = crow::json::rvalue(crow::json::type::List);
+	auto maybe_languages = profiler->languages();
+	if (not maybe_languages.ok()) {
+		return j;
+	}
+	const auto languages = maybe_languages.get();
 	size_t i = 0;
 	for (const auto& language: languages) {
 		j["languages"][i++] = language;

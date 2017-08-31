@@ -490,7 +490,7 @@ pcw.addItemToSuggestionsMenu = function(ul, s) {
 
 pcw.setProfilerLanguages = function() {
 	var input = document.getElementById('pcw-project-profiler');
-	if (input == null) {
+	if (input == null || !input.value.startsWith('http')) {
 		return
 	}
 	var langs = document.getElementById('pcw-project-languages');
