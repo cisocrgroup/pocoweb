@@ -239,6 +239,11 @@ function frontend_render_upload_new_project_div() {
 	echo '<label for="title">Project\'s title</label>', "\n";
 	echo '<input name="title" type="text" placeholder="Title" class="form-control"/>', "\n";
 	echo '</div>', "\n";
+	// Profiler
+	echo '<div class="form-group">', "\n";
+	echo '<label for="profiler">Project\'s Profiler URL (use local if in doubt)</label>', "\n";
+	echo '<input value="local" name="profiler" type="text" placeholder="Profiler URL" class="form-control"/>', "\n";
+	echo '</div>', "\n";
 	// Year
 	echo '<div class="form-group">', "\n";
 	echo '<label for="year">Year of publication</label>', "\n";
