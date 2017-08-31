@@ -496,7 +496,7 @@ pcw.clearNode = function(node) {
 
 pcw.setProfilerLanguages = function() {
 	var input = document.getElementById('pcw-project-profiler');
-	if (input == null || !input.value.startsWith('http')) {
+	if (input == null || (input.value != 'local' && !input.value.startsWith('http')) {
 		return
 	}
 	var langs = document.getElementById('pcw-project-languages');
