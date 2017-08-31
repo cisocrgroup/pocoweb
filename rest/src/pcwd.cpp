@@ -132,30 +132,10 @@ void create_base_directory(const Config& config) {
 
 ////////////////////////////////////////////////////////////////////////////////
 const char* find_config_file(int argc, char** argv) {
-	// if a config file is given use it.
-	if (argc > 1) {
-		std::cerr << "(pcwd) using config file: " << argv[1] << "\n";
-		return argv[1];
+	if (not (argc > 1)) {
+		throw std::runtime_error("usage: " + std::string(argv[0]) + " config");
 	}
-	// search for possible default config files.
-	static const char* files[] = {
-#ifdef PCW_DESTDIR
-	    PCW_DESTDIR "/etc/pcwd.ini",
-#else   // PCWD_DESTDIR
-	    "/etc/pcwd.ini",
-#endif  // PCW_DESTDIR
-	    "./pcwd.ini",
-	};
-	struct stat s;
-	for (const auto file : files) {
-		std::cerr << "(pcwd) trying config file: " << file << "\n";
-		if (stat(file, &s) == 0) {
-			std::cerr << "(pcwd) using config file: " << file
-				  << "\n";
-			return file;
-		}
-	}
-	throw std::runtime_error("Cannot find config file");
+	return argv[1];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
