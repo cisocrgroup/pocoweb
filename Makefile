@@ -11,7 +11,6 @@ include make/plugins.mak
 include make/utils.mak
 include make/test.mak
 include make/frontend.mak
-include make/install.mak
 
 .PHONY: all default
 -include $(DEPS)
