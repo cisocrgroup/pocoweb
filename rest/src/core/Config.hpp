@@ -20,13 +20,12 @@ struct Config {
 	} db;
 
 	const struct Daemon {
-		const std::string host, user, basedir;
+		const std::string host, user, basedir, pidfile;
 		const int port, threads;
 		const bool detach;
 	} daemon;
 
 	const struct Log {
-		const std::string pidfile;
 		const int level;
 	} log;
 

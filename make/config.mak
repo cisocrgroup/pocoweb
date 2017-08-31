@@ -76,7 +76,7 @@ dbg-%:; @echo $*: ${$*}
 
 -include make/cache.mak
 
-make/cache.mak: Makefile make/config.mak
+make/cache.mak: Makefile
 	$(call ECHO,$@)
 	@echo "#" > $@
 	@echo "# cache.mak" >> $@
@@ -105,19 +105,3 @@ make/cache.mak: Makefile make/config.mak
 	@echo "PCW_API_INSTITUTE := $(PCW_API_INSTITUTE)" >> $@
 	@echo "PCW_LOG_PIDFILE := $(PCW_LOG_PIDFILE)" >> $@
 
-config.ini: misc/default/config.def.ini make/cache.mak
-	$(call ECHO,$@)
-	@sed -e 's/$$[({]PCW_DB_HOST[})]/$(PCW_DB_HOST)/g' \
-	     -e 's/$$[({]PCW_DB_USER[})]/$(PCW_DB_USER)/g' \
-	     -e 's/$$[({]PCW_DB_PASS[})]/$(PCW_DB_PASS)/g' \
-	     -e 's/$$[({]PCW_DB[})]/$(PCW_DB)/g' \
-	     -e 's/$$[({]PCW_DB_DEBUG[})]/$(PCW_DB_DEBUG)/g' \
-	     -e 's/$$[({]PCW_DB_CONNECTIONS[})]/$(PCW_DB_CONNECTIONS)/g' \
-	     -e 's/$$[({]PCW_API_USER[})]/$(PCW_API_USER)/g' \
-	     -e 's/$$[({]PCW_API_PASS[})]/$(PCW_API_PASS)/g' \
-	     -e 's/$$[({]PCW_API_EMAIL[})]/$(PCW_API_EMAIL)/g' \
-	     -e 's/$$[({]PCW_API_INSTITUTE[})]/$(PCW_API_INSTITUTE)/g' \
-	     -e 's#$$[({]PCW_LOG_PIDFILE[})]#$(PCW_LOG_PIDFILE)#g' \
-	     $< > $@
-
-ALL += config.ini
