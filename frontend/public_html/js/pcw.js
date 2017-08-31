@@ -488,6 +488,12 @@ pcw.addItemToSuggestionsMenu = function(ul, s) {
 	return a;
 };
 
+pcw.clearNode = function(node) {
+	while (node.firstChild) {
+		node.removeChild(node.firstChild);
+	}
+};
+
 pcw.setProfilerLanguages = function() {
 	var input = document.getElementById('pcw-project-profiler');
 	if (input == null || !input.value.startsWith('http')) {
@@ -497,14 +503,12 @@ pcw.setProfilerLanguages = function() {
 	if (langs == null) {
 		return
 	}
-	// delete children of lang
-	while (langs.firstChild) {
-		langs.removeChild(langs.firstChild)
-	}
+	pcw.clearNode(langs);
 	var api = Object.create(pcw.Api);
 	api.sid = pcw.getSid();
 	api.setupForGetLanguages(input.value);
 	api.run(function(s, res) {
+		pcw.clearNode(langs);
 		for (var i = 0; i < res.languages.length; i++) {
 			t = document.createTextNode(res.languages[i]);
 			o = document.createElement("option");
