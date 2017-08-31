@@ -93,12 +93,12 @@ void change_user_and_group(const Config& config) {
 		THROW(Error, "(pcwd) Could not find user: ", user);
 
 	// set processes uid and gid
-	if (setuid(pw->pw_uid) != 0)
-		throw std::system_error(errno, std::system_category(),
-					"setuid");
 	if (setgid(pw->pw_gid) != 0)
 		throw std::system_error(errno, std::system_category(),
 					"setgid");
+	if (setuid(pw->pw_uid) != 0)
+		throw std::system_error(errno, std::system_category(),
+					"setuid");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
