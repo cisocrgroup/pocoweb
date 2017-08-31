@@ -488,7 +488,7 @@ pcw.addItemToSuggestionsMenu = function(ul, s) {
 	return a;
 };
 
-pcw.setProfilerLanguages() = function() {
+pcw.setProfilerLanguages = function() {
 	var input = document.getElementById('pcw-project-profiler');
 	if (input == nil) {
 		return
