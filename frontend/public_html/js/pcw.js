@@ -490,11 +490,11 @@ pcw.addItemToSuggestionsMenu = function(ul, s) {
 
 pcw.setProfilerLanguages = function() {
 	var input = document.getElementById('pcw-project-profiler');
-	if (input == nil) {
+	if (input == null) {
 		return
 	}
 	var langs = document.getElementById('pcw-project-languages');
-	if (langs == nil) {
+	if (langs == null) {
 		return
 	}
 	// delete children of lang
