@@ -61,7 +61,6 @@ void run(App& app) {
 	change_user_and_group(app.config());
 	create_base_directory(app.config());
 	detach(app.config());
-	write_pidfile(app.config());
 	app.register_plugins();
 	app.Register(std::make_unique<pcw::AdaptiveTokensRoute>());
 	app.Register(std::make_unique<pcw::AssignRoute>());
@@ -104,6 +103,7 @@ void change_user_and_group(const Config& config) {
 ////////////////////////////////////////////////////////////////////////////////
 void detach(const Config& config) {
 	if (config.daemon.detach) {
+		write_pidfile(config);
 		if (daemon(0, 0) != 0) {
 			throw std::system_error(errno, std::system_category(),
 					        "daemon");
@@ -160,9 +160,11 @@ const char* find_config_file(int argc, char** argv) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void write_pidfile(const Config& config) {
-	std::ofstream out(config.log.pidfile);
-	if (out.good()) {
-		out << getpid() << std::endl;
-		out.close();
+	std::ofstream out(config.daemon.pidfile);
+	if (not out.good()) {
+		throw std::system_error(errno, std::system_category(),
+					config.daemon.pidfile);
 	}
+	out << getpid() << std::endl;
+	out.close();
 }
