@@ -504,7 +504,7 @@ pcw.setProfilerLanguages() = function() {
 	var api = Object.create(pcw.Api);
 	api.sid = pcw.getSid();
 	api.setupForGetLanguages(input.value);
-	api.run(function(s, res)) {
+	api.run(function(s, res) {
 		for (var i = 0; i < res.languages.length; i++) {
 			t = document.createTextNode(res.languages[i]);
 			o = document.createElement("option");

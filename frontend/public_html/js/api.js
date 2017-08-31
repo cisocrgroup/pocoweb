@@ -121,7 +121,7 @@ pcw.Api = {
 			pcw.config.backend.routes.languages;
 		this.url = this.url.replace('%s', encodeURI(url));
 		this.acceptedStatuses = [200];
-	}
+	},
 	run: function(callback) {
 		var http = new XMLHttpRequest();
 		var that = this;
