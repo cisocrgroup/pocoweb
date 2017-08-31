@@ -227,6 +227,22 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::can_be_null>;
     };
+    struct Profilerurl
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "profilerurl";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T profilerurl;
+            T& operator()() { return profilerurl; }
+            const T& operator()() const { return profilerurl; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::can_be_null>;
+    };
     struct Directory
     {
       struct _alias_t
@@ -268,6 +284,7 @@ namespace tables
                Books_::Author,
                Books_::Description,
                Books_::Uri,
+               Books_::Profilerurl,
                Books_::Directory,
                Books_::Lang>
   {

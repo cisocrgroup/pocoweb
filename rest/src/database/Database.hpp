@@ -484,6 +484,8 @@ pcw::BookData pcw::detail::make_book_data(const Row& row) noexcept {
 				[&](const auto& l) { data.lang = l; });
 	detail::set_if_not_null(row.directory,
 				[&](const auto& d) { data.dir = d; });
+	detail::set_if_not_null(row.profilerurl,
+				[&](const auto& u) { data.profilerUrl = u; });
 	return data;
 }
 

@@ -33,7 +33,7 @@ struct Config {
 		const std::string backend;
 		const double min_weight;
 		const size_t jobs;
-		const bool local, debug;
+		const bool debug;
 	} profiler;
 
 	const struct Plugins {

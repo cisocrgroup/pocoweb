@@ -20,6 +20,7 @@ create table if not exists books (
 	author varchar(100) not null,
 	description varchar(255),
 	uri varchar(255),
+	profilerurl varchar(255),
 	directory varchar(255) not null,
 	lang varchar(50) not null
 );

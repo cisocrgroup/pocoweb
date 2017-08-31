@@ -15,14 +15,16 @@ using BookSptr = std::shared_ptr<Book>;
 using Path = boost::filesystem::path;
 
 struct BookData {
-	std::string author, title, description, uri, lang;
+	BookData(): author(), title(), description(), uri(),
+		profilerUrl("local"), lang(), dir(), year() {}
+	std::string author, title, description, uri, profilerUrl, lang;
 	Path dir;
 	int year;
 };
 
 class Book : public Project {
        public:
-	Book(int id = 0) : Project(id), data{}, owner_() {}
+	Book(int id = 0) : Project(id), data(), owner_() {}
 	Book(const Book& other) = delete;
 	Book& operator=(const Book& other) = delete;
 	Book(Book&& other) = delete;

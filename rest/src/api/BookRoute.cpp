@@ -104,6 +104,8 @@ void BookRoute::update_book_data(Book& book,
 	if (data.has("uri")) book.data.uri = data["uri"].s();
 	if (data.has("description"))
 		book.data.description = data["description"].s();
+	if (data.has("profilerUrl")) book.data.profilerUrl = data["profilerUrl"].s();
+	else book.data.profilerUrl = "local";
 }
 
 ////////////////////////////////////////////////////////////////////////////////

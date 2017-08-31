@@ -35,7 +35,6 @@ base = ${PCW_PROFILER_BASE}
 backend = ${PCW_PROFILER_BACKEND}
 jobs = ${PCW_PROFILER_JOBS}
 minweight = ${PCW_PROFILER_MINWEIGHT}
-local = ${PCW_PROFILER_LOCAL}
 debug = ${PCW_PROFILER_DEBUG}
 
 ##

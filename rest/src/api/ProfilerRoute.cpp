@@ -115,10 +115,11 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpPost, const Request& req,
 
 ////////////////////////////////////////////////////////////////////////////////
 ProfilerUptr ProfilerRoute::get_profiler(ConstBookSptr book) const {
-	if (get_config().profiler.local) {
+	assert(book);
+	if (book->data.profilerUrl == "local") {
 		return std::make_unique<LocalProfiler>(book, get_config());
 	} else {
-		return std::make_unique<RemoteProfiler>(book, "");
+		return std::make_unique<RemoteProfiler>(book, book->data.profilerUrl);
 	}
 }
 

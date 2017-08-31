@@ -109,7 +109,6 @@ pcw::Config pcw::Config::load(std::istream& is) {
 	    {ptree.get<std::string>("profiler.backend"),
 	     ptree.get<double>("profiler.minweight"),
 	     static_cast<size_t>(ptree.get<int>("profiler.jobs")),
-	     ptree.get<bool>("profiler.local"),
 	     ptree.get<bool>("profiler.debug")},
 	    {
 		get_plugins(ptree),
@@ -157,7 +156,7 @@ void pcw::Config::LOG() const {
 
 	CROW_LOG_INFO << "profiler.backend: " << this->profiler.backend;
 	CROW_LOG_INFO << "profiler.jobs:    " << this->profiler.jobs;
-	CROW_LOG_INFO << "profiler.local:   " << this->profiler.local;
+	CROW_LOG_INFO << "profiler.debug:    " << this->profiler.debug;
 	for (const auto& p : this->plugins.configs) {
 		for (const auto& q : p.second) {
 			CROW_LOG_INFO << "plugins." << p.first << "." << q.first
