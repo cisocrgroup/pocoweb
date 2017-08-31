@@ -83,7 +83,7 @@ function frontend_render_admin_project_table_row($project, $users) {
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'page.php?u=none&p=first&pid=', $pid, '\'"',
 		' title="open project #', $pid, '">';
-	echo '<span class="glyphicon glyphicon-open"/>';
+	echo '<span class="glyphicon glyphicon-book"/>';
 	echo '</button>';
 	// remove project
 	echo '<button class="btn btn-default"',
@@ -101,7 +101,7 @@ function frontend_render_admin_project_table_row($project, $users) {
 	echo '<button class="btn btn-default"',
 		' onclick="pcw.orderProfile(', $pid, ');"',
 		' title="order profile for project #', $pid, '">';
-	echo '<span class="glyphicon glyphicon-glass"/>';
+	echo '<span class="glyphicon glyphicon-check"/>';
 	echo '</button>';
 	// adaptive tokens
 	echo '<button class="btn btn-default"',
