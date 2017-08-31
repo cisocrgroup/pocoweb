@@ -321,15 +321,15 @@ function backend_get_split_images($word) {
 	return $api;
 }
 
-function backend_get_languages_route() {
+function backend_get_languages_route($url) {
 	global $config;
-	return $config["backend"]["url"] .
-		$config["backend"]["routes"]["languages"];
+	return sprintf($config["backend"]["url"] .
+		$config["backend"]["routes"]["languages"], $url);
 }
 
 function backend_get_languages() {
 	global $SID;
-	$api = new Api(backend_get_languages_route());
+	$api = new Api(backend_get_languages_route("local"));
 	$api->set_session_id($SID);
 	$api->get_request();
 	return $api;

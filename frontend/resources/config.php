@@ -45,7 +45,7 @@ $config = array(
 			"searchSuggestions"   => "/books/%d/suggestions?q=%s",
 			"getAllSuggestions"   => "/books/%d/suggestions",
 			"getSuggestions"      => "/books/%d/pages/%d/lines/%d/tokens/%d/suggestions",
-			"languages"           => "/profiler-languages",
+			"languages"           => "/profiler-languages?url=%s",
 			"adaptiveTokens"      => "/books/%d/adaptive-tokens",
 		),
 	),

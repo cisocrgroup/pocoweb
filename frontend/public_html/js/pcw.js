@@ -488,6 +488,32 @@ pcw.addItemToSuggestionsMenu = function(ul, s) {
 	return a;
 };
 
+pcw.setProfilerLanguages() = function() {
+	var input = document.getElementById('pcw-project-profiler');
+	if (input == nil) {
+		return
+	}
+	var langs = document.getElementById('pcw-project-languages');
+	if (langs == nil) {
+		return
+	}
+	// delete children of lang
+	while (langs.firstChild) {
+		langs.removeChild(langs.firstChild)
+	}
+	var api = Object.create(pcw.Api);
+	api.sid = pcw.getSid();
+	api.setupForGetLanguages(input.value);
+	api.run(function(s, res)) {
+		for (var i = 0; i < res.languages.length; i++) {
+			t = document.createTextNode(res.languages[i]);
+			o = document.createElement("option");
+			o.appendChild(t);
+			langs.appendChild(o);
+		}
+	});
+};
+
 pcw.timestampToISO8601 = function(ts) {
 	return new Date(ts * 1000).toUTCString();
 };

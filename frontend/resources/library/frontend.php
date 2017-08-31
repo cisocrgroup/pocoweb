@@ -242,7 +242,9 @@ function frontend_render_upload_new_project_div() {
 	// Profiler
 	echo '<div class="form-group">', "\n";
 	echo '<label for="profiler">Project\'s Profiler URL (use local if in doubt)</label>', "\n";
-	echo '<input value="local" name="profiler" type="text" placeholder="Profiler URL" class="form-control"/>', "\n";
+	echo '<input id="pcw-project-profiler" oninput="pcw.setProfilerLanguages()" ',
+		'value="local" name="profiler" type="text" placeholder="Profiler URL" ',
+		'class="form-control"/>', "\n";
 	echo '</div>', "\n";
 	// Year
 	echo '<div class="form-group">', "\n";
@@ -254,7 +256,7 @@ function frontend_render_upload_new_project_div() {
 	$api = backend_get_languages();
 	echo '<div class="form-group">', "\n";
 	echo '<label for="language">Language</label>', "\n";
-	echo '<select name="language" class="form-control">', "\n";
+	echo '<select id="pcw-project-languages" name="language" class="form-control">', "\n";
 	if ($api->get_http_status_code() == 200) {
 		foreach($api->get_response()["languages"] as $language) {
 			echo '<option>', $language, '</option>', "\n";
