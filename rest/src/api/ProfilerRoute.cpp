@@ -118,7 +118,7 @@ ProfilerUptr ProfilerRoute::get_profiler(ConstBookSptr book) const {
 	if (get_config().profiler.local) {
 		return std::make_unique<LocalProfiler>(book, get_config());
 	} else {
-		return std::make_unique<RemoteProfiler>(book);
+		return std::make_unique<RemoteProfiler>(book, "");
 	}
 }
 
@@ -245,8 +245,17 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 
 ////////////////////////////////////////////////////////////////////////////////
 ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req) const {
-	CROW_LOG_DEBUG << "(ProfilerRoute) get languages";
+	std::string url = "local";
+	if (req.url_params.get("url"))
+		url = req.url_params.get("url");
+	CROW_LOG_DEBUG << "(ProfilerRoute) get languages url=" << url;
 	LockedSession session(must_find_session(req));
+	ProfilerUptr profiler;
+	if (url == "local")
+		profiler.reset(new LocalProfiler(nullptr, get_config()));
+	else
+		profiler.reset(new RemoteProfiler(nullptr, url));
+
 	const auto languages = get_profiler(nullptr)->languages().get();
 	Json j;
 	j["languages"] = crow::json::rvalue(crow::json::type::List);

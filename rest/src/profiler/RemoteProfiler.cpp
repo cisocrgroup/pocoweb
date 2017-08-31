@@ -10,9 +10,9 @@ using namespace pcw;
 Profile RemoteProfiler::do_profile() {
 	THROW(NotImplemented, "RemoteProfiler::do_profile");
 }
+#pragma GCC diagnostic pop
 
 ////////////////////////////////////////////////////////////////////////////////
 std::vector<std::string> RemoteProfiler::do_languages() {
-	THROW(NotImplemented, "RemoteProfiler::do_languages");
+	return {"foo", "bar", "baz"};
 }
-#pragma GCC diagnostic pop
