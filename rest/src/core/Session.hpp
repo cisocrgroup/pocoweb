@@ -40,6 +40,7 @@ class Session;
 using SessionPtr = std::shared_ptr<Session>;
 class SessionDirectory;
 using SessionDirectoryPtr = std::unique_ptr<SessionDirectory>;
+class Config;
 
 class LockedSession {
        public:
@@ -61,7 +62,8 @@ class Session {
 	using Lock = std::lock_guard<Session>;
 	static const size_t SESSION_ID_LENGTH = 16;
 
-	Session(const User& user, AppCacheSptr cache = nullptr);
+	Session(const User& user, const Config& config,
+		AppCacheSptr cache = nullptr);
 
 	const std::string& id() const noexcept { return sid_; }
 	const User& user() const noexcept { return *user_; }

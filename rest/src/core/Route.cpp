@@ -22,7 +22,7 @@ Route::~Route() noexcept {}
 ////////////////////////////////////////////////////////////////////////////////
 SessionPtr Route::new_session(const User& user) const {
 	assert(session_store_);
-	return session_store_->new_session(user, cache_);
+	return session_store_->new_session(user, cache_, get_config());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

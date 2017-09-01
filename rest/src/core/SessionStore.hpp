@@ -14,6 +14,7 @@ class Session;
 using SessionSptr = std::shared_ptr<Session>;
 class SessionStore;
 using SessionStoreSptr = std::shared_ptr<SessionStore>;
+class Config;
 
 class SessionStore {
        public:
@@ -23,7 +24,8 @@ class SessionStore {
 	SessionStore();
 	size_t size() const noexcept { return sessions_.size(); }
 	bool empty() const noexcept { return sessions_.empty(); }
-	SessionSptr new_session(const User& user, AppCacheSptr cache);
+	SessionSptr new_session(const User& user, AppCacheSptr cache,
+				const Config& config);
 	SessionSptr find_session(const std::string& sid) const;
 	void delete_session(const std::string& sid);
 	auto begin() const { return sessions_.begin(); }
