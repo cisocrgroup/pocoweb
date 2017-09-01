@@ -28,6 +28,7 @@ std::vector<std::string> RemoteProfiler::do_languages() {
 	char EBUF[CURL_ERROR_SIZE + 1];
 	buffer_.clear();
 	// curl_easy_setopt(curl.get(), CURLOPT_PORT, port);
+	curl_easy_setopt(curl.get(), CURLOPT_URL, path.string().data());
 	curl_easy_setopt(curl.get(), CURLOPT_ERRORBUFFER, EBUF);
 	// curl_easy_setopt(curl.get(), CURLOPT_COOKIEFILE,
 	// cookiefile.string().data());
