@@ -25,9 +25,6 @@ class Api {
 	public function get_request() {
 		curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->header);
 		$res = curl_exec($this->curl);
-		foreach ($this->header as $x) {
-			echo "x = $x </br>\n";
-		}
 		if ($res === FALSE) {
 			error_log("[Api] could not connect to: $this->url");
 			return FALSE;
