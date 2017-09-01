@@ -1,7 +1,6 @@
-#include "profiler/Profile.hpp"
+#include "ProfilerRoute.hpp"
 #include <crow/app.h>
 #include <chrono>
-#include "ProfilerRoute.hpp"
 #include "core/App.hpp"
 #include "core/Book.hpp"
 #include "core/Config.hpp"
@@ -10,6 +9,7 @@
 #include "core/util.hpp"
 #include "database/Tables.h"
 #include "profiler/LocalProfiler.hpp"
+#include "profiler/Profile.hpp"
 #include "profiler/RemoteProfiler.hpp"
 #include "utils/Maybe.hpp"
 #include "utils/UniqueIdMap.hpp"
@@ -20,7 +20,8 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* ProfilerRoute::route_ = PROFILER_ROUTE_ROUTE_1 "," PROFILER_ROUTE_ROUTE_2;
+const char* ProfilerRoute::route_ =
+    PROFILER_ROUTE_ROUTE_1 "," PROFILER_ROUTE_ROUTE_2;
 const char* ProfilerRoute::name_ = "ProfilerRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -119,7 +120,8 @@ ProfilerUptr ProfilerRoute::get_profiler(ConstBookSptr book) const {
 	if (book->data.profilerUrl == "local") {
 		return std::make_unique<LocalProfiler>(book, get_config());
 	} else {
-		return std::make_unique<RemoteProfiler>(book, book->data.profilerUrl);
+		return std::make_unique<RemoteProfiler>(book,
+							book->data.profilerUrl);
 	}
 }
 
@@ -214,7 +216,8 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 			    stab.tokenid = s.first.id, stab.typid = firstid,
 			    stab.suggestiontypid = secondid,
 			    stab.weight = c.weight(), stab.distance = c.lev(),
-			    stab.topsuggestion = c.is_top_suggestion(s.second)));
+			    stab.topsuggestion =
+				c.is_top_suggestion(s.second)));
 			for (const auto& p : c.explanation().ocrp.patterns) {
 				if (not p.empty()) {
 					auto pattern = std::string(p.left) +
@@ -234,9 +237,8 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 		int typid;
 		std::tie(typid, isnew) = typeids[s];
 		if (isnew) {
-			conn.db()(insert_into(t).set(t.bookid = id,
-						     t.typid = typid,
-						     t.string = s));
+			conn.db()(insert_into(t).set(
+			    t.bookid = id, t.typid = typid, t.string = s));
 		}
 		CROW_LOG_DEBUG << "(ProfilerRoute) adaptive token: " << s;
 		conn.db()(insert_into(a).set(a.bookid = id, a.typid = typid));
@@ -247,8 +249,7 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 ////////////////////////////////////////////////////////////////////////////////
 ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req) const {
 	std::string url = "local";
-	if (req.url_params.get("url"))
-		url = req.url_params.get("url");
+	if (req.url_params.get("url")) url = req.url_params.get("url");
 	CROW_LOG_DEBUG << "(ProfilerRoute) get languages url=" << url;
 	LockedSession session(must_find_session(req));
 	ProfilerUptr profiler;
@@ -259,15 +260,16 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req) const {
 
 	Json j;
 	j["languages"] = crow::json::rvalue(crow::json::type::List);
-	auto maybe_languages = profiler->languages();
-	if (not maybe_languages.ok()) {
-		return j;
-	}
-	const auto languages = maybe_languages.get();
+	const auto languages = profiler->languages().get();
+	// auto maybe_languages = profiler->languages();
+	// if (not maybe_languages.ok()) {
+	// 	CROW_LOG_ERROR << "(ProfilerRoute) " << maybe_languages.what();
+	// 	return j;
+	// }
+	// const auto languages = maybe_languages.get();
 	size_t i = 0;
-	for (const auto& language: languages) {
+	for (const auto& language : languages) {
 		j["languages"][i++] = language;
 	}
 	return j;
 }
-
