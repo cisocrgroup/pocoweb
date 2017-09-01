@@ -147,7 +147,7 @@ void pcw::Config::LOG() const {
 	CROW_LOG_INFO << "daemon.host:       " << this->daemon.host;
 	CROW_LOG_INFO << "daemon.user:       " << this->daemon.user;
 	CROW_LOG_INFO << "daemon.basedir:    " << this->daemon.basedir;
-	CROW_LOG_INFO << "daemon.projectdir: " << this->daemon.basedir;
+	CROW_LOG_INFO << "daemon.projectdir: " << this->daemon.projectdir;
 	CROW_LOG_INFO << "daemon.pidfile:    " << this->daemon.pidfile;
 	CROW_LOG_INFO << "daemon.port:       " << this->daemon.port;
 	CROW_LOG_INFO << "daemon.threads:    " << this->daemon.threads;
