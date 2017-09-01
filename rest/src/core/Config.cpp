@@ -101,6 +101,7 @@ pcw::Config pcw::Config::load(std::istream& is) {
 	    {ptree.get<std::string>("daemon.host"),
 	     ptree.get<std::string>("daemon.user"),
 	     ptree.get<std::string>("daemon.basedir"),
+	     ptree.get<std::string>("daemon.projectdir"),
 	     ptree.get<std::string>("daemon.pidfile"),
 	     ptree.get<int>("daemon.port"), threads,
 	     ptree.get<bool>("daemon.detach")},
@@ -136,25 +137,26 @@ void pcw::Config::setup_logging() const {
 
 ////////////////////////////////////////////////////////////////////////////////
 void pcw::Config::LOG() const {
-	CROW_LOG_INFO << "db.user:          " << this->db.user;
-	CROW_LOG_INFO << "db.host:          " << this->db.host;
-	CROW_LOG_INFO << "db.pass:          " << this->db.pass;
-	CROW_LOG_INFO << "db.db:            " << this->db.db;
-	CROW_LOG_INFO << "db.connections:   " << this->db.connections;
-	CROW_LOG_INFO << "db.debug:         " << this->db.debug;
+	CROW_LOG_INFO << "db.user:           " << this->db.user;
+	CROW_LOG_INFO << "db.host:           " << this->db.host;
+	CROW_LOG_INFO << "db.pass:           " << this->db.pass;
+	CROW_LOG_INFO << "db.db:             " << this->db.db;
+	CROW_LOG_INFO << "db.connections:    " << this->db.connections;
+	CROW_LOG_INFO << "db.debug:          " << this->db.debug;
 
-	CROW_LOG_INFO << "daemon.host:      " << this->daemon.host;
-	CROW_LOG_INFO << "daemon.user:      " << this->daemon.user;
-	CROW_LOG_INFO << "daemon.basedir:   " << this->daemon.basedir;
-	CROW_LOG_INFO << "daemon.pidfile:   " << this->daemon.pidfile;
-	CROW_LOG_INFO << "daemon.port:      " << this->daemon.port;
-	CROW_LOG_INFO << "daemon.threads:   " << this->daemon.threads;
-	CROW_LOG_INFO << "daemon.detach:    " << this->daemon.detach;
+	CROW_LOG_INFO << "daemon.host:       " << this->daemon.host;
+	CROW_LOG_INFO << "daemon.user:       " << this->daemon.user;
+	CROW_LOG_INFO << "daemon.basedir:    " << this->daemon.basedir;
+	CROW_LOG_INFO << "daemon.projectdir: " << this->daemon.basedir;
+	CROW_LOG_INFO << "daemon.pidfile:    " << this->daemon.pidfile;
+	CROW_LOG_INFO << "daemon.port:       " << this->daemon.port;
+	CROW_LOG_INFO << "daemon.threads:    " << this->daemon.threads;
+	CROW_LOG_INFO << "daemon.detach:     " << this->daemon.detach;
 
-	CROW_LOG_INFO << "log.level:        " << this->log.level;
+	CROW_LOG_INFO << "log.level:         " << this->log.level;
 
-	CROW_LOG_INFO << "profiler.backend: " << this->profiler.backend;
-	CROW_LOG_INFO << "profiler.jobs:    " << this->profiler.jobs;
+	CROW_LOG_INFO << "profiler.backend:  " << this->profiler.backend;
+	CROW_LOG_INFO << "profiler.jobs:     " << this->profiler.jobs;
 	CROW_LOG_INFO << "profiler.debug:    " << this->profiler.debug;
 	for (const auto& p : this->plugins.configs) {
 		for (const auto& q : p.second) {

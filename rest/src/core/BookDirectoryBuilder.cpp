@@ -27,10 +27,12 @@ static BookDirectoryBuilder::Path create_unique_bookdir_path(
 	BookDirectoryBuilder::Path path(config.daemon.basedir);
 	while (true) {
 		auto id = gensessionid(16);
-		auto dir = path / id;
+		auto dir = path / config.daemon.projectdir / id;
 		if (not fs::is_directory(dir)) {
 			fs::create_directory(dir);
-			return id;
+			return BookDirectoryBuilder::Path(
+				   config.daemon.projectdir) /
+			       id;
 		}
 	}
 }

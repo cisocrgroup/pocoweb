@@ -23,6 +23,7 @@ detach = ${PCW_DAEMON_DETACH}
 user = ${PCW_DAEMON_USER}
 sessions = ${PCW_DAEMON_SESSIONS}
 basedir = ${PCW_DAEMON_BASEDIR}
+projectdir = ${PCW_DAEMON_PROJECTDIR}
 pidfile = ${PCW_DAEMON_PIDFILE}
 
 # if daemon.detach = true, log uses syslog; else it uses stderr.

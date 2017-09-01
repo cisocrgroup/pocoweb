@@ -20,7 +20,7 @@ struct Config {
 	} db;
 
 	const struct Daemon {
-		const std::string host, user, basedir, pidfile;
+		const std::string host, user, basedir, projectdir, pidfile;
 		const int port, threads;
 		const bool detach;
 	} daemon;
