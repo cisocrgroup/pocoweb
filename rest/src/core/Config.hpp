@@ -25,9 +25,7 @@ struct Config {
 		const bool detach;
 	} daemon;
 
-	const struct Log {
-		const int level;
-	} log;
+	const struct Log { const int level; } log;
 
 	const struct Profiler {
 		const std::string backend;
