@@ -1,4 +1,4 @@
-#include "Book.hpp"
+#include "BookDirectoryBuilder.hpp"
 #include <crow/logging.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -10,7 +10,7 @@
 #include <iostream>
 #include <regex>
 #include <sstream>
-#include "BookDirectoryBuilder.hpp"
+#include "Book.hpp"
 #include "Config.hpp"
 #include "Page.hpp"
 #include "Pix.hpp"
