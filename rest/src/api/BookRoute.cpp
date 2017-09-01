@@ -78,17 +78,17 @@ Route::Response BookRoute::impl(HttpPost, const Request& req) const {
 		book->set_owner(session->user());
 		// update book data
 		update_book_data(*book, json);
-	} else if (crow::get_header_value{
+	} else {
 		dir.add_zip_file_content(extract_content(req));
 		book = dir.build();
 		if (not book) THROW(BadRequest, "Could not build book");
 		book->set_owner(session->user());
 	}
 	// insert book into database
-	CROW_LOG_INFO << "(BookRoute) Inserting new book into database";
+	CROW_LOG_INFO << "(BookRoute) Inserting a new book into database";
 	MysqlCommiter commiter(conn);
 	insert_book(conn.db(), *book);
-	CROW_LOG_INFO << "(BookRoute) Created new book id: " << book->id();
+	CROW_LOG_INFO << "(BookRoute) Created a new book id: " << book->id();
 	// update and clean up
 	commiter.commit();
 	sg.dismiss();
