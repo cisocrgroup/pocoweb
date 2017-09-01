@@ -30,21 +30,31 @@ static BookDirectoryBuilder::Path create_unique_bookdir_path(
 		auto dir = path / id;
 		if (not fs::is_directory(dir)) {
 			fs::create_directory(dir);
-			return dir;
+			return id;
 		}
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BookDirectoryBuilder::BookDirectoryBuilder(const Config& config)
-    : BookDirectoryBuilder(create_unique_bookdir_path(config)) {
-	assert(fs::is_directory(dir_));
+    : BookDirectoryBuilder(config.daemon.basedir,
+			   create_unique_bookdir_path(config)) {
+	if (not fs::is_directory(base_dir_ / dir_)) {
+		fs::create_directory(base_dir_ / dir_);
+	}
+	assert(fs::is_directory(base_dir_ / dir_));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookDirectoryBuilder::BookDirectoryBuilder(Path path)
-    : dir_(path), tmp_dir_(path / ".tmp"), line_img_dir_(path / "line-images") {
-	assert(fs::is_directory(dir_));
+BookDirectoryBuilder::BookDirectoryBuilder(Path base, Path dir)
+    : base_dir_(base),
+      dir_(dir),
+      tmp_dir_(".tmp"),
+      line_img_dir_("line-images") {
+	if (not fs::is_directory(base_dir_ / dir_)) {
+		fs::create_directory(base_dir_ / dir_);
+	}
+	assert(fs::is_directory(base_dir_ / dir_));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -135,13 +145,14 @@ void BookDirectoryBuilder::setup(const Book& book) const {
 ////////////////////////////////////////////////////////////////////////////////
 void BookDirectoryBuilder::setup_img_and_ocr_files(Page& page) const {
 	auto do_copy = [this](const auto& path) {
-		auto to = dir_ / remove_common_base_path(path, tmp_dir());
+		auto to =
+		    base_dir_ / dir_ / remove_common_base_path(path, tmp_dir());
 		fs::create_directories(to.parent_path());
 		// do not attempt to copy ocropus directories
 		if (not fs::is_directory(path)) {
 			copy(path, to);
 		}
-		return to;
+		return remove_common_base_path(to, base_dir_);
 	};
 	if (page.has_ocr_path()) {
 		page.ocr = do_copy(page.ocr);
@@ -156,7 +167,7 @@ void BookDirectoryBuilder::make_line_img_files(const Path& pagedir,
 					       Page& page) const {
 	PixPtr pix;
 	if (page.has_img_path()) {
-		pix.reset(pixRead(page.img.string().data()));
+		pix.reset(pixRead((base_dir_ / page.img).string().data()));
 		if (not pix)
 			THROW(Error, "(BookDirectoryBuilder) Cannot read img ",
 			      page.img);
@@ -167,7 +178,8 @@ void BookDirectoryBuilder::make_line_img_files(const Path& pagedir,
 			    << "(BookDirectoryBuilder) Missing image file for: "
 			    << page.ocr;
 		} else if (not line->has_img_path() and pix) {
-			line->img = pagedir / path_from_id(line->id());
+			line->img = remove_common_base_path(
+			    pagedir / path_from_id(line->id()), base_dir_);
 			// we use png as single output format,
 			// since it is supported by most web browsers
 			// and is also the main image format that
@@ -176,8 +188,9 @@ void BookDirectoryBuilder::make_line_img_files(const Path& pagedir,
 			fs::create_directories(pagedir);
 			write_line_img_file(pix.get(), *line);
 		} else if (line->has_img_path()) {
-			const auto to = dir_ / remove_common_base_path(
-						   line->img, tmp_dir());
+			const auto to =
+			    base_dir_ / dir_ /
+			    remove_common_base_path(line->img, tmp_dir());
 			fs::create_directories(to.parent_path());
 			copy(line->img, to);
 			// copy additional llocs files
@@ -188,7 +201,7 @@ void BookDirectoryBuilder::make_line_img_files(const Path& pagedir,
 				copy(fromllocs, tollocs);
 			}
 			// update line image file
-			line->img = to;
+			line->img = remove_common_base_path(to, base_dir_);
 		}
 	}
 }
@@ -212,7 +225,8 @@ static void clip(BOX& box, const PIX& pix) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void BookDirectoryBuilder::write_line_img_file(void* vpix, const Line& line) {
+void BookDirectoryBuilder::write_line_img_file(void* vpix,
+					       const Line& line) const {
 	auto pix = (PIX*)vpix;
 	assert(pix);
 	// auto format = pixGetInputFormat(pix);
@@ -224,10 +238,10 @@ void BookDirectoryBuilder::write_line_img_file(void* vpix, const Line& line) {
 	clip(box, *pix);
 	if (box.x + box.w <= (int)pix->w and box.y + box.h <= (int)pix->h) {
 		PixPtr tmp{pixClipRectangle(pix, &box, nullptr)};
-		if (not tmp or
-		    pixWrite(line.img.string().data(), tmp.get(), IFF_PNG))
+		if (not tmp or pixWrite((base_dir_ / line.img).string().data(),
+					tmp.get(), IFF_PNG))
 			THROW(Error, "(BookDirectoryBuilder) Cannot write img ",
-			      line.img);
+			      base_dir_ / line.img);
 	} else {
 		CROW_LOG_WARNING << "Cannot write line image for "
 				 << line.cor();
