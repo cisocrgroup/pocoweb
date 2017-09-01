@@ -1,10 +1,10 @@
-#include "core/Book.hpp"
+#include "BookRoute.hpp"
 #include <crow.h>
 #include <boost/filesystem.hpp>
 #include <random>
 #include <regex>
-#include "BookRoute.hpp"
 #include "core/Archiver.hpp"
+#include "core/Book.hpp"
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/Package.hpp"
 #include "core/Page.hpp"
@@ -65,7 +65,8 @@ Route::Response BookRoute::impl(HttpPost, const Request& req) const {
 	ScopeGuard sg([&dir]() { dir.remove(); });
 	CROW_LOG_INFO << "(BookRoute) BookDirectoryBuilder: " << dir.dir();
 	BookSptr book;
-	if (crow::get_header_value(req.headers, "Content-Type") == "application/json") {
+	if (crow::get_header_value(req.headers, "Content-Type") ==
+	    "application/json") {
 		// CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
 		const auto json = crow::json::load(req.body);
 		dir.add_zip_file_path(json["file"].s());
@@ -104,8 +105,10 @@ void BookRoute::update_book_data(Book& book,
 	if (data.has("uri")) book.data.uri = data["uri"].s();
 	if (data.has("description"))
 		book.data.description = data["description"].s();
-	if (data.has("profilerUrl")) book.data.profilerUrl = data["profilerUrl"].s();
-	else book.data.profilerUrl = "local";
+	if (data.has("profilerUrl"))
+		book.data.profilerUrl = data["profilerUrl"].s();
+	else
+		book.data.profilerUrl = "local";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -200,8 +203,9 @@ void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
 	    select(p.projectid, p.owner).from(p).where(p.origin == book.id()));
 	for (const auto& pid : pids) {
 		if (static_cast<int>(pid.owner) != session.user().id()) {
-			THROW(Forbidden, "cannot delete book: project id: ",
-			      pid.projectid, " is not finished");
+			THROW(Forbidden,
+			      "cannot delete book: project id: ", pid.projectid,
+			      " is not finished");
 		}
 		remove_project_impl(conn, pid.projectid);
 		session.uncache_project(pid.projectid);
