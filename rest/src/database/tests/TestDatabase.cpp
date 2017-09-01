@@ -104,7 +104,8 @@ BOOST_AUTO_TEST_CASE(UpdateProjectOwner) {
 BOOST_AUTO_TEST_CASE(SelectBook) {
 	db.expect(
 	    "SELECT books.bookid,books.year,books.title,books.author,"
-	    "books.description,books.uri,books.directory,books.lang "
+	    "books.description,books.uri,books.profilerurl,books.directory,"
+	    "books.lang "
 	    "FROM books "
 	    "INNER JOIN projects ON (books.bookid=projects.origin) "
 	    "WHERE (books.bookid=13)");
@@ -228,7 +229,8 @@ BOOST_AUTO_TEST_CASE(SelectProjectIds) {
 	    "SELECT "
 	    "projects.projectid,projects.origin,projects.owner,projects.pages,"
 	    "books.bookid,books.year,books.title,books.author,books."
-	    "description,books.uri,books.directory,books.lang FROM books INNER "
+	    "description,books.uri,books.profilerurl,books.directory,books."
+	    "lang FROM books INNER "
 	    "JOIN projects ON (books.bookid=projects.origin) WHERE "
 	    "(projects.owner=42)");
 	// db.expect("SELECT projects.projectid FROM projects "
