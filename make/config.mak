@@ -33,7 +33,6 @@ CXXFLAGS += -DPCW_API_VERSION_PATCH=$(PCW_API_VERSION_PATCH)
 CXXFLAGS += -DPCW_DESTDIR=$(DESTDIR)
 
 LDFLAGS += -Llib
-LDFLAGS += -lcurl
 LDFLAGS += -lpcw
 LDFLAGS += -lpugixml
 LDFLAGS += -ldl
@@ -47,6 +46,7 @@ LDFLAGS += -lcrypto
 LDFLAGS += -lcrypt
 LDFLAGS += -lsqlpp-mysql
 LDFLAGS += -lmysqlclient
+LDFLAGS += -lcurl
 
 PCW_DB_HOST ?= localhost
 PCW_DB_USER ?= pocoweb
