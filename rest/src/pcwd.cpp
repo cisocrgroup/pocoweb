@@ -106,7 +106,7 @@ void detach(const Config& config) {
 		write_pidfile(config);
 		if (daemon(0, 0) != 0) {
 			throw std::system_error(errno, std::system_category(),
-					        "daemon");
+						"daemon");
 		}
 	}
 }
@@ -122,8 +122,8 @@ AppPtr get_app(int argc, char** argv) {
 ////////////////////////////////////////////////////////////////////////////////
 void create_base_directory(const Config& config) {
 	boost::system::error_code ec;
-	if (not boost::filesystem::create_directories(config.daemon.basedir,
-						      ec) and
+	const auto dir = config.daemon.basedir + "/" + config.daemon.projectdir;
+	if (not boost::filesystem::create_directories(dir, ec) and
 	    ec.value() != 0) {
 		throw std::system_error(ec.value(), std::system_category(),
 					config.daemon.basedir);
@@ -132,8 +132,9 @@ void create_base_directory(const Config& config) {
 
 ////////////////////////////////////////////////////////////////////////////////
 const char* find_config_file(int argc, char** argv) {
-	if (not (argc > 1)) {
-		throw std::runtime_error("usage: " + std::string(argv[0]) + " config");
+	if (not(argc > 1)) {
+		throw std::runtime_error("usage: " + std::string(argv[0]) +
+					 " config");
 	}
 	return argv[1];
 }
