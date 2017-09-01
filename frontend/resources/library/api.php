@@ -23,8 +23,8 @@ class Api {
 	}
 
 	public function get_request() {
-		$res = curl_exec($this->curl);
 		curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->header);
+		$res = curl_exec($this->curl);
 		foreach ($this->header as $x) {
 			echo "x = $x </br>\n";
 		}
