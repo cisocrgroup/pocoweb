@@ -69,13 +69,16 @@ Route::Response BookRoute::impl(HttpPost, const Request& req) const {
 	    "application/json") {
 		// CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
 		const auto json = crow::json::load(req.body);
-		dir.add_zip_file_path(json["file"].s());
+		const auto file = get<std::string>(json, "file");
+		if (not file)
+			THROW(BadRequest, "(BookRoute) missing file parameter");
+		dir.add_zip_file_path(*file);
 		book = dir.build();
 		if (not book) THROW(BadRequest, "Could not build book");
 		book->set_owner(session->user());
 		// update book data
 		update_book_data(*book, json);
-	} else {
+	} else if (crow::get_header_value{
 		dir.add_zip_file_content(extract_content(req));
 		book = dir.build();
 		if (not book) THROW(BadRequest, "Could not build book");
