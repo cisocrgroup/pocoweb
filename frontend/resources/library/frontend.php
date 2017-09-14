@@ -559,11 +559,14 @@ function frontend_render_page_line_div($line) {
 	echo '<div id="line-input-', $anchor, '" class="line-input hidden input-group">';
 	echo '<input id="', $anchor, '" class="form-control', $inputclass,
 		'" type="text" size="', strlen($d), '" value="', $d, '" ',
-		'onclick=\'pcw.displayConcordance("', $anchor, '");\'/>', "\n";
+		'onclick=\'pcw.displayConcordance("', $anchor, '");\' ',
+		'onblur=\'pcw.toggleFromInputToText("', $anchor, '");\' ',
+		 '/>', "\n";
 	echo '<span class="input-group-btn">', "\n";
 	echo '<button id="', $anchor, '-btn" class="btn btn-default " title="correct line #',
 			$lid, '" onclick=\'pcw.correctLine("', $anchor, '");',
-			'pcw.toggleFromInputToText("', $anchor, '");\' >', "\n";
+			'pcw.toggleFromInputToText("', $anchor, '");\' ',
+			'>', "\n";
 	echo '<span class="glyphicon glyphicon-upload" />';
 	echo '</button>', "\n";
 	echo '</span>', "\n";
