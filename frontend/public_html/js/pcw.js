@@ -163,24 +163,17 @@ pcw.setLoggedInUser = function() {
 	}
 };
 
-pcw.setupCorrectedInputField = function(elem, res) {
-	if (elem === null) return;
-	elem.value = res.cor;
-	elem.className.replace(/ *fully-corrected-line/, '');
-	elem.className.replace(/ *partially-corrected-line/, '');
-	if (res.isFullyCorrected) {
-		elem.className += " fully-corrected-line";
-	} else if (res.isPartiallyCorrected) {
-		elem.className += " partially-corrected-line";
+pcw.setCorrectionStatus = function(elem, fully, partial) {
+	if (elem === null) {
+		return;
 	}
-	pcw.redraw(elem);
-};
-
-pcw.redraw = function(elem) {
-	if (elem !== null) {
-		// does not seem to work :(
-		elem.style.display = 'none';
-		elem.style.display = 'block';
+	elem.className = elem.className.replace(/ *fully-corrected-line/, '');
+	elem.className =
+	    elem.className.replace(/ *partially-corrected-line/, '');
+	if (fully) {
+		elem.className += " fully-corrected-line";
+	} else if (partial) {
+		elem.className += " partially-corrected-line";
 	}
 };
 
@@ -193,8 +186,12 @@ pcw.correctWord = function(anchor) {
 	api.setupForCorrectWord(ids[0], ids[1], ids[2], ids[3], correction);
 	api.run(function(status, res) {
 		var elem = document.getElementById(inputid);
-		elem.value = res.cor;
-		pcw.setupCorrectedInputField(elem, res);
+		if (elem !== null) {
+			elem.value = res.cor;
+			pcw.setCorrectionStatus(
+			    elem, res.isFullyCorrected,
+			    res.isPartiallyCorrected);
+		}
 	});
 };
 
@@ -205,8 +202,24 @@ pcw.correctLine = function(anchor) {
 	api.sid = pcw.getSid();
 	api.setupForCorrectLine(ids[0], ids[1], ids[2], correction);
 	api.run(function(status, res) {
-		var elem = document.getElementById(anchor);
-		pcw.setupCorrectedInputField(elem, res);
+		var fully = res.isFullyCorrected;
+		var partial = res.isPartiallyCorrected;
+		var input = document.getElementById(anchor);
+		if (input !== null) {
+			input.value = res.cor;
+			pcw.setCorrectionStatus(input, fully, partial);
+		}
+		var text = document.getElementById('line-text-' + anchor);
+		if (text !== null) {
+			pcw.setCorrectionStatus(text, fully, partial);
+			text.replaceChild(
+			    document.createTextNode(res.cor),
+			    text.childNodes[0]);
+			var aapi = Object.create(pcw.Api);
+			aapi.sid = pcw.getSid();
+			aapi.setupForGetSuspiciousWords(ids[0], ids[1], ids[2]);
+			aapi.run(pcw.markSuspiciousWordsInLine);
+		}
 	});
 };
 
@@ -308,10 +321,6 @@ pcw.addSuggestionDropdownItem = function(dropdown, s, selection) {
 	var t = document.createTextNode(
 	    s.suggestion + " (patts: " + s.patterns.join(',') + ", dist: " +
 	    s.distance + ", weight: " + s.weight.toFixed(2) + ")");
-	// a.href = "#";
-	/*a.onClick = "pcw.setSuggestionToSelection(" +
-	    JSON.stringify(selection) + ', "' + s.suggestion + '");';
-	    */
 	a.onclick = function() {
 		pcw.setSuggestionToSelection(selection, s.suggestion);
 	};
@@ -523,8 +532,9 @@ pcw.toggleBetweenTextAndInput = function(hide, unhide) {
 	if (hide === null || unhide === null) {
 		return;
 	}
+	hide.className = unhide.className.replace(/ *hidden/, '');
 	hide.className += ' hidden';
-	unhide.className = unhide.className.replace('hidden', '');
+	unhide.className = unhide.className.replace(/ *hidden/, '');
 };
 
 pcw.toggleFromInputToText = function(anchor) {
@@ -543,7 +553,6 @@ pcw.toggleFromTextToInput = function(anchor) {
 		e = b + window.getSelection().toString().length;
 	}
 	pcw.toggleBetweenTextAndInput(text, input);
-	pcw.log('selection: ' + b + ':' + e);
 	if (input.firstChild !== null) {
 		input.firstChild.selectionStart = b;
 		input.firstChild.selectionEnd = e;
@@ -567,7 +576,6 @@ pcw.markSuspiciousWords = function(pid) {
 };
 
 pcw.markSuspiciousWordsInLine = function(status, res) {
-	pcw.log("FUCKING RES: " + JSON.stringify(res));
 	if (res.suspiciousWords.length <= 0) {
 		return;
 	}
