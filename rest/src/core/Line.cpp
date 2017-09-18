@@ -152,7 +152,7 @@ double Line::average_conf() const noexcept {
 		++n;
 		sum += c.conf;
 	});
-	return sum / n;
+	return n != 0 ? sum / n : 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
