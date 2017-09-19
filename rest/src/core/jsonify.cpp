@@ -1,8 +1,11 @@
 #include "jsonify.hpp"
 #include <crow/json.h>
+#include <limits>
 #include "Box.hpp"
 #include "Page.hpp"
 #include "User.hpp"
+
+static double fix_double(double val);
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json& pcw::operator<<(Json& json, const std::vector<ProjectPtr>& books) {
@@ -70,7 +73,7 @@ pcw::Json& pcw::operator<<(Json& json, const Line& line) {
 	json["ocr"] = line.ocr();
 	json["cuts"] = line.cuts();
 	json["confidences"] = line.confidences();
-	json["averageConfidence"] = line.average_conf();
+	json["averageConfidence"] = fix_double(line.average_conf());
 	json["isFullyCorrected"] = line.is_fully_corrected();
 	json["isPartiallyCorrected"] = line.is_partially_corrected();
 	// do *not* show words of each line
@@ -94,7 +97,7 @@ pcw::Json& pcw::operator<<(Json& json, const Token& token) {
 	json["isPartiallyCorrected"] = token.is_partially_corrected();
 	json["ocr"] = token.ocr();
 	json["cor"] = token.cor();
-	json["averageConf"] = token.average_conf();
+	json["averageConf"] = fix_double(token.average_conf());
 	json["box"] << token.box;
 	json["isNormal"] = token.is_normal();
 	return json;
@@ -166,4 +169,19 @@ bool pcw::get(const RJson& j, const char* key, std::string& res) {
 		return true;
 	}
 	return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+double fix_double(double val) {
+	if (std::isnan(val)) {
+		return 0;
+	}
+	if (std::isinf(val) and val > 0) {
+		return std::numeric_limits<double>::max();
+		return DBL_MAX;
+	}
+	if (std::isinf(val) and val < 0) {
+		return std::numeric_limits<double>::min();
+	}
+	return val;
 }
