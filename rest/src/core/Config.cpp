@@ -78,6 +78,9 @@ static int get_log_level(const std::string& level) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+pcw::Config pcw::Config::empty() { return Config{{}, {}, {}, {}, {}}; }
+
+////////////////////////////////////////////////////////////////////////////////
 pcw::Config pcw::Config::load(const std::string& file) {
 	std::ifstream is(file);
 	if (not is.good())

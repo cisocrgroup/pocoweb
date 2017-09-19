@@ -3,10 +3,10 @@
 
 #include <boost/test/unit_test.hpp>
 #include <iostream>
-#include "core/PageBuilder.hpp"
-#include "core/BookBuilder.hpp"
 #include "core/Book.hpp"
+#include "core/BookBuilder.hpp"
 #include "core/Page.hpp"
+#include "core/PageBuilder.hpp"
 #include "core/User.hpp"
 
 using namespace pcw;
@@ -19,8 +19,7 @@ struct BookBuilderFixture {
 BOOST_FIXTURE_TEST_SUITE(BookBuilder, BookBuilderFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(ResetTest)
-{
+BOOST_AUTO_TEST_CASE(ResetTest) {
 	auto first = builder.build();
 	builder.reset();
 	auto second = builder.build();
@@ -28,74 +27,64 @@ BOOST_AUTO_TEST_CASE(ResetTest)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(AuthorTest)
-{
+BOOST_AUTO_TEST_CASE(AuthorTest) {
 	builder.set_author("author");
 	BOOST_CHECK_EQUAL(builder.build()->data.author, "author");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(TitleTest)
-{
+BOOST_AUTO_TEST_CASE(TitleTest) {
 	builder.set_title("title");
 	BOOST_CHECK_EQUAL(builder.build()->data.title, "title");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(DescriptionTest)
-{
+BOOST_AUTO_TEST_CASE(DescriptionTest) {
 	builder.set_description("description");
 	BOOST_CHECK_EQUAL(builder.build()->data.description, "description");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(UriTest)
-{
+BOOST_AUTO_TEST_CASE(UriTest) {
 	builder.set_uri("uri");
 	BOOST_CHECK_EQUAL(builder.build()->data.uri, "uri");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(LanguageTest)
-{
+BOOST_AUTO_TEST_CASE(LanguageTest) {
 	builder.set_language("language");
 	BOOST_CHECK_EQUAL(builder.build()->data.lang, "language");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(DirectoryTest)
-{
+BOOST_AUTO_TEST_CASE(DirectoryTest) {
 	builder.set_directory("/directory/");
 	BOOST_CHECK_EQUAL(builder.build()->data.dir, "/directory/");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(YearTest)
-{
+BOOST_AUTO_TEST_CASE(YearTest) {
 	builder.set_year(2017);
 	BOOST_CHECK_EQUAL(builder.build()->data.year, 2017);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(OwnerTest)
-{
+BOOST_AUTO_TEST_CASE(OwnerTest) {
 	builder.set_owner(*std::make_shared<User>("", "", "", "", 42));
 	BOOST_CHECK_EQUAL(builder.build()->owner().id(), 42);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(IdTest)
-{
+BOOST_AUTO_TEST_CASE(IdTest) {
 	builder.set_id(42);
 	BOOST_CHECK_EQUAL(builder.build()->id(), 42);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(AppendTest)
-{
+BOOST_AUTO_TEST_CASE(AppendTest) {
 	std::vector<PageSptr> pages(5);
 	PageBuilder pbuilder;
-	for (auto& p: pages) {
+	for (auto& p : pages) {
 		pbuilder.reset();
 		p = pbuilder.build();
 		builder.append(*p);
@@ -105,7 +94,7 @@ BOOST_AUTO_TEST_CASE(AppendTest)
 	BOOST_CHECK_EQUAL(b->size(), 5);
 
 	int i = 1;
-	for (const auto& p: pages) {
+	for (const auto& p : pages) {
 		BOOST_CHECK_EQUAL(p->id(), i);
 		BOOST_CHECK_EQUAL(&p->book(), b.get());
 		BOOST_CHECK_EQUAL(b->find(i), p);
@@ -114,8 +103,7 @@ BOOST_AUTO_TEST_CASE(AppendTest)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(AppendTextTestWithNewLine)
-{
+BOOST_AUTO_TEST_CASE(AppendTextTestWithNewLine) {
 	builder.append_text("first line\nsecond line\nthird line\n");
 	auto book = builder.build();
 	BOOST_CHECK_EQUAL(book->size(), 1);
@@ -127,10 +115,8 @@ BOOST_AUTO_TEST_CASE(AppendTextTestWithNewLine)
 	BOOST_CHECK_EQUAL(page->find(3)->cor(), "third line");
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(AppendTextTestWithoutNewLine)
-{
+BOOST_AUTO_TEST_CASE(AppendTextTestWithoutNewLine) {
 	builder.append_text("first line\nsecond line\nthird line");
 	auto book = builder.build();
 	BOOST_CHECK_EQUAL(book->size(), 1);

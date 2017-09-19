@@ -9,6 +9,7 @@ namespace pcw {
 using Ptree = boost::property_tree::ptree;
 
 struct Config {
+	static Config empty();
 	static Config load(const std::string& filename);
 	static Config load(std::istream& is);
 	void setup_logging() const;

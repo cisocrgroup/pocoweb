@@ -10,6 +10,7 @@ clean:
 	$(RM) $(PPROF_OBJS)
 	$(RM) $(PLUGINS)
 	$(RM) $(TESTS)
+	$(RM) $(TESTOBJS)
 	$(RM) -r ext
 	$(RM) -r lib
 

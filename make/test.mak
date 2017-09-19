@@ -47,4 +47,5 @@ RUN_TESTS = $(patsubst %.test,%.run,$(TESTS))
 test: $(RUN_TESTS)
 
 DEPS += $(patsubst %.test,%.d,$(TESTS))
+TESTOBJS += $(patsubst %.test,%.o,$(TESTS))
 .PHONY: test
