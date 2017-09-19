@@ -118,8 +118,8 @@ void BookRoute::update_book_data(Book& book,
 Route::Response BookRoute::impl(HttpGet, const Request& req, int bid) const {
 	LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
-	session->assert_permission(conn, bid, Permissions::Read);
 	auto book = session->must_find(conn, bid);
+	session->assert_permission(conn, bid, Permissions::Read);
 	Json j;
 	return j << *book;
 }
@@ -130,8 +130,8 @@ Route::Response BookRoute::impl(HttpPost, const Request& req, int bid) const {
 	auto data = crow::json::load(req.body);
 	LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
-	session->assert_permission(conn, bid, Permissions::Write);
 	const auto view = session->must_find(conn, bid);
+	session->assert_permission(conn, bid, Permissions::Write);
 	if (not view->is_book())
 		THROW(BadRequest, "cannot set parameters of project id: ", bid);
 	const auto book = std::dynamic_pointer_cast<Book>(view);
@@ -206,9 +206,8 @@ void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
 	    select(p.projectid, p.owner).from(p).where(p.origin == book.id()));
 	for (const auto& pid : pids) {
 		if (static_cast<int>(pid.owner) != session.user().id()) {
-			THROW(Forbidden,
-			      "cannot delete book: project id: ", pid.projectid,
-			      " is not finished");
+			THROW(Forbidden, "cannot delete book: project id: ",
+			      pid.projectid, " is not finished");
 		}
 		remove_project_impl(conn, pid.projectid);
 		session.uncache_project(pid.projectid);
