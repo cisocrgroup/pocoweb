@@ -118,8 +118,8 @@ void BookRoute::update_book_data(Book& book,
 Route::Response BookRoute::impl(HttpGet, const Request& req, int bid) const {
 	LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
-	auto book = session->must_find(conn, bid);
 	session->assert_permission(conn, bid, Permissions::Read);
+	auto book = session->must_find(conn, bid);
 	Json j;
 	return j << *book;
 }
