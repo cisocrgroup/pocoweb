@@ -136,7 +136,7 @@ check_book_does_not_exist() {
 	local id=$1
 	local url="/books/$id"
 	local res=$(curl_get $url)
-	expect $url 404 $(code $res)
+	expect "GET $url" 404 $(code $res)
 }
 
 update_book() {
