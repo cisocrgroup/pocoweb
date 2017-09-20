@@ -519,20 +519,25 @@ function frontend_render_page_header_div($page) {
 
 function frontend_render_page_heading_div($page) {
 	echo '<div id="page-heading">', "\n";
-	echo "<p><h2>Project #$page[projectId], page #$page[pageId]</h2></p>\n";
+	echo "<p><h2>Project $page[projectId], page $page[pageId]</h2></p>\n";
 	echo '</div>', "\n";
 }
 
 function frontend_render_page_div($page) {
-	echo '<div id="page-view">';
-	// echo '<form method="post">';
+	echo '<div id="page-view" class="col-md-6">';
 	foreach ($page["lines"] as $line) {
-		frontend_render_page_line_div($line);
+		frontend_render_page_line_div($line, $page["imgFile"]);
 	}
 	echo '</div>';
+	// if ($page["imgFile"] != "") {
+	// 	echo '<div id="page-image" class="col-md-6">', "\n";
+	// 	echo '<img title="page ', $page["pageId"],
+	// 			'" src="', $page["imgFile"], '" />', "\n";
+	// 	echo '</div>', "\n";
+	// }
 }
 
-function frontend_render_page_line_div($line) {
+function frontend_render_page_line_div($line, $img) {
 	global $SID;
 	global $config;
 	$lid = $line["lineId"];
@@ -544,14 +549,18 @@ function frontend_render_page_line_div($line) {
 	$anchor = "$pid-$p-$lid";
 	$d = $line["cor"];
 	$inputclass = frontend_get_correction_class($line);
-	echo '<div class="text-image-line" title="', $text, '">';
+	echo '<div class="text-image-line" title="', $text, '"';
+    if ($img != "") {
+		echo ' onclick=\'pcw.openImageWindow("', $img, '");\'';
+    }
+	echo " >\n";
 	echo '<a class="line-anchor" id="line-anchor-', $anchor, '"></a>';
 	echo '<img src="', $imgfile, '"',
 		'alt="', $text, '"',
 		'title="', $text, '"',
 		'width="auto"',
 		'height="', $config["frontend"]["image"]["line_image_height"], '"',
-		' />';
+		" />\n";
 	echo '<br/>';
 	echo '<div id="line-text-', $anchor, '" class="line-text', $inputclass, '" ',
 			'onclick=\'pcw.toggleFromTextToInput("', $anchor, '");\'>',

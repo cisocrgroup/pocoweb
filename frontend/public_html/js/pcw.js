@@ -595,6 +595,18 @@ pcw.markSuspiciousWordsInLine = function(status, res) {
 	line.innerHTML = text;
 };
 
+pcw.openImageWindow = function(img) {
+	var w = window.innerWidth || document.documentElement.clientWidth ||
+	    document.body.clientWidth;
+
+	var h = window.innerHeight || document.documentElement.clientHeight ||
+	    document.body.clientHeight;
+	var nw = w / 2;
+	var nh = h;
+	window.open(
+	    img, "image", "width=" + nw + ",height=" + nh + ",left=" + nw);
+};
+
 pcw.timestampToISO8601 = function(ts) {
 	return new Date(ts * 1000).toUTCString();
 };
