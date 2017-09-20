@@ -260,5 +260,5 @@ logout
 ## $sid was not reset -- user should still *not* be logged in
 loggedin $name 403
 
-
+echo $(cat $config)
 exit $error
