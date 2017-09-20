@@ -7,6 +7,6 @@ test:
 integration-test:
         script:
                 - make -j10 CXX=g++-5 PCW_DB_HOST=pocoweb
-                - misc/scripts/integration-tests config.ini 2>/dev/null
                 - cat config.ini
+                - misc/scripts/integration-tests config.ini 2>/dev/null
 
