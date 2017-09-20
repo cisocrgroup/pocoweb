@@ -1,7 +1,8 @@
 #!/bin/bash
 # integration-tests
 
-v=-Ss
+#v=-Ss
+v=
 fail="\033[0;31mFAIL\033[0m"
 success="\033[0;32mSUCCESS\033[0m"
 cookies=$(mktemp)
