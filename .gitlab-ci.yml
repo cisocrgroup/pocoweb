@@ -7,8 +7,8 @@ before_script:
 integration-test:
         script:
                 - wget http://cis.lmu.de/~finkf/pocoweb-env --output-document env
-                - cat env
-                - bash misc/config/config.sh env > config.ini
+                - cat ./env
+                - bash misc/config/config.sh ./env > config.ini
                 - cat config.ini
                 - make -j10 CXX=g++-5 PCW_DB_HOST=pocoweb
                 - misc/scripts/integration-tests config.ini 2>/dev/null
