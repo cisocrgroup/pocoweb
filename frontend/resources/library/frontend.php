@@ -550,17 +550,19 @@ function frontend_render_page_line_div($line, $img) {
 	$d = $line["cor"];
 	$inputclass = frontend_get_correction_class($line);
 	echo '<div class="text-image-line" title="', $text, '"';
-    if ($img != "") {
-		echo ' onclick=\'pcw.openImageWindow("', $img, '");\'';
-    }
 	echo " >\n";
 	echo '<a class="line-anchor" id="line-anchor-', $anchor, '"></a>';
 	echo '<img src="', $imgfile, '"',
 		'alt="', $text, '"',
 		'title="', $text, '"',
 		'width="auto"',
-		'height="', $config["frontend"]["image"]["line_image_height"], '"',
-		" />\n";
+		'height="', $config["frontend"]["image"]["line_image_height"], '"';
+    if ($img != "") {
+			echo ' onclick=\'pcw.openImageWindow("', $img, '",',
+					$line["box"]["left"], ',', $line["box"]["top"], ',',
+					$line["box"]["width"], ',', $line["box"]["height"], ');\'';
+    }
+    echo " />\n";
 	echo '<br/>';
 	echo '<div id="line-text-', $anchor, '" class="line-text', $inputclass, '" ',
 			'onclick=\'pcw.toggleFromTextToInput("', $anchor, '");\'>',

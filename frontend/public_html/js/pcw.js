@@ -595,16 +595,33 @@ pcw.markSuspiciousWordsInLine = function(status, res) {
 	line.innerHTML = text;
 };
 
-pcw.openImageWindow = function(img) {
-	var w = window.innerWidth || document.documentElement.clientWidth ||
+pcw.openImageWindow = function(img, l, t, w, h) {
+	var ww = window.innerWidth || document.documentElement.clientWidth ||
 	    document.body.clientWidth;
 
-	var h = window.innerHeight || document.documentElement.clientHeight ||
+	var wh = window.innerHeight || document.documentElement.clientHeight ||
 	    document.body.clientHeight;
-	var nw = w / 2;
-	var nh = h;
-	window.open(
-	    img, "image", "width=" + nw + ",height=" + nh + ",left=" + nw);
+	var nww = ww / 2;
+	var nwh = wh;
+	var doc = window.open(
+	    img, "image", "width=" + nww + ",height=" + nwh + ",left=" + nww);
+	pcw.log("box: l:" + l + ",t:" + t + ",w:" + w + ",h:" + h);
+	doc.addEventListener("load", function() {
+		// console.log("doc loaded");
+		// var body = doc.document.getElementsByTagName("body")[0];
+		// // var img = doc.document.getElementsByTagName('img')[0];
+		// var canvas = doc.document.createElement('canvas');
+		// canvas.setAttribute('id', 'canvas');
+		// canvas.setAttribute('width', w);
+		// canvas.setAttribute('height', h);
+		// canvas.setAttribute(
+		//     'style',
+		//     'position:absolute; border:1px solid #000000; top:0px;
+		//     left:0px; z-index:1;');
+		// body.appendChild(canvas);
+		// console.log("callback done");
+	}, true);
+	doc.focus();
 };
 
 pcw.timestampToISO8601 = function(ts) {
