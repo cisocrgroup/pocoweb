@@ -524,7 +524,7 @@ function frontend_render_page_heading_div($page) {
 }
 
 function frontend_render_page_div($page) {
-	echo '<div id="page-view" class="col-md-6">';
+	echo '<div id="page-view">';
 	foreach ($page["lines"] as $line) {
 		frontend_render_page_line_div($line, $page["imgFile"]);
 	}
