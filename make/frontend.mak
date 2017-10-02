@@ -16,6 +16,7 @@ FE_FILES += $(PCW_FRONTEND_DIR)/public_html/logout.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/page.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/upload.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/users.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/logo.jpg
 FE_FILES += $(PCW_FRONTEND_DIR)/resources/config.php
 FE_FILES += $(PCW_FRONTEND_DIR)/resources/library/api.php
 FE_FILES += $(PCW_FRONTEND_DIR)/resources/library/backend.php
@@ -33,6 +34,10 @@ $(PCW_FRONTEND_DIR)/%.js: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
 $(PCW_FRONTEND_DIR)%.css: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
+	$(call ECHO,$@)
+	$V install -d $(dir $@)
+	$V install -m 644 $< $@
+$(PCW_FRONTEND_DIR)%.jpg: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@

@@ -29,7 +29,7 @@ if (isset($_GET["pid"])) {
 <div class="container-fluid">
     <div id="pocweb-header">
     <div class="row">
-	<img class="image-rounded center-block" src="img/lmu_cis_logo.jpg"/>
+	<img class="image-rounded center-block" src="img/logo.jpg"/>
     </div>
 	<div id="navbar" class="navbar-collapse collapse">
 	    <!-- <nav class="navbar navbar-default"> -->
