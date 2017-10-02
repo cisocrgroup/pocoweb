@@ -15,19 +15,14 @@ pass=$(git config -f $config --get plugin-simple-login.default-pass)
 #port=8080
 #host=::1
 host="pocoweb.cis.lmu.de/rest"
-#port=80
 curlopt=
 errors=0
-spid=0
 json=
 sid=
 bid=
 
 finish() {
-	# echo removing $cookies
 	rm $cookies
-	# echo killing $spid
-	# kill $spid > /dev/null 2>&1
 }
 
 ## start_server() {
