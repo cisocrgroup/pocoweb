@@ -9,11 +9,6 @@ cookies=$(mktemp)
 config=$1
 name=$(git config -f $config --get plugin-simple-login.default-user)
 pass=$(git config -f $config --get plugin-simple-login.default-pass)
-#host=$(git config -f $config --get daemon.host)
-#port=$(git config -f $config --get daemon.port)
-#host="pocoweb.cis.uni-muenchen.de"
-#port=8080
-#host=::1
 host="pocoweb.cis.lmu.de/rest"
 curlopt=
 errors=0
@@ -24,16 +19,6 @@ bid=
 finish() {
 	rm $cookies
 }
-
-## start_server() {
-## 	# echo "config: $config"
-## 	echo "starting server"
-## 	#./pcwd $config 2> /dev/null &
-## 	./pcwd $config&
-## 	spid=$!
-## 	echo "started server ($spid)"
-## 	sleep 1
-## }
 
 expect() {
 	local url="$1:"
@@ -59,7 +44,7 @@ curl_post() {
 	curl $curlopt $v -w '%%RESPONSE_CODE=%{http_code}%%' \
 		-H "Content-Type: application/json" \
 		-H "Authorization: $sid" \
-		-X POST -d $2 \
+		-d $2 \
 		-g -6 http://$host$1
 }
 
@@ -67,6 +52,14 @@ curl_delete() {
 	curl $curlopt $v -w '%%RESPONSE_CODE=%{http_code}%%' \
 		-H "Authorization: $sid" \
 		-X DELETE \
+		-g -6 http://$host$1
+}
+
+curl_upload() {
+	curl $curlopt $v -w '%%RESPONSE_CODE=%{http_code}%%' \
+		-H "Content-Type: application/gzip" \
+		-H "Authorization: $sid" \
+		--data-binary @$2 \
 		-g -6 http://$host$1
 }
 
@@ -112,15 +105,10 @@ logout() {
 
 upload() {
 	local p=$1
-	local a=$2
-	local t=$3
-	local want=$4
+	local want=$2
 	local url="/books"
-	local post="{\"author\":\"$a\",\"title\":\"$t\",\"file\":\"$p\"}"
-	local res=$(curl_post $url $post)
+	local res=$(curl_upload $url $p)
 	expect "POST $url" $want $(code $res)
-	expect "author=$a" $a $(json_get "author" $(json $res))
-	expect "title=$t" $t $(json_get "title" $(json $res))
 	bid=$(json_get "projectId" $(json "$res"))
 }
 
@@ -217,7 +205,7 @@ sid=""
 login $name $pass 200
 loggedin $name 200
 ## HOBBES
-upload $PWD/misc/data/test/hobbes-ocropus.zip "hobbes" "leviathan" 201
+upload $PWD/misc/data/test/hobbes-ocropus.zip 201
 update_book $bid "title" "Leviathan"
 update_book $bid "author" "Hobbes"
 update_book $bid "language" "Latin"
@@ -240,7 +228,7 @@ get_line $bid 42 40 "mi"
 remove_book $bid
 check_book_does_not_exist $bid
 ## ROLLENHAGEN
-upload $PWD/misc/data/test/rollenhagen_reysen_1603.zip "rollenhagen" "reysen" 201
+upload $PWD/misc/data/test/rollenhagen_reysen_1603.zip 201
 update_book $bid "title" "Reysen"
 update_book $bid "author" "Rollenhagen"
 update_book $bid "language" "German"
