@@ -1,6 +1,7 @@
 PCW_FRONTEND_DIR ?= /usr/share/nginx/html
 
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/about.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/doc.html
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/adaptive.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/concordance.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/css/pcw.css
@@ -22,24 +23,28 @@ FE_FILES += $(PCW_FRONTEND_DIR)/resources/library/frontend.php
 FE_FILES += $(PCW_FRONTEND_DIR)/resources/templates/footer.php
 FE_FILES += $(PCW_FRONTEND_DIR)/resources/templates/header.php
 
+$(PCW_FRONTEND_DIR)/public_html/doc.html: frontend/public_html/doc.md
+	$(call ECHO,$@)
+	$V bash misc/scripts/md2html.sh $< > $@
+
 .SECONDEXPANSION:
 $(PCW_FRONTEND_DIR)/%.js: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
-	$V install $< $@
+	$V install -m 644 $< $@
 $(PCW_FRONTEND_DIR)%.css: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
-	$V install $< $@
+	$V install -m 644 $< $@
 $(PCW_FRONTEND_DIR)%.html: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
-	$V install $< $@
+	$V install -m 644 $< $@
 $(PCW_FRONTEND_DIR)%.php: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V php -l $< > /dev/null
 	$V install -d $(dir $@)
-	$V install $< $@
+	$V install -m 644 $< $@
 
 frontend/public_html/js/config.js: frontend/resources/config.php frontend/resources/genconfig.js.php
 	$(call ECHO,$@)
