@@ -1,9 +1,9 @@
 before_script:
         - g++-5 -v
 
-          ## test:
-          ##         script:
-          ##                 - make -j10 test CXX=g++-5
+unit-tests:
+        script:
+                - make -j10 test CXX=g++-5
 integration-test:
         script:
                 - wget http://cis.lmu.de/~finkf/pocoweb-env --output-document env
