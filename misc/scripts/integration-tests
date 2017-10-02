@@ -1,9 +1,8 @@
 #!/bin/bash
 # integration-tests
 
-#v=-Ss
-#v=--verbose
 v=-v
+#v=-Ss
 fail="\033[0;31mFAIL\033[0m"
 success="\033[0;32mSUCCESS\033[0m"
 cookies=$(mktemp)
@@ -12,7 +11,9 @@ name=$(git config -f $config --get plugin-simple-login.default-user)
 pass=$(git config -f $config --get plugin-simple-login.default-pass)
 #host=$(git config -f $config --get daemon.host)
 #port=$(git config -f $config --get daemon.port)
-host="pocoweb.cis.uni-muenchen.de"
+#host="pocoweb.cis.uni-muenchen.de"
+#port=8080
+host=::1
 port=8080
 curlopt=
 errors=0
