@@ -2,13 +2,22 @@
 require_once("../resources/config.php");
 require_once(TEMPLATES_PATH . "/header.php");
 ?>
-<div class="col-md-9">
+
 <!-- documentation -->
 <h1 class="page-header" id="documentation">Documentation</h1>
 <p>
 PoCoWeb is a web-based postcorrection System for OCR documents.
 It is loosely based on <a href="www.example.org">PoCoTo</a>.
 </p>
+
+<!-- navigation -->
+<h2 id='table-of-content'>Table of content</h2>
+<ul>
+<li style="list-style-type:none;"><a href="#documentation">Documentation</a></li>
+<li style="list-style-type:none;"><a href="#user-management">User management</a></li>
+<li style="list-style-type:none;"><a href="#project-management">Project management</a></li>
+<li style="list-style-type:none;"><a href="#rest-api">Rest API</a></li>
+</ul>
 
 <!-- User management -->
 <h2 class="page-header" id="user-management">User management</h2>
@@ -31,17 +40,6 @@ It is loosely based on <a href="www.example.org">PoCoTo</a>.
 <p>Duis sit amet viverra risus. Duis tristique porttitor ex, vel ullamcorper nunc vulputate a. Duis ac sodales mi. Mauris condimentum erat at odio viverra, vitae maximus sem placerat. Aliquam non diam porttitor, egestas enim a, consequat turpis. Sed condimentum vulputate est, ut eleifend enim dictum non. Aliquam a venenatis risus. Nulla congue id ex et vehicula.</p>
 <p>Suspendisse ac odio at velit cursus vehicula placerat vel dui. Quisque luctus dapibus ante ac efficitur. Duis convallis auctor nisi, quis commodo dolor dictum eget. Phasellus maximus elit ante, ut placerat orci dictum nec. Vestibulum ornare aliquam metus, vel placerat tortor. Sed euismod ex vel nisl posuere tempor. Mauris ut nisi venenatis, aliquet diam at, vulputate libero. Donec vulputate, elit dictum mattis dapibus, ligula ante varius velit, vel ornare elit leo ut felis. Integer neque ante, feugiat id molestie eu, sagittis eu augue. Vivamus fringilla ligula nec finibus imperdiet. Maecenas vestibulum lorem eget felis mattis ornare. Proin pulvinar in tellus eget ornare.</p>
 <p>Nunc vestibulum tellus purus, ac accumsan risus consectetur id. Ut nibh erat, faucibus eget viverra sit amet, congue quis tortor. Etiam ornare vehicula accumsan. Curabitur consectetur rhoncus lorem eu scelerisque. Nam ipsum urna, rutrum sed aliquet at, pretium et tellus. Pellentesque eu hendrerit augue, ut condimentum sapien. Duis maximus, orci blandit placerat auctor, nibh neque fringilla lacus, quis viverra velit ipsum at quam. Donec vehicula sagittis ornare. Fusce quis suscipit quam, eget auctor ipsum. Morbi aliquam eu nulla vel volutpat.</p>
-</div>
-<!-- navigation -->
-<div class="col-md-3">
-<nav class="bs-docs-sidebar hidden-print hidden-sm hidden-xs affix" data-spy="affix" data-offset-top="250">
-<ul class="nav bs-docs-sidenav">
-<li class><a href="#documentation">Documentation</a></li>
-<li class><a href="#user-management">User management</a></li>
-<li class><a href="#project-management">Project management</a></li>
-<li class><a href="#rest-api">Rest API</a></li>
-</ul>
-</nav>
 </div>
 <?php
     require_once(TEMPLATES_PATH . "/footer.php");
