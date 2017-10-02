@@ -15,7 +15,7 @@ pass=$(git config -f $config --get plugin-simple-login.default-pass)
 #port=8080
 #host=::1
 host="pocoweb.cis.lmu.de/rest"
-port=80
+#port=80
 curlopt=
 errors=0
 spid=0
@@ -57,7 +57,7 @@ expect() {
 curl_get() {
 	curl $curlopt $v -w '%%RESPONSE_CODE=%{http_code}%%' \
 		-H "Authorization: $sid" \
-		-g -6 http://[$host]:$port$1
+		-g -6 http://$host$1
 }
 
 curl_post() {
@@ -65,14 +65,14 @@ curl_post() {
 		-H "Content-Type: application/json" \
 		-H "Authorization: $sid" \
 		-X POST -d $2 \
-		-g -6 http://[$host]:$port$1
+		-g -6 http://$host$1
 }
 
 curl_delete() {
 	curl $curlopt $v -w '%%RESPONSE_CODE=%{http_code}%%' \
 		-H "Authorization: $sid" \
 		-X DELETE \
-		-g -6 http://[$host]:$port$1
+		-g -6 http://$host$1
 }
 
 code() {
