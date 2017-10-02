@@ -4,7 +4,12 @@ first paragraph
 
 second paragraph
 
-## heading2
+## Table of contents
+
+* [User Administration](#user-administration)
+
+<a id='user-administration'></a>
+## User administration
 a simple list:
 
 * foo
@@ -21,3 +26,4 @@ second note
 1. first
 2. second
 3. third
+
