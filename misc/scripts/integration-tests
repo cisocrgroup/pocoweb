@@ -13,7 +13,8 @@ pass=$(git config -f $config --get plugin-simple-login.default-pass)
 #port=$(git config -f $config --get daemon.port)
 #host="pocoweb.cis.uni-muenchen.de"
 #port=8080
-host=::1
+#host=::1
+host="localhost"
 port=8080
 curlopt=
 errors=0
@@ -31,10 +32,10 @@ finish() {
 
 start_server() {
 	# echo "config: $config"
-	# echo "starting server"
+	echo "starting server"
 	./pcwd $config 2> /dev/null &
 	spid=$!
-	# echo "started server ($spid)"
+	echo "started server ($spid)"
 	sleep 1
 }
 
