@@ -14,8 +14,8 @@ pass=$(git config -f $config --get plugin-simple-login.default-pass)
 #host="pocoweb.cis.uni-muenchen.de"
 #port=8080
 #host=::1
-host="localhost"
-port=8080
+host="pocoweb.cis.lmu.de/rest"
+port=80
 curlopt=
 errors=0
 spid=0
@@ -27,18 +27,18 @@ finish() {
 	# echo removing $cookies
 	rm $cookies
 	# echo killing $spid
-	kill $spid > /dev/null 2>&1
+	# kill $spid > /dev/null 2>&1
 }
 
-start_server() {
-	# echo "config: $config"
-	echo "starting server"
-	#./pcwd $config 2> /dev/null &
-	./pcwd $config&
-	spid=$!
-	echo "started server ($spid)"
-	sleep 1
-}
+## start_server() {
+## 	# echo "config: $config"
+## 	echo "starting server"
+## 	#./pcwd $config 2> /dev/null &
+## 	./pcwd $config&
+## 	spid=$!
+## 	echo "started server ($spid)"
+## 	sleep 1
+## }
 
 expect() {
 	local url="$1:"
@@ -210,7 +210,7 @@ if [ $# -ne 1 ]; then
 fi
 
 trap finish EXIT
-start_server
+# start_server
 sid=""
 login $name $pass 200
 loggedin $name 200
