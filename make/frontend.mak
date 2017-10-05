@@ -26,7 +26,7 @@ FE_FILES += $(PCW_FRONTEND_DIR)/resources/templates/header.php
 
 $(PCW_FRONTEND_DIR)/public_html/doc.html: frontend/public_html/doc.md
 	$(call ECHO,$@)
-	$V bash misc/scripts/md2html.sh $< > $@
+	$V bash misc/scripts/md2html.sh $< | sed -e 's#<br>##g' > $@
 
 .SECONDEXPANSION:
 $(PCW_FRONTEND_DIR)/%.js: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
