@@ -231,26 +231,26 @@ function frontend_render_upload_new_project_div() {
 	echo '<form action="index.php?upload" method="post" enctype="multipart/form-data">', "\n";
 	// Author
 	echo '<div class="form-group">', "\n";
-	echo '<label for="author">Project\'s author</label>', "\n";
+	echo '<label for="author">Author</label>', "\n";
 	echo '<input name="author" type="text" placeholder="Author" class="form-control"/>', "\n";
 	echo '</div>', "\n";
 	// Title
 	echo '<div class="form-group">', "\n";
-	echo '<label for="title">Project\'s title</label>', "\n";
+	echo '<label for="title">Title</label>', "\n";
 	echo '<input name="title" type="text" placeholder="Title" class="form-control"/>', "\n";
-	echo '</div>', "\n";
-	// Profiler
-	echo '<div class="form-group">', "\n";
-	echo '<label for="profiler">Project\'s Profiler URL (use local if in doubt)</label>', "\n";
-	echo '<input id="pcw-project-profiler" oninput=\'pcw.setProfilerLanguages();\' ',
-		'value="local" name="profiler" type="text" placeholder="Profiler URL" ',
-		'class="form-control"/>', "\n";
 	echo '</div>', "\n";
 	// Year
 	echo '<div class="form-group">', "\n";
 	echo '<label for="year">Year of publication</label>', "\n";
 	echo '<input name="year" type="number" min="0" max="2099" ',
 		'step="1" value="2017" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Profiler
+	echo '<div class="form-group">', "\n";
+	echo '<label for="profiler">Profiler URL (use local if in doubt)</label>', "\n";
+	echo '<input id="pcw-project-profiler" oninput=\'pcw.setProfilerLanguages();\' ',
+		'value="local" name="profiler" type="text" placeholder="Profiler URL" ',
+		'class="form-control"/>', "\n";
 	echo '</div>', "\n";
 	// Languages
 	$api = backend_get_languages();
