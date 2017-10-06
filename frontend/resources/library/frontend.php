@@ -178,7 +178,7 @@ function frontend_render_normal_user_project_table_row($project) {
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'page.php?u=none&p=first&pid=', $pid, '\'"',
 		' title="open project #', $pid, '">';
-	echo '<span class="glyphicon glyphicon-ok"/>';
+	echo '<span class="glyphicon glyphicon-book"/>';
 	echo '</button>';
 	echo '</span>';
 	// finish project button
