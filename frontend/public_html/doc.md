@@ -20,8 +20,14 @@ for suspicious words.
 - - -
 ## Table of contents
 
-* [Users](#users)
-* [User management](#user-management)
+* [Users](#users-content-users)
+* [User management](#user-content-user-management)
+* [Projects](#user-content-projects)
+    * [Uploading new projects](#user-content-upload-new-project)
+	* [Project archives](#user-content-project-archives)
+	* [Project table](#user-content-project-table)
+* [Post correction](#user-content-post-correction)
+* [Pocoweb backend](#user-content-pocoweb-backend)
 
 - - -
 <a id='users'></a>
@@ -36,25 +42,196 @@ different permissions in the system:
 1. Administrator accounts
     * Create new administrator and normal users accounts
     * Delete user accounts
-    * Upload new documents and create new [projects](#projects)
-    * Split projects into [packages](#packages)
+    * Upload new documents and create new [projects](#user-content-project-management)
+    * Split projects into [packages](#user-content-project-management)
     * Assign packages to different user accounts
-    * Profiling projects.
+    * Profile projects.
     * Post correct projects and packages.
     * Delete documents and packages.
     * Download corrected projects
 
 2. Normal user accounts
     * Post correct packages that where assigned to them
-    * Profiling projects.
+    * Profile projects.
     * Reassign packages back to their original owner.
 
 - - -
 <a id='user-management'></a>
 ## User management
 
-In order to remove an user account click on the according
+User management is done via the [Users](/users.php) tab.
+You have to be logged in with an administrator account in order
+to access and use the user management page.
 
-<span class="glyphicon glyphicon-remove">foobar</span>
+The user management page consits of a mask to create new users and
+a user table that lists all existing users. To create a new user,
+fill out the input fields accordingly and then click to the
+![create user](img/doc/button-create-user.png) button.
+If the account should be an administrator account, do not forget to
+check the admin checkbox.
 
-button in the user list.
+After the mask follows the user table.
+In order to remove an user account click on the
+![remove](img/doc/glyphicon-remove.png) button in the according user entry
+in the user table.
+It is not possible at the moment to delete an existing admin account.
+Only regular user accounts can be deleted.
+
+- - -
+<a id='projects'></a>
+## Projects
+
+Project management is done via the [Projects](/index.php) tab.
+On this page you can manage the projects and packages (see below) that your
+user owns.
+
+Pocoweb uses two different kinds of correctable documents.
+*Projects* on the one hand represent whole documents that should be corrected.
+*Packages* on the other hand are smaller subsets of projects that contain
+a smaller subset of the pages of their parent project.
+Two packages with the same parent never contain overlapping pages.
+This makes it possible for two different users to correct different packages
+of the same project in parallel.
+
+Only administrators can upload new projects, split them into a number of
+packages and assign those packages to different users.
+It is not possible to assign a project to a different user.
+
+*Note: Since is possible to correct a whole project as well,
+one should never correct a project while other users could be correcting
+an associated package.
+This could lead to cases where one user accidentally
+overrides an other users work.*
+
+<a id='upload-new-project'></a>
+### Uploading new projects
+
+If you are logged in with an administrator account, you can create a new project.
+Fill in the metadata fields in the mask, select the according
+[project archive](#user-content-project-archives) on your computer and click
+on the ![upload](img/doc/button-upload.png) button.
+Depending on the size of the project archive,
+the uploading of the project can take a while.
+
+The [Pocoweb backend](#user-content-pocoweb-backend) analyzes the project archive,
+processes its OCR and image files and publishes the project.
+If the uploading was successfull, you should see the new project in the
+project table.
+
+The project's author, title and year can be filled out as it seems fit.
+Theses values are not used internally and are there for an easy reference.
+
+A project's profiler and its language are settings specific for the language
+profiler.
+If you plan to use a profiler for the post correction of your project, you
+have to set them accordingly.
+If the installation of Pocoweb comes with a local configured profiler,
+you can use `local` as value for your profiler.
+If not or if you want to use another profiler, you have to specifiy its URL.
+
+Do not forget to set the right language for the new project.
+The language field lists all available languages for your chosen profiler.
+
+<a id='project-archives'></a>
+### Project archives
+
+A project archive is a zipped directory structure that contains the OCR and
+image files for the pages of a document.
+Image files should be encoded as PNG files if possible, but JPEG or TIFF
+encoded images are fine, too.
+The OCR files should be either
+[ABBYY-XML](),
+[ALTO-XML]() or
+[hOCR]()
+encoded files.
+
+The backend tries its best to automatically search and order the pages
+in project archives.
+Therefore the matching OCR and image files should have the same name
+(without the extension).
+It does not matter in which directory structure the different image and OCR
+files reside.
+If the matching OCR and image files do have the same filenames for any reason,
+you can add a [METS/MOTS]() metadata file to the archive, in which the
+page ordering and the association between image and OCR files is specified.
+
+Example structure of a project archive:
+
+```
+archive
+├── img
+│   ├── page-0001.png
+│   ├── page-0002.png
+│   └── page-0003.png
+└── ocr
+    ├── page-0001.xml
+    ├── page-0002.xml
+    └── page-0003.xml
+```
+
+There is no need to seperate the image and ocr files with different directories.
+You can also use a flat directory structure:
+```
+archive
+├── page-0001.png
+├── page-0001.xml
+├── page-0002.png
+├── page-0002.xml
+├── page-0003.png
+└── page-0003.xml
+```
+
+It is also possible to have the files in a page directory structure like this:
+```
+archive
+├── page-0001
+│   ├── page.xml
+│   └── page.png
+├── page-0003
+│   ├── page.xml
+│   └── page.png
+└── page-0002
+    ├── page.xml
+    └── page.png
+```
+
+If you use [ocropy](https://github.com/tmbdev/ocropy),
+you can also use its project structure directly to upload a project archive:
+```
+archive
+└── book
+    ├── 0001.png
+    ├── 0001
+    │   ├── 010001.bin.png
+    │   ├── 010001.txt
+    │   └─ ...
+    ├── 0002.png
+    ├── 0002
+    │   ├── 010001.bin.png
+    │   ├── 010001.txt
+    │   └─ ...
+    ├── 0003.png
+    └── 0003
+        ├── 010001.bin.png
+        ├── 010001.txt
+        └─ ...
+```
+
+
+<a id='project-table'></a>
+### Project table
+
+After the project mask, a table with all the projects and packages that you
+own is shown.
+If you are logged in with an administrator account you see all your uploaded
+projects and all packages that you have not yet assigned to another user.
+If you are logged in with a normal user account, you only see the packages
+that have been assigned to you.
+
+- - -
+<a id='post-correction'></a>
+
+
+- - -
+<a id='pocoweb-backend'></a>
+## Pocoweb backend
