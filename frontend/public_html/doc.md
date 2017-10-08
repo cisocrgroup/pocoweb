@@ -29,7 +29,12 @@ for suspicious words.
 	* [Downloading projects](#user-content-download-project)
 	* [Profiling projects](#user-content-profile-project)
 * [Post correction](#user-content-post-correction)
+    * [Page correction](#user-content-page-correction)
+    * [Navigation bar](#user-content-navigation-bar)
+    * [Concordance view](#user-content-concordance-view)
 * [Pocoweb backend](#user-content-pocoweb-backend)
+    * [Installation](#user-content-installation)
+	* [REST API](#user-content-rest-api)
 
 - - -
 <a id='users'></a>
@@ -245,16 +250,13 @@ to remove the project.
 order a [document profile](#user-content-profile-project).
 
 5. Click on the ![adaptive](img/doc/glyphicon-list-adaptive-tokens.png) button
-to see a list of all [adptive tokens](#user-content-profile-project)
-found during the profiling.
+to open a list of all [adptive tokens](#user-content-profile-project).
 
-6. Choose a number of packages and then click on the
-![split](img/doc/glyphicon-split-project.png) button
+6. Click on the ![split](img/doc/glyphicon-split-project.png) button
 to split the project into multiple packages.
 
-7. Choose an user and click on the
-![assign](img/doc/glyphicon-assign-to-user.png) button to assign
-a package to an user.
+7. Click on the ![assign](img/doc/glyphicon-assign-to-user.png)
+button to assign a package to an user.
 
 <a id='download-project'></a>
 ### Downloading projects
@@ -303,7 +305,102 @@ see the [profiler paper]() and [profiler paper 2]()
 <a id='post-correction'></a>
 ## Post correction
 
+In order to correct a project or package click to the
+![open](img/doc/glyphicon-open-project.png) button.
+Pocoweb opens the first page of the project or package
+and presents the page correction view.
+In generally the post correction is the same for projects an packages.
+Every statement about the correction of projects also applies to the
+correction of packages.
+
+Other than PoCoTo the post correction with Pocoweb is line based.
+Generally you correct whole lines of the document and not single tokens.
+The page correction view presents the lines of the document and lets
+you correct each line individually.
+
+<a id='page-correction'></a>
+### Page correction
+
+The page correction view shows the lines of a page of the project.
+You can use the forward and backward buttons of the navigation bar
+to go to the next, previous first and last pages of the project.
+
+For each line the image of the line and the according OCR text are shown.
+If the project has been profiled, *suspicious tokens* (tokens that the profiler
+thinks are real OCR errors) are marked red in the text.
+The suspicious tokens are meant to give you a visual clue about errors on
+the page.
+
+You can click on the line image to see an overview over the whole line's page image.
+If you click in the text you can edit the text.
+It is also possible to select single tokens in a line, by marking them with
+the mouse. If a token is selected, you can choose a correction candidate for
+it or list all occorurences of the token in the
+[navigation bar](#user-content-navigation-bar).
+
+After you have corrected a line you can click on the
+![correct](img/doc/button-correct.png) button to correct the line and
+send the correction to the backend (you can also click on the button on the
+buttom of the page to correct all lines of a page).
+After the line is corrected it is shown with a green background.
+
+In general if a line was corrected it is shwon with a green background.
+If a line was partially corrected (see
+[concordance view](#user-content-concordance-view) below)
+the background is yellow and
+if the line was not yet touched it has a white background.
+
+<a id='navigation-bar'></a>
+### Navigation bar
+
+The navigation bar lets you navigate the pages of you project.
+It stays on top of your browser's screen even while you navigate down the
+browser page.
+
+Besides the navigation buttons, the navigation bar shows a tab to list
+the assumed error patterns and error tokens of the project.
+If the project was profiled these list assumed errors in the document
+by the number of their occurence or by their common error patterns.
+Click one of the entries to open the
+[concordance view](#user-content-concordance-view) of the according token
+or error patterns.
+
+If a token is selected it shows the concodance count of the token.
+If the document was profiled you can use the correction suggestion tab to
+select a correction candidate for the selected token.
+the selected token with one of the listed correction suggestions.
+
+<a id='concordance-view'></a>
+### Concordance view
+
+The cocordance view lists similar tokens of the whole project and
+shows them in their respective line context. With the concordance
+view you can correct a series of tokens at once.
+If you do this each token of the concordance view is corrected
+in the lines.
+In this way the corrected lines become *partially corrected*,
+since not the whole line was corrected but just a token in the line.
+
+You can correct each token individually.
+Just edit the token and then click to the
+![correct](img/doc/button-correct) button.
+If you want to correct multiple occurences of the tokens in
+the concordance view you can either set a global correction
+in the concordance bar
+![concordance-bar](img/doc/button-concordance-correction.png)
+or select a correction suggestion using the
+![select correction suggestion](img/doc/button-select-correction-suggestion.png)
+selection for each individual token.
+
+Before you correct all tokens in a series make sure, that only the
+tokens you want to correct are checked.
 
 - - -
 <a id='pocoweb-backend'></a>
 ## Pocoweb backend
+
+<a id='installation'></a>
+### Installation
+
+<a id='rest-api'></a>
+### REST API
