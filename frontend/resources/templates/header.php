@@ -35,9 +35,9 @@ if (isset($_GET["pid"])) {
 	    <!-- <nav class="navbar navbar-default"> -->
 		<!-- <div class="navbar-header"> -->
 		    <ul class="nav navbar-nav navbar-left">
-			<li><a href="index.php">Home</a></li>
+			<li><a href="index.php">Projects</a></li>
 			<li><a href="users.php">Users</a></li>
-			<li><a href="about.php">About</a></li>
+			<!--<li><a href="about.php">About</a></li> -->
 			<li><a href="documentation.php">Documentation</a></li>
 			<?php
 			global $config;
