@@ -21,6 +21,7 @@ FE_FILES += $(PCW_FRONTEND_DIR)/resources/library/backend.php
 FE_FILES += $(PCW_FRONTEND_DIR)/resources/library/frontend.php
 FE_FILES += $(PCW_FRONTEND_DIR)/resources/templates/footer.php
 FE_FILES += $(PCW_FRONTEND_DIR)/resources/templates/header.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/LICENSE
 
 .SECONDEXPANSION:
 $(PCW_FRONTEND_DIR)/%.js: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
@@ -35,6 +36,10 @@ $(PCW_FRONTEND_DIR)%.html: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
 	$V install $< $@
+$(PCW_FRONTEND_DIR)/public_html/LICENSE: LICENSE
+	$(call ECHO,$@)
+	$V install -d $(dir $@)
+	$V install -m0644 $< $@
 $(PCW_FRONTEND_DIR)%.php: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V php -l $< > /dev/null
