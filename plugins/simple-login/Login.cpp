@@ -57,14 +57,15 @@ Route::Response Login::login(const Request& req, const std::string& name,
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response Login::impl(HttpPost, const Request& req) const {
-	CROW_LOG_DEBUG << "(Login) body: " << req.body;
+	// CROW_LOG_DEBUG << "(Login) body: " << req.body;
 	auto json = crow::json::load(req.body);
 	if (not json) THROW(BadRequest, "bad json request data");
-	if (json["name"].s().size() and json["pass"].s().size()) {
-		return login(req, json["name"].s(), json["pass"].s());
-	} else {
+	const auto name = pcw::get<std::string>(json, "name");
+	const auto pass = pcw::get<std::string>(json, "pass");
+	if (not name or not pass) {
 		THROW(BadRequest, "invalid login attempt");
 	}
+	return login(req, *name, *pass);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
