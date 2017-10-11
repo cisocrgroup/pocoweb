@@ -155,10 +155,11 @@ template <class Db>
 void pcw::update_user(Db& db, const User& user) {
 	using namespace sqlpp;
 	tables::Users users;
-	// do not change user's name and id
+	// do not change user's id
 	auto stmnt =
 	    update(users)
-		.set(users.email = user.email, users.institute = user.institute)
+		.set(users.passwd = user.password.str(), users.name = user.name,
+		     users.email = user.email, users.institute = user.institute)
 		.where(users.userid == user.id());
 	db(stmnt);
 }

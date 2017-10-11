@@ -36,6 +36,11 @@ void Session::cache(Project& view) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void Session::set_user(const User& user) noexcept {
+	user_ = user.shared_from_this();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void Session::cache(User& user) const {
 	if (cache_) {
 		cache_->users.put(user.shared_from_this());

@@ -20,7 +20,7 @@ class UserRoute : public CrtpRoute<UserRoute> {
 	Response impl(HttpPost, const Request& req) const;
 	Response impl(HttpDelete, const Request& req, int uid) const;
 	Response impl(HttpGet, const Request& req, int uid) const;
-	[[noreturn]] Response impl(HttpPost, const Request& req, int uid) const;
+	Response impl(HttpPost, const Request& req, int uid) const;
 
        private:
 	static const char* route_;

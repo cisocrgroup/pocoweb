@@ -50,9 +50,7 @@ Route::Response UserRoute::impl(HttpPost, const Request& req) const {
 	auto conn = must_get_connection();
 	if (not session->user().admin())
 		THROW(Forbidden, "only admins can create new users");
-	CROW_LOG_DEBUG << "(UserRoute) body: " << req.body;
 	auto json = crow::json::load(req.body);
-
 	const auto name = get<std::string>(json, "name");
 	const auto email = get<std::string>(json, "email");
 	const auto pass = get<std::string>(json, "pass");
@@ -75,7 +73,6 @@ Route::Response UserRoute::impl(HttpDelete, const Request& req, int uid) const {
 	auto conn = must_get_connection();
 	auto user = select_user(conn.db(), uid);
 	if (not user) THROW(NotFound, "invalid user id: ", uid);
-
 	if (user->admin() and user->id() != session->user().id()) {
 		THROW(Forbidden, "user ", session->user().name,
 		      " cannot delete user ", user->name);
@@ -107,7 +104,38 @@ Route::Response UserRoute::impl(HttpGet, const Request& req, int uid) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-[[noreturn]] Route::Response UserRoute::impl(HttpPost, const Request& req,
-					     int uid) const {
-	THROW(NotImplemented, "Not implemented: [POST] /users/uid");
+Route::Response UserRoute::impl(HttpPost, const Request& req, int uid) const {
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	auto user = select_user(conn.db(), uid);
+	if (not user) {
+		THROW(NotFound, "invalid user id: ", uid);
+	}
+	if (user->admin() and session->user().id() != user->id()) {
+		THROW(Forbidden, "user ", session->user().name,
+		      " cannot update user ", user->name);
+	}
+	if (not session->user().admin() and
+	    session->user().id() != user->id()) {
+		THROW(Forbidden, "user ", session->user().name,
+		      " cannot update user ", user->name);
+	}
+	auto json = crow::json::load(req.body);
+	const auto name = get<std::string>(json, "name");
+	const auto email = get<std::string>(json, "email");
+	const auto pass = get<std::string>(json, "pass");
+	const auto inst = get<std::string>(json, "institute");
+	if (not name or not email or not pass or not inst)
+		THROW(BadRequest, "invalid data to update user ", user->name);
+	MysqlCommiter commiter(conn);
+	user->email = *email;
+	user->institute = *inst;
+	user->password = Password::make(*pass);
+	update_user(conn.db(), *user);
+	if (session->user().id() == user->id()) {
+		session->set_user(*user);
+	}
+	commiter.commit();
+	Json j;
+	return j << *user;
 }
