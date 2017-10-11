@@ -4,7 +4,7 @@
 		<a href="#">Back to top <span class="glyphicon glyphicon-menu-up"/></a>
 	</div>
 	<div class="text-muted footer-line text-center">
-		Designed and built by <a href="http://www.example.org">me</a>.
+		Designed and built by the <a href="http://cis.uni-muenchen.de">Centrum für Informations- und Sprachverarbeitung (CIS)</a>.
 	</div>
 	<div class="text-muted footer-line text-center">
 		Code licensed under <a href="LICENSE">Apache-2.0</a>.
