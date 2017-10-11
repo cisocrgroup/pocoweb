@@ -364,8 +364,11 @@ function backend_update_user($uid, $name, $email, $institute, $pass) {
 		'name' => $name,
 		'email' => $email,
 		'institute' => $institute,
-		'pass' => $pass,
 	);
+	# set password only if it is not empty
+	if ($pass != "") {
+			$data['pass'] = $pass;
+	}
 	$api = new Api(backend_get_upload_project_route($file));
 	global $SID;
 	$api->set_session_id($SID);
