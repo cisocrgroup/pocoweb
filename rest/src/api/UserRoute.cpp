@@ -52,16 +52,17 @@ Route::Response UserRoute::impl(HttpPost, const Request& req) const {
 		THROW(Forbidden, "only admins can create new users");
 	CROW_LOG_DEBUG << "(UserRoute) body: " << req.body;
 	auto json = crow::json::load(req.body);
-	const std::string name = json["name"].s();
-	const std::string pass = json["pass"].s();
-	const std::string email = json["email"].s();
-	const std::string institute = json["institute"].s();
-	const bool admin = json["admin"].b();
-	if (name.empty() or pass.empty())
-		THROW(BadRequest, "missing name and/or password for new user");
+
+	const auto name = get<std::string>(json, "name");
+	const auto email = get<std::string>(json, "email");
+	const auto pass = get<std::string>(json, "pass");
+	const auto inst = get<std::string>(json, "institute");
+	const auto admin = get<bool>(json, "admin");
+	if (not name or not email or not pass or not inst or not admin)
+		THROW(BadRequest, "invalid data for new user");
 	MysqlCommiter commiter(conn);
 	const auto user =
-	    pcw::create_user(conn.db(), name, pass, email, institute, admin);
+	    pcw::create_user(conn.db(), *name, *pass, *email, *inst, *admin);
 	assert(user);
 	commiter.commit();
 	Json j;
@@ -73,7 +74,7 @@ Route::Response UserRoute::impl(HttpDelete, const Request& req, int uid) const {
 	LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
 	if (not session->user().admin())
-		THROW(Forbidden, "only admins can create new users");
+		THROW(Forbidden, "only admins can delete users");
 	auto user = select_user(conn.db(), uid);
 	if (not user) THROW(NotFound, "invalid user id: ", uid);
 	if (user->admin()) THROW(Forbidden, "cannot delete admin account");
