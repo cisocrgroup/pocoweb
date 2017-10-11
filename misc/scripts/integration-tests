@@ -36,21 +36,21 @@ expect() {
 
 curl_get() {
 	curl $curlopt $v -w '%%RESPONSE_CODE=%{http_code}%%' \
-		-H "Authorization: $sid" \
+		-H "Authorization: Pocoweb $sid" \
 		-g -6 http://$host$1
 }
 
 curl_post() {
 	curl $curlopt $v -w '%%RESPONSE_CODE=%{http_code}%%' \
 		-H "Content-Type: application/json" \
-		-H "Authorization: $sid" \
+		-H "Authorization: Pocoweb $sid" \
 		-d $2 \
 		-g -6 http://$host$1
 }
 
 curl_delete() {
 	curl $curlopt $v -w '%%RESPONSE_CODE=%{http_code}%%' \
-		-H "Authorization: $sid" \
+		-H "Authorization: Pocoweb $sid" \
 		-X DELETE \
 		-g -6 http://$host$1
 }
@@ -58,7 +58,7 @@ curl_delete() {
 curl_upload() {
 	curl $curlopt $v -w '%%RESPONSE_CODE=%{http_code}%%' \
 		-H "Content-Type: application/gzip" \
-		-H "Authorization: $sid" \
+		-H "Authorization: Pocoweb $sid" \
 		--data-binary @$2 \
 		-g -6 http://$host$1
 }
