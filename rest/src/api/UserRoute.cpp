@@ -92,9 +92,18 @@ Route::Response UserRoute::impl(HttpDelete, const Request& req, int uid) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-[[noreturn]] Route::Response UserRoute::impl(HttpGet, const Request& req,
-					     int uid) const {
-	THROW(NotImplemented, "Not implemented: [GET] /users/uid");
+Route::Response UserRoute::impl(HttpGet, const Request& req, int uid) const {
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	auto user = select_user(conn.db(), uid);
+	if (not user) {
+		THROW(NotFound, "invalid user id: ", uid);
+	}
+	if (not session->user().admin()) {
+		THROW(Forbidden, "only admins can get user credentials");
+	}
+	Json j;
+	return j << *user;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
