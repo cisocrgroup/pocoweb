@@ -75,7 +75,7 @@ template <class G>
 typename pcw::Cache<T>::value_type pcw::Cache<T>::get(int id, G g) {
 	Lock lock(mutex_);
 	auto gg = [id, g]() { return g(id); };
-	auto f = [id](const value_type& t) { return t->id() == id; };
+	auto f = [id](const value_type& t) { return t && t->id() == id; };
 	return get_impl(f, gg);
 }
 
@@ -98,9 +98,11 @@ typename pcw::Cache<T>::value_type pcw::Cache<T>::get_impl(F f, G g) {
 	auto i = std::find_if(begin(), end(), f);
 	if (i == end()) {
 		auto t = g();
-		Base::push_front(t);
-		while (Base::size() > n_) {
-			Base::pop_back();
+		if (t) {
+			Base::push_front(t);
+			while (Base::size() > n_) {
+				Base::pop_back();
+			}
 		}
 		return t;
 	} else if (i != begin()) {

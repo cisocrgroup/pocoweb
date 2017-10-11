@@ -155,7 +155,7 @@ pcw.Api = {
 		http.open(this.method, this.url, true);
 		http.setRequestHeader(
 		    "Content-type", "application/json; charset=UTF-8");
-		http.setRequestHeader("Authorization", this.sid);
+		http.setRequestHeader("Authorization", "Pocoweb " + this.sid);
 		this.log(
 		    "sending request: " + this.formatRequest() + " data: " +
 		    JSON.stringify(this.post));
