@@ -73,13 +73,20 @@ Route::Response UserRoute::impl(HttpPost, const Request& req) const {
 Route::Response UserRoute::impl(HttpDelete, const Request& req, int uid) const {
 	LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
-	if (not session->user().admin())
-		THROW(Forbidden, "only admins can delete users");
 	auto user = select_user(conn.db(), uid);
 	if (not user) THROW(NotFound, "invalid user id: ", uid);
-	if (user->admin()) THROW(Forbidden, "cannot delete admin account");
+
+	if (user->admin() and user->id() != session->user().id()) {
+		THROW(Forbidden, "user ", session->user().name,
+		      " cannot delete user ", user->name);
+	}
+	if (not session->user().admin() and
+	    user->id() != session->user().id()) {
+		THROW(Forbidden, "user ", session->user().name,
+		      " cannot delete user ", user->name);
+	}
 	MysqlCommiter commiter(conn);
-	delete_user(conn.db(), uid);
+	delete_user(conn.db(), user->id());
 	commiter.commit();
 	return ok();
 }
