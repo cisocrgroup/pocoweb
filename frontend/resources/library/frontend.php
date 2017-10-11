@@ -777,6 +777,15 @@ function frontend_render_adaptive_tokens_div($pid) {
 	echo "</div>\n";
 }
 
+function frontend_render_account_div($user) {
+		echo "<div>\n";
+		echo "<p>", $user['id'], "</p>\n";
+		echo "<p>", $user['name'], "</p>\n";
+		echo "<p>", $user['email'], "</p>\n";
+		echo "<p>", $user['institute'], "</p>\n";
+		echo "</div>\n";
+}
+
 function frontend_render_success_div($msg) {
 	echo('<div class="container-fluid">');
 	echo('<div class="alert alert-success" role="alert">');

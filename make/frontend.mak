@@ -7,6 +7,7 @@ FE_FILES += $(PCW_FRONTEND_DIR)/public_html/concordance.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/css/pcw.css
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/documentation.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/index.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/account.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/info.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/js/api.js
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/js/config.js
