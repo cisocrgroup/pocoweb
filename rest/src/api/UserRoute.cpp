@@ -125,12 +125,12 @@ Route::Response UserRoute::impl(HttpPost, const Request& req, int uid) const {
 	const auto email = get<std::string>(json, "email");
 	const auto pass = get<std::string>(json, "pass");
 	const auto inst = get<std::string>(json, "institute");
-	if (not name or not email or not pass or not inst)
-		THROW(BadRequest, "invalid data to update user ", user->name);
+	// set values only if not empty
+	if (email and *email != "") user->email = *email;
+	if (name and *name != "") user->name = *name;
+	if (inst and *inst != "") user->institute = *inst;
+	if (pass and *pass != "") user->password = Password::make(*pass);
 	MysqlCommiter commiter(conn);
-	user->email = *email;
-	user->institute = *inst;
-	user->password = Password::make(*pass);
 	update_user(conn.db(), *user);
 	if (session->user().id() == user->id()) {
 		session->set_user(*user);
