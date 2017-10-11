@@ -27,12 +27,11 @@ SessionPtr Route::new_session(const User& user) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 SessionPtr Route::find_session(const crow::request& request) const {
-	static const auto re =
-	    std::regex("pcw-sid=([a-z]+);?", std::regex_constants::icase);
-	const auto cookie = request.get_header_value("Cookie");
-	CROW_LOG_DEBUG << "(Route::find_session) Cookie: " << cookie;
+	static const auto re = std::regex("[Pp]ocoweb ([a-z]+)");
+	const auto auth = request.get_header_value("Authorization");
+	CROW_LOG_DEBUG << "(Route::find_session) Authorization: " << auth;
 	std::smatch m;
-	if (not std::regex_search(cookie, m, re)) return nullptr;
+	if (not std::regex_match(auth, m, re)) return nullptr;
 	const std::string sid(m[1]);
 	CROW_LOG_DEBUG << "(Route::find_session) SID: `" << sid << "` ("
 		       << sid.size() << ")";

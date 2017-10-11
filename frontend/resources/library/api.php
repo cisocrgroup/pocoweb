@@ -61,8 +61,7 @@ class Api {
 	}
 
 	public function set_session_id($sid) {
-		array_push($this->header, "Authorization: $sid");
-		#curl_setopt($this->curl, CURLOPT_HTTPHEADER, array("Authorization: $sid"));
+		array_push($this->header, "Authorization: Pocoweb $sid");
 	}
 
 	public function get_http_status_code() {
