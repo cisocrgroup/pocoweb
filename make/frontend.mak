@@ -27,15 +27,15 @@ FE_FILES += $(PCW_FRONTEND_DIR)/public_html/LICENSE
 $(PCW_FRONTEND_DIR)/%.js: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
-	$V install $< $@
+	$V install -m0644 $< $@
 $(PCW_FRONTEND_DIR)%.css: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
-	$V install $< $@
+	$V install -m0644 $< $@
 $(PCW_FRONTEND_DIR)%.html: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
-	$V install $< $@
+	$V install -m0644 $< $@
 $(PCW_FRONTEND_DIR)/public_html/LICENSE: LICENSE
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
@@ -44,7 +44,7 @@ $(PCW_FRONTEND_DIR)%.php: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V php -l $< > /dev/null
 	$V install -d $(dir $@)
-	$V install $< $@
+	$V install -m0644 $< $@
 
 frontend/public_html/js/config.js: frontend/resources/config.php frontend/resources/genconfig.js.php
 	$(call ECHO,$@)
