@@ -28,7 +28,7 @@ SessionPtr Route::new_session(const User& user) const {
 ////////////////////////////////////////////////////////////////////////////////
 SessionPtr Route::find_session(const crow::request& request) const {
 	static const auto re =
-	    std::regex("pcw-sid=([a-z]+)", std::regex_constants::icase);
+	    std::regex("pcw-sid=([a-z]+);?", std::regex_constants::icase);
 	const auto cookie = request.get_header_value("Cookie");
 	CROW_LOG_DEBUG << "(Route::find_session) Cookie: " << cookie;
 	std::smatch m;
