@@ -7,8 +7,8 @@
 		Designed and built by <a href="http://www.example.org">me</a>.
 	</div>
 	<div class="text-muted footer-line text-center">
-		Code licensed under <a href="http://www.example.org">Foobar</a>.
-		Documentation licensed under <a href="http://www.example.org">Barfoo</a>.
+		Code licensed under <a href="LICENSE">Apache-2.0</a>.
+		Documentation licensed under <a href="LICENSE">Apache-2.0</a>.
 	</div>
 	<div class="text-muted footer-line text-center">
 		This website uses cookies.
