@@ -73,6 +73,7 @@ if ($USER !== NULL) {
 			</li>
 		</ul>
     </div>
+<hr>
 </div>
 <?php
 /*
