@@ -88,3 +88,11 @@ span.underline {
 		color: #ff0000;
 		text-decoration: underline;
 }
+
+/* json formatting */
+.pl-s {
+		color: green
+}
+.pl-c1 {
+		color: red
+}
