@@ -21,7 +21,8 @@ if (isset($_GET["update"])) {
 						frontend_render_success_div(
 								"successfully updated user account");
 				} else {
-						frontend_render_error_div("could not update user account: $status");
+						frontend_render_error_div("could not update user account: " .
+								backend_get_http_status_info($status));
 				}
 		}
 }
