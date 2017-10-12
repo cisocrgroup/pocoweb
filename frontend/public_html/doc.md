@@ -34,8 +34,8 @@ for suspicious words.
     * [Navigation bar](#user-content-navigation-bar)
     * [Concordance view](#user-content-concordance-view)
 * [Pocoweb backend](#user-content-pocoweb-backend)
-    * [Installation](#user-content-installation)
-	* [REST API](#user-content-rest-api)
+* [Installation](#user-content-installation)
+* [REST API](#user-content-rest-api)
 
 - - -
 <a id='users'></a>
@@ -424,8 +424,105 @@ tokens you want to correct are checked.
 <a id='pocoweb-backend'></a>
 ## Pocoweb backend
 
+- - -
 <a id='installation'></a>
-### Installation
+## Installation
 
+- - -
 <a id='rest-api'></a>
-### REST API
+## REST API
+
+The REST API documentation lists the available URLs of Pocoweb's REST API.
+Each entry gives the request method (GET, POST or DELETE) in square brackets,
+the request path and the layout of the response data is listed.
+Additionally for POST requests the expected layout of the POST data is listed.
+You have to replace the parameters in the request path
+by valid ids:
+ * `<uid>` references a valid user id.
+ * `<pid>` references a valid project or package id.
+ * `<page>` references a valid page id in a project or package.
+ * `<lid>` references a valid line id on a page.
+ * `<tid>` references a valid token id on a line.
+
+You have to be logged in with a valid user account
+(see [Authorization](#user-content-authorization) below).
+
+All URLs in the API documentation reference a `rest-url`.
+You have to set this parameter for your backend accordingly.
+So for example the backend URL for this site is
+<?php global $config; echo $config['backend']['url'];?>.
+This means that you have to replace the occurences of `rest-url`
+in the paths of the REST API documentation with
+<?php global $config; echo $config['backend']['url'];?>.
+
+<a id='authorization'></a>
+### Authorization
+
+You have to be authenticated for most of the API calls.
+If you are not authenticated the API will return `403 Forbidden`
+with no response data.
+
+In order to authenticate you first have to [login](#user-content-login)
+with a valid user account at the backend.
+The login will return an unique session id token.
+You have to send this session token in the `Authorization` header of
+each API call.
+
+For example if your session id is `my-session-id` you have
+to set the `Authorization` header of curl in the following way:
+`curl -H "Authorization: Pocoweb my-session-id"`.
+
+In order to get the first line of the first page of a project using
+curl you would have to run:
+`curl -H "Authorization: Pocoweb my-session-id" rest-url/books/<pid>/pages/1/lines/1`
+
+<a id='version'></a>
+### [GET] rest-url/api-version
+
+Get the semantic version of the backend instance.
+No [authorization](#user-content-authorization) is required.
+
+#### Response data
+```json
+{
+ "version": "1.2.3"
+}
+```
+
+<a id='login'></a>
+### [POST] rest-url/api-version
+You have to log in with a valid user account to use most of the API calls
+(see [authorization](#user-content-authorization) above).
+No [authorization](#user-content-authorization) is required.
+After a successfull login you can use the returned session id in the
+`Authorization` header of your future API calls.
+No [authorization](#user-content-authorization) is required
+
+#### POST data
+```json
+{
+  "user": "username",
+  "pass": "password"
+}
+```
+
+#### Response data
+```json
+{
+  "sid": "pocoweb-session-id"
+}
+```
+
+### [GET] rest-url/login
+Check if logged in and get the settings of the logged in user account.
+[Authorization](#user-content-authorization) is required.
+
+#### Response data
+```json
+{
+  "name": "user-name",
+  "email": "user-email",
+  "insitute": "user-institute",
+  "admin": true|false
+}
+```
