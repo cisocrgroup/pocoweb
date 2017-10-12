@@ -27,11 +27,18 @@ if (isset($_GET["update"])) {
 		}
 }
 if (isset($_GET["delete"])) {
-		frontend_render_info_div("deleting user account...");
-		backend_delete_user($USER['id']);
-}
-
-if ($USER !== NULL) {
+		$api = backend_delete_user($USER['id']);
+		$status = $api->get_http_status_code();
+		if ($status == 200) {
+				$api = backend_logout(); // ignore errors.
+				frontend_render_success_div(
+						"You successfully deleted your user account. " .
+								"<a href=\"login.php\">Login</a> again.");
+		} else {
+				frontend_render_error_div("could not delete user account: " .
+						backend_get_http_status_info($status));
+		}
+} else if ($USER !== NULL) {
 	frontend_render_account_div($USER);
 } else {
 	frontend_render_info_div("Welcome to PoCoWeb. Please <a href='login.php'>login</a>");
