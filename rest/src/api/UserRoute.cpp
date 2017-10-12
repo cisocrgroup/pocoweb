@@ -1,5 +1,6 @@
 #include "core/User.hpp"
 #include <crow.h>
+#include <boost/filesystem.hpp>
 #include <regex>
 #include "UserRoute.hpp"
 #include "core/Session.hpp"
@@ -88,7 +89,19 @@ Route::Response UserRoute::impl(HttpDelete, const Request& req, int uid) const {
 	auto ps =
 	    conn.db()(select(p.projectid).from(p).where(p.owner == user->id()));
 	for (const auto& pp : ps) {
+		const auto project = session->must_find(conn, pp.projectid);
 		delete_project(conn.db(), pp.projectid);
+		if (project->is_book()) {
+			const auto dir = project->origin().data.dir;
+			CROW_LOG_INFO << "(UserRoute) removing directory: "
+				      << dir;
+			boost::system::error_code ec;
+			boost::filesystem::remove_all(dir, ec);
+			if (ec)
+				CROW_LOG_WARNING
+				    << "(UserRoute) cannot remove directory: "
+				    << dir << ": " << ec.message();
+		}
 		session->uncache_project(pp.projectid);
 	}
 	delete_user(conn.db(), user->id());
