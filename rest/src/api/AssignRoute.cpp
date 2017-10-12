@@ -35,13 +35,15 @@ Route::Response AssignRoute::assign(const Request& req, int bid) const {
 	session->assert_permission(conn, bid, Permissions::Assign);
 	const auto project = session->must_find(conn, bid);
 	UserPtr user = nullptr;
-	if (data.has("id"))
-		user = session->find_user(conn, data["id"].i());
-	else if (data.has("name"))
-		user = session->find_user(conn, data["name"].s());
+	const auto id = get<int>(data, "id");
+	const auto name = get<std::string>(data, "name");
+	if (id)
+		user = session->find_user(conn, *id);
+	else if (name)
+		user = session->find_user(conn, *name);
 	else
 		THROW(BadRequest, "cannot find user: missing user information");
-	if (not user) THROW(BadRequest, "cannot find user: no such user");
+	if (not user) THROW(NotFound, "cannot find user: no such user");
 	MysqlCommiter commiter(conn);
 	using namespace sqlpp;
 	tables::Projects projects;

@@ -44,9 +44,10 @@ BOOST_AUTO_TEST_CASE(CreateUser) {
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(UpdateUser) {
-	db.expect(
-	    "UPDATE users SET email='email',institute='institute' "
-	    "WHERE (users.userid=42)");
+	db.expect(std::regex(
+	    "UPDATE users SET "
+	    "passwd='.*',name='name',email='email',institute='institute'"
+	    R"( WHERE \(users.userid=42\))"));
 	update_user(db, *user);
 	db.validate();
 }

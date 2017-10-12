@@ -777,6 +777,51 @@ function frontend_render_adaptive_tokens_div($pid) {
 	echo "</div>\n";
 }
 
+function frontend_render_account_div($user) {
+	echo '<div id="user-account" class="container-fluid">', "\n";
+	echo '<h2>Account for user #', $user['id'], '</h2>', "\n";
+	echo '<form action="account.php?update" method="post">', "\n";
+	// Name
+	echo '<div class="form-group">', "\n";
+	echo '<label for="name">Username</label>', "\n";
+	echo '<input name="name" type="text" value="', $user['name'], '" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Email
+	echo '<div class="form-group">', "\n";
+	echo '<label for="email">Email</label>', "\n";
+	echo '<input name="email" type="text" value="', $user['email'], '" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Institute
+	echo '<div class="form-group">', "\n";
+	echo '<label for="insitute">Institute</label>', "\n";
+	echo '<input name="institute" type="text" value="', $user['institute'], '" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Password 1
+	echo '<div class="form-group">', "\n";
+	echo '<label for="password">Password</label>', "\n";
+	echo '<input name="pass1" type="password" placeholder="Change password" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Password 2
+	echo '<div class="form-group">', "\n";
+	echo '<label for="password">Password (retype)</label>', "\n";
+	echo '<input name="pass2" type="password" placeholder="Change password" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// update button
+	echo '<button class="btn btn-primary" title="update account settings" type="submit">', "\n";
+	echo 'Update account settings', "\n";
+	echo '</button>', "\n";
+	// delete button
+	echo '<div class="pull-right">', "\n";
+	echo '</form>', "\n";
+	echo '<form action="account.php?delete" method="post">', "\n";
+	echo '<button class="btn btn-primary" title="delete this account" type="submit">', "\n";
+	echo 'Delete this account', "\n";
+	echo '</button>', "\n";
+	echo '</form>', "\n";
+	echo '</div>', "\n";
+	echo '</div>', "\n";
+}
+
 function frontend_render_success_div($msg) {
 	echo('<div class="container-fluid">');
 	echo('<div class="alert alert-success" role="alert">');

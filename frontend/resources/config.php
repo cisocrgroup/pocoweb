@@ -48,6 +48,7 @@ $config = array(
 			"getSuspiciousWords"  => "/books/%d/pages/%d/lines/%d/suspicious-words",
 			"languages"           => "/profiler-languages?url=%s",
 			"adaptiveTokens"      => "/books/%d/adaptive-tokens",
+			"updateUser"          => "/users/%d",
 		),
 	),
 	"cookies" => array(

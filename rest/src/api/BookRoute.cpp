@@ -149,13 +149,25 @@ Route::Response BookRoute::impl(HttpDelete, const Request& req, int bid) const {
 	auto conn = must_get_connection();
 	session->assert_permission(conn, bid, Permissions::Remove);
 	const auto project = session->must_find(conn, bid);
-	if (project->is_book())
-		remove_book(conn, *session, project->origin());
-	else
-		remove_project(conn, *session, *project);
+	MysqlCommiter commiter(conn);
+	delete_project(conn.db(), project->id());
+	session->uncache_project(project->id());
+	if (project->is_book()) {
+		const auto dir = project->origin().data.dir;
+		CROW_LOG_INFO << "(BookRoute) removing directory: " << dir;
+		boost::system::error_code ec;
+		boost::filesystem::remove_all(dir, ec);
+		if (ec)
+			CROW_LOG_WARNING
+			    << "(BookRoute) cannot remove directory: " << dir
+			    << ": " << ec.message();
+	}
+	session->uncache_project(project->id());
+	commiter.commit();
 	return ok();
 }
 
+#ifdef foo
 ////////////////////////////////////////////////////////////////////////////////
 void BookRoute::remove_project(MysqlConnection& conn, const Session& session,
 			       const Project& project) const {
@@ -231,3 +243,4 @@ void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
 	session.uncache_project(book.id());
 	commiter.commit();
 }
+#endif

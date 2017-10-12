@@ -1,5 +1,6 @@
 #include "core/User.hpp"
 #include <crow.h>
+#include <boost/filesystem.hpp>
 #include <regex>
 #include "UserRoute.hpp"
 #include "core/Session.hpp"
@@ -50,18 +51,17 @@ Route::Response UserRoute::impl(HttpPost, const Request& req) const {
 	auto conn = must_get_connection();
 	if (not session->user().admin())
 		THROW(Forbidden, "only admins can create new users");
-	CROW_LOG_DEBUG << "(UserRoute) body: " << req.body;
 	auto json = crow::json::load(req.body);
-	const std::string name = json["name"].s();
-	const std::string pass = json["pass"].s();
-	const std::string email = json["email"].s();
-	const std::string institute = json["institute"].s();
-	const bool admin = json["admin"].b();
-	if (name.empty() or pass.empty())
-		THROW(BadRequest, "missing name and/or password for new user");
+	const auto name = get<std::string>(json, "name");
+	const auto email = get<std::string>(json, "email");
+	const auto pass = get<std::string>(json, "pass");
+	const auto inst = get<std::string>(json, "institute");
+	const auto admin = get<bool>(json, "admin");
+	if (not name or not email or not pass or not inst or not admin)
+		THROW(BadRequest, "invalid data for new user");
 	MysqlCommiter commiter(conn);
 	const auto user =
-	    pcw::create_user(conn.db(), name, pass, email, institute, admin);
+	    pcw::create_user(conn.db(), *name, *pass, *email, *inst, *admin);
 	assert(user);
 	commiter.commit();
 	Json j;
@@ -72,25 +72,91 @@ Route::Response UserRoute::impl(HttpPost, const Request& req) const {
 Route::Response UserRoute::impl(HttpDelete, const Request& req, int uid) const {
 	LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
-	if (not session->user().admin())
-		THROW(Forbidden, "only admins can create new users");
 	auto user = select_user(conn.db(), uid);
 	if (not user) THROW(NotFound, "invalid user id: ", uid);
-	if (user->admin()) THROW(Forbidden, "cannot delete admin account");
+	if (user->admin() and user->id() != session->user().id()) {
+		THROW(Forbidden, "user ", session->user().name,
+		      " cannot delete user ", user->name);
+	}
+	if (not session->user().admin() and
+	    user->id() != session->user().id()) {
+		THROW(Forbidden, "user ", session->user().name,
+		      " cannot delete user ", user->name);
+	}
 	MysqlCommiter commiter(conn);
-	delete_user(conn.db(), uid);
+	tables::Projects p;
+	using namespace sqlpp;
+	auto ps =
+	    conn.db()(select(p.projectid).from(p).where(p.owner == user->id()));
+	for (const auto& pp : ps) {
+		const auto project = session->must_find(conn, pp.projectid);
+		delete_project(conn.db(), pp.projectid);
+		if (project->is_book()) {
+			const auto dir = project->origin().data.dir;
+			CROW_LOG_INFO << "(UserRoute) removing directory: "
+				      << dir;
+			boost::system::error_code ec;
+			boost::filesystem::remove_all(dir, ec);
+			if (ec)
+				CROW_LOG_WARNING
+				    << "(UserRoute) cannot remove directory: "
+				    << dir << ": " << ec.message();
+		}
+		session->uncache_project(pp.projectid);
+	}
+	delete_user(conn.db(), user->id());
 	commiter.commit();
 	return ok();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-[[noreturn]] Route::Response UserRoute::impl(HttpGet, const Request& req,
-					     int uid) const {
-	THROW(NotImplemented, "Not implemented: [GET] /users/uid");
+Route::Response UserRoute::impl(HttpGet, const Request& req, int uid) const {
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	auto user = select_user(conn.db(), uid);
+	if (not user) {
+		THROW(NotFound, "invalid user id: ", uid);
+	}
+	if (not session->user().admin()) {
+		THROW(Forbidden, "only admins can get user credentials");
+	}
+	Json j;
+	return j << *user;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-[[noreturn]] Route::Response UserRoute::impl(HttpPost, const Request& req,
-					     int uid) const {
-	THROW(NotImplemented, "Not implemented: [POST] /users/uid");
+Route::Response UserRoute::impl(HttpPost, const Request& req, int uid) const {
+	LockedSession session(must_find_session(req));
+	auto conn = must_get_connection();
+	auto user = select_user(conn.db(), uid);
+	if (not user) {
+		THROW(NotFound, "invalid user id: ", uid);
+	}
+	if (user->admin() and session->user().id() != user->id()) {
+		THROW(Forbidden, "user ", session->user().name,
+		      " cannot update user ", user->name);
+	}
+	if (not session->user().admin() and
+	    session->user().id() != user->id()) {
+		THROW(Forbidden, "user ", session->user().name,
+		      " cannot update user ", user->name);
+	}
+	auto json = crow::json::load(req.body);
+	const auto name = get<std::string>(json, "name");
+	const auto email = get<std::string>(json, "email");
+	const auto pass = get<std::string>(json, "pass");
+	const auto inst = get<std::string>(json, "institute");
+	// set values only if not empty
+	if (email and *email != "") user->email = *email;
+	if (name and *name != "") user->name = *name;
+	if (inst and *inst != "") user->institute = *inst;
+	if (pass and *pass != "") user->password = Password::make(*pass);
+	MysqlCommiter commiter(conn);
+	update_user(conn.db(), *user);
+	if (session->user().id() == user->id()) {
+		session->set_user(*user);
+	}
+	commiter.commit();
+	Json j;
+	return j << *user;
 }

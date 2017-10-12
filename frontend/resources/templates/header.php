@@ -37,6 +37,7 @@ if (isset($_GET["pid"])) {
 		    <ul class="nav navbar-nav navbar-left">
 			<li><a href="index.php">Projects</a></li>
 			<li><a href="users.php">Users</a></li>
+			<li><a href="account.php">Account</a></li>
 			<!--<li><a href="about.php">About</a></li> -->
 			<li><a href="documentation.php">Documentation</a></li>
 			<?php

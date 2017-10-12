@@ -348,4 +348,31 @@ function backend_get_adaptive_tokens($pid) {
 	$api->get_request();
 	return $api;
 }
+
+function backend_get_update_user_route($uid) {
+		global $config;
+		return sprintf($config["backend"]["url"] .
+				$config["backend"]["routes"]["updateUser"], $uid);
+}
+
+function backend_update_user($uid, $name, $email, $institute, $pass) {
+	global $SID;
+	$api = new Api(backend_get_update_user_route($uid));
+	$api->set_session_id($SID);
+	$api->get_request();
+	$data = array(
+		'name' => $name,
+		'email' => $email,
+		'institute' => $institute,
+	);
+	# set password only if it is not empty
+	if ($pass != "") {
+			$data['pass'] = $pass;
+	}
+	$api = new Api(backend_get_update_user_route($uid));
+	global $SID;
+	$api->set_session_id($SID);
+	$api->post_request($data);
+	return $api;
+}
 ?>

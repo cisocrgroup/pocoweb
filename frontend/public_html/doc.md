@@ -21,6 +21,7 @@ for suspicious words.
 ## Table of contents
 
 * [Users](#users-content-users)
+* [Account settings](#user-content-account-settings)
 * [User management](#user-content-user-management)
 * [Projects](#user-content-projects)
     * [Uploading new projects](#user-content-upload-new-project)
@@ -63,6 +64,25 @@ different permissions in the system:
     * Reassign packages back to their original owner.
 
 - - -
+<a id='account-settings'></a>
+## Account settings
+
+Users can manage their account settings using the [Account](/account.php) tab.
+They can only manage their own user's settings. It is not possible to change
+the settings of another user account even if you are logged in with an
+administrator account.
+
+In order to update user settings or to change the user's password, fill in
+or change the appropriate fields and click on the
+![update account settings](img/doc/button-update-account-settings.png) button.
+
+If you want to delete your account click on the
+![delete account](img/doc/button-delete-account.png) button.
+Note that using the account settings is the only way to delete
+an administrator account (see
+[User management](#user-content-user-management) below).
+
+- - -
 <a id='user-management'></a>
 ## User management
 
@@ -81,8 +101,13 @@ After the mask follows the user table.
 In order to remove an user account click on the
 ![remove](img/doc/glyphicon-remove.png) button in the according user entry
 in the user table.
-It is not possible at the moment to delete an existing admin account.
-Only regular user accounts can be deleted.
+It is not possible at the moment to delete an existing admin account;
+only regular user accounts can be deleted.
+
+To delete an administrator account log in with this account, go to the
+[Account](/account.php) tab and click to the
+![delete account](img/doc/button-delete-account.png)
+button (see [Account settings](#user-content-account-settings) above).
 
 - - -
 <a id='projects'></a>

@@ -1,8 +1,6 @@
 #include <crow.h>
-#include "DeleteUser.hpp"
 #include "Login.hpp"
 #include "Logout.hpp"
-#include "UpdateUser.hpp"
 #include "core/App.hpp"
 #include "core/Config.hpp"
 #include "core/Password.hpp"
@@ -38,17 +36,8 @@ static const char* do_plugin(const std::string& p, App& app) noexcept {
 	try {
 		app.config().setup_logging();
 		insert_default_user(p, app);
-
-		auto login = std::make_unique<Login>();
-		auto logout = std::make_unique<Logout>();
-		auto update_user = std::make_unique<UpdateUser>();
-		auto delete_user = std::make_unique<DeleteUser>();
-
-		app.Register(std::move(login));
-		app.Register(std::move(logout));
-		app.Register(std::move(update_user));
-		app.Register(std::move(delete_user));
-
+		app.Register(std::make_unique<Login>());
+		app.Register(std::make_unique<Logout>());
 		return nullptr;
 	} catch (const std::exception& e) {
 		return what(e);
