@@ -807,14 +807,14 @@ function frontend_render_account_div($user) {
 	echo '<input name="pass2" type="password" placeholder="Change password" class="form-control"/>', "\n";
 	echo '</div>', "\n";
 	// update button
-	echo '<button class="btn btn-primary" title="update" type="submit">', "\n";
+	echo '<button class="btn btn-primary" title="update account settings" type="submit">', "\n";
 	echo 'Update account settings', "\n";
 	echo '</button>', "\n";
 	// delete button
 	echo '<div class="pull-right">', "\n";
 	echo '</form>', "\n";
 	echo '<form action="account.php?delete" method="post">', "\n";
-	echo '<button class="btn btn-primary" title="delete" type="submit">', "\n";
+	echo '<button class="btn btn-primary" title="delete this account" type="submit">', "\n";
 	echo 'Delete this account', "\n";
 	echo '</button>', "\n";
 	echo '</form>', "\n";
