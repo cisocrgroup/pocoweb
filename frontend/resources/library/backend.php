@@ -369,7 +369,7 @@ function backend_update_user($uid, $name, $email, $institute, $pass) {
 	if ($pass != "") {
 			$data['pass'] = $pass;
 	}
-	$api = new Api(backend_get_upload_project_route($file));
+	$api = new Api(backend_get_update_user_route($uid));
 	global $SID;
 	$api->set_session_id($SID);
 	$api->post_request($data);
