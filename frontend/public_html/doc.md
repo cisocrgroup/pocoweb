@@ -33,9 +33,18 @@ for suspicious words.
     * [Page correction](#user-content-page-correction)
     * [Navigation bar](#user-content-navigation-bar)
     * [Concordance view](#user-content-concordance-view)
-* [Pocoweb backend](#user-content-pocoweb-backend)
 * [Installation](#user-content-installation)
+    * [Pocoweb frontend](#user-content-pocoweb-frontend)
+    * [Pocoweb backend](#user-content-pocoweb-backend)
 * [REST API](#user-content-rest-api)
+    * [[GET] rest-url/api-version](#user-content-api-get-version)
+    * [[POST] rest-url/login](#user-content-api-post-login)
+    * [[GET] rest-url/login](#user-content-api-get-login)
+	* [[POST] rest-url/users](#user-content-api-post-users)
+	* [[GET] rest-url/users](#user-content-api-get-users)
+	* [[POST] rest-url/users/uid](#user-content-api-post-users-uid)
+	* [[GET] rest-url/users/uid](#user-content-api-get-users-uid)
+	* [[DELETE] rest-url/users/uid](#user-content-api-delete-users-uid)
 
 - - -
 <a id='users'></a>
@@ -78,6 +87,9 @@ or change the appropriate fields and click on the
 
 If you want to delete your account click on the
 ![delete account](img/doc/button-delete-account.png) button.
+This will delete the user and all its projects and packages.
+Use with caution.
+
 Note that using the account settings is the only way to delete
 an administrator account (see
 [User management](#user-content-user-management) below).
@@ -408,7 +420,7 @@ since not the whole line was corrected but just a token in the line.
 
 You can correct each token individually.
 Just edit the token and then click to the
-![correct](img/doc/button-correct) button.
+![correct](img/doc/button-correct.png) button.
 If you want to correct multiple occurences of the tokens in
 the concordance view you can either set a global correction
 in the concordance bar
@@ -421,12 +433,15 @@ Before you correct all tokens in a series make sure, that only the
 tokens you want to correct are checked.
 
 - - -
-<a id='pocoweb-backend'></a>
-## Pocoweb backend
-
-- - -
 <a id='installation'></a>
 ## Installation
+
+<a id='pocoweb-frontend'></a>
+### Pocoweb frontend
+
+<a id='pocoweb-backend'></a>
+### Pocoweb backend
+
 
 - - -
 <a id='rest-api'></a>
@@ -438,11 +453,11 @@ the request path and the layout of the response data is listed.
 Additionally for POST requests the expected layout of the POST data is listed.
 You have to replace the parameters in the request path
 by valid ids:
- * `<uid>` references a valid user id.
- * `<pid>` references a valid project or package id.
- * `<page>` references a valid page id in a project or package.
- * `<lid>` references a valid line id on a page.
- * `<tid>` references a valid token id on a line.
+ * `uid` references a valid user id.
+ * `pid` references a valid project or package id.
+ * `pag>` references a valid page id in a project or package.
+ * `lid` references a valid line id on a page.
+ * `tid` references a valid token id on a line.
 
 You have to be logged in with a valid user account
 (see [Authorization](#user-content-authorization) below).
@@ -462,7 +477,7 @@ You have to be authenticated for most of the API calls.
 If you are not authenticated the API will return `403 Forbidden`
 with no response data.
 
-In order to authenticate you first have to [login](#user-content-login)
+In order to authenticate you first have to [login](#user-content-api-post-login)
 with a valid user account at the backend.
 The login will return an unique session id token.
 You have to send this session token in the `Authorization` header of
@@ -474,9 +489,9 @@ to set the `Authorization` header of curl in the following way:
 
 In order to get the first line of the first page of a project using
 curl you would have to run:
-`curl -H "Authorization: Pocoweb my-session-id" rest-url/books/<pid>/pages/1/lines/1`
+`curl -H "Authorization: Pocoweb my-session-id" rest-url/books/pid/pages/1/lines/1`
 
-<a id='version'></a>
+<a id='api-get-version'></a>
 ### [GET] rest-url/api-version
 
 Get the semantic version of the backend instance.
@@ -485,18 +500,18 @@ No [authorization](#user-content-authorization) is required.
 #### Response data
 ```json
 {
- "version": "1.2.3"
+  "version": "1.2.3"
 }
 ```
 
-<a id='login'></a>
+<a id='api-post-login'></a>
 ### [POST] rest-url/api-version
 You have to log in with a valid user account to use most of the API calls
 (see [authorization](#user-content-authorization) above).
 No [authorization](#user-content-authorization) is required.
+
 After a successfull login you can use the returned session id in the
 `Authorization` header of your future API calls.
-No [authorization](#user-content-authorization) is required
 
 #### POST data
 ```json
@@ -513,6 +528,7 @@ No [authorization](#user-content-authorization) is required
 }
 ```
 
+<a id='api-get-login'></a>
 ### [GET] rest-url/login
 Check if logged in and get the settings of the logged in user account.
 [Authorization](#user-content-authorization) is required.
@@ -520,9 +536,131 @@ Check if logged in and get the settings of the logged in user account.
 #### Response data
 ```json
 {
+  "id": 42,
   "name": "user-name",
   "email": "user-email",
   "insitute": "user-institute",
   "admin": true|false
 }
 ```
+
+<a id='api-post-users'></a>
+### [POST] rest-url/users
+Create a new user account.
+You have to be [authenticated](#user-content-authorization) with an administrator account.
+
+#### POST data
+```json
+{
+  "name": "user-name",
+  "pass": "password",
+  "email": "user-email",
+  "insitute": "user-institute",
+  "admin": true|false
+}
+```
+
+#### Response data
+```json
+{
+  "id": 42,
+  "name": "user-name",
+  "email": "user-email",
+  "insitute": "user-institute",
+  "admin": true|false
+}
+```
+
+<a id='api-get-users'></a>
+### [GET] rest-url/users
+Get a list of all users in the system.
+You have to be [authenticated](#user-content-authorization) with an administrator account.
+
+#### Response data
+```json
+{
+  "users": [
+    {
+      "id": 42,
+      "name": "user-name-1",
+      "email": "user-email-1",
+      "insitute": "user-institute-1",
+      "admin": true|false
+    },
+    {
+      "id": 42,
+      "name": "user-name-2",
+      "email": "user-email-2",
+      "insitute": "user-institute-2",
+      "admin": true|false
+    },
+	...
+  ]
+}
+```
+
+
+<a id='api-post-users-uid'></a>
+### [POST] rest-url/users/uid
+Update the account settings of an user.
+[Authorization](#user-content-authorization) is required.
+* Admins can update any normal user account.
+* Every user can change his own user account.
+* You cannot change the type (administrator or normal) of an user account.
+
+#### POST data
+```json
+{
+  "name": "user-name",
+  "pass": "password",
+  "email": "user-email",
+  "insitute": "user-institute",
+}
+```
+All fiels are optional.
+If a field is missing in the POST request or its value is the empty string "",
+this setting is not changed.
+
+#### Response data
+```json
+{
+  "id": 42,
+  "name": "updated-user-name",
+  "email": "updated-user-email",
+  "insitute": "updated-user-institute",
+  "admin": true|false
+}
+```
+
+<a id='api-get-users-uid'></a>
+### [GET] rest-url/users/uid
+
+Get the settings of an user account logged in user account.
+[Authorization](#user-content-authorization) is required.
+* Admins can get the settings of any normal user account.
+* Every user can get the settings of her own user account.
+
+#### Response data
+```json
+{
+  "id": 42,
+  "name": "user-name",
+  "email": "user-email",
+  "insitute": "user-institute",
+  "admin": true|false
+}
+```
+
+<a id='api-delete-users-uid'></a>
+### [DELETE] rest-url/users/uid
+Delete an user account.
+[Authorization](#user-content-authorization) is required.
+* Admins can delete any user account.
+* Every user can delete her own user account.
+
+If an user account is deleted, any projects and or packages,
+that the user owend are deleted.
+Since packages just define a subset of a project, the deletion of packages
+deletes the package information, but not the project information.
+It is save to delete a user that still owns a package.
+Note that if a project is deleted, all associated packages are deleted as well.
