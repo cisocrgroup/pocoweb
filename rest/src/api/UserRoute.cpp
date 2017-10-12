@@ -83,6 +83,14 @@ Route::Response UserRoute::impl(HttpDelete, const Request& req, int uid) const {
 		      " cannot delete user ", user->name);
 	}
 	MysqlCommiter commiter(conn);
+	tables::Projects p;
+	using namespace sqlpp;
+	auto ps =
+	    conn.db()(select(p.projectid).from(p).where(p.owner == user->id()));
+	for (const auto& pp : ps) {
+		delete_project(conn.db(), pp.projectid);
+		session->uncache_project(pp.projectid);
+	}
 	delete_user(conn.db(), user->id());
 	commiter.commit();
 	return ok();

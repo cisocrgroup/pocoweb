@@ -26,6 +26,11 @@ if (isset($_GET["update"])) {
 				}
 		}
 }
+if (isset($_GET["delete"])) {
+		frontend_render_info_div("deleting user account...");
+		backend_delete_user($USER['id']);
+}
+
 if ($USER !== NULL) {
 	frontend_render_account_div($USER);
 } else {
