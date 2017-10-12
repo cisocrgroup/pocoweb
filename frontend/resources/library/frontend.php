@@ -811,10 +811,14 @@ function frontend_render_account_div($user) {
 	echo 'Update account settings', "\n";
 	echo '</button>', "\n";
 	// delete button
+	echo '<div class="pull-right">', "\n";
+	echo '</form>', "\n";
+	echo '<form action="account.php?delete" method="post">', "\n";
 	echo '<button class="btn btn-primary" title="delete" type="submit">', "\n";
 	echo 'Delete this account', "\n";
 	echo '</button>', "\n";
 	echo '</form>', "\n";
+	echo '</div>', "\n";
 	echo '</div>', "\n";
 }
 
