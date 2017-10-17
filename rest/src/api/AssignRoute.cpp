@@ -36,9 +36,12 @@ Route::Response AssignRoute::assign(const Request& req, int bid) const {
 	const auto project = session->must_find(conn, bid);
 	UserPtr user = nullptr;
 	const auto id = get<int>(data, "id");
+	const auto userid = get<int>(data, "userId");
 	const auto name = get<std::string>(data, "name");
 	if (id)
 		user = session->find_user(conn, *id);
+    else if (userid)
+			user = session->find_user(conn, *id);
 	else if (name)
 		user = session->find_user(conn, *name);
 	else
