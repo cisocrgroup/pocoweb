@@ -59,6 +59,7 @@ for suspicious words.
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/next/`n`](#user-content-api-get-books-pid-pages-pageid-next-n)
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/prev/`n`](#user-content-api-get-books-pid-pages-pageid-prev-n)
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-get-books-pid-pages-pageid-lines-lid)
+	* [[GET] `rest-url`/books/`pid`/search](#user-content-api-get-books-pid-search)
 
 
 - - -
@@ -1088,4 +1089,73 @@ or package with id `pid`.
 }
 ```
 
+<a id='api-get-books-pid-search'></a>
+### [GET] `rest-url`/books/`pid`/search
+Search for a token or error pattern in a project or package with id `pid`.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can search for tokens or error patterns.
 
+#### Query parameters
+* The query is given with the `q=query` parameter. This parameter is mandatory.
+* The optional paramter `p=1|0` specifies if a token search or a error pattern
+search should be performed. If omitted `p=0` is assumed.
+
+#### Response data
+```json
+{
+  "query": "query-parameter",
+  "isErrorPattern": true|false,
+  "projectId": 27,
+  "nLines": 10,
+  "nWords": 15,
+  "matches": [
+    {
+	  "line": {
+        "lineId": 13,
+        "pageId": 38,
+        "projectId": 27,
+        "imgFile": "path to line image file",
+        "cor": "corrected content",
+        "ocr": "ocr content",
+        "cuts": [1, 3, 5, 7, 9, 11, ...],
+        "confidences": [0.1, 0.1, 0.9, 1.0, ...],
+        "averageConfidence": 0.5,
+        "isFullyCorrected": true|false,
+        "isPartiallyCorrected": true|false,
+        "box": {
+          "left": 1,
+          "right": 2,
+          "top": 3,
+          "bottom": 4,
+          "width": 1,
+          "height": 1
+        }
+	  },
+	  "matches": [
+	    {
+		  "projectId": 27,
+		  "pageId": 38,
+		  "lineId": 13,
+		  "tokenId": 17,
+		  "offset": 8,
+		  "isFullyCorrected": true|false,
+		  "isPartiallyCorrected": true|false,
+		  "cor": "corrected content of token",
+		  "ocr": "ocr content of token",
+		  "averageConf": 0.3,
+		  "isNormal": true|false,
+		  "box": {
+            "left": 1,
+            "right": 2,
+            "top": 3,
+            "bottom": 4,
+            "width": 1,
+            "height": 1
+		  },
+		},
+		...
+      ]
+    },
+    ...
+}
+```
