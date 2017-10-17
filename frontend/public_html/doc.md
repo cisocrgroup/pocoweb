@@ -546,7 +546,7 @@ After a successfull login you can use the returned session id in the
 <a id='api-get-login'></a>
 ### [GET] `rest-url`/login
 Check if logged in and get the settings of the logged in user account.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 
 #### Response data
 ```json
@@ -618,7 +618,7 @@ You have to be [authenticated](#user-content-authorization) with an administrato
 <a id='api-post-users-uid'></a>
 ### [POST] `rest-url`/users/`uid`
 Update the account settings of an user with an id of `uid`.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Admins can update any normal user account.
 * Every user can change his own user account.
 * You cannot change the type (administrator or normal) of an user account.
@@ -651,7 +651,7 @@ this setting is not changed.
 ### [GET] `rest-url`/users/`uid`
 
 Get the settings of an user account with an id of `uid`.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Admins can get the settings of any normal user account.
 * Every user can get the settings of her own user account.
 
@@ -669,7 +669,7 @@ Get the settings of an user account with an id of `uid`.
 <a id='api-delete-users-uid'></a>
 ### [DELETE] `rest-url`/users/`uid`
 Delete the user account of the user with an id of `uid`.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Admins can delete any user account.
 * Every user can delete her own user account.
 
@@ -683,7 +683,7 @@ Note that if a project is deleted, all associated packages are deleted as well.
 <a id='api-get-books'></a>
 ### [GET] `rest-url`/books
 Get all books of an user account.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 
 #### Response data
 ```json
@@ -709,7 +709,7 @@ Get all books of an user account.
 <a id='api-post-books'></a>
 ### [POST] `rest-url`/books
 Create a new project.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Only administrators can upload new projects.
 
 #### POST data
@@ -718,7 +718,7 @@ The raw data of the zipped [project archive](#user-content-project-archives).
 <a id='api-get-books-pid'></a>
 ### [GET] `rest-url`/books/`pid`
 Get the content of a project or package.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can access the project's or package's data.
 
 #### Response data
@@ -740,7 +740,7 @@ Get the content of a project or package.
 <a id='api-post-books-pid'></a>
 ### [POST] `rest-url`/books/`pid`
 Update the metadata of a project.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can update the project's data.
 
 #### POST data
@@ -757,7 +757,7 @@ Update the metadata of a project.
 <a id='api-delete-books-pid'></a>
 ### [DELETE] `rest-url`/books/`pid`
 Delete a project.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can delete a project.
 
 If a project is deleted, all associated packages are deleted as well.
@@ -770,7 +770,7 @@ archives are removed from the server.
 <a id='api-get-books-pid-download'></a>
 ### [GET] `rest-url`/books/`pid`/download
 Download a project.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can delete a project.
 
 This API call generates a new project archive and returns
@@ -801,7 +801,7 @@ only the according groundtruth files are updated.
 <a id='api-post-books-pid-assign'></a>
 ### [POST] `rest-url`/books/`pid`/assign
 Assign a packages to another user.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Only the owner of a package can assign it to another user.
 
 #### POST data
@@ -814,13 +814,13 @@ Assign a packages to another user.
 <a id='api-get-books-pid-finish'></a>
 ### [GET] `rest-url`/books/`pid`/finish
 Reassign a package to its original owner.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Only the owner of a package can reassign a it.
 
 <a id='api-get-books-pid-pages-pageid'></a>
 ### [GET] `rest-url`/books/`pid`/pages/`pageid`
 Get the content of a page with id `pageid` of a package or project with id `pid`.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its pages.
 
 #### Response data
@@ -868,7 +868,7 @@ Get the content of a page with id `pageid` of a package or project with id `pid`
 <a id='api-get-books-pid-pages-first'></a>
 ### [GET] `rest-url`/books/`pid`/pages/first
 Get the first page of a project or package with id `pid`.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its pages.
 
 #### Response data
@@ -915,7 +915,7 @@ Get the first page of a project or package with id `pid`.
 <a id='api-get-books-pid-pages-last'></a>
 ### [GET] `rest-url`/books/`pid`/pages/last
 Get the last page of a project or package with id `pid`.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its pages.
 
 #### Response data
@@ -963,7 +963,7 @@ Get the last page of a project or package with id `pid`.
 <a id='api-get-books-pid-pages-pageid-next-n'></a>
 ### [GET] `rest-url`/books/`pid`/pages/`pageid`/next/`n`
 Get the `n`-th next page of a page with id `pageid` of a project or package with id `pid`.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its pages.
 
 #### Response data
@@ -1011,7 +1011,7 @@ Get the `n`-th next page of a page with id `pageid` of a project or package with
 <a id='api-get-books-pid-pages-pageid-prev-n'></a>
 ### [GET] `rest-url`/books/`pid`/pages/`pageid`/prev/`n`
 Get the `n`-th previous page of a page with id `pageid` of a project or package with id `pid`.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its pages.
 
 #### Response data
@@ -1060,7 +1060,7 @@ Get the `n`-th previous page of a page with id `pageid` of a project or package 
 ### [GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`
 Get the line with id `lid` of a page with id `pageid` from a project
 or package with id `pid`.
-[Authorization](#user-content-authorization) is required.
+* [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its lines.
 
 #### Response data
@@ -1087,3 +1087,5 @@ or package with id `pid`.
   }
 }
 ```
+
+
