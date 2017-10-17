@@ -37,19 +37,29 @@ for suspicious words.
     * [Pocoweb frontend](#user-content-pocoweb-frontend)
     * [Pocoweb backend](#user-content-pocoweb-backend)
 * [REST API](#user-content-rest-api)
-    * [[GET] rest-url/api-version](#user-content-api-get-version)
-    * [[POST] rest-url/login](#user-content-api-post-login)
-    * [[GET] rest-url/login](#user-content-api-get-login)
-	* [[POST] rest-url/users](#user-content-api-post-users)
-	* [[GET] rest-url/users](#user-content-api-get-users)
-	* [[POST] rest-url/users/uid](#user-content-api-post-users-uid)
-	* [[GET] rest-url/users/uid](#user-content-api-get-users-uid)
-	* [[DELETE] rest-url/users/uid](#user-content-api-delete-users-uid)
-	* [[GET] rest-url/books](#user-content-api-get-books)
-	* [[POST] rest-url/books](#user-content-api-post-books)
-	* [[GET] rest-url/books/pid](#user-content-api-get-books-pid)
-	* [[POST] rest-url/books/pid](#user-content-api-post-books-pid)
-	* [[DELETE] rest-url/books/pid](#user-content-api-delete-books-pid)
+    * [[GET] `rest-url`/api-version](#user-content-api-get-version)
+    * [[POST] `rest-url`/login](#user-content-api-post-login)
+    * [[GET] `rest-url`/login](#user-content-api-get-login)
+	* [[POST] `rest-url`/users](#user-content-api-post-users)
+	* [[GET] `rest-url`/users](#user-content-api-get-users)
+	* [[POST] `rest-url`/users/`uid`](#user-content-api-post-users-uid)
+	* [[GET] `rest-url`/users/`uid`](#user-content-api-get-users-uid)
+	* [[DELETE] `rest-url`/users/`uid`](#user-content-api-delete-users-uid)
+	* [[GET] `rest-url`/books](#user-content-api-get-books)
+	* [[POST] `rest-url`/books](#user-content-api-post-books)
+	* [[GET] `rest-url`/books/`pid`](#user-content-api-get-books-pid)
+	* [[POST] `rest-url`/books/`pid`](#user-content-api-post-books-pid)
+	* [[DELETE] `rest-url`/books/`pid`](#user-content-api-delete-books-pid)
+	* [[GET] `rest-url`/books/`pid`/download](#user-content-api-get-books-pid-download)
+	* [[POST] `rest-url`/books/`pid`/assign](#user-content-api-post-books-pid-assign)
+	* [[GET] `rest-url`/books/`pid`/finish](#user-content-api-get-books-pid-finish)
+	* [[GET] `rest-url`/books/`pid`/pages/`pageid`](#user-content-api-get-books-pid-pages-pageid)
+	* [[GET] `rest-url`/books/`pid`/pages/first](#user-content-api-get-books-pid-pages-first)
+	* [[GET] `rest-url`/books/`pid`/pages/last](#user-content-api-get-books-pid-pages-last)
+	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/next/`n`](#user-content-api-get-books-pid-pages-pageid-next-n)
+	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/prev/`n`](#user-content-api-get-books-pid-pages-pageid-prev-n)
+	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-get-books-pid-pages-pageid-lines-lid)
+
 
 - - -
 <a id='users'></a>
@@ -469,11 +479,10 @@ You have to be logged in with a valid user account
 
 All URLs in the API documentation reference a `rest-url`.
 You have to set this parameter for your backend accordingly.
-So for example the backend URL for this site is
-<?php global $config; echo $config['backend']['url'];?>.
+So for example the backend URL for this site is <code><?php global $config; echo $config['backend']['url'];?></code>.
 This means that you have to replace the occurences of `rest-url`
 in the paths of the REST API documentation with
-<?php global $config; echo $config['backend']['url'];?>.
+<code><?php global $config; echo $config['backend']['url'];?></code>.
 
 <a id='authorization'></a>
 ### Authorization
@@ -492,12 +501,13 @@ For example if your session id is `my-session-id` you have
 to set the `Authorization` header of curl in the following way:
 `curl -H "Authorization: Pocoweb my-session-id"`.
 
-In order to get the first line of the first page of a project using
-curl you would have to run:
-`curl -H "Authorization: Pocoweb my-session-id" rest-url/books/pid/pages/1/lines/1`
+In order to get the 13-th line of the 38-th page of a project with an id of 27
+from this pocoweb backend using curl you would have to run:
+
+<code>curl -H "Authorization: Pocoweb my-session-id" <?php global $config; echo $config['backend']['url'];?>/books/27/pages/38/lines/13</code>
 
 <a id='api-get-version'></a>
-### [GET] rest-url/api-version
+### [GET] `rest-url`/api-version
 
 Get the semantic version of the backend instance.
 No [authorization](#user-content-authorization) is required.
@@ -510,7 +520,7 @@ No [authorization](#user-content-authorization) is required.
 ```
 
 <a id='api-post-login'></a>
-### [POST] rest-url/api-version
+### [POST] `rest-url`/api-version
 You have to log in with a valid user account to use most of the API calls
 (see [authorization](#user-content-authorization) above).
 No [authorization](#user-content-authorization) is required.
@@ -534,7 +544,7 @@ After a successfull login you can use the returned session id in the
 ```
 
 <a id='api-get-login'></a>
-### [GET] rest-url/login
+### [GET] `rest-url`/login
 Check if logged in and get the settings of the logged in user account.
 [Authorization](#user-content-authorization) is required.
 
@@ -550,7 +560,7 @@ Check if logged in and get the settings of the logged in user account.
 ```
 
 <a id='api-post-users'></a>
-### [POST] rest-url/users
+### [POST] `rest-url`/users
 Create a new user account.
 You have to be [authenticated](#user-content-authorization) with an administrator account.
 
@@ -577,7 +587,7 @@ You have to be [authenticated](#user-content-authorization) with an administrato
 ```
 
 <a id='api-get-users'></a>
-### [GET] rest-url/users
+### [GET] `rest-url`/users
 Get a list of all users in the system.
 You have to be [authenticated](#user-content-authorization) with an administrator account.
 
@@ -606,8 +616,8 @@ You have to be [authenticated](#user-content-authorization) with an administrato
 
 
 <a id='api-post-users-uid'></a>
-### [POST] rest-url/users/uid
-Update the account settings of an user.
+### [POST] `rest-url`/users/`uid`
+Update the account settings of an user with an id of `uid`.
 [Authorization](#user-content-authorization) is required.
 * Admins can update any normal user account.
 * Every user can change his own user account.
@@ -638,9 +648,9 @@ this setting is not changed.
 ```
 
 <a id='api-get-users-uid'></a>
-### [GET] rest-url/users/uid
+### [GET] `rest-url`/users/`uid`
 
-Get the settings of an user account logged in user account.
+Get the settings of an user account with an id of `uid`.
 [Authorization](#user-content-authorization) is required.
 * Admins can get the settings of any normal user account.
 * Every user can get the settings of her own user account.
@@ -657,8 +667,8 @@ Get the settings of an user account logged in user account.
 ```
 
 <a id='api-delete-users-uid'></a>
-### [DELETE] rest-url/users/uid
-Delete an user account.
+### [DELETE] `rest-url`/users/`uid`
+Delete the user account of the user with an id of `uid`.
 [Authorization](#user-content-authorization) is required.
 * Admins can delete any user account.
 * Every user can delete her own user account.
@@ -671,7 +681,7 @@ It is save to delete a user that still owns a package.
 Note that if a project is deleted, all associated packages are deleted as well.
 
 <a id='api-get-books'></a>
-### [GET] rest-url/books
+### [GET] `rest-url`/books
 Get all books of an user account.
 [Authorization](#user-content-authorization) is required.
 
@@ -697,7 +707,7 @@ Get all books of an user account.
 ```
 
 <a id='api-post-books'></a>
-### [POST] rest-url/books
+### [POST] `rest-url`/books
 Create a new project.
 [Authorization](#user-content-authorization) is required.
 * Only administrators can upload new projects.
@@ -706,7 +716,7 @@ Create a new project.
 The raw data of the zipped [project archive](#user-content-project-archives).
 
 <a id='api-get-books-pid'></a>
-### [GET] rest-url/books/pid
+### [GET] `rest-url`/books/`pid`
 Get the content of a project or package.
 [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can access the project's or package's data.
@@ -728,7 +738,7 @@ Get the content of a project or package.
 ```
 
 <a id='api-post-books-pid'></a>
-### [POST] rest-url/books/pid
+### [POST] `rest-url`/books/`pid`
 Update the metadata of a project.
 [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can update the project's data.
@@ -745,7 +755,7 @@ Update the metadata of a project.
 ```
 
 <a id='api-delete-books-pid'></a>
-### [DELETE] rest-url/books/pid
+### [DELETE] `rest-url`/books/`pid`
 Delete a project.
 [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can delete a project.
@@ -756,3 +766,324 @@ The deletion remove all database entries of the projects and all
 associated packages.
 In addition to this the page and line images and all remaining project
 archives are removed from the server.
+
+<a id='api-get-books-pid-download'></a>
+### [GET] `rest-url`/books/`pid`/download
+Download a project.
+[Authorization](#user-content-authorization) is required.
+* Only the owner of a project can delete a project.
+
+This API call generates a new project archive and returns
+the relative url of the new archive.
+The new project contains all original OCR and image files with
+all corrections.
+Additionally the archive contains a file called `adaptive_tokens.txt` as well
+as a `ocropus-book` directory structure.
+
+The file `adaptive_tokens.txt` contains the
+[adaptive token set](#user-content-profile-project) of the various
+profiler runs (if any). This file can be empty, if no profiling was used or
+if the profiler could not find any adaptive tokens.
+
+The `ocorpus-book` directory contains an
+[ocropus directory structure](#user-content-project-archives)
+that can directly be used for model training with ocoropus.
+If the project archive was already a ocropus directory structure,
+only the according groundtruth files are updated.
+
+#### Response data
+```json
+{
+  "archive": "relative download url of project archive",
+}
+```
+
+<a id='api-post-books-pid-assign'></a>
+### [POST] `rest-url`/books/`pid`/assign
+Assign a packages to another user.
+[Authorization](#user-content-authorization) is required.
+* Only the owner of a package can assign it to another user.
+
+#### POST data
+```json
+{
+  "userId": 27
+}
+```
+
+<a id='api-get-books-pid-finish'></a>
+### [GET] `rest-url`/books/`pid`/finish
+Reassign a package to its original owner.
+[Authorization](#user-content-authorization) is required.
+* Only the owner of a package can reassign a it.
+
+<a id='api-get-books-pid-pages-pageid'></a>
+### [GET] `rest-url`/books/`pid`/pages/`pageid`
+Get the content of a page with id `pageid` of a package or project with id `pid`.
+[Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can read its pages.
+
+#### Response data
+```json
+{
+  "pageId": 38,
+  "projectId": 27,
+  "ocrFile": "name of ocr file",
+  "imgFile": "name of image file",
+  "box": {
+    "left": 1,
+    "right": 2,
+    "top": 3,
+    "bottom": 4,
+    "width": 1,
+    "height": 1
+  },
+  "lines": [
+    {
+      "lineId": 13,
+      "pageId": 38,
+      "projectId": 27,
+      "imgFile": "path to line image file",
+      "cor": "corrected content",
+      "ocr": "ocr content",
+      "cuts": [1, 3, 5, 7, 9, 11, ...],
+      "confidences": [0.1, 0.1, 0.9, 1.0, ...],
+      "averageConfidence": 0.5,
+      "isFullyCorrected": true|false,
+      "isPartiallyCorrected": true|false,
+      "box": {
+        "left": 1,
+        "right": 2,
+        "top": 3,
+        "bottom": 4,
+        "width": 1,
+        "height": 1
+      }
+    },
+    ...
+  ]
+}
+```
+
+<a id='api-get-books-pid-pages-first'></a>
+### [GET] `rest-url`/books/`pid`/pages/first
+Get the first page of a project or package with id `pid`.
+[Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can read its pages.
+
+#### Response data
+```json
+{
+  "pageId": 38,
+  "projectId": 27,
+  "ocrFile": "name of ocr file",
+  "imgFile": "name of image file",
+  "box": {
+    "left": 1,
+    "right": 2,
+    "top": 3,
+    "bottom": 4,
+    "width": 1,
+    "height": 1
+  },
+  "lines": [
+    {
+      "lineId": 13,
+      "pageId": 38,
+      "projectId": 27,
+      "imgFile": "path to line image file",
+      "cor": "corrected content",
+      "ocr": "ocr content",
+      "cuts": [1, 3, 5, 7, 9, 11, ...],
+      "confidences": [0.1, 0.1, 0.9, 1.0, ...],
+      "averageConfidence": 0.5,
+      "isFullyCorrected": true|false,
+      "isPartiallyCorrected": true|false,
+      "box": {
+        "left": 1,
+        "right": 2,
+        "top": 3,
+        "bottom": 4,
+        "width": 1,
+        "height": 1
+      }
+    },
+    ...
+  ]
+}
+```
+<a id='api-get-books-pid-pages-last'></a>
+### [GET] `rest-url`/books/`pid`/pages/last
+Get the last page of a project or package with id `pid`.
+[Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can read its pages.
+
+#### Response data
+```json
+{
+  "pageId": 38,
+  "projectId": 27,
+  "ocrFile": "name of ocr file",
+  "imgFile": "name of image file",
+  "box": {
+    "left": 1,
+    "right": 2,
+    "top": 3,
+    "bottom": 4,
+    "width": 1,
+    "height": 1
+  },
+  "lines": [
+    {
+      "lineId": 13,
+      "pageId": 38,
+      "projectId": 27,
+      "imgFile": "path to line image file",
+      "cor": "corrected content",
+      "ocr": "ocr content",
+      "cuts": [1, 3, 5, 7, 9, 11, ...],
+      "confidences": [0.1, 0.1, 0.9, 1.0, ...],
+      "averageConfidence": 0.5,
+      "isFullyCorrected": true|false,
+      "isPartiallyCorrected": true|false,
+      "box": {
+        "left": 1,
+        "right": 2,
+        "top": 3,
+        "bottom": 4,
+        "width": 1,
+        "height": 1
+      }
+    },
+    ...
+  ]
+}
+```
+
+<a id='api-get-books-pid-pages-pageid-next-n'></a>
+### [GET] `rest-url`/books/`pid`/pages/`pageid`/next/`n`
+Get the `n`-th next page of a page with id `pageid` of a project or package with id `pid`.
+[Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can read its pages.
+
+#### Response data
+```json
+{
+  "pageId": 38,
+  "projectId": 27,
+  "ocrFile": "name of ocr file",
+  "imgFile": "name of image file",
+  "box": {
+    "left": 1,
+    "right": 2,
+    "top": 3,
+    "bottom": 4,
+    "width": 1,
+    "height": 1
+  },
+  "lines": [
+    {
+      "lineId": 13,
+      "pageId": 38,
+      "projectId": 27,
+      "imgFile": "path to line image file",
+      "cor": "corrected content",
+      "ocr": "ocr content",
+      "cuts": [1, 3, 5, 7, 9, 11, ...],
+      "confidences": [0.1, 0.1, 0.9, 1.0, ...],
+      "averageConfidence": 0.5,
+      "isFullyCorrected": true|false,
+      "isPartiallyCorrected": true|false,
+      "box": {
+        "left": 1,
+        "right": 2,
+        "top": 3,
+        "bottom": 4,
+        "width": 1,
+        "height": 1
+      }
+    },
+    ...
+  ]
+}
+```
+
+<a id='api-get-books-pid-pages-pageid-prev-n'></a>
+### [GET] `rest-url`/books/`pid`/pages/`pageid`/prev/`n`
+Get the `n`-th previous page of a page with id `pageid` of a project or package with id `pid`.
+[Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can read its pages.
+
+#### Response data
+```json
+{
+  "pageId": 38,
+  "projectId": 27,
+  "ocrFile": "name of ocr file",
+  "imgFile": "name of image file",
+  "box": {
+    "left": 1,
+    "right": 2,
+    "top": 3,
+    "bottom": 4,
+    "width": 1,
+    "height": 1
+  },
+  "lines": [
+    {
+      "lineId": 13,
+      "pageId": 38,
+      "projectId": 27,
+      "imgFile": "path to line image file",
+      "cor": "corrected content",
+      "ocr": "ocr content",
+      "cuts": [1, 3, 5, 7, 9, 11, ...],
+      "confidences": [0.1, 0.1, 0.9, 1.0, ...],
+      "averageConfidence": 0.5,
+      "isFullyCorrected": true|false,
+      "isPartiallyCorrected": true|false,
+      "box": {
+        "left": 1,
+        "right": 2,
+        "top": 3,
+        "bottom": 4,
+        "width": 1,
+        "height": 1
+      }
+    },
+    ...
+  ]
+}
+```
+
+<a id='api-get-books-pid-pages-pageid-lines-lid'></a>
+### [GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`
+Get the line with id `lid` of a page with id `pageid` from a project
+or package with id `pid`.
+[Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can read its lines.
+
+#### Response data
+```json
+{
+  "lineId": 13,
+  "pageId": 38,
+  "projectId": 27,
+  "imgFile": "path to line image file",
+  "cor": "corrected content",
+  "ocr": "ocr content",
+  "cuts": [1, 3, 5, 7, 9, 11, ...],
+  "confidences": [0.1, 0.1, 0.9, 1.0, ...],
+  "averageConfidence": 0.5,
+  "isFullyCorrected": true|false,
+  "isPartiallyCorrected": true|false,
+  "box": {
+    "left": 1,
+    "right": 2,
+    "top": 3,
+    "bottom": 4,
+    "width": 1,
+    "height": 1
+  }
+}
+```
