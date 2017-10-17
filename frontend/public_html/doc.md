@@ -45,6 +45,11 @@ for suspicious words.
 	* [[POST] rest-url/users/uid](#user-content-api-post-users-uid)
 	* [[GET] rest-url/users/uid](#user-content-api-get-users-uid)
 	* [[DELETE] rest-url/users/uid](#user-content-api-delete-users-uid)
+	* [[GET] rest-url/books](#user-content-api-get-books)
+	* [[POST] rest-url/books](#user-content-api-post-books)
+	* [[GET] rest-url/books/pid](#user-content-api-get-books-pid)
+	* [[POST] rest-url/books/pid](#user-content-api-post-books-pid)
+	* [[DELETE] rest-url/books/pid](#user-content-api-delete-books-pid)
 
 - - -
 <a id='users'></a>
@@ -455,7 +460,7 @@ You have to replace the parameters in the request path
 by valid ids:
  * `uid` references a valid user id.
  * `pid` references a valid project or package id.
- * `pag>` references a valid page id in a project or package.
+ * `pageid` references a valid page id in a project or package.
  * `lid` references a valid line id on a page.
  * `tid` references a valid token id on a line.
 
@@ -664,3 +669,90 @@ Since packages just define a subset of a project, the deletion of packages
 deletes the package information, but not the project information.
 It is save to delete a user that still owns a package.
 Note that if a project is deleted, all associated packages are deleted as well.
+
+<a id='api-get-books'></a>
+### [GET] rest-url/books
+Get all books of an user account.
+[Authorization](#user-content-authorization) is required.
+
+#### Response data
+```json
+{
+  "books": [
+    {
+      "author": "book-author",
+      "title": "book-title",
+      "year": 1234,
+      "language": "language",
+      "profilerUrl": "profiler-url|local",
+      "bookId": 27,
+      "projectId": 42,
+      "pages": 100,
+      "pageIds": [15,18,20,27,...],
+      "isBook": true|false
+    },
+    ...
+  ]
+}
+```
+
+<a id='api-post-books'></a>
+### [POST] rest-url/books
+Create a new project.
+[Authorization](#user-content-authorization) is required.
+* Only administrators can upload new projects.
+
+#### POST data
+The raw data of the zipped [project archive](#user-content-project-archives).
+
+<a id='api-get-books-pid'></a>
+### [GET] rest-url/books/pid
+Get the content of a project or package.
+[Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access the project's or package's data.
+
+#### Response data
+```json
+{
+  "author": "book-author",
+  "title": "book-title",
+  "year": 1234,
+  "language": "language",
+  "profilerUrl": "profiler-url|local",
+  "bookId": 27,
+  "projectId": 42,
+  "pages": 100,
+  "pageIds": [15,18,20,27,...],
+  "isBook": true|false
+}
+```
+
+<a id='api-post-books-pid'></a>
+### [POST] rest-url/books/pid
+Update the metadata of a project.
+[Authorization](#user-content-authorization) is required.
+* Only the owner of a project can update the project's data.
+
+#### POST data
+```json
+{
+  "author": "book-author",
+  "title": "book-title",
+  "year": 1234,
+  "language": "language",
+  "profilerUrl": "profiler-url|local"
+}
+```
+
+<a id='api-delete-books-pid'></a>
+### [DELETE] rest-url/books/pid
+Delete a project.
+[Authorization](#user-content-authorization) is required.
+* Only the owner of a project can delete a project.
+
+If a project is deleted, all associated packages are deleted as well.
+It is not possible to delete a package.
+The deletion remove all database entries of the projects and all
+associated packages.
+In addition to this the page and line images and all remaining project
+archives are removed from the server.
