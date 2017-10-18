@@ -744,7 +744,7 @@ function frontend_render_concordance_div($pid, $q, $isErrorPattern) {
 			if (isset($matches["matches"])) {
 				foreach ($matches["matches"] as $match) {
 					$line = $match["line"];
-					foreach ($match["matches"] as $word) {
+					foreach ($match["tokens"] as $word) {
 						frontend_render_concordance_line_div($line, $word);
 					}
 				}
