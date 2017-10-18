@@ -16,7 +16,7 @@
 #include "utils/ScopeGuard.hpp"
 
 #define LINE_ROUTE_ROUTE "/books/<int>/pages/<int>/lines/<int>"
-#define WORD_ROUTE_ROUTE "/books/<int>/pages/<int>/lines/<int>/words/<int>"
+#define WORD_ROUTE_ROUTE "/books/<int>/pages/<int>/lines/<int>/tokens/<int>"
 
 using namespace pcw;
 

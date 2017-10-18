@@ -37,7 +37,7 @@ $config = array(
 			"getLastPage"         => "/books/%d/pages/last",
 			"getNthPage"          => "/books/%d/pages/%d",
 			"correctLine"         => "/books/%d/pages/%d/lines/%d",
-			"correctWord"         => "/books/%d/pages/%d/lines/%d/words/%d",
+			"correctWord"         => "/books/%d/pages/%d/lines/%d/tokens/%d",
 			"uploadProject"       => "/books",
 			"search"              => "/books/%d/search?q=%s&p=%d",
 			"splitImages"         => "/books/%d/pages/%d/lines/%d/tokens/%d/split-images",
