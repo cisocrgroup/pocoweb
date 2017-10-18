@@ -587,7 +587,7 @@ pcw.markSuspiciousWordsInLine = function(status, res) {
 	}
 	var text = line.firstChild.nodeValue;
 	for (var i = 0; i < res.suspiciousWords.length; i++) {
-		var wi = res.suspiciousWords[i].string;
+		var wi = res.suspiciousWords[i].token;
 		text = text.replace(
 		    new RegExp(wi, 'g'),
 		    "<span class=\"underline\">" + wi + "</span>");
