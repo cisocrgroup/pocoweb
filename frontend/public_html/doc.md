@@ -50,6 +50,8 @@ for suspicious words.
 	* [[GET] `rest-url`/books/`pid`](#user-content-api-get-books-pid)
 	* [[POST] `rest-url`/books/`pid`](#user-content-api-post-books-pid)
 	* [[DELETE] `rest-url`/books/`pid`](#user-content-api-delete-books-pid)
+	* [[POST] `rest-url`/books/`pid`/split](#user-content-api-post-books-pid-split)
+	* [[GET] `rest-url`/books/`pid`/adaptive-tokens](#user-content-api-post-books-pid-adaptive-tokens)
 	* [[GET] `rest-url`/books/`pid`/download](#user-content-api-get-books-pid-download)
 	* [[POST] `rest-url`/books/`pid`/assign](#user-content-api-post-books-pid-assign)
 	* [[GET] `rest-url`/books/`pid`/finish](#user-content-api-get-books-pid-finish)
@@ -61,8 +63,16 @@ for suspicious words.
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/prev/`n`](#user-content-api-get-books-pid-pages-pageid-prev-n)
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-get-books-pid-pages-pageid-lines-lid)
 	* [[POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-post-books-pid-pages-pageid-lines-lid)
-	* [[POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/words/`tid`](#user-content-api-post-books-pid-pages-pageid-lines-lid-words-tid)
-
+	* [[POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid)
+	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`/split-images](#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid-split-images)
+	* [[GET] `rest-url`/books/`pid`/suggestions](#user-content-api-get-books-pid-suggestions)
+	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`/suggestions](#user-content-api-get-books-pid-pages-pageid-lines-lid-tokens-tid-suggestions)
+    * [[GET] `rest-url`/books/`pid`/suspicious-words](#user-content-api-get-books-pid-suspicious-words)
+    * [[GET] `rest-url`/books/`pid`/pages/`pageid`/suspicious-words](#user-content-api-get-books-pid-pages-pageid-suspicious-words)
+    * [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/suspicious-words](#user-content-api-get-books-pid-pages-pageid-lines-lid-suspicious-words)
+	* [[GET] `rest-url`/books/`pid`/profile](#user-content-api-get-books-pid-profile)
+	* [[POST] `rest-url`/books/`pid`/profile](#user-content-api-post-books-pid-profile)
+	* [[GET] `rest-url`/profiler-languages](#user-content-api-get-profiler-languages)
 
 - - -
 <a id='users'></a>
@@ -513,7 +523,7 @@ from this pocoweb backend using curl you would have to run:
 ### [GET] `rest-url`/api-version
 
 Get the semantic version of the backend instance.
-No [authorization](#user-content-authorization) is required.
+* No [authorization](#user-content-authorization) is required.
 
 #### Response data
 ```json
@@ -770,6 +780,58 @@ associated packages.
 In addition to this the page and line images and all remaining project
 archives are removed from the server.
 
+<a id='api-post-books-pid-split'></a>
+### [POST] `rest-url`/books/`pid`/split
+Split a [project into packages](#user-content-projects).
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project can split a project into packages.
+
+#### Post data
+```json
+{
+  "n": 8,
+  "random": true|false
+}
+```
+* The mandatory argument `n` gives the number of packges to create.
+* The optional argument `random` specifies if the pages of the packages
+should be generated at random or sequencial. If omitted `random=false` is assumed.
+
+#### Response data
+```json
+{
+  "books": [
+    {
+      "author": "book-author",
+      "title": "book-title",
+      "year": 1234,
+      "language": "language",
+      "profilerUrl": "profiler-url|local",
+      "bookId": 27,
+      "projectId": 42,
+      "pages": 100,
+      "pageIds": [15,18,20,27,...],
+      "isBook": true|false
+    },
+    ...
+  ]
+}
+```
+
+<a id='api-post-books-pid-adaptive-tokens'></a>
+### [GET] `rest-url`/books/`pid`/adaptive-tokens
+Get a list of the adaptive tokens of the last profiler run.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project can access the adaptive token set of the project.
+
+#### Response data
+```json
+{
+  "projectId": 27,
+  "adaptiveTokens": ["token1", "token2", ...]
+}
+```
+
 <a id='api-get-books-pid-download'></a>
 ### [GET] `rest-url`/books/`pid`/download
 Download a project.
@@ -846,7 +908,7 @@ search should be performed. If omitted `p=0` is assumed.
         "lineId": 13,
         "pageId": 38,
         "projectId": 27,
-        "imgFile": "path to line image file",
+        "imgFile": "path/to/line/image/file",
         "cor": "corrected content",
         "ocr": "ocr content",
         "cuts": [1, 3, 5, 7, 9, 11, ...],
@@ -917,7 +979,7 @@ Get the content of a page with id `pageid` of a package or project with id `pid`
       "lineId": 13,
       "pageId": 38,
       "projectId": 27,
-      "imgFile": "path to line image file",
+      "imgFile": "path/to/line/image/file",
       "cor": "corrected content",
       "ocr": "ocr content",
       "cuts": [1, 3, 5, 7, 9, 11, ...],
@@ -965,7 +1027,7 @@ Get the first page of a project or package with id `pid`.
       "lineId": 13,
       "pageId": 38,
       "projectId": 27,
-      "imgFile": "path to line image file",
+      "imgFile": "path/to/line/image/file",
       "cor": "corrected content",
       "ocr": "ocr content",
       "cuts": [1, 3, 5, 7, 9, 11, ...],
@@ -1012,7 +1074,7 @@ Get the last page of a project or package with id `pid`.
       "lineId": 13,
       "pageId": 38,
       "projectId": 27,
-      "imgFile": "path to line image file",
+      "imgFile": "path/to/line/image/file",
       "cor": "corrected content",
       "ocr": "ocr content",
       "cuts": [1, 3, 5, 7, 9, 11, ...],
@@ -1060,7 +1122,7 @@ Get the `n`-th next page of a page with id `pageid` of a project or package with
       "lineId": 13,
       "pageId": 38,
       "projectId": 27,
-      "imgFile": "path to line image file",
+      "imgFile": "path/to/line/image/file",
       "cor": "corrected content",
       "ocr": "ocr content",
       "cuts": [1, 3, 5, 7, 9, 11, ...],
@@ -1108,7 +1170,7 @@ Get the `n`-th previous page of a page with id `pageid` of a project or package 
       "lineId": 13,
       "pageId": 38,
       "projectId": 27,
-      "imgFile": "path to line image file",
+      "imgFile": "path/to/line/image/file",
       "cor": "corrected content",
       "ocr": "ocr content",
       "cuts": [1, 3, 5, 7, 9, 11, ...],
@@ -1143,7 +1205,7 @@ or package with id `pid`.
   "lineId": 13,
   "pageId": 38,
   "projectId": 27,
-  "imgFile": "path to line image file",
+  "imgFile": "path/to/line/image/file",
   "cor": "corrected content",
   "ocr": "ocr content",
   "cuts": [1, 3, 5, 7, 9, 11, ...],
@@ -1181,7 +1243,7 @@ Correct line `lid` in page `pageid` of project or package `pid`.
   "lineId": 13,
   "pageId": 38,
   "projectId": 27,
-  "imgFile": "path to line image file",
+  "imgFile": "path/to/line/image/file",
   "cor": "corrected content",
   "ocr": "ocr content",
   "cuts": [1, 3, 5, 7, 9, 11, ...],
@@ -1200,8 +1262,8 @@ Correct line `lid` in page `pageid` of project or package `pid`.
 }
 ```
 
-<a id='api-post-books-pid-pages-pageid-lines-lid-words-tid'></a>
-### [POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/words/`tid`
+<a id='api-post-books-pid-pages-pageid-lines-lid-tokens-tid'></a>
+### [POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`
 Correct word `tid` in line `lid` in page `pageid` of project or package `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its lines.
@@ -1221,7 +1283,7 @@ Correct word `tid` in line `lid` in page `pageid` of project or package `pid`.
   "projectId": 27,
   "tokenId": 77,
   "offset": 10,
-  "imgFile": "path to line image file",
+  "imgFile": "path/to/line/image/file",
   "cor": "corrected content",
   "ocr": "ocr content",
   "cuts": [1, 3, 5, 7, 9, 11, ...],
@@ -1237,5 +1299,187 @@ Correct word `tid` in line `lid` in page `pageid` of project or package `pid`.
     "width": 1,
     "height": 1
   }
+}
+```
+
+<a id='api-post-books-pid-pages-pageid-lines-lid-tokens-tid-split-images'></a>
+### [GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`/split-images
+Get the left, middle and right split image of a given token with id `tid`
+in line `lid` in page `pageid` of a project or package with an id of `pid`.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access its split images.
+
+#### Response data
+```json
+{
+  "leftImg": "path/to/left/image",
+  "middleImg": "path/to/image/of/token",
+  "rightImg": "path/to/right/image"
+}
+```
+<a id='api-get-books-pid-suggestions'></a>
+### [GET] `rest-url`/books/`pid`/suggestions
+Get correction suggestions for a query in a project or package with an id `pid`.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access the correction suggestions.
+
+#### Query parameters
+* The query token is given with the `q=query` parameter. This parameter is mandatory.
+* The optional paramter `p=1|0` specifies if a token search or a error pattern
+search should be performed. If omitted `p=0` is assumed.
+
+#### Response data
+```json
+{
+  "projectId": 27,
+  "profiles": true|false,
+  "timestamp": 1508317390,
+  "suggestions": [
+    {
+      "pageId": 38,
+      "lineId": 13,
+      "tokenId": 77,
+      "token": "token string",
+      "suggestion": "correction suggestion for token",
+      "weight": 0.8,
+      "distance": 2,
+      "patterns": ["first:pattern", "second:pattern", ...]
+    },
+    ...
+  ]
+}
+```
+
+<a id='api-get-books-pid-pages-pageid-lines-lid-tokens-tid-suggestions'></a>
+### [GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`/suggestions
+Get correction suggestions for a token `tid` in a line `lid` in a page `pid` of
+a project with an id `pid`.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access the correction suggestions.
+
+#### Response data
+```json
+{
+  "projectId": 27,
+  "profiles": true|false,
+  "timestamp": 1508317390,
+  "suggestions": [
+    {
+      "pageId": 38,
+      "lineId": 13,
+      "tokenId": 77,
+      "token": "token string",
+      "suggestion": "correction suggestion for token",
+      "weight": 0.8,
+      "distance": 2,
+      "patterns": ["first:pattern", "second:pattern", ...]
+    },
+    ...
+  ]
+}
+```
+
+<a id='api-get-books-pid-suspicious-words'></a>
+### [GET] `rest-url`/books/`pid`/suspicious-words
+Get the suspicious words in the project or package with an id `pid`.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access the suspicious words.
+
+#### Response data
+```json
+{
+  "projectId": 27,
+  "suspiciousWords": [
+    {
+      "pageId": 38,
+      "lineId": 13,
+      "tokenId": 77,
+      "token": "token string"
+    },
+    ...
+  ]
+}
+```
+
+<a id='api-get-books-pid-pages-pageid-suspicious-words'></a>
+### [GET] `rest-url`/books/`pid`/pages/`pageid`/suspicious-words
+Get the suspicious words in page `pageid` of project or package with
+an id `pid`.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access the suspicious words.
+
+#### Response data
+```json
+{
+  "projectId": 27,
+  "suspiciousWords": [
+    {
+      "pageId": 38,
+      "lineId": 13,
+      "tokenId": 77,
+      "token": "token string"
+    },
+    ...
+  ]
+}
+```
+
+<a id='api-get-books-pid-pages-pageid-lines-lid-suspicious-words'></a>
+### [GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/suspicious-words
+Get the suspicious words in line `lid` in page `pageid` of project or package with
+an id `pid`.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access the suspicious words.
+
+#### Response data
+```json
+{
+  "projectId": 27,
+  "suspiciousWords": [
+    {
+      "pageId": 38,
+      "lineId": 13,
+      "tokenId": 77,
+      "token": "token string"
+    },
+    ...
+  ]
+}
+```
+
+<a id='api-get-books-pid-profile'></a>
+### [GET] `rest-url`/books/`pid`/profile
+Get information about the profiler status of a project or package with an id `pid`.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access the profiler information.
+
+#### Response data
+```json
+{
+  "projectId": 27,
+  "profiled": true|false,
+  "timestamp": 1508317390
+}
+```
+
+<a id='api-post-books-pid-profile'></a>
+### [POST] `rest-url`/books/`pid`/profile
+Request to profile the project with an id `pid` or request to profile
+the original project of a package with an id `pid`.
+The profiling is done with the profiler that is set in the project.
+
+<a id='api-get-profiler-languages'></a>
+### [GET] `rest-url`/profiler-languages
+Get the available languages of a language profiler.
+* No [Authorization](#user-content-authorization) is required.
+
+#### Query parameters
+* The optional parameter `url=profiler-url` specifies the url of the profiler.
+Use `local` to use the local profiler. If omitted, `url=local` is assumed.
+
+#### Response data
+```json
+{
+  "languages": ["language1", "language2", ...]
 }
 ```
