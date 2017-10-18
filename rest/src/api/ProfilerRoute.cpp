@@ -251,7 +251,7 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req) const {
 	std::string url = "local";
 	if (req.url_params.get("url")) url = req.url_params.get("url");
 	CROW_LOG_DEBUG << "(ProfilerRoute) get languages url=" << url;
-	LockedSession session(must_find_session(req));
+	// LockedSession session(must_find_session(req));
 	ProfilerUptr profiler;
 	if (url == "local")
 		profiler.reset(new LocalProfiler(nullptr, get_config()));
