@@ -53,13 +53,15 @@ for suspicious words.
 	* [[GET] `rest-url`/books/`pid`/download](#user-content-api-get-books-pid-download)
 	* [[POST] `rest-url`/books/`pid`/assign](#user-content-api-post-books-pid-assign)
 	* [[GET] `rest-url`/books/`pid`/finish](#user-content-api-get-books-pid-finish)
+	* [[GET] `rest-url`/books/`pid`/search](#user-content-api-get-books-pid-search)
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`](#user-content-api-get-books-pid-pages-pageid)
 	* [[GET] `rest-url`/books/`pid`/pages/first](#user-content-api-get-books-pid-pages-first)
 	* [[GET] `rest-url`/books/`pid`/pages/last](#user-content-api-get-books-pid-pages-last)
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/next/`n`](#user-content-api-get-books-pid-pages-pageid-next-n)
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/prev/`n`](#user-content-api-get-books-pid-pages-pageid-prev-n)
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-get-books-pid-pages-pageid-lines-lid)
-	* [[GET] `rest-url`/books/`pid`/search](#user-content-api-get-books-pid-search)
+	* [[POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-post-books-pid-pages-pageid-lines-lid)
+	* [[POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/words/`tid`](#user-content-api-post-books-pid-pages-pageid-lines-lid-words-tid)
 
 
 - - -
@@ -818,6 +820,77 @@ Reassign a package to its original owner.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a package can reassign a it.
 
+
+<a id='api-get-books-pid-search'></a>
+### [GET] `rest-url`/books/`pid`/search
+Search for a token or error pattern in a project or package with id `pid`.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can search for tokens or error patterns.
+
+#### Query parameters
+* The query is given with the `q=query` parameter. This parameter is mandatory.
+* The optional paramter `p=1|0` specifies if a token search or a error pattern
+search should be performed. If omitted `p=0` is assumed.
+
+#### Response data
+```json
+{
+  "query": "query-parameter",
+  "isErrorPattern": true|false,
+  "projectId": 27,
+  "nLines": 10,
+  "nWords": 15,
+  "matches": [
+    {
+      "line": {
+        "lineId": 13,
+        "pageId": 38,
+        "projectId": 27,
+        "imgFile": "path to line image file",
+        "cor": "corrected content",
+        "ocr": "ocr content",
+        "cuts": [1, 3, 5, 7, 9, 11, ...],
+        "confidences": [0.1, 0.1, 0.9, 1.0, ...],
+        "averageConfidence": 0.5,
+        "isFullyCorrected": true|false,
+        "isPartiallyCorrected": true|false,
+        "box": {
+          "left": 1,
+          "right": 2,
+          "top": 3,
+          "bottom": 4,
+          "width": 1,
+          "height": 1
+        }
+      },
+      "tokens": [
+        {
+          "projectId": 27,
+          "pageId": 38,
+          "lineId": 13,
+          "tokenId": 17,
+          "offset": 8,
+          "isFullyCorrected": true|false,
+          "isPartiallyCorrected": true|false,
+          "cor": "corrected content of token",
+          "ocr": "ocr content of token",
+          "averageConf": 0.3,
+          "isNormal": true|false,
+          "box": {
+            "left": 1,
+            "right": 2,
+            "top": 3,
+            "bottom": 4,
+            "width": 1,
+            "height": 1
+          },
+        },
+        ...
+      ]
+    },
+    ...
+}
+```
 <a id='api-get-books-pid-pages-pageid'></a>
 ### [GET] `rest-url`/books/`pid`/pages/`pageid`
 Get the content of a page with id `pageid` of a package or project with id `pid`.
@@ -1089,73 +1162,80 @@ or package with id `pid`.
 }
 ```
 
-<a id='api-get-books-pid-search'></a>
-### [GET] `rest-url`/books/`pid`/search
-Search for a token or error pattern in a project or package with id `pid`.
+<a id='api-post-books-pid-pages-pageid-lines-lid'></a>
+### [POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`
+Correct line `lid` in page `pageid` of project or package `pid`.
 * [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can search for tokens or error patterns.
+* Only the owner of a project or package can read its lines.
 
-#### Query parameters
-* The query is given with the `q=query` parameter. This parameter is mandatory.
-* The optional paramter `p=1|0` specifies if a token search or a error pattern
-search should be performed. If omitted `p=0` is assumed.
+#### Post data
+```json
+{
+  "correction": "corrected line"
+}
+```
 
 #### Response data
 ```json
 {
-  "query": "query-parameter",
-  "isErrorPattern": true|false,
+  "lineId": 13,
+  "pageId": 38,
   "projectId": 27,
-  "nLines": 10,
-  "nWords": 15,
-  "matches": [
-    {
-	  "line": {
-        "lineId": 13,
-        "pageId": 38,
-        "projectId": 27,
-        "imgFile": "path to line image file",
-        "cor": "corrected content",
-        "ocr": "ocr content",
-        "cuts": [1, 3, 5, 7, 9, 11, ...],
-        "confidences": [0.1, 0.1, 0.9, 1.0, ...],
-        "averageConfidence": 0.5,
-        "isFullyCorrected": true|false,
-        "isPartiallyCorrected": true|false,
-        "box": {
-          "left": 1,
-          "right": 2,
-          "top": 3,
-          "bottom": 4,
-          "width": 1,
-          "height": 1
-        }
-	  },
-	  "matches": [
-	    {
-		  "projectId": 27,
-		  "pageId": 38,
-		  "lineId": 13,
-		  "tokenId": 17,
-		  "offset": 8,
-		  "isFullyCorrected": true|false,
-		  "isPartiallyCorrected": true|false,
-		  "cor": "corrected content of token",
-		  "ocr": "ocr content of token",
-		  "averageConf": 0.3,
-		  "isNormal": true|false,
-		  "box": {
-            "left": 1,
-            "right": 2,
-            "top": 3,
-            "bottom": 4,
-            "width": 1,
-            "height": 1
-		  },
-		},
-		...
-      ]
-    },
-    ...
+  "imgFile": "path to line image file",
+  "cor": "corrected content",
+  "ocr": "ocr content",
+  "cuts": [1, 3, 5, 7, 9, 11, ...],
+  "confidences": [0.1, 0.1, 0.9, 1.0, ...],
+  "averageConfidence": 0.5,
+  "isFullyCorrected": true|false,
+  "isPartiallyCorrected": true|false,
+  "box": {
+    "left": 1,
+    "right": 2,
+    "top": 3,
+    "bottom": 4,
+    "width": 1,
+    "height": 1
+  }
+}
+```
+
+<a id='api-post-books-pid-pages-pageid-lines-lid-words-tid'></a>
+### [POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/words/`tid`
+Correct word `tid` in line `lid` in page `pageid` of project or package `pid`.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can read its lines.
+
+#### Post data
+```json
+{
+  "correction": "corrected token"
+}
+```
+
+#### Response data
+```json
+{
+  "lineId": 13,
+  "pageId": 38,
+  "projectId": 27,
+  "tokenId": 77,
+  "offset": 10,
+  "imgFile": "path to line image file",
+  "cor": "corrected content",
+  "ocr": "ocr content",
+  "cuts": [1, 3, 5, 7, 9, 11, ...],
+  "confidences": [0.1, 0.1, 0.9, 1.0, ...],
+  "averageConfidence": 0.5,
+  "isFullyCorrected": true|false,
+  "isPartiallyCorrected": true|false,
+  "box": {
+    "left": 1,
+    "right": 2,
+    "top": 3,
+    "bottom": 4,
+    "width": 1,
+    "height": 1
+  }
 }
 ```
