@@ -9,7 +9,6 @@
 #include "api/AdaptiveTokensRoute.hpp"
 #include "api/AssignRoute.hpp"
 #include "api/BookRoute.hpp"
-#include "api/CorrectionRoute.hpp"
 #include "api/DownloadRoute.hpp"
 #include "api/FinishRoute.hpp"
 #include "api/LineRoute.hpp"
@@ -65,7 +64,6 @@ void run(App& app) {
 	app.Register(std::make_unique<pcw::AdaptiveTokensRoute>());
 	app.Register(std::make_unique<pcw::AssignRoute>());
 	app.Register(std::make_unique<pcw::BookRoute>());
-	app.Register(std::make_unique<pcw::CorrectionRoute>());
 	app.Register(std::make_unique<pcw::DownloadRoute>());
 	app.Register(std::make_unique<pcw::FinishRoute>());
 	app.Register(std::make_unique<pcw::LineRoute>());
