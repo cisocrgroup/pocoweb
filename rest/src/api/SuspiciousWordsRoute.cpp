@@ -109,7 +109,7 @@ SuspiciousWordsRoute::Response make_response(R& rows, int pid) {
 		json["suspiciousWords"][i]["lineId"] = row.lineid;
 		json["suspiciousWords"][i]["pageId"] = row.pageid;
 		json["suspiciousWords"][i]["tokenId"] = row.tokenid;
-		json["suspiciousWords"][i]["string"] = row.string;
+		json["suspiciousWords"][i]["token"] = row.string;
 		++i;
 	}
 	return json;

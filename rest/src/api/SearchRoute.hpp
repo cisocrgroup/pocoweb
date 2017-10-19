@@ -25,8 +25,6 @@ class SearchRoute : public CrtpRoute<SearchRoute> {
 			TokenQuery) const;
 	Response search(const Request& req, const std::string& q, int bid,
 			ErrorPatternQuery) const;
-	static std::string get_query(const Request& req);
-	static bool is_error_pattern_query(const Request& req);
 	static const char* route_;
 	static const char* name_;
 };

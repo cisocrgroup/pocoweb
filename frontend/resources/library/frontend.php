@@ -137,12 +137,12 @@ function frontend_render_admin_project_table_row($project, $users) {
 		echo '<form method="post" class="form-inline" ',
 			'action="index.php?assign&pid=', $pid, '">', "\n";
 		echo '<div class="form-group">';
-		echo '<select name="assign-user-name" class="form-control">', "\n";
+		echo '<select name="assign-user-id" class="form-control">', "\n";
 		foreach ($users as $user) {
-			if ($user["admin"]) { // skip admins
+			if ($user["admin"]) { // skip admins // Y?
 				continue;
 			}
-			echo '<option value="', $user["name"], '">', $user["name"], '</option>', "\n";
+			echo '<option value="', $user["id"], '">', $user["name"], '</option>', "\n";
 		}
 		echo '</select>', "\n";
 		echo '</div>';
@@ -352,7 +352,7 @@ function frontend_render_create_new_user_div() {
 	// Admin
 	echo '<div class="checkbox">', "\n";
 	echo '<label>', "\n";
-	echo '<input name="admin" type="checkbox"/>Admin', "\n";
+	echo '<input name="admin" type="checkbox"/>Administrator', "\n";
 	echo '</label>', "\n";
 	echo '</div>', "\n";
 	// upload button
@@ -744,7 +744,7 @@ function frontend_render_concordance_div($pid, $q, $isErrorPattern) {
 			if (isset($matches["matches"])) {
 				foreach ($matches["matches"] as $match) {
 					$line = $match["line"];
-					foreach ($match["matches"] as $word) {
+					foreach ($match["tokens"] as $word) {
 						frontend_render_concordance_line_div($line, $word);
 					}
 				}

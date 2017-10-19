@@ -6,6 +6,7 @@
 #include "core/Config.hpp"
 #include "core/Session.hpp"
 #include "core/jsonify.hpp"
+#include "core/queries.hpp"
 #include "core/util.hpp"
 #include "database/Tables.h"
 #include "profiler/LocalProfiler.hpp"
@@ -248,17 +249,20 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 
 ////////////////////////////////////////////////////////////////////////////////
 ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req) const {
-	std::string url = "local";
-	if (req.url_params.get("url")) url = req.url_params.get("url");
-	CROW_LOG_DEBUG << "(ProfilerRoute) get languages url=" << url;
-	LockedSession session(must_find_session(req));
+	auto url = query_get<std::string>(req.url_params, "url");
+	if (not url) {
+		url = "local";
+	}
+	CROW_LOG_DEBUG << "(ProfilerRoute) get languages url=" << *url;
+	// LockedSession session(must_find_session(req));
 	ProfilerUptr profiler;
-	if (url == "local")
+	if (*url == "local")
 		profiler.reset(new LocalProfiler(nullptr, get_config()));
 	else
-		profiler.reset(new RemoteProfiler(nullptr, url));
+		profiler.reset(new RemoteProfiler(nullptr, *url));
 
 	Json j;
+	j["url"] = *url;
 	j["languages"] = crow::json::rvalue(crow::json::type::List);
 	const auto languages = profiler->languages().get();
 	// auto maybe_languages = profiler->languages();

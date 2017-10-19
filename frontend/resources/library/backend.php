@@ -166,17 +166,16 @@ function backend_split_project($pid, $post) {
 	return $api;
 }
 
-function backend_get_assign_project_route($pid) {
+function backend_get_assign_project_route($pid, $uid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["assignProject"], $pid);
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["assignProject"], $pid, $uid);
 }
 
-function backend_assign_project($pid, $post) {
-	$data = array("name" => $post["assign-user-name"]);
-	$api = new Api(backend_get_assign_project_route($pid));
+function backend_assign_project($pid, $uid) {
 	global $SID;
+	$api = new Api(backend_get_assign_project_route($pid, $uid));
 	$api->set_session_id($SID);
-	$api->post_request($data);
+	$api->get_request();
 	return $api;
 }
 

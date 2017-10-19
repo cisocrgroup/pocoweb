@@ -16,6 +16,8 @@
     <script type="text/javascript" src="js/api.js"></script>
 	<script type="text/javascript" src="https://unpkg.com/xregexp@3.2.0/xregexp-all.js"></script>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
+	<link rel="icon" href="/img/favicon.ico" type="image/x-icon">
     <title>PoCoWeb - Post Correction Web</title>
 </head>
 <!-- <body onload='pcw.setApiVersion();pcw.setLoggedInUser();'> -->
@@ -73,6 +75,7 @@ if ($USER !== NULL) {
 			</li>
 		</ul>
     </div>
+<hr>
 </div>
 <?php
 /*

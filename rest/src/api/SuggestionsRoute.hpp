@@ -28,8 +28,6 @@ class SuggestionsRoute : public CrtpRoute<SuggestionsRoute> {
 	Response suggestions(const Request& req, int pid,
 			     const boost::optional<std::string>& q,
 			     bool p) const;
-	static boost::optional<std::string> get_query(const Request& req);
-	static bool is_error_pattern_query(const Request& req);
 	static const char *route_, *name_;
 };
 }

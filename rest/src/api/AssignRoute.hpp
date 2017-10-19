@@ -12,11 +12,9 @@ class AssignRoute : public CrtpRoute<AssignRoute> {
 	virtual const char* name() const noexcept override { return name_; }
 
 	pcw_crtp_route_def_impl__(int);
-	Response impl(HttpPost, const Request& req, int bid) const;
+	Response impl(HttpGet, const Request& req, int bid) const;
 
        private:
-	Response assign(const Request& req, int bid) const;
-
 	static const char* route_;
 	static const char* name_;
 };
