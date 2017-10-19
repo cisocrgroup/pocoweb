@@ -1327,9 +1327,10 @@ Get correction suggestions for a query in a project or package with an id `pid`.
 * Only the owner of a project or package can access the correction suggestions.
 
 #### Query parameters
-* The query token is given with the `q=query` parameter. This parameter is mandatory.
+* An optinal query token can be given with the `q=query` parameter.
 * The optional paramter `p=1|0` specifies if a token search or a error pattern
 search should be performed. If omitted `p=0` is assumed.
+* Note that if `p=1`, `q` becomes mandatory.
 
 #### Response data
 ```json
