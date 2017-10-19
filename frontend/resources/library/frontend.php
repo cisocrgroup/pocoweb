@@ -352,7 +352,7 @@ function frontend_render_create_new_user_div() {
 	// Admin
 	echo '<div class="checkbox">', "\n";
 	echo '<label>', "\n";
-	echo '<input name="admin" type="checkbox"/>Admin', "\n";
+	echo '<input name="admin" type="checkbox"/>Administrator', "\n";
 	echo '</label>', "\n";
 	echo '</div>', "\n";
 	// upload button
