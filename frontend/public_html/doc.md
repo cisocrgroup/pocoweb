@@ -1,13 +1,14 @@
+<!-- vim: spelllang=en spell -->
 # Pocoweb
 
-Pocoweb is a web based postcorrection system for OCRed historical documents.
+Pocoweb is a web based post-correction system for OCRed historical documents.
 It is loosely based on [PoCoTo](https://github.com/cisocrgroup/PoCoTo).
 
-Users can upload their OCRed documents and correct them in the web frontend.
+Users can upload their OCRed documents and correct them in the web front end.
 The corrected documents can then be downloaded and further processed.
 Pocoweb understands various OCR formats that can be used.
 Any corrections are written back into the original format of the documents.
-This makes it possible to integrate the manual postcorrection of OCRed documents
+This makes it possible to integrate the manual post-correction of OCRed documents
 into other digitalisation workflows.
 
 As PoCoTo, Pocoweb is connected with a language
@@ -34,8 +35,8 @@ for suspicious words.
     * [Navigation bar](#user-content-navigation-bar)
     * [Concordance view](#user-content-concordance-view)
 * [Installation](#user-content-installation)
-    * [Pocoweb frontend](#user-content-pocoweb-frontend)
-    * [Pocoweb backend](#user-content-pocoweb-backend)
+    * [Pocoweb front end](#user-content-pocoweb-frontend)
+    * [Pocoweb back-end](#user-content-pocoweb-backend)
 * [REST API](#user-content-rest-api)
     * [[GET] `rest-url`/api-version](#user-content-api-get-version)
     * [[POST] `rest-url`/login](#user-content-api-post-login)
@@ -79,7 +80,7 @@ for suspicious words.
 ## Users
 
 In order to use Pocoweb, each user has to login in the
-[login page](/login.php) using her username and password.
+[login page](/login.php) using her user name and password.
 
 There are two kinds of user accounts in Pocoweb, that have
 different permissions in the system:
@@ -130,18 +131,18 @@ User management is done via the [Users](/users.php) tab.
 You have to be logged in with an administrator account in order
 to access and use the user management page.
 
-The user management page consits of a mask to create new users and
+The user management page consist of a mask to create new users and
 a user table that lists all existing users. To create a new user,
 fill out the input fields accordingly and then click to the
 ![create user](img/doc/button-create-user.png) button.
 If the account should be an administrator account, do not forget to
-check the admin checkbox.
+check the ![administrator check box](img/doc/checkbox-admin.png) check box.
 
 After the mask follows the user table.
 In order to remove an user account click on the
 ![remove](img/doc/glyphicon-remove.png) button in the according user entry
 in the user table.
-It is not possible at the moment to delete an existing admin account;
+It is not possible at the moment to delete an existing administrator account;
 only regular user accounts can be deleted.
 
 To delete an administrator account log in with this account, go to the
@@ -179,15 +180,15 @@ overrides an other users work.*
 ### Uploading new projects
 
 If you are logged in with an administrator account, you can create a new project.
-Fill in the metadata fields in the mask, select the according
+Fill in the meta data fields in the mask, select the according
 [project archive](#user-content-project-archives) on your computer and click
 on the ![upload](img/doc/button-upload.png) button.
 Depending on the size of the project archive,
 the uploading of the project can take a while.
 
-The [Pocoweb backend](#user-content-pocoweb-backend) analyzes the project archive,
+The [Pocoweb back-end](#user-content-pocoweb-backend) analyzes the project archive,
 processes its OCR and image files and publishes the project.
-If the uploading was successfull, you should see the new project in the
+If the uploading was successfully, you should see the new project in the
 project table.
 
 The project's author, title and year can be filled out as it seems fit.
@@ -199,7 +200,7 @@ If you plan to use a profiler for the post correction of your project, you
 have to set them accordingly.
 If the installation of Pocoweb comes with a local configured profiler,
 you can use `local` as value for your profiler.
-If not or if you want to use another profiler, you have to specifiy its URL.
+If not or if you want to use another profiler, you have to specify its URL.
 
 Do not forget to set the right language for the new project.
 The language field lists all available languages for your chosen profiler.
@@ -209,7 +210,7 @@ The language field lists all available languages for your chosen profiler.
 
 A project archive is a zipped directory structure that contains the OCR and
 image files for the pages of a document.
-Image files should be encoded as PNG files if possible, but JPEG or TIFF
+Image files should be encoded as PNG files if possible, but specify or TIFF
 encoded images are fine, too.
 The OCR files should be either
 [ABBYY-XML](),
@@ -217,14 +218,14 @@ The OCR files should be either
 [hOCR]()
 encoded files.
 
-The backend tries its best to automatically search and order the pages
+The back-end tries its best to automatically search and order the pages
 in project archives.
 Therefore the matching OCR and image files should have the same name
 (without the extension).
 It does not matter in which directory structure the different image and OCR
 files reside.
 If the matching OCR and image files do have the same filenames for any reason,
-you can add a [METS/MOTS]() metadata file to the archive, in which the
+you can add a [METS/MOTS]() meta data file to the archive, in which the
 page ordering and the association between image and OCR files is specified.
 
 Example structure of a project archive:
@@ -241,7 +242,7 @@ archive
     └── page-0003.xml
 ```
 
-There is no need to seperate the image and ocr files with different directories.
+There is no need to separate the image and OCR files with different directories.
 You can also use a flat directory structure:
 ```
 archive
@@ -328,7 +329,7 @@ button to assign a package to an user.
 
 You can click on the ![download button](img/doc/glyphicon-download-project.png)
 button in the project table to download a project.
-The pocoweb backend will then generate a project archive and give
+The pocoweb back-end will then generate a project archive and give
 you a link from where you can download it.
 
 The project archive will retain the same structure as the project archive,
@@ -400,16 +401,16 @@ You can click on the line image to see an overview over the whole line's page im
 If you click in the text you can edit the text.
 It is also possible to select single tokens in a line, by marking them with
 the mouse. If a token is selected, you can choose a correction candidate for
-it or list all occorurences of the token in the
+it or list all occurrences of the token in the
 [navigation bar](#user-content-navigation-bar).
 
 After you have corrected a line you can click on the
 ![correct](img/doc/button-correct.png) button to correct the line and
-send the correction to the backend (you can also click on the button on the
-buttom of the page to correct all lines of a page).
+send the correction to the back-end (you can also click on the button on the
+button of the page to correct all lines of a page).
 After the line is corrected it is shown with a green background.
 
-In general if a line was corrected it is shwon with a green background.
+In general if a line was corrected it is shown with a green background.
 If a line was partially corrected (see
 [concordance view](#user-content-concordance-view) below)
 the background is yellow and
@@ -425,20 +426,20 @@ browser page.
 Besides the navigation buttons, the navigation bar shows a tab to list
 the assumed error patterns and error tokens of the project.
 If the project was profiled these list assumed errors in the document
-by the number of their occurence or by their common error patterns.
+by the number of their occurrence or by their common error patterns.
 Click one of the entries to open the
 [concordance view](#user-content-concordance-view) of the according token
 or error patterns.
 
-If a token is selected it shows the concodance count of the token.
+If a token is selected it shows the concordance count of the token.
 If the document was profiled you can use the correction suggestion tab to
 select a correction candidate for the selected token.
-the selected token with one of the listed correction suggestions.
+The selected token with one of the listed correction suggestions.
 
 <a id='concordance-view'></a>
 ### Concordance view
 
-The cocordance view lists similar tokens of the whole project and
+The concordance view lists similar tokens of the whole project and
 shows them in their respective line context. With the concordance
 view you can correct a series of tokens at once.
 If you do this each token of the concordance view is corrected
@@ -449,7 +450,7 @@ since not the whole line was corrected but just a token in the line.
 You can correct each token individually.
 Just edit the token and then click to the
 ![correct](img/doc/button-correct.png) button.
-If you want to correct multiple occurences of the tokens in
+If you want to correct multiple occurrences of the tokens in
 the concordance view you can either set a global correction
 in the concordance bar
 ![concordance-bar](img/doc/button-concordance-correction.png)
@@ -465,11 +466,10 @@ tokens you want to correct are checked.
 ## Installation
 
 <a id='pocoweb-frontend'></a>
-### Pocoweb frontend
+### Pocoweb front-end
 
 <a id='pocoweb-backend'></a>
-### Pocoweb backend
-
+### Pocoweb back-end
 
 - - -
 <a id='rest-api'></a>
@@ -491,8 +491,8 @@ You have to be logged in with a valid user account
 (see [Authorization](#user-content-authorization) below).
 
 All URLs in the API documentation reference a `rest-url`.
-You have to set this parameter for your backend accordingly.
-So for example the backend URL for this site is <code><?php global $config; echo $config['backend']['url'];?></code>.
+You have to set this parameter for your back-end accordingly.
+So for example the back-end URL for this site is <code><?php global $config; echo $config['backend']['url'];?></code>.
 This means that you have to replace the occurences of `rest-url`
 in the paths of the REST API documentation with
 <code><?php global $config; echo $config['backend']['url'];?></code>.
@@ -505,7 +505,7 @@ If you are not authenticated the API will return `403 Forbidden`
 with no response data.
 
 In order to authenticate you first have to [login](#user-content-api-post-login)
-with a valid user account at the backend.
+with a valid user account at the back-end.
 The login will return an unique session id token.
 You have to send this session token in the `Authorization` header of
 each API call.
@@ -515,14 +515,14 @@ to set the `Authorization` header of curl in the following way:
 `curl -H "Authorization: Pocoweb my-session-id"`.
 
 In order to get the 13-th line of the 38-th page of a project with an id of 27
-from this pocoweb backend using curl you would have to run:
+from this Pocoweb back-end using curl you would have to run:
 
 <code>curl -H "Authorization: Pocoweb my-session-id" <?php global $config; echo $config['backend']['url'];?>/books/27/pages/38/lines/13</code>
 
 <a id='api-get-version'></a>
 ### [GET] `rest-url`/api-version
 
-Get the semantic version of the backend instance.
+Get the semantic version of the back-end instance.
 * No [authorization](#user-content-authorization) is required.
 
 #### Response data
@@ -538,7 +538,7 @@ You have to log in with a valid user account to use most of the API calls
 (see [authorization](#user-content-authorization) above).
 No [authorization](#user-content-authorization) is required.
 
-After a successfull login you can use the returned session id in the
+After a successfully login you can use the returned session id in the
 `Authorization` header of your future API calls.
 
 #### POST data
@@ -632,7 +632,7 @@ You have to be [authenticated](#user-content-authorization) with an administrato
 ### [POST] `rest-url`/users/`uid`
 Update the account settings of an user with an id of `uid`.
 * [Authorization](#user-content-authorization) is required.
-* Admins can update any normal user account.
+* Administrators can update any normal user account.
 * Every user can change his own user account.
 * You cannot change the type (administrator or normal) of an user account.
 
@@ -645,7 +645,7 @@ Update the account settings of an user with an id of `uid`.
   "insitute": "user-institute",
 }
 ```
-All fiels are optional.
+All fields are optional.
 If a field is missing in the POST request or its value is the empty string "",
 this setting is not changed.
 
@@ -665,7 +665,7 @@ this setting is not changed.
 
 Get the settings of an user account with an id of `uid`.
 * [Authorization](#user-content-authorization) is required.
-* Admins can get the settings of any normal user account.
+* Administrators can get the settings of any normal user account.
 * Every user can get the settings of her own user account.
 
 #### Response data
@@ -683,11 +683,11 @@ Get the settings of an user account with an id of `uid`.
 ### [DELETE] `rest-url`/users/`uid`
 Delete the user account of the user with an id of `uid`.
 * [Authorization](#user-content-authorization) is required.
-* Admins can delete any user account.
+* Administrators can delete any user account.
 * Every user can delete her own user account.
 
 If an user account is deleted, any projects and or packages,
-that the user owend are deleted.
+that the user owned are deleted.
 Since packages just define a subset of a project, the deletion of packages
 deletes the package information, but not the project information.
 It is save to delete a user that still owns a package.
@@ -752,7 +752,7 @@ Get the content of a project or package.
 
 <a id='api-post-books-pid'></a>
 ### [POST] `rest-url`/books/`pid`
-Update the metadata of a project.
+Update the meta data of a project.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can update the project's data.
 
@@ -793,9 +793,9 @@ Split a [project into packages](#user-content-projects).
   "random": true|false
 }
 ```
-* The mandatory argument `n` gives the number of packges to create.
+* The mandatory argument `n` gives the number of packages to create.
 * The optional argument `random` specifies if the pages of the packages
-should be generated at random or sequencial. If omitted `random=false` is assumed.
+should be generated at random or sequential. If omitted `random=false` is assumed.
 
 #### Response data
 ```json
@@ -839,7 +839,7 @@ Download a project.
 * Only the owner of a project can delete a project.
 
 This API call generates a new project archive and returns
-the relative url of the new archive.
+the relative URL of the new archive.
 The new project contains all original OCR and image files with
 all corrections.
 Additionally the archive contains a file called `adaptive_tokens.txt` as well
@@ -851,10 +851,10 @@ profiler runs (if any). This file can be empty, if no profiling was used or
 if the profiler could not find any adaptive tokens.
 
 The `ocorpus-book` directory contains an
-[ocropus directory structure](#user-content-project-archives)
-that can directly be used for model training with ocoropus.
-If the project archive was already a ocropus directory structure,
-only the according groundtruth files are updated.
+[ocropy directory structure](#user-content-project-archives)
+that can directly be used for model training with ocropy.
+If the project archive was already a ocropy directory structure,
+only the according ground truth files are updated.
 
 #### Response data
 ```json
@@ -1324,7 +1324,7 @@ Get correction suggestions for a query in a project or package with an id `pid`.
 * Only the owner of a project or package can access the correction suggestions.
 
 #### Query parameters
-* An optinal query token can be given with the `q=query` parameter.
+* An optional query token can be given with the `q=query` parameter.
 * The optional parameter `p=1|0` specifies if a token search or a error pattern
 search should be performed. If omitted `p=0` is assumed.
 * Note that if `p=1`, `q` becomes mandatory.
@@ -1475,7 +1475,7 @@ Get the available languages of a language profiler.
 * No [Authorization](#user-content-authorization) is required.
 
 #### Query parameters
-* The optional parameter `url=profiler-url` specifies the url of the profiler.
+* The optional parameter `url=profiler-url` specifies the URL of the profiler.
 Use `local` to use the local profiler. If omitted, `url=local` is assumed.
 
 #### Response data

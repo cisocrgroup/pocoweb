@@ -20,6 +20,7 @@ FE_FILES += $(PCW_FRONTEND_DIR)/public_html/users.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/logo.jpg
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/favicon.ico
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-remove.png
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/checkbox-admin.png
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-download-project.png
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-open-project.png
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-remove-project.png
