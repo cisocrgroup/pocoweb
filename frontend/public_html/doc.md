@@ -533,7 +533,7 @@ Get the semantic version of the backend instance.
 ```
 
 <a id='api-post-login'></a>
-### [POST] `rest-url`/api-version
+### [POST] `rest-url`/login
 You have to log in with a valid user account to use most of the API calls
 (see [authorization](#user-content-authorization) above).
 No [authorization](#user-content-authorization) is required.
