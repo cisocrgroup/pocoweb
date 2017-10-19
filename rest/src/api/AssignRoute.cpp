@@ -5,6 +5,7 @@
 #include "core/Session.hpp"
 #include "core/User.hpp"
 #include "core/jsonify.hpp"
+#include "core/queries.hpp"
 #include "core/util.hpp"
 #include "utils/Error.hpp"
 
@@ -18,35 +19,25 @@ const char* AssignRoute::name_ = "AssignRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
 void AssignRoute::Register(App& app) {
-	CROW_ROUTE(app, ASSIGN_ROUTE_ROUTE).methods("POST"_method)(*this);
+	CROW_ROUTE(app, ASSIGN_ROUTE_ROUTE).methods("GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response AssignRoute::impl(HttpPost, const Request& req, int bid) const {
-	return assign(req, bid);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Route::Response AssignRoute::assign(const Request& req, int bid) const {
+Route::Response AssignRoute::impl(HttpGet, const Request& req, int bid) const {
 	CROW_LOG_DEBUG << "(AssignRoute::assign) body: " << req.body;
 	const auto data = crow::json::load(req.body);
 	auto conn = must_get_connection();
 	const LockedSession session(must_find_session(req));
 	session->assert_permission(conn, bid, Permissions::Assign);
 	const auto project = session->must_find(conn, bid);
-	UserPtr user = nullptr;
-	const auto id = get<int>(data, "id");
-	const auto userid = get<int>(data, "userId");
-	const auto name = get<std::string>(data, "name");
-	if (id)
-		user = session->find_user(conn, *id);
-    else if (userid)
-			user = session->find_user(conn, *id);
-	else if (name)
-		user = session->find_user(conn, *name);
-	else
-		THROW(BadRequest, "cannot find user: missing user information");
-	if (not user) THROW(NotFound, "cannot find user: no such user");
+	const auto id = query_get<int>(req.url_params, "uid");
+	if (not id) {
+		THROW(BadRequest, "missing or invalid user id");
+	}
+	const auto user = session->find_user(conn, *id);
+	if (not user) {
+		THROW(NotFound, "cannot find user: no such user: ", *id);
+	}
 	MysqlCommiter commiter(conn);
 	using namespace sqlpp;
 	tables::Projects projects;

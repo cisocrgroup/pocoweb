@@ -53,7 +53,7 @@ for suspicious words.
 	* [[POST] `rest-url`/books/`pid`/split](#user-content-api-post-books-pid-split)
 	* [[GET] `rest-url`/books/`pid`/adaptive-tokens](#user-content-api-post-books-pid-adaptive-tokens)
 	* [[GET] `rest-url`/books/`pid`/download](#user-content-api-get-books-pid-download)
-	* [[POST] `rest-url`/books/`pid`/assign](#user-content-api-post-books-pid-assign)
+	* [[GET] `rest-url`/books/`pid`/assign](#user-content-api-get-books-pid-assign)
 	* [[GET] `rest-url`/books/`pid`/finish](#user-content-api-get-books-pid-finish)
 	* [[GET] `rest-url`/books/`pid`/search](#user-content-api-get-books-pid-search)
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`](#user-content-api-get-books-pid-pages-pageid)
@@ -863,18 +863,15 @@ only the according groundtruth files are updated.
 }
 ```
 
-<a id='api-post-books-pid-assign'></a>
-### [POST] `rest-url`/books/`pid`/assign
+<a id='api-get-books-pid-assign'></a>
+### [GET] `rest-url`/books/`pid`/assign
 Assign a packages to another user.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a package can assign it to another user.
 
-#### POST data
-```json
-{
-  "userId": 27
-}
-```
+#### Query paramters
+* The id of the user to which the package should be assigned,
+must be given with the `uid=user-id` parameter.
 
 <a id='api-get-books-pid-finish'></a>
 ### [GET] `rest-url`/books/`pid`/finish

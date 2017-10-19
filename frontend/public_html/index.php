@@ -26,7 +26,7 @@ if (isset($_GET["upload"])) {
 	}
 } else if (isset($_GET["assign"])) {
 	$pid = $_GET["pid"];
-	$api = backend_assign_project($pid, $_POST);
+	$api = backend_assign_project($pid, $_POST["assign-user-id"]);
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
 		frontend_render_error_div("Could not assign project #$pid: $status");
