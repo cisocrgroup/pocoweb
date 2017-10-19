@@ -869,7 +869,7 @@ Assign a packages to another user.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a package can assign it to another user.
 
-#### Query paramters
+#### Query parameters
 * The id of the user to which the package should be assigned,
 must be given with the `uid=user-id` parameter.
 
@@ -888,7 +888,7 @@ Search for a token or error pattern in a project or package with id `pid`.
 
 #### Query parameters
 * The query is given with the `q=query` parameter. This parameter is mandatory.
-* The optional paramter `p=1|0` specifies if a token search or a error pattern
+* The optional parameter `p=1|0` specifies if a token search or a error pattern
 search should be performed. If omitted `p=0` is assumed.
 
 #### Response data
@@ -1325,7 +1325,7 @@ Get correction suggestions for a query in a project or package with an id `pid`.
 
 #### Query parameters
 * An optinal query token can be given with the `q=query` parameter.
-* The optional paramter `p=1|0` specifies if a token search or a error pattern
+* The optional parameter `p=1|0` specifies if a token search or a error pattern
 search should be performed. If omitted `p=0` is assumed.
 * Note that if `p=1`, `q` becomes mandatory.
 
