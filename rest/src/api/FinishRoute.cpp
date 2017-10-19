@@ -19,7 +19,8 @@ const char* FinishRoute::name_ = "FinishRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
 void FinishRoute::Register(App& app) {
-	CROW_ROUTE(app, FINISH_ROUTE_ROUTE).methods("POST"_method, "GET"_method)(*this);
+	CROW_ROUTE(app, FINISH_ROUTE_ROUTE)
+	    .methods("POST"_method, "GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

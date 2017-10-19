@@ -6,6 +6,7 @@
 #include "core/Config.hpp"
 #include "core/Session.hpp"
 #include "core/jsonify.hpp"
+#include "core/queries.hpp"
 #include "core/util.hpp"
 #include "database/Tables.h"
 
@@ -41,13 +42,16 @@ SQLPP_ALIAS_PROVIDER(tokstr);
 ////////////////////////////////////////////////////////////////////////////////
 SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request& req,
 						  int bid) const {
-	const auto q = get_query(req);
-	const auto p = is_error_pattern_query(req);
-	if (p and not q) {
-		THROW(BadRequest,
-		      "(SuggestionsRoute) missing query for error patterns");
+	const auto q = query_get<std::string>(req.url_params, "q");
+	const auto p = query_get<bool>(req.url_params, "p");
+	if (p and *p and not q) {
+		THROW(BadRequest, "missing query parameter for pattern search");
 	}
-	return suggestions(req, bid, q, p);
+	if (not p or p == false) {
+		return suggestions(req, bid, q, false);
+	} else {
+		return suggestions(req, bid, q, true);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +64,8 @@ SuggestionsRoute::Response SuggestionsRoute::suggestions(
 	auto conn = must_get_connection();
 	session->assert_permission(conn, bid, Permissions::Read);
 	const auto project = session->must_find(conn, bid);
-	// The project does exist.  If no profile is found, this indicates not a
+	// The project does exist.  If no profile is found, this
+	// indicates not a
 	// 404 but simply an empty profile.
 	using namespace sqlpp;
 	tables::Profiles p;
@@ -149,7 +154,8 @@ SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request& req,
 	auto conn = must_get_connection();
 	session->assert_permission(conn, pid, Permissions::Read);
 	const auto project = session->must_find(conn, pid);
-	// The project does exist.  If no profile is found, this indicates not a
+	// The project does exist.  If no profile is found, this
+	// indicates not a
 	// 404 but simply an empty profile.
 	using namespace sqlpp;
 	tables::Profiles ptab;
@@ -179,31 +185,6 @@ SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request& req,
 		       s.tokenid == tid));
 	append_suggestions(conn, j, pid, rows);
 	return j;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-boost::optional<std::string> SuggestionsRoute::get_query(const Request& req) {
-	const auto q = req.url_params.get("q");
-	if (not q or strlen(q) <= 0) {
-		return {};
-	} else {
-		return std::string(q);
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-bool SuggestionsRoute::is_error_pattern_query(const Request& req) {
-	const auto p = req.url_params.get("p");
-	if (not p) {
-		return false;
-	}
-	try {
-		const auto i = std::stoi(p);
-		return i;
-	} catch (const std::invalid_argument&) {
-	} catch (const std::out_of_range&) {
-	}
-	THROW(BadRequest, "(SearchRoute) invalid parameter p: ", p);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

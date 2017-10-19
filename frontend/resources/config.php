@@ -27,7 +27,7 @@ $config = array(
 			"logout"              => "/logout",
 			"get_projects"        => "/books",
 			"splitProject"        => "/books/%d/split",
-			"assignProject"       => "/books/%d/assign",
+			"assignProject"       => "/books/%d/assign?uid=%d",
 			"finishProject"       => "/books/%d/finish",
 			"removeProject"       => "/books/%d",
 			"downloadProject"     => "/books/%d/download",

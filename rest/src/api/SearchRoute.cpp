@@ -14,6 +14,7 @@
 #include "core/User.hpp"
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
+#include "core/queries.hpp"
 #include "core/util.hpp"
 #include "utils/Error.hpp"
 #include "utils/ScopeGuard.hpp"
@@ -37,11 +38,16 @@ void SearchRoute::Register(App& app) {
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response SearchRoute::impl(HttpGet, const Request& req, int bid) const {
-	const auto q = get_query(req);
-	if (is_error_pattern_query(req)) {
-		return search(req, q, bid, ErrorPatternQuery{});
+	const auto q = query_get<std::string>(req.url_params, "q");
+	if (not q) {
+		THROW(BadRequest,
+		      "(SearchRoute) invalid or missing query parameter");
+	}
+	const auto p = query_get<bool>(req.url_params, "p");
+	if (not p or p == false) {
+		return search(req, *q, bid, TokenQuery{});
 	} else {
-		return search(req, q, bid, TokenQuery{});
+		return search(req, *q, bid, ErrorPatternQuery{});
 	}
 }
 
@@ -89,31 +95,6 @@ Route::Response SearchRoute::search(const Request& req, const std::string& q,
 	CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.size()
 		       << " matches for q='" << q << "'";
 	return make_response(matches, bid, q, true);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-std::string SearchRoute::get_query(const Request& req) {
-	const auto q = req.url_params.get("q");
-	if (not q or strlen(q) <= 0) {
-		THROW(BadRequest,
-		      "(SearchRoute) invalid or missing query string");
-	}
-	return q;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-bool SearchRoute::is_error_pattern_query(const Request& req) {
-	const auto p = req.url_params.get("p");
-	if (not p) {
-		return false;
-	}
-	try {
-		const auto i = std::stoi(p);
-		return i;
-	} catch (const std::invalid_argument&) {
-	} catch (const std::out_of_range&) {
-	}
-	THROW(BadRequest, "(SearchRoute) invalid parameter p: ", p);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
