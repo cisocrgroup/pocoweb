@@ -1317,6 +1317,9 @@ in line `lid` in page `pageid` of a project or package with an id of `pid`.
   "rightImg": "path/to/right/image"
 }
 ```
+If there are no left and/or right images in the split,
+`leftImg` and/or `rightImg` can equal `null`.
+
 <a id='api-get-books-pid-suggestions'></a>
 ### [GET] `rest-url`/books/`pid`/suggestions
 Get correction suggestions for a query in a project or package with an id `pid`.
