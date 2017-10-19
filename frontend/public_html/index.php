@@ -26,12 +26,13 @@ if (isset($_GET["upload"])) {
 	}
 } else if (isset($_GET["assign"])) {
 	$pid = $_GET["pid"];
-	$api = backend_assign_project($pid, $_POST["assign-user-id"]);
+	$uid = $_POST["assign-user-id"];
+	$api = backend_assign_project($pid, $uid);
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
 		frontend_render_error_div("Could not assign project #$pid: $status");
 	} else {
-		frontend_render_success_div("Successfully assigned project #$pid");
+		frontend_render_success_div("Successfully assigned project #$pid to user #$uid");
 	}
 } else if (isset($_GET["remove"])) {
 	$pid = $_GET["pid"];
