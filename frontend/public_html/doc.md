@@ -1480,6 +1480,7 @@ Use `local` to use the local profiler. If omitted, `url=local` is assumed.
 #### Response data
 ```json
 {
+  "url": "profiler-url|local",
   "languages": ["language1", "language2", ...]
 }
 ```
