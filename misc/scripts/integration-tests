@@ -15,6 +15,7 @@ errors=0
 json=
 sid=
 bid=
+uid=
 
 finish() {
 	rm $cookies
@@ -72,7 +73,7 @@ json() {
 }
 
 json_get() {
-	sed -e "s/.*\"$1\":\([^,]*\).*/\1/g" <<< "$2" | tr -d '"{}' | tr -s " " "_"
+	sed -e "s/.*\"$1\":\([^,{}]*\).*/\1/g" <<< "$2" | tr -d '"{}' | tr -s " " "_"
 }
 
 #
@@ -183,6 +184,25 @@ correct_line() {
 	expect "GET $url" "$str" $(json_get cor "$res")
 }
 
+create_user() {
+		local name=$1
+		local pass=$2
+		local url="/users"
+		local post="{\"name\":\"$name\",\"pass\":\"$pass\",\"admin\":false,\"institute\":\"TEST\",\"email\":\"testuser@test.com\"}"
+		# echo $url $post
+		local res=$(curl_post $url $post)
+		expect "POST $url" 200 $(code "$res")
+			echo res: $res
+		uid=$(json_get id "$res")
+}
+
+remove_user() {
+	local id=$1
+	local url="/books/$id"
+	local res=$(curl_delete $url)
+	expect "DELETE $url" 200 $(code "$res")
+}
+
 #
 # START OF SCRIPT
 #
@@ -204,6 +224,11 @@ loggedin "invalid" 403
 sid=""
 login $name $pass 200
 loggedin $name 200
+## NEW USER
+create_user "testuser" "testuserpass";
+echo uid: $uid
+remove_user $uid
+exit $error
 ## HOBBES
 upload $PWD/misc/data/test/hobbes-ocropus.zip 201
 update_book $bid "title" "Leviathan"
