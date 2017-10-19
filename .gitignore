@@ -19,3 +19,6 @@ lib/*
 frontend/public_html/js/config.js
 db/tables.sql.tmp
 misc/systemd/pocoweb.service
+env
+
+profile-tmp.xml
