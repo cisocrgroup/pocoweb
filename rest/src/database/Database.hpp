@@ -656,6 +656,7 @@ void pcw::update_line(Db& db, const Line& line) {
 template <class Db>
 void delete_project(Db& db, int pid) {
 	using namespace sqlpp;
+	tables::Books b;
 	tables::Projects p;
 	tables::ProjectPages pp;
 	tables::Profiles ppp;
@@ -665,6 +666,7 @@ void delete_project(Db& db, int pid) {
 	tables::Textlines l;
 	tables::Contents c;
 	tables::Types t;
+	db(remove_from(b).where(b.bookid == pid));
 	db(remove_from(pp).where(pp.projectid == pid));
 	db(remove_from(p).where(p.projectid == pid));
 	db(remove_from(ppp).where(ppp.bookid == pid));
