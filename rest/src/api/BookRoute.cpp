@@ -74,14 +74,18 @@ Route::Response BookRoute::impl(HttpPost, const Request& req) const {
 			THROW(BadRequest, "(BookRoute) missing file parameter");
 		dir.add_zip_file_path(*file);
 		book = dir.build();
-		if (not book) THROW(BadRequest, "Could not build book");
+		if (not book)
+			THROW(BadRequest, "(BookRoute) could not build book");
 		book->set_owner(session->user());
+		// book->data.profilerUrl = "local";
 		// update book data
 		update_book_data(*book, json);
 	} else {
 		dir.add_zip_file_content(extract_content(req));
 		book = dir.build();
-		if (not book) THROW(BadRequest, "Could not build book");
+		if (not book)
+			THROW(BadRequest, "(BookRoute) could not build book");
+		// book->data.profilerUrl = "local";
 		book->set_owner(session->user());
 	}
 	// insert book into database
@@ -101,17 +105,21 @@ Route::Response BookRoute::impl(HttpPost, const Request& req) const {
 ////////////////////////////////////////////////////////////////////////////////
 void BookRoute::update_book_data(Book& book,
 				 const crow::json::rvalue& data) const {
-	if (data.has("author")) book.data.author = data["author"].s();
-	if (data.has("title")) book.data.title = data["title"].s();
-	if (data.has("language")) book.data.lang = data["language"].s();
-	if (data.has("year")) book.data.year = data["year"].i();
-	if (data.has("uri")) book.data.uri = data["uri"].s();
-	if (data.has("description"))
-		book.data.description = data["description"].s();
-	if (data.has("profilerUrl"))
-		book.data.profilerUrl = data["profilerUrl"].s();
+	if (get<std::string>(data, "author"))
+		book.data.author = *get<std::string>(data, "author");
+	if (get<std::string>(data, "title"))
+		book.data.title = *get<std::string>(data, "title");
+	if (get<std::string>(data, "language"))
+		book.data.lang = *get<std::string>(data, "language");
+	if (get<std::string>(data, "uri"))
+		book.data.uri = *get<std::string>(data, "uri");
+	if (get<std::string>(data, "description"))
+		book.data.description = *get<std::string>(data, "description");
+	if (get<std::string>(data, "profilerUrl"))
+		book.data.profilerUrl = *get<std::string>(data, "profilerUrl");
 	else
 		book.data.profilerUrl = "local";
+	if (get<int>(data, "year")) book.data.year = *get<int>(data, "year");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -151,7 +159,6 @@ Route::Response BookRoute::impl(HttpDelete, const Request& req, int bid) const {
 	const auto project = session->must_find(conn, bid);
 	MysqlCommiter commiter(conn);
 	delete_project(conn.db(), project->id());
-	session->uncache_project(project->id());
 	if (project->is_book()) {
 		const auto dir = project->origin().data.dir;
 		CROW_LOG_INFO << "(BookRoute) removing directory: " << dir;

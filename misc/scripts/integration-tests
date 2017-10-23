@@ -15,6 +15,7 @@ errors=0
 json=
 sid=
 bid=
+uid=
 
 finish() {
 	rm $cookies
@@ -72,7 +73,7 @@ json() {
 }
 
 json_get() {
-	sed -e "s/.*\"$1\":\([^,]*\).*/\1/g" <<< "$2" | tr -d '"{}' | tr -s " " "_"
+	sed -e "s/.*\"$1\":\([^,{}]*\).*/\1/g" <<< "$2" | tr -d '"{}' | tr -s " " "_"
 }
 
 #
@@ -140,6 +141,17 @@ update_book() {
 	expect "$key=$val" $val $(json_get $key $(json "$res"))
 }
 
+update_book_int() {
+	local id=$1
+	local key=$2
+	local val=$3
+	local url="/books/$id"
+	local post="{\"$key\":$val}"
+	local res=$(curl_post $url $post)
+	expect $url 200 $(code $res)
+	expect "$key=$val" $val $(json_get $key $(json "$res"))
+}
+
 remove_book() {
 	local id=$1
 	local url="/books/$id"
@@ -183,6 +195,23 @@ correct_line() {
 	expect "GET $url" "$str" $(json_get cor "$res")
 }
 
+create_user() {
+		local name=$1
+		local pass=$2
+		local url="/users"
+		local post="{\"name\":\"$name\",\"pass\":\"$pass\",\"admin\":false,\"institute\":\"TEST\",\"email\":\"testuser@test.com\"}"
+		local res=$(curl_post $url $post)
+		expect "POST $url" 200 $(code "$res")
+		uid=$(json_get id "$res")
+}
+
+remove_user() {
+	local id=$1
+	local url="/users/$id"
+	local res=$(curl_delete $url)
+	expect "DELETE $url" 200 $(code "$res")
+}
+
 #
 # START OF SCRIPT
 #
@@ -204,12 +233,22 @@ loggedin "invalid" 403
 sid=""
 login $name $pass 200
 loggedin $name 200
+## NEW USER
+create_user "testuser" "testuserpass"
+sid=""
+login "testuser" "testuserpass" 200
+loggedin "testuser" 200
+remove_user $uid
+sid=""
+login $name $pass 200
+loggedin $name 200
 ## HOBBES
 upload $PWD/misc/data/test/hobbes-ocropus.zip 201
+#exit $error
 update_book $bid "title" "Leviathan"
 update_book $bid "author" "Hobbes"
 update_book $bid "language" "Latin"
-update_book $bid "year" 1668
+update_book_int $bid "year" 1668
 update_book $bid "uri" "http://example.org"
 update_book $bid "description" "desc"
 get_book $bid "title" "Leviathan"
@@ -218,6 +257,9 @@ get_book $bid "language" "Latin"
 get_book $bid "year" 1668
 get_book $bid "uri" "http://example.org"
 get_book $bid "description" "desc"
+get_book $bid "profilerUrl" "local"
+update_book $bid "profilerUrl" "some-profiler-url"
+get_book $bid "profilerUrl" "some-profiler-url"
 count_book $bid "Bomine" 1
 count_book $bid "Cæſaris" 1
 count_book $bid "CANNOTFINDME" 0
@@ -232,7 +274,7 @@ upload $PWD/misc/data/test/rollenhagen_reysen_1603.zip 201
 update_book $bid "title" "Reysen"
 update_book $bid "author" "Rollenhagen"
 update_book $bid "language" "German"
-update_book $bid "year" 1603
+update_book_int $bid "year" 1603
 update_book $bid "uri" "http://example.org"
 update_book $bid "description" "desc"
 get_book $bid "title" "Reysen"
@@ -240,6 +282,9 @@ get_book $bid "author" "Rollenhagen"
 get_book $bid "year" 1603
 get_book $bid "uri" "http://example.org"
 get_book $bid "description" "desc"
+get_book $bid "profilerUrl" "local"
+update_book $bid "profilerUrl" "some-profiler-url"
+get_book $bid "profilerUrl" "some-profiler-url"
 count_book $bid "von" 6
 count_book $bid "CANNOTFINDME" 0
 remove_book $bid
