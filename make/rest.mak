@@ -65,6 +65,7 @@ PROFILER_OBJS += rest/src/profiler/LocalProfiler.o
 PROFILER_OBJS += rest/src/profiler/Profile.o
 PROFILER_OBJS += rest/src/profiler/Profiler.o
 PROFILER_OBJS += rest/src/profiler/RemoteProfiler.o
+PROFILER_OBJS += rest/src/profiler/RemoteProfilerTemplate.o
 PROFILER_OBJS += rest/src/profiler/docxml.o
 
 LIBS += lib/libpcw.a
