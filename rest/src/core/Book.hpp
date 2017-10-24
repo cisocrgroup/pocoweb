@@ -15,8 +15,15 @@ using BookSptr = std::shared_ptr<Book>;
 using Path = boost::filesystem::path;
 
 struct BookData {
-	BookData(): author(), title(), description(), uri(),
-		profilerUrl("local"), lang(), dir(), year() {}
+	BookData()
+	    : author(),
+	      title(),
+	      description(),
+	      uri(),
+	      profilerUrl("local"),
+	      lang(),
+	      dir(),
+	      year() {}
 	std::string author, title, description, uri, profilerUrl, lang;
 	Path dir;
 	int year;
@@ -33,6 +40,13 @@ class Book : public Project {
 	virtual const Book& origin() const noexcept override { return *this; }
 	virtual const User& owner() const noexcept override { return *owner_; }
 	virtual void set_owner(const User& user) override;
+	std::shared_ptr<Book> book_ptr() {
+		return std::dynamic_pointer_cast<Book>(shared_from_this());
+	}
+	std::shared_ptr<const Book> book_ptr() const {
+		return std::dynamic_pointer_cast<const Book>(
+		    shared_from_this());
+	}
 
 	BookData data;
 
