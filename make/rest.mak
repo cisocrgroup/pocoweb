@@ -44,6 +44,7 @@ API_OBJS += rest/src/api/SuggestionsRoute.o
 API_OBJS += rest/src/api/SuspiciousWordsRoute.o
 API_OBJS += rest/src/api/UserRoute.o
 API_OBJS += rest/src/api/VersionRoute.o
+API_OBJS += rest/src/utils/Base64.o
 
 PARSER_OBJS += rest/src/parser/AbbyyXmlPageParser.o
 PARSER_OBJS += rest/src/parser/AbbyyXmlParserLine.o

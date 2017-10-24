@@ -1,3 +1,4 @@
+UTILS_TESTS += rest/src/utils/tests/TestBase64.test
 UTILS_TESTS += rest/src/utils/tests/TestError.test
 UTILS_TESTS += rest/src/utils/tests/TestMaybe.test
 UTILS_TESTS += rest/src/utils/tests/TestScopeGuard.test
