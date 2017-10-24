@@ -42,6 +42,7 @@ LDFLAGS += -lpthread
 LDFLAGS += -licuuc
 LDFLAGS += -lboost_system
 LDFLAGS += -lboost_filesystem
+LDFLAGS += -lboost_iostreams
 LDFLAGS += -lcrypto
 LDFLAGS += -lcrypt
 LDFLAGS += -lsqlpp-mysql

@@ -21,6 +21,7 @@ class RemoteProfiler : public Profiler {
 			   void *userdata);
 	static std::vector<std::string> parse_languages(
 	    const std::string &data);
+	static Profile parse_profile(const std::string &data, const Book &book);
 	const std::string url_;
 	std::string buffer_;
 };

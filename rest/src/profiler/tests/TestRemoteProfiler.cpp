@@ -2,6 +2,8 @@
 #define BOOST_TEST_MODULE RemoteProfilerTest
 
 #include <boost/test/unit_test.hpp>
+#include "core/BookBuilder.hpp"
+#include "profiler/Profile.hpp"
 #include "profiler/RemoteProfiler.hpp"
 #include "utils/Base64.hpp"
 #include "utils/Maybe.hpp"
@@ -25,4 +27,14 @@ BOOST_AUTO_TEST_CASE(GetLanguages) {
 	BOOST_CHECK(contains("latin"));
 	BOOST_CHECK(contains("greek"));
 	BOOST_CHECK(not contains("english"));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(GetProfile) {
+	BookBuilder builder;
+	builder.append_text("Erstä Zaile\nZwoite Zaila\nDritte Zeile");
+	builder.append_text("Nöch aine Zaile\nLetzte Zaile\n");
+	RemoteProfiler profiler(builder.build(), url);
+	const auto profile = profiler.profile();
+	BOOST_REQUIRE(profile.ok());
 }

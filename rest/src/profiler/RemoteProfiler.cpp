@@ -1,32 +1,86 @@
 #include "RemoteProfiler.hpp"
 #include <crow/logging.h>
 #include <curl/curl.h>
+#include <boost/iostreams/copy.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
+#include <boost/iostreams/filtering_streambuf.hpp>
+#include <sstream>
 #include "Profile.hpp"
+#include "RemoteProfilerTemplate.hpp"
+#include "docxml.hpp"
 #include "pugixml.hpp"
 #include "utils/Error.hpp"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsuggest-attribute=noreturn"
-Profile RemoteProfiler::do_profile() {
-	THROW(NotImplemented, "RemoteProfiler::do_profile");
+struct curl_clean {
+	void operator()(void* curl) const noexcept { curl_easy_cleanup(curl); }
+};
+
+using curl_ptr = std::unique_ptr<CURL, curl_clean>;
+
+////////////////////////////////////////////////////////////////////////////////
+struct curl_slist_clean {
+	void operator()(curl_slist* slist) const noexcept {
+		curl_slist_free_all(slist);
+	}
+};
+
+using curl_slist_ptr = std::unique_ptr<curl_slist, curl_slist_clean>;
+
+////////////////////////////////////////////////////////////////////////////////
+static curl_ptr new_curl() {
+	std::unique_ptr<CURL, curl_clean> curl(curl_easy_init());
+	if (not curl) THROW(Error, "could not intialize curl");
+	return curl;
 }
-#pragma GCC diagnostic pop
+
+////////////////////////////////////////////////////////////////////////////////
+Profile RemoteProfiler::do_profile() {
+	const auto path = boost::filesystem::path(url_) / "getProfile";
+	char EBUF[CURL_ERROR_SIZE + 1];
+	buffer_.clear();
+	auto curl = new_curl();
+	curl_easy_setopt(curl.get(), CURLOPT_URL, path.string().data());
+	curl_easy_setopt(curl.get(), CURLOPT_ERRORBUFFER, EBUF);
+	curl_easy_setopt(curl.get(), CURLOPT_WRITEFUNCTION, &write);
+	curl_easy_setopt(curl.get(), CURLOPT_WRITEDATA, this);
+	std::stringstream xx, out;
+	DocXml doc;
+	doc << book();
+	xx << doc;
+	boost::iostreams::filtering_streambuf<boost::iostreams::input> in;
+	in.push(boost::iostreams::gzip_compressor());
+	in.push(xx);
+	boost::iostreams::copy(in, out);
+	RemoteProfilerTemplate tmpl;
+	tmpl.set_userid("pocoweb")
+	    .set_language(book().origin().data.lang)
+	    .set_filename("tmp")
+	    .set_data(out.str());
+	curl_easy_setopt(curl.get(), CURLOPT_POSTFIELDS, tmpl.get().data());
+	curl_slist_ptr slist = nullptr;
+	curl_slist_append(slist.get(), "Content-Type: text/xml");
+	curl_easy_setopt(curl.get(), CURLOPT_HTTPHEADER, slist.get());
+	if (curl_easy_perform(curl.get()) != CURLE_OK)
+		THROW(Error, "curl_easy_perfrom(): ", EBUF);
+	return parse_profile(buffer_, book());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Profile RemoteProfiler::parse_profile(const std::string& buffer,
+				      const Book& book) {
+	std::cout << "buffer: " << buffer << "\n";
+	return Profile(book.book_ptr());
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 std::vector<std::string> RemoteProfiler::do_languages() {
 	const auto path = boost::filesystem::path(url_) / "getConfigurations";
-	struct curl_clean {
-		void operator()(void* curl) const noexcept {
-			curl_easy_cleanup(curl);
-		}
-	};
-	std::unique_ptr<CURL, curl_clean> curl(curl_easy_init());
-	if (not curl) THROW(Error, "could not intialize curl");
 	char EBUF[CURL_ERROR_SIZE + 1];
 	buffer_.clear();
+	auto curl = new_curl();
 	// curl_easy_setopt(curl.get(), CURLOPT_PORT, port);
 	curl_easy_setopt(curl.get(), CURLOPT_URL, path.string().data());
 	curl_easy_setopt(curl.get(), CURLOPT_ERRORBUFFER, EBUF);
