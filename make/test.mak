@@ -37,6 +37,7 @@ PARSER_TESTS += rest/src/parser/tests/TestBookDirectoryBuilder.test
 
 PROFILER_TESTS += rest/src/profiler/tests/TestProfile.test
 PROFILER_TESTS += rest/src/profiler/tests/TestDocXml.test
+PROFILER_TESTS += rest/src/profiler/tests/TestRemoteProfilerTemplate.test
 
 TESTS = $(UTILS_TESTS) $(CORE_TESTS) $(DATABASE_TESTS) $(PARSER_TESTS) $(PROFILER_TESTS)
 RUN_TESTS = $(patsubst %.test,%.run,$(TESTS))
