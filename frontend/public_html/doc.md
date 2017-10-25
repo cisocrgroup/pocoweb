@@ -470,6 +470,10 @@ You can download the source code from its
 
 <a id='pocoweb-backend'></a>
 ### Pocoweb back-end
+Pocoweb comes as a separate back-end process.
+This daemon needs a running mysql database server.
+The daemon is configured using the `config.ini` configuration file.
+Its implementation can be found under the `rest/src` directory.
 
 #### Dependencies
 The back-end of Pocoweb is written in c++ and depends on the following libraries
@@ -529,12 +533,37 @@ in the configuration file `config.ini`.
 You can manually start the Pocoweb daemon calling `./pcwd config.ini`.
 Pocoweb comes with a systemd unit file to handle Pocoweb with systemd.
 
-Update and install the unitfile `misc/systemd/pocoweb.service`.
-You can then manage pocoweb using `systemd {enable,restart,start,stop} pocoweb`.
+Update and install the unit file `misc/systemd/pocoweb.service`.
+You can then manage Pocoweb using `systemd {enable,restart,start,stop} pocoweb`.
 It is possible to inspect Pocoweb's log using `journalctl [-f] -u pocoweb`.
 
 <a id='pocoweb-frontend'></a>
 ### Pocoweb front-end
+Pocoweb's front-end is written in PHP using some Javascript functions.
+In order to run, an additional web server with support for PHP is needed.
+Also the front-end relies on a running Pocoweb back-end process.
+The front-end is implemented in the `frontend` directory.
+
+#### Daemon
+The front-end needs Pocoweb's daemon to run.
+You have to configure the daemon's endpoint in the `frontend/resources/config.php`
+file setting the appropriate `$config['backend']['url']` variable.
+
+If the daemon is running on `localhost:8080` for example,
+you need to configure redirection URL in your web server and insert
+set this URL in the configuration.
+
+#### Installation
+You need to install the front-end into your server's web-directory.
+Since there are some files generated automatically (including this documentation)
+it is not possible to merely copy the `frontend` directory.
+If you change any configuration variables in `frontend/resources/config.php`,
+make sure to reinstall the front-end.
+
+To install the front-end to `/path/to/web/directory`,
+issue the following command: `make install-frontend`:
+`make install-frontend PCW_FRONTEND_DIR=/path/to/web/directory`.
+This updates all needed files and installs them under the given directory.
 
 - - -
 <a id='rest-api'></a>
