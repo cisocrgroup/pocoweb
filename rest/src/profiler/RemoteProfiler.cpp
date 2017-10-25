@@ -16,8 +16,11 @@
 
 using namespace pcw;
 
-static int curl_trace(CURL* handle, curl_infotype type, char* data, size_t size,
-		      void* userp);
+/*
+ * static int curl_trace(CURL* handle, curl_infotype type, char* data, size_t
+ *size,
+ *		      void* userp);
+ */
 static std::string get_namespace_prefix(pugi::xml_node node);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,8 +60,8 @@ Profile RemoteProfiler::do_profile() {
 	curl_easy_setopt(curl.get(), CURLOPT_ERRORBUFFER, EBUF);
 	curl_easy_setopt(curl.get(), CURLOPT_WRITEFUNCTION, &write);
 	curl_easy_setopt(curl.get(), CURLOPT_WRITEDATA, this);
-	curl_easy_setopt(curl.get(), CURLOPT_DEBUGFUNCTION, curl_trace);
-	curl_easy_setopt(curl.get(), CURLOPT_VERBOSE, 1L);
+	// curl_easy_setopt(curl.get(), CURLOPT_DEBUGFUNCTION, curl_trace);
+	// curl_easy_setopt(curl.get(), CURLOPT_VERBOSE, 1L);
 	std::stringstream xx, out;
 	DocXml doc;
 	doc << book();
@@ -72,9 +75,9 @@ Profile RemoteProfiler::do_profile() {
 	    .set_language(book().origin().data.lang)
 	    .set_filename("tmp")
 	    .set_data(out.str());
-	std::ofstream fileout("tmpl.xml");
-	fileout << tmpl.get();
-	fileout.close();
+	// std::ofstream fileout("tmpl.xml");
+	// fileout << tmpl.get();
+	// fileout.close();
 	curl_easy_setopt(curl.get(), CURLOPT_POSTFIELDSIZE, tmpl.get().size());
 	curl_easy_setopt(curl.get(), CURLOPT_POSTFIELDS, tmpl.get().data());
 	CROW_LOG_INFO << "(RemoteProfiler) sending profile";
@@ -87,16 +90,13 @@ Profile RemoteProfiler::do_profile() {
 Profile RemoteProfiler::parse_profile(const std::string& buffer,
 				      const Book& book) {
 	CROW_LOG_INFO << "(RemoteProfiler) parsing profile";
-	std::cout << "buffer: " << buffer << "\n";
 	pugi::xml_document doc;
 	const auto ok = doc.load_string(buffer.data());
 	if (not ok) {
 		THROW(Error, "(RemoteProfiler) could not parse response: ",
 		      ok.description());
 	}
-	std::cout << "root: " << doc.document_element().name() << "\n";
 	const auto pre = get_namespace_prefix(doc.document_element());
-	std::cout << "pre: " << pre << "\n";
 	const auto ret = doc.document_element()
 			     .child((pre + "returncode").data())
 			     .child_value();
@@ -122,7 +122,6 @@ Profile RemoteProfiler::parse_profile(const std::string& buffer,
 	out.push(boost::iostreams::gzip_decompressor());
 	out.push(unzipped);
 	boost::iostreams::copy(gzipped, out);
-	std::cerr << "UNZIPPED: " << unzipped.str() << std::endl;
 	ProfileBuilder builder(book.book_ptr());
 	builder.add_candidates_from_stream(unzipped);
 	return builder.build();
@@ -191,37 +190,37 @@ size_t RemoteProfiler::write(char* ptr, size_t size, size_t nmemb,
 	return size * nmemb;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-int curl_trace(CURL*, curl_infotype type, char* data, size_t size, void*) {
-	switch (type) {
-		case CURLINFO_TEXT:
-			std::cerr << "=> Info: " << data;
-		default: /* in case a new one is introduced to shock us */
-			return 0;
-		case CURLINFO_HEADER_OUT:
-			std::cerr << "=> Send header: ";
-			break;
-		case CURLINFO_DATA_OUT:
-			std::cerr << "=> Send data: ";
-			break;
-		case CURLINFO_SSL_DATA_OUT:
-			std::cerr << "=> Send SSL data: ";
-			break;
-		case CURLINFO_HEADER_IN:
-			std::cerr << "<= Recv header: ";
-			break;
-		case CURLINFO_DATA_IN:
-			std::cerr << "<= Recv data: ";
-			break;
-		case CURLINFO_SSL_DATA_IN:
-			std::cerr << "<= Recv SSL data: ";
-			break;
-	}
-	if (data) {
-		std::cerr << std::string(data, size) << "\n";
-	}
-	return 0;
-}
+// ////////////////////////////////////////////////////////////////////////////////
+// int curl_trace(CURL*, curl_infotype type, char* data, size_t size, void*) {
+// 	switch (type) {
+// 		case CURLINFO_TEXT:
+// 			std::cerr << "=> Info: " << data;
+// 		default: /* in case a new one is introduced to shock us */
+// 			return 0;
+// 		case CURLINFO_HEADER_OUT:
+// 			std::cerr << "=> Send header: ";
+// 			break;
+// 		case CURLINFO_DATA_OUT:
+// 			std::cerr << "=> Send data: ";
+// 			break;
+// 		case CURLINFO_SSL_DATA_OUT:
+// 			std::cerr << "=> Send SSL data: ";
+// 			break;
+// 		case CURLINFO_HEADER_IN:
+// 			std::cerr << "<= Recv header: ";
+// 			break;
+// 		case CURLINFO_DATA_IN:
+// 			std::cerr << "<= Recv data: ";
+// 			break;
+// 		case CURLINFO_SSL_DATA_IN:
+// 			std::cerr << "<= Recv SSL data: ";
+// 			break;
+// 	}
+// 	if (data) {
+// 		std::cerr << std::string(data, size) << "\n";
+// 	}
+// 	return 0;
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 std::string get_namespace_prefix(pugi::xml_node node) {

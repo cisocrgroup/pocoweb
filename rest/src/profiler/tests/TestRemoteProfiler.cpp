@@ -37,6 +37,9 @@ BOOST_AUTO_TEST_CASE(GetProfile) {
 	builder.set_language("german");
 	RemoteProfiler profiler(builder.build(), url);
 	const auto mprofile = profiler.profile();
-	// BOOST_REQUIRE(mprofile.ok());
+	BOOST_REQUIRE(mprofile.ok());
 	const auto profile = mprofile.get();
+	BOOST_CHECK(not profile.suggestions().empty());
+	BOOST_CHECK(not profile.calc_ocr_patterns().empty());
+	BOOST_CHECK(not profile.calc_hist_patterns().empty());
 }
