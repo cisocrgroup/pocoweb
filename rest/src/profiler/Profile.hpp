@@ -139,6 +139,7 @@ class ProfileBuilder {
 	ProfileBuilder(ConstBookSptr book);
 	void clear();
 	Profile build() const;
+	void add_candidates_from_stream(std::istream& is);
 	void add_candidates_from_file(const Path& path);
 	void add_candidate_string(const Token& token, const std::string& str,
 				  bool newttok = true);
