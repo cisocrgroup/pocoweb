@@ -3,15 +3,22 @@
 #include <curl/curl.h>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
+#include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filtering_streambuf.hpp>
+#include <fstream>
 #include <sstream>
 #include "Profile.hpp"
 #include "RemoteProfilerTemplate.hpp"
 #include "docxml.hpp"
 #include "pugixml.hpp"
+#include "utils/Base64.hpp"
 #include "utils/Error.hpp"
 
 using namespace pcw;
+
+static int curl_trace(CURL* handle, curl_infotype type, char* data, size_t size,
+		      void* userp);
+static std::string get_namespace_prefix(pugi::xml_node node);
 
 ////////////////////////////////////////////////////////////////////////////////
 struct curl_clean {
@@ -43,9 +50,15 @@ Profile RemoteProfiler::do_profile() {
 	buffer_.clear();
 	auto curl = new_curl();
 	curl_easy_setopt(curl.get(), CURLOPT_URL, path.string().data());
+	curl_slist_ptr slist = nullptr;
+	slist.reset(
+	    curl_slist_append(slist.release(), "Content-Type: text/xml"));
+	curl_easy_setopt(curl.get(), CURLOPT_HTTPHEADER, slist.get());
 	curl_easy_setopt(curl.get(), CURLOPT_ERRORBUFFER, EBUF);
 	curl_easy_setopt(curl.get(), CURLOPT_WRITEFUNCTION, &write);
 	curl_easy_setopt(curl.get(), CURLOPT_WRITEDATA, this);
+	curl_easy_setopt(curl.get(), CURLOPT_DEBUGFUNCTION, curl_trace);
+	curl_easy_setopt(curl.get(), CURLOPT_VERBOSE, 1L);
 	std::stringstream xx, out;
 	DocXml doc;
 	doc << book();
@@ -59,10 +72,12 @@ Profile RemoteProfiler::do_profile() {
 	    .set_language(book().origin().data.lang)
 	    .set_filename("tmp")
 	    .set_data(out.str());
+	std::ofstream fileout("tmpl.xml");
+	fileout << tmpl.get();
+	fileout.close();
+	curl_easy_setopt(curl.get(), CURLOPT_POSTFIELDSIZE, tmpl.get().size());
 	curl_easy_setopt(curl.get(), CURLOPT_POSTFIELDS, tmpl.get().data());
-	curl_slist_ptr slist = nullptr;
-	curl_slist_append(slist.get(), "Content-Type: text/xml");
-	curl_easy_setopt(curl.get(), CURLOPT_HTTPHEADER, slist.get());
+	CROW_LOG_INFO << "(RemoteProfiler) sending profile";
 	if (curl_easy_perform(curl.get()) != CURLE_OK)
 		THROW(Error, "curl_easy_perfrom(): ", EBUF);
 	return parse_profile(buffer_, book());
@@ -71,8 +86,46 @@ Profile RemoteProfiler::do_profile() {
 ////////////////////////////////////////////////////////////////////////////////
 Profile RemoteProfiler::parse_profile(const std::string& buffer,
 				      const Book& book) {
+	CROW_LOG_INFO << "(RemoteProfiler) parsing profile";
 	std::cout << "buffer: " << buffer << "\n";
-	return Profile(book.book_ptr());
+	pugi::xml_document doc;
+	const auto ok = doc.load_string(buffer.data());
+	if (not ok) {
+		THROW(Error, "(RemoteProfiler) could not parse response: ",
+		      ok.description());
+	}
+	std::cout << "root: " << doc.document_element().name() << "\n";
+	const auto pre = get_namespace_prefix(doc.document_element());
+	std::cout << "pre: " << pre << "\n";
+	const auto ret = doc.document_element()
+			     .child((pre + "returncode").data())
+			     .child_value();
+	if (ret != std::string("0")) {
+		THROW(Error, "(RemoteProfiler) invalid return code: ", ret);
+	}
+	const auto msg = doc.document_element()
+			     .child((pre + "message").data())
+			     .child_value();
+	if (msg != std::string("ok")) {
+		THROW(Error, "(RemoteProfiler) invalid status message: ", msg);
+	}
+	const auto bin = doc.document_element()
+			     .child((pre + "doc_out").data())
+			     .child((pre + "binaryData").data())
+			     .child_value();
+	if (!bin || *bin == 0) {
+		THROW(Error, "(RemoteProfiler) empty binary data");
+	}
+	std::stringstream gzipped(base64::decode(bin));
+	std::stringstream unzipped;
+	boost::iostreams::filtering_ostream out;
+	out.push(boost::iostreams::gzip_decompressor());
+	out.push(unzipped);
+	boost::iostreams::copy(gzipped, out);
+	std::cerr << "UNZIPPED: " << unzipped.str() << std::endl;
+	ProfileBuilder builder(book.book_ptr());
+	builder.add_candidates_from_stream(unzipped);
+	return builder.build();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -109,8 +162,9 @@ std::vector<std::string> RemoteProfiler::parse_languages(
 	if (not res) {
 		THROW(Error, "could not get languages: ", res.description());
 	}
-	auto nodes =
-	    xml.document_element().select_nodes(".//ns2:configurations");
+	const auto pre = get_namespace_prefix(xml.document_element());
+	auto nodes = xml.document_element().select_nodes(
+	    (".//" + pre + "configurations").data());
 	std::vector<std::string> languages;
 	for (const auto& node : nodes) {
 		languages.push_back(node.node().child_value());
@@ -119,7 +173,8 @@ std::vector<std::string> RemoteProfiler::parse_languages(
 }
 
 // ////////////////////////////////////////////////////////////////////////////////
-// size_t RemoteProfiler::read(void *ptr, size_t size, size_t nmemb, void
+// size_t RemoteProfiler::read(void *ptr, size_t size, size_t nmemb,
+// void
 // *userdata)
 // {
 // 	auto is = reinterpret_cast<std::ifstream*>(userdata);
@@ -134,4 +189,47 @@ size_t RemoteProfiler::write(char* ptr, size_t size, size_t nmemb,
 	auto that = reinterpret_cast<RemoteProfiler*>(userdata);
 	that->buffer_.append(ptr, size * nmemb);
 	return size * nmemb;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int curl_trace(CURL*, curl_infotype type, char* data, size_t size, void*) {
+	switch (type) {
+		case CURLINFO_TEXT:
+			std::cerr << "=> Info: " << data;
+		default: /* in case a new one is introduced to shock us */
+			return 0;
+		case CURLINFO_HEADER_OUT:
+			std::cerr << "=> Send header: ";
+			break;
+		case CURLINFO_DATA_OUT:
+			std::cerr << "=> Send data: ";
+			break;
+		case CURLINFO_SSL_DATA_OUT:
+			std::cerr << "=> Send SSL data: ";
+			break;
+		case CURLINFO_HEADER_IN:
+			std::cerr << "<= Recv header: ";
+			break;
+		case CURLINFO_DATA_IN:
+			std::cerr << "<= Recv data: ";
+			break;
+		case CURLINFO_SSL_DATA_IN:
+			std::cerr << "<= Recv SSL data: ";
+			break;
+	}
+	if (data) {
+		std::cerr << std::string(data, size) << "\n";
+	}
+	return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::string get_namespace_prefix(pugi::xml_node node) {
+	for (const auto attr : node.attributes()) {
+		const auto ns = strstr(attr.name(), "xmlns:");
+		if (ns) {
+			return std::string(ns + strlen("xmlns:")) + ":";
+		}
+	}
+	return "";
 }

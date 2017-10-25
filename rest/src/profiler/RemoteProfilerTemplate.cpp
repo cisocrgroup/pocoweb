@@ -7,19 +7,17 @@ using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 const char* RemoteProfilerTemplate::t =
-    R"(
-<?xml version = "1.0" encoding='utf-8'?>
-<ns1:GetProfileRequest xmlns:ns1='http://www.cis.uni-muenchen.de/profiler/'>
-		<ns1:userid>__USERID__</ns1:userid>
-		<ns1:configuration>__LANGUAGE__</ns1:configuration>
-		<ns1:doc_in>
-				<!-- optional -->
-				<ns1:fileName>__FILE_NAME__</ns1:fileName>
-				<!-- optional -->
-				<ns1:binaryData>__DATA__</ns1:binaryData>
-		</ns1:doc_in>
-		<ns1:doc_in_type>DOCXML</ns1:doc_in_type>
-		<ns1:doc_in_size>__SIZE__</ns1:doc_in_size>
+    R"(<ns1:GetProfileRequest xmlns:ns1='http://www.cis.uni-muenchen.de/profiler/'>
+<ns1:userid>__USERID__</ns1:userid>
+<ns1:configuration>__LANGUAGE__</ns1:configuration>
+<ns1:doc_in>
+<!-- optional -->
+<ns1:fileName>__FILE_NAME__</ns1:fileName>
+<!-- optional -->
+<ns1:binaryData>__DATA__</ns1:binaryData>
+</ns1:doc_in>
+<ns1:doc_in_type>DOCXML</ns1:doc_in_type>
+<ns1:doc_in_size>__SIZE__</ns1:doc_in_size>
 </ns1:GetProfileRequest>)";
 
 ////////////////////////////////////////////////////////////////////////////////
