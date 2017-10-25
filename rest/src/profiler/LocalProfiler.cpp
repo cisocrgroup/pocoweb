@@ -1,7 +1,7 @@
 #include "LocalProfiler.hpp"
+#include <crow/logging.h>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
-#include <crow/logging.h>
 #include <cstdlib>
 #include <fstream>
 #include <thread>
@@ -56,8 +56,7 @@ void LocalProfiler::run_profiler(const std::string& command) const {
 ////////////////////////////////////////////////////////////////////////////////
 Profile LocalProfiler::read_profile() const {
 	CROW_LOG_DEBUG << "(LocalProfiler) Reading profile file " << infile_;
-	ProfileBuilder builder(
-	    std::dynamic_pointer_cast<const Book>(book().shared_from_this()));
+	ProfileBuilder builder(book().book_ptr());
 	builder.add_candidates_from_file(infile_);
 	if (debug_) {  // write tmp-profile if debugging is enabled
 		boost::system::error_code ec;
@@ -107,10 +106,10 @@ std::string LocalProfiler::profiler_config() const {
 std::vector<std::string> LocalProfiler::do_languages() {
 	std::vector<std::string> languages;
 	fs::directory_iterator b(backend_ / "profiler-backend"), e;
-	BOOST_FOREACH(const fs::path& p, std::make_pair(b, e)) {
+	BOOST_FOREACH (const fs::path& p, std::make_pair(b, e)) {
 		if (fs::is_regular_file(p) and p.extension() == ".ini") {
 			languages.push_back(
-				p.filename().replace_extension().string());
+			    p.filename().replace_extension().string());
 		}
 	}
 	return languages;
