@@ -12,10 +12,19 @@
 # Dependencies
  * g++-5
  * libbost-dev
- * libmysqlcppconn-dev
  * make
  * libssl-dev
  * libmariadbclient (mariadb is not needed)
+
+# Folder structure
+ * `rest/src` contains the back-end c++ implementation
+ * `db` contains the database table definitions
+ * `frontend` contains the web frontend files
+ * `frontend/resources` contains the php templates and library functions
+ * `frontend/public_html` contains images, html, php and javascript front-end files
+ * `make` contains various helper makefiles
+ * `modules` contains the git submodules
+
 
 # Misc
 ```$ apt-get install g++-5 libbost-dev libmysqlcppconn-dev make libssl-dev```
