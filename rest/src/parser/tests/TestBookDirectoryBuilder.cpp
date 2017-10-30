@@ -2,6 +2,7 @@
 #define BOOST_TEST_MODULE BookDirectoryBuilderTest
 
 #include <crow/logging.h>
+#include <boost/filesystem/operations.hpp>
 #include <boost/test/unit_test.hpp>
 #include <fstream>
 #include <functional>
@@ -13,6 +14,20 @@
 #include "utils/TmpDir.hpp"
 
 using namespace pcw;
+
+struct ZipFile {
+	public:
+		ZipFile(const std::string& file): file_(file) {
+			system(("wget http://www.cis.lmu.de/~finkf/pocoweb/" + file_).data());
+		}
+		~ZipFile() {
+			boost::system::error_code ec;
+			boost::filesystem::remove(file_, ec);
+		}
+		const std::string& file() {return file_;}
+	private:
+		const std::string file_;
+};
 
 struct Fixture {
 	Fixture() : tmpdir(), dir("testdir"), builder(tmpdir.dir(), dir) {
@@ -40,7 +55,8 @@ BOOST_FIXTURE_TEST_SUITE(BookDirectoryBuilderTest, Fixture)
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(Ocropus) {
-	add_zip_file("misc/data/test/hobbes-ocropus.zip");
+	ZipFile zip("hobbes-ocropus.zip");
+	add_zip_file(zip.file().data());
 	auto book = builder.build();
 	BOOST_REQUIRE(book);
 	BOOST_CHECK_EQUAL(book->size(), 2);
@@ -74,7 +90,8 @@ BOOST_AUTO_TEST_CASE(Ocropus) {
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(Alto) {
-	add_zip_file("misc/data/test/rollenhagen_reysen_1603.zip");
+	ZipFile zip("rollenhagen_reysen_1603.zip");
+	add_zip_file(zip.file().data());
 	auto book = builder.build();
 	BOOST_REQUIRE(book);
 	BOOST_CHECK_EQUAL(book->size(), 3);
