@@ -8,15 +8,17 @@
 ./__/ /____/______/__/________/_____\_____/...
 ..............................................
 ```
+# Pocoweb
+Pocoweb is postcorrection for the web.
 
-# Dependencies
+## Dependencies
  * g++-5
  * libbost-dev
  * make
  * libssl-dev
  * libmariadbclient (mariadb is not needed)
 
-# Folder structure
+## Folder structure
  * `rest/src` contains the back-end c++ implementation
  * `db` contains the database table definitions
  * `frontend` contains the web frontend files
@@ -26,22 +28,8 @@
  * `modules` contains the git submodules
 
 
-# Misc
-```$ apt-get install g++-5 libbost-dev libmysqlcppconn-dev make libssl-dev```
+## License
 
-## Settings for file upload
+Attributed is free software, and may be redistributed under the terms specified in the [LICENSE] file.
 
-### Nginx
- * set `client_max_body_size 500M;` in `/etc/nginx/nginx.conf`
- * `client_max_body_size` can be set in the contexts: `http`, `server`, `location`
- * add the following to `/etc/nginx/sites-available/default`:
-```
-location~ \.php$ {
-	# ...
-	fastcgi_param PHP_VALUE "upload_max_filesize=500M\npost_max_size=500M";
-}
-```
-
-### PHP
- * set `file_uploads = On` in `php.ini`
- * set `upload_max_file_size = 500M` in `php.ini`
+[LICENSE]: /LICENSE
