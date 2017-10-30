@@ -1,13 +1,14 @@
+#include "SessionStore.hpp"
 #include "Session.hpp"
 #include "SessionDirectory.hpp"
-#include "SessionStore.hpp"
 
 using namespace pcw;
 ////////////////////////////////////////////////////////////////////////////////
 SessionStore::SessionStore() : sessions_(), id_register_(), mutex_() {}
 
 ////////////////////////////////////////////////////////////////////////////////
-SessionSptr SessionStore::new_session(const User& user, AppCacheSptr cache) {
+SessionSptr SessionStore::new_session(const User& user, AppCacheSptr cache,
+				      const Config& config) {
 	using std::end;
 	using std::begin;
 	SessionSptr session = nullptr;
@@ -18,7 +19,7 @@ SessionSptr SessionStore::new_session(const User& user, AppCacheSptr cache) {
 		id_register_.clear();
 	}
 	while (not session) {
-		session = std::make_shared<Session>(user, cache);
+		session = std::make_shared<Session>(user, config, cache);
 		// Session id and directory id must be unique.
 		// You cannot use the same id for sessions and their
 		// directories, since SessionDirectories leak their id to the

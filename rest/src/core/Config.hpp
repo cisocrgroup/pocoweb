@@ -9,6 +9,7 @@ namespace pcw {
 using Ptree = boost::property_tree::ptree;
 
 struct Config {
+	static Config empty();
 	static Config load(const std::string& filename);
 	static Config load(std::istream& is);
 	void setup_logging() const;
@@ -20,21 +21,18 @@ struct Config {
 	} db;
 
 	const struct Daemon {
-		const std::string host, user, basedir;
+		const std::string host, user, basedir, projectdir, pidfile;
 		const int port, threads;
 		const bool detach;
 	} daemon;
 
-	const struct Log {
-		const std::string pidfile;
-		const int level;
-	} log;
+	const struct Log { const int level; } log;
 
 	const struct Profiler {
 		const std::string backend;
 		const double min_weight;
 		const size_t jobs;
-		const bool local, debug;
+		const bool debug;
 	} profiler;
 
 	const struct Plugins {

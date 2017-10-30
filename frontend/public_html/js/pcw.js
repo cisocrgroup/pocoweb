@@ -11,7 +11,6 @@ $(function() {
 			    input.val().replace(/\\/g, '/').replace(/.*\//, '');
 		    input.trigger('fileselect', [numFiles, label]);
 	    });
-
 	// We can watch for our custom `fileselect` event like this
 	$(document)
 	    .ready(function() {
@@ -50,6 +49,7 @@ pcw.onLoadWithPid = function(pid) {
 	pcw.setApiVersion();
 	pcw.setErrorDropdowns(pid);
 	pcw.setCorrectionSuggestions(pid);
+	pcw.markSuspiciousWords(pid);
 };
 
 pcw.getIds = function(anchor) {
@@ -80,8 +80,8 @@ pcw.setCorrectionSuggestionForAllSelectedConcordanceTokens = function() {
 	var suggestion =
 	    document.getElementById("global-correction-suggestion");
 	var items = document.getElementsByTagName("input");
-	const regex = /concordance-token-input-(\d+-\d+-\d+-\d+)/;
-	if (suggestion != null) {
+	var regex = /concordance-token-input-(\d+-\d+-\d+-\d+)/;
+	if (suggestion !== null) {
 		for (var i = 0; i < items.length; i++) {
 			var m = regex.exec(items[i].id);
 			if (m !== null && m.length > 0) {
@@ -98,14 +98,14 @@ pcw.setCorrectionSuggestionForAllSelectedConcordanceTokens = function() {
 };
 
 pcw.getSidImpl = function() {
-	const name = "pcw-sid=";
+	var name = "pcw-sid=";
 	var cookies = document.cookie.split(';');
 	for (var i = 0; i < cookies.length; i++) {
 		var c = cookies[i];
-		while (c.charAt(0) == ' ') {
+		while (c.charAt(0) === ' ') {
 			c = c.substring(1, c.length);
 		}
-		if (c.indexOf(name) == 0) {
+		if (c.indexOf(name) === 0) {
 			return c.substring(name.length, c.length);
 		}
 		return null;
@@ -122,7 +122,7 @@ pcw.setApiVersion = function() {
 	api = Object.create(pcw.Api);
 	api.setupForGetVersion();
 	api.run(function(status, res) {
-		const elem = document.getElementById('pcw-api-version');
+		var elem = document.getElementById('pcw-api-version');
 		if (elem !== null) {
 			elem.innerHTML = 'Api-Version: ' + res.version;
 		}
@@ -163,55 +163,68 @@ pcw.setLoggedInUser = function() {
 	}
 };
 
-pcw.setupCorrectedInputField = function(elem, res) {
-	if (elem === null) return;
-	elem.value = res.cor;
-	elem.className.replace(/ *fully-corrected-line/, '');
-	elem.className.replace(/ *partially-corrected-line/, '');
-	if (res.isFullyCorrected) {
-		elem.className += " fully-corrected-line";
-	} else if (res.isPartiallyCorrected) {
-		elem.className += " partially-corrected-line";
+pcw.setCorrectionStatus = function(elem, fully, partial) {
+	if (elem === null) {
+		return;
 	}
-	pcw.redraw(elem);
-};
-
-pcw.redraw = function(elem) {
-	if (elem !== null) {
-		// does not seem to work :(
-		elem.style.display = 'none';
-		elem.style.display = 'block';
+	elem.className = elem.className.replace(/ *fully-corrected-line/, '');
+	elem.className =
+	    elem.className.replace(/ *partially-corrected-line/, '');
+	if (fully) {
+		elem.className += " fully-corrected-line";
+	} else if (partial) {
+		elem.className += " partially-corrected-line";
 	}
 };
 
 pcw.correctWord = function(anchor) {
-	const ids = pcw.getIds(anchor);
-	const inputid = "concordance-token-input-" + anchor;
-	const correction = document.getElementById(inputid).value;
+	var ids = pcw.getIds(anchor);
+	var inputid = "concordance-token-input-" + anchor;
+	var correction = document.getElementById(inputid).value;
 	var api = Object.create(pcw.Api);
 	api.sid = pcw.getSid();
 	api.setupForCorrectWord(ids[0], ids[1], ids[2], ids[3], correction);
 	api.run(function(status, res) {
 		var elem = document.getElementById(inputid);
-		elem.value = res.cor;
-		pcw.setupCorrectedInputField(elem, res);
+		if (elem !== null) {
+			elem.value = res.cor;
+			pcw.setCorrectionStatus(
+			    elem, res.isFullyCorrected,
+			    res.isPartiallyCorrected);
+		}
 	});
 };
 
 pcw.correctLine = function(anchor) {
-	const ids = pcw.getIds(anchor);
-	const correction = document.getElementById(anchor).value;
+	var ids = pcw.getIds(anchor);
+	var correction = document.getElementById(anchor).value;
 	var api = Object.create(pcw.Api);
 	api.sid = pcw.getSid();
 	api.setupForCorrectLine(ids[0], ids[1], ids[2], correction);
 	api.run(function(status, res) {
-		var elem = document.getElementById(anchor);
-		pcw.setupCorrectedInputField(elem, res);
+		var fully = res.isFullyCorrected;
+		var partial = res.isPartiallyCorrected;
+		var input = document.getElementById(anchor);
+		if (input !== null) {
+			input.value = res.cor;
+			pcw.setCorrectionStatus(input, fully, partial);
+		}
+		var text = document.getElementById('line-text-' + anchor);
+		if (text !== null) {
+			pcw.setCorrectionStatus(text, fully, partial);
+			text.replaceChild(
+			    document.createTextNode(res.cor),
+			    text.childNodes[0]);
+			var aapi = Object.create(pcw.Api);
+			aapi.sid = pcw.getSid();
+			aapi.setupForGetSuspiciousWords(ids[0], ids[1], ids[2]);
+			aapi.run(pcw.markSuspiciousWordsInLine);
+		}
 	});
 };
 
 pcw.correctAllLines = function(sid) {
-	const regex = /(\d+)-(\d+)-(\d+)/;
+	var regex = /(\d+)-(\d+)-(\d+)/;
 	// iterate over all input nodes
 	var items = document.getElementsByTagName("input");
 	var ids = [];
@@ -229,7 +242,7 @@ pcw.getSelectedWordFromInputElement = function(elem) {
 		sel.b = elem.selectionStart;
 		sel.e = elem.selectionEnd;
 		// we need unicode aware regexes to handle words like `ſunt` ...
-		const regex = XRegExp('^(\\PL*)(.*?)(\\PL*)$');
+		var regex = XRegExp('^(\\PL*)(.*?)(\\PL*)$');
 		if ((sel.e - sel.b) > 0) {
 			var m = regex.exec(elem.value.substring(sel.b, sel.e));
 			sel.str = m[2];
@@ -242,9 +255,9 @@ pcw.getSelectedWordFromInputElement = function(elem) {
 };
 
 pcw.displayConcordance = function(anchor) {
-	const ids = pcw.getIds(anchor);
-	const pid = ids[0];
-	const selection = pcw.getSelectedWordFromInputElement(
+	var ids = pcw.getIds(anchor);
+	var pid = ids[0];
+	var selection = pcw.getSelectedWordFromInputElement(
 	    document.getElementById(anchor));
 	if (selection !== null) {
 		selection.ids = ids;
@@ -263,7 +276,7 @@ pcw.setConcordanceSearchLabel = function(pid, selection) {
 	api.run(function(status, res) {
 		var searchButton =
 		    document.getElementById('concordance-search-label');
-		const n = res.nWords;
+		var n = res.nWords;
 		var ocs = "occurrences";
 		if (n === 1) {
 			ocs = "occurrence";
@@ -308,10 +321,6 @@ pcw.addSuggestionDropdownItem = function(dropdown, s, selection) {
 	var t = document.createTextNode(
 	    s.suggestion + " (patts: " + s.patterns.join(',') + ", dist: " +
 	    s.distance + ", weight: " + s.weight.toFixed(2) + ")");
-	// a.href = "#";
-	/*a.onClick = "pcw.setSuggestionToSelection(" +
-	    JSON.stringify(selection) + ', "' + s.suggestion + '");';
-	    */
 	a.onclick = function() {
 		pcw.setSuggestionToSelection(selection, s.suggestion);
 	};
@@ -375,7 +384,7 @@ pcw.setErrorPatternsDropdown = function(pid, dropdown, res) {
 		}
 	}
 	var counts = [];
-	for (p in patterns) {
+	for (var p in patterns) {
 		counts.push(
 		    {pattern: p, count: Object.keys(patterns[p]).length});
 	}
@@ -389,8 +398,8 @@ pcw.setErrorPatternsDropdown = function(pid, dropdown, res) {
 			window.location.href = href;
 		};
 	};
-	for (var i = 0; i < counts.length; i++) {
-		var c = counts[i];
+	for (var ii = 0; ii < counts.length; ii++) {
+		var c = counts[ii];
 		var a = pcw.appendErrorCountItem(dropdown, c.pattern, c.count);
 		a.onclick = onclick(pid, c);
 	}
@@ -409,7 +418,7 @@ pcw.setErrorTokensDropdown = function(pid, dropdown, res) {
 		tokens[tok] = set;
 	}
 	var counts = [];
-	for (p in tokens) {
+	for (var p in tokens) {
 		counts.push({token: p, count: Object.keys(tokens[p]).length});
 	}
 	counts.sort(function(a, b) { return b.count - a.count; });
@@ -421,8 +430,8 @@ pcw.setErrorTokensDropdown = function(pid, dropdown, res) {
 			window.location.href = href;
 		};
 	};
-	for (var i = 0; i < counts.length; i++) {
-		c = counts[i];
+	for (var ii = 0; ii < counts.length; ii++) {
+		c = counts[ii];
 		var a = pcw.appendErrorCountItem(dropdown, c.token, c.count);
 		a.onclick = onclick(pid, c);
 	}
@@ -486,6 +495,133 @@ pcw.addItemToSuggestionsMenu = function(ul, s) {
 	li.appendChild(a);
 	ul.appendChild(li);
 	return a;
+};
+
+pcw.clearNode = function(node) {
+	while (node.firstChild) {
+		node.removeChild(node.firstChild);
+	}
+};
+
+pcw.setProfilerLanguages = function() {
+	var input = document.getElementById('pcw-project-profiler');
+	if (input === null ||
+	    (input.value != 'local' && !input.value.startsWith('http'))) {
+		return;
+	}
+	var langs = document.getElementById('pcw-project-languages');
+	if (langs === null) {
+		return;
+	}
+	pcw.clearNode(langs);
+	var api = Object.create(pcw.Api);
+	api.sid = pcw.getSid();
+	api.setupForGetLanguages(input.value);
+	api.run(function(s, res) {
+		pcw.clearNode(langs);
+		for (var i = 0; i < res.languages.length; i++) {
+			t = document.createTextNode(res.languages[i]);
+			o = document.createElement("option");
+			o.appendChild(t);
+			langs.appendChild(o);
+		}
+	});
+};
+
+pcw.toggleBetweenTextAndInput = function(hide, unhide) {
+	if (hide === null || unhide === null) {
+		return;
+	}
+	hide.className = unhide.className.replace(/ *hidden/, '');
+	hide.className += ' hidden';
+	unhide.className = unhide.className.replace(/ *hidden/, '');
+};
+
+pcw.toggleFromInputToText = function(anchor) {
+	var input = document.getElementById('line-input-' + anchor);
+	var text = document.getElementById('line-text-' + anchor);
+	pcw.toggleBetweenTextAndInput(input, text);
+};
+
+pcw.toggleFromTextToInput = function(anchor) {
+	var input = document.getElementById('line-input-' + anchor);
+	var text = document.getElementById('line-text-' + anchor);
+	var b = 0;
+	var e = 0;
+	if (window.getSelection) {
+		b = window.getSelection().anchorOffset;
+		e = b + window.getSelection().toString().length;
+	}
+	pcw.toggleBetweenTextAndInput(text, input);
+	if (input.firstChild !== null) {
+		input.firstChild.selectionStart = b;
+		input.firstChild.selectionEnd = e;
+		input.firstChild.focus();
+	}
+};
+
+pcw.markSuspiciousWords = function(pid) {
+	var divs = document.getElementsByTagName("div");
+	var p = 0;
+	for (var i = 0; i < divs.length; i++) {
+		var div = divs[i];
+		if (/line-text-\d+-\d+\d+/.test(div.id)) {
+			var ids = pcw.getIds(div.id.substring(10));
+			var api = Object.create(pcw.Api);
+			api.sid = pcw.getSid();
+			api.setupForGetSuspiciousWords(pid, ids[1], ids[2]);
+			api.run(pcw.markSuspiciousWordsInLine);
+		}
+	}
+};
+
+pcw.markSuspiciousWordsInLine = function(status, res) {
+	if (res.suspiciousWords.length <= 0) {
+		return;
+	}
+	var w0 = res.suspiciousWords[0];
+	var id = res.projectId + '-' + w0.pageId + '-' + w0.lineId;
+	var line = document.getElementById('line-text-' + id);
+	if (line === null || line.firstChild === null) {
+		return;
+	}
+	var text = line.firstChild.nodeValue;
+	for (var i = 0; i < res.suspiciousWords.length; i++) {
+		var wi = res.suspiciousWords[i].token;
+		text = text.replace(
+		    new RegExp(wi, 'g'),
+		    "<span class=\"underline\">" + wi + "</span>");
+	}
+	line.innerHTML = text;
+};
+
+pcw.openImageWindow = function(img, l, t, w, h) {
+	var ww = window.innerWidth || document.documentElement.clientWidth ||
+	    document.body.clientWidth;
+
+	var wh = window.innerHeight || document.documentElement.clientHeight ||
+	    document.body.clientHeight;
+	var nww = ww / 2;
+	var nwh = wh;
+	var doc = window.open(
+	    img, "image", "width=" + nww + ",height=" + nwh + ",left=" + nww);
+	pcw.log("box: l:" + l + ",t:" + t + ",w:" + w + ",h:" + h);
+	doc.addEventListener("load", function() {
+		// console.log("doc loaded");
+		// var body = doc.document.getElementsByTagName("body")[0];
+		// // var img = doc.document.getElementsByTagName('img')[0];
+		// var canvas = doc.document.createElement('canvas');
+		// canvas.setAttribute('id', 'canvas');
+		// canvas.setAttribute('width', w);
+		// canvas.setAttribute('height', h);
+		// canvas.setAttribute(
+		//     'style',
+		//     'position:absolute; border:1px solid #000000; top:0px;
+		//     left:0px; z-index:1;');
+		// body.appendChild(canvas);
+		// console.log("callback done");
+	}, true);
+	doc.focus();
 };
 
 pcw.timestampToISO8601 = function(ts) {

@@ -34,7 +34,7 @@ App::run()
 	assert(config_);
 	if (not app_)
 		app_ = std::make_unique<Route::App>();
-	CROW_LOG_INFO << "(App) Starting server";
+	CROW_LOG_INFO << "(App) Starting server version " << App::version_str();
 	app_->port(config_->daemon.port)
 		.concurrency(config_->daemon.threads)
 		.bindaddr(config_->daemon.host)

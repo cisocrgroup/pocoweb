@@ -29,13 +29,14 @@ a.line-anchor {
 	/*visibility: hidden;*/
 }
 
-input.partially-corrected {
+.partially-corrected {
 	background-color: #fcf8e3;
 }
 
-input.fully-corrected {
+input.fully-corrected, div.fully-corrected {
 	background-color: #dff0d8;
 }
+
 .affix {
 	top: 0;
 	width: 100%;
@@ -69,8 +70,29 @@ div.text-image-line:hover {
 	/*box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);*/
 }
 
+.line-input hidden {
+		display: none
+}
+
+.line-text hidden {
+		dispaly: none
+}
+
 .scrollable-menu {
     height: auto;
     max-height: 200px;
     overflow-x: hidden;
+}
+
+span.underline {
+		color: #ff0000;
+		text-decoration: underline;
+}
+
+/* json formatting */
+.pl-s {
+		color: green
+}
+.pl-c1 {
+		color: red
 }

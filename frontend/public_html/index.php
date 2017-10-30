@@ -5,6 +5,9 @@ require_once(LIBRARY_PATH . "/backend.php");
 require_once(TEMPLATES_PATH . "/header.php");
 
 if (isset($_GET["upload"])) {
+	/*foreach ($_POST as $key => $val) {
+		frontend_render_info_div("$key = $val");
+	}*/
 	if (isset($_FILES["archive"])) {
 		$_POST["uri"] = "";
 		$_POST["description"] = "";
@@ -23,12 +26,13 @@ if (isset($_GET["upload"])) {
 	}
 } else if (isset($_GET["assign"])) {
 	$pid = $_GET["pid"];
-	$api = backend_assign_project($pid, $_POST);
+	$uid = $_POST["assign-user-id"];
+	$api = backend_assign_project($pid, $uid);
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
 		frontend_render_error_div("Could not assign project #$pid: $status");
 	} else {
-		frontend_render_success_div("Successfully assigned project #$pid");
+		frontend_render_success_div("Successfully assigned project #$pid to user #$uid");
 	}
 } else if (isset($_GET["remove"])) {
 	$pid = $_GET["pid"];

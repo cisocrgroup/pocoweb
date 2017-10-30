@@ -5,6 +5,7 @@
 #include <iostream>
 #include <thread>
 #include "core/BookBuilder.hpp"
+#include "core/Config.hpp"
 #include "core/ProjectBuilder.hpp"
 #include "core/Session.hpp"
 #include "core/SessionDirectory.hpp"
@@ -34,7 +35,8 @@ struct SessionFixture {
 		pbuilder.set_origin(*book);
 		project = pbuilder.build();
 		session = std::make_shared<Session>(
-		    *user, std::make_shared<AppCache>(2, 2, 2));
+		    *user, Config::empty(),
+		    std::make_shared<AppCache>(2, 2, 2));
 	}
 };
 
@@ -49,7 +51,7 @@ BOOST_AUTO_TEST_CASE(HasUser) {
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(WorksWithNullCache) {
 	// just check for segfaults
-	session = std::make_shared<Session>(*user, nullptr);
+	session = std::make_shared<Session>(*user, Config::empty(), nullptr);
 	session->insert_project(connection, *book);
 	session->insert_project(connection, *project);
 	auto b = session->find_project(connection, book->id());
@@ -58,7 +60,7 @@ BOOST_AUTO_TEST_CASE(WorksWithNullCache) {
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(HasRandomSessionId) {
-	session = std::make_shared<Session>(*user, nullptr);
+	session = std::make_shared<Session>(*user, Config::empty(), nullptr);
 	BOOST_CHECK(not session->id().empty());
 	BOOST_CHECK_EQUAL(session->id().size(), 16);
 }

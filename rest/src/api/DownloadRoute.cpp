@@ -41,7 +41,7 @@ Route::Response DownloadRoute::download(const Request& req, int bid) const {
 	const LockedSession session(must_find_session(req));
 	session->assert_permission(conn, bid, Permissions::Read);
 	const auto project = session->must_find(conn, bid);
-	Archiver archiver(*project);
+	Archiver archiver(*project, conn, get_config());
 	auto ar = archiver();
 	Json j;
 	j["archive"] = ar.string();

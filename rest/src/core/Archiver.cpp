@@ -10,6 +10,7 @@
 #include "Page.hpp"
 #include "Project.hpp"
 #include "WagnerFischer.hpp"
+#include "database/Tables.h"
 #include "parser/PageParser.hpp"
 #include "parser/ParserPage.hpp"
 #include "utils/Error.hpp"
@@ -19,20 +20,29 @@ using namespace pcw;
 namespace fs = boost::filesystem;
 
 ////////////////////////////////////////////////////////////////////////////////
-Archiver::Archiver(const Project& project)
-    : project_(project.shared_from_this()) {}
+Archiver::Archiver(const Project& project, MysqlConnection& conn,
+		   const Config& config)
+    : project_(project.shared_from_this()),
+      conn_(conn),
+      basedir_(config.daemon.basedir) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 Archiver::Path Archiver::operator()() const {
 	assert(project_);
+	const auto oldwd = fs::current_path();
+	ScopeGuard restoreoldwd([&oldwd]() { fs::current_path(oldwd); });
+	fs::current_path(basedir_);
 	const auto archive = project_->origin().data.dir / archive_name();
-	const auto dir = project_->origin().data.dir / archive.stem();
+	const auto dir = archive.parent_path() / archive.stem();
 	ScopeGuard deltmpdir([&dir]() { fs::remove_all(dir); });
 	ScopeGuard delarchive([&archive]() { fs::remove(archive); });
 	copy_files(dir);
+	write_adaptive_token_set(dir);
 	zip(dir, archive);
 	delarchive.dismiss();
 	// do *not* dismiss deltmpdir; it should be removed all the time.
+	// do *not* dissmiss restoreoldwd, since we want change back to it in
+	// any case.
 	return archive;
 }
 
@@ -49,7 +59,7 @@ void Archiver::zip(const Path& dir, const Path& archive) const {
 	CROW_LOG_DEBUG << "(Archiver) zip command: " << command;
 	const auto err = system(command.data());
 	if (err)
-		THROW(Error, "Cannot unzip file: `", command, "` returned ",
+		THROW(Error, "Cannot unzip file: `", command, "` returned: ",
 		      err);
 	// do *not* dismiss restoreold, since we want to change back to the old
 	// working directory.
@@ -68,7 +78,6 @@ void Archiver::write_gt_file(const Line& line, const Path& to) const {
 ////////////////////////////////////////////////////////////////////////////////
 void Archiver::copy_files(const Path& dir) const {
 	assert(project_);
-	const auto base = project_->origin().data.dir;
 	WagnerFischer wf;
 	for (const auto& page : *project_) {
 		if (not page->has_ocr_path()) {
@@ -101,7 +110,29 @@ void Archiver::copy_files(const Path& dir) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Archiver::Path Archiver::get_tmp_file(const Path& source, const Path& tmpdir) {
+void Archiver::write_adaptive_token_set(const Path& dir) const {
+	const auto bookid = project_->id();
+	const auto path = dir / "adaptive_tokens.txt";
+	std::ofstream os(path.string());
+	if (not os.good()) {
+		throw std::system_error(errno, std::system_category(),
+					path.string());
+	}
+	tables::Types t;
+	tables::Adaptivetokens a;
+	auto rows = conn_.db()(
+	    select(t.string)
+		.from(t.join(a).on(t.typid == a.typid and t.bookid == a.bookid))
+		.where(t.bookid == bookid));
+	for (const auto& row : rows) {
+		os << row.string << "\n";
+	}
+	os.close();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Archiver::Path Archiver::get_tmp_file(const Path& source,
+				      const Path& tmpdir) const {
 	const auto base = remove_common_base_path(source.parent_path(), tmpdir);
 	const auto target = tmpdir / base / source.filename();
 	return target;
@@ -109,12 +140,18 @@ Archiver::Path Archiver::get_tmp_file(const Path& source, const Path& tmpdir) {
 
 ////////////////////////////////////////////////////////////////////////////////
 Archiver::Path Archiver::copy_to_tmp_dir(const Path& source,
-					 const Path& tmpdir) {
+					 const Path& tmpdir) const {
 	const auto target = get_tmp_file(source, tmpdir);
-	fs::create_directories(target.parent_path());
 	boost::system::error_code ec;
+	fs::create_directories(target.parent_path(), ec);
+	if (ec)
+		THROW(Error, "(Archiver) cannot create directory: ",
+		      target.parent_path(), ": ", ec.message());
+	CROW_LOG_DEBUG << "(Archiver) copying " << source << " to " << target;
 	hard_link_or_copy(source, target, ec);
-	if (ec) THROW(Error, "(Archiver) cannot copy ", source, " to ", target);
+	if (ec)
+		THROW(Error, "(Archiver) cannot copy ", source, " to ", target,
+		      ": ", ec.message());
 	return target;
 }
 

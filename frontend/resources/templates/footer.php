@@ -1,14 +1,17 @@
 <div class="col-md-12">
+<hr>
 <footer class="footer">
 	<div class="text-muted footer-line text-center">
 		<a href="#">Back to top <span class="glyphicon glyphicon-menu-up"/></a>
 	</div>
 	<div class="text-muted footer-line text-center">
-		Designed and built by <a href="http://www.example.org">me</a>.
+		Designed and built by the
+		<a target="_blank" href="http://cis.uni-muenchen.de">
+		Centrum für Informations- und Sprachverarbeitung (CIS)</a>.
 	</div>
 	<div class="text-muted footer-line text-center">
-		Code licensed under <a href="http://www.example.org">Foobar</a>.
-		Documentation licensed under <a href="http://www.example.org">Barfoo</a>.
+		Code licensed under <a href="LICENSE">Apache-2.0</a>.
+		Documentation licensed under <a href="LICENSE">Apache-2.0</a>.
 	</div>
 	<div class="text-muted footer-line text-center">
 		This website uses cookies.

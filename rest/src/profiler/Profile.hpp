@@ -50,6 +50,7 @@ class Candidate {
 	int lev() const noexcept { return lev_; }
 	Explanation explanation() const { return expl_; }
 	const std::string& explanation_string() const noexcept { return expl_; }
+	bool is_top_suggestion(const std::set<Candidate>& cs) const;
 
        private:
 	std::string cor_;
@@ -119,10 +120,14 @@ class Profile {
 
 	const Book& book() const noexcept { return *book_; }
 	const Suggestions& suggestions() const noexcept { return suggestions_; }
+	const std::set<std::string> adaptive_tokens() const noexcept {
+		return adaptive_tokens_;
+	}
 	Patterns calc_ocr_patterns() const;
 	Patterns calc_hist_patterns() const;
 
        private:
+	std::set<std::string> adaptive_tokens_;
 	Suggestions suggestions_;
 	ConstBookSptr book_;
 
@@ -134,6 +139,7 @@ class ProfileBuilder {
 	ProfileBuilder(ConstBookSptr book);
 	void clear();
 	Profile build() const;
+	void add_candidates_from_stream(std::istream& is);
 	void add_candidates_from_file(const Path& path);
 	void add_candidate_string(const Token& token, const std::string& str,
 				  bool newttok = true);
@@ -143,6 +149,7 @@ class ProfileBuilder {
        private:
 	void init();
 
+	std::set<std::string> adaptive_tokens_;
 	std::unordered_map<int64_t, Token> tokens_;
 	Profile::Suggestions suggestions_;
 	ConstBookSptr book_;

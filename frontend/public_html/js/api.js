@@ -112,7 +112,25 @@ pcw.Api = {
 		this.url = this.url.replace('%d', p);
 		this.url = this.url.replace('%d', lid);
 		this.url = this.url.replace('%d', tid);
-		this.acceptedStatuses = [200]
+		this.acceptedStatuses = [200];
+	},
+	setupForGetSuspiciousWords: function(pid, p, lid) {
+		this.method = "GET";
+		this.post = null;
+		this.url = pcw.config.backend.url +
+		    pcw.config.backend.routes.getSuspiciousWords;
+		this.url = this.url.replace('%d', pid);
+		this.url = this.url.replace('%d', p);
+		this.url = this.url.replace('%d', lid);
+		this.acceptedStatuses = [200];
+	},
+	setupForGetLanguages: function(url) {
+		this.method = "GET";
+		this.post = null;
+		this.url = pcw.config.backend.url +
+		    pcw.config.backend.routes.languages;
+		this.url = this.url.replace('%s', encodeURI(url));
+		this.acceptedStatuses = [200];
 	},
 	run: function(callback) {
 		var http = new XMLHttpRequest();
@@ -137,7 +155,7 @@ pcw.Api = {
 		http.open(this.method, this.url, true);
 		http.setRequestHeader(
 		    "Content-type", "application/json; charset=UTF-8");
-		http.setRequestHeader("Authorization", this.sid);
+		http.setRequestHeader("Authorization", "Pocoweb " + this.sid);
 		this.log(
 		    "sending request: " + this.formatRequest() + " data: " +
 		    JSON.stringify(this.post));

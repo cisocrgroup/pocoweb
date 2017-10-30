@@ -6,11 +6,24 @@
 namespace pcw {
 class RemoteProfiler : public Profiler {
        public:
-	RemoteProfiler(ConstBookSptr book) : Profiler(std::move(book)) {}
+	RemoteProfiler(ConstBookSptr book, std::string url)
+	    : Profiler(std::move(book)), url_(std::move(url)), buffer_() {}
 	virtual ~RemoteProfiler() noexcept override = default;
 
        protected:
 	virtual Profile do_profile() override;
+	virtual std::vector<std::string> do_languages() override;
+
+       private:
+	static size_t write(char *ptr, size_t size, size_t nmemb,
+			    void *userdata);
+	static size_t read(void *ptr, size_t size, size_t nmemb,
+			   void *userdata);
+	static std::vector<std::string> parse_languages(
+	    const std::string &data);
+	static Profile parse_profile(const std::string &data, const Book &book);
+	const std::string url_;
+	std::string buffer_;
 };
 }
 

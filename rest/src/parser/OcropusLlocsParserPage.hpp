@@ -14,7 +14,6 @@ class OcropusLlocsParserPage : public BasicParserPage {
 
        private:
 	static void write(int id, const ParserLine& line, const Path& base);
-	static void copy(const Path& from, const Path& to);
 
 	Path dir_;
 };

@@ -34,6 +34,14 @@ function backend_get_login_route() {
 		$config["backend"]["routes"]["login"];
 }
 
+function backend_get_http_status_info($status) {
+	global $config;
+	if (isset($config["httpStatusInfo"][$status])) {
+		return "$status " . $config["httpStatusInfo"][$status];
+	}
+	return "$status Unknown";
+}
+
 function backend_login($name, $pass) {
 	$data = array("name" => $name, "pass" => $pass);
 	$api = new Api(backend_get_login_route());
@@ -158,17 +166,16 @@ function backend_split_project($pid, $post) {
 	return $api;
 }
 
-function backend_get_assign_project_route($pid) {
+function backend_get_assign_project_route($pid, $uid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["assignProject"], $pid);
+	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["assignProject"], $pid, $uid);
 }
 
-function backend_assign_project($pid, $post) {
-	$data = array("name" => $post["assign-user-name"]);
-	$api = new Api(backend_get_assign_project_route($pid));
+function backend_assign_project($pid, $uid) {
 	global $SID;
+	$api = new Api(backend_get_assign_project_route($pid, $uid));
 	$api->set_session_id($SID);
-	$api->post_request($data);
+	$api->get_request();
 	return $api;
 }
 
@@ -310,6 +317,61 @@ function backend_get_split_images($word) {
 		$word["lineId"], $word["tokenId"]));
 	$api->set_session_id($SID);
 	$api->get_request();
+	return $api;
+}
+
+function backend_get_languages_route($url) {
+	global $config;
+	return sprintf($config["backend"]["url"] .
+		$config["backend"]["routes"]["languages"], $url);
+}
+
+function backend_get_languages() {
+	global $SID;
+	$api = new Api(backend_get_languages_route("local"));
+	$api->set_session_id($SID);
+	$api->get_request();
+	return $api;
+}
+
+function backend_get_adaptive_tokens_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["url"] .
+		$config["backend"]["routes"]["adaptiveTokens"], $pid);
+}
+
+function backend_get_adaptive_tokens($pid) {
+	global $SID;
+	$api = new Api(backend_get_adaptive_tokens_route($pid));
+	$api->set_session_id($SID);
+	$api->get_request();
+	return $api;
+}
+
+function backend_get_update_user_route($uid) {
+		global $config;
+		return sprintf($config["backend"]["url"] .
+				$config["backend"]["routes"]["updateUser"], $uid);
+}
+
+function backend_update_user($uid, $name, $email, $institute, $pass) {
+	global $SID;
+	$api = new Api(backend_get_update_user_route($uid));
+	$api->set_session_id($SID);
+	$api->get_request();
+	$data = array(
+		'name' => $name,
+		'email' => $email,
+		'institute' => $institute,
+	);
+	# set password only if it is not empty
+	if ($pass != "") {
+			$data['pass'] = $pass;
+	}
+	$api = new Api(backend_get_update_user_route($uid));
+	global $SID;
+	$api->set_session_id($SID);
+	$api->post_request($data);
 	return $api;
 }
 ?>

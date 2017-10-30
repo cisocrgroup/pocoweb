@@ -16,6 +16,8 @@
     <script type="text/javascript" src="js/api.js"></script>
 	<script type="text/javascript" src="https://unpkg.com/xregexp@3.2.0/xregexp-all.js"></script>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
+	<link rel="icon" href="/img/favicon.ico" type="image/x-icon">
     <title>PoCoWeb - Post Correction Web</title>
 </head>
 <!-- <body onload='pcw.setApiVersion();pcw.setLoggedInUser();'> -->
@@ -29,15 +31,16 @@ if (isset($_GET["pid"])) {
 <div class="container-fluid">
     <div id="pocweb-header">
     <div class="row">
-	<img class="image-rounded center-block" src="img/lmu_cis_logo.jpg"/>
+	<img class="image-rounded center-block" src="img/logo.jpg"/>
     </div>
 	<div id="navbar" class="navbar-collapse collapse">
 	    <!-- <nav class="navbar navbar-default"> -->
 		<!-- <div class="navbar-header"> -->
 		    <ul class="nav navbar-nav navbar-left">
-			<li><a href="index.php">Home</a></li>
+			<li><a href="index.php">Projects</a></li>
 			<li><a href="users.php">Users</a></li>
-			<li><a href="about.php">About</a></li>
+			<li><a href="account.php">Account</a></li>
+			<!--<li><a href="about.php">About</a></li> -->
 			<li><a href="documentation.php">Documentation</a></li>
 			<?php
 			global $config;
@@ -72,6 +75,7 @@ if ($USER !== NULL) {
 			</li>
 		</ul>
     </div>
+<hr>
 </div>
 <?php
 /*

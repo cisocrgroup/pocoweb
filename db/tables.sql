@@ -20,6 +20,7 @@ create table if not exists books (
 	author varchar(100) not null,
 	description varchar(255),
 	uri varchar(255),
+	profilerurl varchar(255),
 	directory varchar(255) not null,
 	lang varchar(50) not null
 );
@@ -96,7 +97,8 @@ create table if not exists suggestions (
 	typid int references types(typid),
 	suggestiontypid int references types(typid),
 	weight double not null,
-	distance int not null
+	distance int not null,
+	topsuggestion boolean not null
 );
 
 /* (3 * 4)^ + 1^^ + (3 * 4)^ = 25*/
@@ -106,5 +108,11 @@ create table if not exists errorpatterns (
 	suggestionid int references suggestions(suggestionid),
 	bookid int references books(bookid),
 	pattern varchar(25)
+);
+
+create table if not exists adaptivetokens (
+	bookid int references books(bookid),
+	typid int references types(typid),
+	primary key (bookid, typid)
 );
 

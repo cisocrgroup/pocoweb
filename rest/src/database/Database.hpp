@@ -62,6 +62,9 @@ template <class Db>
 void insert_project_info_and_set_id(Db& db, Project& view);
 
 template <class Db>
+void delete_project(Db& db, int pid);
+
+template <class Db>
 void select_pages(Db& db, const BookBuilder& builder, int bookid);
 
 template <class Db>
@@ -155,10 +158,11 @@ template <class Db>
 void pcw::update_user(Db& db, const User& user) {
 	using namespace sqlpp;
 	tables::Users users;
-	// do not change user's name and id
+	// do not change user's id
 	auto stmnt =
 	    update(users)
-		.set(users.email = user.email, users.institute = user.institute)
+		.set(users.passwd = user.password.str(), users.name = user.name,
+		     users.email = user.email, users.institute = user.institute)
 		.where(users.userid == user.id());
 	db(stmnt);
 }
@@ -484,6 +488,8 @@ pcw::BookData pcw::detail::make_book_data(const Row& row) noexcept {
 				[&](const auto& l) { data.lang = l; });
 	detail::set_if_not_null(row.directory,
 				[&](const auto& d) { data.dir = d; });
+	detail::set_if_not_null(row.profilerurl,
+				[&](const auto& u) { data.profilerUrl = u; });
 	return data;
 }
 
@@ -644,6 +650,33 @@ void pcw::update_line(Db& db, const Line& line) {
 	    contents.conf = parameter(contents.conf)));
 	db.run(remove);
 	detail::insert_content(db, insert, line);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template <class Db>
+void delete_project(Db& db, int pid) {
+	using namespace sqlpp;
+	tables::Books b;
+	tables::Projects p;
+	tables::ProjectPages pp;
+	tables::Profiles ppp;
+	tables::Suggestions s;
+	tables::Errorpatterns e;
+	tables::Adaptivetokens a;
+	tables::Textlines l;
+	tables::Contents c;
+	tables::Types t;
+	db(remove_from(b).where(b.bookid == pid));
+	db(remove_from(pp).where(pp.projectid == pid));
+	db(remove_from(p).where(p.projectid == pid));
+	db(remove_from(ppp).where(ppp.bookid == pid));
+	db(remove_from(l).where(l.bookid == pid));
+	db(remove_from(c).where(c.bookid == pid));
+	db(remove_from(s).where(s.bookid == pid));
+	db(remove_from(e).where(e.bookid == pid));
+	db(remove_from(t).where(t.bookid == pid));
+	db(remove_from(a).where(a.bookid == pid));
+	db(remove_from(p).where(p.origin == pid));
 }
 
 #endif  // pcw_Database_hpp__

@@ -1,10 +1,10 @@
-#include "core/Book.hpp"
+#include "BookRoute.hpp"
 #include <crow.h>
 #include <boost/filesystem.hpp>
 #include <random>
 #include <regex>
-#include "BookRoute.hpp"
 #include "core/Archiver.hpp"
+#include "core/Book.hpp"
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/Package.hpp"
 #include "core/Page.hpp"
@@ -65,26 +65,34 @@ Route::Response BookRoute::impl(HttpPost, const Request& req) const {
 	ScopeGuard sg([&dir]() { dir.remove(); });
 	CROW_LOG_INFO << "(BookRoute) BookDirectoryBuilder: " << dir.dir();
 	BookSptr book;
-	if (crow::get_header_value(req.headers, "Content-Type") == "application/json") {
+	if (crow::get_header_value(req.headers, "Content-Type") ==
+	    "application/json") {
 		// CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
 		const auto json = crow::json::load(req.body);
-		dir.add_zip_file_path(json["file"].s());
+		const auto file = get<std::string>(json, "file");
+		if (not file)
+			THROW(BadRequest, "(BookRoute) missing file parameter");
+		dir.add_zip_file_path(*file);
 		book = dir.build();
-		if (not book) THROW(BadRequest, "Could not build book");
+		if (not book)
+			THROW(BadRequest, "(BookRoute) could not build book");
 		book->set_owner(session->user());
+		// book->data.profilerUrl = "local";
 		// update book data
 		update_book_data(*book, json);
 	} else {
 		dir.add_zip_file_content(extract_content(req));
 		book = dir.build();
-		if (not book) THROW(BadRequest, "Could not build book");
+		if (not book)
+			THROW(BadRequest, "(BookRoute) could not build book");
+		// book->data.profilerUrl = "local";
 		book->set_owner(session->user());
 	}
 	// insert book into database
-	CROW_LOG_INFO << "(BookRoute) Inserting new book into database";
+	CROW_LOG_INFO << "(BookRoute) Inserting a new book into database";
 	MysqlCommiter commiter(conn);
 	insert_book(conn.db(), *book);
-	CROW_LOG_INFO << "(BookRoute) Created new book id: " << book->id();
+	CROW_LOG_INFO << "(BookRoute) Created a new book id: " << book->id();
 	// update and clean up
 	commiter.commit();
 	sg.dismiss();
@@ -97,13 +105,21 @@ Route::Response BookRoute::impl(HttpPost, const Request& req) const {
 ////////////////////////////////////////////////////////////////////////////////
 void BookRoute::update_book_data(Book& book,
 				 const crow::json::rvalue& data) const {
-	if (data.has("author")) book.data.author = data["author"].s();
-	if (data.has("title")) book.data.title = data["title"].s();
-	if (data.has("language")) book.data.lang = data["language"].s();
-	if (data.has("year")) book.data.year = data["year"].i();
-	if (data.has("uri")) book.data.uri = data["uri"].s();
-	if (data.has("description"))
-		book.data.description = data["description"].s();
+	if (get<std::string>(data, "author"))
+		book.data.author = *get<std::string>(data, "author");
+	if (get<std::string>(data, "title"))
+		book.data.title = *get<std::string>(data, "title");
+	if (get<std::string>(data, "language"))
+		book.data.lang = *get<std::string>(data, "language");
+	if (get<std::string>(data, "uri"))
+		book.data.uri = *get<std::string>(data, "uri");
+	if (get<std::string>(data, "description"))
+		book.data.description = *get<std::string>(data, "description");
+	if (get<std::string>(data, "profilerUrl"))
+		book.data.profilerUrl = *get<std::string>(data, "profilerUrl");
+	else
+		book.data.profilerUrl = "local";
+	if (get<int>(data, "year")) book.data.year = *get<int>(data, "year");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -122,8 +138,8 @@ Route::Response BookRoute::impl(HttpPost, const Request& req, int bid) const {
 	auto data = crow::json::load(req.body);
 	LockedSession session(must_find_session(req));
 	auto conn = must_get_connection();
-	session->assert_permission(conn, bid, Permissions::Write);
 	const auto view = session->must_find(conn, bid);
+	session->assert_permission(conn, bid, Permissions::Write);
 	if (not view->is_book())
 		THROW(BadRequest, "cannot set parameters of project id: ", bid);
 	const auto book = std::dynamic_pointer_cast<Book>(view);
@@ -141,13 +157,24 @@ Route::Response BookRoute::impl(HttpDelete, const Request& req, int bid) const {
 	auto conn = must_get_connection();
 	session->assert_permission(conn, bid, Permissions::Remove);
 	const auto project = session->must_find(conn, bid);
-	if (project->is_book())
-		remove_book(conn, *session, project->origin());
-	else
-		remove_project(conn, *session, *project);
+	MysqlCommiter commiter(conn);
+	delete_project(conn.db(), project->id());
+	if (project->is_book()) {
+		const auto dir = project->origin().data.dir;
+		CROW_LOG_INFO << "(BookRoute) removing directory: " << dir;
+		boost::system::error_code ec;
+		boost::filesystem::remove_all(dir, ec);
+		if (ec)
+			CROW_LOG_WARNING
+			    << "(BookRoute) cannot remove directory: " << dir
+			    << ": " << ec.message();
+	}
+	session->uncache_project(project->id());
+	commiter.commit();
 	return ok();
 }
 
+#ifdef foo
 ////////////////////////////////////////////////////////////////////////////////
 void BookRoute::remove_project(MysqlConnection& conn, const Session& session,
 			       const Project& project) const {
@@ -167,6 +194,7 @@ void BookRoute::remove_project_impl(MysqlConnection& conn, int pid) const {
 	tables::Profiles ppp;
 	tables::Suggestions s;
 	tables::Errorpatterns e;
+	tables::Adaptivetokens a;
 	tables::Types t;
 	conn.db()(remove_from(pp).where(pp.projectid == pid));
 	conn.db()(remove_from(p).where(p.projectid == pid));
@@ -174,6 +202,7 @@ void BookRoute::remove_project_impl(MysqlConnection& conn, int pid) const {
 	conn.db()(remove_from(s).where(s.bookid == pid));
 	conn.db()(remove_from(e).where(e.bookid == pid));
 	conn.db()(remove_from(t).where(t.bookid == pid));
+	conn.db()(remove_from(a).where(a.bookid == pid));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -221,3 +250,4 @@ void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
 	session.uncache_project(book.id());
 	commiter.commit();
 }
+#endif

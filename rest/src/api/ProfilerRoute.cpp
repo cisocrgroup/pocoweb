@@ -1,25 +1,28 @@
-#include "profiler/Profile.hpp"
+#include "ProfilerRoute.hpp"
 #include <crow/app.h>
 #include <chrono>
-#include "ProfilerRoute.hpp"
 #include "core/App.hpp"
 #include "core/Book.hpp"
 #include "core/Config.hpp"
 #include "core/Session.hpp"
 #include "core/jsonify.hpp"
+#include "core/queries.hpp"
 #include "core/util.hpp"
 #include "database/Tables.h"
 #include "profiler/LocalProfiler.hpp"
+#include "profiler/Profile.hpp"
 #include "profiler/RemoteProfiler.hpp"
 #include "utils/Maybe.hpp"
 #include "utils/UniqueIdMap.hpp"
 
-#define PROFILER_ROUTE_ROUTE "/books/<int>/profile"
+#define PROFILER_ROUTE_ROUTE_1 "/books/<int>/profile"
+#define PROFILER_ROUTE_ROUTE_2 "/profiler-languages"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* ProfilerRoute::route_ = PROFILER_ROUTE_ROUTE;
+const char* ProfilerRoute::route_ =
+    PROFILER_ROUTE_ROUTE_1 "," PROFILER_ROUTE_ROUTE_2;
 const char* ProfilerRoute::name_ = "ProfilerRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,8 +48,9 @@ void ProfilerRoute::Register(App& app) {
 	// setup jobs (Register() is called after each route has been set up).
 	// must be called before the route is registered.
 	jobs_ = std::make_shared<std::vector<Job>>(get_config().profiler.jobs);
-	CROW_ROUTE(app, PROFILER_ROUTE_ROUTE)
+	CROW_ROUTE(app, PROFILER_ROUTE_ROUTE_1)
 	    .methods("GET"_method, "POST"_method)(*this);
+	CROW_ROUTE(app, PROFILER_ROUTE_ROUTE_2).methods("GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -113,10 +117,12 @@ ProfilerRoute::Response ProfilerRoute::impl(HttpPost, const Request& req,
 
 ////////////////////////////////////////////////////////////////////////////////
 ProfilerUptr ProfilerRoute::get_profiler(ConstBookSptr book) const {
-	if (get_config().profiler.local) {
+	assert(book);
+	if (book->data.profilerUrl == "local") {
 		return std::make_unique<LocalProfiler>(book, get_config());
 	} else {
-		return std::make_unique<RemoteProfiler>(book);
+		return std::make_unique<RemoteProfiler>(book,
+							book->data.profilerUrl);
 	}
 }
 
@@ -161,6 +167,7 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 	tables::Profiles p;
 	tables::Errorpatterns e;
 	tables::Types t;
+	tables::Adaptivetokens a;
 	tables::Suggestions stab;
 	auto conn = that->must_get_connection();
 	const auto id = profile.book().id();
@@ -172,10 +179,12 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 	conn.db()(remove_from(stab).where(stab.bookid == id));
 	conn.db()(remove_from(t).where(t.bookid == id));
 	conn.db()(remove_from(e).where(e.bookid == id));
+	conn.db()(remove_from(a).where(a.bookid == id));
 	// insert new profile timestamp
 	conn.db()(insert_into(p).set(p.bookid = id, p.timestamp = ts));
 	// insert new profile
 	UniqueIdMap<std::string> typeids;
+	// suggestions
 	for (const auto& s : profile.suggestions()) {
 		bool isnew;
 		int firstid;
@@ -207,7 +216,9 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 			    stab.lineid = s.first.line->id(),
 			    stab.tokenid = s.first.id, stab.typid = firstid,
 			    stab.suggestiontypid = secondid,
-			    stab.weight = c.weight(), stab.distance = c.lev()));
+			    stab.weight = c.weight(), stab.distance = c.lev(),
+			    stab.topsuggestion =
+				c.is_top_suggestion(s.second)));
 			for (const auto& p : c.explanation().ocrp.patterns) {
 				if (not p.empty()) {
 					auto pattern = std::string(p.left) +
@@ -221,5 +232,48 @@ void ProfilerRoute::insert_profile(const ProfilerRoute* that,
 			}
 		}
 	}
+	// adaptive tokens
+	for (const auto& s : profile.adaptive_tokens()) {
+		bool isnew;
+		int typid;
+		std::tie(typid, isnew) = typeids[s];
+		if (isnew) {
+			conn.db()(insert_into(t).set(
+			    t.bookid = id, t.typid = typid, t.string = s));
+		}
+		CROW_LOG_DEBUG << "(ProfilerRoute) adaptive token: " << s;
+		conn.db()(insert_into(a).set(a.bookid = id, a.typid = typid));
+	}
 	commiter.commit();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request& req) const {
+	auto url = query_get<std::string>(req.url_params, "url");
+	if (not url) {
+		url = "local";
+	}
+	CROW_LOG_DEBUG << "(ProfilerRoute) get languages url=" << *url;
+	// LockedSession session(must_find_session(req));
+	ProfilerUptr profiler;
+	if (*url == "local")
+		profiler.reset(new LocalProfiler(nullptr, get_config()));
+	else
+		profiler.reset(new RemoteProfiler(nullptr, *url));
+
+	Json j;
+	j["url"] = *url;
+	j["languages"] = crow::json::rvalue(crow::json::type::List);
+	const auto languages = profiler->languages().get();
+	// auto maybe_languages = profiler->languages();
+	// if (not maybe_languages.ok()) {
+	// 	CROW_LOG_ERROR << "(ProfilerRoute) " << maybe_languages.what();
+	// 	return j;
+	// }
+	// const auto languages = maybe_languages.get();
+	size_t i = 0;
+	for (const auto& language : languages) {
+		j["languages"][i++] = language;
+	}
+	return j;
 }

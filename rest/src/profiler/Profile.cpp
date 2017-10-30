@@ -1,5 +1,6 @@
 #include "Profile.hpp"
 #include <utf8.h>
+#include <fstream>
 #include <iostream>
 #include "core/Book.hpp"
 #include "core/Page.hpp"
@@ -71,6 +72,16 @@ std::wstring Candidate::wcor() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+bool Candidate::is_top_suggestion(const std::set<Candidate>& cs) const {
+	auto i = std::max_element(begin(cs), end(cs),
+				  [](const auto& a, const auto& b) {
+					  return a.weight() < b.weight();
+				  });
+	if (i == end(cs)) return false;
+	return this->weight() >= i->weight();
+}
+
+////////////////////////////////////////////////////////////////////////////////
 Profile::Patterns Profile::calc_ocr_patterns() const {
 	Patterns ps;
 	for (const auto& s : suggestions_) {
@@ -126,6 +137,7 @@ void ProfileBuilder::init() {
 ////////////////////////////////////////////////////////////////////////////////
 void ProfileBuilder::clear() {
 	suggestions_.clear();
+	adaptive_tokens_.clear();
 	// book remains untouched
 	// tokens remains untouched
 }
@@ -134,16 +146,27 @@ void ProfileBuilder::clear() {
 Profile ProfileBuilder::build() const {
 	Profile profile{book_};
 	profile.suggestions_ = this->suggestions_;
+	profile.adaptive_tokens_ = this->adaptive_tokens_;
 	return profile;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void ProfileBuilder::add_candidates_from_file(const Path& path) {
+	std::ifstream file(path.string());
+	if (not file.good()) {
+		THROW(ParseError, "could not open file: ", path);
+	}
+	add_candidates_from_stream(file);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void ProfileBuilder::add_candidates_from_stream(std::istream& is) {
 	pugi::xml_document doc;
-	auto ok = doc.load_file(path.string().data());
-	if (not ok)
-		THROW(ParseError, "Could not parse file ", path, ": ",
+	auto ok = doc.load(is);
+	if (not ok) {
+		THROW(ParseError, "Could not parse xml file: ",
 		      ok.description());
+	}
 	auto ts = doc.document_element().select_nodes(".//token");
 	bool newtok = false;
 	for (const auto& t : ts) {
@@ -163,6 +186,11 @@ void ProfileBuilder::add_candidates_from_file(const Path& path) {
 					     newtok);
 			newtok = false;
 		}
+	}
+	// adaptive tokens
+	auto ats = doc.document_element().select_nodes(".//adaptiveToken");
+	for (const auto& t : ats) {
+		adaptive_tokens_.insert(t.node().child_value());
 	}
 }
 

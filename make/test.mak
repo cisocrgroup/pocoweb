@@ -1,3 +1,4 @@
+UTILS_TESTS += rest/src/utils/tests/TestBase64.test
 UTILS_TESTS += rest/src/utils/tests/TestError.test
 UTILS_TESTS += rest/src/utils/tests/TestMaybe.test
 UTILS_TESTS += rest/src/utils/tests/TestScopeGuard.test
@@ -16,6 +17,7 @@ CORE_TESTS += rest/src/core/tests/TestPackageBuilder.test
 CORE_TESTS += rest/src/core/tests/TestPageBuilder.test
 CORE_TESTS += rest/src/core/tests/TestPassword.test
 CORE_TESTS += rest/src/core/tests/TestProjectBuilder.test
+CORE_TESTS += rest/src/core/tests/TestQueries.test
 CORE_TESTS += rest/src/core/tests/TestSearcher.test
 CORE_TESTS += rest/src/core/tests/TestSession.test
 CORE_TESTS += rest/src/core/tests/TestSessionStore.test
@@ -33,8 +35,10 @@ PARSER_TESTS += rest/src/parser/tests/TestOcropusLlocsParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestHocrParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestBookDirectoryBuilder.test
 
-PROFILER_TESTS += rest/src/profiler/tests/TestProfile.test
 PROFILER_TESTS += rest/src/profiler/tests/TestDocXml.test
+PROFILER_TESTS += rest/src/profiler/tests/TestProfile.test
+PROFILER_TESTS += rest/src/profiler/tests/TestRemoteProfiler.test
+PROFILER_TESTS += rest/src/profiler/tests/TestRemoteProfilerTemplate.test
 
 TESTS = $(UTILS_TESTS) $(CORE_TESTS) $(DATABASE_TESTS) $(PARSER_TESTS) $(PROFILER_TESTS)
 RUN_TESTS = $(patsubst %.test,%.run,$(TESTS))
@@ -47,4 +51,5 @@ RUN_TESTS = $(patsubst %.test,%.run,$(TESTS))
 test: $(RUN_TESTS)
 
 DEPS += $(patsubst %.test,%.d,$(TESTS))
+TESTOBJS += $(patsubst %.test,%.o,$(TESTS))
 .PHONY: test

@@ -26,11 +26,12 @@ CORE_OBJS += rest/src/core/User.o
 CORE_OBJS += rest/src/core/WagnerFischer.o
 CORE_OBJS += rest/src/core/XmlFile.o
 CORE_OBJS += rest/src/core/jsonify.o
+CORE_OBJS += rest/src/core/queries.o
 CORE_OBJS += rest/src/core/util.o
 
+API_OBJS += rest/src/api/AdaptiveTokensRoute.o
 API_OBJS += rest/src/api/AssignRoute.o
 API_OBJS += rest/src/api/BookRoute.o
-API_OBJS += rest/src/api/CorrectionRoute.o
 API_OBJS += rest/src/api/DownloadRoute.o
 API_OBJS += rest/src/api/FinishRoute.o
 API_OBJS += rest/src/api/LineRoute.o
@@ -40,8 +41,10 @@ API_OBJS += rest/src/api/SearchRoute.o
 API_OBJS += rest/src/api/SplitImagesRoute.o
 API_OBJS += rest/src/api/SplitRoute.o
 API_OBJS += rest/src/api/SuggestionsRoute.o
+API_OBJS += rest/src/api/SuspiciousWordsRoute.o
 API_OBJS += rest/src/api/UserRoute.o
 API_OBJS += rest/src/api/VersionRoute.o
+API_OBJS += rest/src/utils/Base64.o
 
 PARSER_OBJS += rest/src/parser/AbbyyXmlPageParser.o
 PARSER_OBJS += rest/src/parser/AbbyyXmlParserLine.o
@@ -62,6 +65,7 @@ PROFILER_OBJS += rest/src/profiler/LocalProfiler.o
 PROFILER_OBJS += rest/src/profiler/Profile.o
 PROFILER_OBJS += rest/src/profiler/Profiler.o
 PROFILER_OBJS += rest/src/profiler/RemoteProfiler.o
+PROFILER_OBJS += rest/src/profiler/RemoteProfilerTemplate.o
 PROFILER_OBJS += rest/src/profiler/docxml.o
 
 LIBS += lib/libpcw.a

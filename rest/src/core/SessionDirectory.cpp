@@ -4,14 +4,15 @@
 #include "Line.hpp"
 #include "Page.hpp"
 #include "Session.hpp"
+#include "core/Config.hpp"
 #include "crow/json.h"
 #include "jsonify.hpp"
 
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-SessionDirectory::SessionDirectory(const std::string& sid)
-    : dirs_(), sid_(sid) {}
+SessionDirectory::SessionDirectory(const std::string& sid, const Config& config)
+    : dirs_(), base_dir_(config.daemon.basedir), sid_(sid) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 SessionDirectory::~SessionDirectory() noexcept { close(); }
@@ -32,23 +33,23 @@ void SessionDirectory::close() const noexcept {
 ////////////////////////////////////////////////////////////////////////////////
 SessionDirectory::SplitImagePaths SessionDirectory::create_split_images(
     const Line& line, const Box& box) {
-	const auto basedir = line.page().book().data.dir / sid_;
-	if (not dirs_.count(basedir)) {
-		init(basedir);
-		dirs_.insert(basedir);
+	const auto dir = line.page().book().data.dir / sid_;
+	if (not dirs_.count(dir)) {
+		init(base_dir_ / dir);
+		dirs_.insert(dir);
 	}
 	if (not box.is_within(line.box))
 		THROW(BadRequest, "(SessionDirectory) Invalid coordinates");
-	PixPtr pix{pixRead(line.img.string().data())};
+	PixPtr pix{pixRead((base_dir_ / line.img).string().data())};
 	if (not pix)
-		THROW(Error, "(SessionDirectory) cannot read image file: ",
-		      line.img);
-	CROW_LOG_DEBUG << "(SessionDirectory) basedir: " << basedir;
+		THROW(Error,
+		      "(SessionDirectory) cannot read image file: ", line.img);
+	CROW_LOG_DEBUG << "(SessionDirectory) dir: " << dir;
 	const auto projectid = line.page().book().id();
 	const auto pageid = line.page().id();
 	const auto lineid = line.id();
-	const auto splitdir = basedir / "split-images";
-	init(splitdir);
+	const auto splitdir = dir / "split-images";
+	init(base_dir_ / splitdir);
 	const auto x0 = box.left() - line.box.left();
 	const auto x1 = box.right() - line.box.left();
 	const auto basefilename = std::to_string(projectid) + "-" +
@@ -71,7 +72,7 @@ SessionDirectory::SplitImagePaths SessionDirectory::create_split_images(
 
 ////////////////////////////////////////////////////////////////////////////////
 SessionDirectory::OptPath SessionDirectory::write_split_image(
-    int f, int t, PIX& pix, const Path& path) {
+    int f, int t, PIX& pix, const Path& path) const {
 	assert(f >= 0 and f <= static_cast<int>(pix.w));
 	assert(t >= 0 and f <= static_cast<int>(pix.w));
 	assert(f <= t);
@@ -84,9 +85,11 @@ SessionDirectory::OptPath SessionDirectory::write_split_image(
 	box.h = pix.h;
 	PixPtr tmp{pixClipRectangle(&pix, &box, nullptr)};
 	if (not tmp)
-		THROW(Error, "(SessionDirectory) Cannot create image: ", path);
-	if (pixWrite(path.string().data(), tmp.get(), IFF_PNG))
-		THROW(Error, "(SessionDirectory) Cannot write image: ", path);
+		THROW(Error, "(SessionDirectory) Cannot create image: ",
+		      base_dir_ / path);
+	if (pixWrite((base_dir_ / path).string().data(), tmp.get(), IFF_PNG))
+		THROW(Error, "(SessionDirectory) Cannot write image: ",
+		      base_dir_ / path);
 	return path;
 }
 

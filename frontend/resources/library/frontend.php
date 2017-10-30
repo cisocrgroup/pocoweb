@@ -33,7 +33,8 @@ function frontend_render_project_table_div($admin) {
 	$api = backend_get_projects();
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
-		frontend_render_error_div("error could not load projects: $status");
+		frontend_render_error_div("error could not load projects: " .
+			backend_get_http_status_info($status));
 	} else {
 		$projects = $api->get_response();
 		if (!isset($projects["books"])) {
@@ -78,32 +79,35 @@ function frontend_render_admin_project_table_row($project, $users) {
 	echo '<div class="input-group">';
 	// open project button
 	echo '<div class="btn-group" role="group">', "\n";
-	// echo '<span class="input-group-btn">';
+	// open project
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'page.php?u=none&p=first&pid=', $pid, '\'"',
 		' title="open project #', $pid, '">';
-	echo '<span class="glyphicon glyphicon-open"/>';
+	echo '<span class="glyphicon glyphicon-book"/>';
 	echo '</button>';
-	// echo '</span>';
-	// remove project button
-	// echo '<span class="input-group-btn">';
+	// remove project
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'index.php?remove&pid=', $pid, '\'"',
 		' title="remove project #', $pid, '">';
 	echo '<span class="glyphicon glyphicon-remove"/>';
 	echo '</button>';
-	// echo '</span>';
-	// download project button
-	// echo '<span class="input-group-btn">';
+	// download project
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'index.php?download&pid=', $pid, '\'"',
 		' title="download project #', $pid, '">';
 	echo '<span class="glyphicon glyphicon-download"/>';
 	echo '</button>';
+	// order document profile
 	echo '<button class="btn btn-default"',
 		' onclick="pcw.orderProfile(', $pid, ');"',
 		' title="order profile for project #', $pid, '">';
-	echo '<span class="glyphicon glyphicon-glass"/>';
+	echo '<span class="glyphicon glyphicon-check"/>';
+	echo '</button>';
+	// adaptive tokens
+	echo '<button class="btn btn-default"',
+		' onclick="window.location.href=\'adaptive.php?pid=', $pid, '\'"',
+		' title="list adpative tokens">';
+	echo '<span class="glyphicon glyphicon-link"/>';
 	echo '</button>';
 	// echo '</span>';
 	echo '</div>';
@@ -133,12 +137,12 @@ function frontend_render_admin_project_table_row($project, $users) {
 		echo '<form method="post" class="form-inline" ',
 			'action="index.php?assign&pid=', $pid, '">', "\n";
 		echo '<div class="form-group">';
-		echo '<select name="assign-user-name" class="form-control">', "\n";
+		echo '<select name="assign-user-id" class="form-control">', "\n";
 		foreach ($users as $user) {
-			if ($user["admin"]) { // skip admins
+			if ($user["admin"]) { // skip admins // Y?
 				continue;
 			}
-			echo '<option value="', $user["name"], '">', $user["name"], '</option>', "\n";
+			echo '<option value="', $user["id"], '">', $user["name"], '</option>', "\n";
 		}
 		echo '</select>', "\n";
 		echo '</div>';
@@ -174,7 +178,7 @@ function frontend_render_normal_user_project_table_row($project) {
 	echo '<button class="btn btn-default"',
 		' onclick="window.location.href=\'page.php?u=none&p=first&pid=', $pid, '\'"',
 		' title="open project #', $pid, '">';
-	echo '<span class="glyphicon glyphicon-ok"/>';
+	echo '<span class="glyphicon glyphicon-book"/>';
 	echo '</button>';
 	echo '</span>';
 	// finish project button
@@ -227,12 +231,12 @@ function frontend_render_upload_new_project_div() {
 	echo '<form action="index.php?upload" method="post" enctype="multipart/form-data">', "\n";
 	// Author
 	echo '<div class="form-group">', "\n";
-	echo '<label for="author">Project\'s author</label>', "\n";
+	echo '<label for="author">Author</label>', "\n";
 	echo '<input name="author" type="text" placeholder="Author" class="form-control"/>', "\n";
 	echo '</div>', "\n";
 	// Title
 	echo '<div class="form-group">', "\n";
-	echo '<label for="title">Project\'s title</label>', "\n";
+	echo '<label for="title">Title</label>', "\n";
 	echo '<input name="title" type="text" placeholder="Title" class="form-control"/>', "\n";
 	echo '</div>', "\n";
 	// Year
@@ -241,10 +245,27 @@ function frontend_render_upload_new_project_div() {
 	echo '<input name="year" type="number" min="0" max="2099" ',
 		'step="1" value="2017" class="form-control"/>', "\n";
 	echo '</div>', "\n";
-	// Language
+	// Profiler
+	echo '<div class="form-group">', "\n";
+	echo '<label for="profiler">Profiler URL (use local if in doubt)</label>', "\n";
+	echo '<input id="pcw-project-profiler" oninput=\'pcw.setProfilerLanguages();\' ',
+		'value="local" name="profiler" type="text" placeholder="Profiler URL" ',
+		'class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Languages
+	$api = backend_get_languages();
 	echo '<div class="form-group">', "\n";
 	echo '<label for="language">Language</label>', "\n";
-	echo '<input name="language" type="text" placeholder="Language" class="form-control"/>', "\n";
+	echo '<select id="pcw-project-languages" name="language" class="form-control">', "\n";
+	if ($api->get_http_status_code() == 200) {
+		foreach($api->get_response()["languages"] as $language) {
+			echo '<option>', $language, '</option>', "\n";
+		}
+	}
+	echo '</select>', "\n";
+	/*echo '<input name="language" list="profiler-languages" type="text" ',
+		'placeholder="Language" class="form-control"/>', "\n";
+	 */
 	echo '</div>', "\n";
 	// upload file
 	echo '<div class="form-group">', "\n";
@@ -282,7 +303,8 @@ function frontend_upload_project_archive($post, $file) {
 	$api = backend_upload_project($post, $file["name"], $file["tmp_name"]);
 	$status = $api->get_http_status_code();
 	if ($status != 201) {
-		frontend_render_error_div("Could not upload archive: backend returned $status");
+		frontend_render_error_div("Could not upload archive: backend returned " .
+			backend_get_http_status_info($status));
 	} else {
 		frontend_render_success_div("Successfully uploaded new project");
 	}
@@ -330,7 +352,7 @@ function frontend_render_create_new_user_div() {
 	// Admin
 	echo '<div class="checkbox">', "\n";
 	echo '<label>', "\n";
-	echo '<input name="admin" type="checkbox"/>Admin', "\n";
+	echo '<input name="admin" type="checkbox"/>Administrator', "\n";
 	echo '</label>', "\n";
 	echo '</div>', "\n";
 	// upload button
@@ -345,7 +367,8 @@ function frontend_render_users_table_div() {
 	$api = backend_get_users();
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
-		frontend_render_error_div("error: could not load users: $status");
+		frontend_render_error_div("error: could not load users: " .
+			backend_get_http_status_info($status));
 	} else {
 		$users = $api->get_response();
 		echo '<div class="container-fluid">', "\n";
@@ -406,7 +429,8 @@ function frontend_render_page_view_div($pid, $p, $u, $post) {
 	$api = backend_get_page($pid, $p);
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
-		frontend_render_error_div("error: could not load project #$pid, page #$p: $status");
+		frontend_render_error_div("error: could not load project #$pid, page #$p: " .
+			backend_get_http_status_info($status));
 	} else {
 		$page = $api->get_response();
 		echo '<div id="page-view" onload=\'pcw.setErrorsDropdown(', $pid, ')\'>', "\n";
@@ -495,20 +519,25 @@ function frontend_render_page_header_div($page) {
 
 function frontend_render_page_heading_div($page) {
 	echo '<div id="page-heading">', "\n";
-	echo "<p><h2>Project #$page[projectId], page #$page[pageId]</h2></p>\n";
+	echo "<p><h2>Project $page[projectId], page $page[pageId]</h2></p>\n";
 	echo '</div>', "\n";
 }
 
 function frontend_render_page_div($page) {
 	echo '<div id="page-view">';
-	// echo '<form method="post">';
 	foreach ($page["lines"] as $line) {
-		frontend_render_page_line_div($line);
+		frontend_render_page_line_div($line, $page["imgFile"]);
 	}
 	echo '</div>';
+	// if ($page["imgFile"] != "") {
+	// 	echo '<div id="page-image" class="col-md-6">', "\n";
+	// 	echo '<img title="page ', $page["pageId"],
+	// 			'" src="', $page["imgFile"], '" />', "\n";
+	// 	echo '</div>', "\n";
+	// }
 }
 
-function frontend_render_page_line_div($line) {
+function frontend_render_page_line_div($line, $img) {
 	global $SID;
 	global $config;
 	$lid = $line["lineId"];
@@ -520,23 +549,35 @@ function frontend_render_page_line_div($line) {
 	$anchor = "$pid-$p-$lid";
 	$d = $line["cor"];
 	$inputclass = frontend_get_correction_class($line);
-	echo '<div class="text-image-line" title="', $text, '">';
+	echo '<div class="text-image-line" title="', $text, '"';
+	echo " >\n";
 	echo '<a class="line-anchor" id="line-anchor-', $anchor, '"></a>';
 	echo '<img src="', $imgfile, '"',
 		'alt="', $text, '"',
 		'title="', $text, '"',
 		'width="auto"',
-		'height="', $config["frontend"]["image"]["line_image_height"], '"',
-		' />';
+		'height="', $config["frontend"]["image"]["line_image_height"], '"';
+    if ($img != "") {
+			echo ' onclick=\'pcw.openImageWindow("', $img, '",',
+					$line["box"]["left"], ',', $line["box"]["top"], ',',
+					$line["box"]["width"], ',', $line["box"]["height"], ');\'';
+    }
+    echo " />\n";
 	echo '<br/>';
-	echo '<div class="input-group">', "\n";
+	echo '<div id="line-text-', $anchor, '" class="line-text', $inputclass, '" ',
+			'onclick=\'pcw.toggleFromTextToInput("', $anchor, '");\'>',
+			$d, '</div>';
+	echo '<div id="line-input-', $anchor, '" class="line-input hidden input-group">';
 	echo '<input id="', $anchor, '" class="form-control', $inputclass,
 		'" type="text" size="', strlen($d), '" value="', $d, '" ',
-		'onclick=\'pcw.displayConcordance("', $anchor, '");\'',
-		'/>', "\n";
+		'onclick=\'pcw.displayConcordance("', $anchor, '");\' ',
+		'onblur=\'pcw.toggleFromInputToText("', $anchor, '");\' ',
+		 '/>', "\n";
 	echo '<span class="input-group-btn">', "\n";
-	echo '<button id="', $anchor, '-btn" class="btn btn-default" title="correct line #',
-		$lid, '" onclick=\'pcw.correctLine("', $anchor, '");\' >', "\n";
+	echo '<button id="', $anchor, '-btn" class="btn btn-default " title="correct line #',
+			$lid, '" onclick=\'pcw.correctLine("', $anchor, '");',
+			'pcw.toggleFromInputToText("', $anchor, '");\' ',
+			'>', "\n";
 	echo '<span class="glyphicon glyphicon-upload" />';
 	echo '</button>', "\n";
 	echo '</span>', "\n";
@@ -565,7 +606,8 @@ function frontend_render_concordance_line_div($line, $word) {
 	$api = backend_get_split_images($word);
 	$status = $api->get_http_status_code();
 	if ($status != 200) {
-		frontend_render_error_div("Could not get split images: server returned: $status");
+		frontend_render_error_div("Could not get split images: server returned: " .
+			backend_get_http_status_info($status));
 		return;
 	}
 	$height = $config["frontend"]["image"]["line_image_height"];
@@ -581,7 +623,7 @@ function frontend_render_concordance_line_div($line, $word) {
 	// This makes the left side of the line the biggest and gives enough space
 	// for the token in the middle.
 	// The right side is a little bit smaller but big enough to show the
-	// emidate context of the selected tokens.
+	// immediate context of the selected tokens.
 	echo '<div class="col-md-5 col-xs-5">';
 	if ($images["leftImg"] != NULL) {
 		echo '<a class="invisible=link" href="', $link, '">';
@@ -702,7 +744,7 @@ function frontend_render_concordance_div($pid, $q, $isErrorPattern) {
 			if (isset($matches["matches"])) {
 				foreach ($matches["matches"] as $match) {
 					$line = $match["line"];
-					foreach ($match["matches"] as $word) {
+					foreach ($match["tokens"] as $word) {
 						frontend_render_concordance_line_div($line, $word);
 					}
 				}
@@ -710,8 +752,74 @@ function frontend_render_concordance_div($pid, $q, $isErrorPattern) {
 			echo '</div>', "\n";
 		}
 	} else {
-		frontend_render_error_div("Error: backend returned: $status");
+		frontend_render_error_div("Error: backend returned: " .
+			backend_get_http_status_info($status));
 	}
+}
+
+function frontend_render_adaptive_tokens_div($pid) {
+	$api = backend_get_adaptive_tokens($pid);
+	$status = $api->get_http_status_code();
+	if ($status != 200) {
+		frontend_render_error_div("backend returned status: " .
+			backend_get_http_status_info($status));
+		return;
+	}
+	echo "<h2>Adaptive token set</h2>\n";
+	echo "<div>\n";
+	foreach ($api->get_response()["adaptiveTokens"] as $token) {
+		echo '<div class="col-md-11" ',
+			'onclick="window.location.href=\'concordance.php?',
+			'pid=', $pid, '&q=', urlencode($token), '\'">';
+		echo $token;
+		echo '</div>', "\n";
+	}
+	echo "</div>\n";
+}
+
+function frontend_render_account_div($user) {
+	echo '<div id="user-account" class="container-fluid">', "\n";
+	echo '<h2>Account for user #', $user['id'], '</h2>', "\n";
+	echo '<form action="account.php?update" method="post">', "\n";
+	// Name
+	echo '<div class="form-group">', "\n";
+	echo '<label for="name">Username</label>', "\n";
+	echo '<input name="name" type="text" value="', $user['name'], '" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Email
+	echo '<div class="form-group">', "\n";
+	echo '<label for="email">Email</label>', "\n";
+	echo '<input name="email" type="text" value="', $user['email'], '" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Institute
+	echo '<div class="form-group">', "\n";
+	echo '<label for="insitute">Institute</label>', "\n";
+	echo '<input name="institute" type="text" value="', $user['institute'], '" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Password 1
+	echo '<div class="form-group">', "\n";
+	echo '<label for="password">Password</label>', "\n";
+	echo '<input name="pass1" type="password" placeholder="Change password" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// Password 2
+	echo '<div class="form-group">', "\n";
+	echo '<label for="password">Password (retype)</label>', "\n";
+	echo '<input name="pass2" type="password" placeholder="Change password" class="form-control"/>', "\n";
+	echo '</div>', "\n";
+	// update button
+	echo '<button class="btn btn-primary" title="update account settings" type="submit">', "\n";
+	echo 'Update account settings', "\n";
+	echo '</button>', "\n";
+	// delete button
+	echo '<div class="pull-right">', "\n";
+	echo '</form>', "\n";
+	echo '<form action="account.php?delete" method="post">', "\n";
+	echo '<button class="btn btn-primary" title="delete this account" type="submit">', "\n";
+	echo 'Delete this account', "\n";
+	echo '</button>', "\n";
+	echo '</form>', "\n";
+	echo '</div>', "\n";
+	echo '</div>', "\n";
 }
 
 function frontend_render_success_div($msg) {

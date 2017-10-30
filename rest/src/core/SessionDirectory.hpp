@@ -11,12 +11,13 @@ namespace pcw {
 using Path = boost::filesystem::path;
 class Line;
 class Box;
+class Config;
 class SessionDirectory {
        public:
 	using OptPath = boost::optional<Path>;
 	using SplitImagePaths = std::tuple<OptPath, OptPath, OptPath>;
 
-	SessionDirectory(const std::string& sid);
+	SessionDirectory(const std::string& sid, const Config& config);
 	~SessionDirectory() noexcept;
 	const std::string& id() const noexcept { return sid_; }
 	SplitImagePaths create_split_images(const Line& line, const Box& b);
@@ -25,9 +26,10 @@ class SessionDirectory {
 	void init(const Path& dir) const;
 	void close() const noexcept;
 	static bool check_boxes(const Box& lbox, const Box& tbox);
-	static OptPath write_split_image(int f, int t, PIX& pix,
-					 const Path& path);
+	OptPath write_split_image(int f, int t, PIX& pix,
+				  const Path& path) const;
 	std::set<Path> dirs_;
+	const Path base_dir_;
 	const std::string sid_;
 };
 }
