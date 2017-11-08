@@ -660,6 +660,7 @@ void delete_project(Db& db, int pid) {
 	tables::Projects p;
 	tables::ProjectPages pp;
 	tables::Profiles ppp;
+	tables::Pages pages;
 	tables::Suggestions s;
 	tables::Errorpatterns e;
 	tables::Adaptivetokens a;
@@ -670,6 +671,7 @@ void delete_project(Db& db, int pid) {
 	db(remove_from(pp).where(pp.projectid == pid));
 	db(remove_from(p).where(p.projectid == pid));
 	db(remove_from(ppp).where(ppp.bookid == pid));
+	db(remove_from(pages).where(pages.bookid == pid));
 	db(remove_from(l).where(l.bookid == pid));
 	db(remove_from(c).where(c.bookid == pid));
 	db(remove_from(s).where(s.bookid == pid));

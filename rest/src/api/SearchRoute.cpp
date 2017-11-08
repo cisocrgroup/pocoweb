@@ -113,7 +113,7 @@ SearchRoute::Response make_response(const M& matches, int bookid,
 		json["matches"][i]["line"] << *m.first;
 		size_t j = 0;
 		for (const auto& token : m.second) {
-			json["tokens"][i]["matches"][j] << token;
+			json["matches"][i]["tokens"][j] << token;
 			j++;
 			words++;
 		}
