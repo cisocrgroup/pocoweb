@@ -822,6 +822,16 @@ function frontend_render_account_div($user) {
 	echo '</div>', "\n";
 }
 
+function frontend_debug_json($json) {
+	echo '<div class="container-fluid">'."\n";
+	echo '<div class="alert alert-info" role="alert">' . "\n";
+	echo '<div class="highlight highlight-source-json">'."\n";
+	echo json_encode($json, JSON_PRETTY_PRINT);
+	echo "</div>\n";
+	echo "</div>\n";
+	echo "</div>\n";
+}
+
 function frontend_render_success_div($msg) {
 	echo('<div class="container-fluid">');
 	echo('<div class="alert alert-success" role="alert">');
