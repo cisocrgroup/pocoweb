@@ -9,7 +9,8 @@
 ..............................................
 ```
 # Pocoweb
-Pocoweb is postcorrection for the web.
+Pocoweb is a postcorrection tool for the web.
+It is based on [PoCoTo](https://github.com/cisocrgroup/PoCoTo).
 
 ## Dependencies
  * g++-5
