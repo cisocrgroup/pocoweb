@@ -195,7 +195,14 @@ pcw.correctWord = function(anchor) {
 	});
 };
 
+pcw.onClickCorrectLineButton = function(anchor) {
+	pcw.log('pcw.onClickCorrectLineButton(' + anchor + ')');
+	pcw.correctLine(anchor);
+	pcw.toggleFromInputToText(anchor);
+};
+
 pcw.correctLine = function(anchor) {
+	pcw.log('pcw.correctLine(' + anchor + ')');
 	var ids = pcw.getIds(anchor);
 	var correction = document.getElementById(anchor).value;
 	var api = Object.create(pcw.Api);
@@ -204,7 +211,7 @@ pcw.correctLine = function(anchor) {
 	api.run(function(status, res) {
 		var fully = res.isFullyCorrected;
 		var partial = res.isPartiallyCorrected;
-		var input = document.getElementById(anchor);
+		var input = document.getElementById('line-input-' + anchor);
 		if (input !== null) {
 			input.value = res.cor;
 			pcw.setCorrectionStatus(input, fully, partial);
@@ -532,18 +539,28 @@ pcw.toggleBetweenTextAndInput = function(hide, unhide) {
 	if (hide === null || unhide === null) {
 		return;
 	}
-	hide.className = unhide.className.replace(/ *hidden/, '');
+	hide.className = hide.className.replace(/ *hidden/,'');
 	hide.className += ' hidden';
-	unhide.className = unhide.className.replace(/ *hidden/, '');
+	// hide.disabled = true;
+	unhide.className = unhide.className.replace(/ *hidden/,'');
+	// unhide.disabled = false;
+	// hide.style.display = 'none';
+	// unhide.style.display = 'block';
 };
 
 pcw.toggleFromInputToText = function(anchor) {
+	pcw.log('pcw.toggleFromInputToText(' + anchor + ')');
 	var input = document.getElementById('line-input-' + anchor);
 	var text = document.getElementById('line-text-' + anchor);
+	if (input === null || text === null) {
+		return;
+	}
+	text.firstChild.data = input.firstChild.value;
 	pcw.toggleBetweenTextAndInput(input, text);
 };
 
 pcw.toggleFromTextToInput = function(anchor) {
+	pcw.log('pcw.toggleFromTextToInput(' + anchor + ')');
 	var input = document.getElementById('line-input-' + anchor);
 	var text = document.getElementById('line-text-' + anchor);
 	var b = 0;
@@ -558,6 +575,11 @@ pcw.toggleFromTextToInput = function(anchor) {
 		input.firstChild.selectionEnd = e;
 		input.firstChild.focus();
 	}
+	input.onkeyup = function(event) {
+		if (event.keyCode === 13) { // <enter>
+			pcw.correctLine(anchor);
+		}
+	};
 };
 
 pcw.markSuspiciousWords = function(pid) {
