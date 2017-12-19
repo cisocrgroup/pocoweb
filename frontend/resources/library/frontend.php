@@ -565,16 +565,17 @@ function frontend_render_page_line_div($line, $img) {
     echo " />\n";
 	echo '<br/>';
 	echo '<div id="line-text-', $anchor, '" class="line-text', $inputclass, '" ',
-			'onclick=\'pcw.toggleFromTextToInput("', $anchor, '");\'>',
-			$d, '</div>';
+        'onclick=\'pcw.toggleFromTextToInput("', $anchor, '");\' ',
+		'onblur=\'pcw.toggleFromInputToText("', $anchor, '");\' ',
+        ">\n",
+			$d, "</div>\n";
 	echo '<div id="line-input-', $anchor, '" class="line-input hidden input-group">';
 	echo '<input id="', $anchor, '" class="form-control', $inputclass,
 		'" type="text" size="', strlen($d), '" value="', $d, '" ',
 		'onclick=\'pcw.displayConcordance("', $anchor, '");\' ',
-		'onblur=\'pcw.toggleFromInputToText("', $anchor, '");\' ', '/>', "\n";
+        ">\n";
 	echo '<span class="input-group-btn" ',
-        // 'onclick=\'pcw.onClickCorrectLineButton("', $anchor, '");\' ', ">\n";
-        'onclick=\'pcw.log("', $anchor, '");\' ', ">\n";
+        'onclick=\'pcw.onClickCorrectLineButton("', $anchor, '");\' ', ">\n";
 	echo '<button id="', $anchor, '-btn" class="btn btn-default" title="correct line #', $lid, '">', "\n";
 	echo '<span class="glyphicon glyphicon-upload" />', "\n";
 	echo '</button>', "\n";

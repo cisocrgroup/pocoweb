@@ -195,13 +195,11 @@ pcw.correctWord = function(anchor) {
 };
 
 pcw.onClickCorrectLineButton = function(anchor) {
-	pcw.log('pcw.onClickCorrectLineButton(' + anchor + ')');
 	pcw.correctLine(anchor);
 	pcw.toggleFromInputToText(anchor);
 };
 
 pcw.correctLine = function(anchor) {
-	pcw.log('pcw.correctLine(' + anchor + ')');
 	var ids = pcw.getIds(anchor);
 	var correction = document.getElementById(anchor).value;
 	var api = Object.create(pcw.Api);
@@ -212,13 +210,11 @@ pcw.correctLine = function(anchor) {
 		var partial = res.isPartiallyCorrected;
 		var input = document.getElementById(anchor);
 		if (input !== null) {
-			pcw.log("setting correction status input: " + anchor);
 			input.value = res.cor;
 			pcw.setCorrectionStatus(input, fully, partial);
 		}
 		var text = document.getElementById('line-text-' + anchor);
 		if (text !== null) {
-			pcw.log("setting correction status text: " + anchor);
 			pcw.setCorrectionStatus(text, fully, partial);
 			text.replaceChild(
 			    document.createTextNode(res.cor),
@@ -269,7 +265,6 @@ pcw.displayConcordance = function(anchor) {
 	    document.getElementById(anchor));
 	if (selection !== null) {
 		selection.ids = ids;
-		pcw.log("selection: " + JSON.stringify(selection));
 		pcw.setConcordanceSearchLabel(pid, selection);
 		pcw.setSuggestionsDropdown(pid, selection);
 	}
@@ -378,7 +373,6 @@ pcw.setErrorDropdowns = function(pid) {
 };
 
 pcw.setErrorPatternsDropdown = function(pid, dropdown, res) {
-	pcw.log("setErrorPatternsDropdown");
 	var patterns = {};
 	var suggs = res.suggestions || [];
 	for (var i = 0; i < suggs.length; i++) {
