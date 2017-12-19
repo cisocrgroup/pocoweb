@@ -167,13 +167,12 @@ pcw.setCorrectionStatus = function(elem, fully, partial) {
 	if (elem === null) {
 		return;
 	}
-	elem.className = elem.className.replace(/ *fully-corrected-line/, '');
-	elem.className =
-	    elem.className.replace(/ *partially-corrected-line/, '');
+	elem.classList.remove('fully-corrected');
+	elem.classList.remove('partially-corrected');
 	if (fully) {
-		elem.className += " fully-corrected-line";
+		elem.classList.add('fully-corrected');
 	} else if (partial) {
-		elem.className += " partially-corrected-line";
+		elem.classList.add('partially-corrected');
 	}
 };
 
@@ -211,13 +210,15 @@ pcw.correctLine = function(anchor) {
 	api.run(function(status, res) {
 		var fully = res.isFullyCorrected;
 		var partial = res.isPartiallyCorrected;
-		var input = document.getElementById('line-input-' + anchor);
+		var input = document.getElementById(anchor);
 		if (input !== null) {
+			pcw.log("setting correction status input: " + anchor);
 			input.value = res.cor;
 			pcw.setCorrectionStatus(input, fully, partial);
 		}
 		var text = document.getElementById('line-text-' + anchor);
 		if (text !== null) {
+			pcw.log("setting correction status text: " + anchor);
 			pcw.setCorrectionStatus(text, fully, partial);
 			text.replaceChild(
 			    document.createTextNode(res.cor),
@@ -539,13 +540,8 @@ pcw.toggleBetweenTextAndInput = function(hide, unhide) {
 	if (hide === null || unhide === null) {
 		return;
 	}
-	hide.className = hide.className.replace(/ *hidden/,'');
-	hide.className += ' hidden';
-	// hide.disabled = true;
-	unhide.className = unhide.className.replace(/ *hidden/,'');
-	// unhide.disabled = false;
-	// hide.style.display = 'none';
-	// unhide.style.display = 'block';
+	hide.classList.add('hidden');
+	unhide.classList.remove('hidden');
 };
 
 pcw.toggleFromInputToText = function(anchor) {
@@ -578,6 +574,7 @@ pcw.toggleFromTextToInput = function(anchor) {
 	input.onkeyup = function(event) {
 		if (event.keyCode === 13) { // <enter>
 			pcw.correctLine(anchor);
+			pcw.toggleFromInputToText(anchor);
 		}
 	};
 };

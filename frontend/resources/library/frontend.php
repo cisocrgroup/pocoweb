@@ -571,14 +571,12 @@ function frontend_render_page_line_div($line, $img) {
 	echo '<input id="', $anchor, '" class="form-control', $inputclass,
 		'" type="text" size="', strlen($d), '" value="', $d, '" ',
 		'onclick=\'pcw.displayConcordance("', $anchor, '");\' ',
-		'onblur=\'pcw.toggleFromInputToText("', $anchor, '");\' ',
-		 '/>', "\n";
-	echo '<span class="input-group-btn">', "\n";
-	echo '<button id="', $anchor, '-btn" class="btn btn-default " title="correct line #',
-			$lid, '" onclick=\'pcw.correctLine("', $anchor, '");',
-			'pcw.toggleFromInputToText("', $anchor, '");\' ',
-			'>', "\n";
-	echo '<span class="glyphicon glyphicon-upload" />';
+		'onblur=\'pcw.toggleFromInputToText("', $anchor, '");\' ', '/>', "\n";
+	echo '<span class="input-group-btn" ',
+        // 'onclick=\'pcw.onClickCorrectLineButton("', $anchor, '");\' ', ">\n";
+        'onclick=\'pcw.log("', $anchor, '");\' ', ">\n";
+	echo '<button id="', $anchor, '-btn" class="btn btn-default" title="correct line #', $lid, '">', "\n";
+	echo '<span class="glyphicon glyphicon-upload" />', "\n";
 	echo '</button>', "\n";
 	echo '</span>', "\n";
 	echo '</div>', "\n";

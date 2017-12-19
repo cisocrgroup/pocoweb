@@ -3,10 +3,6 @@ div.line-view {
 	/*border: 1px solid #ccc;*/
 }
 
-div.line-view:hover {
-	/*background: lightgrey;*/
-}
-
 .affix {
 	top: 5px;
 }
@@ -29,12 +25,17 @@ a.line-anchor {
 	/*visibility: hidden;*/
 }
 
+/*
+ * the next two are utility classes that should allways
+ * override anything else.
+ * See: https://css-tricks.com/when-using-important-is-the-right-choice/
+*/
 .partially-corrected {
-	background-color: #fcf8e3;
+	background-color: #fcf8e3 !important;
 }
 
-input.fully-corrected, div.fully-corrected {
-	background-color: #dff0d8;
+.fully-corrected {
+	background-color: #dff0d8 !important;
 }
 
 .affix {
