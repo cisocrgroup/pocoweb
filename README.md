@@ -27,6 +27,9 @@ Pocoweb is postcorrection for the web.
  * `make` contains various helper makefiles
  * `modules` contains the git submodules
 
+## Documentation
+The basic usage and API Documentation is part of Pocoweb.
+It can be found [here](frontend/public_html/doc.md).
 
 ## License
 
