@@ -482,7 +482,7 @@ and tools:
 * libboost
 * libcrypt
 * libcrypto
-* libcurl
+* libcurl4-gnutls-dev
 * libicu
 * liblept
 * libmysqlclient
