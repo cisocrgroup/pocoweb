@@ -1335,6 +1335,7 @@ search should be performed. If omitted `p=0` is assumed.
   "timestamp": 1508317390,
   "suggestions": [
     {
+			"projectId": 17,
       "pageId": 38,
       "lineId": 13,
       "tokenId": 77,
@@ -1342,7 +1343,10 @@ search should be performed. If omitted `p=0` is assumed.
       "suggestion": "correction suggestion for token",
       "weight": 0.8,
       "distance": 2,
-      "patterns": ["first:pattern", "second:pattern", ...]
+      "ocrPatterns": ["first:ocr-pattern", "second:ocr-pattern", ...],
+      "histPatterns": ["first:hist-pattern", "second:hist-pattern", ...],
+			"isOcrError": true,
+			"isTopSuggestion": false
     },
     ...
   ]
