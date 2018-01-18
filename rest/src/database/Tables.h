@@ -1285,12 +1285,29 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::can_be_null>;
     };
+    struct Ocr
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "ocr";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T ocr;
+            T& operator()() { return ocr; }
+            const T& operator()() const { return ocr; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::boolean, sqlpp::tag::require_insert>;
+    };
   }
 
   struct Errorpatterns: sqlpp::table_t<Errorpatterns,
                Errorpatterns_::Suggestionid,
                Errorpatterns_::Bookid,
-               Errorpatterns_::Pattern>
+               Errorpatterns_::Pattern,
+               Errorpatterns_::Ocr>
   {
     struct _alias_t
     {

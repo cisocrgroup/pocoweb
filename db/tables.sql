@@ -1,8 +1,8 @@
 /*drop database if exists pocweb;*/
-create database if not exists pocoweb
-default character set utf8
-default collate utf8_general_ci;
-use pocoweb;
+/*create database if not exists pocoweb*/
+/*default character set utf8*/
+/*default collate utf8_general_ci;*/
+/*use pocoweb;*/
 
 create table if not exists users (
 	userid int not null unique primary key auto_increment,
@@ -107,7 +107,8 @@ create table if not exists suggestions (
 create table if not exists errorpatterns (
 	suggestionid int references suggestions(suggestionid),
 	bookid int references books(bookid),
-	pattern varchar(25)
+	pattern varchar(25),
+	ocr boolean not null
 );
 
 create table if not exists adaptivetokens (
@@ -115,4 +116,3 @@ create table if not exists adaptivetokens (
 	typid int references types(typid),
 	primary key (bookid, typid)
 );
-

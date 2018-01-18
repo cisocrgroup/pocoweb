@@ -322,7 +322,7 @@ pcw.addSuggestionDropdownItem = function(dropdown, s, selection) {
 	var li = document.createElement("li");
 	var a = document.createElement("a");
 	var t = document.createTextNode(
-	    s.suggestion + " (patts: " + s.patterns.join(',') + ", dist: " +
+	    s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
 	    s.distance + ", weight: " + s.weight.toFixed(2) + ")");
 	a.onclick = function() {
 		pcw.setSuggestionToSelection(selection, s.suggestion);
@@ -378,8 +378,8 @@ pcw.setErrorPatternsDropdown = function(pid, dropdown, res) {
 	for (var i = 0; i < suggs.length; i++) {
 		var id = suggs[i].pageId + '-' + suggs[i].lineId + '-' +
 		    suggs[i].tokenId;
-		for (var j = 0; j < suggs[i].patterns.length; j++) {
-			var pat = suggs[i].patterns[j].toLowerCase();
+		for (var j = 0; j < suggs[i].ocrPatterns.length; j++) {
+			var pat = suggs[i].ocrPatterns[j].toLowerCase();
 			var set = patterns[pat] || {};
 			set[i] = true;
 			patterns[pat] = set;
@@ -491,7 +491,7 @@ pcw.addItemToSuggestionsMenu = function(ul, s) {
 	var li = document.createElement("li");
 	var a = document.createElement("a");
 	var t = document.createTextNode(
-	    s.suggestion + " (patts: " + s.patterns.join(',') + ", dist: " +
+	    s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
 	    s.distance + ", weight: " + s.weight.toFixed(2) + ")");
 	a.appendChild(t);
 	li.appendChild(a);
