@@ -135,11 +135,16 @@ BookConstructor::find_matching_img_file(const Path &path) const noexcept {
   if (f != end(img_))
     return f;
 
-  const auto stem = path.filename().stem();
-  CROW_LOG_DEBUG << "(BookConstructor) Searching by file stem: " << stem;
-  f = std::find_if(begin(img_), end(img_), [&](const auto &ipath) {
-    return ipath.filename().stem() == stem;
-  });
+  for (auto p = path.filename(); true; p = p.stem()) {
+    // const auto stem = path.filename().stem();
+    CROW_LOG_DEBUG << "(BookConstructor) Searching by file stem: " << p;
+    f = std::find_if(begin(img_), end(img_), [&](const auto &ipath) {
+      return ipath.filename().stem() == p;
+    });
+    if (p.extension().empty()) {
+      break;
+    }
+  }
   if (f == end(img_))
     CROW_LOG_WARNING << "(BookConstructor) cannot find image file for path: "
                      << path;
