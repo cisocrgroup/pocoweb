@@ -5,6 +5,7 @@ UTILS_TESTS += rest/src/utils/tests/TestScopeGuard.test
 UTILS_TESTS += rest/src/utils/tests/TestUniqueIdMap.test
 
 CORE_TESTS += rest/src/core/tests/TestBookBuilder.test
+CORE_TESTS += rest/src/core/tests/TestBookDirectoryBuilder.test
 CORE_TESTS += rest/src/core/tests/TestBox.test
 CORE_TESTS += rest/src/core/tests/TestCache.test
 CORE_TESTS += rest/src/core/tests/TestCorLine.test
