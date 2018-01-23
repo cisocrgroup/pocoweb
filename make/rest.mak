@@ -30,6 +30,7 @@ CORE_OBJS += rest/src/core/queries.o
 CORE_OBJS += rest/src/core/util.o
 
 API_OBJS += rest/src/api/AdaptiveTokensRoute.o
+API_OBJS += rest/src/api/TokenRoute.o
 API_OBJS += rest/src/api/AssignRoute.o
 API_OBJS += rest/src/api/BookRoute.o
 API_OBJS += rest/src/api/DownloadRoute.o
