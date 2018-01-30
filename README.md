@@ -9,7 +9,7 @@
 ..............................................
 ```
 # Pocoweb
-Pocoweb is a postcorrection tool for the web.
+Pocoweb is a postcorrection tool for (historical) OCR data for the web.
 It is based on [PoCoTo](https://github.com/cisocrgroup/PoCoTo).
 
 ## Installation
@@ -19,19 +19,20 @@ This daemon needs a running mysql database server.
 The daemon is configured using the `config.ini` configuration file.
 Its implementation can be found under the `rest/src` directory.
 
-#### Dependencies
-The back-end of Pocoweb is written in c++ and depends on the following libraries
-and tools:
-* g++ 5.4.0
-* libboost
-* libcrypt
-* libcrypto
-* libcurl4-gnutls-dev
-* libicu
-* liblept
-* libmysqlclient
-* libssl
+n#### Dependencies
+The back-end of Pocoweb is written in c++ and depends on the following (ubuntu)
+libraries and tools (see also [the dependency listing](misc/docker/dependencies)):
+* libboost-all-dev
 * make
+* g++
+* git
+* cmake
+* libmysqlclient-dev
+* mysql-client
+* libleptonica-dev
+* libssl-dev
+* libcurl4-gnutls-dev
+* python-pyparsing
 
 #### Additional dependencies
 Pocoweb manages some of its internal dependencies using git submodules.
@@ -46,7 +47,8 @@ It depends on the following git submodules (found in the `modules` directory):
 In order to load the internal dependencies, in the source directory of
 Pocoweb issue the following command: `git submodule update --init`.
 This will clone the submodules and download the internal dependencies of
-Pocoweb.
+Pocoweb. You must download all internal dependencies before you can
+proceed to build Pocoweb.
 
 #### Compilation
 After all dependencies have been installed (see above),
