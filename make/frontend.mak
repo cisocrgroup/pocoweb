@@ -49,35 +49,35 @@ $(PCW_FRONTEND_DIR)/public_html/doc.html: frontend/public_html/doc.md
 	$V bash misc/scripts/md2html.sh $< | sed -e 's#<br>##g' > $@
 
 .SECONDEXPANSION:
-$(PCW_FRONTEND_DIR)/%.js: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
+%.js: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
-$(PCW_FRONTEND_DIR)%.css: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
+%.css: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
-$(PCW_FRONTEND_DIR)%.jpg: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
+%.jpg: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
-$(PCW_FRONTEND_DIR)%.png: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
+%.png: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
-$(PCW_FRONTEND_DIR)%.ico: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
+%.ico: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
-$(PCW_FRONTEND_DIR)%.html: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
+%.html: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
-$(PCW_FRONTEND_DIR)/public_html/LICENSE: LICENSE
+%/LICENSE: LICENSE
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
-	$V install -m0644 $< $@
-$(PCW_FRONTEND_DIR)%.php: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
+	$V install -m 644 $< $@
+%.php: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V php -l $< > /dev/null
 	$V install -d $(dir $@)
