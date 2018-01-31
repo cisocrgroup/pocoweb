@@ -30,5 +30,5 @@ RUN cp /pocoweb/lib/simple-login.so /apps/
 RUN rm -rf /profiler /pocoweb
 
 ## run pocoweb
-EXPOSE 80
+EXPOSE 8080
 CMD /apps/pocoweb /apps/pocoweb.conf
