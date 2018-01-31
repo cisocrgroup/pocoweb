@@ -65,7 +65,8 @@ PCW_LOG_PIDFILE ?= /var/run/pocoweb.pid
 
 ECHO = 							\
 	@if [ "$C" = "yes" ]; then 			\
-		echo "[\033[0;32m$1\033[0m]";	\
+		echo
+		"[\033[0;32m$1\033[0m]";	\
 	else						\
 		echo "[$1]";				\
 	fi
