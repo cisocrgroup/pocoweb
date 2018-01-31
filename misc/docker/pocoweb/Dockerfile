@@ -1,6 +1,7 @@
 FROM ubuntu:latest
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
 
+## dependencies
 COPY dependencies /dependencies
 RUN apt-get update && apt-get install -y $(cat /dependencies)
 

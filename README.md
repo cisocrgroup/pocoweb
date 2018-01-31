@@ -21,7 +21,7 @@ Its implementation can be found under the `rest/src` directory.
 
 n#### Dependencies
 The back-end of Pocoweb is written in c++ and depends on the following (ubuntu)
-libraries and tools (see also [the dependency listing](misc/docker/dependencies)):
+libraries and tools (see also [the dependency listing](misc/docker/pocoweb/dependencies)):
 * libboost-all-dev
 * make
 * g++
