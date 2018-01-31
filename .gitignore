@@ -11,7 +11,7 @@ tags
 pcwd
 pcwc
 config.ini
-make/cache.mak
+make/cache.make
 vendor/*
 tmp/*
 ext/*

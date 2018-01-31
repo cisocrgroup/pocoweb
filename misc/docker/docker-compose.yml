@@ -1,7 +1,16 @@
 version: '3'
 services:
-  pocoweb:
-    build: .
-    # links:
-    #   - mysql
-    #   - nginx
+  nginx:
+    build: nginx/
+    ports:
+      - "80:80"
+    links:
+      - fpm
+    volumes:
+      - ./nginx/html:/www-data:ro
+  fpm:
+    image: php:fpm
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./nginx/html:/www-data:ro
