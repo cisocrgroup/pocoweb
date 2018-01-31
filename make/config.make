@@ -76,12 +76,12 @@ ECHO = 							\
 mkdir-%:; @mkdir -p $(subst -,/,$*)
 dbg-%:; @echo $*: ${$*}
 
--include make/cache.mak
+-include make/cache.make
 
-make/cache.mak: Makefile
+make/cache.make: Makefile
 	$(call ECHO,$@)
 	@echo "#" > $@
-	@echo "# cache.mak" >> $@
+	@echo "# cache.make" >> $@
 	@echo "# created: `date`" >> $@
 	@echo "#" >> $@
 	@echo "PCW_API_VERSION_MAJOR := $(PCW_API_VERSION_MAJOR)" >> $@
