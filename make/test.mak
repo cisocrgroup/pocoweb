@@ -48,9 +48,12 @@ RUN_TESTS = $(patsubst %.test,%.run,$(TESTS))
 	$V $(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
 %.run: %.test
 	$(call ECHO,$@)
-	$V $< #> /dev/null 2>&1
-test: $(RUN_TESTS)
+	$V echo "# $@" >> tests.log
+	$V $< >> tests.log 2>&1
+test: tests.log $(RUN_TESTS)
+tests.log:
+	$V echo "# tests:" $(shell date) > $@
 
 DEPS += $(patsubst %.test,%.d,$(TESTS))
 TESTOBJS += $(patsubst %.test,%.o,$(TESTS))
-.PHONY: test
+.PHONY: test tests.log
