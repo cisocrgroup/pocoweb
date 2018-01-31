@@ -11,3 +11,5 @@ libssl-dev
 libcurl4-gnutls-dev
 python-pyparsing
 unzip
+libcppunit-dev
+libxerces-c-dev
