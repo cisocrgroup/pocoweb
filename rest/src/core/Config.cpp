@@ -15,7 +15,9 @@
 using PluginsConfig = std::unordered_map<std::string, pcw::Ptree>;
 
 ////////////////////////////////////////////////////////////////////////////////
-static std::string get_val(const pcw::Ptree &ptree, const std::string &var) {
+static std::string
+get_val(const pcw::Ptree& ptree, const std::string& var)
+{
   auto val = getenv(var.data());
   if (val)
     return val;
@@ -24,20 +26,26 @@ static std::string get_val(const pcw::Ptree &ptree, const std::string &var) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-static void expand_variables(pcw::Ptree &ptree) {
-  static const std::regex var{R"(\$[({](.+)[})])"};
+static void
+expand_variables(pcw::Ptree& ptree)
+{
+  static const std::regex var{ R"(\$[({](.+)[})])" };
   std::smatch m;
   size_t runs = 0;
 again:
   if (runs++ >= PCW_CONFIG_EXPANSION_MAX_RUNS)
-    THROW(pcw::Error, "Maximal number of expansion runs exeeded ",
-          "(Recursion in a variable?): ", runs);
-  for (auto &p : ptree) {
-    for (auto &pair : p.second) {
+    THROW(pcw::Error,
+          "Maximal number of expansion runs exeeded ",
+          "(Recursion in a variable?): ",
+          runs);
+  for (auto& p : ptree) {
+    for (auto& pair : p.second) {
       if (not std::regex_search(pair.second.data(), m, var))
         continue;
       auto expand = get_val(ptree, m[1]);
-      auto res = std::regex_replace(pair.second.data(), var, expand,
+      auto res = std::regex_replace(pair.second.data(),
+                                    var,
+                                    expand,
                                     std::regex_constants::format_first_only);
       p.second.put(pair.first, res);
       goto again;
@@ -46,12 +54,14 @@ again:
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-static PluginsConfig get_plugins(const pcw::Ptree &ptree) {
-  static const std::regex plugin{R"(^plugin[-_](.*)$)",
-                                 std::regex_constants::icase};
+static PluginsConfig
+get_plugins(const pcw::Ptree& ptree)
+{
+  static const std::regex plugin{ R"(^plugin[-_](.*)$)",
+                                  std::regex_constants::icase };
   PluginsConfig plugins;
   std::smatch m;
-  for (const auto &config : ptree) {
+  for (const auto& config : ptree) {
     if (std::regex_search(config.first, m, plugin)) {
       plugins.emplace(m[1], config.second);
     }
@@ -60,7 +70,9 @@ static PluginsConfig get_plugins(const pcw::Ptree &ptree) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-static int get_log_level(const std::string &level) {
+static int
+get_log_level(const std::string& level)
+{
   if (boost::iequals(level, "debug"))
     return static_cast<int>(crow::LogLevel::Debug);
   if (boost::iequals(level, "info"))
@@ -77,10 +89,16 @@ static int get_log_level(const std::string &level) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Config pcw::Config::empty() { return Config{{}, {}, {}, {}, {}}; }
+pcw::Config
+pcw::Config::empty()
+{
+  return Config{ {}, {}, {}, {}, {} };
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Config pcw::Config::load(const std::string &file) {
+pcw::Config
+pcw::Config::load(const std::string& file)
+{
   std::ifstream is(file);
   if (not is.good())
     throw std::system_error(errno, std::system_category(), file);
@@ -88,7 +106,9 @@ pcw::Config pcw::Config::load(const std::string &file) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Config pcw::Config::load(std::istream &is) {
+pcw::Config
+pcw::Config::load(std::istream& is)
+{
   Ptree ptree;
   boost::property_tree::read_ini(is, ptree);
   expand_variables(ptree);
@@ -96,37 +116,45 @@ pcw::Config pcw::Config::load(std::istream &is) {
   threads = threads < 1 ? std::thread::hardware_concurrency() : threads;
 
   return {
-      {ptree.get<std::string>("db.user"), ptree.get<std::string>("db.host"),
-       ptree.get<std::string>("db.pass"), ptree.get<std::string>("db.db"),
-       ptree.get<int>("db.connections"), ptree.get<bool>("db.debug")},
-      {ptree.get<std::string>("daemon.host"),
-       ptree.get<std::string>("daemon.user"),
-       ptree.get<std::string>("daemon.basedir"),
-       ptree.get<std::string>("daemon.projectdir"),
-       ptree.get<std::string>("daemon.pidfile"), ptree.get<int>("daemon.port"),
-       threads, ptree.get<bool>("daemon.detach")},
-      {get_log_level(ptree.get<std::string>("log.level"))},
-      {ptree.get<std::string>("profiler.langdir"),
-       ptree.get<std::string>("profiler.exe"),
-       ptree.get<double>("profiler.minweight"),
-       static_cast<size_t>(ptree.get<int>("profiler.jobs")),
-       ptree.get<bool>("profiler.debug")},
-      {
-          get_plugins(ptree),
-      },
+    { ptree.get<std::string>("db.user"),
+      ptree.get<std::string>("db.host"),
+      ptree.get<std::string>("db.pass"),
+      ptree.get<std::string>("db.db"),
+      ptree.get<int>("db.connections"),
+      ptree.get<bool>("db.debug") },
+    { ptree.get<std::string>("daemon.host"),
+      ptree.get<std::string>("daemon.user"),
+      ptree.get<std::string>("daemon.basedir"),
+      ptree.get<std::string>("daemon.projectdir"),
+      ptree.get<std::string>("daemon.pidfile"),
+      ptree.get<int>("daemon.port"),
+      threads,
+      ptree.get<bool>("daemon.detach") },
+    { get_log_level(ptree.get<std::string>("log.level")) },
+    { ptree.get<std::string>("profiler.langdir"),
+      ptree.get<std::string>("profiler.exe"),
+      ptree.get<double>("profiler.minweight"),
+      static_cast<size_t>(ptree.get<int>("profiler.jobs")),
+      ptree.get<bool>("profiler.debug") },
+    {
+      get_plugins(ptree),
+    },
   };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const pcw::Ptree &pcw::Config::Plugins::operator[](const std::string &p) const
-    noexcept {
+const pcw::Ptree& pcw::Config::Plugins::operator[](const std::string& p) const
+  noexcept
+{
   static const Ptree nothing;
   auto i = configs.find(p);
   return i == end(configs) ? nothing : i->second;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void pcw::Config::setup_logging() const {
+void
+pcw::Config::setup_logging() const
+{
   static crow::CerrLogHandler cerrlogger;
   static Syslogger syslogger;
   if (daemon.detach)
@@ -137,33 +165,35 @@ void pcw::Config::setup_logging() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void pcw::Config::LOG() const {
-  CROW_LOG_INFO << "db.user:           " << this->db.user;
-  CROW_LOG_INFO << "db.host:           " << this->db.host;
-  CROW_LOG_INFO << "db.pass:           " << this->db.pass;
-  CROW_LOG_INFO << "db.db:             " << this->db.db;
-  CROW_LOG_INFO << "db.connections:    " << this->db.connections;
-  CROW_LOG_INFO << "db.debug:          " << this->db.debug;
+void
+pcw::Config::LOG() const
+{
+  CROW_LOG_DEBUG << "db.user:           " << this->db.user;
+  CROW_LOG_DEBUG << "db.host:           " << this->db.host;
+  CROW_LOG_DEBUG << "db.pass:           " << this->db.pass;
+  CROW_LOG_DEBUG << "db.db:             " << this->db.db;
+  CROW_LOG_DEBUG << "db.connections:    " << this->db.connections;
+  CROW_LOG_DEBUG << "db.debug:          " << this->db.debug;
 
-  CROW_LOG_INFO << "daemon.host:       " << this->daemon.host;
-  CROW_LOG_INFO << "daemon.user:       " << this->daemon.user;
-  CROW_LOG_INFO << "daemon.basedir:    " << this->daemon.basedir;
-  CROW_LOG_INFO << "daemon.projectdir: " << this->daemon.projectdir;
-  CROW_LOG_INFO << "daemon.pidfile:    " << this->daemon.pidfile;
-  CROW_LOG_INFO << "daemon.port:       " << this->daemon.port;
-  CROW_LOG_INFO << "daemon.threads:    " << this->daemon.threads;
-  CROW_LOG_INFO << "daemon.detach:     " << this->daemon.detach;
+  CROW_LOG_DEBUG << "daemon.host:       " << this->daemon.host;
+  CROW_LOG_DEBUG << "daemon.user:       " << this->daemon.user;
+  CROW_LOG_DEBUG << "daemon.basedir:    " << this->daemon.basedir;
+  CROW_LOG_DEBUG << "daemon.projectdir: " << this->daemon.projectdir;
+  CROW_LOG_DEBUG << "daemon.pidfile:    " << this->daemon.pidfile;
+  CROW_LOG_DEBUG << "daemon.port:       " << this->daemon.port;
+  CROW_LOG_DEBUG << "daemon.threads:    " << this->daemon.threads;
+  CROW_LOG_DEBUG << "daemon.detach:     " << this->daemon.detach;
 
-  CROW_LOG_INFO << "log.level:         " << this->log.level;
+  CROW_LOG_DEBUG << "log.level:         " << this->log.level;
 
-  CROW_LOG_INFO << "profiler.langdir:  " << this->profiler.langdir;
-  CROW_LOG_INFO << "profiler.exe:      " << this->profiler.exe;
-  CROW_LOG_INFO << "profiler.jobs:     " << this->profiler.jobs;
-  CROW_LOG_INFO << "profiler.debug:    " << this->profiler.debug;
-  for (const auto &p : this->plugins.configs) {
-    for (const auto &q : p.second) {
-      CROW_LOG_INFO << "plugins." << p.first << "." << q.first << ": "
-                    << q.second.data();
+  CROW_LOG_DEBUG << "profiler.langdir:  " << this->profiler.langdir;
+  CROW_LOG_DEBUG << "profiler.exe:      " << this->profiler.exe;
+  CROW_LOG_DEBUG << "profiler.jobs:     " << this->profiler.jobs;
+  CROW_LOG_DEBUG << "profiler.debug:    " << this->profiler.debug;
+  for (const auto& p : this->plugins.configs) {
+    for (const auto& q : p.second) {
+      CROW_LOG_DEBUG << "plugins." << p.first << "." << q.first << ": "
+                     << q.second.data();
     }
   }
 }
