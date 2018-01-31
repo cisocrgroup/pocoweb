@@ -1,0 +1,7 @@
+version: '3'
+services:
+  pocoweb:
+    build: .
+    # links:
+    #   - mysql
+    #   - nginx
