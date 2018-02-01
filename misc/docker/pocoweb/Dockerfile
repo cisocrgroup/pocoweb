@@ -14,7 +14,7 @@ RUN git clone https://git@github.com/cisocrgroup/pocoweb.git /pocoweb &&\
 		make -j $(nproc) &&\
 		mkdir -p /apps &&\
 		cp /pocoweb/pcwd /apps/pocoweb &&\
-		cp /pocoweb/lib/simple-login.so /apps/pocoweb &&\
+		cp /pocoweb/lib/simple-login.so /apps/simple-login.so &&\
 		cd / &&\
 		rm -rf /pocoweb
 
