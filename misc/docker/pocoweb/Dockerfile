@@ -5,6 +5,17 @@ MAINTAINER Florian Fink <finkf@cis.lmu.de>
 COPY dependencies /dependencies
 RUN apt-get update && apt-get install -y $(cat /dependencies)
 
+## profiler
+RUN git clone https://git@github.com/cisocrgroup/Profiler.git /profiler &&\
+		mkdir /profiler/build &&\
+		cd /profiler/build &&\
+		cmake .. &&\
+		make -j $(nproc) &&\
+		mkdir -p /apps &&\
+		cp bin/profiler /apps/profiler &&\
+		cd / &&\
+		rm -rf /profiler
+
 ## pocoweb
 ENV POCOWEB_BRANCH "doc"
 RUN git clone https://git@github.com/cisocrgroup/pocoweb.git /pocoweb &&\
@@ -17,18 +28,6 @@ RUN git clone https://git@github.com/cisocrgroup/pocoweb.git /pocoweb &&\
 		cp /pocoweb/lib/simple-login.so /apps/simple-login.so &&\
 		cd / &&\
 		rm -rf /pocoweb
-
-## profiler
-RUN git clone https://git@github.com/cisocrgroup/Profiler.git /profiler &&\
-		mkdir /profiler/build &&\
-		cd /profiler/build &&\
-		cmake .. &&\
-		make -j $(nproc) &&\
-		mkdir -p /apps &&\
-		cp bin/profiler /apps/profiler &&\
-		cd / &&\
-		rm -rf /profiler
-
 
 ## pocoweb config file
 COPY pocoweb.conf /apps/
