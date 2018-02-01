@@ -19,7 +19,8 @@ $config = array(
 		),
 	),
 	"backend" => array(
-		"url"            => "http://pocoweb.cis.lmu.de/rest",
+	  "internalURL"    => "http://pocoweb:8080",
+		"url"            => "http://localhost/rest",
 		"profilerWaitMs" => 30000,
 		"routes"         => array(
 			"apiVersion"          => "/api-version",

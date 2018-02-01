@@ -30,7 +30,7 @@ function backend_setup_globals() {
 
 function backend_get_login_route() {
 	global $config;
-	return $config["backend"]["url"] .
+	return $config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["login"];
 }
 
@@ -72,7 +72,7 @@ function backend_get_session_cookie() {
 
 function backend_get_logout_route() {
 	global $config;
-	return $config["backend"]["url"] .
+	return $config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["logout"];
 }
 
@@ -94,7 +94,7 @@ function backend_get_login_name() {
 
 function backend_get_projects_route() {
 	global $config;
-	return $config["backend"]["url"] .
+	return $config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["get_projects"];
 }
 
@@ -108,7 +108,7 @@ function backend_get_projects() {
 
 function backend_get_users_route() {
 	global $config;
-	return $config["backend"]["url"] .
+	return $config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["getUsers"];
 }
 
@@ -135,7 +135,7 @@ function backend_create_user($post) {
 
 function backend_get_delete_user_route($uid) {
 	global $config;
-	return sprintf($config["backend"]["url"] .
+	return sprintf($config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["deleteUser"], $uid);
 }
 
@@ -149,7 +149,8 @@ function backend_delete_user($uid) {
 
 function backend_get_split_project_route($pid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["splitProject"], $pid);
+	return sprintf($config["backend"]["internalURL"] .
+	  $config["backend"]["routes"]["splitProject"], $pid);
 }
 
 function backend_split_project($pid, $post) {
@@ -168,7 +169,8 @@ function backend_split_project($pid, $post) {
 
 function backend_get_assign_project_route($pid, $uid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["assignProject"], $pid, $uid);
+	return sprintf($config["backend"]["internalURL"] .
+	  $config["backend"]["routes"]["assignProject"], $pid, $uid);
 }
 
 function backend_assign_project($pid, $uid) {
@@ -181,7 +183,8 @@ function backend_assign_project($pid, $uid) {
 
 function backend_get_finish_project_route($pid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["finishProject"], $pid);
+	return sprintf($config["backend"]["internalURL"] .
+	  $config["backend"]["routes"]["finishProject"], $pid);
 }
 
 function backend_finish_project($pid) {
@@ -195,7 +198,8 @@ function backend_finish_project($pid) {
 
 function backend_get_remove_project_route($pid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["removeProject"], $pid);
+	return sprintf($config["backend"]["internalURL"] .
+	  $config["backend"]["routes"]["removeProject"], $pid);
 }
 
 function backend_remove_project($pid) {
@@ -208,7 +212,8 @@ function backend_remove_project($pid) {
 
 function backend_get_download_project_route($pid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["downloadProject"], $pid);
+	return sprintf($config["backend"]["internalURL"] .
+	  $config["backend"]["routes"]["downloadProject"], $pid);
 }
 
 function backend_download_project($pid) {
@@ -221,22 +226,25 @@ function backend_download_project($pid) {
 
 function backend_get_nth_page_route($pid, $p) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["getNthPage"], $pid, $p);
+	return sprintf($config["backend"]["internalURL"] .
+	  $config["backend"]["routes"]["getNthPage"], $pid, $p);
 }
 
 function backend_get_last_page_route($pid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["getLastPage"], $pid);
+	return sprintf($config["backend"]["internalURL"] .
+	  $config["backend"]["routes"]["getLastPage"], $pid);
 }
 
 function backend_get_first_page_route($pid) {
 	global $config;
-	return sprintf($config["backend"]["url"] . $config["backend"]["routes"]["getFirstPage"], $pid);
+	return sprintf($config["backend"]["internalURL"] .
+	  $config["backend"]["routes"]["getFirstPage"], $pid);
 }
 
 function backend_get_correct_line_route($pid, $p, $lid) {
 	global $config;
-	return sprintf($config["backend"]["url"] .
+	return sprintf($config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["correctLine"], $pid, $p, $lid);
 }
 
@@ -275,7 +283,7 @@ function backend_get_page($pid, $p) {
 
 function backend_get_upload_project_route($file) {
 	global $config;
-	return $config["backend"]["url"] .
+	return $config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["uploadProject"];
 }
 
@@ -290,7 +298,7 @@ function backend_upload_project($post, $name, $file) {
 
 function backend_get_search_route($pid, $q, $p) {
 	global $config;
-	return sprintf($config["backend"]["url"] .
+	return sprintf($config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["search"],
 		$pid, urlencode($q), (int)$p);
 }
@@ -305,7 +313,7 @@ function backend_get_concordance($pid, $q, $isErrorPattern) {
 
 function backend_get_split_images_route($pid, $p, $lid, $tid) {
 	global $config;
-	return sprintf($config["backend"]["url"] .
+	return sprintf($config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["splitImages"],
 		$pid, $p, $lid, $tid);
 }
@@ -322,7 +330,7 @@ function backend_get_split_images($word) {
 
 function backend_get_languages_route($url) {
 	global $config;
-	return sprintf($config["backend"]["url"] .
+	return sprintf($config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["languages"], $url);
 }
 
@@ -336,7 +344,7 @@ function backend_get_languages() {
 
 function backend_get_adaptive_tokens_route($pid) {
 	global $config;
-	return sprintf($config["backend"]["url"] .
+	return sprintf($config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["adaptiveTokens"], $pid);
 }
 
@@ -350,7 +358,7 @@ function backend_get_adaptive_tokens($pid) {
 
 function backend_get_update_user_route($uid) {
 		global $config;
-		return sprintf($config["backend"]["url"] .
+		return sprintf($config["backend"]["internalURL"] .
 				$config["backend"]["routes"]["updateUser"], $uid);
 }
 
