@@ -119,7 +119,7 @@ pcw::Config::load(std::istream& is)
     { ptree.get<std::string>("db.user"),
       ptree.get<std::string>("db.host"),
       ptree.get<std::string>("db.pass"),
-      ptree.get<std::string>("db.db"),
+      ptree.get<std::string>("db.name"),
       ptree.get<int>("db.connections"),
       ptree.get<bool>("db.debug") },
     { ptree.get<std::string>("daemon.host"),
@@ -171,7 +171,7 @@ pcw::Config::LOG() const
   CROW_LOG_DEBUG << "db.user:           " << this->db.user;
   CROW_LOG_DEBUG << "db.host:           " << this->db.host;
   CROW_LOG_DEBUG << "db.pass:           " << this->db.pass;
-  CROW_LOG_DEBUG << "db.db:             " << this->db.db;
+  CROW_LOG_DEBUG << "db.name:           " << this->db.name;
   CROW_LOG_DEBUG << "db.connections:    " << this->db.connections;
   CROW_LOG_DEBUG << "db.debug:          " << this->db.debug;
 
