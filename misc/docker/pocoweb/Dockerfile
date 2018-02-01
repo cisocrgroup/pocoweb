@@ -23,7 +23,7 @@ RUN make -j $(nproc)
 
 ## clean up
 WORKDIR /
-COPY config.ini /apps/pocoweb.conf
+COPY pocoweb.conf /apps
 RUN cp /profiler/build/bin/profiler /apps/profiler
 RUN cp /pocoweb/pcwd /apps/pocoweb
 RUN cp /pocoweb/lib/simple-login.so /apps/
