@@ -11,24 +11,27 @@ RUN git clone https://git@github.com/cisocrgroup/pocoweb.git /pocoweb &&\
 		cd /pocoweb &&\
 		git checkout $POCOWEB_BRANCH &&\
 		git submodule update --init --recursive &&\
-		make -j $(nproc)
+		make -j $(nproc) &&\
+		mkdir -p /apps &&\
+		cp /pocoweb/pcwd /apps/pocoweb &&\
+		cp /pocoweb/lib/simple-login.so /apps/pocoweb &&\
+		cd / &&\
+		rm -rf /pocoweb
 
 ## profiler
 RUN git clone https://git@github.com/cisocrgroup/Profiler.git /profiler &&\
-		cd /profiler &&\
-		mkdir build &&\
-		cd build &&\
+		mkdir /profiler/build &&\
+		cd /profiler/build &&\
 		cmake .. &&\
-		make -j $(nproc)
+		make -j $(nproc) &&\
+		mkdir -p /apps &&\
+		cp bin/profiler /apps/profiler &&\
+		cd / &&\
+		rm -rf /profiler
 
-## clean up
-WORKDIR /
-COPY pocoweb.conf /apps
-RUN cp /profiler/build/bin/profiler /apps/profiler &&\
-		cp /pocoweb/pcwd /apps/pocoweb &&\
-		cp /pocoweb/lib/simple-login.so apps &&\
-		rm -rf /profiler &&\
-		rm -rf /pocoweb
+
+## pocoweb config file
+COPY pocoweb.conf /apps/
 
 ## run pocoweb
 EXPOSE 8080
