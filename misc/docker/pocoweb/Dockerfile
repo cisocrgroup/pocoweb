@@ -7,27 +7,28 @@ RUN apt-get update && apt-get install -y $(cat /dependencies)
 
 ## pocoweb
 ENV POCOWEB_BRANCH "doc"
-RUN git clone https://git@github.com/cisocrgroup/pocoweb.git /pocoweb
-WORKDIR /pocoweb
-RUN git checkout $POCOWEB_BRANCH && git submodule update --init --recursive
-RUN make -j $(nproc)
-# RUN make -j test
+RUN git clone https://git@github.com/cisocrgroup/pocoweb.git /pocoweb &&\
+		cd /pocoweb &&\
+		git checkout $POCOWEB_BRANCH &&\
+		git submodule update --init --recursive &&\
+		make -j $(nproc)
 
 ## profiler
-RUN git clone https://git@github.com/cisocrgroup/Profiler.git /profiler
-WORKDIR /profiler
-RUN mkdir build
-WORKDIR /profiler/build
-RUN cmake ..
-RUN make -j $(nproc)
+RUN git clone https://git@github.com/cisocrgroup/Profiler.git /profiler &&\
+		cd /profiler &&\
+		mkdir build &&\
+		cd build &&\
+		cmake .. &&\
+		make -j $(nproc)
 
 ## clean up
 WORKDIR /
 COPY pocoweb.conf /apps
-RUN cp /profiler/build/bin/profiler /apps/profiler
-RUN cp /pocoweb/pcwd /apps/pocoweb
-RUN cp /pocoweb/lib/simple-login.so /apps/
-RUN rm -rf /profiler /pocoweb
+RUN cp /profiler/build/bin/profiler /apps/profiler &&\
+		cp /pocoweb/pcwd /apps/pocoweb &&\
+		cp /pocoweb/lib/simple-login.so apps &&\
+		rm -rf /profiler &&\
+		rm -rf /pocoweb
 
 ## run pocoweb
 EXPOSE 8080
