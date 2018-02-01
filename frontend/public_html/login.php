@@ -31,7 +31,7 @@ if ($user !== NULL) {
 	default:
 		$SID = "";
 		require(TEMPLATES_PATH . "/header.php");
-		frontend_render_error_div("Login error: " . $status);
+		frontend_render_error_div("Login error: " . backend_get_http_status_info($status));
 		frontend_render_login_div();
 		break;
 	}
