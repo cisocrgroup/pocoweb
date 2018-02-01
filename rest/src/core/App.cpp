@@ -41,6 +41,9 @@ App::run()
     .concurrency(config_->daemon.threads)
     .bindaddr(config_->daemon.host)
     .run();
+  CROW_LOG_DEBUG << "(App) Started server version " << App::version_str()
+                 << " on " << config_->daemon.host << ":"
+                 << config_->daemon.port;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
