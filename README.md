@@ -12,6 +12,21 @@
 Pocoweb is a postcorrection tool for (historical) OCR data for the web.
 It is based on [PoCoTo](https://github.com/cisocrgroup/PoCoTo).
 
+## Docker
+Pocoweb can be used and deployed using containers with [docker-compose](https://docs.docker.com/compose/).
+Its main configuration can be found in the [docker-compose.yml](misc/docker/docker-compose.yml) file.
+
+### Building the container images
+Change into the `misc/docker` directory and build the containers using:
+```
+docker-compose build
+```
+### Running the container
+After building the containers in the `misc/docker` directory issue the following command
+```
+docker-compose up
+```
+
 ## Installation
 ### Pocoweb back-end
 Pocoweb comes as a separate back-end process.
