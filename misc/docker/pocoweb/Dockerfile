@@ -16,6 +16,11 @@ RUN git clone https://git@github.com/cisocrgroup/Profiler.git /profiler &&\
 		cd / &&\
 		rm -rf /profiler
 
+# locale for profiler
+ENV LANG C.UTF-8
+ENV LANGUAGE C.UTF-8
+ENV LC_ALL C.UTF-8
+
 ## pocoweb
 ENV POCOWEB_BRANCH "doc"
 RUN git clone https://git@github.com/cisocrgroup/pocoweb.git /pocoweb &&\
@@ -30,7 +35,7 @@ RUN git clone https://git@github.com/cisocrgroup/pocoweb.git /pocoweb &&\
 		rm -rf /pocoweb
 
 ## pocoweb config file
-COPY pocoweb.conf /apps/
+COPY pocoweb.conf /apps/pocoweb.conf
 
 ## run pocoweb
 EXPOSE 8080
