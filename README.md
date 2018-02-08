@@ -28,13 +28,21 @@ docker-compose up
 ```
 
 ## Installation
+The installation is a complex. Various services have to be configured.
+In general you can allways take a look at some of the example
+configuration files.
+ * The Pocoweb [Dockerfile](misc/docker/pocoweb/Dockerfile)
+ * The Pocoweb [configuration](misc/docker/pocoweb/pocoweb.conf)
+ * The Nginx [configuration](misc/docker/nginx/nginx.conf)
+ * The required database [configuration](db/tables.sql)
+
 ### Pocoweb back-end
 Pocoweb comes as a separate back-end process.
 This daemon needs a running mysql database server.
 The daemon is configured using the `config.ini` configuration file.
 Its implementation can be found under the `rest/src` directory.
 
-n#### Dependencies
+#### Dependencies
 The back-end of Pocoweb is written in c++ and depends on the following (ubuntu)
 libraries and tools (see also [the dependency listing](misc/docker/pocoweb/dependencies)):
 * libboost-all-dev
@@ -94,8 +102,12 @@ in the configuration file `config.ini`.
 You can manually start the Pocoweb daemon calling `./pcwd config.ini`.
 Pocoweb comes with a systemd unit file to handle Pocoweb with systemd.
 
-Update and install the unit file `misc/systemd/pocoweb.service`.
-You can then manage Pocoweb using `systemd {enable,restart,start,stop} pocoweb`.
+Do not forget to copy the `pcwd` executable and the configuration file
+to the appropriate places in your system (see the systemd service file).
+Update and install the [unit file](misc/systemd/pococweb.service).
+Enable the service using `systemd enable pocoweb.service`.
+You can then manage Pocoweb using `systemd {restart,start,stop} pocoweb`.
+Note, that you need to be root to execute all of the later commands.
 It is possible to inspect Pocoweb's log using `journalctl [-f] -u pocoweb`.
 
 ### Pocoweb front-end
@@ -110,8 +122,8 @@ You have to configure the daemon's endpoint in the `frontend/resources/config.ph
 file setting the appropriate `$config['backend']['url']` variable.
 
 If the daemon is running on `localhost:8080` for example,
-you need to configure redirection URL in your web server and insert
-set this URL in the configuration.
+you need to configure the redirection URL in your web server and insert
+this URL in the configuration as well.
 
 #### Installation
 You need to install the front-end into your server's web-directory.
@@ -121,8 +133,10 @@ If you change any configuration variables in `frontend/resources/config.php`,
 make sure to reinstall the front-end.
 
 To install the front-end to `/path/to/web/directory`,
-issue the following command: `make install-frontend`:
-`make install-frontend PCW_FRONTEND_DIR=/path/to/web/directory`.
+issue the following command:
+```
+make install-frontend PCW_FRONTEND_DIR=/path/to/web/directory
+```
 This updates all needed files and installs them under the given directory.
 
 ## Folder structure

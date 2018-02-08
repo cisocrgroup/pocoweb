@@ -87,6 +87,11 @@ db/tables.sql.tmp: db/tables.sql
 	@sed -e '/create/ s/if\s\s*not\s\s*exists\s*//' \
 		-e 's#/\*.*\*/##' $< > $@
 
+install: pcwd
+	$(call install pcwd)
+	$V install -d $(BINDIR)
+	$V install -m 751 $< $(BINDIR)/pcwd
+
 DEPS += $(patsubst %.o,%.d,$(CORE_OBJS) $(API_OBJS) $(PARSER_OBJS) $(PROFILER_OBJS) $(PUGI_OBJS))
 DEPS += $(patsubst %,%.d,$(MAINS))
 ALL += $(LIBS) $(MAINS)
