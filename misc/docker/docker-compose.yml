@@ -1,21 +1,42 @@
-version: '3'
+version: '2.1'
 services:
   nginx:
     build: nginx/
     ports:
       - "80:80"
+    volumes:
+      - /srv/www-data:/www-data:ro
+      - /srv/project-data/:/project-data:ro
     links:
       - fpm
       - pocoweb
-    volumes:
-      - ./nginx/html:/www-data:ro
+    depends_on:
+      fpm:
+        condition: service_started
+      pocoweb:
+        condition: service_started
+
   fpm:
     image: php:fpm
     ports:
       - "9000:9000"
     volumes:
-      - ./nginx/html:/www-data:ro
+      - /srv/www-data:/www-data:ro
+
   pocoweb:
     build: pocoweb/
     ports:
       - "8080:8080"
+    links:
+      - db
+    volumes:
+      - /srv/project-data/:/project-data:rw
+    depends_on:
+      db:
+        condition: service_started
+  db:
+    build: db/
+    env_file:
+      - db.env
+    volumes:
+      - /srv/db-data:/var/lib/mysql
