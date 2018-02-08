@@ -56,7 +56,7 @@ $config = array(
 		"name"    => "pcw-user",
 		"sid"     => "pcw-sid",
 		"expires" => 8 * 60 * 60, // expires after 8 hours
-		"domain"  => "pocoweb.cis.lmu.de",
+		"domain"  => "localhost",
 	),
 	"httpStatusInfo" => array(
 		100 => "Continue",
