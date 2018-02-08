@@ -16,6 +16,19 @@ It is based on [PoCoTo](https://github.com/cisocrgroup/PoCoTo).
 Pocoweb can be used and deployed using containers with [docker-compose](https://docs.docker.com/compose/).
 Its main configuration can be found in the [docker-compose.yml](misc/docker/docker-compose.yml) file.
 
+### Setup
+There are three external directories, that the different container need to access.
+Create them using `mkdir -p /srv/{www,project,db}-data`.
+ * `/srv/www-data` contains all php, java-script and css files of the frontend
+ * `/srv/project-data` contains the data for the different OCR projects
+ * `/srv/db-data` contains the data of the mysql database
+ * It is possible to change the paths of the different directories.
+   Make sure to update the paths in the [docker-compose.yml](misc/docker/docker-compose.yml) file
+
+The `/srv/www-data` directory contains the static files for Pocoweb's frontend.
+You need to install the frontend to this directory using the command
+`make PCW_FRONTEND_DIR=/srv/www-data install-frontend`, from Pocoweb's root directory.
+
 ### Building the container images
 Change into the `misc/docker` directory and build the containers using:
 ```
@@ -28,13 +41,14 @@ docker-compose up
 ```
 
 ## Installation
-The installation is a complex. Various services have to be configured.
+The installation is a little bit involved. Various services have to be
+configured and made to comunicate with each other.
 In general you can allways take a look at some of the example
-configuration files.
+configuration files:
  * The Pocoweb [Dockerfile](misc/docker/pocoweb/Dockerfile)
  * The Pocoweb [configuration](misc/docker/pocoweb/pocoweb.conf)
  * The Nginx [configuration](misc/docker/nginx/nginx.conf)
- * The required database [configuration](db/tables.sql)
+ * The database [configuration](db/tables.sql)
 
 ### Pocoweb back-end
 Pocoweb comes as a separate back-end process.
