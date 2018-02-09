@@ -85,6 +85,10 @@ libraries and tools (see also [the dependency listing](misc/docker/pocoweb/depen
 * libcurl4-gnutls-dev
 * python-pyparsing
 
+If you are on ubuntu, you can do
+`sudo apt-get install $(cat misc/docker/pocoweb/dependencies)`
+to automatically install all dependencies.
+
 #### Additional dependencies
 Pocoweb manages some of its internal dependencies using git submodules.
 It depends on the following git submodules (found in the `modules` directory):
