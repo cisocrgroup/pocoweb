@@ -21,7 +21,7 @@ ENV LANG C.UTF-8
 ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
-## pocoweb
+# pocoweb
 ENV POCOWEB_BRANCH "doc"
 RUN git clone https://git@github.com/cisocrgroup/pocoweb.git /pocoweb &&\
 		cd /pocoweb &&\
@@ -33,6 +33,7 @@ RUN git clone https://git@github.com/cisocrgroup/pocoweb.git /pocoweb &&\
 		cp /pocoweb/lib/simple-login.so /apps/simple-login.so &&\
 		cd / &&\
 		rm -rf /pocoweb
+
 
 ## pocoweb config file
 COPY pocoweb.conf /apps/pocoweb.conf

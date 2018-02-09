@@ -1,5 +1,6 @@
-version: '2.1'
+version: '3'
 services:
+  # web server
   nginx:
     build: nginx/
     ports:
@@ -11,18 +12,16 @@ services:
       - fpm
       - pocoweb
     depends_on:
-      fpm:
-        condition: service_started
-      pocoweb:
-        condition: service_started
-
+      - fpm
+      - pocoweb
+  # php fast cgi
   fpm:
     image: php:fpm
     ports:
       - "9000:9000"
     volumes:
       - /srv/www-data:/www-data:ro
-
+  # pocoweb rest service
   pocoweb:
     build: pocoweb/
     ports:
@@ -32,10 +31,12 @@ services:
     volumes:
       - /srv/project-data/:/project-data:rw
     depends_on:
-      db:
-        condition: service_started
+      - db
+  # mysql database
   db:
-    build: db/
+    image: mariadb
+    ports:
+      - "3306:3306"
     env_file:
       - db.env
     volumes:
