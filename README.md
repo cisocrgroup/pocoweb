@@ -8,6 +8,9 @@
 ./__/ /____/______/__/________/_____\_____/...
 ..............................................
 ```
+
+[![Build Status](https://travis-ci.org/cisocrgroup/pocoweb.svg?branch=doc)](https://travis-ci.org/cisocrgroup/pocoweb)
+
 # Pocoweb
 Pocoweb is a postcorrection tool for (historical) OCR data for the web.
 It is based on [PoCoTo](https://github.com/cisocrgroup/PoCoTo).
