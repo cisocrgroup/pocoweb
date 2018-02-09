@@ -14,13 +14,15 @@ services:
     depends_on:
       - fpm
       - pocoweb
+    restart: always
   # php fast cgi
   fpm:
-    image: php:fpm
+    build: fpm/
     ports:
       - "9000:9000"
     volumes:
       - /srv/www-data:/www-data:ro
+    restart: always
   # pocoweb rest service
   pocoweb:
     build: pocoweb/
@@ -33,6 +35,7 @@ services:
       - /srv/language-data/:/language-data:ro
     depends_on:
       - db
+    restart: always
   # mysql database
   db:
     image: mariadb
@@ -42,3 +45,4 @@ services:
       - db.env
     volumes:
       - /srv/db-data:/var/lib/mysql
+    restart: always
