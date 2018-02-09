@@ -15,9 +15,9 @@ using namespace pcw;
 static void
 insert_default_user(const std::string& p, const App& app)
 {
-  auto conn = app.connection_pool().get_connection();
-  assert(conn);
   try {
+    auto conn = app.connection_pool().get_connection();
+    assert(conn);
     auto name = app.config().plugins[p].get<std::string>("default-user");
     auto user = select_user(conn.db(), name);
     if (not user) {
