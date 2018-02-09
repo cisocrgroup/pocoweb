@@ -30,6 +30,7 @@ services:
       - db
     volumes:
       - /srv/project-data/:/project-data:rw
+      - /srv/language-data/:/language-data:ro
     depends_on:
       - db
   # mysql database

@@ -21,12 +21,17 @@ Its main configuration can be found in the [docker-compose.yml](misc/docker/dock
 
 ### Setup
 There are three external directories, that the different container need to access.
-Create them using `mkdir -p /srv/{www,project,db}-data`.
+Create them using `mkdir -p /srv/{www,project,db,language}-data`.
  * `/srv/www-data` contains all php, java-script and css files of the frontend
  * `/srv/project-data` contains the data for the different OCR projects
  * `/srv/db-data` contains the data of the mysql database
- * It is possible to change the paths of the different directories.
-   Make sure to update the paths in the [docker-compose.yml](misc/docker/docker-compose.yml) file
+ * `/srv/language-data` contains the
+   [language configurations](https://github.com/cisocrgroup/Resources/blob/master/manuals/profiler-manual.pdf)
+   for the local profiler
+
+It is possible to change the paths of the different directories.
+Make sure to update the paths in the [docker-compose.yml](misc/docker/docker-compose.yml) and
+Pocoweb [configuration](misc/docker/pocwoeb/pocoweb.conf) files accordingly.
 
 The `/srv/www-data` directory contains the static files for Pocoweb's frontend.
 You need to install the frontend to this directory using the command
