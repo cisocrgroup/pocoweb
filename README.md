@@ -42,6 +42,14 @@ Change into the `misc/docker` directory and build the containers using:
 ```
 docker-compose build
 ```
+
+You need to setup the tables of the databsase. After building the containers
+-- before starting them -- start the database service and setup the tables:
+```
+docker-compose start db
+mysql -h 127.0.0.1 -P 3306 -uuser-name -ppassword pocoweb < db/tables.sql
+```
+
 ### Running the container
 After building the containers in the `misc/docker` directory issue the following command:
 ```
@@ -116,7 +124,7 @@ Execute Pocoweb's unit tests with `make test`.
 #### Mysql
 Pocoweb uses a mysql database to store its data.
 You need to create a database called `pocoweb` with an according user account
-and update Pocoweb's configuration file `config.ini`
+and update Pocoweb's configuration file `config.ini`.
 
 In order to create the tables for Pocoweb you can issue the command:
 `mysql -h dbhost -u dbuser -p < db/tables.sql`.
