@@ -185,7 +185,8 @@ Connect to the database:
 Settings for the file upload limits for PHP, nginx and Pocoweb:
  * Set `$config["frontend"]["upload"]["max_size"]` in [config.php](frontend/resources/config.php)
  * Set `client_max_body_size` (see [nginx.conf](misc/docker/nginx/nginx.conf))
- * Set `upload_max_file_size` and `post_max_size` (see [nginx.conf](misc/docker/nginx/nginx.conf))
+ * Set `upload_max_file_size` and `post_max_size` (see [nginx.conf](misc/docker/nginx/nginx.conf),
+   [upload.ini](misc/docker/fpm/upload.ini) and the [Dockerfile](misc/docker/fpm/Dockerfile))
 
 ## Folder structure
  * `rest/src` contains the back-end c++ implementation
