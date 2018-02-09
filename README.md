@@ -43,7 +43,7 @@ Change into the `misc/docker` directory and build the containers using:
 docker-compose build
 ```
 ### Running the container
-After building the containers in the `misc/docker` directory issue the following command
+After building the containers in the `misc/docker` directory issue the following command:
 ```
 docker-compose up
 ```
