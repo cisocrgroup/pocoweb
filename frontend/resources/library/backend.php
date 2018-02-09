@@ -42,6 +42,14 @@ function backend_get_http_status_info($status) {
 	return "$status Unknown";
 }
 
+function backend_get_upload_error_info($code) {
+    global $uploadErrorCodes;
+    if (isset($uploadErrorCodes[$code])) {
+        return "$uploadErrorCodes[$code]";
+    }
+    return "unknown upload error";
+}
+
 function backend_login($name, $pass) {
 	$data = array("name" => $name, "pass" => $pass);
 	$api = new Api(backend_get_login_route());
