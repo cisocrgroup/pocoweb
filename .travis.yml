@@ -1,0 +1,8 @@
+# .travis.yml
+language: bash
+services:
+  - docker
+install:
+  - cd misc/docker && docker-compose .
+  # - cd misc/docker && docker-compose
+language: cpp
