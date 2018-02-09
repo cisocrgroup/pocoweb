@@ -40,6 +40,12 @@ After building the containers in the `misc/docker` directory issue the following
 docker-compose up
 ```
 
+### Misc notes
+Connect to the database:
+ * make sure that the `ports` entry in the [docker-compose.yml](misc/docker/docker-compose.yml)
+   publishes the database port: `"3306:3306"`
+ * connect to the database with `mysql -h 127.0.0.1 -P 3306 -uuser -ppass pocoweb`
+
 ## Installation
 The installation is a little bit involved. Various services have to be
 configured and made to comunicate with each other.
