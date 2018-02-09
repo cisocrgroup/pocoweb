@@ -34,7 +34,6 @@ RUN git clone https://git@github.com/cisocrgroup/pocoweb.git /pocoweb &&\
 		cd / &&\
 		rm -rf /pocoweb
 
-
 ## pocoweb config file
 COPY pocoweb.conf /apps/pocoweb.conf
 
