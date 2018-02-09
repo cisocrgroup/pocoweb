@@ -15,6 +15,9 @@
 Pocoweb is a postcorrection tool for (historical) OCR data for the web.
 It is based on [PoCoTo](https://github.com/cisocrgroup/PoCoTo).
 
+If you encounter any problems, make sure to check the [misc notes]()
+section on the bottom of this page.
+
 ## Docker
 Pocoweb can be used and deployed using containers with [docker-compose](https://docs.docker.com/compose/).
 Its main configuration can be found in the [docker-compose.yml](misc/docker/docker-compose.yml) file.
@@ -55,12 +58,6 @@ After building the containers in the `misc/docker` directory issue the following
 ```
 docker-compose up
 ```
-
-### Misc notes
-Connect to the database:
- * make sure that the `ports` entry in the [docker-compose.yml](misc/docker/docker-compose.yml)
-   publishes the database port: `"3306:3306"`
- * connect to the database with `mysql -h 127.0.0.1 -P 3306 -uuser -ppass pocoweb`
 
 ## Installation
 The installation is a little bit involved. Various services have to be
@@ -178,6 +175,17 @@ issue the following command:
 make install-frontend PCW_FRONTEND_DIR=/path/to/web/directory
 ```
 This updates all needed files and installs them under the given directory.
+
+## Misc notes
+Connect to the database:
+ * make sure that the `ports` entry in the [docker-compose.yml](misc/docker/docker-compose.yml)
+   publishes the database port: `"3306:3306"`
+ * connect to the database with `mysql -h 127.0.0.1 -P 3306 -uuser -ppass pocoweb`
+
+Settings for the file upload limits for PHP, nginx and Pocoweb:
+ * Set `$config["frontend"]["upload"]["max_size"]` in [config.php](frontend/resources/config.php)
+ * Set `client_max_body_size` (see [nginx.conf](misc/docker/nginx/nginx.conf))
+ * Set `upload_max_file_size` and `post_max_size` (see [nginx.conf](misc/docker/nginx/nginx.conf))
 
 ## Folder structure
  * `rest/src` contains the back-end c++ implementation
