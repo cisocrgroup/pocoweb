@@ -506,28 +506,34 @@ pcw.clearNode = function(node) {
 };
 
 pcw.setProfilerLanguages = function() {
-	var input = document.getElementById('pcw-project-profiler');
-	if (input === null ||
-	    (input.value != 'local' && !input.value.startsWith('http'))) {
-		return;
-	}
-	var langs = document.getElementById('pcw-project-languages');
-	if (langs === null) {
-		return;
-	}
-	pcw.clearNode(langs);
-	var api = Object.create(pcw.Api);
-	api.sid = pcw.getSid();
-	api.setupForGetLanguages(input.value);
-	api.run(function(s, res) {
-		pcw.clearNode(langs);
-		for (var i = 0; i < res.languages.length; i++) {
-			t = document.createTextNode(res.languages[i]);
-			o = document.createElement("option");
-			o.appendChild(t);
-			langs.appendChild(o);
+		var input = document.getElementById('pcw-project-profiler');
+		if (input === null) {
+				return;
 		}
-	});
+		var thevalue = input.value;
+		if (thevalue == 'default') { // rewrite `default` to `local`
+				thevalue = 'local';
+		}
+	  if (thevalue != 'local' && !thevalue.startsWith('http')) {
+				return;
+		}
+		var langs = document.getElementById('pcw-project-languages');
+		if (langs === null) {
+				return;
+		}
+		pcw.clearNode(langs);
+		var api = Object.create(pcw.Api);
+		api.sid = pcw.getSid();
+		api.setupForGetLanguages(thevalue);
+		api.run(function(s, res) {
+				pcw.clearNode(langs);
+				for (var i = 0; i < res.languages.length; i++) {
+						t = document.createTextNode(res.languages[i]);
+						o = document.createElement("option");
+						o.appendChild(t);
+						langs.appendChild(o);
+				}
+		});
 };
 
 pcw.toggleBetweenTextAndInput = function(hide, unhide) {
