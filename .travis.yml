@@ -3,6 +3,6 @@ language: bash
 services:
   - docker
 install:
-  - cd misc/docker && docker-compose build .
+  - cd misc/docker && docker-compose build
   # - cd misc/docker && docker-compose
 language: cpp
