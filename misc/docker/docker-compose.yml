@@ -6,8 +6,8 @@ services:
     ports:
       - "80:80"
     volumes:
-      - /srv/www-data:/www-data:ro
-      - /srv/project-data/:/project-data:ro
+      - /srv/pocoweb/www-data:/www-data:ro
+      - /srv/pocoweb/project-data/:/project-data:ro
     links:
       - fpm
       - pocoweb
@@ -21,7 +21,8 @@ services:
     ports:
       - "9000:9000"
     volumes:
-      - /srv/www-data:/www-data:ro
+      - /srv/pocoweb/www-data:/www-data:ro
+      - /srv/pocoweb/tmp-data/:/tmp:rw
     restart: always
   # pocoweb rest service
   pocoweb:
@@ -31,8 +32,9 @@ services:
     links:
       - db
     volumes:
-      - /srv/project-data/:/project-data:rw
-      - /srv/language-data/:/language-data:ro
+      - /srv/pocoweb/project-data/:/project-data:rw
+      - /srv/pocoweb/language-data/:/language-data:ro
+      - /srv/pocoweb/tmp-data/:/tmp:rw
     depends_on:
       - db
     restart: always
@@ -44,5 +46,5 @@ services:
     env_file:
       - db.env
     volumes:
-      - /srv/db-data:/var/lib/mysql
+      - /srv/pocoweb/db-data:/var/lib/mysql
     restart: always
