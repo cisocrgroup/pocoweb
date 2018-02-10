@@ -1,4 +1,5 @@
 cmake
+curl
 g++
 gcc
 git
@@ -11,5 +12,6 @@ libssl-dev
 libxerces-c-dev
 make
 mysql-client
+php
 python-pyparsing
 unzip
