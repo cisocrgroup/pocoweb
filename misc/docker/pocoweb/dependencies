@@ -4,12 +4,10 @@ g++
 gcc
 git
 libboost-all-dev
-libcppunit-dev
 libcurl4-gnutls-dev
 libleptonica-dev
 libmysqlclient-dev
 libssl-dev
-libxerces-c-dev
 make
 mysql-client
 php

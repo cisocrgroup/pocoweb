@@ -7,7 +7,7 @@ services:
       - "80:80"
     volumes:
       - /srv/pocoweb/www-data:/www-data:ro
-      - /srv/pocoweb/project-data/:/project-data:ro
+      - /srv/pocoweb/project-data:/project-data:ro
     links:
       - fpm
       - pocoweb
@@ -17,12 +17,12 @@ services:
     restart: always
   # php fast cgi
   fpm:
-    build: fpm/
+    image: php:fpm
     ports:
       - "9000:9000"
     volumes:
       - /srv/pocoweb/www-data:/www-data:ro
-      - /srv/pocoweb/tmp-data/:/tmp:rw
+      - /srv/pocoweb/tmp-data:/tmp:rw
     restart: always
   # pocoweb rest service
   pocoweb:
@@ -32,9 +32,10 @@ services:
     links:
       - db
     volumes:
-      - /srv/pocoweb/project-data/:/project-data:rw
-      - /srv/pocoweb/language-data/:/language-data:ro
-      - /srv/pocoweb/tmp-data/:/tmp:rw
+      - /srv/pocoweb/project-data:/project-data:rw
+      - /srv/pocoweb/tmp-data:/tmp:rw
+      - /srv/pocoweb/www-data:/www-data:rw
+      - /srv/pocoweb/language-data:/language-data:ro
     depends_on:
       - db
     restart: always
