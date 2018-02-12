@@ -26,13 +26,15 @@ Its main configuration can be found in the [docker-compose.yml](misc/docker/dock
 There are five external directories, that the different container need to access.
 Create them using `mkdir -p /srv/pocoweb/{www,project,db,tmp,language}-data`.
  * `/srv/pocoweb/www-data` contains all php, java-script and css files of the frontend
- * `/srv/pocoweb/project-data` contains the data for the different OCR projects
+ * `/srv/pocoweb/project-data` is used to store the different OCR projects of Pocoweb
  * `/srv/pocoweb/db-data` contains the data of the mysql database
  * `/srv/pocoweb/language-data` contains the
    [language configurations](https://github.com/cisocrgroup/Resources/blob/master/manuals/profiler-manual.pdf)
    for the local profiler
  * `/srv/pocoweb/tmp-data` contains temporary data,
    that is used to upload project files to Pocoweb.
+ * make sure that PHP can access the `srv/pocoweb/tmp-data` directory:
+   `chmod a+w /srv/pocoweb/tmp-data`
 
 It is possible to change the paths of the different directories.
 Make sure to update the paths in the [docker-compose.yml](misc/docker/docker-compose.yml) and
@@ -113,6 +115,16 @@ This will clone the submodules and download the internal dependencies of
 Pocoweb. You must download all internal dependencies before you can
 proceed to build Pocoweb.
 
+#### Profiler
+Pocoweb can optionally be used with a local (in respect to the rest-service)
+profiler.
+In order to use a local profiler, the profiler must be installed and
+according language backends should have been created. Refer to
+[the profiler manual](https://github.com/cisocrgroup/Resources/blob/master/manuals/profiler-manual.pdf)
+for more information or read the Profilers [Dockerfile](misc/docker/profiler/Dockerfile).
+
+http://localhost/project-data/udsvhhrbqzrswlcp/ocropus-book/0042/010001.bin.png
+
 #### Compilation
 After all dependencies have been installed (see above),
 build the back-end using the command `make` (use `-jN` to speed up the
@@ -156,6 +168,18 @@ In order to run, an additional web server with support for PHP is needed.
 Also the front-end relies on a running Pocoweb back-end process.
 The front-end is implemented in the `frontend` directory.
 
+In order to serve the front-end, you need to have a web server installed
+on the host system. You have to enable PHP on the webserver and make sure
+that the various limits on file uploads are set accordingly.
+
+The web server must be able to redirect calls to the rest-service
+to the Pocoweb back-end (see next section) and be able to serve paths
+to the project directory of the back-end.
+
+If you are unsure, take a look to the configuration files of the containers:
+ * [nginx.conf](misc/docker/nginx/nginx.conf)
+ * [pocoweb.conf](misc/docker/pocoweb/pocoweb.conf)
+
 #### Daemon
 The front-end needs Pocoweb's daemon to run.
 You have to configure the daemon's endpoint in the `frontend/resources/config.php`
@@ -179,18 +203,6 @@ make install-frontend PCW_FRONTEND_DIR=/path/to/web/directory
 ```
 This updates all needed files and installs them under the given directory.
 
-## Misc notes
-Connect to the database:
- * make sure that the `ports` entry in the [docker-compose.yml](misc/docker/docker-compose.yml)
-   publishes the database port: `"3306:3306"`
- * connect to the database with `mysql -h 127.0.0.1 -P 3306 -uuser -ppass pocoweb`
-
-Settings for the file upload limits for PHP, nginx and Pocoweb:
- * Set `$config["frontend"]["upload"]["max_size"]` in [config.php](frontend/resources/config.php)
- * Set `client_max_body_size` (see [nginx.conf](misc/docker/nginx/nginx.conf))
- * Set `upload_max_file_size` and `post_max_size` (see [nginx.conf](misc/docker/nginx/nginx.conf),
-   [upload.ini](misc/docker/fpm/upload.ini) and the [Dockerfile](misc/docker/fpm/Dockerfile))
-
 ## Folder structure
  * `rest/src` contains the back-end c++ implementation
  * `db` contains the database table definitions
@@ -209,3 +221,15 @@ It can be found [here](frontend/public_html/doc.md).
 Attributed is free software, and may be redistributed under the terms specified in the [LICENSE] file.
 
 [LICENSE]: /LICENSE
+
+## Misc notes
+Connect to the database:
+ * make sure that the `ports` entry in the [docker-compose.yml](misc/docker/docker-compose.yml)
+   publishes the database port: `"3306:3306"`
+ * connect to the database with `mysql -h 127.0.0.1 -P 3306 -uuser -ppass pocoweb`
+
+Settings for the file upload limits for PHP, nginx and Pocoweb:
+ * Set `$config["frontend"]["upload"]["max_size"]` in [config.php](frontend/resources/config.php)
+ * Set `client_max_body_size` (see [nginx.conf](misc/docker/nginx/nginx.conf))
+ * Set `upload_max_file_size` and `post_max_size` (see [nginx.conf](misc/docker/nginx/nginx.conf),
+   [upload.ini](misc/docker/fpm/upload.ini) and the [Dockerfile](misc/docker/fpm/Dockerfile))
