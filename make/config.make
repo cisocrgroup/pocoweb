@@ -65,7 +65,7 @@ PCW_LOG_PIDFILE ?= /var/run/pocoweb.pid
 
 ECHO = 							\
 	@if [ "$C" = "yes" ]; then 			\
-		echo -e "[\033[0;32m$1\033[0m]";	\
+		echo "[\033[0;32m$1\033[0m]";	\
 	else						\
 		echo "[$1]";				\
 	fi
@@ -76,12 +76,12 @@ ECHO = 							\
 mkdir-%:; @mkdir -p $(subst -,/,$*)
 dbg-%:; @echo $*: ${$*}
 
--include make/cache.mak
+-include make/cache.make
 
-make/cache.mak: Makefile
+make/cache.make: Makefile
 	$(call ECHO,$@)
 	@echo "#" > $@
-	@echo "# cache.mak" >> $@
+	@echo "# cache.make" >> $@
 	@echo "# created: `date`" >> $@
 	@echo "#" >> $@
 	@echo "PCW_API_VERSION_MAJOR := $(PCW_API_VERSION_MAJOR)" >> $@
@@ -106,4 +106,3 @@ make/cache.mak: Makefile
 	@echo "PCW_API_EMAIL:= $(PCW_API_EMAIL)" >> $@
 	@echo "PCW_API_INSTITUTE := $(PCW_API_INSTITUTE)" >> $@
 	@echo "PCW_LOG_PIDFILE := $(PCW_LOG_PIDFILE)" >> $@
-

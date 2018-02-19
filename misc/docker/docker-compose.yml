@@ -1,0 +1,21 @@
+version: '3'
+services:
+  nginx:
+    build: nginx/
+    ports:
+      - "80:80"
+    links:
+      - fpm
+      - pocoweb
+    volumes:
+      - ./nginx/html:/www-data:ro
+  fpm:
+    image: php:fpm
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./nginx/html:/www-data:ro
+  pocoweb:
+    build: pocoweb/
+    ports:
+      - "8080:8080"

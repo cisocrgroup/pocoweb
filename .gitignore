@@ -11,7 +11,7 @@ tags
 pcwd
 pcwc
 config.ini
-make/cache.mak
+make/cache.make
 vendor/*
 tmp/*
 ext/*
@@ -20,5 +20,5 @@ frontend/public_html/js/config.js
 db/tables.sql.tmp
 misc/systemd/pocoweb.service
 env
-
+tests.log
 profile-tmp.xml

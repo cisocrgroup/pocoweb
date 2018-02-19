@@ -78,9 +78,9 @@ lib/libpcw.a: $(CORE_OBJS) $(API_OBJS) $(PROFILER_OBJS) $(PARSER_OBJS) | $(MODS)
 pcwd: rest/src/pcwd.o $(LIBS)
 	$(call ECHO,$@)
 	$V $(CXX) $(CXXFLAGS) $< $(LDFLAGS) -o $@
-rest/src/database/Tables.h: modules/sqlpp11/scripts/ddl2cpp db/tables.sql.tmp
+rest/src/database/Tables.h: db/tables.sql.tmp
 	$(call ECHO,$@)
-	$V $^ rest/src/database/Tables tables
+	$V modules/sqlpp11/scripts/ddl2cpp rest/src/database/Tables tables
 # ddl2cpp does not handle `create table if not exists foo`
 db/tables.sql.tmp: db/tables.sql
 	$(call ECHO,$@)

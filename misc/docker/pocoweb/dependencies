@@ -1,0 +1,15 @@
+libboost-all-dev
+make
+gcc
+g++
+git
+cmake
+libmysqlclient-dev
+mysql-client
+libleptonica-dev
+libssl-dev
+libcurl4-gnutls-dev
+python-pyparsing
+unzip
+libcppunit-dev
+libxerces-c-dev
