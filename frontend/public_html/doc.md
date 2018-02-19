@@ -196,7 +196,7 @@ profiler.
 If you plan to use a profiler for the post correction of your project, you
 have to set them accordingly.
 If the installation of Pocoweb comes with a local configured profiler,
-you can use `local` as value for your profiler.
+you can use `default` or `local` as value for your profiler.
 If not or if you want to use another profiler, you have to specify its URL.
 
 Do not forget to set the right language for the new project.

@@ -1,0 +1,7 @@
+cmake
+g++
+gcc
+git
+libcppunit-dev
+libxerces-c-dev
+make

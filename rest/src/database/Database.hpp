@@ -37,9 +37,6 @@ template <class U> UserSptr make_user(const U &users) {
   set_if_not_null(users.institute,
                   [user](const std::string &inst) { user->institute = inst; });
   return user;
-  /*	return std::make_shared<User>(users.name, Password(users.passwd),
-                                      users.email, users.institute,
-                                      users.userid, users.admin);*/
 }
 
 template <class T, class F> void set_if_not_null(const T &t, F f) {
@@ -74,7 +71,7 @@ void select_lines(Db &db, const PageBuilder &builder, int bookid, int pageid);
 template <class Db>
 void select_contents(Db &db, const LineBuilder &builder, int bookid, int pageid,
                      int lineid);
-} // namespace detail
+}
 
 template <class Db>
 UserSptr create_user(Db &db, const std::string &user, const std::string &pw,
@@ -125,7 +122,7 @@ template <class Db>
 ProjectSptr select_project(Db &db, const Book &book, int projectid);
 
 template <class Db> void update_line(Db &db, const Line &line);
-} // namespace pcw
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 template <class Db>
@@ -179,7 +176,11 @@ template <class Db> pcw::UserSptr pcw::select_user(Db &db, int id) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+<<<<<<< HEAD
 template <class Db> std::vector<pcw::UserSptr> pcw::select_all_users(Db &db) {
+=======
+template <class Db> std::vector<pcw::UserSptr> pcw::select_all_users(Db &db) {
+>>>>>>> doc
   using namespace sqlpp;
   std::vector<UserSptr> res;
   tables::Users users;

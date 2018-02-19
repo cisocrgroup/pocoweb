@@ -1,21 +1,51 @@
 version: '3'
 services:
+  # web server
   nginx:
     build: nginx/
     ports:
       - "80:80"
+    volumes:
+      - /srv/pocoweb/www-data:/www-data:ro
+      - /srv/pocoweb/project-data:/project-data:ro
     links:
       - fpm
       - pocoweb
-    volumes:
-      - ./nginx/html:/www-data:ro
+    depends_on:
+      - fpm
+      - pocoweb
+    restart: always
+  # php fast cgi
   fpm:
     image: php:fpm
     ports:
       - "9000:9000"
     volumes:
-      - ./nginx/html:/www-data:ro
+      - /srv/pocoweb/www-data:/www-data:ro
+      - /srv/pocoweb/tmp-data:/tmp:rw
+    restart: always
+  # pocoweb rest service
   pocoweb:
     build: pocoweb/
     ports:
       - "8080:8080"
+    links:
+      - db
+    volumes:
+      - /srv/pocoweb/project-data:/project-data:rw
+      - /srv/pocoweb/tmp-data:/tmp:rw
+      - /srv/pocoweb/www-data:/www-data:rw
+      - /srv/pocoweb/language-data:/language-data:ro
+    depends_on:
+      - db
+    restart: always
+  # mysql database
+  db:
+    image: mariadb
+    ports:
+      - "3306:3306"
+    env_file:
+      - db.env
+    volumes:
+      - /srv/pocoweb/db-data:/var/lib/mysql
+    restart: always

@@ -1,37 +1,28 @@
-FROM ubuntu:latest
+FROM profiler:latest
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
 
+VOLUME /project-data /www-data /tmp /language-data
 ## dependencies
 COPY dependencies /dependencies
 RUN apt-get update && apt-get install -y $(cat /dependencies)
 
-## profiler
-RUN git clone https://git@github.com/cisocrgroup/Profiler.git /profiler &&\
-		mkdir /profiler/build &&\
-		cd /profiler/build &&\
-		cmake .. &&\
-		make -j $(nproc) &&\
-		mkdir -p /apps &&\
-		cp bin/profiler /apps/profiler &&\
-		cd / &&\
-		rm -rf /profiler
-
-## pocoweb
+# pocoweb
 ENV POCOWEB_BRANCH "doc"
 RUN git clone https://git@github.com/cisocrgroup/pocoweb.git /pocoweb &&\
 		cd /pocoweb &&\
 		git checkout $POCOWEB_BRANCH &&\
 		git submodule update --init --recursive &&\
 		make -j $(nproc) &&\
+		make -j $(nproc) V="" PCW_FRONTEND_DIR=/www-data install-frontend &&\
 		mkdir -p /apps &&\
 		cp /pocoweb/pcwd /apps/pocoweb &&\
 		cp /pocoweb/lib/simple-login.so /apps/simple-login.so &&\
+		cp /pocoweb/db/tables.sql /apps/tables.sql &&\
 		cd / &&\
 		rm -rf /pocoweb
 
-## pocoweb config file
-COPY pocoweb.conf /apps/
+COPY pocoweb.conf /apps/pocoweb.conf
+COPY startup.sh /startup.sh
 
-## run pocoweb
 EXPOSE 8080
-CMD /apps/pocoweb /apps/pocoweb.conf
+CMD /startup.sh

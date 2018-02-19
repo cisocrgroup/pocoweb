@@ -18,8 +18,7 @@ dbpass=$(git config -f $config --get db.pass)
 dbdb=$(git config -f $config --get db.db)
 
 mysql -h$dbhost -u$dbuser --password=$dbpass $dbdb <<EOF
-INSERT INTO 
-	users (name,email,institute,passwd) 
+INSERT INTO
+	users (name,email,institute,passwd)
 	VALUES ('$name','$email','$inst',PASSWORD('$pass'));
 EOF
-

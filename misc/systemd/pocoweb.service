@@ -1,0 +1,13 @@
+[Unit]
+Description=pocoweb the pocoweb rest daemon
+Documentation=http://pocoweb.cis.lmu.de/documentation.php
+Requires=network.service
+
+[Service]
+Type=simple
+PIDFile=/var/lib/pcwd.pid
+ExecStart=/usr/local/bin/pcwd /etc/pocoweb.conf
+Restart=always
+
+[Install]
+WantedBy=default.target

@@ -56,7 +56,7 @@ $config = array(
 		"name"    => "pcw-user",
 		"sid"     => "pcw-sid",
 		"expires" => 8 * 60 * 60, // expires after 8 hours
-		"domain"  => "pocoweb.cis.lmu.de",
+		"domain"  => "localhost",
 	),
 	"httpStatusInfo" => array(
 		100 => "Continue",
@@ -101,6 +101,18 @@ $config = array(
 		504 => "Gateway Timeout",
 		505 => "HTTP Version Not Supported",
 	),
+);
+
+global $uploadErrorCodes;
+$uploadErrorCodes = array(
+	  UPLOAD_ERR_OK         => "OK",
+		UPLOAD_ERR_INI_SIZE   => "PHP size limit exeeded",
+		UPLOAD_ERR_FORM_SIZE  => "HTML size limit exeeded",
+		UPLOAD_ERR_PARTIAL    => "partial upload",
+		UPLOAD_ERR_NO_FILE    => "no file uploaded",
+		UPLOAD_ERR_NO_TMP_DIR => "missing tmp directory",
+		UPLOAD_ERR_CANT_WRITE => "could not write file",
+		UPLOAD_ERR_EXTENSION  => "file upload stopped",
 );
 
 defined("LIBRARY_PATH") or define("LIBRARY_PATH", realpath(dirname(__FILE__)) . "/library");

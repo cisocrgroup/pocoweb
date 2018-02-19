@@ -247,9 +247,9 @@ function frontend_render_upload_new_project_div() {
 	echo '</div>', "\n";
 	// Profiler
 	echo '<div class="form-group">', "\n";
-	echo '<label for="profiler">Profiler URL (use local if in doubt)</label>', "\n";
+	echo '<label for="profiler">Profiler URL (use default or local if in doubt)</label>', "\n";
 	echo '<input id="pcw-project-profiler" oninput=\'pcw.setProfilerLanguages();\' ',
-		'value="local" name="profiler" type="text" placeholder="Profiler URL" ',
+		'value="default" name="profiler" type="text" placeholder="Profiler URL" ',
 		'class="form-control"/>', "\n";
 	echo '</div>', "\n";
 	// Languages
@@ -283,7 +283,8 @@ function frontend_render_upload_new_project_div() {
 function frontend_upload_project_archive($post, $file) {
 	global $config;
 	if ($file["error"] != UPLOAD_ERR_OK) {
-		frontend_render_error_div("Could not upload archive: error: $file[error]");
+        $info = backend_get_upload_error_info($file["error"]);
+		frontend_render_error_div("Could not upload archive: error: $info");
 		return;
 	}
 	if ($file["size"] > $config["frontend"]["upload"]["max_size"]) {

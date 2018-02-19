@@ -2,7 +2,6 @@
 *.d
 *.a
 *~
-.*
 *.log
 *.gitmodule
 *.so
