@@ -573,7 +573,8 @@ Check if logged in and get the settings of the logged in user account.
 <a id='api-post-users'></a>
 ### [POST] `rest-url`/users
 Create a new user account.
-You have to be [authenticated](#user-content-authorization) with an administrator account.
+* [Authorization](#user-content-authorization) is required.
+* Only administrators can create new user accounts.
 
 #### POST data
 ```json
@@ -600,7 +601,8 @@ You have to be [authenticated](#user-content-authorization) with an administrato
 <a id='api-get-users'></a>
 ### [GET] `rest-url`/users
 Get a list of all users in the system.
-You have to be [authenticated](#user-content-authorization) with an administrator account.
+* [Authorization](#user-content-authorization) is required.
+* Only administrators can list all user accounts.
 
 #### Response data
 ```json
