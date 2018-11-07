@@ -54,7 +54,7 @@ main(int argc, char** argv)
   try {
     return run(argc, argv);
   } catch (const std::exception& e) {
-    CROW_LOG_ERROR << e.what();
+    CROW_LOG_ERROR << "fatal: " << e.what();
   }
   return 1;
 }
