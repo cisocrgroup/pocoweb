@@ -19,7 +19,7 @@ $config = array(
 		),
 	),
 	"backend" => array(
-	  "internalURL"    => "http://pocoweb:8080",
+	  "internalURL"    => "http://pcwauth:8081",
 		"url"            => "http://localhost/rest",
 		"profilerWaitMs" => 30000,
 		"routes"         => array(
