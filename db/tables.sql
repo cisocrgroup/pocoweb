@@ -5,16 +5,17 @@
 /*use pocoweb;*/
 
 create table if not exists users (
-	userid int not null unique primary key auto_increment,
-	name varchar(50) not null unique,
-	email varchar(50) not null,
-	institute varchar(50) not null,
-	passwd varchar(100) not null,
-	admin boolean not null
+    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	name VARCHAR(255) NOT NULL UNIQUE,
+	email VARCHAR(255) NOT NULL,
+	institute VARCHAR(255) NOT NULL,
+	hash BINARY(64),
+	salt BINARY(32),
+	admin BOOLEAN DEFAULT(false) NOT NULL
 );
 
-create table if not exists books (
-	bookid int not null unique references projects(projectid),
+CREATE TABLE IF NOT EXISTS BOOKS (
+	BOOKID INT NOT NULL UNIQUE references projects(projectid),
 	year int,
 	title varchar(100) not null,
 	author varchar(100) not null,
@@ -26,14 +27,14 @@ create table if not exists books (
 );
 
 create table if not exists projects (
-	projectid int not null unique primary key auto_increment,
+	id int not null unique primary key auto_increment,
 	origin int,
-	owner int references users(userid),
+	owner int references users(id),
 	pages int
 );
 
 create table if not exists project_pages (
-	projectid int not null references projects(projectid),
+	projectid int not null references projects(id),
 	pageid int not null references pages(pageid),
 	primary key (projectid, pageid)
 );
