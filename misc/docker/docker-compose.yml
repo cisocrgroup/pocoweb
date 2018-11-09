@@ -6,14 +6,15 @@ services:
     ports:
       - "80:80"
     volumes:
-      - /srv/pocoweb/www-data:/www-data:ro
-      - /srv/pocoweb/project-data:/project-data:ro
+      - /home/flo/data/srv/pocoweb/www-data:/www-data:ro
+      - /home/flo/data/srv/pocoweb/project-data:/project-data:ro
     links:
       - fpm
       - pocoweb
     depends_on:
       - fpm
       - pocoweb
+      - pcwauth
     restart: always
   # php fast cgi
   fpm:
@@ -21,31 +22,54 @@ services:
     ports:
       - "9000:9000"
     volumes:
-      - /srv/pocoweb/www-data:/www-data:ro
-      - /srv/pocoweb/tmp-data:/tmp:rw
+      - /home/flo/data/srv/pocoweb/www-data:/www-data:ro
+      - /home/flo/data/srv/pocoweb/tmp-data:/tmp:rw
     restart: always
+
   # pocoweb rest service
   pocoweb:
+    environment:
+      - POCOWEB_CHECKOUT_BRANCH=devel
     build: pocoweb/
     ports:
       - "8080:8080"
     links:
       - db
     volumes:
-      - /srv/pocoweb/project-data:/project-data:rw
-      - /srv/pocoweb/tmp-data:/tmp:rw
-      - /srv/pocoweb/www-data:/www-data:rw
-      - /srv/pocoweb/language-data:/language-data:ro
+      - /home/flo/data/srv/pocoweb/project-data:/project-data:rw
+      - /home/flo/data/srv/pocoweb/tmp-data:/tmp:rw
+      - /home/flo/data/srv/pocoweb/www-data:/www-data:rw
+      - /home/flo/data/srv/pocoweb/language-data:/language-data:ro
     depends_on:
       - db
     restart: always
+
   # mysql database
   db:
     image: mariadb
     ports:
       - "3306:3306"
-    env_file:
-      - db.env
     volumes:
-      - /srv/pocoweb/db-data:/var/lib/mysql
+      - /home/flo/data/srv/pocoweb/db-data:/var/lib/mysql
     restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=example
+      - MYSQL_USER=pocoweb
+      - MYSQL_PASSWORD=pocoweb1998
+      - MYSQL_DATABASE=pocoweb
+
+  # pocoweb authentification and user management
+  pcwauth:
+    build: pcwauth/
+    ports:
+      - "8081:8081"
+    links:
+      - db
+      - pocoweb
+    depends_on:
+      - db
+    restart: always
+    environment:
+      - PCWAUTH_DB=pocoweb:pocoweb1998@(db)/pocoweb
+      - PCWAUTH_POCOWEB=http://pocoweb:8080
+      - PCWAUTH_HOST=:8081
