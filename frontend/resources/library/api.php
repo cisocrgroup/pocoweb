@@ -7,7 +7,6 @@ class Api {
 		$this->url = $url;
 		$this->json = NULL;
 		$this->curl = curl_init($url);
-		$this->header = array();
 		if ($this->curl === FALSE) {
 			throw new Exception("Could not initialize curl handle");
 		}
@@ -18,12 +17,9 @@ class Api {
 				"=" . $_COOKIE[$sid]);
 		}
 		curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, TRUE);
-		# curl_setopt($this->curl,
-		# 	CURLOPT_HEADERFUNCTION, 'header_callback');
 	}
 
 	public function get_request() {
-		curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->header);
 		$res = curl_exec($this->curl);
 		if ($res === FALSE) {
 			error_log("[Api] could not connect to: $this->url");
@@ -35,8 +31,6 @@ class Api {
 
 	public function post_request($data) {
 		curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($data));
-		array_push($this->header, "Content-Type: application/json");
-		curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->header);
 		$res = curl_exec($this->curl);
 		$this->json = NULL;
 		if ($res === FALSE) {
@@ -49,7 +43,6 @@ class Api {
 
 	public function delete_request() {
 		curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-		curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->header);
 		$res = curl_exec($this->curl);
 		$this->json = NULL;
 		if ($res === FALSE) {
@@ -61,7 +54,8 @@ class Api {
 	}
 
 	public function set_session_id($sid) {
-		array_push($this->header, "Authorization: Pocoweb $sid");
+        $this->url = $this->url . "?auth=" . $sid["auth"];
+        curl_setopt($this->curl, CURLOPT_URL, $this->url);
 	}
 
 	public function get_http_status_code() {
@@ -86,19 +80,5 @@ class Api {
 		}
 	}
 }
-
-# function header_callback($curl, $header_line) {
-# 	if (preg_match('/^Set-Cookie:\s*(.*)$/mi', $header_line, $m)) {
-# 		$cookie = utils_parse_http_cookie($m[1]);
-# 		foreach ($cookie["cookies"] as $key => $val) {
-# 			if (!setcookie($key, $val, $cookie["expires"],
-# 				$cookie["path"], $cookie["domain"])) {
-# 				error_log("[Api] could not set cookie $key=$val; " .
-# 					"expires=$cookie[expires]; $cookie[path]; $cookie[domain];");
-# 			}
-# 		}
-# 	}
-# 	return strlen($header_line);
-# }
 
 ?>

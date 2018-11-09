@@ -58,11 +58,13 @@ if (isset($_GET["pid"])) {
 <?php
 require_once(dirname(dirname(__FILE__)) . "/config.php");
 require_once(LIBRARY_PATH . "/backend.php");
-backend_setup_globals();
-global $USER;
-if ($USER !== NULL) {
+global $SID;
+$SID = backend_get_session_cookie();
+// backend_setup_globals();
+// global $USER;
+if ($SID !== NULL) {
 	echo '<li><p class="navbar-text">Logged in as user: ',
-		$USER["name"], '</p></li>', "\n";
+		$SID["user"]["name"], '</p></li>', "\n";
 	echo '<li><a href="logout.php">Logout</a></li>', "\n";
 } else {
     echo('<li><a href="login.php">Login</a></li>');

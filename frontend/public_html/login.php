@@ -15,9 +15,14 @@ if ($user !== NULL) {
 	$status = $api->get_http_status_code();
 	switch ($status) {
 	case "200":
-		backend_set_session_cookie($api->get_response()["auth"]);
-		backend_set_global_session_id();
-		backend_set_global_user();
+        $session = $api->get_response();
+		backend_set_session_cookie($session);
+        global $USER;
+        global $SID;
+        $USER = $session["user"];
+        $SID = $session["auth"];
+		// backend_set_global_session_id();
+		// backend_set_global_user();
 		require(TEMPLATES_PATH . "/header.php");
 		frontend_render_success_div("You have successfully logged in");
 		break;

@@ -7,13 +7,13 @@ if (typeof Object.create !== 'function') {
 }
 
 pcw.Api = {
-	sid: "",
+	sid: null,
 	post: null,
 	url: "",
 	method: "GET",
 	acceptedStatuses: [200],
 	formatRequest: function() {
-		return this.method + " " + this.url + " [" + this.sid + "]";
+		return this.method + " " + this.url + " [" + JSON.stringify(this.sid) + "]";
 	},
 	onError: function(status) {
 		console.error(this.formatRequest() + " returned: " + status);
@@ -139,8 +139,8 @@ pcw.Api = {
 			if (http.readyState === 4 && that.accept(http.status)) {
 				that.log(
 				    that.formatRequest() + " returned: " +
-				    http.status + " data: " +
-				    http.responseText);
+						http.status + " data: " +
+						http.responseText);
 				if (http.responseText.length > 0) {
 					callback(
 					    http.status,
@@ -152,13 +152,15 @@ pcw.Api = {
 				that.onError(http.status);
 			}
 		};
+		if (this.sid != null) {
+			this.url = this.url + "?auth=" + this.sid.auth;
+		}
 		http.open(this.method, this.url, true);
 		http.setRequestHeader(
-		    "Content-type", "application/json; charset=UTF-8");
-		http.setRequestHeader("Authorization", "Pocoweb " + this.sid);
+			"Content-Type", "application/json; charset=UTF-8");
 		this.log(
-		    "sending request: " + this.formatRequest() + " data: " +
-		    JSON.stringify(this.post));
+			"sending request: " + this.formatRequest() + " data: " +
+				JSON.stringify(this.post));
 		if (this.method === "POST" && this.post !== null) {
 			http.send(JSON.stringify(this.post));
 		} else {

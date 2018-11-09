@@ -5,27 +5,21 @@ require_once(LIBRARY_PATH . "/api.php");
 function backend_set_global_user() {
 	global $USER;
 	global $SID;
-	if (strlen($SID) > 0) {
-		$api = backend_get_login_name();
-		if ($api->get_http_status_code() == 200) {
-			$USER = $api->get_response()["user"];
-		} else {
-			$USER = NULL;
-		}
-	} else {
-		$USER = NULL;
-	}
+	// if (strlen($SID) > 0) {
+	// 	$api = backend_get_login_name();
+	// 	if ($api->get_http_status_code() == 200) {
+	// 		$USER = $api->get_response()["user"];
+	// 	} else {
+	// 		$USER = NULL;
+	// 	}
+	// } else {
+	// 	$USER = NULL;
+	// }
 }
 
 function backend_set_global_session_id() {
 	global $SID;
 	$SID = backend_get_session_cookie();
-}
-
-function backend_setup_globals() {
-	// session id must be set before the user.
-	backend_set_global_session_id();
-	backend_set_global_user();
 }
 
 function backend_get_login_route() {
@@ -57,11 +51,14 @@ function backend_login($email, $pass) {
 	return $api;
 }
 
-function backend_set_session_cookie($sid) {
+function backend_set_session_cookie($session) {
 	global $config;
-	$res = setcookie($config["cookies"]["sid"], $sid,
-		time() + $config["cookies"]["expires"],
-		"/", $config["cookies"]["domain"]);
+    $json = json_encode($session);
+	$res = setcookie(
+        $config["cookies"]["sid"],
+        $json,
+        time() + $config["cookies"]["expires"],
+        "/", $config["cookies"]["domain"]);
 	if (!$res) {
 		error_log("(backend_set_session_cookie) " .
 			"could not set cookie: $sid");
@@ -71,11 +68,11 @@ function backend_set_session_cookie($sid) {
 function backend_get_session_cookie() {
 	global $config;
 	$res = "";
-	if (isset($_COOKIE[$config["cookies"]["sid"]])) {
-		$res = $_COOKIE[$config["cookies"]["sid"]];
-	}
-	return $res;
-
+	if (!isset($_COOKIE[$config["cookies"]["sid"]])) {
+        return NULL;
+    }
+    $res = $_COOKIE[$config["cookies"]["sid"]];
+    return json_decode($res, TRUE);
 }
 
 function backend_get_logout_route() {

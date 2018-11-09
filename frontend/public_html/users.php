@@ -19,10 +19,10 @@ if (isset($_GET["create"])) {
 	backend_delete_user($_GET["uid"]);
 	frontend_render_success_div("Successfully deleted user id: $_GET[uid]");
 }
-global $USER;
-if ($USER === NULL) {
+global $SID;
+if ($SID === NULL) {
 	frontend_render_info_div("Welcome to PoCoWeb. Please <a href='login.php'>login</a>");
-} else if (!$USER["admin"]) {
+} else if (!$SID["user"]["admin"]) {
 	frontend_render_warning_div("You are not allowed to do user administration");
 } else {
 	frontend_render_users_div();
