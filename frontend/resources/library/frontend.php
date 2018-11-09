@@ -7,8 +7,8 @@ function frontend_render_login_div() {
 	echo '<div class="container-fluid">';
 	echo '<form class="form-horizontal" method="post">';
 	echo '<div class="form-group">';
-	echo '<label for="name">User name</label>';
-	echo '<input name="name" type="text" class="form-control" placeholder="Username"/>';
+	echo '<label for="name">User email</label>';
+	echo '<input name="name" type="text" class="form-control" placeholder="Email"/>';
 	echo '</div>';
 	echo '<div class="form-group">';
 	echo '<label for="pass">Password</label>';
