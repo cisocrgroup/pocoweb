@@ -8,7 +8,7 @@ function backend_set_global_user() {
 	if (strlen($SID) > 0) {
 		$api = backend_get_login_name();
 		if ($api->get_http_status_code() == 200) {
-			$USER = $api->get_response();
+			$USER = $api->get_response()["user"];
 		} else {
 			$USER = NULL;
 		}
