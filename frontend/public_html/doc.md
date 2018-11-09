@@ -40,7 +40,7 @@ for suspicious words.
     * [[GET] `rest-url`/login](#user-content-api-get-login)
 	* [[POST] `rest-url`/users](#user-content-api-post-users)
 	* [[GET] `rest-url`/users](#user-content-api-get-users)
-	* [[POST] `rest-url`/users/`uid`](#user-content-api-post-users-uid)
+	* [[PUT] `rest-url`/users/`uid`](#user-content-api-post-users-uid)
 	* [[GET] `rest-url`/users/`uid`](#user-content-api-get-users-uid)
 	* [[DELETE] `rest-url`/users/`uid`](#user-content-api-delete-users-uid)
 	* [[GET] `rest-url`/books](#user-content-api-get-books)
@@ -542,15 +542,22 @@ After a successfully login you can use the returned session id in the
 #### POST data
 ```json
 {
-  "user": "username",
-  "pass": "password"
+  "email": "user email",
+  "password": "password"
 }
 ```
 
 #### Response data
 ```json
 {
-  "sid": "pocoweb-session-id"
+  "auth": "auth-token",
+  "user": {
+	"id": 42,
+    "name": "user-name",
+    "email": "user-email",
+    "insitute": "user-institute",
+    "admin": true|false
+  }
 }
 ```
 
@@ -579,11 +586,14 @@ Create a new user account.
 #### POST data
 ```json
 {
-  "name": "user-name",
-  "pass": "password",
-  "email": "user-email",
-  "insitute": "user-institute",
-  "admin": true|false
+	"user": {
+	    "id": 0,
+		"name": "user-name",
+		"email": "user's unique email",
+		"insitute": "user-institute",
+		"admin": true|false
+	},
+	"password": "new user's password"
 }
 ```
 
@@ -629,7 +639,7 @@ Get a list of all users in the system.
 
 
 <a id='api-post-users-uid'></a>
-### [POST] `rest-url`/users/`uid`
+### [PUT] `rest-url`/users/`uid`
 Update the account settings of an user with an id of `uid`.
 * [Authorization](#user-content-authorization) is required.
 * Administrators can update any normal user account.
@@ -639,15 +649,19 @@ Update the account settings of an user with an id of `uid`.
 #### POST data
 ```json
 {
-  "name": "user-name",
-  "pass": "password",
-  "email": "user-email",
-  "insitute": "user-institute",
+	"user": {
+	    "id": 42,
+		"name": "user-name",
+		"pass": "password",
+		"email": "user-email",
+		"insitute": "user-institute"
+	},
+	"password": "user's new password"
 }
 ```
-All fields are optional.
-If a field is missing in the POST request or its value is the empty string "",
-this setting is not changed.
+You can leave out the password or use the empty string,
+if you do not want to update the user's password. It is
+not possible to change a user's id.
 
 #### Response data
 ```json
