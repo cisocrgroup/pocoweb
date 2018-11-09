@@ -50,8 +50,8 @@ function backend_get_upload_error_info($code) {
     return "unknown upload error";
 }
 
-function backend_login($name, $pass) {
-	$data = array("name" => $name, "pass" => $pass);
+function backend_login($email, $pass) {
+	$data = array("email" => $email, "password" => $pass);
 	$api = new Api(backend_get_login_route());
 	$api->post_request($data);
 	return $api;
