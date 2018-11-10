@@ -80,12 +80,13 @@ pcwd: rest/src/pcwd.o $(LIBS)
 	$V $(CXX) $(CXXFLAGS) $< $(LDFLAGS) -o $@
 rest/src/database/Tables.h: db/tables.sql.tmp
 	$(call ECHO,$@)
-	$V modules/sqlpp11/scripts/ddl2cpp rest/src/database/Tables tables
+	$V modules/sqlpp11/scripts/ddl2cpp $^ rest/src/database/Tables tables
 # ddl2cpp does not handle `create table if not exists foo`
 db/tables.sql.tmp: db/tables.sql
 	$(call ECHO,$@)
 	@sed -e '/create/ s/if\s\s*not\s\s*exists\s*//' \
-		-e 's#/\*.*\*/##' $< > $@
+		 -e 's#/\*.*\*/##' $< > $@
+
 
 install: pcwd
 	$(call install pcwd)
