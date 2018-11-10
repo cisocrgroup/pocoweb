@@ -25,7 +25,6 @@ CORE_TESTS += rest/src/core/tests/TestSessionStore.test
 CORE_TESTS += rest/src/core/tests/TestUtils.test
 CORE_TESTS += rest/src/core/tests/TestWagnerFischer.test
 
-DATABASE_TESTS += rest/src/database/tests/TestTables.test
 DATABASE_TESTS += rest/src/database/tests/TestDatabase.test
 DATABASE_TESTS += rest/src/database/tests/TestConnectionPool.test
 DATABASE_TESTS += rest/src/database/tests/TestDatabaseGuard.test
@@ -48,11 +47,12 @@ RUN_TESTS = $(patsubst %.test,%.run,$(TESTS))
 	$V $(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
 %.run: %.test
 	$V $(call ECHO,$@)
-	@echo "# $@" >> tests.log
-	$V $< >> tests.log 2>&1
-test: tests.log $(RUN_TESTS)
+#@echo "# $@" >> tests.log
+	$V $<
+#test: tests.log $(RUN_TESTS)
+test: $(RUN_TESTS)
 tests.log:
-	@echo "# tests:" $(shell date) > $@
+#	@echo "# tests:" $(shell date) > $@
 
 DEPS += $(patsubst %.test,%.d,$(TESTS))
 TESTOBJS += $(patsubst %.test,%.o,$(TESTS))

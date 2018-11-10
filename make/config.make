@@ -63,7 +63,7 @@ PCW_API_INSTITUTE ?= CIS
 
 PCW_LOG_PIDFILE ?= /var/run/pocoweb.pid
 
-ECHO = echo "[$1]";
+ECHO = @echo "[$1]";
 
 %.o: %.cpp
 	$(call ECHO,$@)
