@@ -12,8 +12,6 @@
 #define PCW_CONFIG_EXPANSION_MAX_RUNS 1000
 #endif // PCW_CONFIG_EXPANSION_MAX_RUNS
 
-using PluginsConfig = std::unordered_map<std::string, pcw::Ptree>;
-
 ////////////////////////////////////////////////////////////////////////////////
 static std::string
 get_val(const pcw::Ptree& ptree, const std::string& var)
@@ -54,22 +52,6 @@ again:
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-static PluginsConfig
-get_plugins(const pcw::Ptree& ptree)
-{
-  static const std::regex plugin{ R"(^plugin[-_](.*)$)",
-                                  std::regex_constants::icase };
-  PluginsConfig plugins;
-  std::smatch m;
-  for (const auto& config : ptree) {
-    if (std::regex_search(config.first, m, plugin)) {
-      plugins.emplace(m[1], config.second);
-    }
-  }
-  return plugins;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 static int
 get_log_level(const std::string& level)
 {
@@ -92,7 +74,7 @@ get_log_level(const std::string& level)
 pcw::Config
 pcw::Config::empty()
 {
-  return Config{ {}, {}, {}, {}, {} };
+  return Config{ {}, {}, {}, {} };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -136,19 +118,7 @@ pcw::Config::load(std::istream& is)
       ptree.get<double>("profiler.minweight"),
       static_cast<size_t>(ptree.get<int>("profiler.jobs")),
       ptree.get<bool>("profiler.debug") },
-    {
-      get_plugins(ptree),
-    },
   };
-}
-
-////////////////////////////////////////////////////////////////////////////////
-const pcw::Ptree& pcw::Config::Plugins::operator[](const std::string& p) const
-  noexcept
-{
-  static const Ptree nothing;
-  auto i = configs.find(p);
-  return i == end(configs) ? nothing : i->second;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -190,10 +160,4 @@ pcw::Config::LOG() const
   CROW_LOG_DEBUG << "profiler.exe:      " << this->profiler.exe;
   CROW_LOG_DEBUG << "profiler.jobs:     " << this->profiler.jobs;
   CROW_LOG_DEBUG << "profiler.debug:    " << this->profiler.debug;
-  for (const auto& p : this->plugins.configs) {
-    for (const auto& q : p.second) {
-      CROW_LOG_DEBUG << "plugins." << p.first << "." << q.first << ": "
-                     << q.second.data();
-    }
-  }
 }

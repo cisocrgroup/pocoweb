@@ -7,11 +7,12 @@
 
 namespace pcw {
 using Path = boost::filesystem::path;
-class Config;
+struct Config;
 
-class LocalProfiler : public Profiler {
+class LocalProfiler : public Profiler
+{
 public:
-  LocalProfiler(ConstBookSptr book, const Config &config);
+  LocalProfiler(ConstBookSptr book, const Config& config);
   virtual ~LocalProfiler() noexcept override = default;
 
 protected:
@@ -19,7 +20,7 @@ protected:
   virtual std::vector<std::string> do_languages() override;
 
 private:
-  void run_profiler(const std::string &command) const;
+  void run_profiler(const std::string& command) const;
   pcw::Profile read_profile() const;
   void write_docxml() const;
   std::string profiler_command() const;

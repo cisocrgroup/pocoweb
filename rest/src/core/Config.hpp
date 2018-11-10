@@ -42,12 +42,6 @@ struct Config
     const bool debug;
   } profiler;
 
-  const struct Plugins
-  {
-    const std::unordered_map<std::string, Ptree> configs;
-    const Ptree& operator[](const std::string& p) const noexcept;
-  } plugins;
-
   void LOG() const;
 };
 }

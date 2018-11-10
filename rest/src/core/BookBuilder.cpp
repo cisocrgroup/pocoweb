@@ -1,5 +1,5 @@
-#include "Book.hpp"
 #include "BookBuilder.hpp"
+#include "Book.hpp"
 #include "LineBuilder.hpp"
 #include "Page.hpp"
 #include "PageBuilder.hpp"
@@ -9,16 +9,24 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-BookBuilder::BookBuilder() : book_() { reset(); }
+BookBuilder::BookBuilder()
+  : book_()
+{
+  reset();
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-BookBuilder &BookBuilder::reset() {
+BookBuilder&
+BookBuilder::reset()
+{
   book_ = std::make_shared<Book>();
   return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const BookBuilder &BookBuilder::append(Page &page) const {
+const BookBuilder&
+BookBuilder::append(Page& page) const
+{
   assert(book_);
   book_->push_back(page);
   assert(not book_->empty());
@@ -44,77 +52,99 @@ const BookBuilder &BookBuilder::append(Page &page) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const BookBuilder &BookBuilder::set_book_data(BookData data) const {
+const BookBuilder&
+BookBuilder::set_book_data(BookData data) const
+{
   assert(book_);
   book_->data = std::move(data);
   return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const BookBuilder &BookBuilder::set_author(std::string author) const {
+const BookBuilder&
+BookBuilder::set_author(std::string author) const
+{
   assert(book_);
   book_->data.author = std::move(author);
   return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const BookBuilder &BookBuilder::set_title(std::string title) const {
+const BookBuilder&
+BookBuilder::set_title(std::string title) const
+{
   assert(book_);
   book_->data.title = std::move(title);
   return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const BookBuilder &BookBuilder::set_description(std::string description) const {
+const BookBuilder&
+BookBuilder::set_description(std::string description) const
+{
   assert(book_);
   book_->data.description = std::move(description);
   return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const BookBuilder &BookBuilder::set_uri(std::string uri) const {
+const BookBuilder&
+BookBuilder::set_uri(std::string uri) const
+{
   assert(book_);
   book_->data.uri = std::move(uri);
   return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const BookBuilder &BookBuilder::set_language(std::string language) const {
+const BookBuilder&
+BookBuilder::set_language(std::string language) const
+{
   assert(book_);
   book_->data.lang = std::move(language);
   return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const BookBuilder &BookBuilder::set_directory(Path directory) const {
+const BookBuilder&
+BookBuilder::set_directory(Path directory) const
+{
   assert(book_);
   book_->data.dir = std::move(directory);
   return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const BookBuilder &BookBuilder::set_year(int year) const {
+const BookBuilder&
+BookBuilder::set_year(int year) const
+{
   assert(book_);
   book_->data.year = year;
   return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const BookBuilder &BookBuilder::set_owner(const User &owner) const {
+const BookBuilder&
+BookBuilder::set_owner(int owner) const
+{
   assert(book_);
   book_->set_owner(owner);
   return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const BookBuilder &BookBuilder::set_id(int id) const {
+const BookBuilder&
+BookBuilder::set_id(int id) const
+{
   assert(book_);
   book_->set_id(id);
   return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookSptr BookBuilder::build() const {
+BookSptr
+BookBuilder::build() const
+{
   assert(book_);
   // Handle cases where multiple ocr pages have
   // the same page sequence number set in the ocr files.
@@ -125,9 +155,11 @@ BookSptr BookBuilder::build() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool BookBuilder::has_unique_page_ids(const Book &book) {
+bool
+BookBuilder::has_unique_page_ids(const Book& book)
+{
   std::set<int> ids;
-  for (const auto &page : book) {
+  for (const auto& page : book) {
     if (ids.count(page->id()))
       return false;
     ids.insert(page->id());
@@ -136,11 +168,13 @@ bool BookBuilder::has_unique_page_ids(const Book &book) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void BookBuilder::reorder_pages(Book &book) {
+void
+BookBuilder::reorder_pages(Book& book)
+{
   // skip empty books
   if (book.empty())
     return;
-  static const auto cmp = [](const PagePtr &a, const PagePtr &b) {
+  static const auto cmp = [](const PagePtr& a, const PagePtr& b) {
     assert(a);
     assert(b);
     return a->ocr.filename().stem() < b->ocr.filename().stem();
@@ -149,14 +183,16 @@ void BookBuilder::reorder_pages(Book &book) {
   std::sort(begin(book), end(book), cmp);
   // set ids from 1 to n
   int id = 1;
-  for (auto &page : book) {
+  for (auto& page : book) {
     assert(page);
     page->id_ = id++;
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const BookBuilder &BookBuilder::append_text(const std::string &str) const {
+const BookBuilder&
+BookBuilder::append_text(const std::string& str) const
+{
   std::wstring wstr;
   wstr.reserve(str.size());
   utf8::utf8to32(begin(str), end(str), std::back_inserter(wstr));
@@ -164,7 +200,9 @@ const BookBuilder &BookBuilder::append_text(const std::string &str) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const BookBuilder &BookBuilder::append_text(const std::wstring &str) const {
+const BookBuilder&
+BookBuilder::append_text(const std::wstring& str) const
+{
   PageBuilder pbuilder;
   LineBuilder lbuilder;
   auto b = begin(str);

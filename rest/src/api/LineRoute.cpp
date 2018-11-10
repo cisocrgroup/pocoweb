@@ -5,7 +5,6 @@
 #include "core/Page.hpp"
 #include "core/Session.hpp"
 #include "core/SessionDirectory.hpp"
-#include "core/User.hpp"
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
 #include "utils/Error.hpp"
@@ -21,18 +20,21 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char *LineRoute::route_ = LINE_ROUTE_ROUTE "," WORD_ROUTE_ROUTE;
-const char *LineRoute::name_ = "LineRoute";
+const char* LineRoute::route_ = LINE_ROUTE_ROUTE "," WORD_ROUTE_ROUTE;
+const char* LineRoute::name_ = "LineRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
-void LineRoute::Register(App &app) {
+void
+LineRoute::Register(App& app)
+{
   CROW_ROUTE(app, LINE_ROUTE_ROUTE).methods("GET"_method, "POST"_method)(*this);
   CROW_ROUTE(app, WORD_ROUTE_ROUTE).methods("GET"_method, "POST"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response LineRoute::impl(HttpGet, const Request &req, int bid, int pid,
-                                int lid) const {
+Route::Response
+LineRoute::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
+{
   LockedSession session(must_find_session(req));
   auto conn = must_get_connection();
   auto line = session->must_find(conn, bid, pid, lid);
@@ -41,22 +43,24 @@ Route::Response LineRoute::impl(HttpGet, const Request &req, int bid, int pid,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
-                                int lid) const {
+Route::Response
+LineRoute::impl(HttpPost, const Request& req, int pid, int p, int lid) const
+{
   const auto json = crow::json::load(req.body);
   const auto c = get<std::string>(json, "correction");
   if (not c)
     THROW(BadRequest, "(LineRoute) missing correction data");
   LockedSession session(must_find_session(req));
   auto conn = must_get_connection();
-  session->assert_permission(conn, pid, Permissions::Write);
   auto line = session->must_find(conn, pid, p, lid);
   return correct(conn, *line, *c);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response LineRoute::impl(HttpGet, const Request &req, int pid, int p,
-                                int lid, int tid) const {
+Route::Response
+LineRoute::impl(HttpGet, const Request& req, int pid, int p, int lid, int tid)
+  const
+{
   LockedSession session(must_find_session(req));
   auto conn = must_get_connection();
   auto line = session->must_find(conn, pid, p, lid);
@@ -69,22 +73,26 @@ Route::Response LineRoute::impl(HttpGet, const Request &req, int pid, int p,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
-                                int lid, int tid) const {
+Route::Response
+LineRoute::impl(HttpPost, const Request& req, int pid, int p, int lid, int tid)
+  const
+{
   const auto json = crow::json::load(req.body);
   const auto c = get<std::string>(json, "correction");
   if (not c)
     THROW(BadRequest, "(LineRoute) missing correction data");
   LockedSession session(must_find_session(req));
   auto conn = must_get_connection();
-  session->assert_permission(conn, pid, Permissions::Write);
   auto line = session->must_find(conn, pid, p, lid);
   return correct(conn, *line, tid, *c);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response LineRoute::correct(MysqlConnection &conn, Line &line,
-                                   const std::string &c) const {
+Route::Response
+LineRoute::correct(MysqlConnection& conn,
+                   Line& line,
+                   const std::string& c) const
+{
   WagnerFischer wf;
   wf.set_gt(c);
   wf.set_ocr(line);
@@ -100,12 +108,23 @@ Route::Response LineRoute::correct(MysqlConnection &conn, Line &line,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response LineRoute::correct(MysqlConnection &conn, Line &line, int tid,
-                                   const std::string &c) const {
+Route::Response
+LineRoute::correct(MysqlConnection& conn,
+                   Line& line,
+                   int tid,
+                   const std::string& c) const
+{
   auto token = find_token(line, tid);
   if (not token) {
-    THROW(NotFound, "(LineRoute) cannot find ", line.page().book().id(), "-",
-          line.page().id(), "-", line.id(), "-", tid);
+    THROW(NotFound,
+          "(LineRoute) cannot find ",
+          line.page().book().id(),
+          "-",
+          line.page().id(),
+          "-",
+          line.id(),
+          "-",
+          tid);
   }
   WagnerFischer wf;
   wf.set_ocr(line);
@@ -120,8 +139,16 @@ Route::Response LineRoute::correct(MysqlConnection &conn, Line &line, int tid,
   wf.correct(line, b, n);
   token = find_token(line, tid);
   if (not token) {
-    THROW(Error, "(LineRoute) cannot find token ", line.page().book().id(), "-",
-          line.page().id(), "-", line.id(), "-", tid, " after correction");
+    THROW(Error,
+          "(LineRoute) cannot find token ",
+          line.page().book().id(),
+          "-",
+          line.page().id(),
+          "-",
+          line.id(),
+          "-",
+          tid,
+          " after correction");
   }
   update_line(conn, line);
   Json j;
@@ -129,9 +156,11 @@ Route::Response LineRoute::correct(MysqlConnection &conn, Line &line, int tid,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-boost::optional<Token> LineRoute::find_token(const Line &line, int tid) {
+boost::optional<Token>
+LineRoute::find_token(const Line& line, int tid)
+{
   boost::optional<Token> token;
-  line.each_token([&](const auto &t) {
+  line.each_token([&](const auto& t) {
     if (t.id == tid) {
       token = t;
     }
@@ -140,7 +169,9 @@ boost::optional<Token> LineRoute::find_token(const Line &line, int tid) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void LineRoute::update_line(MysqlConnection &conn, const Line &line) {
+void
+LineRoute::update_line(MysqlConnection& conn, const Line& line)
+{
   MysqlCommiter commiter(conn);
   pcw::update_line(conn.db(), line);
   commiter.commit();

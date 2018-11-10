@@ -15,12 +15,12 @@ CXXFLAGS := -MP -MD -std=gnu++14 -Wall -Werror -fpic
 CXXFLAGS += -g
 CXXFLAGS += -Irest/src
 CXXFLAGS += -Wundef
-CXXFLAGS += -Wnoexcept
-CXXFLAGS += -Wno-aggressive-loop-optimizations
-CXXFLAGS += -Wsuggest-override
-CXXFLAGS += -Wsuggest-attribute=pure
-CXXFLAGS += -Wsuggest-attribute=const
-CXXFLAGS += -Wsuggest-attribute=noreturn
+# CXXFLAGS += -Wnoexcept
+# CXXFLAGS += -Wno-aggressive-loop-optimizations
+# CXXFLAGS += -Wsuggest-override
+# CXXFLAGS += -Wsuggest-attribute=pure
+# CXXFLAGS += -Wsuggest-attribute=const
+# CXXFLAGS += -Wsuggest-attribute=noreturn
 CXXFLAGS += -isystem modules/sqlpp11/include
 CXXFLAGS += -isystem modules/sqlpp11-connector-mysql/include
 CXXFLAGS += -isystem modules/date

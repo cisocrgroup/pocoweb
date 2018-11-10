@@ -16,19 +16,26 @@
 
 using namespace pcw;
 
-template <class C, class J, class R>
-static void append_suggestions(C &conn, J &j, size_t bookid, R &row);
-template <class C, class J, class R>
-static bool lookup_and_append_patterns(C &conn, J &json, size_t bookid,
-                                       size_t i, const R &row);
+template<class C, class J, class R>
+static void
+append_suggestions(C& conn, J& j, size_t bookid, R& row);
+template<class C, class J, class R>
+static bool
+lookup_and_append_patterns(C& conn,
+                           J& json,
+                           size_t bookid,
+                           size_t i,
+                           const R& row);
 
 ////////////////////////////////////////////////////////////////////////////////
-const char *SuggestionsRoute::route_ =
-    SUGGESTIONS_ROUTE_ROUTE_1 "," SUGGESTIONS_ROUTE_ROUTE_2;
-const char *SuggestionsRoute::name_ = "SuggestionsRoute";
+const char* SuggestionsRoute::route_ =
+  SUGGESTIONS_ROUTE_ROUTE_1 "," SUGGESTIONS_ROUTE_ROUTE_2;
+const char* SuggestionsRoute::name_ = "SuggestionsRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
-void SuggestionsRoute::Register(App &app) {
+void
+SuggestionsRoute::Register(App& app)
+{
   CROW_ROUTE(app, SUGGESTIONS_ROUTE_ROUTE_1).methods("GET"_method)(*this);
   CROW_ROUTE(app, SUGGESTIONS_ROUTE_ROUTE_2).methods("GET"_method)(*this);
 }
@@ -40,8 +47,9 @@ SQLPP_ALIAS_PROVIDER(tokstr);
 // SQLPP_ALIAS_PROVIDER(esugid);
 
 ////////////////////////////////////////////////////////////////////////////////
-SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request &req,
-                                                  int bid) const {
+SuggestionsRoute::Response
+SuggestionsRoute::impl(HttpGet, const Request& req, int bid) const
+{
   const auto q = query_get<std::string>(req.url_params, "q");
   const auto p = query_get<bool>(req.url_params, "p");
   if (p and *p and not q) {
@@ -56,14 +64,15 @@ SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request &req,
 
 ////////////////////////////////////////////////////////////////////////////////
 SuggestionsRoute::Response
-SuggestionsRoute::suggestions(const Request &req, int bid,
-                              const boost::optional<std::string> &q,
-                              bool pat) const {
+SuggestionsRoute::suggestions(const Request& req,
+                              int bid,
+                              const boost::optional<std::string>& q,
+                              bool pat) const
+{
   CROW_LOG_DEBUG << "(SuggestionsRoute) lookup suggestions for project id: "
                  << bid;
   LockedSession session(must_find_session(req));
   auto conn = must_get_connection();
-  session->assert_permission(conn, bid, Permissions::Read);
   const auto project = session->must_find(conn, bid);
   // The project does exist.  If no profile is found, this
   // indicates not a
@@ -76,7 +85,7 @@ SuggestionsRoute::suggestions(const Request &req, int bid,
   j["timestamp"] = 0;
   j["suggestions"] = crow::json::rvalue(crow::json::type::List);
   const auto profile =
-      conn.db()(select(p.timestamp).from(p).where(p.bookid == bid));
+    conn.db()(select(p.timestamp).from(p).where(p.bookid == bid));
   if (profile.empty()) {
     return j;
   }
@@ -92,19 +101,19 @@ SuggestionsRoute::suggestions(const Request &req, int bid,
     auto t2 = t.as(t2_alias);
     // lookup typid of query token
     const auto qidrow = conn.db()(
-        select(t.typid).from(t).where(t.bookid == bid and t.string == query));
+      select(t.typid).from(t).where(t.bookid == bid and t.string == query));
     if (qidrow.empty()) {
       return j;
     }
     const auto qid = qidrow.front().typid;
     auto rows =
-        conn.db()(select(all_of(s), t1.string.as(tokstr), t2.string.as(suggstr))
-                      .from(s.join(t1)
-                                .on(t1.typid == s.typid)
-                                .join(t2)
-                                .on(t2.typid == s.suggestiontypid))
-                      .where(s.bookid == bid && t1.bookid == bid &&
-                             t2.bookid == bid && s.typid == qid));
+      conn.db()(select(all_of(s), t1.string.as(tokstr), t2.string.as(suggstr))
+                  .from(s.join(t1)
+                          .on(t1.typid == s.typid)
+                          .join(t2)
+                          .on(t2.typid == s.suggestiontypid))
+                  .where(s.bookid == bid && t1.bookid == bid &&
+                         t2.bookid == bid && s.typid == qid));
     append_suggestions(conn, j, bid, rows);
   } else if (not pat) {
     j["query"] = "";
@@ -113,12 +122,12 @@ SuggestionsRoute::suggestions(const Request &req, int bid,
     auto t1 = t.as(t1_alias);
     auto t2 = t.as(t2_alias);
     auto rows = conn.db()(
-        select(all_of(s), t1.string.as(tokstr), t2.string.as(suggstr))
-            .from(s.join(t1)
-                      .on(t1.typid == s.typid)
-                      .join(t2)
-                      .on(t2.typid == s.suggestiontypid))
-            .where(s.bookid == bid && t1.bookid == bid && t2.bookid == bid));
+      select(all_of(s), t1.string.as(tokstr), t2.string.as(suggstr))
+        .from(s.join(t1)
+                .on(t1.typid == s.typid)
+                .join(t2)
+                .on(t2.typid == s.suggestiontypid))
+        .where(s.bookid == bid && t1.bookid == bid && t2.bookid == bid));
     append_suggestions(conn, j, bid, rows);
   } else if (pat and q) {
     j["query"] = *q;
@@ -130,29 +139,33 @@ SuggestionsRoute::suggestions(const Request &req, int bid,
     auto t1 = t.as(t1_alias);
     auto t2 = t.as(t2_alias);
     auto rows =
-        conn.db()(select(all_of(s), t1.string.as(tokstr), t2.string.as(suggstr))
-                      .from(s.join(t1)
-                                .on(t1.typid == s.typid)
-                                .join(t2)
-                                .on(t2.typid == s.suggestiontypid)
-                                .join(e)
-                                .on(s.suggestionid == e.suggestionid))
-                      .where(s.bookid == bid && t1.bookid == bid &&
-                             t2.bookid == bid && e.pattern == query));
+      conn.db()(select(all_of(s), t1.string.as(tokstr), t2.string.as(suggstr))
+                  .from(s.join(t1)
+                          .on(t1.typid == s.typid)
+                          .join(t2)
+                          .on(t2.typid == s.suggestiontypid)
+                          .join(e)
+                          .on(s.suggestionid == e.suggestionid))
+                  .where(s.bookid == bid && t1.bookid == bid &&
+                         t2.bookid == bid && e.pattern == query));
     append_suggestions(conn, j, bid, rows);
   }
   return j;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request &req,
-                                                  int pid, int p, int lid,
-                                                  int tid) const {
+SuggestionsRoute::Response
+SuggestionsRoute::impl(HttpGet,
+                       const Request& req,
+                       int pid,
+                       int p,
+                       int lid,
+                       int tid) const
+{
   CROW_LOG_DEBUG << "(SuggestionsRoute) lookup suggestions for project id: "
                  << pid;
   LockedSession session(must_find_session(req));
   auto conn = must_get_connection();
-  session->assert_permission(conn, pid, Permissions::Read);
   const auto project = session->must_find(conn, pid);
   // The project does exist.  If no profile is found, this
   // indicates not a
@@ -165,7 +178,7 @@ SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request &req,
   j["timestamp"] = 0;
   j["suggestions"] = crow::json::rvalue(crow::json::type::List);
   const auto profile =
-      conn.db()(select(ptab.timestamp).from(ptab).where(ptab.bookid == pid));
+    conn.db()(select(ptab.timestamp).from(ptab).where(ptab.bookid == pid));
   if (profile.empty()) {
     return j;
   }
@@ -176,22 +189,24 @@ SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request &req,
   auto t1 = t.as(t1_alias);
   auto t2 = t.as(t2_alias);
   auto rows =
-      conn.db()(select(all_of(s), t1.string.as(tokstr), t2.string.as(suggstr))
-                    .from(s.join(t1)
-                              .on(t1.typid == s.typid)
-                              .join(t2)
-                              .on(t2.typid == s.suggestiontypid))
-                    .where(s.bookid == pid and s.pageid == p and
-                           s.lineid == lid and s.tokenid == tid));
+    conn.db()(select(all_of(s), t1.string.as(tokstr), t2.string.as(suggstr))
+                .from(s.join(t1)
+                        .on(t1.typid == s.typid)
+                        .join(t2)
+                        .on(t2.typid == s.suggestiontypid))
+                .where(s.bookid == pid and s.pageid == p and s.lineid == lid and
+                       s.tokenid == tid));
   append_suggestions(conn, j, pid, rows);
   return j;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class C, class J, class R>
-void append_suggestions(C &conn, J &j, size_t bookid, R &rs) {
+template<class C, class J, class R>
+void
+append_suggestions(C& conn, J& j, size_t bookid, R& rs)
+{
   size_t i = 0;
-  for (const auto &r : rs) {
+  for (const auto& r : rs) {
     j["suggestions"][i]["projectId"] = bookid;
     j["suggestions"][i]["token"] = r.tokstr;
     j["suggestions"][i]["suggestion"] = r.suggstr;
@@ -208,19 +223,19 @@ void append_suggestions(C &conn, J &j, size_t bookid, R &rs) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class C, class J, class R>
-bool lookup_and_append_patterns(C &conn, J &j, size_t bookid, size_t i,
-                                const R &row) {
+template<class C, class J, class R>
+bool
+lookup_and_append_patterns(C& conn, J& j, size_t bookid, size_t i, const R& row)
+{
   tables::Errorpatterns e;
-  auto rs = conn.db()(select(e.pattern, e.ocr)
-                          .from(e)
-                          .where(e.suggestionid == row.suggestionid));
+  auto rs = conn.db()(
+    select(e.pattern, e.ocr).from(e).where(e.suggestionid == row.suggestionid));
   j["suggestions"][i]["ocrPatterns"] =
-      crow::json::rvalue(crow::json::type::List);
+    crow::json::rvalue(crow::json::type::List);
   j["suggestions"][i]["histPatterns"] =
-      crow::json::rvalue(crow::json::type::List);
+    crow::json::rvalue(crow::json::type::List);
   size_t k = 0, l = 0;
-  for (const auto &r : rs) {
+  for (const auto& r : rs) {
     if (r.ocr) {
       // CROW_LOG_DEBUG << "(SuggestionRoute) ocrpattern[" << k
       //                << "]: " << r.pattern;

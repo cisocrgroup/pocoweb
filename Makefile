@@ -7,7 +7,6 @@ include make/modules.make
 include make/external.make
 include make/clean.make
 include make/rest.make
-include make/plugins.make
 include make/test.make
 include make/frontend.make
 

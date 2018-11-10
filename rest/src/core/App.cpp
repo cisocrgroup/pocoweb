@@ -10,16 +10,14 @@ using namespace pcw;
 ////////////////////////////////////////////////////////////////////////////////
 App::App(const char* config)
   : routes_()
-  , plugins_()
   , app_()
-  , cache_(std::make_shared<AppCache>(100, 100, 100))
+  , cache_(std::make_shared<AppCache>(100, 100))
   , config_(std::make_shared<Config>(Config::load(config)))
   , session_store_(std::make_shared<SessionStore>())
   , connection_pool_(std::make_shared<MysqlConnectionPool>(
       config_->db.connections,
       mysqlConnectionConfigFromConfig(*config_)))
-{
-}
+{}
 
 ////////////////////////////////////////////////////////////////////////////////
 App::~App() noexcept
@@ -51,13 +49,11 @@ void
 App::stop() noexcept
 {
   try {
-    // order matters here: first delete the server,
-    // then delete all routes and then close the plugins
+    // Order matters here: first delete the server, then delete all routes.
     if (app_) {
       app_.reset();
     }
     routes_.clear();
-    plugins_.clear();
   } catch (const std::exception& e) {
     CROW_LOG_ERROR << "(App) Error: " << e.what();
   } catch (...) {
@@ -106,22 +102,6 @@ App::log(const Route& route) const
     }
     CROW_LOG_DEBUG << "(App) Registered route " << route.name() << ": " << r
                    << " [" << &route << "]";
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void
-App::register_plugins()
-{
-  assert(config_);
-  if (not app_)
-    app_ = std::make_unique<Route::App>();
-  for (const auto& p : config_->plugins.configs) {
-    auto path = p.second.get<std::string>("path");
-    CROW_LOG_DEBUG << "(App) Registering plugin " << p.first << ": " << path;
-    pcw::Plugin plugin(path);
-    plugin(p.first, *this);
-    plugins_.push_back(std::move(plugin));
   }
 }
 

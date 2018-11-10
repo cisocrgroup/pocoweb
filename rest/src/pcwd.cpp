@@ -12,11 +12,9 @@
 #include "api/SuggestionsRoute.hpp"
 #include "api/SuspiciousWordsRoute.hpp"
 #include "api/TokenRoute.hpp"
-#include "api/UserRoute.hpp"
 #include "api/VersionRoute.hpp"
 #include "core/App.hpp"
 #include "core/Config.hpp"
-#include "core/Plugin.hpp"
 #include "core/Route.hpp"
 #include "crow.h"
 #include <boost/filesystem/operations.hpp>
@@ -75,7 +73,6 @@ run(App& app)
   change_user_and_group(app.config());
   create_base_directory(app.config());
   detach(app.config());
-  app.register_plugins();
   app.Register(std::make_unique<pcw::AdaptiveTokensRoute>());
   app.Register(std::make_unique<pcw::AssignRoute>());
   app.Register(std::make_unique<pcw::BookRoute>());
@@ -90,7 +87,6 @@ run(App& app)
   app.Register(std::make_unique<pcw::SuggestionsRoute>());
   app.Register(std::make_unique<pcw::SuspiciousWordsRoute>());
   app.Register(std::make_unique<pcw::TokenRoute>());
-  app.Register(std::make_unique<pcw::UserRoute>());
   app.Register(std::make_unique<pcw::VersionRoute>());
   app.run();
 }

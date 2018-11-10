@@ -4,18 +4,18 @@
 /*default collate utf8_general_ci;*/
 /*use pocoweb;*/
 
-create table if not exists users (
-    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	name VARCHAR(255) NOT NULL UNIQUE,
-	email VARCHAR(255) NOT NULL,
-	institute VARCHAR(255) NOT NULL,
-	hash BINARY(64),
-	salt BINARY(32),
-	admin BOOLEAN DEFAULT(false) NOT NULL
-);
+-- create table if not exists users (
+--     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+-- 	name VARCHAR(255) NOT NULL UNIQUE,
+-- 	email VARCHAR(255) NOT NULL,
+-- 	institute VARCHAR(255) NOT NULL,
+-- 	hash BINARY(64),
+-- 	salt BINARY(32),
+-- 	admin BOOLEAN DEFAULT(false) NOT NULL
+-- );
 
-CREATE TABLE IF NOT EXISTS BOOKS (
-	BOOKID INT NOT NULL UNIQUE references projects(projectid),
+create table if not exists books (
+	bookid int not null unique references projects(projectid),
 	year int,
 	title varchar(100) not null,
 	author varchar(100) not null,

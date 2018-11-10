@@ -11,7 +11,6 @@
 #include "core/Password.hpp"
 #include "core/Project.hpp"
 #include "core/ProjectBuilder.hpp"
-#include "core/User.hpp"
 #include <boost/optional.hpp>
 #include <crow/logging.h>
 #include <memory>
@@ -30,19 +29,6 @@ to_file_type(const Row& row)
       ft > static_cast<int>(FileType::Max))
     throw std::logic_error("invalid file type");
   return static_cast<FileType>(ft);
-}
-
-template<class U>
-UserSptr
-make_user(const U& users)
-{
-  auto user = std::make_shared<User>(
-    users.name, Password(users.passwd), "", "", users.userid, users.admin);
-  set_if_not_null(users.email,
-                  [user](const std::string& email) { user->email = email; });
-  set_if_not_null(users.institute,
-                  [user](const std::string& inst) { user->institute = inst; });
-  return user;
 }
 
 template<class T, class F>
@@ -102,39 +88,6 @@ select_contents(Db& db,
 }
 
 template<class Db>
-UserSptr
-create_user(Db& db,
-            const std::string& user,
-            const std::string& pw,
-            const std::string& email = "",
-            const std::string& inst = "",
-            bool admin = false);
-
-template<class Db>
-void
-update_user(Db& db, const User& user);
-
-template<class Db>
-UserSptr
-select_user(Db& db, const std::string& name);
-
-template<class Db>
-UserSptr
-select_user(Db& db, int id);
-
-template<class Db>
-std::vector<UserSptr>
-select_all_users(Db& db);
-
-template<class Db>
-void
-delete_user(Db& db, const std::string& name);
-
-template<class Db>
-void
-delete_user(Db& db, int id);
-
-template<class Db>
 ProjectSptr
 insert_project(Db& db, Project& book);
 
@@ -158,7 +111,7 @@ select_project_entry(Db& db, int projectid);
 
 template<class Db>
 std::vector<ProjectEntry>
-select_all_project_entries(Db& db, const User& owner);
+select_all_project_entries(Db& db, int owner);
 
 template<class Db>
 boost::optional<BookData>
@@ -166,7 +119,7 @@ select_book_data(Db& db, int bookid);
 
 template<class Db>
 std::vector<std::pair<BookData, ProjectEntry>>
-select_all_projects(Db& db, const User& user);
+select_all_projects(Db& db, int userid);
 
 template<class Db>
 void
@@ -174,7 +127,7 @@ update_project_owner(Db& db, int projectid, int owner);
 
 template<class Db>
 BookSptr
-select_book(Db& db, const User& owner, int bookid);
+select_book(Db& db, int owner, int bookid);
 
 template<class Db>
 ProjectSptr
@@ -187,112 +140,6 @@ update_line(Db& db, const Line& line);
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
-pcw::UserSptr
-pcw::create_user(Db& db,
-                 const std::string& name,
-                 const std::string& pw,
-                 const std::string& email,
-                 const std::string& inst,
-                 bool admin)
-{
-  using namespace sqlpp;
-  auto password = Password::make(pw);
-  tables::Users users;
-  auto stmnt = insert_into(users).set(users.name = name,
-                                      users.email = email,
-                                      users.institute = inst,
-                                      users.passwd = password.str(),
-                                      users.admin = admin);
-  auto id = db(stmnt);
-  return std::make_shared<User>(name, password, email, inst, id);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template<class Db>
-void
-pcw::update_user(Db& db, const User& user)
-{
-  using namespace sqlpp;
-  tables::Users users;
-  // do not change user's id
-  auto stmnt = update(users)
-                 .set(users.passwd = user.password.str(),
-                      users.name = user.name,
-                      users.email = user.email,
-                      users.institute = user.institute)
-                 .where(users.userid == user.id());
-  db(stmnt);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template<class Db>
-pcw::UserSptr
-pcw::select_user(Db& db, const std::string& name)
-{
-  using namespace sqlpp;
-  tables::Users users;
-  auto stmnt = select(all_of(users)).from(users).where(users.name == name);
-  auto res = db(stmnt);
-  if (not res.empty())
-    return pcw::detail::make_user(res.front());
-  return nullptr;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template<class Db>
-pcw::UserSptr
-pcw::select_user(Db& db, int id)
-{
-  using namespace sqlpp;
-  tables::Users users;
-  auto stmnt = select(all_of(users)).from(users).where(users.userid == id);
-  auto res = db(stmnt);
-  if (not res.empty())
-    return pcw::detail::make_user(res.front());
-  return nullptr;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template<class Db>
-std::vector<pcw::UserSptr>
-pcw::select_all_users(Db& db)
-{
-  using namespace sqlpp;
-  std::vector<UserSptr> res;
-  tables::Users users;
-  const auto stmnt = select(all_of(users)).from(users).unconditionally();
-  // const auto rows = db(stmnt);
-  // while (not rows.empty()) {
-  for (const auto& row : db(stmnt)) {
-    res.push_back(detail::make_user(row));
-  }
-  return res;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template<class Db>
-void
-pcw::delete_user(Db& db, const std::string& name)
-{
-  using namespace sqlpp;
-  tables::Users users;
-  auto stmnt = remove_from(users).where(users.name == name);
-  db(stmnt);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template<class Db>
-void
-pcw::delete_user(Db& db, int id)
-{
-  using namespace sqlpp;
-  tables::Users users;
-  auto stmnt = remove_from(users).where(users.userid == id);
-  db(stmnt);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template<class Db>
 void
 pcw::detail::insert_project_info_and_set_id(Db& db, Project& view)
 {
@@ -301,7 +148,7 @@ pcw::detail::insert_project_info_and_set_id(Db& db, Project& view)
   auto id =
     db(insert_into(projects).set(projects.origin = view.origin().id(),
                                  projects.pages = static_cast<int>(view.size()),
-                                 projects.owner = view.owner().id()));
+                                 projects.owner = view.owner()));
   view.set_id(id);
 }
 
@@ -334,12 +181,11 @@ pcw::detail::insert_book_info_and_set_id(Db& db, Book& book)
   using namespace sqlpp;
   tables::Projects projects;
   auto id = db(insert_into(projects).set(projects.origin = 0,
-                                         projects.owner = book.owner().id(),
+                                         projects.owner = book.owner(),
                                          projects.pages = book.size()));
   CROW_LOG_DEBUG << "(insert_book_info_and_set_id) id: " << id;
   book.set_id(id);
-  db(
-    update(projects).set(projects.origin = id).where(projects.projectid == id));
+  db(update(projects).set(projects.origin = id).where(projects.id == id));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -506,9 +352,8 @@ pcw::select_project_entry(Db& db, int projectid)
 {
   using namespace sqlpp;
   tables::Projects projects;
-  auto stmnt = select(all_of(projects))
-                 .from(projects)
-                 .where(projects.projectid == projectid);
+  auto stmnt =
+    select(all_of(projects)).from(projects).where(projects.id == projectid);
   auto res = db(stmnt);
   if (not res.empty())
     return detail::make_project_entry(res.front());
@@ -518,14 +363,14 @@ pcw::select_project_entry(Db& db, int projectid)
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
 std::vector<std::pair<pcw::BookData, pcw::ProjectEntry>>
-pcw::select_all_projects(Db& db, const User& user)
+pcw::select_all_projects(Db& db, int userid)
 {
   using namespace sqlpp;
   tables::Projects projects;
   tables::Books books;
   auto stmnt = select(all_of(projects), all_of(books))
                  .from(books.join(projects).on(books.bookid == projects.origin))
-                 .where(projects.owner == user.id());
+                 .where(projects.owner == userid);
   std::vector<std::pair<BookData, ProjectEntry>> data;
   for (const auto& row : db(stmnt)) {
     const auto bookdata = detail::make_book_data(row);
@@ -541,7 +386,7 @@ pcw::ProjectEntry
 pcw::detail::make_project_entry(const Row& row) noexcept
 {
   ProjectEntry entry;
-  set_if_not_null(row.projectid, [&](const auto pid) {
+  set_if_not_null(row.id, [&](const auto pid) {
     return entry.projectid = static_cast<int>(pid);
   });
   set_if_not_null(row.owner, [&](const auto owner) {
@@ -601,14 +446,14 @@ pcw::update_project_owner(Db& db, int projectid, int owner)
   tables::Projects projects;
   auto stmnt = update(projects)
                  .set(projects.owner = owner)
-                 .where(projects.projectid == projectid);
+                 .where(projects.id == projectid);
   db(stmnt);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 template<class Db>
 pcw::BookSptr
-pcw::select_book(Db& db, const User& owner, int bookid)
+pcw::select_book(Db& db, int owner, int bookid)
 {
   auto book_data = select_book_data(db, bookid);
   if (not book_data)
@@ -766,7 +611,7 @@ delete_project(Db& db, int pid)
   tables::Types t;
   db(remove_from(b).where(b.bookid == pid));
   db(remove_from(pp).where(pp.projectid == pid));
-  db(remove_from(p).where(p.projectid == pid));
+  db(remove_from(p).where(p.id == pid));
   db(remove_from(ppp).where(ppp.bookid == pid));
   db(remove_from(pages).where(pages.bookid == pid));
   db(remove_from(l).where(l.bookid == pid));
