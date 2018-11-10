@@ -26,7 +26,7 @@ Route::get_userid(const Request& request) const noexcept
                  std::regex_constants::optimize);
   // raw_url or url
   std::smatch m;
-  if (not std::regex_search(request.url, m, re)) {
+  if (not std::regex_search(request.raw_url, m, re)) {
     return std::make_pair(0, "");
   }
   CROW_LOG_DEBUG << "(Route::get_userid) userid: " << m[1];
