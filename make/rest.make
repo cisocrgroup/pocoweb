@@ -22,7 +22,6 @@ CORE_OBJS += rest/src/core/Searcher.o
 CORE_OBJS += rest/src/core/Session.o
 CORE_OBJS += rest/src/core/SessionDirectory.o
 CORE_OBJS += rest/src/core/SessionStore.o
-CORE_OBJS += rest/src/core/User.o
 CORE_OBJS += rest/src/core/WagnerFischer.o
 CORE_OBJS += rest/src/core/XmlFile.o
 CORE_OBJS += rest/src/core/jsonify.o
@@ -43,7 +42,6 @@ API_OBJS += rest/src/api/SplitImagesRoute.o
 API_OBJS += rest/src/api/SplitRoute.o
 API_OBJS += rest/src/api/SuggestionsRoute.o
 API_OBJS += rest/src/api/SuspiciousWordsRoute.o
-API_OBJS += rest/src/api/UserRoute.o
 API_OBJS += rest/src/api/VersionRoute.o
 API_OBJS += rest/src/utils/Base64.o
 
