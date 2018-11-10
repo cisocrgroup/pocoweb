@@ -16,6 +16,24 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
+int
+Route::get_userid(const Request& request) const noexcept
+{
+  // helps if this is fast, cause it is called on each request
+  static const auto re =
+    std::regex("[?&]userid=([0-9]+)",
+               std::regex_constants::ECMAScript | std::regex_constants::icase |
+                 std::regex_constants::optimize);
+  // raw_url or url
+  std::smatch m;
+  if (not std::regex_search(request.url, m, re)) {
+    return 0;
+  }
+  CROW_LOG_DEBUG << "(Route::get_userid) userid: " << m[1];
+  return std::stoi(m[1]);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 SessionPtr
 Route::new_session(int user) const
 {
