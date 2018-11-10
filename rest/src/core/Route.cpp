@@ -19,18 +19,17 @@ using namespace pcw;
 std::pair<int, std::string>
 Route::get_userid(const Request& request) const noexcept
 {
-  // helps if this is fast, cause it is called on each request
-  static const auto re =
-    std::regex("[?&]userid=([0-9]+)",
-               std::regex_constants::ECMAScript | std::regex_constants::icase |
-                 std::regex_constants::optimize);
-  // raw_url or url
-  std::smatch m;
-  if (not std::regex_search(request.raw_url, m, re)) {
-    return std::make_pair(0, "");
+  static const std::string userid("userid");
+  const auto idstr = request.url_params.get(userid);
+  if (idstr == nullptr) {
+    return std::make_pair(0, "0");
   }
-  CROW_LOG_DEBUG << "(Route::get_userid) userid: " << m[1];
-  return std::make_pair(std::stoi(m[1]), m[1]);
+  CROW_LOG_DEBUG << "(Route::get_userid) userid: " << idstr;
+  const auto id = atoi(idstr);
+  if (id == 0) {
+    return std::make_pair(0, "0");
+  }
+  return std::make_pair(id, std::string(idstr));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
