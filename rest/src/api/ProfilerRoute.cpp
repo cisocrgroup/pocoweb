@@ -63,7 +63,7 @@ ProfilerRoute::Response
 ProfilerRoute::impl(HttpGet, const Request& req, int bid) const
 {
   CROW_LOG_DEBUG << "(ProfilerRoute) lookup profile for project id: " << bid;
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   Json j;
   j["projectId"] = bid;
@@ -88,7 +88,7 @@ ProfilerRoute::impl(HttpPost, const Request& req, int bid) const
 {
   // query book
   CROW_LOG_DEBUG << "(ProfilerRoute) order profile for project id: " << bid;
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
   const auto book =
@@ -279,7 +279,7 @@ ProfilerRoute::impl(HttpGet, const Request& req) const
     url = "local";
   }
   CROW_LOG_DEBUG << "(ProfilerRoute) get languages url=" << *url;
-  // LockedSession session(must_find_session(req));
+  // LockedSession session(get_session(req));
   ProfilerUptr profiler;
   if (*url == "local")
     profiler.reset(new LocalProfiler(nullptr, get_config()));

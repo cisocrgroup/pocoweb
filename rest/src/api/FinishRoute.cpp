@@ -38,7 +38,7 @@ FinishRoute::finish(const Request& req, int bid) const
   CROW_LOG_DEBUG << "(FinishRoute::finish) body: " << req.body;
   const auto data = crow::json::load(req.body);
   auto conn = must_get_connection();
-  const LockedSession session(must_find_session(req));
+  const LockedSession session(get_session(req));
   const auto project = session->must_find(conn, bid);
   const auto pentry = pcw::select_project_entry(conn.db(), bid);
   if (not pentry)

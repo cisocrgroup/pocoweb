@@ -41,7 +41,7 @@ AdaptiveTokensRoute::impl(HttpGet, const Request& req, int bid) const
 {
   CROW_LOG_DEBUG
     << "(AdaptiveTokensRoute) lookup adaptive tokens for project id: " << bid;
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   Json j;
   tables::Types t;

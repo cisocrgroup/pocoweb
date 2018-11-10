@@ -16,7 +16,7 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-int
+std::pair<int, std::string>
 Route::get_userid(const Request& request) const noexcept
 {
   // helps if this is fast, cause it is called on each request
@@ -27,46 +27,25 @@ Route::get_userid(const Request& request) const noexcept
   // raw_url or url
   std::smatch m;
   if (not std::regex_search(request.url, m, re)) {
-    return 0;
+    return std::make_pair(0, "");
   }
   CROW_LOG_DEBUG << "(Route::get_userid) userid: " << m[1];
-  return std::stoi(m[1]);
+  return std::make_pair(std::stoi(m[1]), m[1]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 SessionPtr
-Route::new_session(int user) const
+Route::get_session(const crow::request& request) const
 {
-  assert(session_store_);
-  return session_store_->new_session(user, cache_, get_config());
-}
-
-////////////////////////////////////////////////////////////////////////////////
-SessionPtr
-Route::find_session(const crow::request& request) const
-{
-  static const auto re = std::regex("[Pp]ocoweb ([a-z]+)");
-  const auto auth = request.get_header_value("Authorization");
-  CROW_LOG_DEBUG << "(Route::find_session) Authorization: " << auth;
-  std::smatch m;
-  if (not std::regex_match(auth, m, re))
+  const auto id = get_userid(request);
+  if (id.first == 0) {
     return nullptr;
-  const std::string sid(m[1]);
-  CROW_LOG_DEBUG << "(Route::find_session) SID: `" << sid << "` (" << sid.size()
-                 << ")";
-  if (sid.size() != Session::SESSION_ID_LENGTH)
-    return nullptr;
+  }
   assert(session_store_);
-  return session_store_->find_session(sid);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-SessionPtr
-Route::must_find_session(const crow::request& request) const
-{
-  auto session = find_session(request);
-  if (not session)
-    THROW(Forbidden, "(Route) Not logged in");
+  const auto session = session_store_->find_session(id.second);
+  if (session == nullptr) {
+    return session_store_->new_session(id.first, cache_, get_config());
+  }
   return session;
 }
 

@@ -42,7 +42,7 @@ PageRoute::Register(App& app)
 Route::Response
 PageRoute::impl(HttpGet, const Request& req, int bid, int pid) const
 {
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   CROW_LOG_DEBUG << "(PageRoute) searching for book id: " << bid
                  << " page id: " << pid;
@@ -55,7 +55,7 @@ PageRoute::impl(HttpGet, const Request& req, int bid, int pid) const
 Route::Response
 PageRoute::impl(HttpGet, const Request& req, int bid) const
 {
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   auto book = session->must_find(conn, bid);
   CROW_LOG_DEBUG << "(PageRoute) found project id: " << book->id();
@@ -92,7 +92,7 @@ PageRoute::impl(HttpGet, const Request& req, int bid) const
 Route::Response
 PageRoute::impl(HttpGet, const Request& req, int bid, int pid, int val) const
 {
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   auto book = session->must_find(conn, bid);
   if (strcasestr(req.url.data(), "/next/"))

@@ -43,7 +43,7 @@ SplitRoute::split(const Request& req, int bid) const
   CROW_LOG_DEBUG << "(SplitRoute::split) body: " << req.body;
   auto data = crow::json::load(req.body);
   auto conn = must_get_connection();
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto proj = session->must_find(conn, bid);
   if (not proj->is_book())
     THROW(BadRequest, "cannot split project: only books can be split");

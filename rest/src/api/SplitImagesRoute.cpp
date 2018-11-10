@@ -40,7 +40,7 @@ SplitImagesRoute::impl(HttpGet,
                        int tid) const
 {
   const auto json = crow::json::load(req.body);
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto line = session->must_find(conn, bid, pid, lid);
   return create_split_images(*session, *line, tid);

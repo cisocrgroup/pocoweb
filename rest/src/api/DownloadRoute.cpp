@@ -41,7 +41,7 @@ DownloadRoute::download(const Request& req, int bid) const
 {
   CROW_LOG_DEBUG << "(DownloadRoute::download) downloading project id: " << bid;
   auto conn = must_get_connection();
-  const LockedSession session(must_find_session(req));
+  const LockedSession session(get_session(req));
   const auto project = session->must_find(conn, bid);
   Archiver archiver(*project, conn, get_config());
   auto ar = archiver();

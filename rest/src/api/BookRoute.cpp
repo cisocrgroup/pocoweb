@@ -43,7 +43,7 @@ BookRoute::Register(App& app)
 Route::Response
 BookRoute::impl(HttpGet, const Request& req) const
 {
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   // no permissions check since all loaded projectes are owned by the user
   const auto projects = select_all_projects(conn.db(), session->user());
@@ -65,7 +65,7 @@ BookRoute::impl(HttpGet, const Request& req) const
 Route::Response
 BookRoute::impl(HttpPost, const Request& req) const
 {
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   // create new bookdir
   BookDirectoryBuilder dir(get_config());
@@ -135,7 +135,7 @@ update_book_data(pcw::Book& book, const crow::json::rvalue& data)
 Route::Response
 BookRoute::impl(HttpGet, const Request& req, int bid) const
 {
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   auto book = session->must_find(conn, bid);
   Json j;
@@ -148,7 +148,7 @@ BookRoute::impl(HttpPost, const Request& req, int bid) const
 {
   // CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
   auto data = crow::json::load(req.body);
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto view = session->must_find(conn, bid);
   if (not view->is_book())
@@ -166,7 +166,7 @@ BookRoute::impl(HttpPost, const Request& req, int bid) const
 Route::Response
 BookRoute::impl(HttpDelete, const Request& req, int bid) const
 {
-  const LockedSession session(must_find_session(req));
+  const LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
   MysqlCommiter commiter(conn);

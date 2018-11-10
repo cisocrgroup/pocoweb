@@ -35,7 +35,7 @@ LineRoute::Register(App& app)
 Route::Response
 LineRoute::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
 {
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   auto line = session->must_find(conn, bid, pid, lid);
   Json j;
@@ -50,7 +50,7 @@ LineRoute::impl(HttpPost, const Request& req, int pid, int p, int lid) const
   const auto c = get<std::string>(json, "correction");
   if (not c)
     THROW(BadRequest, "(LineRoute) missing correction data");
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   auto line = session->must_find(conn, pid, p, lid);
   return correct(conn, *line, *c);
@@ -61,7 +61,7 @@ Route::Response
 LineRoute::impl(HttpGet, const Request& req, int pid, int p, int lid, int tid)
   const
 {
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   auto line = session->must_find(conn, pid, p, lid);
   auto token = find_token(*line, tid);
@@ -81,7 +81,7 @@ LineRoute::impl(HttpPost, const Request& req, int pid, int p, int lid, int tid)
   const auto c = get<std::string>(json, "correction");
   if (not c)
     THROW(BadRequest, "(LineRoute) missing correction data");
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   auto line = session->must_find(conn, pid, p, lid);
   return correct(conn, *line, tid, *c);

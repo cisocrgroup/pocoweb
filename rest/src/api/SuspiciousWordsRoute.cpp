@@ -41,7 +41,7 @@ SuspiciousWordsRoute::impl(HttpGet, const Request& req, int bid) const
 {
   CROW_LOG_DEBUG
     << "(SuspiciousWordsRoute) lookup suspicious words for project id: " << bid;
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
   tables::Suggestions s;
@@ -58,7 +58,7 @@ SuspiciousWordsRoute::impl(HttpGet, const Request& req, int bid, int pid) const
 {
   CROW_LOG_DEBUG
     << "(SuspiciousWordsRoute) lookup suspicious words for project id: " << bid;
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
   tables::Suggestions s;
@@ -80,7 +80,7 @@ SuspiciousWordsRoute::impl(HttpGet,
 {
   CROW_LOG_DEBUG
     << "(SuspiciousWordsRoute) lookup suspicious words for project id: " << bid;
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
   tables::Suggestions s;

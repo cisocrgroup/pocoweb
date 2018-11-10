@@ -77,9 +77,7 @@ public:
   }
 
 protected:
-  SessionPtr new_session(int user) const;
-  SessionPtr find_session(const Request& request) const;
-  SessionPtr must_find_session(const Request& request) const;
+  SessionPtr get_session(const Request& request) const;
   void delete_session(const Session& session) const;
   const Config& get_config() const noexcept { return *config_; }
   MysqlConnection get_connection() const;
@@ -88,7 +86,7 @@ protected:
   static std::string extract_content(const crow::request& request);
 
 private:
-  int get_userid(const Request& request) const noexcept;
+  std::pair<int, std::string> get_userid(const Request& request) const noexcept;
   static std::string extract_multipart(const Request& req,
                                        const std::string& boundary);
   static std::string extract_raw(const Request& req);

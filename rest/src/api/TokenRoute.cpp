@@ -35,7 +35,7 @@ TokenRoute::Register(App& app)
 Route::Response
 TokenRoute::impl(HttpGet, const Request& req, int bid, int pid) const
 {
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   auto page = session->must_find(conn, bid, pid);
   std::vector<Token> tokens;
@@ -54,7 +54,7 @@ TokenRoute::impl(HttpGet, const Request& req, int bid, int pid) const
 Route::Response
 TokenRoute::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
 {
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   auto line = session->must_find(conn, bid, pid, lid);
   Json j;

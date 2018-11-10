@@ -71,7 +71,7 @@ SuggestionsRoute::suggestions(const Request& req,
 {
   CROW_LOG_DEBUG << "(SuggestionsRoute) lookup suggestions for project id: "
                  << bid;
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
   // The project does exist.  If no profile is found, this
@@ -164,7 +164,7 @@ SuggestionsRoute::impl(HttpGet,
 {
   CROW_LOG_DEBUG << "(SuggestionsRoute) lookup suggestions for project id: "
                  << pid;
-  LockedSession session(must_find_session(req));
+  LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, pid);
   // The project does exist.  If no profile is found, this

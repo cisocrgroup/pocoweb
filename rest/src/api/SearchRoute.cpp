@@ -62,7 +62,7 @@ SearchRoute::search(const Request& req,
 {
   CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
                  << " query string q: " << q;
-  const LockedSession session(must_find_session(req));
+  const LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
   Searcher searcher(*project);
@@ -81,7 +81,7 @@ SearchRoute::search(const Request& req,
 {
   CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
                  << " for error pattern q: " << q;
-  const LockedSession session(must_find_session(req));
+  const LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
   tables::Errorpatterns e;
