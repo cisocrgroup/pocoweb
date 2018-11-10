@@ -44,15 +44,15 @@ PROFILER_TESTS += rest/src/profiler/tests/TestRemoteProfilerTemplate.test
 TESTS = $(UTILS_TESTS) $(CORE_TESTS) $(DATABASE_TESTS) $(PARSER_TESTS) $(PROFILER_TESTS)
 RUN_TESTS = $(patsubst %.test,%.run,$(TESTS))
 %.test: %.o $(LIBS)
-	$(call ECHO,$@)
+	$V $(call ECHO,$@)
 	$V $(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS) -l boost_unit_test_framework
 %.run: %.test
-	$(call ECHO,$@)
-	$V echo "# $@" >> tests.log
+	$V $(call ECHO,$@)
+	@echo "# $@" >> tests.log
 	$V $< >> tests.log 2>&1
 test: tests.log $(RUN_TESTS)
 tests.log:
-	$V echo "# tests:" $(shell date) > $@
+	@echo "# tests:" $(shell date) > $@
 
 DEPS += $(patsubst %.test,%.d,$(TESTS))
 TESTOBJS += $(patsubst %.test,%.o,$(TESTS))
