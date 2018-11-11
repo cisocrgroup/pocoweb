@@ -37,9 +37,6 @@ SessionPtr
 Route::get_session(const crow::request& request) const
 {
   const auto id = get_userid(request);
-  if (id.first == 0) {
-    return nullptr;
-  }
   assert(session_store_);
   const auto session = session_store_->find_session(id.second);
   if (session == nullptr) {
