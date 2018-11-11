@@ -23,7 +23,8 @@ global $SID;
 if ($SID === NULL) {
 	frontend_render_info_div("Welcome to PoCoWeb. Please <a href='login.php'>login</a>");
 } else if (!$SID["user"]["admin"]) {
-	frontend_render_warning_div("You are not allowed to do user administration");
+    $sid = json_encode($SID);
+	frontend_render_warning_div("You are not allowed to do user administration ($sid)");
 } else {
 	frontend_render_users_div();
 }
