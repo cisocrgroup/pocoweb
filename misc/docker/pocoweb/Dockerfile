@@ -15,7 +15,6 @@ RUN git clone https://git@github.com/cisocrgroup/pocoweb.git \
 	make -j $(nproc) V="" PCW_FRONTEND_DIR=/www-data install-frontend &&\
 	mkdir -p /apps &&\
 	cp /pocoweb/pcwd /apps/pocoweb &&\
-	cp /pocoweb/lib/simple-login.so /apps/simple-login.so &&\
 	cp /pocoweb/db/tables.sql /apps/tables.sql &&\
 	cd / &&\
 	rm -rf /pocoweb
