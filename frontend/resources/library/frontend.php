@@ -779,7 +779,11 @@ function frontend_render_adaptive_tokens_div($pid) {
 
 function frontend_render_account_div($user) {
 	echo '<div id="user-account" class="container-fluid">', "\n";
-	echo '<h2>Account for user #', $user['id'], '</h2>', "\n";
+    if ($user['admin']) {
+        echo '<h2>Account for user #', $user['id'], ' (Administrator)</h2>', "\n";
+    } else {
+        echo '<h2>Account for user #', $user['id'], '</h2>', "\n";
+    }
 	echo '<form action="account.php?update" method="post">', "\n";
 	// Name
 	echo '<div class="form-group">', "\n";
