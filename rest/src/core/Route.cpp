@@ -36,12 +36,17 @@ Route::get_userid(const Request& request) const noexcept
 SessionPtr
 Route::get_session(const crow::request& request) const
 {
+  CROW_LOG_DEBUG << "(Route::get_session) BEGIN";
   const auto id = get_userid(request);
+  CROW_LOG_DEBUG << "(Route::get_session) ID: " << id.first << "," << id.second;
   assert(session_store_);
+  CROW_LOG_DEBUG << "(Route::get_session) SEARCHING";
   const auto session = session_store_->find_session(id.second);
   if (session == nullptr) {
+    CROW_LOG_DEBUG << "(Route::get_session) CREATING NEW SESSION";
     return session_store_->new_session(id.first, cache_, get_config());
   }
+  CROW_LOG_DEBUG << "(Route::get_session) RETURN EXISTING SESSION";
   return session;
 }
 
