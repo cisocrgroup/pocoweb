@@ -6,7 +6,7 @@ COPY dependencies /dependencies
 RUN apt-get update && apt-get install -y $(cat /dependencies)
 
 # pocoweb
-ENV POCOWEB_CHECKOUT_BRANCH rmauth
+ENV POCOWEB_CHECKOUT_BRANCH devel
 RUN git clone https://git@github.com/cisocrgroup/pocoweb.git \
 	--single-branch -b $POCOWEB_CHECKOUT_BRANCH &&\
 	cd /pocoweb &&\
