@@ -125,16 +125,20 @@ function backend_get_users() {
 	return $api;
 }
 
-function backend_create_user($post) {
-	if (isset($post["admin"]) && $post["admin"] == "on") {
-		$post["admin"] = true;
-	} else {
-		$post["admin"] = false;
-	}
+function backend_create_user($name, $email, $institute, $admin, $pass) {
+    $data = array(
+        'user' => array(
+            'name' => $name,
+            'email' => $email,
+            'institute' => $institute,
+            'admin' => $admin,
+        ),
+        'password' => $pass,
+    );
 	$api = new Api(backend_get_users_route());
 	global $SID;
 	$api->set_session_id($SID);
-	$api->post_request($post);
+	$api->post_request($data);
 	return $api;
 }
 

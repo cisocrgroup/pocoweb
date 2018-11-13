@@ -7,7 +7,13 @@ if (isset($_GET["create"])) {
 	if ($_POST["pass"] != $_POST["pass2"]) {
 		frontend_render_error_div("Error: could not create user $_POST[name]: passwords do not match");
 	} else {
-		$api = backend_create_user($_POST);
+        $admin = isset($_POST['admin']) && $_POST['admin'] == "on";
+		$api = backend_create_user(
+            $_POST['name'],
+            $_POST['email'],
+            $_POST['institute'],
+            $admin,
+            $_POST['pass']);
 		$status = $api->get_http_status_code();
 		if ($status == 200) {
 			frontend_render_success_div("Successfully created new user");
