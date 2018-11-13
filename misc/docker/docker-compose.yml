@@ -52,11 +52,8 @@ services:
     volumes:
       - /home/flo/data/srv/pocoweb/db-data:/var/lib/mysql
     restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=example
-      - MYSQL_USER=pocoweb
-      - MYSQL_PASSWORD=pocoweb1998
-      - MYSQL_DATABASE=pocoweb
+    env_file:
+      - env.sh
 
   # pocoweb authentification and user management
   pcwauth:
@@ -69,7 +66,5 @@ services:
     depends_on:
       - db
     restart: always
-    environment:
-      - PCWAUTH_DB=pocoweb:pocoweb1998@(db)/pocoweb
-      - PCWAUTH_POCOWEB=http://pocoweb:8080
-      - PCWAUTH_HOST=:8081
+    env_file:
+      - env.sh
