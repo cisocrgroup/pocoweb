@@ -20,7 +20,7 @@ $config = array(
 	),
 	"backend" => array(
 	    "internalURL"    => "http://pcwauth:8081",
-		"restURL"        => "http://localhost/rest",
+		"externalURL"        => "http://localhost/rest",
 		"profilerWaitMs" => 30000,
 		"routes"         => array(
 			"apiVersion"          => "/api-version",

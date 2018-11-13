@@ -34,7 +34,7 @@ pcw.Api = {
 	setupForGetVersion: function() {
 		this.method = "GET";
 		this.post = null;
-		this.url = pcw.config.backend.restURL +
+		this.url = pcw.config.backend.externalURL +
 		    pcw.config.backend.routes.apiVersion;
 		this.acceptedStatuses = [200];
 	},
@@ -42,12 +42,12 @@ pcw.Api = {
 		this.method = "GET";
 		this.post = null;
 		this.url =
-		    pcw.config.backend.restURL + pcw.config.backend.routes.login;
+		    pcw.config.backend.externalURL + pcw.config.backend.routes.login;
 		this.acceptedStatuses = [200];
 	},
 	setupForCorrectWord: function(pid, p, lid, tid, c) {
 		this.method = "POST";
-		this.url = pcw.config.backend.restURL +
+		this.url = pcw.config.backend.externalURL +
 		    pcw.config.backend.routes.correctWord;
 		this.url = this.url.replace('%d', pid);
 		this.url = this.url.replace('%d', p);
@@ -59,7 +59,7 @@ pcw.Api = {
 	setupForCorrectLine: function(pid, p, lid, c) {
 		this.method = "POST";
 		this.post = {correction: c};
-		this.url = pcw.config.backend.restURL +
+		this.url = pcw.config.backend.externalURL +
 		    pcw.config.backend.routes.correctLine;
 		this.url = this.url.replace('%d', pid);
 		this.url = this.url.replace('%d', p);
@@ -70,7 +70,7 @@ pcw.Api = {
 		this.method = "GET";
 		this.post = null;
 		this.url =
-		    pcw.config.backend.restURL + pcw.config.backend.routes.search;
+		    pcw.config.backend.externalURL + pcw.config.backend.routes.search;
 		this.url = this.url.replace('%d', pid);
 		this.url = this.url.replace('%s', encodeURI(q));
 		this.url = this.url.replace('%d', '0');
@@ -79,7 +79,7 @@ pcw.Api = {
 	setupForOrderProfile: function(pid) {
 		this.method = "POST";
 		this.post = {};
-		this.url = pcw.config.backend.restURL +
+		this.url = pcw.config.backend.externalURL +
 		    pcw.config.backend.routes.orderProfile;
 		this.url = this.url.replace('%d', pid);
 		// 202 -> accepted
@@ -88,7 +88,7 @@ pcw.Api = {
 	setupForSearchSuggestions: function(pid, q) {
 		this.method = "GET";
 		this.post = null;
-		this.url = pcw.config.backend.restURL +
+		this.url = pcw.config.backend.externalURL +
 		    pcw.config.backend.routes.searchSuggestions;
 		this.url = this.url.replace('%d', pid);
 		this.url = this.url.replace('%s', encodeURI(q));
@@ -98,7 +98,7 @@ pcw.Api = {
 	setupForGetAllSuggestions: function(pid) {
 		this.method = "GET";
 		this.post = null;
-		this.url = pcw.config.backend.restURL +
+		this.url = pcw.config.backend.externalURL +
 		    pcw.config.backend.routes.getAllSuggestions;
 		this.url = this.url.replace('%d', pid);
 		this.acceptedStatuses = [200]
@@ -106,7 +106,7 @@ pcw.Api = {
 	setupForGetSuggestions: function(pid, p, lid, tid) {
 		this.method = "GET";
 		this.post = null;
-		this.url = pcw.config.backend.restURL +
+		this.url = pcw.config.backend.externalURL +
 		    pcw.config.backend.routes.getSuggestions;
 		this.url = this.url.replace('%d', pid);
 		this.url = this.url.replace('%d', p);
@@ -117,7 +117,7 @@ pcw.Api = {
 	setupForGetSuspiciousWords: function(pid, p, lid) {
 		this.method = "GET";
 		this.post = null;
-		this.url = pcw.config.backend.restURL +
+		this.url = pcw.config.backend.externalURL +
 		    pcw.config.backend.routes.getSuspiciousWords;
 		this.url = this.url.replace('%d', pid);
 		this.url = this.url.replace('%d', p);
@@ -127,7 +127,7 @@ pcw.Api = {
 	setupForGetLanguages: function(url) {
 		this.method = "GET";
 		this.post = null;
-		this.url = pcw.config.backend.restURL +
+		this.url = pcw.config.backend.externalURL +
 		    pcw.config.backend.routes.languages;
 		this.url = this.url.replace('%s', encodeURI(url));
 		this.acceptedStatuses = [200];
