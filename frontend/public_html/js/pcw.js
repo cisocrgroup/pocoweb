@@ -29,7 +29,6 @@ $(function() {
 				} else {
 					if (log) alert(log);
 				}
-
 			});
 	    });
 
