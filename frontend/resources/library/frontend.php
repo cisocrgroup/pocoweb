@@ -802,12 +802,12 @@ function frontend_render_account_div($user) {
 	// Password 1
 	echo '<div class="form-group">', "\n";
 	echo '<label for="password">Password</label>', "\n";
-	echo '<input name="pass1" type="password" placeholder="Change password" class="form-control"/>', "\n";
+	echo '<input name="pass1" type="password" placeholder="Change password" value="__NULL__" class="form-control"/>', "\n";
 	echo '</div>', "\n";
 	// Password 2
 	echo '<div class="form-group">', "\n";
 	echo '<label for="password">Password (retype)</label>', "\n";
-	echo '<input name="pass2" type="password" placeholder="Change password" class="form-control"/>', "\n";
+	echo '<input name="pass2" type="password" placeholder="Change password" value="__NULL__" class="form-control"/>', "\n";
 	echo '</div>', "\n";
 	// update button
 	echo '<button class="btn btn-primary" title="update account settings" type="submit">', "\n";

@@ -368,23 +368,21 @@ function backend_get_update_user_route($uid) {
 }
 
 function backend_update_user($uid, $name, $email, $institute, $pass) {
+    $data = array(
+        'user' => array (
+            'id' => $uid,
+            'name' => $name,
+            'email' => $name,
+            'institute' => $institute,
+        ),
+    );
+    if ($pass != "") {
+        $data['password'] = $pass;
+    }
 	global $SID;
 	$api = new Api(backend_get_update_user_route($uid));
-	$api->set_session_id($SID);
-	$api->get_request();
-	$data = array(
-		'name' => $name,
-		'email' => $email,
-		'institute' => $institute,
-	);
-	# set password only if it is not empty
-	if ($pass != "") {
-			$data['pass'] = $pass;
-	}
-	$api = new Api(backend_get_update_user_route($uid));
-	global $SID;
-	$api->set_session_id($SID);
-	$api->post_request($data);
-	return $api;
+    $api->set_session_id($SID);
+    $api->put_request($data);
+    return $api;
 }
 ?>

@@ -41,6 +41,20 @@ class Api {
 		return TRUE;
 	}
 
+	public function put_request($data) {
+        curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($this->curl, CURLOPT_POSTFIELDS,json_encode($data));
+		$res = curl_exec($this->curl);
+		$this->json = NULL;
+		if ($res === FALSE) {
+			error_log("[Api] could not connect to: $this->url");
+			return FALSE;
+		}
+		$this->json = json_decode($res, TRUE);
+		return TRUE;
+	}
+
 	public function delete_request() {
 		curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 		$res = curl_exec($this->curl);
