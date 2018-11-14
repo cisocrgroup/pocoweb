@@ -14,6 +14,12 @@ create table if not exists users (
 	admin boolean default(false) not null
 );
 
+create table if not exists sessions (
+	auth char(10) not null unique,
+	userid integer not null references users(id),
+	expires integer not null
+);
+
 create table if not exists books (
 	bookid int not null unique references projects(projectid),
 	year int,

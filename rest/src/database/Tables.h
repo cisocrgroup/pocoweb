@@ -146,6 +146,76 @@ namespace tables
       };
     };
   };
+  namespace Sessions_
+  {
+    struct Auth
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "auth";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T auth;
+            T& operator()() { return auth; }
+            const T& operator()() const { return auth; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::char_, sqlpp::tag::require_insert>;
+    };
+    struct Userid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "userid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T userid;
+            T& operator()() { return userid; }
+            const T& operator()() const { return userid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
+    };
+    struct Expires
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "expires";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T expires;
+            T& operator()() { return expires; }
+            const T& operator()() const { return expires; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
+    };
+  }
+
+  struct Sessions: sqlpp::table_t<Sessions,
+               Sessions_::Auth,
+               Sessions_::Userid,
+               Sessions_::Expires>
+  {
+    struct _alias_t
+    {
+      static constexpr const char _literal[] =  "sessions";
+      using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+      template<typename T>
+      struct _member_t
+      {
+        T sessions;
+        T& operator()() { return sessions; }
+        const T& operator()() const { return sessions; }
+      };
+    };
+  };
   namespace Books_
   {
     struct Bookid
