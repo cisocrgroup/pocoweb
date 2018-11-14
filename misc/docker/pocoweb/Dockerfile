@@ -6,7 +6,6 @@ COPY dependencies /dependencies
 RUN yum update -y && yum install -y $(cat /dependencies)
 
 # pocoweb
-ENV XX=YY
 ENV POCOWEB_CHECKOUT_BRANCH devel
 RUN git clone https://git@github.com/cisocrgroup/pocoweb.git \
 	--single-branch -b $POCOWEB_CHECKOUT_BRANCH &&\
