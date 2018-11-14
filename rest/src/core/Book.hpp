@@ -32,7 +32,7 @@ struct BookData
 class Book : public Project
 {
 public:
-  Book(int id = 0)
+  explicit Book(int id = 0)
     : Project(id)
     , data()
     , owner_()
