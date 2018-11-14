@@ -376,7 +376,7 @@ function backend_update_user($uid, $name, $email, $institute, $pass) {
         'user' => array (
             'id' => $uid,
             'name' => $name,
-            'email' => $name,
+            'email' => $email,
             'institute' => $institute,
         ),
     );

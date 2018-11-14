@@ -29,8 +29,9 @@ global $SID;
 if ($SID === NULL) {
 	frontend_render_info_div("Welcome to PoCoWeb. Please <a href='login.php'>login</a>");
 } else if (!$SID["user"]["admin"]) {
-	frontend_render_warning_div("User $SID[user][name] ($SID[user][email]) " .
-                                "is not allowed to do user administration");
+	frontend_render_warning_div(
+        "User ". $SID['user']['name'] . " (" . $SID["user"]["email"] .
+        ") is not allowed to do user administration");
 } else {
 	frontend_render_users_div($SID['user']);
 }
