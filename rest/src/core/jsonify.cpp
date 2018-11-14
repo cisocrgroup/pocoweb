@@ -36,7 +36,8 @@ pcw::operator<<(Json& json, const BookData& data)
 pcw::Json&
 pcw::operator<<(Json& json, const Project& view)
 {
-  json["projectId"] = view.origin().id();
+  json["projectId"] = view.id();
+  json["bookId"] = view.origin().id();
   json["isBook"] = view.is_book();
   json << view.origin().data;
 
