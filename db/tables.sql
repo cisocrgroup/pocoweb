@@ -10,7 +10,7 @@ create table if not exists users (
 	email varchar(255) not null,
 	institute varchar(255) not null,
 	hash varchar(128),
-	salt binary(64),
+	salt varchar(64),
 	admin boolean default(false) not null
 );
 
