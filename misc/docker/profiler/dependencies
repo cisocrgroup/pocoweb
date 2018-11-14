@@ -1,7 +1,7 @@
 cmake
-g++
-gcc
-git
-libcppunit-dev
-libxerces-c-dev
 make
+gcc-c++
+git
+cppunit-devel
+xerces-c-devel
+libicu-devel

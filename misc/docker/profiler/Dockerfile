@@ -1,9 +1,10 @@
-FROM ubuntu:latest
+FROM fedora:latest
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
 
 ## dependencies
 COPY dependencies /dependencies
-RUN apt-get update && apt-get install -y $(cat /dependencies)
+#RUN apt-get update && apt-get install -y $(cat /dependencies)
+RUN yum update -y && yum install -y $(cat /dependencies)
 
 ## profiler
 RUN git clone https://git@github.com/cisocrgroup/Profiler.git /profiler &&\
