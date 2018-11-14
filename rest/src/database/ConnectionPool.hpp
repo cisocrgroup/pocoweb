@@ -8,6 +8,7 @@
 #include <memory>
 #include <mutex>
 #include <tuple>
+#include <vector>
 
 namespace pcw {
 template<class Db>
