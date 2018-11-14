@@ -6,8 +6,8 @@
 
 create table if not exists users (
     id integer not null primary key auto_increment,
-	name varchar(255) not null unique,
-	email varchar(255) not null,
+	name varchar(255) not null,
+	email varchar(255) not null unique,
 	institute varchar(255) not null,
 	hash varchar(128),
 	salt varchar(64),
