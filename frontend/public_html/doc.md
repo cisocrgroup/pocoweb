@@ -502,20 +502,22 @@ You have to be authenticated for most of the API calls.
 If you are not authenticated the API will return `403 Forbidden`
 with no response data.
 
-In order to authenticate you first have to [login](#user-content-api-post-login)
-with a valid user account at the back-end.
-The login will return an unique session id token.
-You have to send this session token in the `Authorization` header of
+In order to authenticate you first have to
+[login](#user-content-api-post-login) with a valid user account at the
+back-end.  The login will return an unique session id token.  You have
+to send this session token using an additional `auth=id` parameter for
 each API call.
 
-For example if your session id is `my-session-id` you have
-to set the `Authorization` header of curl in the following way:
-`curl -H "Authorization: Pocoweb my-session-id"`.
+For example if your session id is `my-session-id` you have to append
+the `auth=my-session-id` to any URL. So for example using `curl`, you
+would need to call `curl
+rest-url/books/pid/pages/pageid?auth=my-session-id`.
 
 In order to get the 13-th line of the 38-th page of a project with an id of 27
 from this Pocoweb back-end using curl you would have to run:
 
-<code>curl -H "Authorization: Pocoweb my-session-id" <?php global $config; echo $config['backend']['url'];?>/books/27/pages/38/lines/13</code>
+<code>curl <?php global $config; echo
+$config['backend']['url'];?>/books/27/pages/38/lines/13?auth=my-session-id</code>
 
 <a id='api-get-version'></a>
 ### [GET] `rest-url`/api-version
