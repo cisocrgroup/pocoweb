@@ -10,8 +10,12 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-PatternExpr::PatternExpr(std::ssub_match mm) : left(), right(), pos() {
-  static const std::regex patternre{R"((.*):(.*),(\d+))"};
+PatternExpr::PatternExpr(std::ssub_match mm)
+  : left()
+  , right()
+  , pos()
+{
+  static const std::regex patternre{ R"((.*):(.*),(\d+))" };
   std::smatch m;
   if (not std::regex_match(mm.first, mm.second, m, patternre))
     THROW(ParseError, "Invalid pattern expression: ", mm);
@@ -21,8 +25,10 @@ PatternExpr::PatternExpr(std::ssub_match mm) : left(), right(), pos() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-PatternsExpr::PatternsExpr(std::ssub_match mm) : patterns() {
-  static const std::regex patternsre{R"(\((.*?,\d+)\)(.*))"};
+PatternsExpr::PatternsExpr(std::ssub_match mm)
+  : patterns()
+{
+  static const std::regex patternsre{ R"(\((.*?,\d+)\)(.*))" };
   std::smatch m;
   while (std::regex_search(mm.first, mm.second, m, patternsre)) {
     patterns.emplace_back(m[1]);
@@ -32,9 +38,14 @@ PatternsExpr::PatternsExpr(std::ssub_match mm) : patterns() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // ἕνος:{ἕνος+[]}+ocr[(ἕ:με,0)],voteWeight=0.0285641,levDistance=2
-Explanation::Explanation(const std::string &expr) : hist(), histp(), ocrp() {
+Explanation::Explanation(const std::string& expr)
+  : hist()
+  , histp()
+  , ocrp()
+{
   static const std::regex explre{
-      R"((.*:)?\{(.+)\+\[(.*)\]\}\+ocr\[(.*)\].*)"};
+    R"((.*:)?\{(.+)\+\[(.*)\]\}\+ocr\[(.*)\].*)"
+  };
   std::smatch m;
   if (not std::regex_match(expr, m, explre))
     THROW(ParseError, "Invalid explanation expression: ", expr);
@@ -45,11 +56,15 @@ Explanation::Explanation(const std::string &expr) : hist(), histp(), ocrp() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // ἕνος:{ἕνος+[]}+ocr[(ἕ:με,0)],voteWeight=0.0285641,levDistance=2
-Candidate::Candidate(const std::string &expr) : cor_(), expl_(), w_(), lev_() {
-  static const std::regex candre{
-      R"((.*):(\{.*\+\[.*\]\}\+ocr\[.*\]),)"
-      R"(voteWeight=([-0-9.,eE]+),)"
-      R"(levDistance=(\d+))"};
+Candidate::Candidate(const std::string& expr)
+  : cor_()
+  , expl_()
+  , w_()
+  , lev_()
+{
+  static const std::regex candre{ R"((.*):(\{.*\+\[.*\]\}\+ocr\[.*\]),)"
+                                  R"(voteWeight=([-0-9.,eE]+),)"
+                                  R"(levDistance=(\d+))" };
   std::smatch m;
   if (not std::regex_match(expr, m, candre))
     THROW(ParseError, "Invalid candidate expression: ", expr);
@@ -61,10 +76,16 @@ Candidate::Candidate(const std::string &expr) : cor_(), expl_(), w_(), lev_() {
 
 ////////////////////////////////////////////////////////////////////////////////
 Candidate::Candidate(std::string cor, double w, int lev, std::string expl)
-    : cor_(std::move(cor)), expl_(std::move(expl)), w_(w), lev_(lev) {}
+  : cor_(std::move(cor))
+  , expl_(std::move(expl))
+  , w_(w)
+  , lev_(lev)
+{}
 
 ////////////////////////////////////////////////////////////////////////////////
-std::wstring Candidate::wcor() const {
+std::wstring
+Candidate::wcor() const
+{
   std::wstring res;
   res.reserve(cor_.size());
   utf8::utf8to32(begin(cor_), end(cor_), std::back_inserter(res));
@@ -72,23 +93,27 @@ std::wstring Candidate::wcor() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool Candidate::is_top_suggestion(const std::set<Candidate> &cs) const {
+bool
+Candidate::is_top_suggestion(const std::set<Candidate>& cs) const
+{
   auto i =
-      std::max_element(begin(cs), end(cs), [](const auto &a, const auto &b) {
-        return a.weight() < b.weight();
-      });
+    std::max_element(begin(cs), end(cs), [](const auto& a, const auto& b) {
+      return a.weight() < b.weight();
+    });
   if (i == end(cs))
     return false;
   return this->weight() >= i->weight();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Profile::Patterns Profile::calc_ocr_patterns() const {
+Profile::Patterns
+Profile::calc_ocr_patterns() const
+{
   Patterns ps;
-  for (const auto &s : suggestions_) {
-    for (const auto &cand : s.second) {
+  for (const auto& s : suggestions_) {
+    for (const auto& cand : s.second) {
       const auto expl = cand.explanation();
-      for (const auto &ocrp : expl.ocrp.patterns) {
+      for (const auto& ocrp : expl.ocrp.patterns) {
         ps[ocrp].emplace(cand, s.first.cor());
       }
     }
@@ -97,12 +122,14 @@ Profile::Patterns Profile::calc_ocr_patterns() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Profile::Patterns Profile::calc_hist_patterns() const {
+Profile::Patterns
+Profile::calc_hist_patterns() const
+{
   Patterns ps;
-  for (const auto &s : suggestions_) {
-    for (const auto &cand : s.second) {
+  for (const auto& s : suggestions_) {
+    for (const auto& cand : s.second) {
       const auto expl = cand.explanation();
-      for (const auto &histp : expl.histp.patterns) {
+      for (const auto& histp : expl.histp.patterns) {
         ps[histp].emplace(cand, s.first.cor());
       }
     }
@@ -112,17 +139,22 @@ Profile::Patterns Profile::calc_hist_patterns() const {
 
 ////////////////////////////////////////////////////////////////////////////////
 ProfileBuilder::ProfileBuilder(ConstBookSptr book)
-    : tokens_(), suggestions_(), book_(std::move(book)) {
+  : tokens_()
+  , suggestions_()
+  , book_(std::move(book))
+{
   init();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ProfileBuilder::init() {
-  for (const auto &page : *book_) {
+void
+ProfileBuilder::init()
+{
+  for (const auto& page : *book_) {
     assert(page);
-    for (const auto &line : *page) {
+    for (const auto& line : *page) {
       assert(line);
-      line->each_token([this](const auto &token) {
+      line->each_token([this](const auto& token) {
         auto id = token.unique_id();
         // std::cerr << "ADDING TOKEN:    " <<
         // token.ocr() << "\n";
@@ -136,7 +168,9 @@ void ProfileBuilder::init() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ProfileBuilder::clear() {
+void
+ProfileBuilder::clear()
+{
   suggestions_.clear();
   adaptive_tokens_.clear();
   // book remains untouched
@@ -144,15 +178,19 @@ void ProfileBuilder::clear() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Profile ProfileBuilder::build() const {
-  Profile profile{book_};
+Profile
+ProfileBuilder::build() const
+{
+  Profile profile{ book_ };
   profile.suggestions_ = this->suggestions_;
   profile.adaptive_tokens_ = this->adaptive_tokens_;
   return profile;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ProfileBuilder::add_candidates_from_file(const Path &path) {
+void
+ProfileBuilder::add_candidates_from_file(const Path& path)
+{
   std::ifstream file(path.string());
   if (not file.good()) {
     THROW(ParseError, "could not open file: ", path);
@@ -161,7 +199,9 @@ void ProfileBuilder::add_candidates_from_file(const Path &path) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ProfileBuilder::add_candidates_from_stream(std::istream &is) {
+void
+ProfileBuilder::add_candidates_from_stream(std::istream& is)
+{
   pugi::xml_document doc;
   auto ok = doc.load(is);
   if (not ok) {
@@ -169,7 +209,7 @@ void ProfileBuilder::add_candidates_from_stream(std::istream &is) {
   }
   auto ts = doc.document_element().select_nodes(".//token");
   bool newtok = false;
-  for (const auto &t : ts) {
+  for (const auto& t : ts) {
     auto id = std::stoll(t.node().child("ext_id").child_value());
     auto token = tokens_[id];
     newtok = true;
@@ -181,29 +221,35 @@ void ProfileBuilder::add_candidates_from_stream(std::istream &is) {
     if (not token.line or not token.unique_id())
       THROW(ParseError, "Invalid token id: ", id);
     auto cs = t.node().select_nodes(".//cand");
-    for (const auto &c : cs) {
+    for (const auto& c : cs) {
       add_candidate_string(token, c.node().child_value(), newtok);
       newtok = false;
     }
   }
   // adaptive tokens
   auto ats = doc.document_element().select_nodes(".//adaptiveToken");
-  for (const auto &t : ats) {
+  for (const auto& t : ats) {
     adaptive_tokens_.insert(t.node().child_value());
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ProfileBuilder::add_candidate_string(const Token &token,
-                                          const std::string &str, bool newtok) {
+void
+ProfileBuilder::add_candidate_string(const Token& token,
+                                     const std::string& str,
+                                     bool newtok)
+{
   if (not token.line or not token.unique_id())
     THROW(ParseError, "Invalid token for expression: ", str);
   add_candidate(token, Candidate(str), newtok);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ProfileBuilder::add_candidate(const Token &token, const Candidate &cand,
-                                   bool newtok) {
+void
+ProfileBuilder::add_candidate(const Token& token,
+                              const Candidate& cand,
+                              bool newtok)
+{
   if (not token.line or not token.unique_id())
     THROW(ParseError, "Encountered empty token for candidate: ", cand.cor());
   // skip adaptive artifacts of the profiler:
