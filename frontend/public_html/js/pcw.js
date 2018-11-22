@@ -106,7 +106,8 @@ pcw.getSidImpl = function() {
 		}
 		if (c.indexOf(name) === 0) {
 			pcw.log("c00kie: " + c);
-			return JSON.parse(c.substring(name.length, c.length));
+			return JSON.parse(
+				decodeURIComponent(c.substring(name.length, c.length)));
 		}
 		return null;
 	}

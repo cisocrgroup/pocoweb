@@ -68,7 +68,12 @@ class Api {
 	}
 
 	public function set_session_id($sid) {
-        $this->url = $this->url . "?auth=" . $sid["auth"];
+        $pos = strrpos($this->url, "?");
+        if ($pos === FALSE) {
+            $this->url = $this->url . "?auth=" . $sid["auth"];
+        } else {
+            $this->url = $this->url . "&auth=" . $sid["auth"];
+        }
         curl_setopt($this->curl, CURLOPT_URL, $this->url);
 	}
 

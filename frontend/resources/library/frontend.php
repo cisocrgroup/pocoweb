@@ -588,7 +588,7 @@ function frontend_render_page_correct_all_div($page) {
 	global $SID;
 	echo '<div id="correct-all-lines">', "\n";
 	echo '<button id="correct-all-lines-btn" class="btn btn-default" title="correct all lines"',
-		'onclick=\'pcw.correctAllLines("', $SID, '");\'>';
+		'onclick=\'pcw.correctAllLines("', $SID['auth'], '");\'>';
 	echo 'Correct all';
 	echo '</button', "\n";
 	echo '</div>';

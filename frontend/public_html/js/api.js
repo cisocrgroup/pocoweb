@@ -153,7 +153,11 @@ pcw.Api = {
 			}
 		};
 		if (this.sid != null) {
-			this.url = this.url + "?auth=" + this.sid.auth;
+			if (this.url.lastIndexOf("?") == -1) {
+				this.url += "?auth=" + this.sid.auth;
+			} else {
+				this.url += "&auth=" + this.sid.auth;
+			}
 		}
 		http.open(this.method, this.url, true);
 		http.setRequestHeader(
