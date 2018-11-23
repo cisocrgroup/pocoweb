@@ -1,9 +1,9 @@
-FROM profiler:latest
+FROM ffink/profiler:latest
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
 
 VOLUME /project-data /www-data /tmp /language-data
-COPY dependencies /dependencies
-RUN yum update -y && yum install -y $(cat /dependencies)
+COPY dependencies.txt /dependencies.txt
+RUN yum update -y && yum install -y $(cat /dependencies.txt)
 
 # pocoweb
 ENV POCOWEB_CHECKOUT_BRANCH devel
