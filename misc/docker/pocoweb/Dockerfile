@@ -1,9 +1,11 @@
 FROM ffink/profiler:latest
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
+ENV DATE='Fri Nov 23 15:48:16 CET 2018'
 
-VOLUME /project-data /www-data /tmp /language-data
+# VOLUME /project-data /www-data /tmp /language-data
 COPY dependencies.txt /dependencies.txt
 RUN yum update -y && yum install -y $(cat /dependencies.txt)
+# RUN apt-get update && apt-get install -y $(cat /dependencies.txt)
 
 # pocoweb
 ENV POCOWEB_CHECKOUT_BRANCH devel

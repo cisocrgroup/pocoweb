@@ -1,10 +1,11 @@
 FROM fedora:latest
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
+ENV DATE='Fri Nov 23 15:48:47 CET 2018'
 
 ## dependencies
-COPY dependencies /dependencies
+COPY dependencies.txt /dependencies.txt
 #RUN apt-get update && apt-get install -y $(cat /dependencies)
-RUN yum update -y && yum install -y $(cat /dependencies)
+RUN yum update -y && yum install -y $(cat /dependencies.txt)
 
 ## profiler
 RUN git clone https://git@github.com/cisocrgroup/Profiler.git /profiler &&\

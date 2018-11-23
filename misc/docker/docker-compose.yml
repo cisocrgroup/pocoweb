@@ -51,9 +51,11 @@ services:
       - "3306:3306"
     volumes:
       - /home/flo/data/srv/pocoweb/db-data:/var/lib/mysql
+      - ./db:/etc/mysql/conf.d:ro
     restart: always
     env_file:
       - env.sh
+    #command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
 
   # pocoweb authentification and user management
   pcwauth:
