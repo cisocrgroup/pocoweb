@@ -1,8 +1,10 @@
-/*drop database if exists pocweb;*/
-/*create database if not exists pocoweb*/
-/*default character set utf8*/
-/*default collate utf8_general_ci;*/
-/*use pocoweb;*/
+-- drop database if exists pocweb;
+-- create database if not exists pocoweb
+-- default character set utf8
+-- default collate utf8_general_ci;
+-- use pocoweb;
+
+create database if not exists pocoweb character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists users (
     id integer not null primary key auto_increment,
@@ -13,12 +15,17 @@ create table if not exists users (
 	salt varchar(64),
 	admin boolean default(false) not null
 );
+alter table users convert to character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table users change name name varchar(255) character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table users change email email varchar(255) character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table users change institute institute varchar(255) character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists sessions (
 	auth char(10) not null unique,
 	userid integer not null references users(id),
 	expires integer not null
 );
+alter table sessions convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists books (
 	bookid int not null unique references projects(projectid),
@@ -31,6 +38,12 @@ create table if not exists books (
 	directory varchar(255) not null,
 	lang varchar(50) not null
 );
+alter table books convert to character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table books change title title varchar(100) character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table books change author author varchar(100) character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table books change description description varchar(255) character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table books change directory directory varchar(255) character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table books change lang lang varchar(255) character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists projects (
 	id int not null unique primary key auto_increment,
@@ -38,12 +51,14 @@ create table if not exists projects (
 	owner int references users(id),
 	pages int
 );
+alter table projects convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists project_pages (
 	projectid int not null references projects(id),
 	pageid int not null references pages(pageid),
 	primary key (projectid, pageid)
 );
+alter table project_pages convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists pages (
 	bookid int references books(bookid),
@@ -57,6 +72,9 @@ create table if not exists pages (
 	pbottom int,
 	primary key (bookid, pageid)
 );
+alter table pages convert to character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table pages change imagepath imagepath varchar(255) character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table pages change ocrpath ocrpath varchar(255) character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists textlines (
 	bookid int references books(bookid),
@@ -69,6 +87,8 @@ create table if not exists textlines (
 	lbottom int,
 	primary key (bookid, pageid, lineid)
 );
+alter table textlines convert to character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table textlines change imagepath imagepath varchar(255) character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists contents (
 	bookid int references books(bookid),
@@ -81,6 +101,7 @@ create table if not exists contents (
 	conf double not null,
 	primary key (bookid, pageid, lineid, seq)
 );
+alter table contents convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists types (
 	bookid int references books(bookid),
@@ -88,12 +109,15 @@ create table if not exists types (
 	string varchar(50),
 	primary key (bookid, typid)
 );
+alter table types convert to character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table types change string string varchar(50) character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists profiles (
 	bookid int references books(bookid),
 	timestamp bigint not null,
 	primary key (bookid)
 );
+alter table profiles convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists suggestions (
 	suggestionid int not null unique primary key auto_increment,
@@ -107,6 +131,7 @@ create table if not exists suggestions (
 	distance int not null,
 	topsuggestion boolean not null
 );
+alter table suggestions convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
 /* (3 * 4)^ + 1^^ + (3 * 4)^ = 25*/
 /* ^: max utf length of a pattern with maximal 3 characters */
@@ -117,9 +142,12 @@ create table if not exists errorpatterns (
 	pattern varchar(25),
 	ocr boolean not null
 );
+alter table errorpatterns convert to character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table errorpatterns change pattern pattern varchar(25) character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists adaptivetokens (
 	bookid int references books(bookid),
 	typid int references types(typid),
 	primary key (bookid, typid)
 );
+alter table adaptivetokens convert to character set utf8mb4 collate utf8mb4_unicode_ci;

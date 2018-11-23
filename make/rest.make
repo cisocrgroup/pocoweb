@@ -83,7 +83,8 @@ rest/src/database/Tables.h: db/tables.sql.tmp
 db/tables.sql.tmp: db/tables.sql
 	$(call ECHO,$@)
 	@sed -e '/create/ s/if\s\s*not\s\s*exists\s*//' \
-		 -e 's#/\*.*\*/##' $< > $@
+		 -e '/character set/d' \
+		 -e '/--/d' $< > $@
 
 
 install: pcwd
