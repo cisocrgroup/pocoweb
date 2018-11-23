@@ -64,7 +64,7 @@ if (isset($_GET["upload"])) {
 }
 global $SID;
 if ($SID !== NULL) {
-	frontend_render_projects_div();
+	frontend_render_projects_div($SID['user']);
 } else {
 	frontend_render_info_div("Welcome to PoCoWeb. Please <a href='login.php'>login</a>");
 }

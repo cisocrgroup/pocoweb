@@ -19,9 +19,8 @@ function frontend_render_login_div() {
 	echo '</div>';
 }
 
-function frontend_render_projects_div() {
-	global $USER;
-	if ($USER != NULL && $USER["admin"]) {
+function frontend_render_projects_div($user) {
+	if ($user['admin']) {
 		frontend_render_upload_new_project_div();
 		frontend_render_project_table_div(true);
 	} else {
