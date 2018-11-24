@@ -28,8 +28,6 @@ services:
 
   # pocoweb rest service
   pocoweb:
-    environment:
-      - POCOWEB_CHECKOUT_BRANCH=devel
     build: pocoweb/
     ports:
       - "8080:8080"
