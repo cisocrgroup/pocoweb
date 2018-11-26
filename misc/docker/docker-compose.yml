@@ -2,12 +2,14 @@ version: '3'
 services:
   # web server
   nginx:
+    env_file:
+      - env.sh
     build: nginx/
     ports:
       - "80:80"
     volumes:
-      - /home/flo/data/srv/pocoweb/www-data:/www-data:ro
-      - /home/flo/data/srv/pocoweb/project-data:/project-data:ro
+      - ${PCW_BASE_DIR}/www-data:/www-data:ro
+      - ${PCW_BASE_DIR}/project-data:/project-data:ro
     links:
       - fpm
       - pocoweb
@@ -18,12 +20,14 @@ services:
     restart: always
   # php fast cgi
   fpm:
+    env_file:
+      - env.sh
     image: php:fpm
     ports:
       - "9000:9000"
     volumes:
-      - /home/flo/data/srv/pocoweb/www-data:/www-data:ro
-      - /home/flo/data/srv/pocoweb/tmp-data:/tmp:rw
+      - ${PCW_BASE_DIR}/www-data:/www-data:ro
+      - ${PCW_BASE_DIR}/tmp-data:/tmp:rw
     restart: always
 
   # pocoweb rest service
@@ -34,13 +38,15 @@ services:
     links:
       - db
     volumes:
-      - /home/flo/data/srv/pocoweb/project-data:/project-data:rw
-      - /home/flo/data/srv/pocoweb/tmp-data:/tmp:rw
-      - /home/flo/data/srv/pocoweb/www-data:/www-data:rw
-      - /home/flo/data/srv/pocoweb/language-data:/language-data:ro
+      - ${PCW_BASE_DIR}/project-data:/project-data:rw
+      - ${PCW_BASE_DIR}/tmp-data:/tmp:rw
+      - ${PCW_BASE_DIR}/www-data:/www-data:rw
+      - ${PCW_BASE_DIR}/language-data:/language-data:ro
     depends_on:
       - db
     restart: always
+    env_file:
+      - env.sh
 
   # mysql database
   db:
@@ -48,12 +54,11 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - /home/flo/data/srv/pocoweb/db-data:/var/lib/mysql
+      - ${PCW_BASE_DIR}/db-data:/var/lib/mysql
       - ./db:/etc/mysql/conf.d:ro
     restart: always
     env_file:
       - env.sh
-    #command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
 
   # pocoweb authentification and user management
   pcwauth:

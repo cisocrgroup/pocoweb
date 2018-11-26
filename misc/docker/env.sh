@@ -1,5 +1,8 @@
 #/bin/sh
 
+# Base dirctory of volumes
+PCW_BASE_DIR=/home/flo/data/srv/pocoweb
+
 # Settings for the mysql user
 MYSQL_ROOT_PASSWORD=example
 MYSQL_USER=pocoweb
