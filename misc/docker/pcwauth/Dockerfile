@@ -8,7 +8,7 @@ RUN apk add git &&\
 	go install ${PCWAUTH_GIT} &&\
 	rm -rf src &&\
 	apk del git
-CMD sleep 15 && pcwauth -db "${MYSQL_USER}:${MYSQL_PASSWORD}@(db)/${MYSQL_DATABASE}" \
+CMD sleep 15 && pcwauth -db "${MYSQL_USER}:${MYSQL_PASSWORD}@(${PCW_DB_HOST})/${MYSQL_DATABASE}" \
 	-pocoweb ${PCW_POCOWEB_HOST} -listen ${PCW_PCWAUTH_HOST} \
 	-root-name ${PCW_ROOT_NAME} -root-password ${PCW_ROOT_PASSWORD} \
     -root-email ${PCW_ROOT_EMAIL} -root-institute ${PCW_ROOT_INSTITUTE} \
