@@ -12,6 +12,6 @@ name=$(git config -f $config --get db.name)
 
 cp -vr $public_html /www-data
 cp -vr $resoures /www-data
-sleep 5
+sleep 10
 mysql -h$host -u$user -p$pass $name < $sql || exit 1
 /apps/pocoweb $config || exit 1
