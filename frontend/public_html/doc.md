@@ -740,9 +740,27 @@ Get all books of an user account.
 Create a new project.
 * [Authorization](#user-content-authorization) is required.
 * Only administrators can upload new projects.
+* There are two kinds of post requests:
+  1. Raw upload of [project archive](#user-content-project-archives).
+  2. Upload of local [project archive](#user-content-project-archives).
 
-#### POST data
-The raw data of the zipped [project archive](#user-content-project-archives).
+#### POST raw data
+The raw data of the zipped [project
+archive](#user-content-project-archives). Use `Content-Type:
+application/zip` as request header.
+
+#### POST local data
+Use `Content-Type: application/json` as request header.
+```json
+{
+  "author": "book-author",
+  "title": "book-title",
+  "year": 1234,
+  "language": "language",
+  "profilerUrl": "profiler-url|local",
+  "file": "/path/to/server-local/file
+}
+```
 
 <a id='api-get-books-pid'></a>
 ### [GET] `rest-url`/books/`pid`

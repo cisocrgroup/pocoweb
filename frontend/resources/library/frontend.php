@@ -281,6 +281,7 @@ function frontend_render_upload_new_project_div() {
 
 function frontend_upload_project_archive($post, $file) {
 	global $config;
+    error_log("uploading file size=$file[size] type=$file[type] tmp_name=$file[tmp_name]");
 	if ($file["error"] != UPLOAD_ERR_OK) {
         $info = backend_get_upload_error_info($file["error"]);
 		frontend_render_error_div("Could not upload archive: error: $info");
@@ -302,7 +303,7 @@ function frontend_upload_project_archive($post, $file) {
 	}
 	$api = backend_upload_project($post, $file["name"], $file["tmp_name"]);
 	$status = $api->get_http_status_code();
-	if ($status != 201) {
+	if ($status != 201 || $status != 200) { # accept 200 OK and 201 Created
 		frontend_render_error_div("Could not upload archive: backend returned " .
 			backend_get_http_status_info($status));
 	} else {
