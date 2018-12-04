@@ -1,5 +1,7 @@
 # Setup
 - update settings in env.sh file.
+- `mkdir -p $PCW_BASE_DIR/tmp-data`
+- `chmod a+rwx $PCW_BASE_DIR/tmp-data`
 - PCW_BASE_DIR=/base/dir docker-compose build
 - PCW_BASE_DIR=/base/dir docker-compose up (starts in forground) or
 - PCW_BASE_DIR=/base/dir docker-compose run (starts in background)
