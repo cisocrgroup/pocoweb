@@ -303,7 +303,7 @@ function frontend_upload_project_archive($post, $file) {
 	}
 	$api = backend_upload_project($post, $file["name"], $file["tmp_name"]);
 	$status = $api->get_http_status_code();
-	if ($status != 201) {
+	if ($status != 201 || $status != 200) { # accept 200 OK and 201 Created
 		frontend_render_error_div("Could not upload archive: backend returned " .
 			backend_get_http_status_info($status));
 	} else {
