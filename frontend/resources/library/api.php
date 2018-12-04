@@ -21,6 +21,7 @@ class Api {
 
 	public function get_request() {
 		$res = curl_exec($this->curl);
+        $this->log("GET");
 		if ($res === FALSE) {
 			error_log("[Api] could not connect to: $this->url");
 			return FALSE;
@@ -31,6 +32,7 @@ class Api {
 
 	public function post_request($data) {
 		curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($data));
+        $this->log("POST");
 		$res = curl_exec($this->curl);
 		$this->json = NULL;
 		if ($res === FALSE) {
@@ -45,6 +47,7 @@ class Api {
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, "PUT");
         curl_setopt($this->curl, CURLOPT_POSTFIELDS,json_encode($data));
+        $this->log("PUT");
 		$res = curl_exec($this->curl);
 		$this->json = NULL;
 		if ($res === FALSE) {
@@ -57,6 +60,7 @@ class Api {
 
 	public function delete_request() {
 		curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+        $this->log("DELETE");
 		$res = curl_exec($this->curl);
 		$this->json = NULL;
 		if ($res === FALSE) {
@@ -66,6 +70,10 @@ class Api {
 			return TRUE;
 		}
 	}
+
+    private function log($req) {
+        error_log("API: sending $req $this->url");
+    }
 
 	public function set_session_id($sid) {
         $pos = strrpos($this->url, "?");
