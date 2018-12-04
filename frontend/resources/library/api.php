@@ -31,6 +31,10 @@ class Api {
 	}
 
 	public function post_request($data) {
+        $headers = array();
+        $headers[] = 'Content-Type: application/json';
+        $headers[] = 'User-Agent: pcw-php-api-client';
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
 		curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($data));
         $this->log("POST");
 		$res = curl_exec($this->curl);
