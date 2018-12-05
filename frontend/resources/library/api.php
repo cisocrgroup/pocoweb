@@ -32,9 +32,7 @@ class Api {
 	}
 
 	public function post_request($data) {
-        $headers = $this->get_default_header();
-        $headers[] = 'Content-Type: application/json';
-        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->get_default_header());
 		curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($data));
         $this->log("POST");
 		$res = curl_exec($this->curl);
@@ -80,6 +78,7 @@ class Api {
     private function get_default_header() {
         $headers = array();
         $headers[] = 'User-Agent: pcw-php-api-client';
+        $headers[] = 'Content-Type: application/json';
         return $headers;
     }
 
