@@ -20,6 +20,7 @@ class Api {
 	}
 
 	public function get_request() {
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->get_default_header());
 		$res = curl_exec($this->curl);
         $this->log("GET");
 		if ($res === FALSE) {
@@ -31,9 +32,8 @@ class Api {
 	}
 
 	public function post_request($data) {
-        $headers = array();
+        $headers = $this->get_default_header();
         $headers[] = 'Content-Type: application/json';
-        $headers[] = 'User-Agent: pcw-php-api-client';
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
 		curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($data));
         $this->log("POST");
@@ -48,6 +48,7 @@ class Api {
 	}
 
 	public function put_request($data) {
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->get_default_header());
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, "PUT");
         curl_setopt($this->curl, CURLOPT_POSTFIELDS,json_encode($data));
@@ -63,6 +64,7 @@ class Api {
 	}
 
 	public function delete_request() {
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->get_default_header());
 		curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
         $this->log("DELETE");
 		$res = curl_exec($this->curl);
@@ -74,6 +76,12 @@ class Api {
 			return TRUE;
 		}
 	}
+
+    private function get_default_header() {
+        $headers = array();
+        $headers[] = 'User-Agent: pcw-php-api-client';
+        return $headers;
+    }
 
     private function log($req) {
         error_log("API: sending $req $this->url");
