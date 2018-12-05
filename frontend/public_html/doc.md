@@ -490,10 +490,10 @@ You have to be logged in with a valid user account
 
 All URLs in the API documentation reference a `rest-url`.
 You have to set this parameter for your back-end accordingly.
-So for example the back-end URL for this site is <code><?php global $config; echo $config['backend']['url'];?></code>.
+So for example the back-end URL for this site is <code><?php global $config; echo $config['backend']['externalURL'];?></code>.
 This means that you have to replace the occurences of `rest-url`
 in the paths of the REST API documentation with
-<code><?php global $config; echo $config['backend']['url'];?></code>.
+<code><?php global $config; echo $config['backend']['externalURL'];?></code>.
 
 <a id='authorization'></a>
 ### Authorization
@@ -517,7 +517,7 @@ In order to get the 13-th line of the 38-th page of a project with an id of 27
 from this Pocoweb back-end using curl you would have to run:
 
 <code>curl <?php global $config; echo
-$config['backend']['url'];?>/books/27/pages/38/lines/13?auth=my-session-id</code>
+$config['backend']['externalURL'];?>/books/27/pages/38/lines/13?auth=my-session-id</code>
 
 <a id='api-get-version'></a>
 ### [GET] `rest-url`/api-version
