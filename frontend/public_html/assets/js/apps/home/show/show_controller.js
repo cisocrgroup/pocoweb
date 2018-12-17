@@ -20,7 +20,7 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
                 "color": "green",
                 "icon": "fa-align-left",
                 "id": "test_btn",
-                "name": "OCR Projects",
+                "name": "Projects",
                 "seq": 1,
                 "text": "Test pages for OCR projects.",
                 "url": "projects:list",

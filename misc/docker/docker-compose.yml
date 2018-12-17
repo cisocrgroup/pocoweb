@@ -35,41 +35,41 @@ services:
     build: pocoweb/
     ports:
       - "8080:8080"
-    links:
-      - db
+    #links:
+    #  - db
     volumes:
       - ${PCW_BASE_DIR}/project-data:/project-data:rw
       - ${PCW_BASE_DIR}/tmp-data:/tmp:rw
       - ${PCW_BASE_DIR}/www-data:/www-data:rw
       - ${PCW_BASE_DIR}/language-data:/language-data:ro
-    depends_on:
-      - db
+    #depends_on:
+    #  - db
     restart: always
     env_file:
       - env.sh
 
   # mysql database
-  db:
-    image: mariadb
-    ports:
-      - "3306:3306"
-    volumes:
-      - ${PCW_BASE_DIR}/db-data:/var/lib/mysql
-      - ./db:/etc/mysql/conf.d:ro
-    restart: always
-    env_file:
-      - env.sh
+  #db:
+  #  image: mariadb
+  #  ports:
+  #    - "3306:3306"
+  #  volumes:
+  #    - ${PCW_BASE_DIR}/db-data:/var/lib/mysql
+  #    - ./db:/etc/mysql/conf.d:ro
+  #  restart: always
+  #  env_file:
+  #    - env.sh
 
   # pocoweb authentification and user management
   pcwauth:
     build: pcwauth/
     ports:
       - "8081:8081"
-    links:
-      - db
-      - pocoweb
-    depends_on:
-      - db
+    #links:
+    #  - db
+    #  - pocoweb
+    #depends_on:
+    #  - db
     restart: always
     env_file:
       - env.sh
