@@ -49,7 +49,7 @@ Entities.API = {
               defer.resolve(data);
             },
             error: function(data){
-              defer.resolve(undefined);
+              defer.reject(data);
             }
     });
 

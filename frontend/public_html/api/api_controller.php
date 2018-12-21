@@ -43,22 +43,21 @@ function login(){
     // backend_set_global_session_id();
     // backend_set_global_user();
         header_remove();
-        header($status);
+        header("status: ".$status);
         echo "You have successfully logged in";
 
     break;
   case "403":
     $SID = "";
-    require(TEMPLATES_PATH . "/header.php");
-    frontend_render_warning_div(
-      "Login error: invalid username or password");
-    frontend_render_login_div();
+    header_remove();
+    header("status: ".$status);
+    echo 'Login error: invalid username or password Please try again: <a href="#" class="js-login">login</a>';
     break;
   default:
     $SID = "";
-    require(TEMPLATES_PATH . "/header.php");
-    frontend_render_error_div("Login error: " . backend_get_http_status_info($status));
-    frontend_render_login_div();
+        header_remove();
+        header("status: ".$status);
+        echo "Login error: " . backend_get_http_status_info($status);
     break;
   }
 // } else {

@@ -25538,7 +25538,7 @@ Entities.API = {
               defer.resolve(data);
             },
             error: function(data){
-              defer.resolve(undefined);
+              defer.reject(data);
             }
     });
 
@@ -25654,10 +25654,14 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
                   console.log(result)
 
-                    // TO DO
-                })
+                }).fail(function(response){ 
 
-     console.log(data)
+                   var newMsg = new Show.Message({message:response.responseText,type:'danger'});
+                    App.mainLayout._regions.mainRegion.currentView.showChildView('msgRegion',newMsg);                                   
+                                      
+          }); //  $.when(loggingInUser).done
+
+
     });
 
     });
@@ -25708,34 +25712,6 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
   }
 
-
-
-
-  function getItemByUrl(navItems,url){
-  
-  var result;
-
-        for (key in navItems){
-
-          if(navItems[key].url==url){
-            result= navItems[key];
-          }
-
-          else{
-
-              for (key2 in navItems[key].nav_children){
-                      if(navItems[key].nav_children[key2].url==url){
-                      result= navItems[key].nav_children[key2];
-                      }           
-              }
-
-          }
-
-        }
-
-return result;
-
-}
 
 
 
