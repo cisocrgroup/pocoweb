@@ -24137,6 +24137,21 @@ __p+='\n';
 return __p;
 };});
 
+
+define("tpl!common/templates/msgtemplate.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='\r\n<div class="container" style="margin-top: 35px">\r\n  <hr>\r\n  <div id="msg" class="alert alert-'+
+((__t=(type))==null?'':_.escape(__t))+
+' alert-dismissible fade show" role="'+
+((__t=(role))==null?'':_.escape(__t))+
+'">'+
+((__t=(message))==null?'':__t)+
+'\r\n  	  <button type="button" class="close" data-dismiss="alert" aria-label="Close">\r\n    <span aria-hidden="true">&times;</span>\r\n  </button>\r\n  </div>\r\n  <hr>\r\n</div>\r\n';
+}
+return __p;
+};});
+
 // ===============
 // common/views.js
 // ===============
@@ -24159,8 +24174,9 @@ define('common/views',["marionette","app","spin","spin.jquery","common/util","da
 "tpl!common/templates/bginfo.tpl",
 "tpl!common/templates/footerpaneltemplate.tpl",
 "tpl!common/templates/confirm.tpl",
+"tpl!common/templates/msgtemplate.tpl",
 
-	], function(Marionette,IPS_App,Spinner,SpinnerJQuery,Util,dtb,listTpl,loadingTpl,loadingOpcTpl,headerTpl,cardHeadTpl,cardhubTpl,layoutTpl,errorTpl,emptyTpl,areYouTpl,okTpl,infoPanelTpl,bgInfoTpl,footerPanelTpl,confirmTpl){
+	], function(Marionette,IPS_App,Spinner,SpinnerJQuery,Util,dtb,listTpl,loadingTpl,loadingOpcTpl,headerTpl,cardHeadTpl,cardhubTpl,layoutTpl,errorTpl,emptyTpl,areYouTpl,okTpl,infoPanelTpl,bgInfoTpl,footerPanelTpl,confirmTpl,msgTpl){
 
     var Views={};
 
@@ -24331,6 +24347,35 @@ onAttach: function(){
 	});
 
 
+   Views.Message = Marionette.View.extend({
+	template:msgTpl,
+	role: "alert",
+	type: "info",
+	message: "default message",
+
+		serializeData: function(){
+			return {
+				role: Marionette.getOption(this,"errortext"),
+				message: Marionette.getOption(this,"message"),
+    		    asModal: Marionette.getOption(this,"asModal"),
+    		    type: Marionette.getOption(this,"type")
+
+			}
+		},
+		onAttach : function(){
+		   if(this.options.asModal){
+
+          this.$el.attr("ID","msg-modal");
+          this.$el.addClass("modal fade msg-modal");
+          this.$el.on('shown.bs.modal', function (e) {
+           })
+
+           this.$el.modal();
+   		 }
+	}
+
+
+	});
 
    Views.DataTable = Marionette.View.extend({
     template: listTpl,
@@ -24787,7 +24832,7 @@ return Views;
 define("tpl!common/templates/maintemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="container">\n<div id="backdrop-region"> </div>\n<div id="header-region"> </div>\n<div id="main-region"> </div>\n</div>\n\n<div id="footer-region"> </div>\n<div id="dialog-region"> </div>\n\n<div id="add-project-region"></div>\n<div id="add-book-region"></div>\n';
+__p+='<div id="backdrop-region"> </div>\n<div id="header-region"> </div>\n<div id="main-region"> </div>\n\n<div id="footer-region"> </div>\n<div id="dialog-region"> </div>\n\n<div id="add-project-region"></div>\n<div id="add-book-region"></div>\n';
 }
 return __p;
 };});
@@ -24805,7 +24850,7 @@ return __p;
 define("tpl!apps/header/show/templates/navbar.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n\n\n\n<nav class="navbar navbar-expand-lg navbar-dark bg-dark">\n  <a class="navbar-brand" href="#home">OCRD</a>\n  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">\n    <span class="navbar-toggler-icon"></span>\n  </button>\n\n\n  <div class="collapse navbar-collapse" id="navbarSupportedContent">\n    <ul class="navbar-nav mr-auto">\n      <li class="nav-item">\n        <a class="nav-link" href="#projects/list">OCR Projects</a>\n      </li>\n      <li class="nav-item">\n        <a class="nav-link" href="#docs">Api-Documentation</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#about">About</a>\n      </li>\n    </ul>\n  </div>\n</nav>\n\n\n\n';
+__p+='\n\n<div class="text-center">\n<img class="rounded" src="assets/images/logo.jpg" style="margin: 15px;" />\n</div>\n\n\n<nav class="navbar navbar-expand-lg navbar-light bg-light">\n  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">\n    <span class="navbar-toggler-icon"></span>\n  </button>\n\n\n  <div class="collapse navbar-collapse" id="navbarSupportedContent">\n     <ul class="navbar-nav mr-auto">\n      <li class="nav-item">\n        <a class="nav-link" href="#projects/list">Projects</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#docs">Users</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#docs">Account</a>\n      </li>\n      <li class="nav-item">\n        <a class="nav-link" href="#docs">Documentation</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#about">About</a>\n      </li>\n    </ul>\n\n     <ul class="navbar-nav my-2 my-lg-0">\n    \n       <li class="nav-item ">\n        <a class="nav-link js-login" href="#"><i class="fa fa-unlock"></i> Login</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" >Api-Version:</a>\n      </li>\n    </ul>\n  \n  </div>\n</nav>\n\n\n\n\n\n\n';
 }
 return __p;
 };});
@@ -24814,12 +24859,12 @@ return __p;
 // apps/header/show/show_view.js
 // =============================
 
-define('apps/header/show/show_view',["marionette","app","common/util",
+define('apps/header/show/show_view',["marionette","app","common/views","common/util",
   "tpl!apps/header/show/templates/layout.tpl",
   "tpl!apps/header/show/templates/navbar.tpl",
   "tpl!common/templates/emptytemplate.tpl"
 
-  ], function(Marionette,IPS_App,Util,layoutTpl,navbarTpl,emptyTpl){
+  ], function(Marionette,App,Views,Util,layoutTpl,navbarTpl,emptyTpl){
 
   var Show={};
 
@@ -24832,19 +24877,25 @@ define('apps/header/show/show_view',["marionette","app","common/util",
 
   });
 
+ Show.Message = Views.Message.extend({
+  });
+
    Show.Topbar = Marionette.View.extend({
    template: navbarTpl,
    triggers:{
       "click .js-logout":"nav:logout",
+      "click .js-login":"nav:login",
       "click .js-exit":"nav:exit",
       "click #help_button":"nav:help"
      },
    
     events:{
       'click .nav_item.active' : 'nav_item_clicked',
-      'click .logo_area_left' : 'nav_item_clicked',
+      'click .logo_area_left' : 'nav_item_clicked'
 
     },
+
+
     
       serializeData: function(){
           var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
@@ -24867,419 +24918,14 @@ return Show;
 });
 
 
-// ================
-// entities/util.js
-// ================
 
-define('entities/util',["app"], function(App){
-
-  var Entities={};
-
- 
-
-Entities.API = {
-
-
-  startTraining: function(data){
-    var defer = jQuery.Deferred();
-    $.ajax({
-         headers: { 
-        'Accept': 'application/json',
-        'Content-Type': 'application/json' 
-        },
-        url: "/api/trainclassifier",
-        type: "POST",
-        data:JSON.stringify(data),
-        success: function(data) {
-
-             defer.resolve(data);
-
-            },
-            error: function(data){
-              defer.resolve(undefined);
-            }
-    });
-
-    return defer.promise();
-    
-}
-
-
-};
-
-
-
-return Entities;
-
-});
-
-// ===================================
-// apps/header/show/show_controller.js
-// ===================================
-
-define('apps/header/show/show_controller',["app","common/util","apps/header/show/show_view"], function(IPS_App,Util,Show){
-
-
-  var Controller = {
-
-   showHeader: function(){
-
-
-  
-
-        var headerShowLayout = new Show.Layout();
- 
- 
-
-      var headerShowTopbar = new Show.Topbar({});
-  		headerShowLayout.on("show",function(){
-  		headerShowLayout.navbarRegion.show(headerShowTopbar);
- 		}); // on:show
-
-  headerShowTopbar.on("nav:item_clicked",function(data){
-
-
-        
-    });
-
-
-
-       headerShowTopbar.on("nav:help",function(){
-
-            require(["entities/util"], function(UtilEntities){
-
-                  var fetchingHelpTexts= UtilEntities.API.getHelpText(IPS_App.getCurrentRoute(),currentUser.get('userRole'));
-
-
-                  $.when(fetchingHelpTexts).done(function(helptexts){
-       
-
-                  var helpModal = new Show.Help({
-                    helpitems:helptexts.helpItems,
-                    asModal:true
-                  }); 
-
-               IPS_App.mainLayout.showChildView('dialogRegion',helpModal);
-
-            }); // when fetchingHelp
-
-        }); // require
-           
-       });
-
-
-
-      
-
-
-      headerShowTopbar.on("nav:exit",function(){
-     IPS_App.trigger("home:portal");
-    });
-
-
-      IPS_App.mainLayout.showChildView('headerRegion',headerShowTopbar);
-
-
- 
-    } // showHeader
-
-  }
-
-
-
-
-  function getItemByUrl(navItems,url){
-  
-  var result;
-
-        for (key in navItems){
-
-          if(navItems[key].url==url){
-            result= navItems[key];
-          }
-
-          else{
-
-              for (key2 in navItems[key].nav_children){
-                      if(navItems[key].nav_children[key2].url==url){
-                      result= navItems[key].nav_children[key2];
-                      }           
-              }
-
-          }
-
-        }
-
-return result;
-
-}
-
-
-
-return Controller;
-
-});
-
-
-define('apps/header/header_app',["marionette","app"], function(Marionette,IPS_App){
-
-	var HeaderApp={};
-
-		HeaderApp.API = {
-			showHeader: function(callback){
-				require(["apps/header/show/show_controller"], function(ShowController){
-					ShowController.showHeader();
-					callback();
-					
-				});
-			}
-		};
-
-	// HeaderApp.on("start", function(){
-	// 	API.showHeader();
-	// });	
-
-
-  return HeaderApp; 	
-
-});
-
-define("tpl!apps/home/show/templates/layout.tpl", function () { return function(obj){
+define("tpl!apps/users/login/templates/loginform.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='    <div id="hl-region"></div>\n\n    <div id="hub-region"></div>\n';
+__p+='\r\n<div class="modal fade" id="loginModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\r\n <div class="modal-dialog">\r\n <div class="modal-content">\r\n      <div class="modal-header">\r\n            <legend>Login</legend>\r\n              <div type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </div>\r\n      </div>\r\n       <div class="modal-body">\r\n<form>\r\n  <div class="form-group">\r\n    <label for="email">Email address</label>\r\n    <input type="email" class="form-control" id="email" name="email"aria-describedby="emailHelp" placeholder="Enter email">\r\n    <small id="emailHelp" class="form-text text-muted">We\'ll never share your email with anyone else.</small>\r\n  </div>\r\n  <div class="form-group">\r\n    <label for="password">Password</label>\r\n    <input type="password" class="form-control" name="password" id="password" placeholder="Password">\r\n  </div>\r\n\r\n  <button type="submit" class="btn btn-primary js-loginsubmit">Submit</button>\r\n</form>\r\n</div>\r\n</div>\r\n\r\n</div>\r\n</div>\r\n\r\n';
 }
 return __p;
 };});
-
-
-define("tpl!apps/home/show/templates/header.tpl", function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='\n<div class="container">\n\n<div style="text-align: center;">\n\n<h1 style="padding: 15px; margin-bottom: 50px;margin-top: 30px"> UIF Prototype - PoCoWeb </h1>\n</div>\n\n</div>';
-}
-return __p;
-};});
-
-// ===========================
-// apps/home/home/home_view.js
-// ===========================
-
-define('apps/home/show/show_view',["marionette","app","common/views","common/util",
- "tpl!apps/home/show/templates/layout.tpl",
- "tpl!apps/home/show/templates/header.tpl",
-
-], function(Marionette,App,Views,Util,layoutTpl,headerTpl){
-
-
-  var Home = {};
-
-  Home.Layout =Marionette.View.extend({
-  template: layoutTpl,
-  regions:{
-    headerRegion: "#hl-region",
-    hubRegion: "#hub-region",
-  },
-  className:"home_container"
- 
-  });
-
-
- Home.Header = Marionette.View.extend({
-     template:headerTpl
-  });
-
-
- Home.Hub = Views.CardHub.extend({
-  
- })
-
-
-return Home;
-
-
-});
-
-// =================================
-// apps/home/show/home_controller.js
-// =================================
-
-define('apps/home/show/show_controller',["app","common/util","apps/home/show/show_view","apps/header/show/show_view"], function(App,Util,Home,Header){
-
-
- var Controller = {
-
- 	showHome: function(){
-         $(window).scrollTop(0);
-
-            
-		var homeHomeLayout = new Home.Layout();
-		var homeHomeHeader = new Home.Header();
-
-
-        var cards = [
-        {
-                "color": "green",
-                "icon": "fa-align-left",
-                "id": "test_btn",
-                "name": "Projects",
-                "seq": 1,
-                "text": "Test pages for OCR projects.",
-                "url": "projects:list",
-            }, {
-                "color": "blue",
-                "icon": "fa-book",
-                "id": "doc_button",
-                "name": "Api-Documentation",
-                "seq": 3,
-                "text": "Documentation of API-routes.",
-                "url": "docs:show",
-            }, {
-                "color": "purple",
-                "icon": "fa-question-circle-o",
-                "id": "about_btn",
-                "name": "About",
-                "seq": 4,
-                "text": "About this project.",
-                "url": "about:home",
-        }]
-
-
-		var homeHomeHub = new Home.Hub({cards:cards,currentRoute:"home"});
-
-        homeHomeHub.on("cardHub:clicked",function(data){
-            App.trigger(data.url);
-        })       
-
-		homeHomeLayout.on("attach",function(){
-
-                homeHomeLayout.showChildView('headerRegion',homeHomeHeader);
-                homeHomeLayout.showChildView('hubRegion',homeHomeHub);
-	
-      
- 		}); // on:show
-
-
-
-         App.mainLayout.showChildView('mainRegion',homeHomeLayout);
-
-
-
-
-	}
- }
-
-return Controller;
-
-});
-
-
-
-define('apps/home/home_app',["marionette","app"], function(Marionette,IPS_App){
-
-	var HomeApp = {};
-
-	HomeApp.Router = Marionette.AppRouter.extend({
-		appRoutes: {
-			"home":"homePortal",
-		}
-	});
-
-
-	API = {
-		homePortal: function(){
-			require(["apps/home/show/show_controller"], function(HomeController){
-       				HomeController.showHome();
-				});
-		},
-	};
-
-	IPS_App.on("home:portal",function(){
-		IPS_App.navigate("home");
-		API.homePortal();
-	});
-
-	
-	var router = new HomeApp.Router({
-		controller: API,
-	});
-
-
- return HomeApp; 	
-
-});
-
-define("tpl!apps/footer/show/templates/footer.tpl", function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div id="footer">\n\n<div class="footercontainer">\n		<div class="footer_text">OCRD Project </div> \n </div>\n		\n</div>\n';
-}
-return __p;
-};});
-
-// =============================
-// apps/footer/show/show_view.js
-// =============================
-
-define('apps/footer/show/show_view',["marionette","app","common/views",
-        "tpl!apps/footer/show/templates/footer.tpl"
- ], function(Marionette,IPS_App,views,footerTpl){
-
- 	var Show={};
-
-	Show.Footer = Marionette.View.extend({
-		template: footerTpl,
-
-		onAttach: function(){
-
-				
-		}
-	  
-		});
-
-return Show;
-
-});
-
-
-
-define('apps/footer/show/show_controller',["marionette","app","apps/footer/show/show_view"], function(Marionette,IPS_App,Show){
-
-
-
- var Controller = {
-
-		showFooter: function(){
-			var footerView = new Show.Footer();
-     		IPS_App.mainLayout.showChildView('footerRegion',footerView);
-		}
-
-	}
-
-
-return Controller;
-
-});
-
-
-define('apps/footer/footer_app',["marionette","app"], function(Marionette,IPS_App){
-
-	var FooterApp={};
-
-	FooterApp.API = {
-		showFooter: function(){
-			require(["apps/footer/show/show_controller"], function(ShowController){
-       				ShowController.showFooter();
-				});
-		}
-	};
-
-
-
-
- return FooterApp; 	
-
-});
 
 (function(root) {
 define("backbone.syphon", ["backbone"], function() {
@@ -25758,6 +25404,652 @@ return root.Backbone = Backbone;
   }).apply(root, arguments);
 });
 }(this));
+
+
+define('apps/users/login/login_view',["app","marionette",
+  "tpl!apps/users/login/templates/loginform.tpl",
+   "backbone.syphon",
+   "common/util"
+  ],
+function(App,Marionette,loginformTpl,syphon,Util){
+
+  var Login = {};
+
+
+ Login.Form = Marionette.View.extend({
+   template: loginformTpl,
+   events: {
+   "click .js-loginsubmit": "submitClicked"
+
+   },
+
+   submitClicked: function(e){
+   e.preventDefault();
+   var data = Backbone.Syphon.serialize(this);
+  
+   
+    //  var preValidate = this.model.isValid(['username', 'password']);
+    // console.log(preValidate);
+    this.trigger("login:submit", data);
+   },
+
+  customValidate: function(data){
+
+        if(!this.model.isValid('username')) { var error = this.model.preValidate('username', data['username']); Util.showFormErrors("username",error); }
+        if(!this.model.isValid('password')) { var error = this.model.preValidate('password', data['password']); Util.showFormErrors("password",error); }
+
+        if(this.model.isValid('username')) { var error = this.model.preValidate('username', data['username']); Util.hideFormErrors("username"); }
+        if(this.model.isValid('password')) { var error = this.model.preValidate('password', data['password']); Util.hideFormErrors("password"); }
+
+     if(this.model.isValid(['username', 'password'])){
+      return true;
+      } 
+
+      return false;
+     
+
+     },     
+
+   // onRender: function(){
+   //   Backbone.Validation.bind(this, {
+   //   valid: function(view, attr){
+   //    // hide errors on the `attr` attribute from the view
+   //    hideFormErrors(attr);
+
+   //   },
+   //   invalid: function(view, attr, error){
+   //   // show errors on the `attr` attribute from the view
+   //     showFormErrors(attr,error);
+   //   }
+   //  });
+  
+   // },
+
+   // onShow: function(){
+   //   if(this.options.asModal){
+
+
+
+   //  }
+   //   else {
+   //     var $title = $('#formhl');
+   //   $title.text(this.title);
+   //  }
+   // }
+  
+});
+
+
+
+return Login;
+
+
+});
+
+
+// ================
+// entities/users.js
+// ================
+
+define('entities/users',["app"], function(App){
+
+  var Entities={};
+
+Entities.API = {
+
+
+  getJson: function(data){
+    var defer = jQuery.Deferred();
+        $.ajax({
+        headers: { 
+        'Accept': 'application/json',
+        'Content-Type': 'application/json' 
+         },
+        url: "assets/js/api.json",
+        type: "GET",
+        dataType:"json",
+        success: function(data) {
+          console.log(data)
+          defer.resolve(data);
+
+            },
+            error: function(data){
+              defer.resolve(undefined);
+            }
+    });
+
+
+    return defer.promise();
+    
+},
+
+  
+  login: function(data){
+
+    data['backend_route'] = "login";
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(data);
+            },
+            error: function(data){
+              defer.resolve(undefined);
+            }
+    });
+
+    return defer.promise();
+  },
+
+
+
+};
+
+
+
+return Entities;
+
+});
+
+// ================
+// entities/util.js
+// ================
+
+define('entities/util',["app"], function(App){
+
+  var Entities={};
+
+ 
+
+Entities.API = {
+
+
+  startTraining: function(data){
+    var defer = jQuery.Deferred();
+    $.ajax({
+         headers: { 
+        'Accept': 'application/json',
+        'Content-Type': 'application/json' 
+        },
+        url: "/api/trainclassifier",
+        type: "POST",
+        data:JSON.stringify(data),
+        success: function(data) {
+
+             defer.resolve(data);
+
+            },
+            error: function(data){
+              defer.resolve(undefined);
+            }
+    });
+
+    return defer.promise();
+    
+}
+
+
+};
+
+
+
+return Entities;
+
+});
+
+// ===================================
+// apps/header/show/show_controller.js
+// ===================================
+
+define('apps/header/show/show_controller',["app","common/util","apps/header/show/show_view","apps/users/login/login_view"], function(App,Util,Show,Login){
+
+
+  var Controller = {
+
+   showHeader: function(){
+
+
+          require(["entities/users"], function(UserEntities){
+
+
+        var headerShowLayout = new Show.Layout();
+         var headerLogin ;
+ 
+
+      var headerShowTopbar = new Show.Topbar({});
+  		headerShowLayout.on("show",function(){
+  		headerShowLayout.navbarRegion.show(headerShowTopbar);
+ 		}); // on:show
+
+  headerShowTopbar.on("nav:item_clicked",function(data){
+
+
+        
+    });
+
+  headerShowTopbar.on("nav:login",function(data){
+     headerLogin = new Login.Form();
+     App.mainLayout.showChildView('dialogRegion',headerLogin);
+     $('#loginModal').modal();
+
+
+     headerLogin.on("login:submit",function(data){
+     $('#loginModal').modal('hide');
+
+    var loggingInUser = UserEntities.API.login(data);
+
+
+                 $.when(loggingInUser).done(function(result){
+
+                  if(App.getCurrentRoute()=="home"){
+                 
+                  var newMsg = new Show.Message({message:result,type:'success'});
+
+                  App.mainLayout._regions.mainRegion.currentView.showChildView('msgRegion',newMsg);
+                  }
+
+                  console.log(result)
+
+                    // TO DO
+                })
+
+     console.log(data)
+    });
+
+    });
+
+  
+
+
+
+       headerShowTopbar.on("nav:help",function(){
+
+            require(["entities/util"], function(UtilEntities){
+
+                  var fetchingHelpTexts= UtilEntities.API.getHelpText(App.getCurrentRoute(),currentUser.get('userRole'));
+
+
+                  $.when(fetchingHelpTexts).done(function(helptexts){
+       
+
+                  var helpModal = new Show.Help({
+                    helpitems:helptexts.helpItems,
+                    asModal:true
+                  }); 
+
+               App.mainLayout.showChildView('dialogRegion',helpModal);
+
+            }); // when fetchingHelp
+
+        }); // require
+           
+       });
+
+
+
+      
+
+
+      headerShowTopbar.on("nav:exit",function(){
+     App.trigger("home:portal");
+    });
+
+
+      App.mainLayout.showChildView('headerRegion',headerShowTopbar);
+
+
+    });
+  
+    } // showHeader
+
+  }
+
+
+
+
+  function getItemByUrl(navItems,url){
+  
+  var result;
+
+        for (key in navItems){
+
+          if(navItems[key].url==url){
+            result= navItems[key];
+          }
+
+          else{
+
+              for (key2 in navItems[key].nav_children){
+                      if(navItems[key].nav_children[key2].url==url){
+                      result= navItems[key].nav_children[key2];
+                      }           
+              }
+
+          }
+
+        }
+
+return result;
+
+}
+
+
+
+return Controller;
+
+});
+
+
+define('apps/header/header_app',["marionette","app"], function(Marionette,IPS_App){
+
+	var HeaderApp={};
+
+		HeaderApp.API = {
+			showHeader: function(callback){
+				require(["apps/header/show/show_controller"], function(ShowController){
+					ShowController.showHeader();
+					callback();
+					
+				});
+			}
+		};
+
+	// HeaderApp.on("start", function(){
+	// 	API.showHeader();
+	// });	
+
+
+  return HeaderApp; 	
+
+});
+
+define("tpl!apps/home/show/templates/layout.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='    \n    <div id="msg-region"></div>\n    <div id="hl-region"></div>\n    <div id="hub-region"></div>\n';
+}
+return __p;
+};});
+
+
+define("tpl!apps/home/show/templates/header.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='\n<div class="container">\n\n<div style="text-align: center;">\n\n<h1 style="padding: 15px; margin-bottom: 50px;margin-top: 30px">PoCoWeb - Post Correction Web </h1>\n\n</div>\n\n</div>';
+}
+return __p;
+};});
+
+// ===========================
+// apps/home/home/home_view.js
+// ===========================
+
+define('apps/home/show/show_view',["marionette","app","common/views","common/util",
+ "tpl!apps/home/show/templates/layout.tpl",
+ "tpl!apps/home/show/templates/header.tpl",
+
+], function(Marionette,App,Views,Util,layoutTpl,headerTpl){
+
+
+  var Home = {};
+
+  Home.Layout =Marionette.View.extend({
+  template: layoutTpl,
+  regions:{
+    headerRegion: "#hl-region",
+    hubRegion: "#hub-region",
+    msgRegion: "#msg-region"
+
+  },
+  className:"home_container"
+ 
+  });
+
+
+ Home.Header = Marionette.View.extend({
+     template:headerTpl,
+      triggers:{
+      "click .js-login":"home:login"
+     }
+  });
+
+ Home.Message = Views.Message.extend({
+    triggers:{
+      "click .js-login":"msg:login",
+     },
+  });
+
+ Home.Hub = Views.CardHub.extend({
+  
+ })
+
+
+return Home;
+
+
+});
+
+// =================================
+// apps/home/show/home_controller.js
+// =================================
+
+define('apps/home/show/show_controller',["app","common/util","apps/home/show/show_view","apps/header/show/show_view","apps/users/login/login_view"], function(App,Util,Home,Header,Login){
+
+
+ var Controller = {
+
+ 	showHome: function(){
+         $(window).scrollTop(0);
+
+       require(["entities/users"], function(UserEntities){
+
+		var homeHomeLayout = new Home.Layout();
+		var homeHomeHeader = new Home.Header();
+        var homeHomeMsg = new Home.Message({message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>',type:'info'});
+
+        var cards = [
+        {
+                "color": "green",
+                "icon": "fa-align-left",
+                "id": "test_btn",
+                "name": "Projects",
+                "seq": 1,
+                "text": "Test pages for OCR projects.",
+                "url": "projects:list",
+            }, {
+                "color": "blue",
+                "icon": "fa-book",
+                "id": "doc_button",
+                "name": "Api-Documentation",
+                "seq": 3,
+                "text": "Documentation of API-routes.",
+                "url": "docs:show",
+            }, {
+                "color": "purple",
+                "icon": "fa-question-circle-o",
+                "id": "about_btn",
+                "name": "About",
+                "seq": 4,
+                "text": "About this project.",
+                "url": "about:home",
+        }]
+
+
+		var homeHomeHub = new Home.Hub({cards:cards,currentRoute:"home"});
+
+        homeHomeHub.on("cardHub:clicked",function(data){
+            App.trigger(data.url);
+        })       
+
+		homeHomeLayout.on("attach",function(){
+                homeHomeLayout.showChildView('msgRegion',homeHomeMsg);
+                homeHomeLayout.showChildView('headerRegion',homeHomeHeader);
+                homeHomeLayout.showChildView('hubRegion',homeHomeHub);
+	
+      
+ 		}); // on:show
+
+      homeHomeMsg.on("msg:login",function(data){
+        var headerLogin = new Login.Form();
+         App.mainLayout.showChildView('dialogRegion',headerLogin);
+         $('#loginModal').modal();
+
+                 headerLogin.on("login:submit",function(data){
+                 $('#loginModal').modal('hide');
+
+                var loggingInUser = UserEntities.API.login(data);
+
+
+                             $.when(loggingInUser).done(function(result){
+
+                              if(App.getCurrentRoute()=="home"){
+                             
+                              var newMsg = new Home.Message({message:result,type:'success'});
+
+                              App.mainLayout._regions.mainRegion.currentView.showChildView('msgRegion',newMsg);
+                              }
+
+                              console.log(result)
+
+                                // TO DO
+                            })
+
+                 console.log(data)
+                });
+
+        });
+
+
+
+
+         App.mainLayout.showChildView('mainRegion',homeHomeLayout);
+
+
+     });
+
+	}
+   
+ }
+
+
+
+return Controller;
+
+});
+
+
+
+define('apps/home/home_app',["marionette","app"], function(Marionette,App){
+
+	var HomeApp = {};
+
+	HomeApp.Router = Marionette.AppRouter.extend({
+		appRoutes: {
+			"home":"homePortal",
+		}
+	});
+
+
+	API = {
+		homePortal: function(){
+			require(["apps/home/show/show_controller"], function(HomeController){
+       				HomeController.showHome();
+				});
+		}
+	
+	};
+
+	App.on("home:portal",function(){
+		App.navigate("home");
+		API.homePortal();
+	});
+
+
+
+	var router = new HomeApp.Router({
+		controller: API,
+	});
+
+
+ return HomeApp; 	
+
+});
+
+define("tpl!apps/footer/show/templates/footer.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<div class="col-md-12">\n<hr>\n<footer class="footer">\n	<div class="text-muted footer-line text-center">\n		<a href="#">Back to top <span class="glyphicon glyphicon-menu-up"></span></a>\n	</div>\n	<div class="text-muted footer-line text-center">\n		Designed and built by the\n		<a target="_blank" href="http://cis.uni-muenchen.de">\n		Centrum für Informations- und Sprachverarbeitung (CIS)</a>.\n	</div>\n	<div class="text-muted footer-line text-center">\n		Code licensed under <a href="LICENSE">Apache-2.0</a>.\n		Documentation licensed under <a href="LICENSE">Apache-2.0</a>.\n	</div>\n	<div class="text-muted footer-line text-center">\n		This website uses cookies.\n	</div>\n</footer>\n</div>';
+}
+return __p;
+};});
+
+// =============================
+// apps/footer/show/show_view.js
+// =============================
+
+define('apps/footer/show/show_view',["marionette","app","common/views",
+        "tpl!apps/footer/show/templates/footer.tpl"
+ ], function(Marionette,IPS_App,views,footerTpl){
+
+ 	var Show={};
+
+	Show.Footer = Marionette.View.extend({
+		template: footerTpl,
+
+		onAttach: function(){
+
+				
+		}
+	  
+		});
+
+return Show;
+
+});
+
+
+
+define('apps/footer/show/show_controller',["marionette","app","apps/footer/show/show_view"], function(Marionette,IPS_App,Show){
+
+
+
+ var Controller = {
+
+		showFooter: function(){
+			var footerView = new Show.Footer();
+     		IPS_App.mainLayout.showChildView('footerRegion',footerView);
+		}
+
+	}
+
+
+return Controller;
+
+});
+
+
+define('apps/footer/footer_app',["marionette","app"], function(Marionette,IPS_App){
+
+	var FooterApp={};
+
+	FooterApp.API = {
+		showFooter: function(){
+			require(["apps/footer/show/show_controller"], function(ShowController){
+       				ShowController.showFooter();
+				});
+		}
+	};
+
+
+
+
+ return FooterApp; 	
+
+});
 
 
 define("tpl!apps/projects/common/templates/projectform.tpl", function () { return function(obj){
@@ -27349,6 +27641,915 @@ define('apps/docs/docs_app',["marionette","app"], function(Marionette,App){
 
 });
 
+
+define('apps/users/home/home_view',["app","common/views"], function(ResearchTool){
+
+ResearchTool.module("UsersApp.Home", function(Home,ResearchTool,
+Backbone,Marionette,$,_){
+
+  Home.Layout = ResearchTool.Common.Views.LoginUserLayout.extend({
+  });
+
+    Home.Header = ResearchTool.Common.Views.Header.extend({
+    initialize: function(){
+        this.title = "Users"
+
+        this.breadcrumbs = [
+        {name: "Users", url: "#/users",current:"true"},
+        ]
+      }
+  });
+
+
+  Home.Error = ResearchTool.Common.Views.LoginError.extend({});
+
+//  Home.Hub = ResearchTool.Common.Views.Hub.extend({
+//   initialize: function(){
+
+//         this.rows = [
+//         {
+//          name: "Database",
+//          icon:"fa fa-database",
+//          items:[
+//            {name:"Browse",url:"#users/browse",icon:"fa fa-list-alt",loggedIn:true},
+//            {name:"Query",url:"#users/query",icon:"fa fa-question",loggedIn:true},
+//            {name:"Create New Account",url:"#users/new",icon:"fa fa-user-plus",loggedIn:true},
+//          ]
+//         },
+//         {
+//        name: "Statistics",
+//        icon:"fa fa-bar-chart",
+//        items:[
+//          {name:"Charts",url:"#users/statistics/charts",icon:"fa fa-pie-chart",loggedIn:true},
+//          {name:"Query",url:"#users/statistics/query",icon:"fa fa-question",loggedIn:true},
+//        ]
+//       },
+
+
+//         ]
+//       }
+//  })
+
+// });
+
+Home.Hub = ResearchTool.Common.Views.IconHub.extend({
+  initialize: function(){
+        this.maxrowlength=3,
+        this.rows = [
+        {
+         needsLogin:true,
+         name: "Database",
+           items:[
+              {
+             name:"My Account",
+             url:"#users/"+this.model.get('user_id'),
+             icon:"fa fa-user",
+             subheader:"Information on my account",
+             loggedIn:false
+             },
+             {
+             name:"Browse",
+             url:"#users/browse",
+             icon:"fa fa-list-alt",
+             subheader:"Browse the users database",
+             loggedIn:false
+             },
+             //  {
+             // name:"Create New Account",
+             // url:"#users/new",
+             // icon:"fa fa-user-plus",
+             // subheader:"Add a new user",
+             // loggedIn:true
+             // },
+           ]
+           },
+           //  {
+           //  needsLogin:true,
+           // name: "Statistics",
+           //  items:[
+           //   {
+           //   name:"Charts",
+           //   url:"#users/statistics/charts",
+           //   icon:"fa fa-pie-chart",
+           //   subheader:"Interactive charts concerning the users database",
+           //   loggedIn:false
+           //   },
+           //    {
+           //   name:"Query",
+           //   url:"#users/statistics/query",
+           //   icon:"fa fa-bar-chart",
+           //   subheader:"Query result as a chart",
+           //   loggedIn:false
+           //   },
+    
+           // ]
+           // }
+    
+
+
+        ]
+      }
+ })
+
+});
+
+
+return ResearchTool.UsersApp.Home;
+
+});
+
+
+
+define('apps/users/home/home_controller',["app","common/util","apps/users/home/home_view"], function(ResearchTool,Util){
+
+ResearchTool.module("UsersApp.Home", function(Home, ResearchTool, Backbone, Marionette, $, _){
+
+ Home.Controller = {
+
+ 	showHome: function(){
+
+   		require(["entities/users"], function(){
+
+   		var backdropView = new ResearchTool.Common.Views.LoadingBackdropOpc();
+   		ResearchTool.backdropRegion.show(backdropView);
+   		
+		var currentUser = ResearchTool.request('app:currentUser');
+    	var fetchingAuthCheck = ResearchTool.request("auth:authcheck");
+
+		$.when(currentUser,fetchingAuthCheck).done(function(currentUser){
+        backdropView.destroy();
+
+		var usersHomeLayout = new Home.Layout({model:currentUser});
+	 	var	usersHomeHeader = new Home.Header();
+		var	usersHomeHub = new Home.Hub({model:currentUser});
+
+
+			usersHomeLayout.on("show",function(){
+			
+				usersHomeLayout.headerRegion.show(usersHomeHeader);
+				usersHomeLayout.contentRegion.show(usersHomeHub);
+
+    		});
+
+
+			
+		usersHomeLayout.on("currentuser:loggedOut",function(){
+			ResearchTool.UsersApp.Home.Controller.showHome();
+ 		}); // on:loggedOut
+
+	
+		
+		ResearchTool.mainRegion.show(usersHomeLayout);
+		}).fail(function(response){ 
+
+ 			      backdropView.destroy();
+				  var errortext = Util.getErrorText(response);    
+                  var errorView = new Home.Error({model: currentUser,errortext:errortext})
+
+                  errorView.on("currentuser:loggedIn",function(){
+					    ResearchTool.UsersApp.Home.Controller.showHome();
+                  });
+
+                  ResearchTool.mainRegion.show(errorView);    // $when
+
+          }); //  $.when(fetchingAuth).done // $when fetchingUsers
+
+		}); // require
+
+	}
+ }
+});
+
+return ResearchTool.UsersApp.Home.Controller;
+
+});
+define('apps/users/list/list_view',["app","common/views"], function(App){
+
+
+var List = {}
+
+  List.Layout = App.Common.Views.LoginUserLayout.extend({    
+  });
+
+  
+    List.Header = App.Common.Views.Header.extend({
+    initialize: function(){
+        this.title = "Browse: Users"
+
+        this.breadcrumbs = [
+        {name: "Users", url: "#/users"},
+        {name: "Browse", url: "#/users",current:"true"},
+
+        ]
+      }
+  });
+
+
+  List.UsersList = App.Common.Views.DataTable.extend({
+   initialize: function(){
+        this.urlroot="users"
+
+        this.headers = [
+          {name: "Username"},
+          {name: "Role"},
+          {name: "Email"},
+          {name: "Verified"}
+        ]
+
+        this.columns = [
+        {name:"username",id:"user_id"},
+        {name:"role",id:"user_id"},
+        {name:"email",id:"user_id"},
+        {name:"verified",id:"user_id"},
+
+        ]
+
+    
+        }
+   
+  });
+
+
+ List.Error = App.Common.Views.LoginError.extend({});
+
+
+
+
+return List;
+
+});
+
+
+define('apps/users/list/list_controller',["app","common/util","apps/users/list/list_view"], function(App,Util){
+
+
+ var Controller = {
+
+ 	listUsers: function(){
+		
+   		require(["entities/users"], function(){
+
+   		var backdropView = new App.Common.Views.LoadingBackdropOpc();
+   		App.backdropRegion.show(backdropView);
+   		
+		var currentUser = App.request('app:currentUser');
+    	var fetchingUsers = App.request("user:entities");
+    	var fetchingAuthCheck = App.request("auth:authcheck");
+
+		usersListLayout = new List.Layout({model:currentUser});
+
+    	 $.when(fetchingUsers,fetchingAuthCheck).done(function(users){
+     	 	backdropView.destroy();
+	
+		usersListLayout.on("show",function(){
+
+ 			var usersListHeader = new List.Header();
+			var usersListView = new List.UsersList({collection: users});
+
+			  usersListLayout.headerRegion.show(usersListHeader);
+			  usersListLayout.contentRegion.show(usersListView);	
+
+ 		}); // on:show
+
+		usersListLayout.on("currentuser:loggedOut",function(){
+			App.UsersApp.List.Controller.listUsers();
+ 		}); // on:loggedOut
+
+
+		App.mainRegion.show(usersListLayout);
+
+		}).fail(function(response){ 
+
+
+ 			      backdropView.destroy();
+				  var errortext = Util.getErrorText(response);    
+                  var errorView = new List.Error({model: currentUser,errortext:errortext})
+
+                  errorView.on("currentuser:loggedIn",function(){
+					    App.UsersApp.List.Controller.listUsers();
+                  });
+
+                  App.mainRegion.show(errorView);   
+                          
+                         
+                                        
+          }); //  $.when(fetchingAuth).done // $when fetchingUsers
+
+		}); // require
+	}
+ }
+
+
+return Controller;
+
+});
+
+define('apps/users/login/login_controller',["app","apps/users/login/login_view"], function(App){
+
+  
+  var Controller = {
+
+    showLogin: function(){
+
+      var loginFormView = new Login.Form({
+				asModal:true
+	  });
+	  App.dialogRegion.show(loginFormView);
+
+    }
+
+}
+
+return App.UsersApp.Login.Controller;
+
+
+});
+
+define("tpl!apps/users/show/templates/layout.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<div id="hl-region"></div>\r\n    <div id="panel-region"></div>\r\n    <div id="info-region" ></div>';
+}
+return __p;
+};});
+
+
+define("tpl!apps/users/show/templates/panel.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='  <div class="large-12 columns">\r\n    <a href="#/users/'+
+((__t=(id))==null?'':_.escape(__t))+
+'/edit" class="button success right js-edit-user"> <i class="fa fa-pencil"></i> Edit</a>\r\n  </div>';
+}
+return __p;
+};});
+
+
+define("tpl!apps/users/show/templates/info.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+=' <div class="large-12 columns bg_layer">\r\n\r\n  <h3> User Information: </h3>\r\n  <fieldset> \r\n  <div> Firstname: '+
+((__t=( firstname ))==null?'':_.escape(__t))+
+' <div>  \r\n  <div> Lastname: '+
+((__t=( lastname ))==null?'':_.escape(__t))+
+' <div>  \r\n  <div> Role: '+
+((__t=( role ))==null?'':_.escape(__t))+
+' <div>  \r\n  <div> Email: '+
+((__t=( email ))==null?'':_.escape(__t))+
+' <div>\r\n<!-- 7  <div> Last Updated: '+
+((__t=( changed ))==null?'':_.escape(__t))+
+' <div> -->\r\n  <div> Verified: '+
+((__t=( verified ))==null?'':_.escape(__t))+
+' </div>\r\n  </fieldset>\r\n\r\n  ';
+ if(logs.length>0){
+__p+='<h3> Change Log: </h3> \r\n   <table id="log_table">\r\n     <thead>\r\n      <tr>\r\n        <th>Table</th>\r\n        <th>Action</th>\r\n        <th>Entity ID</th>\r\n        <th>Date</th>\r\n      </tr>\r\n     </thead>\r\n     <tbody>\r\n    ';
+ _.each(logs, function(log) { 
+__p+='  \r\n      <tr>\r\n      <td> <div class="resp_header" style="margin-right:5px">  Table: </div>  '+
+((__t=( log.tablename ))==null?'':_.escape(__t))+
+' </a> </td>\r\n      <td> <div class="resp_header" style="margin-right:5px"> Action: </div>  '+
+((__t=( log.action ))==null?'':_.escape(__t))+
+' </a> </td>\r\n      <td> <div class="resp_header" style="margin-right:5px"> Entity ID: </div> '+
+((__t=( log.entity_id ))==null?'':_.escape(__t))+
+' </a> </td>\r\n      <td> <div class="resp_header" style="margin-right:5px"> Date: </div> '+
+((__t=( log.time_tag ))==null?'':_.escape(__t))+
+'</a>  </td>\r\n      </tr>\r\n    ';
+ }); 
+__p+='\r\n\r\n     </tbody>\r\n    </table>\r\n\r\n';
+}
+__p+='\r\n\r\n  <button type="submit" class="medium button right js-back"> <i class="fa fa-chevron-left"></i> Back</button>\r\n\r\n  </div>\r\n';
+}
+return __p;
+};});
+
+
+define('apps/users/show/show_view',["app","common/views",
+        "tpl!apps/users/show/templates/layout.tpl",
+        "tpl!apps/users/show/templates/panel.tpl",
+        "tpl!apps/users/show/templates/info.tpl"
+
+  ], function(ResearchTool,views,layoutTpl,panelTpl,infoTpl){
+
+
+ResearchTool.module("UsersApp.Show", function(Show, ResearchTool, Backbone, Marionette, $, _){
+
+
+  Show.Layout = ResearchTool.Common.Views.LoginUserLayout.extend({
+    template:layoutTpl,
+    regions:{
+      headerRegion: "#hl-region",
+      panelRegion: "#panel-region",
+      infoRegion: "#info-region"
+    }
+
+  });
+
+
+  Show.Header = ResearchTool.Common.Views.Header.extend({
+    initialize: function(){
+        this.title = "User Account: "+this.model.get('username');
+
+        this.breadcrumbs = [
+        {name: "Users", url: "#/users"},
+        {name: this.model.get('username'), url: "#/users/"+this.model.get('user_id'),current:"true"},
+        ]
+      }
+  });
+
+
+
+  Show.Info = Marionette.ItemView.extend({
+      template: infoTpl,
+      className: "row bg_style",
+      events:{
+        "click button.js-back":   "backClicked",
+      },
+      backClicked: function(e){
+      e.preventDefault();
+      this.trigger("show:back");
+     }, 
+     onShow: function(){
+         $('#log_table').dataTable( {
+              "bAutoWidth": false,
+               "bStateSave": true,
+                 "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+               "iDisplayLength": 10
+            });
+      }          
+
+  });
+
+
+
+  Show.Panel = Marionette.ItemView.extend({
+      template: panelTpl,
+      className: "row"         
+  });
+
+
+ Show.Error = ResearchTool.Common.Views.LoginError.extend({});
+
+
+	Show.MissingUser = ResearchTool.Common.Views.Error.extend({errortext:"Error 404: User not found"});
+
+
+});
+
+return ResearchTool.UsersApp.Home;
+
+});
+
+
+
+define('apps/users/show/show_controller',["app","common/util","apps/users/show/show_view"], function(App,Util){
+
+
+ var Controller = {
+
+		showUser: function(id){
+
+	   		require(["entities/users"], function(){
+
+	   		var backdropView = new App.Common.Views.LoadingBackdropOpc();
+	   		App.backdropRegion.show(backdropView);
+
+			var currentUser = App.request('app:currentUser');
+			var fetchingUser= App.request("user:entity",id);
+
+			$.when(fetchingUser).done(function(user){
+			backdropView.destroy();
+
+		 	//currentUser.set({"url_id":id}); // pass url_id to view..
+			var userShowLayout = new Show.Layout({model:currentUser,preventDestroy:true});
+
+			var userShowHeader;
+     		var userShowPanel;
+			var userShowInfo;
+	
+			userShowLayout.on("show",function(){
+			  
+
+			  userShowHeader = new Show.Header({model:user,preventDestroy:true});
+			  userShowPanel = new Show.Panel({model:user,preventDestroy:true});
+			  userShowInfo = new Show.Info({model:user,preventDestroy:true});
+			 
+		      userShowLayout.headerRegion.show(userShowHeader);
+			  userShowLayout.panelRegion.show(userShowPanel);
+			  userShowLayout.infoRegion.show(userShowInfo);
+
+			   userShowInfo.on("show:back",function(){
+			  	 App.trigger("users:list");
+			  });
+
+
+    		}); // show
+
+
+			userShowLayout.on("currentuser:loggedOut",function(){
+				console.log("loggedOut");
+				App.UsersApp.Show.Controller.showUser(id);
+	 		}); // on:loggedOut
+
+
+
+
+			App.mainRegion.show(userShowLayout);
+
+
+    		}).fail(function(response){ 
+
+ 			      backdropView.destroy();
+				  var errortext = Util.getErrorText(response);    
+                  var errorView = new Show.Error({model: currentUser,errortext:errortext})
+
+                  errorView.on("currentuser:loggedIn",function(){
+					    App.UsersApp.Show.Controller.showUser(id);
+                  });
+
+                  App.mainRegion.show(errorView);  
+
+          }); //  $.when(fetchingAuth).done // $when fetchingUser;
+
+    	}) // require
+    	
+		}
+
+	}
+
+
+return Controller;
+
+});
+
+define("tpl!apps/users/common/templates/userform.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='\r\n<div class="large-12 columns bg_layer">\r\n\r\n<form id="user-form" >\r\n  <fieldset>\r\n   ';
+ if(username=="") { 
+__p+=' \r\n    <legend>Register</legend>\r\n   ';
+ } 
+__p+=' \r\n\r\n   <div class="row">\r\n      <div class="small-6 columns ">\r\n        <label for="username">Username <small>required</small>\r\n         <input type="text" id="username" name="username" required pattern="[a-z-A-Z]+" placeholder="Username" autocomplete="off" value="'+
+((__t=(username))==null?'':_.escape(__t))+
+'">\r\n         <small class="error" style="display: none;"></small>\r\n        </label>\r\n\r\n      </div>\r\n     </div>\r\n\r\n\r\n <div class="row">\r\n      <div class="large-6 columns">\r\n        <label for="firstname">Firstname <small>required</small>\r\n          <input  type="text" id="firstname" placeholder="Firstname" name="firstname" required="" value="'+
+((__t=(firstname))==null?'':_.escape(__t))+
+'">\r\n          <small class="error" style="display: none;"></small>\r\n        </label>\r\n      </div>\r\n     <div class="large-6 columns">\r\n        <label for="lastname">Lastname <small>required</small>\r\n          <input  type="text" id="lastname" placeholder="Lastname" name="lastname" required="" value="'+
+((__t=(lastname))==null?'':_.escape(__t))+
+'">\r\n          <small class="error" style="display: none;"></small>\r\n        </label>\r\n      </div> \r\n    </div>\r\n\r\n\r\n     ';
+ if(username=="") { 
+__p+=' \r\n\r\n    <div class="row">\r\n      <div class="large-6 columns">\r\n        <label for="password">Password <small>required</small>\r\n          <input type="password" id="password" placeholder="Password" name="password" required="">\r\n          <small class="error" style="display: none;"></small>\r\n        </label>\r\n      </div>\r\n     <div class="large-6 columns">\r\n        <label for="confirmPassword">Confirm Password <small>required</small>\r\n          <input type="password" id="confirmPassword" placeholder="Confirm Password" name="confirmPassword" required="" data-equalto="password">\r\n          <small class="error" style="display: none;"></small>\r\n        </label>\r\n      </div> \r\n    </div>\r\n\r\n    ';
+ } 
+__p+=' \r\n\r\n\r\n\r\n    <div class="row">\r\n      <div class="large-6 columns">\r\n        <label for="email">Email\r\n          <input type="email" id="email" placeholder="me@xyz.com"  name="email"  required=""value="'+
+((__t=(email))==null?'':_.escape(__t))+
+'" >\r\n          <small class="error" style="display: none;"></small>\r\n        </label>\r\n      </div>\r\n    </div>\r\n\r\n\r\n\r\n ';
+ if(role_idx>1) { 
+__p+=' \r\n\r\n\r\n  <div class="row">\r\n        <div class="small-6 columns ">\r\n          <label for="role">Role <small>required</small>\r\n          <select id="roles">\r\n          ';
+ _.each(roles, function(role_item) { 
+__p+='  \r\n           <option value="'+
+((__t=(role_item))==null?'':_.escape(__t))+
+'">'+
+((__t=(role_item))==null?'':_.escape(__t))+
+'</option>\r\n          ';
+ }); 
+__p+='\r\n\r\n           </select> \r\n          <small class="error" style="display: none;"></small>\r\n          </label>\r\n\r\n        </div>\r\n </div>\r\n\r\n  <div class="row">\r\n\r\n\r\n  <div class="medium-6 columns">\r\n  <input id="verified_checkbox" type="checkbox"><label for="verified_checkbox">Verified </label>\r\n  </div>\r\n\r\n\r\n  <div class="medium-6 columns">\r\n  <input id="notify" type="checkbox"><label for="notify">Notify user via email about account verification </label>\r\n  </div>\r\n</div>\r\n\r\n ';
+ } 
+__p+=' \r\n\r\n\r\n\r\n ';
+ if(username=="") { 
+__p+=' \r\n\r\n    <div class="row">\r\n      <div class="large-6 columns">\r\n        <label for="securitycode">Security Code\r\n          <input type="text" id="securitycode" placeholder="Please enter the correct answer to the calculation on the right"  name="securitycode"  required=""value="'+
+((__t=(securitycode))==null?'':_.escape(__t))+
+'" >\r\n          <small class="error" style="display: none;"></small>\r\n        </label>\r\n      </div>\r\n\r\n      <div class="large-6 columns" style="text-align: center">\r\n        <fieldset class="captcha_set" >\r\n         <img src="assets/images/captcha/'+
+((__t=(captcha))==null?'':_.escape(__t))+
+'" style="margin-bottom:2px" >\r\n         </fieldset>\r\n      </div>\r\n    </div>\r\n\r\n';
+ } 
+__p+='\r\n\r\n\r\n    <div class="row">\r\n      <div class="large-12 columns">\r\n        <hr>\r\n      </div>\r\n    </div>\r\n\r\n\r\n    <div class="row">\r\n      <div class="large-12 columns">\r\n\r\n       ';
+ if(username=="") { 
+__p+=' \r\n         <!-- <button type="submit" class="medium button success js-submit">Submit</button> -->\r\n\r\n         <div class="left">\r\n\r\n         <div class="small_icon_parent">\r\n\r\n                 \r\n                  <img src="assets/images/icons/bg_icon.png">\r\n                  <a class="js-submit">\r\n                  <div class="small_btniconcontainer">\r\n                  <i class="fa fa-check"></i>\r\n                  </div>\r\n                  </a>\r\n                 \r\n\r\n                  <a class="js-submit">\r\n                  <div class="small_bubblebtnbackground"> </div>\r\n                  </a>\r\n                  <div class="small_bubbleshadow"> </div>\r\n        </div>\r\n\r\n      <div class="center_parent">\r\n      <p class="defaultsh subheader">Submit</p>\r\n      </div>\r\n      </div>\r\n\r\n       ';
+ } else { 
+__p+=' \r\n         <div type="submit" class="medium button success js-submit">Update</div>\r\n         <div type="submit" class="medium button alert success js-delete">Delete</div>\r\n       ';
+ } 
+__p+=' \r\n\r\n        ';
+ if (asModal) { 
+__p+='\r\n         <!-- <button  type="submit" class="medium button right js-close"><i class="fa fa-times"></i></button> -->\r\n\r\n         <div class="right">\r\n\r\n         <div class="small_icon_parent">\r\n\r\n                 \r\n                  <img src="assets/images/icons/bg_icon.png">\r\n                  <a class="js-close">\r\n                  <div class="small_btniconcontainer">\r\n                  <i class="fa fa-close"></i>\r\n                  </div>\r\n                  </a>\r\n                 \r\n                  <a class="js-close">\r\n                  <div class="small_bubblebtnbackground"> </div>\r\n                  </a>\r\n                  <div class="small_bubbleshadow"> </div>\r\n        </div>\r\n\r\n        <div class="center_parent">\r\n        <p class="defaultsh subheader">Close</p>\r\n        </div>\r\n\r\n      </div>\r\n\r\n       ';
+ } else { 
+__p+='  \r\n          <button type="submit" class="medium button right js-back"><i class="fa fa-chevron-left"></i> Back</button>\r\n       ';
+ } 
+__p+=' \r\n      </div>\r\n    </div> \r\n\r\n  </fieldset>\r\n</form>\r\n\r\n</div>';
+}
+return __p;
+};});
+
+
+define('apps/users/common/views',["app",
+        "tpl!apps/users/common/templates/userform.tpl",
+        "common/util"
+	], function(ResearchTool,userformTpl,Util){
+
+ResearchTool.module("UsersApp.Common.Views", function(Views,ResearchTool,Backbone,Marionette,$,_){
+
+ Views.Form = Marionette.ItemView.extend({
+	 template: userformTpl,
+	 className:"row bg_style",
+	 events: {
+	 "click .js-submit": "submitClicked",
+	 "click .js-delete": "deleteClicked",
+	 "click .js-back":   "backClicked",
+	 "click .js-close":  "closeClicked"
+
+	 },
+	 initialize: function(){
+		
+ 	},
+
+	 submitClicked: function(e){
+		 e.preventDefault();
+  		var data = Backbone.Syphon.serialize(this);
+  		var role = $('#roles').find(":selected").text();
+  		data['role'] = role;
+  	 var checkBox =$('#notify').is(':checked');
+     var checkBoxValue=0;
+     if(checkBox) checkBoxValue=1;
+     data['notify'] = checkBoxValue;
+
+       checkBox =$('#verified_checkbox').is(':checked');
+       checkBoxValue=0;
+     if(checkBox) checkBoxValue=1;
+     data['verified'] = checkBoxValue;
+		this.trigger("form:submit", data);
+	 },
+
+	 deleteClicked: function(e){
+		  e.preventDefault();
+  		var data = Backbone.Syphon.serialize(this);
+	 },
+
+	 backClicked: function(e){
+		  e.preventDefault();
+			this.trigger("form:back");
+	 },
+
+ 	closeClicked: function(e){
+		  e.preventDefault();
+          this.$el.foundation('reveal', 'close');
+	 },
+
+
+	 onRender: function(){
+
+	 Backbone.Validation.bind(this, {
+		 valid: function(view, attr){
+		  // hide errors on the `attr` attribute from the view
+ 		 Util.hideFormErrors(attr);
+
+
+		 },
+		 invalid: function(view, attr, error){
+		 // show errors on the `attr` attribute from the view
+		 Util.showFormErrors(attr,error);
+
+		 }
+		});
+	 },
+
+	  onDomRefresh: function(){
+		 if(this.options.asModal){
+		  this.$el.removeClass("bg_style");
+  		  this.$el.children().removeClass("bg_layer");
+
+		  this.$el.addClass("reveal-modal");
+  		  this.$el.append('<a class="close-reveal-modal">&#215;</a>');
+		  this.$el.attr("data-reveal","");
+
+          this.$el.foundation('reveal', 'open');
+	      $(document).foundation('reflow');
+
+		}
+		$("#roles").val(this.model.get('role')); // set current
+
+		    if(this.model.get('verified')==1) {$("#verified_checkbox").prop('checked', true); }
+		    else $("#verified_checkbox").prop('checked', false);
+
+
+	 },
+
+	
+	 templateHelpers: function () {
+	    return {
+	           asModal: this.options.asModal,
+   	           role_idx: this.options.role_idx,
+   	           roles: this.options.roles,
+   	           captcha: this.options.captcha
+
+	     }
+  	 }
+
+	 });
+
+
+});
+
+return ResearchTool.UsersApp.Common.Views;
+
+
+});
+
+define('apps/users/edit/edit_view',["app","common/views","apps/users/common/views"], function(App){
+
+
+
+  Edit.Layout = App.Common.Views.LoginUserLayout.extend({});
+
+
+  Edit.Header = App.Common.Views.Header.extend({
+    initialize: function(){
+        this.title = "Edit User: "+this.model.get('username');
+
+        this.breadcrumbs = [
+        {name: "Users", url: "#/users"},
+        {name: this.model.get('username'), url: "#/users/"+this.model.get('user_id')},
+        {name: "Edit",current:"true"}
+        ]
+      }
+  });
+
+
+  Edit.User = App.UsersApp.Common.Views.Form.extend({});
+
+ Edit.Error = App.Common.Views.LoginError.extend({});
+
+
+
+return App.UsersApp.Edit;
+
+});
+
+
+
+
+
+define('apps/users/edit/edit_controller',["app","common/util","apps/users/edit/edit_view"], function(App,Util){
+
+
+
+var Controller = {
+
+		editUser: function(id){
+
+     		require(["entities/users"], function(){
+
+	   		var backdropView = new App.Common.Views.LoadingBackdropOpc();
+	   		App.backdropRegion.show(backdropView);
+
+			var currentUser = App.request('app:currentUser');
+			var roles = App.request("user_role:entities");
+			var fetchingUser= App.request("user:entity",id);
+
+			$.when(fetchingUser,currentUser).done(function(user,currentuser){
+			backdropView.destroy();
+		 //	currentUser.set({"url_id":id}); // pass url_id to view..
+			var userEditLayout = new Edit.Layout({model:currentUser,preventDestroy:true});
+    		userEditLayout.on("show",function(){
+			 var userEditHeader = new Edit.Header({model:user,preventDestroy:true});
+			 var userEditForm = new Edit.User({model:user,roles:roles,role_idx:currentUser.get('role_idx'),preventDestroy:true});
+			  
+				userEditLayout.headerRegion.show(userEditHeader);
+    			userEditLayout.contentRegion.show(userEditForm);
+
+    			  userEditForm.on("form:submit",function(data){
+
+	    			  	data['password']="xyz";
+	    			  	data['confirmPassword']="xyz"; // workaround for PW equalTo valid
+	    			  	data['securitycode']="xyz"; // workaround for PW equalTo valid
+
+	    			  	data['currentuser_id']=currentUser.get('user_id'); // who made the change
+	    			    user.set(data);	
+			        if(user.save(data)){
+
+			          	if(currentUser.get('user_id')==id){ currentUser.set(data), currentUser.set({'loggedIn':true});}
+           			 	App.trigger("user:show",id);
+       			   	    Util.writeToMsgConsole("Edit Account: successful","success"); // write success msg
+
+			           }
+			           else{
+       			   	    Util.writeToMsgConsole("Edit Account: failed","error"); // write success msg
+			           }
+
+			    });
+
+    			 userEditForm.on("form:back",function(data){
+    			 	App.trigger("user:show",id);
+    			 });
+
+    		}); // show
+    	
+				userEditLayout.on("currentuser:loggedOut",function(){
+					App.UsersApp.Edit.Controller.editUser(id);
+		 		}); // on:loggedOut
+	
+
+				App.mainRegion.show(userEditLayout);
+
+
+		 }).fail(function(response){ 
+
+ 			      backdropView.destroy();
+				  var errortext = Util.getErrorText(response);    
+                  var errorView = new Edit.Error({model: currentUser,errortext:errortext})
+
+                  errorView.on("currentuser:loggedIn",function(){
+					    App.UsersApp.Edit.Controller.editUser(id);
+                  });
+
+                  App.mainRegion.show(errorView);  
+
+          }); //  $.when(fetchingAuth).done // $when fetchingUsers;
+
+    	});// require
+
+		}
+
+	}
+
+
+return Controller;
+
+});
+
+define('apps/users/users_app',["marionette","app"], function(Marionette,App){
+
+	var UsersApp = {};
+
+	UsersApp.Router = Marionette.AppRouter.extend({
+		appRoutes: {
+			"users":"usersPortal",
+			"users/browse":"listUsers",
+			"users/login":"login",
+    		"users/newUser":"newUser",
+    		"users/:id":"showUser",
+			"users/:id/edit":"editUser"
+		}
+	});
+
+	var API = {
+		usersPortal: function(){
+			require(["apps/users/home/home_controller"], function(HomeController){
+       				HomeController.showHome();
+			});
+		},
+		listUsers: function(){
+			require(["apps/users/list/list_controller"], function(ListController){
+   				ListController.listUsers();
+			});
+		},
+		login: function(){
+			require(["apps/users/login/login_controller"], function(LoginController){
+       				LoginController.showLogin();
+				});
+		},
+		newUser: function(){
+		},
+		showUser: function(id){
+			require(["apps/users/show/show_controller"], function(ShowController){
+       				ShowController.showUser(id);
+				});
+		},
+		editUser: function(id){
+			require(["apps/users/edit/edit_controller"], function(EditController){
+       				EditController.editUser(id);
+				});
+		}
+	};
+
+	App.on("users:home",function(){
+		App.navigate("users");
+		API.usersPortal();
+	});
+
+	App.on("users:list",function(){
+		App.navigate("users/browse");
+		API.listUsers();
+	});
+
+
+	App.on("users:list",function(){
+		App.navigate("users/login");
+		API.login();
+	});
+
+	App.on("user:show",function(id){
+	 	App.navigate("users/"+ id);
+	API.showUser(id);
+	});
+
+	App.on("user:edit",function(id){
+	 	App.navigate("users/"+ id+"/edit");
+	API.editUser(id);
+	});
+
+
+	var router = new UsersApp.Router({
+		controller: API,
+	});
+ return UsersApp; 	
+
+});
 // ======
 // app.js
 // ======
@@ -27405,8 +28606,9 @@ App.on("start", function(){
                ,"apps/projects/projects_app"
                ,"apps/ocrd/ocrd_app"
                ,"apps/docs/docs_app"
+               ,"apps/users/users_app"
 
-        ], function (HeaderApp,HomeApp,FooterApp,ProjectsApp,OcrdApp,DocsApp) {
+        ], function (HeaderApp,HomeApp,FooterApp,ProjectsApp,OcrdApp,DocsApp,UsersApp) {
 
 
     var app_region = App.getRegion();

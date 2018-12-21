@@ -54,8 +54,9 @@ App.on("start", function(){
                ,"apps/projects/projects_app"
                ,"apps/ocrd/ocrd_app"
                ,"apps/docs/docs_app"
+               ,"apps/users/users_app"
 
-        ], function (HeaderApp,HomeApp,FooterApp,ProjectsApp,OcrdApp,DocsApp) {
+        ], function (HeaderApp,HomeApp,FooterApp,ProjectsApp,OcrdApp,DocsApp,UsersApp) {
 
 
     var app_region = App.getRegion();

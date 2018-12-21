@@ -2,12 +2,12 @@
 // apps/header/show/show_view.js
 // =============================
 
-define(["marionette","app","common/util",
+define(["marionette","app","common/views","common/util",
   "tpl!apps/header/show/templates/layout.tpl",
   "tpl!apps/header/show/templates/navbar.tpl",
   "tpl!common/templates/emptytemplate.tpl"
 
-  ], function(Marionette,IPS_App,Util,layoutTpl,navbarTpl,emptyTpl){
+  ], function(Marionette,App,Views,Util,layoutTpl,navbarTpl,emptyTpl){
 
   var Show={};
 
@@ -20,19 +20,25 @@ define(["marionette","app","common/util",
 
   });
 
+ Show.Message = Views.Message.extend({
+  });
+
    Show.Topbar = Marionette.View.extend({
    template: navbarTpl,
    triggers:{
       "click .js-logout":"nav:logout",
+      "click .js-login":"nav:login",
       "click .js-exit":"nav:exit",
       "click #help_button":"nav:help"
      },
    
     events:{
       'click .nav_item.active' : 'nav_item_clicked',
-      'click .logo_area_left' : 'nav_item_clicked',
+      'click .logo_area_left' : 'nav_item_clicked'
 
     },
+
+
     
       serializeData: function(){
           var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);

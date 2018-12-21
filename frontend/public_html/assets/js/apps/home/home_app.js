@@ -1,6 +1,6 @@
 
 
-define(["marionette","app"], function(Marionette,IPS_App){
+define(["marionette","app"], function(Marionette,App){
 
 	var HomeApp = {};
 
@@ -16,15 +16,17 @@ define(["marionette","app"], function(Marionette,IPS_App){
 			require(["apps/home/show/show_controller"], function(HomeController){
        				HomeController.showHome();
 				});
-		},
+		}
+	
 	};
 
-	IPS_App.on("home:portal",function(){
-		IPS_App.navigate("home");
+	App.on("home:portal",function(){
+		App.navigate("home");
 		API.homePortal();
 	});
 
-	
+
+
 	var router = new HomeApp.Router({
 		controller: API,
 	});

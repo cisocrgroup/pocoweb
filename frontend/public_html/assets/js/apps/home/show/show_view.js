@@ -16,6 +16,8 @@ define(["marionette","app","common/views","common/util",
   regions:{
     headerRegion: "#hl-region",
     hubRegion: "#hub-region",
+    msgRegion: "#msg-region"
+
   },
   className:"home_container"
  
@@ -23,9 +25,17 @@ define(["marionette","app","common/views","common/util",
 
 
  Home.Header = Marionette.View.extend({
-     template:headerTpl
+     template:headerTpl,
+      triggers:{
+      "click .js-login":"home:login"
+     }
   });
 
+ Home.Message = Views.Message.extend({
+    triggers:{
+      "click .js-login":"msg:login",
+     },
+  });
 
  Home.Hub = Views.CardHub.extend({
   

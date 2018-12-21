@@ -20,8 +20,9 @@ define(["marionette","app","spin","spin.jquery","common/util","datatables",
 "tpl!common/templates/bginfo.tpl",
 "tpl!common/templates/footerpaneltemplate.tpl",
 "tpl!common/templates/confirm.tpl",
+"tpl!common/templates/msgtemplate.tpl",
 
-	], function(Marionette,IPS_App,Spinner,SpinnerJQuery,Util,dtb,listTpl,loadingTpl,loadingOpcTpl,headerTpl,cardHeadTpl,cardhubTpl,layoutTpl,errorTpl,emptyTpl,areYouTpl,okTpl,infoPanelTpl,bgInfoTpl,footerPanelTpl,confirmTpl){
+	], function(Marionette,IPS_App,Spinner,SpinnerJQuery,Util,dtb,listTpl,loadingTpl,loadingOpcTpl,headerTpl,cardHeadTpl,cardhubTpl,layoutTpl,errorTpl,emptyTpl,areYouTpl,okTpl,infoPanelTpl,bgInfoTpl,footerPanelTpl,confirmTpl,msgTpl){
 
     var Views={};
 
@@ -192,6 +193,35 @@ onAttach: function(){
 	});
 
 
+   Views.Message = Marionette.View.extend({
+	template:msgTpl,
+	role: "alert",
+	type: "info",
+	message: "default message",
+
+		serializeData: function(){
+			return {
+				role: Marionette.getOption(this,"errortext"),
+				message: Marionette.getOption(this,"message"),
+    		    asModal: Marionette.getOption(this,"asModal"),
+    		    type: Marionette.getOption(this,"type")
+
+			}
+		},
+		onAttach : function(){
+		   if(this.options.asModal){
+
+          this.$el.attr("ID","msg-modal");
+          this.$el.addClass("modal fade msg-modal");
+          this.$el.on('shown.bs.modal', function (e) {
+           })
+
+           this.$el.modal();
+   		 }
+	}
+
+
+	});
 
    Views.DataTable = Marionette.View.extend({
     template: listTpl,
