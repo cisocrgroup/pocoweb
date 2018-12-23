@@ -201,7 +201,8 @@ onAttach: function(){
 
 		serializeData: function(){
 			return {
-				role: Marionette.getOption(this,"errortext"),
+				id: Marionette.getOption(this,"id"),
+				role: Marionette.getOption(this,"role"),
 				message: Marionette.getOption(this,"message"),
     		    asModal: Marionette.getOption(this,"asModal"),
     		    type: Marionette.getOption(this,"type")
@@ -218,7 +219,16 @@ onAttach: function(){
 
            this.$el.modal();
    		 }
-	}
+   		
+
+   		 },
+   		  updateContent: function(message,type){
+   	
+   			this.options.message = message;
+   			this.options.type = type
+   			this.render();
+   		  }
+	
 
 
 	});

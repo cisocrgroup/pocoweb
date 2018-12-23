@@ -2,7 +2,7 @@
 <hr>
 <footer class="footer">
 	<div class="text-muted footer-line text-center">
-		<a href="#">Back to top <span class="glyphicon glyphicon-menu-up"></span></a>
+		<a href="#">Back to top <i class="fas fa-angle-up fa-lg"></i></a>
 	</div>
 	<div class="text-muted footer-line text-center">
 		Designed and built by the

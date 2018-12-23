@@ -30,16 +30,17 @@
       </li>
     </ul>
 
-     <ul class="navbar-nav my-2 my-lg-0">
-    
-       <li class="nav-item ">
-        <a class="nav-link js-login" href="#"><i class="fa fa-unlock"></i> Login</a>
+     <ul class="navbar-nav my-2 my-lg-0 right-nav">
+       <li class="nav-item js-login">
+        <a class="nav-link" href="#"><i class="fas fa-sign-in-alt fa-sm"></i> Login</a>
       </li>
+     
+    </ul>
+   <ul class="navbar-nav my-2 my-lg-0 version-nav">
        <li class="nav-item">
-        <a class="nav-link" >Api-Version:</a>
+        <p class="navbar-text" style="margin:0;">Api-Version: <%-version%></p>
       </li>
     </ul>
-  
   </div>
 </nav>
 

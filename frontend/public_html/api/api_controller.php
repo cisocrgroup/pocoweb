@@ -11,8 +11,6 @@ require_once('config.php');
 require_once('api.php');
 require_once('backend.php');
 
-ob_start();
-session_start();
 
 ini_set('max_execution_time', 300);
 ini_set('max_input_vars ', 1000000);
@@ -21,6 +19,9 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
     $action = $_POST['backend_route'];
     switch($action) {
         case 'login' : login();break;
+        case 'login_check' : login_check();break;
+        case 'logout' : logout();break;
+        case 'api_version' : get_api_version();break;
     }
 }
 
@@ -34,36 +35,137 @@ function login(){
   $status = $api->get_http_status_code();
   switch ($status) {
   case "200":
+        $result=array();
         $session = $api->get_response();
         backend_set_session_cookie($session);
-        global $USER;
-        global $SID;
-        $USER = $session["user"];
-        $SID = $session["auth"];
+
     // backend_set_global_session_id();
     // backend_set_global_user();
-        header_remove();
         header("status: ".$status);
-        echo "You have successfully logged in";
+
+        $result['user'] = $session['user'];
+        $result['message'] = "You have successfully logged in";
+        echo json_encode($result); 
 
     break;
   case "403":
-    $SID = "";
-    header_remove();
     header("status: ".$status);
-    echo 'Login error: invalid username or password Please try again: <a href="#" class="js-login">login</a>';
+    echo 'Login error: invalid username or password. Please try again: <a href="#" class="js-login">login</a>';
     break;
   default:
-    $SID = "";
-        header_remove();
         header("status: ".$status);
         echo "Login error: " . backend_get_http_status_info($status);
     break;
   }
-// } else {
-//   require(TEMPLATES_PATH . "/header.php");
-//   frontend_render_login_div("Internal error: bad request to login.php");
-// }
+
+}
+
+function logout(){
+
+  $api = new Api(backend_get_logout_route());
+  $api->set_session_id(backend_get_session_cookie());
+  $api->get_request();
+ 
+  $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        backend_set_session_cookie("");
+
+        header("status: ".$status);
+
+        $result['message'] = "You have successfully logged out";
+        echo json_encode($result); 
+
+    break;
+  case "403":
+    $SID = "";
+            backend_set_session_cookie("");
+
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status);
+    break;
+  default:
+    $SID = "";
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+  return $api;
+}
+
+function login_check(){
+
+      if(isset(backend_get_session_cookie()['user'])){
+        $session = backend_get_session_cookie();
+        echo json_encode($session['user']);
+
+      }
+      else {
+        echo -1;
+      }
+ 
+  // $status = $api->get_http_status_code();
+  // switch ($status) {
+  // case "200":
+  //       $result=array();
+  //       $session = $api->get_response();
+  //       backend_get_session_cookie();
+  //       global $USER;
+  //       global $SID;
+  //       $USER = $session["user"];
+  //       $SID = $session["auth"];
+  //   // backend_set_global_session_id();
+  //   // backend_set_global_user();
+  //       header_remove();
+  //       header("status: ".$status);
+
+  //       $result['user'] = $USER;
+  //       $result['message'] = "You have successfully logged in";
+  //       echo json_encode($result); 
+
+  //   break;
+  // case "403":
+  //   $SID = "";
+  //   header_remove();
+  //   header("status: ".$status);
+  //   echo 'Login error: invalid username or password. Please try again: <a href="#" class="js-login">login</a>';
+  //   break;
+  // default:
+  //   $SID = "";
+  //       header_remove();
+  //       header("status: ".$status);
+  //       echo "Login error: " . backend_get_http_status_info($status);
+  //   break;
+  // }
+
+  // return $api;
+}
+
+function get_api_version(){
+  $api = new Api(backend_get_api_version_route());
+  $api->get_request();
+
+  $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result = $api->get_response();
+  
+        header_remove();
+        header("status: ".$status);
+
+        echo json_encode($result); 
+
+    break;
+  default:
+        header_remove();
+        header("status: ".$status);
+        echo 'Couldn\'t get api version';
+    break;
+  }
+
 
   return $api;
 }

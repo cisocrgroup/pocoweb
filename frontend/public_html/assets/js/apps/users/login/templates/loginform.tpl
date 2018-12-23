@@ -4,8 +4,8 @@
  <div class="modal-content">
       <div class="modal-header">
             <legend>Login</legend>
-              <div type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+              <div class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>
         </div>
       </div>
        <div class="modal-body">
@@ -13,7 +13,6 @@
   <div class="form-group">
     <label for="email">Email address</label>
     <input type="email" class="form-control" id="email" name="email"aria-describedby="emailHelp" placeholder="Enter email">
-    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
   </div>
   <div class="form-group">
     <label for="password">Password</label>

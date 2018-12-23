@@ -42,7 +42,7 @@
                      </div>
 
                      <div class="footer_item_enter_container">  
-                        <div class="footer_item footer_item_enter hover <%if(item['available']!=undefined&&item['available']==true){%><%-item.color%>-border<%}%>">  <i class="fa fa-sign-in" aria-hidden="true"></i> Enter </div>
+                        <div class="footer_item footer_item_enter hover <%if(item['available']!=undefined&&item['available']==true){%><%-item.color%>-border<%}%>">  <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Enter </div>
                      </div>
 
                    </div>

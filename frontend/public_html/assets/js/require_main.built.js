@@ -23937,7 +23937,7 @@ __p+=''+
 ((__t=(item.color))==null?'':_.escape(__t))+
 '-border';
 }
-__p+='">  <i class="fa fa-sign-in" aria-hidden="true"></i> Enter </div>\n                     </div>\n\n                   </div>\n                     \n                  </div>\n\n\n                </div>\n\n                </div>\n\n              ';
+__p+='">  <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Enter </div>\n                     </div>\n\n                   </div>\n                     \n                  </div>\n\n\n                </div>\n\n                </div>\n\n              ';
  col_count++;  } 
 __p+='\n    </div> \n  ';
  } 
@@ -24141,13 +24141,15 @@ return __p;
 define("tpl!common/templates/msgtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n<div class="container" style="margin-top: 35px">\r\n  <hr>\r\n  <div id="msg" class="alert alert-'+
+__p+='\r\n<div class="container" style="margin-top: 35px">\r\n  <div id="'+
+((__t=(id))==null?'':_.escape(__t))+
+'" class="alert alert-'+
 ((__t=(type))==null?'':_.escape(__t))+
 ' alert-dismissible fade show" role="'+
 ((__t=(role))==null?'':_.escape(__t))+
 '">'+
 ((__t=(message))==null?'':__t)+
-'\r\n  	  <button type="button" class="close" data-dismiss="alert" aria-label="Close">\r\n    <span aria-hidden="true">&times;</span>\r\n  </button>\r\n  </div>\r\n  <hr>\r\n</div>\r\n';
+'\r\n  	  <button type="button" class="close" data-dismiss="alert" aria-label="Close">\r\n    <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\r\n  </button>\r\n  </div>\r\n</div>\r\n';
 }
 return __p;
 };});
@@ -24355,7 +24357,8 @@ onAttach: function(){
 
 		serializeData: function(){
 			return {
-				role: Marionette.getOption(this,"errortext"),
+				id: Marionette.getOption(this,"id"),
+				role: Marionette.getOption(this,"role"),
 				message: Marionette.getOption(this,"message"),
     		    asModal: Marionette.getOption(this,"asModal"),
     		    type: Marionette.getOption(this,"type")
@@ -24372,7 +24375,16 @@ onAttach: function(){
 
            this.$el.modal();
    		 }
-	}
+   		
+
+   		 },
+   		  updateContent: function(message,type){
+   	
+   			this.options.message = message;
+   			this.options.type = type
+   			this.render();
+   		  }
+	
 
 
 	});
@@ -24850,7 +24862,9 @@ return __p;
 define("tpl!apps/header/show/templates/navbar.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n<div class="text-center">\n<img class="rounded" src="assets/images/logo.jpg" style="margin: 15px;" />\n</div>\n\n\n<nav class="navbar navbar-expand-lg navbar-light bg-light">\n  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">\n    <span class="navbar-toggler-icon"></span>\n  </button>\n\n\n  <div class="collapse navbar-collapse" id="navbarSupportedContent">\n     <ul class="navbar-nav mr-auto">\n      <li class="nav-item">\n        <a class="nav-link" href="#projects/list">Projects</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#docs">Users</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#docs">Account</a>\n      </li>\n      <li class="nav-item">\n        <a class="nav-link" href="#docs">Documentation</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#about">About</a>\n      </li>\n    </ul>\n\n     <ul class="navbar-nav my-2 my-lg-0">\n    \n       <li class="nav-item ">\n        <a class="nav-link js-login" href="#"><i class="fa fa-unlock"></i> Login</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" >Api-Version:</a>\n      </li>\n    </ul>\n  \n  </div>\n</nav>\n\n\n\n\n\n\n';
+__p+='\n\n<div class="text-center">\n<img class="rounded" src="assets/images/logo.jpg" style="margin: 15px;" />\n</div>\n\n\n<nav class="navbar navbar-expand-lg navbar-light bg-light">\n  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">\n    <span class="navbar-toggler-icon"></span>\n  </button>\n\n\n  <div class="collapse navbar-collapse" id="navbarSupportedContent">\n     <ul class="navbar-nav mr-auto">\n      <li class="nav-item">\n        <a class="nav-link" href="#projects/list">Projects</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#docs">Users</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#docs">Account</a>\n      </li>\n      <li class="nav-item">\n        <a class="nav-link" href="#docs">Documentation</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#about">About</a>\n      </li>\n    </ul>\n\n     <ul class="navbar-nav my-2 my-lg-0 right-nav">\n       <li class="nav-item js-login">\n        <a class="nav-link" href="#"><i class="fas fa-sign-in-alt fa-sm"></i> Login</a>\n      </li>\n     \n    </ul>\n   <ul class="navbar-nav my-2 my-lg-0 version-nav">\n       <li class="nav-item">\n        <p class="navbar-text" style="margin:0;">Api-Version: '+
+((__t=(version))==null?'':_.escape(__t))+
+'</p>\n      </li>\n    </ul>\n  </div>\n</nav>\n\n\n\n\n\n\n';
 }
 return __p;
 };});
@@ -24900,12 +24914,23 @@ define('apps/header/show/show_view',["marionette","app","common/views","common/u
       serializeData: function(){
           var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
           data.navbarItems = Marionette.getOption(this,"navbarItems");
+          data.version = Marionette.getOption(this,"version");
+
           // data.currentRoute = Marionette.getOption(this,"currentRoute");
         return data;
     
     },
+    setLoggedIn: function(name){
+    
+          $('.right-nav').empty();
+          $('.right-nav').prepend('<li class="nav-item js-logout"><a href="#" class="nav-link">Logout</a></li>');
+          $('.right-nav').prepend('<li><p class="navbar-text" style="margin:0;">Logged in as user: '+name+" </p></li>");
+        },
+     setLoggedOut: function(name){
+      $('.right-nav').empty();
+      $('.right-nav').append('<li class="nav-item js-login"><a class="nav-link" href="#"><i class="fas fa-sign-in-alt fa-sm"></i> Login</a></li>');
+    }
   
-   
 
 
   });
@@ -24922,7 +24947,7 @@ return Show;
 define("tpl!apps/users/login/templates/loginform.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n<div class="modal fade" id="loginModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\r\n <div class="modal-dialog">\r\n <div class="modal-content">\r\n      <div class="modal-header">\r\n            <legend>Login</legend>\r\n              <div type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </div>\r\n      </div>\r\n       <div class="modal-body">\r\n<form>\r\n  <div class="form-group">\r\n    <label for="email">Email address</label>\r\n    <input type="email" class="form-control" id="email" name="email"aria-describedby="emailHelp" placeholder="Enter email">\r\n    <small id="emailHelp" class="form-text text-muted">We\'ll never share your email with anyone else.</small>\r\n  </div>\r\n  <div class="form-group">\r\n    <label for="password">Password</label>\r\n    <input type="password" class="form-control" name="password" id="password" placeholder="Password">\r\n  </div>\r\n\r\n  <button type="submit" class="btn btn-primary js-loginsubmit">Submit</button>\r\n</form>\r\n</div>\r\n</div>\r\n\r\n</div>\r\n</div>\r\n\r\n';
+__p+='\r\n<div class="modal fade" id="loginModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\r\n <div class="modal-dialog">\r\n <div class="modal-content">\r\n      <div class="modal-header">\r\n            <legend>Login</legend>\r\n              <div class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\r\n        </div>\r\n      </div>\r\n       <div class="modal-body">\r\n<form>\r\n  <div class="form-group">\r\n    <label for="email">Email address</label>\r\n    <input type="email" class="form-control" id="email" name="email"aria-describedby="emailHelp" placeholder="Enter email">\r\n  </div>\r\n  <div class="form-group">\r\n    <label for="password">Password</label>\r\n    <input type="password" class="form-control" name="password" id="password" placeholder="Password">\r\n  </div>\r\n\r\n  <button type="submit" class="btn btn-primary js-loginsubmit">Submit</button>\r\n</form>\r\n</div>\r\n</div>\r\n\r\n</div>\r\n</div>\r\n\r\n';
 }
 return __p;
 };});
@@ -25535,7 +25560,7 @@ Entities.API = {
         data:data,
         success: function(data) {
 
-              defer.resolve(data);
+              defer.resolve(JSON.parse(data));
             },
             error: function(data){
               defer.reject(data);
@@ -25545,7 +25570,47 @@ Entities.API = {
     return defer.promise();
   },
 
+  
+  loginCheck: function(){
+    var data= {};
+    data['backend_route'] = "login_check";
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
 
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+    logout: function(data){
+    var data= {};
+    data['backend_route'] = "logout";
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
 
 };
 
@@ -25590,7 +25655,29 @@ Entities.API = {
 
     return defer.promise();
     
-}
+},
+  getApiVersion: function(){
+    var data = {};
+    data['backend_route'] = "api_version";
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  }
+
+
 
 
 };
@@ -25613,20 +25700,43 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
    showHeader: function(){
 
 
-          require(["entities/users"], function(UserEntities){
+  require(["entities/users","entities/util"], function(UserEntities,UtilEntities){
 
+
+    var fetchingVersion = UtilEntities.API.getApiVersion();
+    var fetchingLoginCheck = UserEntities.API.loginCheck();
+      $.when(fetchingVersion,fetchingLoginCheck).done(function(api_version,login_check){
 
         var headerShowLayout = new Show.Layout();
          var headerLogin ;
  
 
-      var headerShowTopbar = new Show.Topbar({});
+      var headerShowTopbar = new Show.Topbar({version:api_version.version});
+
+
   		headerShowLayout.on("show",function(){
   		headerShowLayout.navbarRegion.show(headerShowTopbar);
  		}); // on:show
 
-  headerShowTopbar.on("nav:item_clicked",function(data){
+  headerShowTopbar.on("nav:logout",function(data){
 
+    var loggingOutUser = UserEntities.API.logout();
+
+
+                 $.when(loggingOutUser).done(function(result){
+
+                  if(App.getCurrentRoute()=="home"){
+
+
+                        App.homeMsg.updateContent(result.message,'success');
+                         headerShowTopbar.setLoggedOut();
+                        }
+              
+                  
+                }).fail(function(response){ 
+                  App.homeMsg.updateContent(response.responseText,'danger');                       
+                                      
+          }); //  $.when(loggingOutUser).done
 
         
     });
@@ -25646,18 +25756,15 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
                  $.when(loggingInUser).done(function(result){
 
                   if(App.getCurrentRoute()=="home"){
-                 
-                  var newMsg = new Show.Message({message:result,type:'success'});
 
-                  App.mainLayout._regions.mainRegion.currentView.showChildView('msgRegion',newMsg);
-                  }
 
-                  console.log(result)
-
+                        App.homeMsg.updateContent(result.message,'success');
+                         headerShowTopbar.setLoggedIn(result.user.name);
+                        }
+              
+                  
                 }).fail(function(response){ 
-
-                   var newMsg = new Show.Message({message:response.responseText,type:'danger'});
-                    App.mainLayout._regions.mainRegion.currentView.showChildView('msgRegion',newMsg);                                   
+                  App.homeMsg.updateContent(response.responseText,'danger');                       
                                       
           }); //  $.when(loggingInUser).done
 
@@ -25672,32 +25779,37 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
        headerShowTopbar.on("nav:help",function(){
 
-            require(["entities/util"], function(UtilEntities){
+        //     require(["entities/util"], function(UtilEntities){
 
-                  var fetchingHelpTexts= UtilEntities.API.getHelpText(App.getCurrentRoute(),currentUser.get('userRole'));
+        //           var fetchingHelpTexts= UtilEntities.API.getHelpText(App.getCurrentRoute(),currentUser.get('userRole'));
 
 
-                  $.when(fetchingHelpTexts).done(function(helptexts){
+        //           $.when(fetchingHelpTexts).done(function(helptexts){
        
 
-                  var helpModal = new Show.Help({
-                    helpitems:helptexts.helpItems,
-                    asModal:true
-                  }); 
+        //           var helpModal = new Show.Help({
+        //             helpitems:helptexts.helpItems,
+        //             asModal:true
+        //           }); 
 
-               App.mainLayout.showChildView('dialogRegion',helpModal);
+        //        App.mainLayout.showChildView('dialogRegion',helpModal);
 
-            }); // when fetchingHelp
+        //     }); // when fetchingHelp
 
-        }); // require
+        // }); // require
            
        });
 
 
 
-      
+     
 
-
+  headerShowTopbar.on("attach",function(){
+       if(login_check!=-1){
+      App.homeMsg.updateContent("Welcome back to PoCoWeb: "+login_check.name+"!",'success');
+      headerShowTopbar.setLoggedIn(login_check.name);
+      }
+    });
       headerShowTopbar.on("nav:exit",function(){
      App.trigger("home:portal");
     });
@@ -25705,6 +25817,7 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
       App.mainLayout.showChildView('headerRegion',headerShowTopbar);
 
+    }); //fetching user,util
 
     });
   
@@ -25825,7 +25938,8 @@ define('apps/home/show/show_controller',["app","common/util","apps/home/show/sho
 
 		var homeHomeLayout = new Home.Layout();
 		var homeHomeHeader = new Home.Header();
-        var homeHomeMsg = new Home.Message({message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>',type:'info'});
+        var homeHomeMsg = new Home.Message({message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
+        App.homeMsg = homeHomeMsg;
 
         var cards = [
         {
@@ -25846,7 +25960,7 @@ define('apps/home/show/show_controller',["app","common/util","apps/home/show/sho
                 "url": "docs:show",
             }, {
                 "color": "purple",
-                "icon": "fa-question-circle-o",
+                "icon": "far fa-question-circle",
                 "id": "about_btn",
                 "name": "About",
                 "seq": 4,
@@ -25884,15 +25998,20 @@ define('apps/home/show/show_controller',["app","common/util","apps/home/show/sho
 
                               if(App.getCurrentRoute()=="home"){
                              
-                              var newMsg = new Home.Message({message:result,type:'success'});
+                              homeHomeMsg.updateContent(result.message,'success');
 
-                              App.mainLayout._regions.mainRegion.currentView.showChildView('msgRegion',newMsg);
+                              $('.login-item').remove();
+                              $('.right-nav').prepend('<li class="nav-item"><a href="#" class="nav-link">Logout</a></li>');
+                              $('.right-nav').prepend('<li><p class="navbar-text" style="margin:0;">Logged in as user: '+result.user.name+" </p></li>");
+
                               }
 
-                              console.log(result)
 
-                                // TO DO
-                            })
+                            }).fail(function(response){ 
+                              homeHomeMsg.updateContent(response.responseText,'danger');
+
+                                                  
+                          }); //  $.when(loggingInUser).done
 
                  console.log(data)
                 });
@@ -25958,7 +26077,7 @@ define('apps/home/home_app',["marionette","app"], function(Marionette,App){
 define("tpl!apps/footer/show/templates/footer.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="col-md-12">\n<hr>\n<footer class="footer">\n	<div class="text-muted footer-line text-center">\n		<a href="#">Back to top <span class="glyphicon glyphicon-menu-up"></span></a>\n	</div>\n	<div class="text-muted footer-line text-center">\n		Designed and built by the\n		<a target="_blank" href="http://cis.uni-muenchen.de">\n		Centrum für Informations- und Sprachverarbeitung (CIS)</a>.\n	</div>\n	<div class="text-muted footer-line text-center">\n		Code licensed under <a href="LICENSE">Apache-2.0</a>.\n		Documentation licensed under <a href="LICENSE">Apache-2.0</a>.\n	</div>\n	<div class="text-muted footer-line text-center">\n		This website uses cookies.\n	</div>\n</footer>\n</div>';
+__p+='<div class="col-md-12">\n<hr>\n<footer class="footer">\n	<div class="text-muted footer-line text-center">\n		<a href="#">Back to top <i class="fas fa-angle-up fa-lg"></i></a>\n	</div>\n	<div class="text-muted footer-line text-center">\n		Designed and built by the\n		<a target="_blank" href="http://cis.uni-muenchen.de">\n		Centrum für Informations- und Sprachverarbeitung (CIS)</a>.\n	</div>\n	<div class="text-muted footer-line text-center">\n		Code licensed under <a href="LICENSE">Apache-2.0</a>.\n		Documentation licensed under <a href="LICENSE">Apache-2.0</a>.\n	</div>\n	<div class="text-muted footer-line text-center">\n		This website uses cookies.\n	</div>\n</footer>\n</div>';
 }
 return __p;
 };});
@@ -28603,6 +28722,7 @@ App.on("start", function(){
        }
 
      });
+
 
 
 

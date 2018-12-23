@@ -14,7 +14,8 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
 
 		var homeHomeLayout = new Home.Layout();
 		var homeHomeHeader = new Home.Header();
-        var homeHomeMsg = new Home.Message({message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>',type:'info'});
+        var homeHomeMsg = new Home.Message({message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
+        App.homeMsg = homeHomeMsg;
 
         var cards = [
         {
@@ -35,7 +36,7 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
                 "url": "docs:show",
             }, {
                 "color": "purple",
-                "icon": "fa-question-circle-o",
+                "icon": "far fa-question-circle",
                 "id": "about_btn",
                 "name": "About",
                 "seq": 4,
@@ -73,15 +74,20 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
 
                               if(App.getCurrentRoute()=="home"){
                              
-                              var newMsg = new Home.Message({message:result,type:'success'});
+                              homeHomeMsg.updateContent(result.message,'success');
 
-                              App.mainLayout._regions.mainRegion.currentView.showChildView('msgRegion',newMsg);
+                              $('.login-item').remove();
+                              $('.right-nav').prepend('<li class="nav-item"><a href="#" class="nav-link">Logout</a></li>');
+                              $('.right-nav').prepend('<li><p class="navbar-text" style="margin:0;">Logged in as user: '+result.user.name+" </p></li>");
+
                               }
 
-                              console.log(result)
 
-                                // TO DO
-                            })
+                            }).fail(function(response){ 
+                              homeHomeMsg.updateContent(response.responseText,'danger');
+
+                                                  
+                          }); //  $.when(loggingInUser).done
 
                  console.log(data)
                 });

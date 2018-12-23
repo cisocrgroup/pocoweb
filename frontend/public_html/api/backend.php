@@ -17,6 +17,13 @@ function backend_set_global_user() {
 	// }
 }
 
+function backend_get_api_version_route() {
+	global $config;
+	return $config["backend"]["internalURL"] .
+		$config["backend"]["routes"]["apiVersion"];
+}
+
+
 function backend_set_global_session_id() {
 	global $SID;
 	$SID = backend_get_session_cookie();

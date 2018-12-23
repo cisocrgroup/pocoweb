@@ -10,20 +10,43 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
    showHeader: function(){
 
 
-          require(["entities/users"], function(UserEntities){
+  require(["entities/users","entities/util"], function(UserEntities,UtilEntities){
 
+
+    var fetchingVersion = UtilEntities.API.getApiVersion();
+    var fetchingLoginCheck = UserEntities.API.loginCheck();
+      $.when(fetchingVersion,fetchingLoginCheck).done(function(api_version,login_check){
 
         var headerShowLayout = new Show.Layout();
          var headerLogin ;
  
 
-      var headerShowTopbar = new Show.Topbar({});
+      var headerShowTopbar = new Show.Topbar({version:api_version.version});
+
+
   		headerShowLayout.on("show",function(){
   		headerShowLayout.navbarRegion.show(headerShowTopbar);
  		}); // on:show
 
-  headerShowTopbar.on("nav:item_clicked",function(data){
+  headerShowTopbar.on("nav:logout",function(data){
 
+    var loggingOutUser = UserEntities.API.logout();
+
+
+                 $.when(loggingOutUser).done(function(result){
+
+                  if(App.getCurrentRoute()=="home"){
+
+
+                        App.homeMsg.updateContent(result.message,'success');
+                         headerShowTopbar.setLoggedOut();
+                        }
+              
+                  
+                }).fail(function(response){ 
+                  App.homeMsg.updateContent(response.responseText,'danger');                       
+                                      
+          }); //  $.when(loggingOutUser).done
 
         
     });
@@ -43,18 +66,15 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
                  $.when(loggingInUser).done(function(result){
 
                   if(App.getCurrentRoute()=="home"){
-                 
-                  var newMsg = new Show.Message({message:result,type:'success'});
 
-                  App.mainLayout._regions.mainRegion.currentView.showChildView('msgRegion',newMsg);
-                  }
 
-                  console.log(result)
-
+                        App.homeMsg.updateContent(result.message,'success');
+                         headerShowTopbar.setLoggedIn(result.user.name);
+                        }
+              
+                  
                 }).fail(function(response){ 
-
-                   var newMsg = new Show.Message({message:response.responseText,type:'danger'});
-                    App.mainLayout._regions.mainRegion.currentView.showChildView('msgRegion',newMsg);                                   
+                  App.homeMsg.updateContent(response.responseText,'danger');                       
                                       
           }); //  $.when(loggingInUser).done
 
@@ -69,32 +89,37 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
        headerShowTopbar.on("nav:help",function(){
 
-            require(["entities/util"], function(UtilEntities){
+        //     require(["entities/util"], function(UtilEntities){
 
-                  var fetchingHelpTexts= UtilEntities.API.getHelpText(App.getCurrentRoute(),currentUser.get('userRole'));
+        //           var fetchingHelpTexts= UtilEntities.API.getHelpText(App.getCurrentRoute(),currentUser.get('userRole'));
 
 
-                  $.when(fetchingHelpTexts).done(function(helptexts){
+        //           $.when(fetchingHelpTexts).done(function(helptexts){
        
 
-                  var helpModal = new Show.Help({
-                    helpitems:helptexts.helpItems,
-                    asModal:true
-                  }); 
+        //           var helpModal = new Show.Help({
+        //             helpitems:helptexts.helpItems,
+        //             asModal:true
+        //           }); 
 
-               App.mainLayout.showChildView('dialogRegion',helpModal);
+        //        App.mainLayout.showChildView('dialogRegion',helpModal);
 
-            }); // when fetchingHelp
+        //     }); // when fetchingHelp
 
-        }); // require
+        // }); // require
            
        });
 
 
 
-      
+     
 
-
+  headerShowTopbar.on("attach",function(){
+       if(login_check!=-1){
+      App.homeMsg.updateContent("Welcome back to PoCoWeb: "+login_check.name+"!",'success');
+      headerShowTopbar.setLoggedIn(login_check.name);
+      }
+    });
       headerShowTopbar.on("nav:exit",function(){
      App.trigger("home:portal");
     });
@@ -102,6 +127,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
       App.mainLayout.showChildView('headerRegion',headerShowTopbar);
 
+    }); //fetching user,util
 
     });
   
