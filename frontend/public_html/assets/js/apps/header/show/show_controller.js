@@ -22,7 +22,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
  
 
       var headerShowTopbar = new Show.Topbar({version:api_version.version});
-
+      App.Navbar = headerShowTopbar;
 
   		headerShowLayout.on("show",function(){
   		headerShowLayout.navbarRegion.show(headerShowTopbar);
@@ -51,7 +51,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
         
     });
 
-  headerShowTopbar.on("nav:login",function(data){
+  headerShowTopbar.on("nav:login",function(){
      headerLogin = new Login.Form();
      App.mainLayout.showChildView('dialogRegion',headerLogin);
      $('#loginModal').modal();

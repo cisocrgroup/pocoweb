@@ -60,41 +60,12 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
  		}); // on:show
 
       homeHomeMsg.on("msg:login",function(data){
-        var headerLogin = new Login.Form();
-         App.mainLayout.showChildView('dialogRegion',headerLogin);
-         $('#loginModal').modal();
-
-                 headerLogin.on("login:submit",function(data){
-                 $('#loginModal').modal('hide');
-
-                var loggingInUser = UserEntities.API.login(data);
-
-
-                             $.when(loggingInUser).done(function(result){
-
-                              if(App.getCurrentRoute()=="home"){
-                             
-                              homeHomeMsg.updateContent(result.message,'success');
-
-                              $('.login-item').remove();
-                              $('.right-nav').prepend('<li class="nav-item"><a href="#" class="nav-link">Logout</a></li>');
-                              $('.right-nav').prepend('<li><p class="navbar-text" style="margin:0;">Logged in as user: '+result.user.name+" </p></li>");
-
-                              }
-
-
-                            }).fail(function(response){ 
-                              homeHomeMsg.updateContent(response.responseText,'danger');
-
-                                                  
-                          }); //  $.when(loggingInUser).done
-
-                 console.log(data)
-                });
-
+        App.Navbar.trigger("nav:login");
         });
 
-
+      homeHomeMsg.on("msg:logout",function(data){
+        App.Navbar.trigger("nav:logout");
+        });
 
 
          App.mainLayout.showChildView('mainRegion',homeHomeLayout);

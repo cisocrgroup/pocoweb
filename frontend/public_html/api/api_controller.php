@@ -75,7 +75,7 @@ function logout(){
 
         header("status: ".$status);
 
-        $result['message'] = "You have successfully logged out";
+        $result['message'] = 'You have successfully logged out! <a href="#" class="js-login">Log back in?</a>';
         echo json_encode($result); 
 
     break;
