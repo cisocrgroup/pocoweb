@@ -14,14 +14,23 @@ define(["marionette","app","common/views","common/util",
  Show.Layout = Marionette.View.extend({
     template: layoutTpl,
     regions:{
-      navbarRegion: "#navbar-region"
+      navbarRegion: "#navbar-region",
+      msgRegion: "#msg-region"
+
     }
   
 
   });
 
+
  Show.Message = Views.Message.extend({
+    triggers:{
+      "click .js-login":"msg:login",
+      "click .js-logout":"msg:logout"
+
+     },
   });
+
 
    Show.Topbar = Marionette.View.extend({
    template: navbarTpl,

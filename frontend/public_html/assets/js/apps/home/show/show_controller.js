@@ -14,9 +14,7 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
 
 		var homeHomeLayout = new Home.Layout();
 		var homeHomeHeader = new Home.Header();
-        var homeHomeMsg = new Home.Message({message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
-        App.homeMsg = homeHomeMsg;
-
+     
         var cards = [
         {
                 "color": "green",
@@ -52,22 +50,13 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
         })       
 
 		homeHomeLayout.on("attach",function(){
-                homeHomeLayout.showChildView('msgRegion',homeHomeMsg);
                 homeHomeLayout.showChildView('headerRegion',homeHomeHeader);
                 homeHomeLayout.showChildView('hubRegion',homeHomeHub);
 	
       
  		}); // on:show
 
-      homeHomeMsg.on("msg:login",function(data){
-        App.Navbar.trigger("nav:login");
-        });
-
-      homeHomeMsg.on("msg:logout",function(data){
-        App.Navbar.trigger("nav:logout");
-        });
-
-
+  
          App.mainLayout.showChildView('mainRegion',homeHomeLayout);
 
 

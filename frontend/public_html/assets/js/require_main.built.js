@@ -24853,7 +24853,7 @@ return __p;
 define("tpl!apps/header/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="navbar-region"></div>\n\n\n';
+__p+='<div id="navbar-region"></div>\n <div id="msg-region"></div>\n\n\n';
 }
 return __p;
 };});
@@ -24885,14 +24885,23 @@ define('apps/header/show/show_view',["marionette","app","common/views","common/u
  Show.Layout = Marionette.View.extend({
     template: layoutTpl,
     regions:{
-      navbarRegion: "#navbar-region"
+      navbarRegion: "#navbar-region",
+      msgRegion: "#msg-region"
+
     }
   
 
   });
 
+
  Show.Message = Views.Message.extend({
+    triggers:{
+      "click .js-login":"msg:login",
+      "click .js-logout":"msg:logout"
+
+     },
   });
+
 
    Show.Topbar = Marionette.View.extend({
    template: navbarTpl,
@@ -25714,8 +25723,10 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
       var headerShowTopbar = new Show.Topbar({version:api_version.version});
       App.Navbar = headerShowTopbar;
 
-  		headerShowLayout.on("show",function(){
-  		headerShowLayout.navbarRegion.show(headerShowTopbar);
+      
+      var headerShowMsg = new Show.Message({message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
+  		headerShowLayout.on("attach",function(){
+  		headerShowLayout.showChildView('navbarRegion',headerShowTopbar);
  		}); // on:show
 
   headerShowTopbar.on("nav:logout",function(data){
@@ -25728,13 +25739,13 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
                   if(App.getCurrentRoute()=="home"){
 
 
-                        App.homeMsg.updateContent(result.message,'success');
+                       headerShowMsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedOut();
                         }
               
                   
                 }).fail(function(response){ 
-                  App.homeMsg.updateContent(response.responseText,'danger');                       
+                  headerShowMsg.updateContent(response.responseText,'danger');                       
                                       
           }); //  $.when(loggingOutUser).done
 
@@ -25758,13 +25769,13 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
                   if(App.getCurrentRoute()=="home"){
 
 
-                        App.homeMsg.updateContent(result.message,'success');
+                        headerShowMsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedIn(result.user.name);
                         }
               
                   
                 }).fail(function(response){ 
-                  App.homeMsg.updateContent(response.responseText,'danger');                       
+                  headerShowMsg.updateContent(response.responseText,'danger');                       
                                       
           }); //  $.when(loggingInUser).done
 
@@ -25806,8 +25817,17 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
   headerShowTopbar.on("attach",function(){
        if(login_check!=-1){
-      App.homeMsg.updateContent("Welcome back to PoCoWeb: "+login_check.name+"!",'success');
+      headerShowMsg.updateContent("Welcome back to PoCoWeb: "+login_check.name+"!",'success');
       headerShowTopbar.setLoggedIn(login_check.name);
+             console.log("ASDDKlö")
+        headerShowLayout.showChildView('msgRegion',headerShowMsg)
+
+      }
+      else {
+        headerShowLayout.showChildView('msgRegion',headerShowMsg)
+
+  
+
       }
     });
       headerShowTopbar.on("nav:exit",function(){
@@ -25815,7 +25835,17 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
     });
 
 
-      App.mainLayout.showChildView('headerRegion',headerShowTopbar);
+          headerShowMsg.on("msg:login",function(data){
+        headerShowTopbar.trigger("nav:login");
+        });
+
+      headerShowMsg.on("msg:logout",function(data){
+       headerShowTopbar.trigger("nav:logout");
+        });
+
+
+
+      App.mainLayout.showChildView('headerRegion',headerShowLayout);
 
     }); //fetching user,util
 
@@ -25859,7 +25889,7 @@ define('apps/header/header_app',["marionette","app"], function(Marionette,IPS_Ap
 define("tpl!apps/home/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='    \n    <div id="msg-region"></div>\n    <div id="hl-region"></div>\n    <div id="hub-region"></div>\n';
+__p+='    \n    <div id="hl-region"></div>\n    <div id="hub-region"></div>\n';
 }
 return __p;
 };});
@@ -25890,8 +25920,7 @@ define('apps/home/show/show_view',["marionette","app","common/views","common/uti
   template: layoutTpl,
   regions:{
     headerRegion: "#hl-region",
-    hubRegion: "#hub-region",
-    msgRegion: "#msg-region"
+    hubRegion: "#hub-region"
 
   },
   className:"home_container"
@@ -25904,12 +25933,6 @@ define('apps/home/show/show_view',["marionette","app","common/views","common/uti
       triggers:{
       "click .js-login":"home:login"
      }
-  });
-
- Home.Message = Views.Message.extend({
-    triggers:{
-      "click .js-login":"msg:login",
-     },
   });
 
  Home.Hub = Views.CardHub.extend({
@@ -25938,9 +25961,7 @@ define('apps/home/show/show_controller',["app","common/util","apps/home/show/sho
 
 		var homeHomeLayout = new Home.Layout();
 		var homeHomeHeader = new Home.Header();
-        var homeHomeMsg = new Home.Message({message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
-        App.homeMsg = homeHomeMsg;
-
+     
         var cards = [
         {
                 "color": "green",
@@ -25976,22 +25997,13 @@ define('apps/home/show/show_controller',["app","common/util","apps/home/show/sho
         })       
 
 		homeHomeLayout.on("attach",function(){
-                homeHomeLayout.showChildView('msgRegion',homeHomeMsg);
                 homeHomeLayout.showChildView('headerRegion',homeHomeHeader);
                 homeHomeLayout.showChildView('hubRegion',homeHomeHub);
 	
       
  		}); // on:show
 
-      homeHomeMsg.on("msg:login",function(data){
-        App.Navbar.trigger("nav:login");
-        });
-
-      homeHomeMsg.on("msg:logout",function(data){
-        App.Navbar.trigger("nav:logout");
-        });
-
-
+  
          App.mainLayout.showChildView('mainRegion',homeHomeLayout);
 
 

@@ -15,8 +15,7 @@ define(["marionette","app","common/views","common/util",
   template: layoutTpl,
   regions:{
     headerRegion: "#hl-region",
-    hubRegion: "#hub-region",
-    msgRegion: "#msg-region"
+    hubRegion: "#hub-region"
 
   },
   className:"home_container"
@@ -29,12 +28,6 @@ define(["marionette","app","common/views","common/util",
       triggers:{
       "click .js-login":"home:login"
      }
-  });
-
- Home.Message = Views.Message.extend({
-    triggers:{
-      "click .js-login":"msg:login",
-     },
   });
 
  Home.Hub = Views.CardHub.extend({

@@ -24,8 +24,10 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
       var headerShowTopbar = new Show.Topbar({version:api_version.version});
       App.Navbar = headerShowTopbar;
 
-  		headerShowLayout.on("show",function(){
-  		headerShowLayout.navbarRegion.show(headerShowTopbar);
+      
+      var headerShowMsg = new Show.Message({message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
+  		headerShowLayout.on("attach",function(){
+  		headerShowLayout.showChildView('navbarRegion',headerShowTopbar);
  		}); // on:show
 
   headerShowTopbar.on("nav:logout",function(data){
@@ -38,13 +40,13 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
                   if(App.getCurrentRoute()=="home"){
 
 
-                        App.homeMsg.updateContent(result.message,'success');
+                       headerShowMsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedOut();
                         }
               
                   
                 }).fail(function(response){ 
-                  App.homeMsg.updateContent(response.responseText,'danger');                       
+                  headerShowMsg.updateContent(response.responseText,'danger');                       
                                       
           }); //  $.when(loggingOutUser).done
 
@@ -68,13 +70,13 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
                   if(App.getCurrentRoute()=="home"){
 
 
-                        App.homeMsg.updateContent(result.message,'success');
+                        headerShowMsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedIn(result.user.name);
                         }
               
                   
                 }).fail(function(response){ 
-                  App.homeMsg.updateContent(response.responseText,'danger');                       
+                  headerShowMsg.updateContent(response.responseText,'danger');                       
                                       
           }); //  $.when(loggingInUser).done
 
@@ -116,8 +118,17 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
   headerShowTopbar.on("attach",function(){
        if(login_check!=-1){
-      App.homeMsg.updateContent("Welcome back to PoCoWeb: "+login_check.name+"!",'success');
+      headerShowMsg.updateContent("Welcome back to PoCoWeb: "+login_check.name+"!",'success');
       headerShowTopbar.setLoggedIn(login_check.name);
+             console.log("ASDDKlö")
+        headerShowLayout.showChildView('msgRegion',headerShowMsg)
+
+      }
+      else {
+        headerShowLayout.showChildView('msgRegion',headerShowMsg)
+
+  
+
       }
     });
       headerShowTopbar.on("nav:exit",function(){
@@ -125,7 +136,17 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
     });
 
 
-      App.mainLayout.showChildView('headerRegion',headerShowTopbar);
+          headerShowMsg.on("msg:login",function(data){
+        headerShowTopbar.trigger("nav:login");
+        });
+
+      headerShowMsg.on("msg:logout",function(data){
+       headerShowTopbar.trigger("nav:logout");
+        });
+
+
+
+      App.mainLayout.showChildView('headerRegion',headerShowLayout);
 
     }); //fetching user,util
 
