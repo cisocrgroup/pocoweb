@@ -25621,6 +25621,27 @@ Entities.API = {
     return defer.promise();
   },
 
+    getUsers: function(){
+    data = {}
+    data['backend_route'] = "get_users";
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+
 };
 
 
@@ -25819,7 +25840,6 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
        if(login_check!=-1){
       headerShowMsg.updateContent("Welcome back to PoCoWeb: "+login_check.name+"!",'success');
       headerShowTopbar.setLoggedIn(login_check.name);
-             console.log("ASDDKlö")
         headerShowLayout.showChildView('msgRegion',headerShowMsg)
 
       }
@@ -25969,14 +25989,23 @@ define('apps/home/show/show_controller',["app","common/util","apps/home/show/sho
                 "id": "test_btn",
                 "name": "Projects",
                 "seq": 1,
-                "text": "Test pages for OCR projects.",
+                "text": "Your current OCR - projects.",
                 "url": "projects:list",
             }, {
+                "color": "red",
+                "icon": "fa-users-cog",
+                "id": "users_button",
+                "name": "User Management",
+                "seq": 3,
+                "text": "Manage user accounts.",
+                "url": "users:home",
+            },
+             {
                 "color": "blue",
                 "icon": "fa-book",
                 "id": "doc_button",
-                "name": "Api-Documentation",
-                "seq": 3,
+                "name": "Documentation",
+                "seq": 5,
                 "text": "Documentation of API-routes.",
                 "url": "docs:show",
             }, {
@@ -26566,27 +26595,28 @@ Entities.Project = Backbone.Model.extend({
 
 Entities.API = {
 
-
+ 
   getProjects: function(){
+    var data = {};
+    data['backend_route'] = "get_projects";
     var defer = jQuery.Deferred();
-        $.ajax({
-        
-        url: "/api/projects/list",
-        type: "GET",
-        dataType:"json",
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
         success: function(data) {
-          defer.resolve(data);
 
+              defer.resolve(JSON.parse(data));
             },
             error: function(data){
-              defer.resolve(undefined);
+              defer.reject(data);
             }
     });
 
-
     return defer.promise();
-    
-},
+  },
+
 
 getProject: function(id){
   var defer = jQuery.Deferred();
@@ -26987,6 +27017,7 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 		 var projectsListLayout = new List.Layout();
 
     	 $.when(fetchingprojects).done(function(projects){
+        console.log(projects);
 		   loadingCircleView.destroy();
 
 
@@ -27086,7 +27117,7 @@ define('apps/projects/projects_app',["marionette","app"], function(Marionette,Ap
 
 	projectsdApp.Router = Marionette.AppRouter.extend({
 		appRoutes: {
-		   "projects/list"    :"listProjects",
+		   "projects"    :"listProjects",
   		   "projects/:id"    :"showProject"
 
 		}
@@ -27111,13 +27142,13 @@ define('apps/projects/projects_app',["marionette","app"], function(Marionette,Ap
 
 
 	App.on("projects:show",function(id){
-		App.navigate("projects");
+		App.navigate("projects/:id");
 		API.showProject(id);
 	});
 
 
 	App.on("projects:list",function(){
-		App.navigate("projects/list");
+		App.navigate("projects");
 		API.listProjects();
 	});
 
@@ -27719,226 +27750,150 @@ define('apps/docs/docs_app',["marionette","app"], function(Marionette,App){
 
 });
 
+// ===========================
+// apps/users/home/home_view.js
+// ===========================
 
-define('apps/users/home/home_view',["app","common/views"], function(ResearchTool){
+define('apps/users/home/home_view',["marionette","app","common/views","common/util",
 
-ResearchTool.module("UsersApp.Home", function(Home,ResearchTool,
-Backbone,Marionette,$,_){
+], function(Marionette,App,Views,Util){
 
-  Home.Layout = ResearchTool.Common.Views.LoginUserLayout.extend({
+
+  var Home = {};
+
+  Home.Layout = Views.Layout.extend({
   });
 
-    Home.Header = ResearchTool.Common.Views.Header.extend({
+
+ Home.Header = Views.Header.extend({
     initialize: function(){
-        this.title = "Users"
-
-        this.breadcrumbs = [
-        {name: "Users", url: "#/users",current:"true"},
-        ]
+        this.title = "User Management"
+        this.icon ="fas fa-users-cog"
+        this.color ="red"
       }
   });
 
-
-  Home.Error = ResearchTool.Common.Views.LoginError.extend({});
-
-//  Home.Hub = ResearchTool.Common.Views.Hub.extend({
-//   initialize: function(){
-
-//         this.rows = [
-//         {
-//          name: "Database",
-//          icon:"fa fa-database",
-//          items:[
-//            {name:"Browse",url:"#users/browse",icon:"fa fa-list-alt",loggedIn:true},
-//            {name:"Query",url:"#users/query",icon:"fa fa-question",loggedIn:true},
-//            {name:"Create New Account",url:"#users/new",icon:"fa fa-user-plus",loggedIn:true},
-//          ]
-//         },
-//         {
-//        name: "Statistics",
-//        icon:"fa fa-bar-chart",
-//        items:[
-//          {name:"Charts",url:"#users/statistics/charts",icon:"fa fa-pie-chart",loggedIn:true},
-//          {name:"Query",url:"#users/statistics/query",icon:"fa fa-question",loggedIn:true},
-//        ]
-//       },
-
-
-//         ]
-//       }
-//  })
-
-// });
-
-Home.Hub = ResearchTool.Common.Views.IconHub.extend({
-  initialize: function(){
-        this.maxrowlength=3,
-        this.rows = [
-        {
-         needsLogin:true,
-         name: "Database",
-           items:[
-              {
-             name:"My Account",
-             url:"#users/"+this.model.get('user_id'),
-             icon:"fa fa-user",
-             subheader:"Information on my account",
-             loggedIn:false
-             },
-             {
-             name:"Browse",
-             url:"#users/browse",
-             icon:"fa fa-list-alt",
-             subheader:"Browse the users database",
-             loggedIn:false
-             },
-             //  {
-             // name:"Create New Account",
-             // url:"#users/new",
-             // icon:"fa fa-user-plus",
-             // subheader:"Add a new user",
-             // loggedIn:true
-             // },
-           ]
-           },
-           //  {
-           //  needsLogin:true,
-           // name: "Statistics",
-           //  items:[
-           //   {
-           //   name:"Charts",
-           //   url:"#users/statistics/charts",
-           //   icon:"fa fa-pie-chart",
-           //   subheader:"Interactive charts concerning the users database",
-           //   loggedIn:false
-           //   },
-           //    {
-           //   name:"Query",
-           //   url:"#users/statistics/query",
-           //   icon:"fa fa-bar-chart",
-           //   subheader:"Query result as a chart",
-           //   loggedIn:false
-           //   },
-    
-           // ]
-           // }
-    
-
-
-        ]
-      }
+ Home.Hub = Views.CardHub.extend({
+  
  })
 
+
+return Home;
+
+
 });
 
+// =================================
+// apps/users/home/home_controller.js
+// =================================
 
-return ResearchTool.UsersApp.Home;
-
-});
+define('apps/users/home/home_controller',["app","common/util","apps/users/home/home_view","apps/header/show/show_view","apps/users/login/login_view"], function(App,Util,Home,Header,Login){
 
 
-
-define('apps/users/home/home_controller',["app","common/util","apps/users/home/home_view"], function(ResearchTool,Util){
-
-ResearchTool.module("UsersApp.Home", function(Home, ResearchTool, Backbone, Marionette, $, _){
-
- Home.Controller = {
+ var Controller = {
 
  	showHome: function(){
+         $(window).scrollTop(0);
 
-   		require(["entities/users"], function(){
+       require(["entities/users"], function(UserEntities){
 
-   		var backdropView = new ResearchTool.Common.Views.LoadingBackdropOpc();
-   		ResearchTool.backdropRegion.show(backdropView);
-   		
-		var currentUser = ResearchTool.request('app:currentUser');
-    	var fetchingAuthCheck = ResearchTool.request("auth:authcheck");
+		var usersHomeLayout = new Home.Layout();
+		var usersHomeHeader = new Home.Header();
+     
+        var cards = [
+        {
+                "color": "red",
+                "icon": "fa-users",
+                "id": "list_user_btn",
+                "name": "List Users.",
+                "seq": 1,
+                "text": "List of all registered users.",
+                "url": "users:list",
+            }, {
+                "color": "red",
+                "icon": "fa-user-plus",
+                "id": "add_user_btn",
+                "name": "Create User",
+                "seq": 3,
+                "text": "Create a new user account.",
+                "url": "users:create",
+            },
+             {
+                "color": "red",
+                "icon": "fa-user-circle",
+                "id": "my_account_btn",
+                "name": "My Account",
+                "seq": 5,
+                "text": "Update or delete your account.",
+                "url": "users:show",
+            }]
 
-		$.when(currentUser,fetchingAuthCheck).done(function(currentUser){
-        backdropView.destroy();
 
-		var usersHomeLayout = new Home.Layout({model:currentUser});
-	 	var	usersHomeHeader = new Home.Header();
-		var	usersHomeHub = new Home.Hub({model:currentUser});
+		var usersHomeHub = new Home.Hub({cards:cards,currentRoute:"users"});
 
+        usersHomeHub.on("cardHub:clicked",function(data){
+            App.trigger(data.url);
+        })       
 
-			usersHomeLayout.on("show",function(){
-			
-				usersHomeLayout.headerRegion.show(usersHomeHeader);
-				usersHomeLayout.contentRegion.show(usersHomeHub);
-
-    		});
-
-
-			
-		usersHomeLayout.on("currentuser:loggedOut",function(){
-			ResearchTool.UsersApp.Home.Controller.showHome();
- 		}); // on:loggedOut
-
+		usersHomeLayout.on("attach",function(){
+                usersHomeLayout.showChildView('headerRegion',usersHomeHeader);
+                usersHomeLayout.showChildView('contentRegion',usersHomeHub);
 	
-		
-		ResearchTool.mainRegion.show(usersHomeLayout);
-		}).fail(function(response){ 
+      
+ 		}); // on:show
 
- 			      backdropView.destroy();
-				  var errortext = Util.getErrorText(response);    
-                  var errorView = new Home.Error({model: currentUser,errortext:errortext})
+  
+         App.mainLayout.showChildView('mainRegion',usersHomeLayout);
 
-                  errorView.on("currentuser:loggedIn",function(){
-					    ResearchTool.UsersApp.Home.Controller.showHome();
-                  });
 
-                  ResearchTool.mainRegion.show(errorView);    // $when
-
-          }); //  $.when(fetchingAuth).done // $when fetchingUsers
-
-		}); // require
+     });
 
 	}
+   
  }
+
+
+
+return Controller;
+
 });
 
-return ResearchTool.UsersApp.Home.Controller;
-
-});
-define('apps/users/list/list_view',["app","common/views"], function(App){
+define('apps/users/list/list_view',["app","common/views"], function(App,Views){
 
 
 var List = {}
 
-  List.Layout = App.Common.Views.LoginUserLayout.extend({    
+  List.Layout = Views.Layout.extend({    
   });
 
   
-    List.Header = App.Common.Views.Header.extend({
+ List.Header = Views.Header.extend({
     initialize: function(){
-        this.title = "Browse: Users"
-
-        this.breadcrumbs = [
-        {name: "Users", url: "#/users"},
-        {name: "Browse", url: "#/users",current:"true"},
-
-        ]
+        this.title = "Users"
+        this.icon ="fas fa-users"
+        this.color ="red"
       }
   });
 
-
-  List.UsersList = App.Common.Views.DataTable.extend({
+  List.UsersList = Views.Icon_DataTable.extend({
    initialize: function(){
         this.urlroot="users"
 
         this.headers = [
-          {name: "Username"},
-          {name: "Role"},
+          {name: "#"},
+          {name: "Name"},
           {name: "Email"},
-          {name: "Verified"}
+          {name: "Institute"},
+          {name: "Admin"}
+
         ]
 
         this.columns = [
-        {name:"username",id:"user_id"},
-        {name:"role",id:"user_id"},
-        {name:"email",id:"user_id"},
-        {name:"verified",id:"user_id"},
+        {name:"id",id:"id"},
+        {name:"name",id:"id"},
+        {name:"email",id:"id"},
+        {name:"institute",id:"id"},
+        {name:"admin",id:"id"},
 
         ]
 
@@ -27948,9 +27903,6 @@ var List = {}
   });
 
 
- List.Error = App.Common.Views.LoginError.extend({});
-
-
 
 
 return List;
@@ -27958,54 +27910,43 @@ return List;
 });
 
 
-define('apps/users/list/list_controller',["app","common/util","apps/users/list/list_view"], function(App,Util){
+define('apps/users/list/list_controller',["app","common/util","apps/users/list/list_view"], function(App,Util,List){
 
 
  var Controller = {
 
  	listUsers: function(){
 		
-   		require(["entities/users"], function(){
+   		require(["entities/users"], function(UserEntities){
 
-   		var backdropView = new App.Common.Views.LoadingBackdropOpc();
-   		App.backdropRegion.show(backdropView);
-   		
-		var currentUser = App.request('app:currentUser');
-    	var fetchingUsers = App.request("user:entities");
-    	var fetchingAuthCheck = App.request("auth:authcheck");
+ 
+       	var fetchingUsers = UserEntities.API.getUsers();
 
-		usersListLayout = new List.Layout({model:currentUser});
+		usersListLayout = new List.Layout();
 
-    	 $.when(fetchingUsers,fetchingAuthCheck).done(function(users){
-     	 	backdropView.destroy();
-	
-		usersListLayout.on("show",function(){
+    	 $.when(fetchingUsers).done(function(users){
+		console.log(users);
+		usersListLayout.on("attach",function(){
 
  			var usersListHeader = new List.Header();
-			var usersListView = new List.UsersList({collection: users});
+			var usersListView = new List.UsersList({collection: users.users});
 
-			  usersListLayout.headerRegion.show(usersListHeader);
-			  usersListLayout.contentRegion.show(usersListView);	
+
+			    usersListLayout.showChildView('headerRegion',usersListHeader);
+                usersListLayout.showChildView('contentRegion',usersListView);	
 
  		}); // on:show
 
-		usersListLayout.on("currentuser:loggedOut",function(){
-			App.UsersApp.List.Controller.listUsers();
- 		}); // on:loggedOut
 
 
-		App.mainRegion.show(usersListLayout);
+         App.mainLayout.showChildView('mainRegion',usersListLayout);
 
 		}).fail(function(response){ 
 
 
- 			      backdropView.destroy();
 				  var errortext = Util.getErrorText(response);    
                   var errorView = new List.Error({model: currentUser,errortext:errortext})
 
-                  errorView.on("currentuser:loggedIn",function(){
-					    App.UsersApp.List.Controller.listUsers();
-                  });
 
                   App.mainRegion.show(errorView);   
                           
@@ -28557,7 +28498,7 @@ define('apps/users/users_app',["marionette","app"], function(Marionette,App){
 	UsersApp.Router = Marionette.AppRouter.extend({
 		appRoutes: {
 			"users":"usersPortal",
-			"users/browse":"listUsers",
+			"users/list":"listUsers",
 			"users/login":"login",
     		"users/newUser":"newUser",
     		"users/:id":"showUser",
@@ -28601,15 +28542,11 @@ define('apps/users/users_app',["marionette","app"], function(Marionette,App){
 	});
 
 	App.on("users:list",function(){
-		App.navigate("users/browse");
+		App.navigate("users/list");
 		API.listUsers();
 	});
 
 
-	App.on("users:list",function(){
-		App.navigate("users/login");
-		API.login();
-	});
 
 	App.on("user:show",function(id){
 	 	App.navigate("users/"+ id);

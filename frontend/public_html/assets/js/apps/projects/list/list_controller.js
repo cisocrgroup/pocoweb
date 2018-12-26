@@ -20,6 +20,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 		 var projectsListLayout = new List.Layout();
 
     	 $.when(fetchingprojects).done(function(projects){
+        console.log(projects);
 		   loadingCircleView.destroy();
 
 

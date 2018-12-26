@@ -22,7 +22,68 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'login_check' : login_check();break;
         case 'logout' : logout();break;
         case 'api_version' : get_api_version();break;
+        case 'get_projects' : get_projects();break;
+        case 'get_users' : get_users();break;
+
     }
+}
+
+
+function get_projects(){
+  //print_r(backend_get_session_cookie());
+
+  $api = new Api(backend_get_projects_route());
+  $api->set_session_id(backend_get_session_cookie());
+  $api->get_request();
+ 
+  $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+
+        echo json_encode($session); 
+
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status);
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+  return $api;
+}
+
+function get_users(){
+
+  $api = new Api(backend_get_users_route());
+  $api->set_session_id(backend_get_session_cookie());
+  $api->get_request();
+ 
+  $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+
+        echo json_encode($session); 
+
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status);
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+  return $api;
 }
 
 
@@ -71,7 +132,9 @@ function logout(){
   case "200":
         $result=array();
         $session = $api->get_response();
-        backend_set_session_cookie("");
+       // backend_set_session_cookie("");
+        unset($_COOKIE['pcw-sid']);
+        setcookie('pcw-sid', '', time() - 3600, '/');
 
         header("status: ".$status);
 
@@ -80,14 +143,15 @@ function logout(){
 
     break;
   case "403":
-    $SID = "";
-            backend_set_session_cookie("");
+         //   backend_set_session_cookie("");
+            unset($_COOKIE['pcw-sid']);
+            setcookie('pcw-sid', '', time() - 3600, '/');
+
 
     header("status: ".$status);
     echo  backend_get_http_status_info($status);
     break;
   default:
-    $SID = "";
         header("status: ".$status);
         echo backend_get_http_status_info($status);
     break;

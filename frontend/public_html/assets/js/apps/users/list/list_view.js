@@ -1,41 +1,39 @@
-define(["app","common/views"], function(App){
+define(["app","common/views"], function(App,Views){
 
 
 var List = {}
 
-  List.Layout = App.Common.Views.LoginUserLayout.extend({    
+  List.Layout = Views.Layout.extend({    
   });
 
   
-    List.Header = App.Common.Views.Header.extend({
+ List.Header = Views.Header.extend({
     initialize: function(){
-        this.title = "Browse: Users"
-
-        this.breadcrumbs = [
-        {name: "Users", url: "#/users"},
-        {name: "Browse", url: "#/users",current:"true"},
-
-        ]
+        this.title = "Users"
+        this.icon ="fas fa-users"
+        this.color ="red"
       }
   });
 
-
-  List.UsersList = App.Common.Views.DataTable.extend({
+  List.UsersList = Views.Icon_DataTable.extend({
    initialize: function(){
         this.urlroot="users"
 
         this.headers = [
-          {name: "Username"},
-          {name: "Role"},
+          {name: "#"},
+          {name: "Name"},
           {name: "Email"},
-          {name: "Verified"}
+          {name: "Institute"},
+          {name: "Admin"}
+
         ]
 
         this.columns = [
-        {name:"username",id:"user_id"},
-        {name:"role",id:"user_id"},
-        {name:"email",id:"user_id"},
-        {name:"verified",id:"user_id"},
+        {name:"id",id:"id"},
+        {name:"name",id:"id"},
+        {name:"email",id:"id"},
+        {name:"institute",id:"id"},
+        {name:"admin",id:"id"},
 
         ]
 
@@ -43,9 +41,6 @@ var List = {}
         }
    
   });
-
-
- List.Error = App.Common.Views.LoginError.extend({});
 
 
 

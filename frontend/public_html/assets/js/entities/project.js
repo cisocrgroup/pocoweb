@@ -25,27 +25,28 @@ Entities.Project = Backbone.Model.extend({
 
 Entities.API = {
 
-
+ 
   getProjects: function(){
+    var data = {};
+    data['backend_route'] = "get_projects";
     var defer = jQuery.Deferred();
-        $.ajax({
-        
-        url: "/api/projects/list",
-        type: "GET",
-        dataType:"json",
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
         success: function(data) {
-          defer.resolve(data);
 
+              defer.resolve(JSON.parse(data));
             },
             error: function(data){
-              defer.resolve(undefined);
+              defer.reject(data);
             }
     });
 
-
     return defer.promise();
-    
-},
+  },
+
 
 getProject: function(id){
   var defer = jQuery.Deferred();

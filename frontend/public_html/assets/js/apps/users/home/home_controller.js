@@ -1,64 +1,74 @@
+// =================================
+// apps/users/home/home_controller.js
+// =================================
 
-define(["app","common/util","apps/users/home/home_view"], function(ResearchTool,Util){
+define(["app","common/util","apps/users/home/home_view","apps/header/show/show_view","apps/users/login/login_view"], function(App,Util,Home,Header,Login){
 
-ResearchTool.module("UsersApp.Home", function(Home, ResearchTool, Backbone, Marionette, $, _){
 
- Home.Controller = {
+ var Controller = {
 
  	showHome: function(){
+         $(window).scrollTop(0);
 
-   		require(["entities/users"], function(){
+       require(["entities/users"], function(UserEntities){
 
-   		var backdropView = new ResearchTool.Common.Views.LoadingBackdropOpc();
-   		ResearchTool.backdropRegion.show(backdropView);
-   		
-		var currentUser = ResearchTool.request('app:currentUser');
-    	var fetchingAuthCheck = ResearchTool.request("auth:authcheck");
+		var usersHomeLayout = new Home.Layout();
+		var usersHomeHeader = new Home.Header();
+     
+        var cards = [
+        {
+                "color": "red",
+                "icon": "fa-users",
+                "id": "list_user_btn",
+                "name": "List Users.",
+                "seq": 1,
+                "text": "List of all registered users.",
+                "url": "users:list",
+            }, {
+                "color": "red",
+                "icon": "fa-user-plus",
+                "id": "add_user_btn",
+                "name": "Create User",
+                "seq": 3,
+                "text": "Create a new user account.",
+                "url": "users:create",
+            },
+             {
+                "color": "red",
+                "icon": "fa-user-circle",
+                "id": "my_account_btn",
+                "name": "My Account",
+                "seq": 5,
+                "text": "Update or delete your account.",
+                "url": "users:show",
+            }]
 
-		$.when(currentUser,fetchingAuthCheck).done(function(currentUser){
-        backdropView.destroy();
 
-		var usersHomeLayout = new Home.Layout({model:currentUser});
-	 	var	usersHomeHeader = new Home.Header();
-		var	usersHomeHub = new Home.Hub({model:currentUser});
+		var usersHomeHub = new Home.Hub({cards:cards,currentRoute:"users"});
 
+        usersHomeHub.on("cardHub:clicked",function(data){
+            App.trigger(data.url);
+        })       
 
-			usersHomeLayout.on("show",function(){
-			
-				usersHomeLayout.headerRegion.show(usersHomeHeader);
-				usersHomeLayout.contentRegion.show(usersHomeHub);
-
-    		});
-
-
-			
-		usersHomeLayout.on("currentuser:loggedOut",function(){
-			ResearchTool.UsersApp.Home.Controller.showHome();
- 		}); // on:loggedOut
-
+		usersHomeLayout.on("attach",function(){
+                usersHomeLayout.showChildView('headerRegion',usersHomeHeader);
+                usersHomeLayout.showChildView('contentRegion',usersHomeHub);
 	
-		
-		ResearchTool.mainRegion.show(usersHomeLayout);
-		}).fail(function(response){ 
+      
+ 		}); // on:show
 
- 			      backdropView.destroy();
-				  var errortext = Util.getErrorText(response);    
-                  var errorView = new Home.Error({model: currentUser,errortext:errortext})
+  
+         App.mainLayout.showChildView('mainRegion',usersHomeLayout);
 
-                  errorView.on("currentuser:loggedIn",function(){
-					    ResearchTool.UsersApp.Home.Controller.showHome();
-                  });
 
-                  ResearchTool.mainRegion.show(errorView);    // $when
-
-          }); //  $.when(fetchingAuth).done // $when fetchingUsers
-
-		}); // require
+     });
 
 	}
+   
  }
-});
 
-return ResearchTool.UsersApp.Home.Controller;
+
+
+return Controller;
 
 });

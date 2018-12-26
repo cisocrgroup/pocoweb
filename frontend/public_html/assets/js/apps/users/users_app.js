@@ -6,7 +6,7 @@ define(["marionette","app"], function(Marionette,App){
 	UsersApp.Router = Marionette.AppRouter.extend({
 		appRoutes: {
 			"users":"usersPortal",
-			"users/browse":"listUsers",
+			"users/list":"listUsers",
 			"users/login":"login",
     		"users/newUser":"newUser",
     		"users/:id":"showUser",
@@ -50,15 +50,11 @@ define(["marionette","app"], function(Marionette,App){
 	});
 
 	App.on("users:list",function(){
-		App.navigate("users/browse");
+		App.navigate("users/list");
 		API.listUsers();
 	});
 
 
-	App.on("users:list",function(){
-		App.navigate("users/login");
-		API.login();
-	});
 
 	App.on("user:show",function(id){
 	 	App.navigate("users/"+ id);

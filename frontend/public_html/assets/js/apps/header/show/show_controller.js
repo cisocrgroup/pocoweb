@@ -120,7 +120,6 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
        if(login_check!=-1){
       headerShowMsg.updateContent("Welcome back to PoCoWeb: "+login_check.name+"!",'success');
       headerShowTopbar.setLoggedIn(login_check.name);
-             console.log("ASDDKlö")
         headerShowLayout.showChildView('msgRegion',headerShowMsg)
 
       }

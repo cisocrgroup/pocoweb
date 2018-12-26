@@ -73,9 +73,11 @@ function backend_set_session_cookie($session) {
 }
 
 function backend_get_session_cookie() {
+		//print_r($_COOKIE);
 	global $config;
 	$res = "";
 	if (!isset($_COOKIE[$config["cookies"]["sid"]])) {
+		
         return NULL;
     }
     $res = $_COOKIE[$config["cookies"]["sid"]];
