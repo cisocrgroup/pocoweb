@@ -1,16 +1,15 @@
 
-define(["app","common/views",
+define(["app","marionette","common/views",
         "tpl!apps/users/show/templates/layout.tpl",
         "tpl!apps/users/show/templates/panel.tpl",
         "tpl!apps/users/show/templates/info.tpl"
 
-  ], function(ResearchTool,views,layoutTpl,panelTpl,infoTpl){
+  ], function(App,Marionette,Views,layoutTpl,panelTpl,infoTpl){
 
 
-ResearchTool.module("UsersApp.Show", function(Show, ResearchTool, Backbone, Marionette, $, _){
+var Show = {};
 
-
-  Show.Layout = ResearchTool.Common.Views.LoginUserLayout.extend({
+  Show.Layout = Marionette.View.extend({
     template:layoutTpl,
     regions:{
       headerRegion: "#hl-region",
@@ -21,57 +20,42 @@ ResearchTool.module("UsersApp.Show", function(Show, ResearchTool, Backbone, Mari
   });
 
 
-  Show.Header = ResearchTool.Common.Views.Header.extend({
+  Show.Header = Views.Header.extend({
     initialize: function(){
-        this.title = "User Account: "+this.model.get('username');
-
-        this.breadcrumbs = [
-        {name: "Users", url: "#/users"},
-        {name: this.model.get('username'), url: "#/users/"+this.model.get('user_id'),current:"true"},
-        ]
+      this.color = "red";
+      this.icon = "fa fa-user-circle";
+        this.title = 'Account for user #'+this.model.get('id');
+        if(this.model.get('admin')) this.title += " (Administrator)"
       }
   });
 
 
 
-  Show.Info = Marionette.ItemView.extend({
+  Show.Info = Marionette.View.extend({
       template: infoTpl,
-      className: "row bg_style",
       events:{
         "click button.js-back":   "backClicked",
       },
       backClicked: function(e){
       e.preventDefault();
       this.trigger("show:back");
-     }, 
-     onShow: function(){
-         $('#log_table').dataTable( {
-              "bAutoWidth": false,
-               "bStateSave": true,
-                 "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-               "iDisplayLength": 10
-            });
-      }          
+     },     
 
   });
 
 
 
-  Show.Panel = Marionette.ItemView.extend({
+  Show.Panel = Marionette.View.extend({
       template: panelTpl,
       className: "row"         
   });
 
 
- Show.Error = ResearchTool.Common.Views.LoginError.extend({});
 
 
-	Show.MissingUser = ResearchTool.Common.Views.Error.extend({errortext:"Error 404: User not found"});
 
 
-});
-
-return ResearchTool.UsersApp.Home;
+return Show;
 
 });
 

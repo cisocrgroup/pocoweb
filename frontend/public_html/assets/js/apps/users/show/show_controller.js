@@ -1,39 +1,41 @@
 
-define(["app","common/util","apps/users/show/show_view"], function(App,Util){
+define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show){
 
 
  var Controller = {
 
 		showUser: function(id){
 
-	   		require(["entities/users"], function(){
+	   		require(["entities/users"], function(UserEntitites){
 
-	   		var backdropView = new App.Common.Views.LoadingBackdropOpc();
-	   		App.backdropRegion.show(backdropView);
+	   		// var backdropView = new App.Common.Views.LoadingBackdropOpc();
+	   		// App.backdropRegion.show(backdropView);
 
-			var currentUser = App.request('app:currentUser');
-			var fetchingUser= App.request("user:entity",id);
+
+			var fetchingUser = UserEntitites.API.getUser(id);
 
 			$.when(fetchingUser).done(function(user){
-			backdropView.destroy();
+			// backdropView.destroy();
 
-		 	//currentUser.set({"url_id":id}); // pass url_id to view..
-			var userShowLayout = new Show.Layout({model:currentUser,preventDestroy:true});
+			var userModel = new UserEntitites.User(user);
+			console.log(userModel)
+
+			var userShowLayout = new Show.Layout();
 
 			var userShowHeader;
      		var userShowPanel;
 			var userShowInfo;
 	
-			userShowLayout.on("show",function(){
+			userShowLayout.on("attach",function(){
 			  
 
-			  userShowHeader = new Show.Header({model:user,preventDestroy:true});
-			  userShowPanel = new Show.Panel({model:user,preventDestroy:true});
-			  userShowInfo = new Show.Info({model:user,preventDestroy:true});
+			  userShowHeader = new Show.Header({model:userModel});
+			  userShowPanel = new Show.Panel({model:user});
+			  userShowInfo = new Show.Info({model:userModel});
 			 
-		      userShowLayout.headerRegion.show(userShowHeader);
-			  userShowLayout.panelRegion.show(userShowPanel);
-			  userShowLayout.infoRegion.show(userShowInfo);
+		       userShowLayout.showChildView('headerRegion',userShowHeader);
+			   userShowLayout.showChildView('infoRegion',userShowInfo);
+
 
 			   userShowInfo.on("show:back",function(){
 			  	 App.trigger("users:list");
@@ -51,7 +53,7 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util){
 
 
 
-			App.mainRegion.show(userShowLayout);
+         App.mainLayout.showChildView('mainRegion',userShowLayout);
 
 
     		}).fail(function(response){ 

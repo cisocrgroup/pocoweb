@@ -40,7 +40,7 @@ define(["app","common/util","apps/users/home/home_view","apps/header/show/show_v
                 "name": "My Account",
                 "seq": 5,
                 "text": "Update or delete your account.",
-                "url": "users:show",
+                "url": "users:account",
             }]
 
 

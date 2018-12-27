@@ -10,7 +10,9 @@ define(["marionette","app"], function(Marionette,App){
 			"users/login":"login",
     		"users/newUser":"newUser",
     		"users/:id":"showUser",
-			"users/:id/edit":"editUser"
+			"users/:id/edit":"editUser",
+			"users/account":"showUser"
+
 		}
 	});
 
@@ -66,6 +68,10 @@ define(["marionette","app"], function(Marionette,App){
 	API.editUser(id);
 	});
 
+	App.on("users:account",function(id){
+	 	App.navigate("users/account");
+	API.showUser(id);
+	});
 
 	var router = new UsersApp.Router({
 		controller: API,

@@ -24,6 +24,7 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'api_version' : get_api_version();break;
         case 'get_projects' : get_projects();break;
         case 'get_users' : get_users();break;
+        case 'get_user' : get_user();break;
 
     }
 }
@@ -47,7 +48,7 @@ function get_projects(){
     break;
   case "403":
     header("status: ".$status);
-    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Try again ? </a>';
+    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Please login.</a>';
     break;
   default:
         header("status: ".$status);
@@ -75,7 +76,7 @@ function get_users(){
     break;
   case "403":
     header("status: ".$status);
-    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Try again ? </a>';
+    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Please login.</a>';
     break;
   default:
         header("status: ".$status);
@@ -170,6 +171,25 @@ function login_check(){
       else {
         echo -1;
       }
+ 
+}
+
+function get_user(){
+
+      if(!isset($_POST['id'])){
+      if(isset(backend_get_session_cookie()['user'])){
+        $session = backend_get_session_cookie();
+        echo json_encode($session['user']);
+      }
+      else {
+       header("status: 403");
+       echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Please login.</a>';
+      }
+
+    }
+    else{
+      echo "to do";
+    }
  
   // $status = $api->get_http_status_code();
   // switch ($status) {

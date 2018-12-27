@@ -44,6 +44,9 @@ var List = {}
 
 
 
+  List.FooterPanel = Views.FooterPanel.extend({
+    });
+
 
 return List;
 

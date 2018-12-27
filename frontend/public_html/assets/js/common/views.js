@@ -198,6 +198,11 @@ onAttach: function(){
 	role: "alert",
 	type: "info",
 	message: "default message",
+	events:{
+		"click .js-close-msg" : "hide"
+	},
+
+
 
 		serializeData: function(){
 			return {
@@ -227,8 +232,11 @@ onAttach: function(){
    			this.options.message = message;
    			this.options.type = type
    			this.render();
+        	$("#"+this.id).css('display','block');
+
    		  },
    		  hide: function(){
+   		  	console.log("xxx")
    		  	$("#"+this.id).css('display','none');
    		  }
 	

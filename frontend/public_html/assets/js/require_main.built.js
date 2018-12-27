@@ -24149,7 +24149,7 @@ __p+='\r\n<div class="container" style="margin-top: 35px">\r\n  <div id="'+
 ((__t=(role))==null?'':_.escape(__t))+
 '">'+
 ((__t=(message))==null?'':__t)+
-'\r\n  	  <button type="button" class="close" data-dismiss="alert" aria-label="Close">\r\n    <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\r\n  </button>\r\n  </div>\r\n</div>\r\n';
+'\r\n  	  <button type="button" class="close js-close-msg">\r\n    <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\r\n  </button>\r\n  </div>\r\n</div>\r\n';
 }
 return __p;
 };});
@@ -24354,6 +24354,11 @@ onAttach: function(){
 	role: "alert",
 	type: "info",
 	message: "default message",
+	events:{
+		"click .js-close-msg" : "hide"
+	},
+
+
 
 		serializeData: function(){
 			return {
@@ -24383,8 +24388,11 @@ onAttach: function(){
    			this.options.message = message;
    			this.options.type = type
    			this.render();
+        	$("#"+this.id).css('display','block');
+
    		  },
    		  hide: function(){
+   		  	console.log("xxx")
    		  	$("#"+this.id).css('display','none');
    		  }
 	
@@ -25532,6 +25540,17 @@ define('entities/users',["app"], function(App){
 
   var Entities={};
 
+Entities.User = Backbone.Model.extend({
+  defaults:{
+  name:"",
+  email:"",
+  institute:"",
+  id:null,
+  admin:""
+  
+     }
+  });
+
 Entities.API = {
 
 
@@ -25644,7 +25663,31 @@ Entities.API = {
 
     return defer.promise();
   },
+    getUser: function(id){
+      data = {}
+    if(id!="account") {
+      data['id'] = id;
+    }
 
+    data['backend_route'] = "get_user";
+  console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
 };
 
 
@@ -26593,8 +26636,7 @@ define('entities/project',["app"], function(IPS_App){
   var Entities={};
 
 Entities.Project = Backbone.Model.extend({
-     urlRoot: "api/v1/proposals",
-
+     urlRoot: "projects",
      defaults:{
   author:null,
   books:null,
@@ -27832,7 +27874,7 @@ define('apps/users/home/home_controller',["app","common/util","apps/users/home/h
                 "name": "My Account",
                 "seq": 5,
                 "text": "Update or delete your account.",
-                "url": "users:show",
+                "url": "users:account",
             }]
 
 
@@ -27911,6 +27953,9 @@ var List = {}
 
 
 
+  List.FooterPanel = Views.FooterPanel.extend({
+    });
+
 
 return List;
 
@@ -27938,9 +27983,11 @@ define('apps/users/list/list_controller',["app","common/util","apps/users/list/l
  			var usersListHeader = new List.Header();
 			var usersListView = new List.UsersList({collection: users.users});
 
+			var usersFooterPanel = new List.FooterPanel();
 
 			    usersListLayout.showChildView('headerRegion',usersListHeader);
                 usersListLayout.showChildView('contentRegion',usersListView);	
+                usersListLayout.showChildView('panelRegion',usersFooterPanel);	
 
  		}); // on:show
 
@@ -27992,7 +28039,7 @@ return App.UsersApp.Login.Controller;
 define("tpl!apps/users/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\r\n    <div id="panel-region"></div>\r\n    <div id="info-region" ></div>';
+__p+='<div id="hl-region"></div>\r\n    <div id="panel-region"></div>\r\n    <div id="info-region" ></div>\r\n    ';
 }
 return __p;
 };});
@@ -28012,52 +28059,33 @@ return __p;
 define("tpl!apps/users/show/templates/info.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+=' <div class="large-12 columns bg_layer">\r\n\r\n  <h3> User Information: </h3>\r\n  <fieldset> \r\n  <div> Firstname: '+
-((__t=( firstname ))==null?'':_.escape(__t))+
-' <div>  \r\n  <div> Lastname: '+
-((__t=( lastname ))==null?'':_.escape(__t))+
-' <div>  \r\n  <div> Role: '+
-((__t=( role ))==null?'':_.escape(__t))+
+__p+='    <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n';
+ console.log(this) 
+__p+='\r\n';
+ console.log(name)
+__p+='\r\n  <h3> User Information: </h3>\r\n  <fieldset> \r\n  <div> Username: '+
+((__t=( name ))==null?'':_.escape(__t))+
 ' <div>  \r\n  <div> Email: '+
 ((__t=( email ))==null?'':_.escape(__t))+
-' <div>\r\n<!-- 7  <div> Last Updated: '+
-((__t=( changed ))==null?'':_.escape(__t))+
-' <div> -->\r\n  <div> Verified: '+
-((__t=( verified ))==null?'':_.escape(__t))+
-' </div>\r\n  </fieldset>\r\n\r\n  ';
- if(logs.length>0){
-__p+='<h3> Change Log: </h3> \r\n   <table id="log_table">\r\n     <thead>\r\n      <tr>\r\n        <th>Table</th>\r\n        <th>Action</th>\r\n        <th>Entity ID</th>\r\n        <th>Date</th>\r\n      </tr>\r\n     </thead>\r\n     <tbody>\r\n    ';
- _.each(logs, function(log) { 
-__p+='  \r\n      <tr>\r\n      <td> <div class="resp_header" style="margin-right:5px">  Table: </div>  '+
-((__t=( log.tablename ))==null?'':_.escape(__t))+
-' </a> </td>\r\n      <td> <div class="resp_header" style="margin-right:5px"> Action: </div>  '+
-((__t=( log.action ))==null?'':_.escape(__t))+
-' </a> </td>\r\n      <td> <div class="resp_header" style="margin-right:5px"> Entity ID: </div> '+
-((__t=( log.entity_id ))==null?'':_.escape(__t))+
-' </a> </td>\r\n      <td> <div class="resp_header" style="margin-right:5px"> Date: </div> '+
-((__t=( log.time_tag ))==null?'':_.escape(__t))+
-'</a>  </td>\r\n      </tr>\r\n    ';
- }); 
-__p+='\r\n\r\n     </tbody>\r\n    </table>\r\n\r\n';
-}
-__p+='\r\n\r\n  <button type="submit" class="medium button right js-back"> <i class="fa fa-chevron-left"></i> Back</button>\r\n\r\n  </div>\r\n';
+' <div>  \r\n  <div> Institute: '+
+((__t=( institute ))==null?'':_.escape(__t))+
+' <div>  \r\n  </fieldset>\r\n\r\n\r\n\r\n<button class="btn back_btn js-back hover"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\r\n\r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
 }
 return __p;
 };});
 
 
-define('apps/users/show/show_view',["app","common/views",
+define('apps/users/show/show_view',["app","marionette","common/views",
         "tpl!apps/users/show/templates/layout.tpl",
         "tpl!apps/users/show/templates/panel.tpl",
         "tpl!apps/users/show/templates/info.tpl"
 
-  ], function(ResearchTool,views,layoutTpl,panelTpl,infoTpl){
+  ], function(App,Marionette,Views,layoutTpl,panelTpl,infoTpl){
 
 
-ResearchTool.module("UsersApp.Show", function(Show, ResearchTool, Backbone, Marionette, $, _){
+var Show = {};
 
-
-  Show.Layout = ResearchTool.Common.Views.LoginUserLayout.extend({
+  Show.Layout = Marionette.View.extend({
     template:layoutTpl,
     regions:{
       headerRegion: "#hl-region",
@@ -28068,97 +28096,84 @@ ResearchTool.module("UsersApp.Show", function(Show, ResearchTool, Backbone, Mari
   });
 
 
-  Show.Header = ResearchTool.Common.Views.Header.extend({
+  Show.Header = Views.Header.extend({
     initialize: function(){
-        this.title = "User Account: "+this.model.get('username');
-
-        this.breadcrumbs = [
-        {name: "Users", url: "#/users"},
-        {name: this.model.get('username'), url: "#/users/"+this.model.get('user_id'),current:"true"},
-        ]
+      this.color = "red";
+      this.icon = "fa fa-user-circle";
+        this.title = 'Account for user #'+this.model.get('id');
+        if(this.model.get('admin')) this.title += " (Administrator)"
       }
   });
 
 
 
-  Show.Info = Marionette.ItemView.extend({
+  Show.Info = Marionette.View.extend({
       template: infoTpl,
-      className: "row bg_style",
       events:{
         "click button.js-back":   "backClicked",
       },
       backClicked: function(e){
       e.preventDefault();
       this.trigger("show:back");
-     }, 
-     onShow: function(){
-         $('#log_table').dataTable( {
-              "bAutoWidth": false,
-               "bStateSave": true,
-                 "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-               "iDisplayLength": 10
-            });
-      }          
+     },     
 
   });
 
 
 
-  Show.Panel = Marionette.ItemView.extend({
+  Show.Panel = Marionette.View.extend({
       template: panelTpl,
       className: "row"         
   });
 
 
- Show.Error = ResearchTool.Common.Views.LoginError.extend({});
 
 
-	Show.MissingUser = ResearchTool.Common.Views.Error.extend({errortext:"Error 404: User not found"});
 
 
-});
-
-return ResearchTool.UsersApp.Home;
+return Show;
 
 });
 
 
 
-define('apps/users/show/show_controller',["app","common/util","apps/users/show/show_view"], function(App,Util){
+define('apps/users/show/show_controller',["app","common/util","apps/users/show/show_view"], function(App,Util,Show){
 
 
  var Controller = {
 
 		showUser: function(id){
 
-	   		require(["entities/users"], function(){
+	   		require(["entities/users"], function(UserEntitites){
 
-	   		var backdropView = new App.Common.Views.LoadingBackdropOpc();
-	   		App.backdropRegion.show(backdropView);
+	   		// var backdropView = new App.Common.Views.LoadingBackdropOpc();
+	   		// App.backdropRegion.show(backdropView);
 
-			var currentUser = App.request('app:currentUser');
-			var fetchingUser= App.request("user:entity",id);
+
+			var fetchingUser = UserEntitites.API.getUser(id);
 
 			$.when(fetchingUser).done(function(user){
-			backdropView.destroy();
+			// backdropView.destroy();
 
-		 	//currentUser.set({"url_id":id}); // pass url_id to view..
-			var userShowLayout = new Show.Layout({model:currentUser,preventDestroy:true});
+			var userModel = new UserEntitites.User(user);
+			console.log(userModel)
+
+			var userShowLayout = new Show.Layout();
 
 			var userShowHeader;
      		var userShowPanel;
 			var userShowInfo;
 	
-			userShowLayout.on("show",function(){
+			userShowLayout.on("attach",function(){
 			  
 
-			  userShowHeader = new Show.Header({model:user,preventDestroy:true});
-			  userShowPanel = new Show.Panel({model:user,preventDestroy:true});
-			  userShowInfo = new Show.Info({model:user,preventDestroy:true});
+			  userShowHeader = new Show.Header({model:userModel});
+			  userShowPanel = new Show.Panel({model:user});
+			  userShowInfo = new Show.Info({model:userModel});
 			 
-		      userShowLayout.headerRegion.show(userShowHeader);
-			  userShowLayout.panelRegion.show(userShowPanel);
-			  userShowLayout.infoRegion.show(userShowInfo);
+		       userShowLayout.showChildView('headerRegion',userShowHeader);
+			   userShowLayout.showChildView('infoRegion',userShowInfo);
+
 
 			   userShowInfo.on("show:back",function(){
 			  	 App.trigger("users:list");
@@ -28176,7 +28191,7 @@ define('apps/users/show/show_controller',["app","common/util","apps/users/show/s
 
 
 
-			App.mainRegion.show(userShowLayout);
+         App.mainLayout.showChildView('mainRegion',userShowLayout);
 
 
     		}).fail(function(response){ 
@@ -28507,7 +28522,9 @@ define('apps/users/users_app',["marionette","app"], function(Marionette,App){
 			"users/login":"login",
     		"users/newUser":"newUser",
     		"users/:id":"showUser",
-			"users/:id/edit":"editUser"
+			"users/:id/edit":"editUser",
+			"users/account":"showUser"
+
 		}
 	});
 
@@ -28563,6 +28580,10 @@ define('apps/users/users_app',["marionette","app"], function(Marionette,App){
 	API.editUser(id);
 	});
 
+	App.on("users:account",function(id){
+	 	App.navigate("users/account");
+	API.showUser(id);
+	});
 
 	var router = new UsersApp.Router({
 		controller: API,

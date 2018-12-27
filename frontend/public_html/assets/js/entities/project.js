@@ -7,8 +7,7 @@ define(["app"], function(IPS_App){
   var Entities={};
 
 Entities.Project = Backbone.Model.extend({
-     urlRoot: "api/v1/proposals",
-
+     urlRoot: "projects",
      defaults:{
   author:null,
   books:null,

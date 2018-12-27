@@ -6,6 +6,17 @@ define(["app"], function(App){
 
   var Entities={};
 
+Entities.User = Backbone.Model.extend({
+  defaults:{
+  name:"",
+  email:"",
+  institute:"",
+  id:null,
+  admin:""
+  
+     }
+  });
+
 Entities.API = {
 
 
@@ -118,7 +129,31 @@ Entities.API = {
 
     return defer.promise();
   },
+    getUser: function(id){
+      data = {}
+    if(id!="account") {
+      data['id'] = id;
+    }
 
+    data['backend_route'] = "get_user";
+  console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
 };
 
 
