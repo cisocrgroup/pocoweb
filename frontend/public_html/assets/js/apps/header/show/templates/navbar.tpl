@@ -14,13 +14,13 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
      <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" href="#projects/list">Projects</a>
+        <a class="nav-link" href="#projects">Projects</a>
       </li>
        <li class="nav-item">
-        <a class="nav-link" href="#docs">Users</a>
+        <a class="nav-link" href="#users">Users</a>
       </li>
        <li class="nav-item">
-        <a class="nav-link" href="#docs">Account</a>
+        <a class="nav-link" href="#users/account">Account</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#docs">Documentation</a>

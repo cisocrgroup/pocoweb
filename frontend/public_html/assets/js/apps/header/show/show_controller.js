@@ -25,7 +25,10 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
       App.Navbar = headerShowTopbar;
 
       
-      var headerShowMsg = new Show.Message({message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
+      var headerShowMsg = new Show.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
+      App.mainmsg = headerShowMsg; // save view to be changed form other views..
+
+
   		headerShowLayout.on("attach",function(){
   		headerShowLayout.showChildView('navbarRegion',headerShowTopbar);
  		}); // on:show
@@ -67,14 +70,24 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
                  $.when(loggingInUser).done(function(result){
 
-                  if(App.getCurrentRoute()=="home"){
-
-
                         headerShowMsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedIn(result.user.name);
-                        }
-              
-                  
+                          
+                          var currentRoute =  App.getCurrentRoute();
+
+
+                          switch(currentRoute) {
+                            case "projects":
+                              App.trigger("projects:list")
+                              break;
+                            case "users/list":
+                              App.trigger("users:list")
+                              break;
+                            default:
+                              // code block
+                          } 
+
+                                            
                 }).fail(function(response){ 
                   headerShowMsg.updateContent(response.responseText,'danger');                       
                                       

@@ -20,7 +20,7 @@ define(["app","common/util","apps/users/home/home_view","apps/header/show/show_v
                 "color": "red",
                 "icon": "fa-users",
                 "id": "list_user_btn",
-                "name": "List Users.",
+                "name": "List Users",
                 "seq": 1,
                 "text": "List of all registered users.",
                 "url": "users:list",

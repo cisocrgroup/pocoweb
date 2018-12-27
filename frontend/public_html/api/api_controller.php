@@ -47,7 +47,7 @@ function get_projects(){
     break;
   case "403":
     header("status: ".$status);
-    echo  backend_get_http_status_info($status);
+    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Try again ? </a>';
     break;
   default:
         header("status: ".$status);
@@ -75,7 +75,7 @@ function get_users(){
     break;
   case "403":
     header("status: ".$status);
-    echo  backend_get_http_status_info($status);
+    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Try again ? </a>';
     break;
   default:
         header("status: ".$status);

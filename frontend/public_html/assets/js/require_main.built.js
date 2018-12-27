@@ -24383,6 +24383,9 @@ onAttach: function(){
    			this.options.message = message;
    			this.options.type = type
    			this.render();
+   		  },
+   		  hide: function(){
+   		  	$("#"+this.id).css('display','none');
    		  }
 	
 
@@ -24862,7 +24865,7 @@ return __p;
 define("tpl!apps/header/show/templates/navbar.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n<div class="text-center">\n<img class="rounded" src="assets/images/logo.jpg" style="margin: 15px;" />\n</div>\n\n\n<nav class="navbar navbar-expand-lg navbar-light bg-light">\n  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">\n    <span class="navbar-toggler-icon"></span>\n  </button>\n\n\n  <div class="collapse navbar-collapse" id="navbarSupportedContent">\n     <ul class="navbar-nav mr-auto">\n      <li class="nav-item">\n        <a class="nav-link" href="#projects/list">Projects</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#docs">Users</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#docs">Account</a>\n      </li>\n      <li class="nav-item">\n        <a class="nav-link" href="#docs">Documentation</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#about">About</a>\n      </li>\n    </ul>\n\n     <ul class="navbar-nav my-2 my-lg-0 right-nav">\n       <li class="nav-item js-login">\n        <a class="nav-link" href="#"><i class="fas fa-sign-in-alt fa-sm"></i> Login</a>\n      </li>\n     \n    </ul>\n   <ul class="navbar-nav my-2 my-lg-0 version-nav">\n       <li class="nav-item">\n        <p class="navbar-text" style="margin:0;">Api-Version: '+
+__p+='\n\n<div class="text-center">\n<img class="rounded" src="assets/images/logo.jpg" style="margin: 15px;" />\n</div>\n\n\n<nav class="navbar navbar-expand-lg navbar-light bg-light">\n  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">\n    <span class="navbar-toggler-icon"></span>\n  </button>\n\n\n  <div class="collapse navbar-collapse" id="navbarSupportedContent">\n     <ul class="navbar-nav mr-auto">\n      <li class="nav-item">\n        <a class="nav-link" href="#projects">Projects</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#users">Users</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#users/account">Account</a>\n      </li>\n      <li class="nav-item">\n        <a class="nav-link" href="#docs">Documentation</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#about">About</a>\n      </li>\n    </ul>\n\n     <ul class="navbar-nav my-2 my-lg-0 right-nav">\n       <li class="nav-item js-login">\n        <a class="nav-link" href="#"><i class="fas fa-sign-in-alt fa-sm"></i> Login</a>\n      </li>\n     \n    </ul>\n   <ul class="navbar-nav my-2 my-lg-0 version-nav">\n       <li class="nav-item">\n        <p class="navbar-text" style="margin:0;">Api-Version: '+
 ((__t=(version))==null?'':_.escape(__t))+
 '</p>\n      </li>\n    </ul>\n  </div>\n</nav>\n\n\n\n\n\n\n';
 }
@@ -25745,7 +25748,10 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
       App.Navbar = headerShowTopbar;
 
       
-      var headerShowMsg = new Show.Message({message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
+      var headerShowMsg = new Show.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
+      App.mainmsg = headerShowMsg; // save view to be changed form other views..
+
+
   		headerShowLayout.on("attach",function(){
   		headerShowLayout.showChildView('navbarRegion',headerShowTopbar);
  		}); // on:show
@@ -25787,14 +25793,24 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
                  $.when(loggingInUser).done(function(result){
 
-                  if(App.getCurrentRoute()=="home"){
-
-
                         headerShowMsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedIn(result.user.name);
-                        }
-              
-                  
+                          
+                          var currentRoute =  App.getCurrentRoute();
+
+
+                          switch(currentRoute) {
+                            case "projects":
+                              App.trigger("projects:list")
+                              break;
+                            case "users/list":
+                              App.trigger("users:list")
+                              break;
+                            default:
+                              // code block
+                          } 
+
+                                            
                 }).fail(function(response){ 
                   headerShowMsg.updateContent(response.responseText,'danger');                       
                                       
@@ -27008,8 +27024,8 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
      		require(["entities/project"], function(ProjectEntitites){
 
-          var loadingCircleView = new  Views.LoadingBackdrop();
-          App.mainLayout.showChildView('backdropRegion',loadingCircleView);
+          // var loadingCircleView = new  Views.LoadingBackdrop();
+          // App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
 
      var fetchingprojects = ProjectEntitites.API.getProjects();
@@ -27018,7 +27034,7 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
     	 $.when(fetchingprojects).done(function(projects){
         console.log(projects);
-		   loadingCircleView.destroy();
+		   // loadingCircleView.destroy();
 
 
     		projectsListLayout.on("attach",function(){
@@ -27066,7 +27082,6 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
 
           });
-
           App.mainLayout.showChildView('dialogRegion',projectsListAddProject);
 
 
@@ -27082,22 +27097,14 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
        App.mainLayout.showChildView('mainRegion',projectsListLayout);
 
 		}).fail(function(response){
+      
+       projectsListLayout.getRegion('main');
+       var mainRegion = App.mainLayout.getRegion('mainRegion');
+       mainRegion.empty();
 
-
- 			     // loadingCircleView.destroy();
-				  var errortext = Util.getErrorText(response);
-                  var errorView = new List.Error({model: currentUser,errortext:errortext})
-
-                  errorView.on("currentProject:loggedIn",function(){
-					        App.projectsApp.List.Controller.listprojects();
-                  });
-
-                  App.mainLayout.showChildView('mainRegion',errorView);
-
-
-
-
-          }); //  $.when(fetchingAuth).done // $when fetchingprojects
+         App.mainmsg.updateContent(response.responseText,'danger');                       
+                                    
+          }); // $when fetchingprojects
 
 		}); // require
 	}
@@ -27805,7 +27812,7 @@ define('apps/users/home/home_controller',["app","common/util","apps/users/home/h
                 "color": "red",
                 "icon": "fa-users",
                 "id": "list_user_btn",
-                "name": "List Users.",
+                "name": "List Users",
                 "seq": 1,
                 "text": "List of all registered users.",
                 "url": "users:list",
@@ -27943,13 +27950,11 @@ define('apps/users/list/list_controller',["app","common/util","apps/users/list/l
 
 		}).fail(function(response){ 
 
+		      var mainRegion = App.mainLayout.getRegion('mainRegion');
+		       mainRegion.empty();
 
-				  var errortext = Util.getErrorText(response);    
-                  var errorView = new List.Error({model: currentUser,errortext:errortext})
-
-
-                  App.mainRegion.show(errorView);   
-                          
+		         App.mainmsg.updateContent(response.responseText,'danger');              
+		                          
                          
                                         
           }); //  $.when(fetchingAuth).done // $when fetchingUsers

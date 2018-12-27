@@ -227,6 +227,9 @@ onAttach: function(){
    			this.options.message = message;
    			this.options.type = type
    			this.render();
+   		  },
+   		  hide: function(){
+   		  	$("#"+this.id).css('display','none');
    		  }
 	
 

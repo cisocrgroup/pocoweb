@@ -32,13 +32,11 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 
 		}).fail(function(response){ 
 
+		      var mainRegion = App.mainLayout.getRegion('mainRegion');
+		       mainRegion.empty();
 
-				  var errortext = Util.getErrorText(response);    
-                  var errorView = new List.Error({model: currentUser,errortext:errortext})
-
-
-                  App.mainRegion.show(errorView);   
-                          
+		         App.mainmsg.updateContent(response.responseText,'danger');              
+		                          
                          
                                         
           }); //  $.when(fetchingAuth).done // $when fetchingUsers

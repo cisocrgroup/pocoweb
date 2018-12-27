@@ -11,8 +11,8 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
      		require(["entities/project"], function(ProjectEntitites){
 
-          var loadingCircleView = new  Views.LoadingBackdrop();
-          App.mainLayout.showChildView('backdropRegion',loadingCircleView);
+          // var loadingCircleView = new  Views.LoadingBackdrop();
+          // App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
 
      var fetchingprojects = ProjectEntitites.API.getProjects();
@@ -21,7 +21,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
     	 $.when(fetchingprojects).done(function(projects){
         console.log(projects);
-		   loadingCircleView.destroy();
+		   // loadingCircleView.destroy();
 
 
     		projectsListLayout.on("attach",function(){
@@ -69,7 +69,6 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
 
           });
-
           App.mainLayout.showChildView('dialogRegion',projectsListAddProject);
 
 
@@ -85,22 +84,14 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
        App.mainLayout.showChildView('mainRegion',projectsListLayout);
 
 		}).fail(function(response){
+      
+       projectsListLayout.getRegion('main');
+       var mainRegion = App.mainLayout.getRegion('mainRegion');
+       mainRegion.empty();
 
-
- 			     // loadingCircleView.destroy();
-				  var errortext = Util.getErrorText(response);
-                  var errorView = new List.Error({model: currentUser,errortext:errortext})
-
-                  errorView.on("currentProject:loggedIn",function(){
-					        App.projectsApp.List.Controller.listprojects();
-                  });
-
-                  App.mainLayout.showChildView('mainRegion',errorView);
-
-
-
-
-          }); //  $.when(fetchingAuth).done // $when fetchingprojects
+         App.mainmsg.updateContent(response.responseText,'danger');                       
+                                    
+          }); // $when fetchingprojects
 
 		}); // require
 	}
