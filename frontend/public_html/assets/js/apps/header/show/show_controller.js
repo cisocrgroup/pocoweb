@@ -25,8 +25,8 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
       App.Navbar = headerShowTopbar;
 
       
-      var headerShowMsg = new Show.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
-      App.mainmsg = headerShowMsg; // save view to be changed form other views..
+      // var headerShowMsg = new Show.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
+      // App.mainmsg = headerShowMsg; // save view to be changed form other views..
 
 
   		headerShowLayout.on("attach",function(){
@@ -40,16 +40,12 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
                  $.when(loggingOutUser).done(function(result){
 
-                  if(App.getCurrentRoute()=="home"){
-
-
-                       headerShowMsg.updateContent(result.message,'success');
+                       App.mainmsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedOut();
-                        }
-              
+                        
                   
                 }).fail(function(response){ 
-                  headerShowMsg.updateContent(response.responseText,'danger');                       
+                  App.mainmsg.updateContent(response.responseText,'danger');                       
                                       
           }); //  $.when(loggingOutUser).done
 
@@ -70,7 +66,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
                  $.when(loggingInUser).done(function(result){
 
-                        headerShowMsg.updateContent(result.message,'success');
+                        App.mainmsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedIn(result.user.name);
                           
                           var currentRoute =  App.getCurrentRoute();
@@ -82,6 +78,8 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
                               break;
                             case "users/list":
                               App.trigger("users:list")
+                            case "users/account":
+                              App.trigger("users:show","account")
                               break;
                             default:
                               // code block
@@ -89,7 +87,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
                                             
                 }).fail(function(response){ 
-                  headerShowMsg.updateContent(response.responseText,'danger');                       
+                  App.mainmsg.updateContent(response.responseText,'danger');                       
                                       
           }); //  $.when(loggingInUser).done
 
@@ -131,16 +129,13 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
   headerShowTopbar.on("attach",function(){
        if(login_check!=-1){
-      headerShowMsg.updateContent("Welcome back to PoCoWeb: "+login_check.name+"!",'success');
+      App.mainmsg.updateContent("Welcome back to PoCoWeb: "+login_check.name+"!",'success');
       headerShowTopbar.setLoggedIn(login_check.name);
-        headerShowLayout.showChildView('msgRegion',headerShowMsg)
+        headerShowLayout.showChildView('msgRegion',App.mainmsg)
 
       }
       else {
-        headerShowLayout.showChildView('msgRegion',headerShowMsg)
-
-  
-
+        headerShowLayout.showChildView('msgRegion',App.mainmsg)
       }
     });
       headerShowTopbar.on("nav:exit",function(){
@@ -148,11 +143,11 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
     });
 
 
-          headerShowMsg.on("msg:login",function(data){
+          App.mainmsg.on("msg:login",function(data){
         headerShowTopbar.trigger("nav:login");
         });
 
-      headerShowMsg.on("msg:logout",function(data){
+      App.mainmsg.on("msg:logout",function(data){
        headerShowTopbar.trigger("nav:logout");
         });
 

@@ -22,7 +22,7 @@ define(["marionette","app","common/views","apps/projects/common/views",
   
     List.Header = CommonViews.Header.extend({
     initialize: function(){
-        this.title = "OCR Projects"
+        this.title = "Projects"
         this.icon ="fa fa-align-left"
         this.color ="green"
       }

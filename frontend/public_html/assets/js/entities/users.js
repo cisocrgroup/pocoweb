@@ -12,7 +12,9 @@ Entities.User = Backbone.Model.extend({
   email:"",
   institute:"",
   id:null,
-  admin:""
+  admin:"",
+  password:"",
+  new_password:""
   
      }
   });
@@ -136,6 +138,25 @@ Entities.API = {
     }
 
     data['backend_route'] = "get_user";
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+     updateUser: function(data){
+    data['backend_route'] = "update_user";
   console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({

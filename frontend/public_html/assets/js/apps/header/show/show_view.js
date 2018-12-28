@@ -23,15 +23,6 @@ define(["marionette","app","common/views","common/util",
   });
 
 
- Show.Message = Views.Message.extend({
-    triggers:{
-      "click .js-login":"msg:login",
-      "click .js-logout":"msg:logout"
-
-     },
-  });
-
-
    Show.Topbar = Marionette.View.extend({
    template: navbarTpl,
    triggers:{
@@ -62,7 +53,7 @@ define(["marionette","app","common/views","common/util",
     
           $('.right-nav').empty();
           $('.right-nav').prepend('<li class="nav-item js-logout"><a href="#" class="nav-link">Logout</a></li>');
-          $('.right-nav').prepend('<li><p class="navbar-text" style="margin:0;">Logged in as user: '+name+" </p></li>");
+          $('.right-nav').prepend('<li><p class="navbar-text" style="margin:0;">Logged in as user: <span class="loginname">'+name+"</span></p></li>");
         },
      setLoggedOut: function(name){
       $('.right-nav').empty();

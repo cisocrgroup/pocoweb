@@ -1,10 +1,9 @@
 
-define(["app","marionette","common/views",
+define(["app","marionette","apps/users/common/views","common/views",
         "tpl!apps/users/show/templates/layout.tpl",
-        "tpl!apps/users/show/templates/panel.tpl",
-        "tpl!apps/users/show/templates/info.tpl"
+        "tpl!apps/users/show/templates/panel.tpl"
 
-  ], function(App,Marionette,Views,layoutTpl,panelTpl,infoTpl){
+  ], function(App,Marionette,UserViews,Views,layoutTpl,panelTpl){
 
 
 var Show = {};
@@ -14,7 +13,9 @@ var Show = {};
     regions:{
       headerRegion: "#hl-region",
       panelRegion: "#panel-region",
-      infoRegion: "#info-region"
+      infoRegion: "#info-region",
+      footerRegion: "#info-region"
+
     }
 
   });
@@ -31,23 +32,39 @@ var Show = {};
 
 
 
-  Show.Info = Marionette.View.extend({
-      template: infoTpl,
-      events:{
+  Show.Form = UserViews.Form.extend({
+
+  });
+
+
+  Show.AreYouSure = Views.AreYouSure.extend({})
+
+  Show.Panel = Marionette.View.extend({
+      template: panelTpl,
+       events:{
         "click button.js-back":   "backClicked",
+        "click button.js-update": "updateClicked",
+        "click button.js-delete": "deleteClicked"
       },
       backClicked: function(e){
       e.preventDefault();
       this.trigger("show:back");
      },     
-
-  });
-
-
-
-  Show.Panel = Marionette.View.extend({
-      template: panelTpl,
-      className: "row"         
+      updateClicked: function(e){
+      e.preventDefault();
+      var data = {}
+      data['name'] = $("input[name=name]").val();
+      data['email'] = $("input[name=email]").val();
+      data['institute'] = $("input[name=institute").val();
+      data['password'] = $("input[name=password]").val();
+      data['new_password'] = $("input[name=new_password]").val();
+          console.log(data)
+      this.trigger("show:update",data);
+     },
+      deleteClicked: function(e){
+      e.preventDefault();
+      this.trigger("show:delete");
+     }     
   });
 
 

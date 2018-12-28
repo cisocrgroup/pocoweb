@@ -58,12 +58,12 @@ define(["marionette","app"], function(Marionette,App){
 
 
 
-	App.on("user:show",function(id){
+	App.on("users:show",function(id){
 	 	App.navigate("users/"+ id);
 	API.showUser(id);
 	});
 
-	App.on("user:edit",function(id){
+	App.on("users:edit",function(id){
 	 	App.navigate("users/"+ id+"/edit");
 	API.editUser(id);
 	});

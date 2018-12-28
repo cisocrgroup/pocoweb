@@ -24003,7 +24003,11 @@ return __p;
 define("tpl!common/templates/areyousure.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='  <a class="close-reveal-modal">×</a>\n   <h3> Are you sure...</h3>\n   <a class="button small  alert" id="js-yes"> Yes </a>\n   <a class="button small" id="js-no"> No </a>';
+__p+='  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header">\n        <h5 class="modal-title">'+
+((__t=(title))==null?'':_.escape(__t))+
+'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n      </div>\n      <div class="modal-body">\n        <p>'+
+((__t=(text))==null?'':_.escape(__t))+
+'</p>\n      </div>\n      <div class="modal-footer">\n        <button type="button" class="btn btn-primary">Yes</button>\n        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>\n      </div>\n    </div>\n  </div>\n';
 }
 return __p;
 };});
@@ -24357,6 +24361,11 @@ onAttach: function(){
 	events:{
 		"click .js-close-msg" : "hide"
 	},
+	 triggers:{
+      "click .js-login":"msg:login",
+      "click .js-logout":"msg:logout"
+
+     },
 
 
 
@@ -24731,18 +24740,27 @@ Views.Layout = Marionette.View.extend({
      "click #js-yes":"yesClicked",
       "click #js-no":"noClicked",
     },
+	serializeData: function(){
+			return {
+				title: Marionette.getOption(this,"title"),
+				text: Marionette.getOption(this,"text"),
+				id: Marionette.getOption(this,"id")
 
-     onShow: function(){
-      if(this.options.asModal){
-      this.$el.addClass("reveal-modal small");
-        this.$el.append('<a class="close-reveal-modal">&#215;</a>');
-      this.$el.attr("data-reveal","");
+			}
+	},
 
-          
+     onAttach: function(){
 
-      }
-     }
+  		this.$el.addClass("modal fade");
+		this.$el.attr("tabindex","-1");
+		this.$el.attr("role","dialog");
+		this.$el.attr("id",this.id);
 
+
+      	$("#"+this.id).modal();
+
+       }
+     
 	});
 
  Views.OkDialog = Marionette.View.extend({
@@ -24905,15 +24923,6 @@ define('apps/header/show/show_view',["marionette","app","common/views","common/u
   });
 
 
- Show.Message = Views.Message.extend({
-    triggers:{
-      "click .js-login":"msg:login",
-      "click .js-logout":"msg:logout"
-
-     },
-  });
-
-
    Show.Topbar = Marionette.View.extend({
    template: navbarTpl,
    triggers:{
@@ -24944,7 +24953,7 @@ define('apps/header/show/show_view',["marionette","app","common/views","common/u
     
           $('.right-nav').empty();
           $('.right-nav').prepend('<li class="nav-item js-logout"><a href="#" class="nav-link">Logout</a></li>');
-          $('.right-nav').prepend('<li><p class="navbar-text" style="margin:0;">Logged in as user: '+name+" </p></li>");
+          $('.right-nav').prepend('<li><p class="navbar-text" style="margin:0;">Logged in as user: <span class="loginname">'+name+"</span></p></li>");
         },
      setLoggedOut: function(name){
       $('.right-nav').empty();
@@ -25546,7 +25555,9 @@ Entities.User = Backbone.Model.extend({
   email:"",
   institute:"",
   id:null,
-  admin:""
+  admin:"",
+  password:"",
+  new_password:""
   
      }
   });
@@ -25670,6 +25681,25 @@ Entities.API = {
     }
 
     data['backend_route'] = "get_user";
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+     updateUser: function(data){
+    data['backend_route'] = "update_user";
   console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
@@ -25791,8 +25821,8 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
       App.Navbar = headerShowTopbar;
 
       
-      var headerShowMsg = new Show.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
-      App.mainmsg = headerShowMsg; // save view to be changed form other views..
+      // var headerShowMsg = new Show.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
+      // App.mainmsg = headerShowMsg; // save view to be changed form other views..
 
 
   		headerShowLayout.on("attach",function(){
@@ -25806,16 +25836,12 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
                  $.when(loggingOutUser).done(function(result){
 
-                  if(App.getCurrentRoute()=="home"){
-
-
-                       headerShowMsg.updateContent(result.message,'success');
+                       App.mainmsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedOut();
-                        }
-              
+                        
                   
                 }).fail(function(response){ 
-                  headerShowMsg.updateContent(response.responseText,'danger');                       
+                  App.mainmsg.updateContent(response.responseText,'danger');                       
                                       
           }); //  $.when(loggingOutUser).done
 
@@ -25836,7 +25862,7 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
                  $.when(loggingInUser).done(function(result){
 
-                        headerShowMsg.updateContent(result.message,'success');
+                        App.mainmsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedIn(result.user.name);
                           
                           var currentRoute =  App.getCurrentRoute();
@@ -25848,6 +25874,8 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
                               break;
                             case "users/list":
                               App.trigger("users:list")
+                            case "users/account":
+                              App.trigger("users:show","account")
                               break;
                             default:
                               // code block
@@ -25855,7 +25883,7 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
                                             
                 }).fail(function(response){ 
-                  headerShowMsg.updateContent(response.responseText,'danger');                       
+                  App.mainmsg.updateContent(response.responseText,'danger');                       
                                       
           }); //  $.when(loggingInUser).done
 
@@ -25897,16 +25925,13 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
   headerShowTopbar.on("attach",function(){
        if(login_check!=-1){
-      headerShowMsg.updateContent("Welcome back to PoCoWeb: "+login_check.name+"!",'success');
+      App.mainmsg.updateContent("Welcome back to PoCoWeb: "+login_check.name+"!",'success');
       headerShowTopbar.setLoggedIn(login_check.name);
-        headerShowLayout.showChildView('msgRegion',headerShowMsg)
+        headerShowLayout.showChildView('msgRegion',App.mainmsg)
 
       }
       else {
-        headerShowLayout.showChildView('msgRegion',headerShowMsg)
-
-  
-
+        headerShowLayout.showChildView('msgRegion',App.mainmsg)
       }
     });
       headerShowTopbar.on("nav:exit",function(){
@@ -25914,11 +25939,11 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
     });
 
 
-          headerShowMsg.on("msg:login",function(data){
+          App.mainmsg.on("msg:login",function(data){
         headerShowTopbar.trigger("nav:login");
         });
 
-      headerShowMsg.on("msg:logout",function(data){
+      App.mainmsg.on("msg:logout",function(data){
        headerShowTopbar.trigger("nav:logout");
         });
 
@@ -27019,7 +27044,7 @@ define('apps/projects/list/list_view',["marionette","app","common/views","apps/p
   
     List.Header = CommonViews.Header.extend({
     initialize: function(){
-        this.title = "OCR Projects"
+        this.title = "Projects"
         this.icon ="fa fa-align-left"
         this.color ="green"
       }
@@ -27140,7 +27165,6 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
 		}).fail(function(response){
       
-       projectsListLayout.getRegion('main');
        var mainRegion = App.mainLayout.getRegion('mainRegion');
        mainRegion.empty();
 
@@ -28036,10 +28060,110 @@ return App.UsersApp.Login.Controller;
 
 });
 
+define("tpl!apps/users/common/templates/userform.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='    <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n\r\n\r\n<div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">Username</label>\r\n    <div class="col-md-6">     \r\n          <input class="form-control" name="name" type="text" value="'+
+((__t=(name))==null?'':_.escape(__t))+
+'" required="">\r\n    </div>\r\n    <div class="col-md-3 form-control-comment"> \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">Email</label>\r\n    <div class="col-md-6">\r\n          <input class="form-control" name="email" type="email" value="'+
+((__t=(email))==null?'':_.escape(__t))+
+'" required="">\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">              \r\n    </div>\r\n  </div>\r\n\r\n   <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">Institute</label>\r\n      <div class="col-md-6">\r\n    <input class="form-control" name="institute" type="text" value="'+
+((__t=(institute))==null?'':_.escape(__t))+
+'">\r\n    </div>\r\n\r\n    <div class="col-md-3 form-control-comment">\r\n    \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">\r\n              Password\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control" name="password" type="password" value="';
+password
+__p+='" pattern=".{5,}" required="">\r\n            <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span>\r\n          </div>\r\n   \r\n    </div>\r\n    <div class="col-md-3 form-control-comment">   \r\n    </div>\r\n  </div>\r\n       \r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">\r\n               Password (retype)\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control " name="new_password" type="password" value="'+
+((__t=(password))==null?'':_.escape(__t))+
+'" pattern=".{5,}">\r\n            <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span>\r\n          </div>\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">\r\n    </div>\r\n  </div>\r\n\r\n</div>\r\n</div>\r\n</div>';
+}
+return __p;
+};});
+
+
+define('apps/users/common/views',["app","marionette",
+        "tpl!apps/users/common/templates/userform.tpl",
+        "common/util"
+	], function(App,Marionette,userformTpl,Util){
+
+var Views = {}
+
+ Views.Form = Marionette.View.extend({
+	 template: userformTpl,
+	 events: {
+	 "click .js-submit": "submitClicked",
+	 "click .js-delete": "deleteClicked",
+	 "click .js-back":   "backClicked",
+	 "click .js-close":  "closeClicked"
+
+	 },
+	 initialize: function(){
+		
+ 	},
+ 
+ templateHelpers: function () {
+	    return {
+	           asModal: this.options.asModal,
+   	          id: Marionette.getOption(this,"id")
+	     }
+  	 },
+     onAttach: function(){
+
+			 if(this.options.asModal){
+			  		this.$el.addClass("modal fade");
+					this.$el.attr("tabindex","-1");
+					this.$el.attr("role","dialog");
+					this.$el.attr("id",this.id);
+			      	$("#"+this.id).modal();
+			}
+       },
+
+	 submitClicked: function(e){
+		 e.preventDefault();
+  		var data = Backbone.Syphon.serialize(this);
+  		var role = $('#roles').find(":selected").text();
+  		data['role'] = role;
+  	 var checkBox =$('#notify').is(':checked');
+     var checkBoxValue=0;
+     if(checkBox) checkBoxValue=1;
+     data['notify'] = checkBoxValue;
+
+       checkBox =$('#verified_checkbox').is(':checked');
+       checkBoxValue=0;
+     if(checkBox) checkBoxValue=1;
+     data['verified'] = checkBoxValue;
+		this.trigger("form:submit", data);
+	 },
+
+	 deleteClicked: function(e){
+		  e.preventDefault();
+  		var data = Backbone.Syphon.serialize(this);
+	 },
+
+	 backClicked: function(e){
+		  e.preventDefault();
+			this.trigger("form:back");
+	 },
+
+ 	closeClicked: function(e){
+		  e.preventDefault();
+          this.$el.foundation('reveal', 'close');
+	 },
+
+
+	
+	 });
+
+
+
+return Views;
+
+
+});
+
+
 define("tpl!apps/users/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\r\n    <div id="panel-region"></div>\r\n    <div id="info-region" ></div>\r\n    ';
+__p+='<div id="hl-region"></div>\r\n    <div id="panel-region"></div>\r\n    <div id="info-region" ></div>\r\n    <div id="footer-region" ></div>\r\n';
 }
 return __p;
 };});
@@ -28048,39 +28172,17 @@ return __p;
 define("tpl!apps/users/show/templates/panel.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='  <div class="large-12 columns">\r\n    <a href="#/users/'+
-((__t=(id))==null?'':_.escape(__t))+
-'/edit" class="button success right js-edit-user"> <i class="fa fa-pencil"></i> Edit</a>\r\n  </div>';
+__p+='    <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button type="button" class="btn js-update"><i class="fas fa-user-edit"></i> Update account settings</button>\r\n  <button type="button" class="btn js-delete"><i class="fas fa-user-times"></i> Delete this account</button>\r\n\r\n  <h3  style="margin-bottom: 25px;margin-top: 25px;"> Personal Information </h3>\r\n                                \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
 }
 return __p;
 };});
 
 
-define("tpl!apps/users/show/templates/info.tpl", function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='    <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n';
- console.log(this) 
-__p+='\r\n';
- console.log(name)
-__p+='\r\n  <h3> User Information: </h3>\r\n  <fieldset> \r\n  <div> Username: '+
-((__t=( name ))==null?'':_.escape(__t))+
-' <div>  \r\n  <div> Email: '+
-((__t=( email ))==null?'':_.escape(__t))+
-' <div>  \r\n  <div> Institute: '+
-((__t=( institute ))==null?'':_.escape(__t))+
-' <div>  \r\n  </fieldset>\r\n\r\n\r\n\r\n<button class="btn back_btn js-back hover"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\r\n\r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
-}
-return __p;
-};});
-
-
-define('apps/users/show/show_view',["app","marionette","common/views",
+define('apps/users/show/show_view',["app","marionette","apps/users/common/views","common/views",
         "tpl!apps/users/show/templates/layout.tpl",
-        "tpl!apps/users/show/templates/panel.tpl",
-        "tpl!apps/users/show/templates/info.tpl"
+        "tpl!apps/users/show/templates/panel.tpl"
 
-  ], function(App,Marionette,Views,layoutTpl,panelTpl,infoTpl){
+  ], function(App,Marionette,UserViews,Views,layoutTpl,panelTpl){
 
 
 var Show = {};
@@ -28090,7 +28192,9 @@ var Show = {};
     regions:{
       headerRegion: "#hl-region",
       panelRegion: "#panel-region",
-      infoRegion: "#info-region"
+      infoRegion: "#info-region",
+      footerRegion: "#info-region"
+
     }
 
   });
@@ -28107,23 +28211,39 @@ var Show = {};
 
 
 
-  Show.Info = Marionette.View.extend({
-      template: infoTpl,
-      events:{
+  Show.Form = UserViews.Form.extend({
+
+  });
+
+
+  Show.AreYouSure = Views.AreYouSure.extend({})
+
+  Show.Panel = Marionette.View.extend({
+      template: panelTpl,
+       events:{
         "click button.js-back":   "backClicked",
+        "click button.js-update": "updateClicked",
+        "click button.js-delete": "deleteClicked"
       },
       backClicked: function(e){
       e.preventDefault();
       this.trigger("show:back");
      },     
-
-  });
-
-
-
-  Show.Panel = Marionette.View.extend({
-      template: panelTpl,
-      className: "row"         
+      updateClicked: function(e){
+      e.preventDefault();
+      var data = {}
+      data['name'] = $("input[name=name]").val();
+      data['email'] = $("input[name=email]").val();
+      data['institute'] = $("input[name=institute").val();
+      data['password'] = $("input[name=password]").val();
+      data['new_password'] = $("input[name=new_password]").val();
+          console.log(data)
+      this.trigger("show:update",data);
+     },
+      deleteClicked: function(e){
+      e.preventDefault();
+      this.trigger("show:delete");
+     }     
   });
 
 
@@ -28162,31 +28282,43 @@ define('apps/users/show/show_controller',["app","common/util","apps/users/show/s
 
 			var userShowHeader;
      		var userShowPanel;
-			var userShowInfo;
+			var userShowForm;
 	
 			userShowLayout.on("attach",function(){
 			  
 
 			  userShowHeader = new Show.Header({model:userModel});
 			  userShowPanel = new Show.Panel({model:user});
-			  userShowInfo = new Show.Info({model:userModel});
+			  userShowForm = new Show.Form({model:userModel});
 			 
 		       userShowLayout.showChildView('headerRegion',userShowHeader);
-			   userShowLayout.showChildView('infoRegion',userShowInfo);
+   		       userShowLayout.showChildView('panelRegion',userShowPanel);
+			   userShowLayout.showChildView('infoRegion',userShowForm);
 
 
-			   userShowInfo.on("show:back",function(){
+			   userShowPanel.on("show:back",function(){
 			  	 App.trigger("users:list");
+			  });
+
+			  userShowPanel.on("show:update",function(data){
+			  		data['id'] = user['id'];
+			  		var updatingUser = UserEntitites.API.updateUser(data);
+						$.when(updatingUser).done(function(user){
+							   App.mainmsg.updateContent("Account updated successfully.",'success');      
+							   $('.loginname').text(user.name);       
+
+						});
+
+			  });
+ 			userShowPanel.on("show:delete",function(){
+
+ 				var confirmModal = new Show.AreYouSure({title:"Are you sure...",text:"...you want to delete your account?",id:"deleteModal"})
+ 				App.mainLayout.showChildView('dialogRegion',confirmModal)
 			  });
 
 
     		}); // show
 
-
-			userShowLayout.on("currentuser:loggedOut",function(){
-				console.log("loggedOut");
-				App.UsersApp.Show.Controller.showUser(id);
-	 		}); // on:loggedOut
 
 
 
@@ -28196,15 +28328,10 @@ define('apps/users/show/show_controller',["app","common/util","apps/users/show/s
 
     		}).fail(function(response){ 
 
- 			      backdropView.destroy();
-				  var errortext = Util.getErrorText(response);    
-                  var errorView = new Show.Error({model: currentUser,errortext:errortext})
+		       var mainRegion = App.mainLayout.getRegion('mainRegion');
+		       mainRegion.empty();
 
-                  errorView.on("currentuser:loggedIn",function(){
-					    App.UsersApp.Show.Controller.showUser(id);
-                  });
-
-                  App.mainRegion.show(errorView);  
+            App.mainmsg.updateContent(response.responseText,'danger');             
 
           }); //  $.when(fetchingAuth).done // $when fetchingUser;
 
@@ -28218,177 +28345,6 @@ define('apps/users/show/show_controller',["app","common/util","apps/users/show/s
 return Controller;
 
 });
-
-define("tpl!apps/users/common/templates/userform.tpl", function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='\r\n<div class="large-12 columns bg_layer">\r\n\r\n<form id="user-form" >\r\n  <fieldset>\r\n   ';
- if(username=="") { 
-__p+=' \r\n    <legend>Register</legend>\r\n   ';
- } 
-__p+=' \r\n\r\n   <div class="row">\r\n      <div class="small-6 columns ">\r\n        <label for="username">Username <small>required</small>\r\n         <input type="text" id="username" name="username" required pattern="[a-z-A-Z]+" placeholder="Username" autocomplete="off" value="'+
-((__t=(username))==null?'':_.escape(__t))+
-'">\r\n         <small class="error" style="display: none;"></small>\r\n        </label>\r\n\r\n      </div>\r\n     </div>\r\n\r\n\r\n <div class="row">\r\n      <div class="large-6 columns">\r\n        <label for="firstname">Firstname <small>required</small>\r\n          <input  type="text" id="firstname" placeholder="Firstname" name="firstname" required="" value="'+
-((__t=(firstname))==null?'':_.escape(__t))+
-'">\r\n          <small class="error" style="display: none;"></small>\r\n        </label>\r\n      </div>\r\n     <div class="large-6 columns">\r\n        <label for="lastname">Lastname <small>required</small>\r\n          <input  type="text" id="lastname" placeholder="Lastname" name="lastname" required="" value="'+
-((__t=(lastname))==null?'':_.escape(__t))+
-'">\r\n          <small class="error" style="display: none;"></small>\r\n        </label>\r\n      </div> \r\n    </div>\r\n\r\n\r\n     ';
- if(username=="") { 
-__p+=' \r\n\r\n    <div class="row">\r\n      <div class="large-6 columns">\r\n        <label for="password">Password <small>required</small>\r\n          <input type="password" id="password" placeholder="Password" name="password" required="">\r\n          <small class="error" style="display: none;"></small>\r\n        </label>\r\n      </div>\r\n     <div class="large-6 columns">\r\n        <label for="confirmPassword">Confirm Password <small>required</small>\r\n          <input type="password" id="confirmPassword" placeholder="Confirm Password" name="confirmPassword" required="" data-equalto="password">\r\n          <small class="error" style="display: none;"></small>\r\n        </label>\r\n      </div> \r\n    </div>\r\n\r\n    ';
- } 
-__p+=' \r\n\r\n\r\n\r\n    <div class="row">\r\n      <div class="large-6 columns">\r\n        <label for="email">Email\r\n          <input type="email" id="email" placeholder="me@xyz.com"  name="email"  required=""value="'+
-((__t=(email))==null?'':_.escape(__t))+
-'" >\r\n          <small class="error" style="display: none;"></small>\r\n        </label>\r\n      </div>\r\n    </div>\r\n\r\n\r\n\r\n ';
- if(role_idx>1) { 
-__p+=' \r\n\r\n\r\n  <div class="row">\r\n        <div class="small-6 columns ">\r\n          <label for="role">Role <small>required</small>\r\n          <select id="roles">\r\n          ';
- _.each(roles, function(role_item) { 
-__p+='  \r\n           <option value="'+
-((__t=(role_item))==null?'':_.escape(__t))+
-'">'+
-((__t=(role_item))==null?'':_.escape(__t))+
-'</option>\r\n          ';
- }); 
-__p+='\r\n\r\n           </select> \r\n          <small class="error" style="display: none;"></small>\r\n          </label>\r\n\r\n        </div>\r\n </div>\r\n\r\n  <div class="row">\r\n\r\n\r\n  <div class="medium-6 columns">\r\n  <input id="verified_checkbox" type="checkbox"><label for="verified_checkbox">Verified </label>\r\n  </div>\r\n\r\n\r\n  <div class="medium-6 columns">\r\n  <input id="notify" type="checkbox"><label for="notify">Notify user via email about account verification </label>\r\n  </div>\r\n</div>\r\n\r\n ';
- } 
-__p+=' \r\n\r\n\r\n\r\n ';
- if(username=="") { 
-__p+=' \r\n\r\n    <div class="row">\r\n      <div class="large-6 columns">\r\n        <label for="securitycode">Security Code\r\n          <input type="text" id="securitycode" placeholder="Please enter the correct answer to the calculation on the right"  name="securitycode"  required=""value="'+
-((__t=(securitycode))==null?'':_.escape(__t))+
-'" >\r\n          <small class="error" style="display: none;"></small>\r\n        </label>\r\n      </div>\r\n\r\n      <div class="large-6 columns" style="text-align: center">\r\n        <fieldset class="captcha_set" >\r\n         <img src="assets/images/captcha/'+
-((__t=(captcha))==null?'':_.escape(__t))+
-'" style="margin-bottom:2px" >\r\n         </fieldset>\r\n      </div>\r\n    </div>\r\n\r\n';
- } 
-__p+='\r\n\r\n\r\n    <div class="row">\r\n      <div class="large-12 columns">\r\n        <hr>\r\n      </div>\r\n    </div>\r\n\r\n\r\n    <div class="row">\r\n      <div class="large-12 columns">\r\n\r\n       ';
- if(username=="") { 
-__p+=' \r\n         <!-- <button type="submit" class="medium button success js-submit">Submit</button> -->\r\n\r\n         <div class="left">\r\n\r\n         <div class="small_icon_parent">\r\n\r\n                 \r\n                  <img src="assets/images/icons/bg_icon.png">\r\n                  <a class="js-submit">\r\n                  <div class="small_btniconcontainer">\r\n                  <i class="fa fa-check"></i>\r\n                  </div>\r\n                  </a>\r\n                 \r\n\r\n                  <a class="js-submit">\r\n                  <div class="small_bubblebtnbackground"> </div>\r\n                  </a>\r\n                  <div class="small_bubbleshadow"> </div>\r\n        </div>\r\n\r\n      <div class="center_parent">\r\n      <p class="defaultsh subheader">Submit</p>\r\n      </div>\r\n      </div>\r\n\r\n       ';
- } else { 
-__p+=' \r\n         <div type="submit" class="medium button success js-submit">Update</div>\r\n         <div type="submit" class="medium button alert success js-delete">Delete</div>\r\n       ';
- } 
-__p+=' \r\n\r\n        ';
- if (asModal) { 
-__p+='\r\n         <!-- <button  type="submit" class="medium button right js-close"><i class="fa fa-times"></i></button> -->\r\n\r\n         <div class="right">\r\n\r\n         <div class="small_icon_parent">\r\n\r\n                 \r\n                  <img src="assets/images/icons/bg_icon.png">\r\n                  <a class="js-close">\r\n                  <div class="small_btniconcontainer">\r\n                  <i class="fa fa-close"></i>\r\n                  </div>\r\n                  </a>\r\n                 \r\n                  <a class="js-close">\r\n                  <div class="small_bubblebtnbackground"> </div>\r\n                  </a>\r\n                  <div class="small_bubbleshadow"> </div>\r\n        </div>\r\n\r\n        <div class="center_parent">\r\n        <p class="defaultsh subheader">Close</p>\r\n        </div>\r\n\r\n      </div>\r\n\r\n       ';
- } else { 
-__p+='  \r\n          <button type="submit" class="medium button right js-back"><i class="fa fa-chevron-left"></i> Back</button>\r\n       ';
- } 
-__p+=' \r\n      </div>\r\n    </div> \r\n\r\n  </fieldset>\r\n</form>\r\n\r\n</div>';
-}
-return __p;
-};});
-
-
-define('apps/users/common/views',["app",
-        "tpl!apps/users/common/templates/userform.tpl",
-        "common/util"
-	], function(ResearchTool,userformTpl,Util){
-
-ResearchTool.module("UsersApp.Common.Views", function(Views,ResearchTool,Backbone,Marionette,$,_){
-
- Views.Form = Marionette.ItemView.extend({
-	 template: userformTpl,
-	 className:"row bg_style",
-	 events: {
-	 "click .js-submit": "submitClicked",
-	 "click .js-delete": "deleteClicked",
-	 "click .js-back":   "backClicked",
-	 "click .js-close":  "closeClicked"
-
-	 },
-	 initialize: function(){
-		
- 	},
-
-	 submitClicked: function(e){
-		 e.preventDefault();
-  		var data = Backbone.Syphon.serialize(this);
-  		var role = $('#roles').find(":selected").text();
-  		data['role'] = role;
-  	 var checkBox =$('#notify').is(':checked');
-     var checkBoxValue=0;
-     if(checkBox) checkBoxValue=1;
-     data['notify'] = checkBoxValue;
-
-       checkBox =$('#verified_checkbox').is(':checked');
-       checkBoxValue=0;
-     if(checkBox) checkBoxValue=1;
-     data['verified'] = checkBoxValue;
-		this.trigger("form:submit", data);
-	 },
-
-	 deleteClicked: function(e){
-		  e.preventDefault();
-  		var data = Backbone.Syphon.serialize(this);
-	 },
-
-	 backClicked: function(e){
-		  e.preventDefault();
-			this.trigger("form:back");
-	 },
-
- 	closeClicked: function(e){
-		  e.preventDefault();
-          this.$el.foundation('reveal', 'close');
-	 },
-
-
-	 onRender: function(){
-
-	 Backbone.Validation.bind(this, {
-		 valid: function(view, attr){
-		  // hide errors on the `attr` attribute from the view
- 		 Util.hideFormErrors(attr);
-
-
-		 },
-		 invalid: function(view, attr, error){
-		 // show errors on the `attr` attribute from the view
-		 Util.showFormErrors(attr,error);
-
-		 }
-		});
-	 },
-
-	  onDomRefresh: function(){
-		 if(this.options.asModal){
-		  this.$el.removeClass("bg_style");
-  		  this.$el.children().removeClass("bg_layer");
-
-		  this.$el.addClass("reveal-modal");
-  		  this.$el.append('<a class="close-reveal-modal">&#215;</a>');
-		  this.$el.attr("data-reveal","");
-
-          this.$el.foundation('reveal', 'open');
-	      $(document).foundation('reflow');
-
-		}
-		$("#roles").val(this.model.get('role')); // set current
-
-		    if(this.model.get('verified')==1) {$("#verified_checkbox").prop('checked', true); }
-		    else $("#verified_checkbox").prop('checked', false);
-
-
-	 },
-
-	
-	 templateHelpers: function () {
-	    return {
-	           asModal: this.options.asModal,
-   	           role_idx: this.options.role_idx,
-   	           roles: this.options.roles,
-   	           captcha: this.options.captcha
-
-	     }
-  	 }
-
-	 });
-
-
-});
-
-return ResearchTool.UsersApp.Common.Views;
-
-
-});
-
 define('apps/users/edit/edit_view',["app","common/views","apps/users/common/views"], function(App){
 
 
@@ -28570,12 +28526,12 @@ define('apps/users/users_app',["marionette","app"], function(Marionette,App){
 
 
 
-	App.on("user:show",function(id){
+	App.on("users:show",function(id){
 	 	App.navigate("users/"+ id);
 	API.showUser(id);
 	});
 
-	App.on("user:edit",function(id){
+	App.on("users:edit",function(id){
 	 	App.navigate("users/"+ id+"/edit");
 	API.editUser(id);
 	});
@@ -28655,6 +28611,7 @@ App.on("start", function(){
     var app_region = App.getRegion();
 
     App.mainLayout = new MainView();
+     App.mainmsg  = new Views.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
 
      App.showView(App.mainLayout);
 

@@ -1,14 +1,13 @@
 
-define(["app",
+define(["app","marionette",
         "tpl!apps/users/common/templates/userform.tpl",
         "common/util"
-	], function(ResearchTool,userformTpl,Util){
+	], function(App,Marionette,userformTpl,Util){
 
-ResearchTool.module("UsersApp.Common.Views", function(Views,ResearchTool,Backbone,Marionette,$,_){
+var Views = {}
 
- Views.Form = Marionette.ItemView.extend({
+ Views.Form = Marionette.View.extend({
 	 template: userformTpl,
-	 className:"row bg_style",
 	 events: {
 	 "click .js-submit": "submitClicked",
 	 "click .js-delete": "deleteClicked",
@@ -19,6 +18,23 @@ ResearchTool.module("UsersApp.Common.Views", function(Views,ResearchTool,Backbon
 	 initialize: function(){
 		
  	},
+ 
+ templateHelpers: function () {
+	    return {
+	           asModal: this.options.asModal,
+   	          id: Marionette.getOption(this,"id")
+	     }
+  	 },
+     onAttach: function(){
+
+			 if(this.options.asModal){
+			  		this.$el.addClass("modal fade");
+					this.$el.attr("tabindex","-1");
+					this.$el.attr("role","dialog");
+					this.$el.attr("id",this.id);
+			      	$("#"+this.id).modal();
+			}
+       },
 
 	 submitClicked: function(e){
 		 e.preventDefault();
@@ -53,61 +69,12 @@ ResearchTool.module("UsersApp.Common.Views", function(Views,ResearchTool,Backbon
 	 },
 
 
-	 onRender: function(){
-
-	 Backbone.Validation.bind(this, {
-		 valid: function(view, attr){
-		  // hide errors on the `attr` attribute from the view
- 		 Util.hideFormErrors(attr);
-
-
-		 },
-		 invalid: function(view, attr, error){
-		 // show errors on the `attr` attribute from the view
-		 Util.showFormErrors(attr,error);
-
-		 }
-		});
-	 },
-
-	  onDomRefresh: function(){
-		 if(this.options.asModal){
-		  this.$el.removeClass("bg_style");
-  		  this.$el.children().removeClass("bg_layer");
-
-		  this.$el.addClass("reveal-modal");
-  		  this.$el.append('<a class="close-reveal-modal">&#215;</a>');
-		  this.$el.attr("data-reveal","");
-
-          this.$el.foundation('reveal', 'open');
-	      $(document).foundation('reflow');
-
-		}
-		$("#roles").val(this.model.get('role')); // set current
-
-		    if(this.model.get('verified')==1) {$("#verified_checkbox").prop('checked', true); }
-		    else $("#verified_checkbox").prop('checked', false);
-
-
-	 },
-
 	
-	 templateHelpers: function () {
-	    return {
-	           asModal: this.options.asModal,
-   	           role_idx: this.options.role_idx,
-   	           roles: this.options.roles,
-   	           captcha: this.options.captcha
-
-	     }
-  	 }
-
 	 });
 
 
-});
 
-return ResearchTool.UsersApp.Common.Views;
+return Views;
 
 
 });

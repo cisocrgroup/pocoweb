@@ -85,7 +85,6 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
 		}).fail(function(response){
       
-       projectsListLayout.getRegion('main');
        var mainRegion = App.mainLayout.getRegion('mainRegion');
        mainRegion.empty();
 

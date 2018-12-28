@@ -62,6 +62,7 @@ App.on("start", function(){
     var app_region = App.getRegion();
 
     App.mainLayout = new MainView();
+     App.mainmsg  = new Views.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
 
      App.showView(App.mainLayout);
 

@@ -201,6 +201,11 @@ onAttach: function(){
 	events:{
 		"click .js-close-msg" : "hide"
 	},
+	 triggers:{
+      "click .js-login":"msg:login",
+      "click .js-logout":"msg:logout"
+
+     },
 
 
 
@@ -575,18 +580,27 @@ Views.Layout = Marionette.View.extend({
      "click #js-yes":"yesClicked",
       "click #js-no":"noClicked",
     },
+	serializeData: function(){
+			return {
+				title: Marionette.getOption(this,"title"),
+				text: Marionette.getOption(this,"text"),
+				id: Marionette.getOption(this,"id")
 
-     onShow: function(){
-      if(this.options.asModal){
-      this.$el.addClass("reveal-modal small");
-        this.$el.append('<a class="close-reveal-modal">&#215;</a>');
-      this.$el.attr("data-reveal","");
+			}
+	},
 
-          
+     onAttach: function(){
 
-      }
-     }
+  		this.$el.addClass("modal fade");
+		this.$el.attr("tabindex","-1");
+		this.$el.attr("role","dialog");
+		this.$el.attr("id",this.id);
 
+
+      	$("#"+this.id).modal();
+
+       }
+     
 	});
 
  Views.OkDialog = Marionette.View.extend({

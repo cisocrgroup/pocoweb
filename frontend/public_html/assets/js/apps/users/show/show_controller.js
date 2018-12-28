@@ -24,31 +24,43 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
 
 			var userShowHeader;
      		var userShowPanel;
-			var userShowInfo;
+			var userShowForm;
 	
 			userShowLayout.on("attach",function(){
 			  
 
 			  userShowHeader = new Show.Header({model:userModel});
 			  userShowPanel = new Show.Panel({model:user});
-			  userShowInfo = new Show.Info({model:userModel});
+			  userShowForm = new Show.Form({model:userModel});
 			 
 		       userShowLayout.showChildView('headerRegion',userShowHeader);
-			   userShowLayout.showChildView('infoRegion',userShowInfo);
+   		       userShowLayout.showChildView('panelRegion',userShowPanel);
+			   userShowLayout.showChildView('infoRegion',userShowForm);
 
 
-			   userShowInfo.on("show:back",function(){
+			   userShowPanel.on("show:back",function(){
 			  	 App.trigger("users:list");
+			  });
+
+			  userShowPanel.on("show:update",function(data){
+			  		data['id'] = user['id'];
+			  		var updatingUser = UserEntitites.API.updateUser(data);
+						$.when(updatingUser).done(function(user){
+							   App.mainmsg.updateContent("Account updated successfully.",'success');      
+							   $('.loginname').text(user.name);       
+
+						});
+
+			  });
+ 			userShowPanel.on("show:delete",function(){
+
+ 				var confirmModal = new Show.AreYouSure({title:"Are you sure...",text:"...you want to delete your account?",id:"deleteModal"})
+ 				App.mainLayout.showChildView('dialogRegion',confirmModal)
 			  });
 
 
     		}); // show
 
-
-			userShowLayout.on("currentuser:loggedOut",function(){
-				console.log("loggedOut");
-				App.UsersApp.Show.Controller.showUser(id);
-	 		}); // on:loggedOut
 
 
 
@@ -58,15 +70,10 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
 
     		}).fail(function(response){ 
 
- 			      backdropView.destroy();
-				  var errortext = Util.getErrorText(response);    
-                  var errorView = new Show.Error({model: currentUser,errortext:errortext})
+		       var mainRegion = App.mainLayout.getRegion('mainRegion');
+		       mainRegion.empty();
 
-                  errorView.on("currentuser:loggedIn",function(){
-					    App.UsersApp.Show.Controller.showUser(id);
-                  });
-
-                  App.mainRegion.show(errorView);  
+            App.mainmsg.updateContent(response.responseText,'danger');             
 
           }); //  $.when(fetchingAuth).done // $when fetchingUser;
 
