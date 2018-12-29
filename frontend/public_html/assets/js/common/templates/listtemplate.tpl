@@ -24,22 +24,22 @@
      
       %>
 
-      <% if(columns[0]['id']=="index") { %>
-
-       <tr class='clickable-row' data-href="#" data-idx ="<%-count%>">
-       
-       <% } else { %>
+      <% if(columns[0]['clickrow']) { %>
 
        <tr class='clickable-row' data-href="#<%-urlroot%>/<%-item[columns[0]['id']]%>">
-
+       
+       <% } else { %>
+       <tr>
        <% } %>
 
         <% for(var i=0;i<columns.length;i++){ %>  
 
-          <% column=columns[i]; %>
-    
+          <% column = columns[i]; %>
+          <% if (column.name == "action") {  %>
+          <td><button type="button" class="close btn js-delete-user" id="<%-item[columns[0]['id']]%>"> <span aria-hidden="true"><i class="far fa-times-circle"></i></span></button></td>      
+          <% } else { %>
           <td> <%- item[column.name] %> </td>      
-
+          <% } %>
         <% } %>  
        
      

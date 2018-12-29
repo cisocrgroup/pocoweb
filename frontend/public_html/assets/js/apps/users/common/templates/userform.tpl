@@ -42,7 +42,7 @@
     <div class="col-md-6">
 
           <div class="input-group">
-            <input class="form-control" name="password" type="password" value="<%password%>" pattern=".{5,}" required="">
+            <input class="form-control" name="password" type="password" value="<%-password%>" pattern=".{5,}" required="">
             <span class="input-group-btn">
               <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">
                 Show

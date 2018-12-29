@@ -16,33 +16,49 @@ var List = {}
   });
 
   List.UsersList = Views.Icon_DataTable.extend({
+   events: {
+    "click .js-delete-user": "delete_user"
+   },
    initialize: function(){
         this.urlroot="users"
+        this.actioncolumn = true
 
         this.headers = [
           {name: "#"},
           {name: "Name"},
           {name: "Email"},
           {name: "Institute"},
-          {name: "Admin"}
+          {name: "Admin"},
+          {name: "Action"}
 
         ]
 
         this.columns = [
-        {name:"id",id:"id"},
-        {name:"name",id:"id"},
-        {name:"email",id:"id"},
-        {name:"institute",id:"id"},
-        {name:"admin",id:"id"},
+        {name:"id",id:"id",clickrow :false},
+        {name:"name",id:"id",clickrow :false},
+        {name:"email",id:"id",clickrow :false},
+        {name:"institute",id:"id",clickrow :false},
+        {name:"admin",id:"id",clickrow :false},
+        {name:"action",id:"id",clickrow :false},
 
         ]
 
     
-        }
+        },
+       delete_user : function(e){
+        var id = $(e.currentTarget).attr('id');
+        var parentrow = $(e.currentTarget).parent().parent();
+        this.trigger("user:delete",id,parentrow);
+     },
+
    
   });
 
-
+  List.AreYouSure = Views.AreYouSure.extend({
+      triggers:{
+     "click .js-yes":"delete:confirm"
+    }
+  })
 
   List.FooterPanel = Views.FooterPanel.extend({
     });

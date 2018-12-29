@@ -26,6 +26,7 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'get_users' : get_users();break;
         case 'get_user' : get_user();break;
         case 'update_user' : update_user();break;
+        case 'delete_user' : delete_user();break;
 
     }
 }
@@ -85,7 +86,6 @@ function get_users(){
     break;
   }
 
-  return $api;
 }
 
 function get_user(){
@@ -105,55 +105,20 @@ function get_user(){
       echo "to do";
     }
  
-  // $status = $api->get_http_status_code();
-  // switch ($status) {
-  // case "200":
-  //       $result=array();
-  //       $session = $api->get_response();
-  //       backend_get_session_cookie();
-  //       global $USER;
-  //       global $SID;
-  //       $USER = $session["user"];
-  //       $SID = $session["auth"];
-  //   // backend_set_global_session_id();
-  //   // backend_set_global_user();
-  //       header_remove();
-  //       header("status: ".$status);
 
-  //       $result['user'] = $USER;
-  //       $result['message'] = "You have successfully logged in";
-  //       echo json_encode($result); 
-
-  //   break;
-  // case "403":
-  //   $SID = "";
-  //   header_remove();
-  //   header("status: ".$status);
-  //   echo 'Login error: invalid username or password. Please try again: <a href="#" class="js-login">login</a>';
-  //   break;
-  // default:
-  //   $SID = "";
-  //       header_remove();
-  //       header("status: ".$status);
-  //       echo "Login error: " . backend_get_http_status_info($status);
-  //   break;
-  // }
-
-  // return $api;
 }
 
 function update_user() {
 
-  
 
 if (!isset($_POST["name"]) || !isset($_POST["email"]) ||
         !isset($_POST["institute"]) || !isset($_POST["password"]) ||
         !isset($_POST["new_password"])) {
         header("status: 500");
-         echo "invalid post parameters";
+         echo "Invalid post parameters.";
     } else if ($_POST["password"] != $_POST["new_password"]) {
        header("status: 500");
-        echo "passwords do not match";
+        echo "Passwords do not match.";
     } else {
 
   $uid = (int)$_POST['id'];
@@ -202,6 +167,34 @@ if (!isset($_POST["name"]) || !isset($_POST["email"]) ||
     break;
   }
 }
+}
+
+function delete_user(){
+
+  $api = new Api(backend_get_delete_user_route($_POST['id']));
+  $api->set_session_id(backend_get_session_cookie());
+  $api->delete_request();
+ 
+  $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+
+        echo json_encode($session); 
+
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status);
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+
 }
 
 function login(){

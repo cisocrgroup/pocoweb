@@ -316,6 +316,8 @@ onAttach: function(){
         		header_bg: Marionette.getOption(this,"header_bg"),	
         		border_color: Marionette.getOption(this,"border_color"),	
 				items: Marionette.getOption(this,"collection"),
+				actioncolumn: Marionette.getOption(this,"actioncolumn"),
+
      		    header:"",
      		    backBtn:"",
      		    datatable_options: Marionette.getOption(this,"datatable_options"),

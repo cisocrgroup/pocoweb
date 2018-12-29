@@ -49,7 +49,11 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
 							   App.mainmsg.updateContent("Account updated successfully.",'success');      
 							   $('.loginname').text(user.name);       
 
-						});
+						}).fail(function(response){ 
+
+			            App.mainmsg.updateContent(response.responseText,'warning');             
+
+			          });
 
 			  });
  			userShowPanel.on("show:delete",function(){

@@ -10,8 +10,8 @@
         <p><%-text%></p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Yes</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        <button type="button" class="btn btn-primary js-yes">Yes</button>
+        <button type="button" class="btn btn-secondary js-no" data-dismiss="modal">No</button>
       </div>
     </div>
   </div>

@@ -23819,24 +23819,30 @@ __p+='         \n      </tr>\n     </thead>\n     <tbody>\n\n\n     ';
      
       
 __p+='\n\n      ';
- if(columns[0]['id']=="index") { 
-__p+='\n\n       <tr class=\'clickable-row\' data-href="#" data-idx ="'+
-((__t=(count))==null?'':_.escape(__t))+
-'">\n       \n       ';
- } else { 
+ if(columns[0]['clickrow']) { 
 __p+='\n\n       <tr class=\'clickable-row\' data-href="#'+
 ((__t=(urlroot))==null?'':_.escape(__t))+
 '/'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'">\n\n       ';
+'">\n       \n       ';
+ } else { 
+__p+='\n       <tr>\n       ';
  } 
 __p+='\n\n        ';
  for(var i=0;i<columns.length;i++){ 
 __p+='  \n\n          ';
- column=columns[i]; 
-__p+='\n    \n          <td> '+
+ column = columns[i]; 
+__p+='\n          ';
+ if (column.name == "action") {  
+__p+='\n          <td><button type="button" class="close btn js-delete-user" id="'+
+((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
+'"> <span aria-hidden="true"><i class="far fa-times-circle"></i></span></button></td>      \n          ';
+ } else { 
+__p+='\n          <td> '+
 ((__t=( item[column.name] ))==null?'':_.escape(__t))+
-' </td>      \n\n        ';
+' </td>      \n          ';
+ } 
+__p+='\n        ';
  } 
 __p+='  \n       \n     \n      </tr>\n\n    ';
  count++;  }); 
@@ -24007,7 +24013,7 @@ __p+='  <div class="modal-dialog" role="document">\n    <div class="modal-conten
 ((__t=(title))==null?'':_.escape(__t))+
 '</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n      </div>\n      <div class="modal-body">\n        <p>'+
 ((__t=(text))==null?'':_.escape(__t))+
-'</p>\n      </div>\n      <div class="modal-footer">\n        <button type="button" class="btn btn-primary">Yes</button>\n        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>\n      </div>\n    </div>\n  </div>\n';
+'</p>\n      </div>\n      <div class="modal-footer">\n        <button type="button" class="btn btn-primary js-yes">Yes</button>\n        <button type="button" class="btn btn-secondary js-no" data-dismiss="modal">No</button>\n      </div>\n    </div>\n  </div>\n';
 }
 return __p;
 };});
@@ -24476,6 +24482,8 @@ onAttach: function(){
         		header_bg: Marionette.getOption(this,"header_bg"),	
         		border_color: Marionette.getOption(this,"border_color"),	
 				items: Marionette.getOption(this,"collection"),
+				actioncolumn: Marionette.getOption(this,"actioncolumn"),
+
      		    header:"",
      		    backBtn:"",
      		    datatable_options: Marionette.getOption(this,"datatable_options"),
@@ -25700,7 +25708,25 @@ Entities.API = {
   },
      updateUser: function(data){
     data['backend_route'] = "update_user";
-  console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+      deleteUser: function(data){
+    data['backend_route'] = "delete_user";
     var defer = jQuery.Deferred();
        $.ajax({
      
@@ -27949,33 +27975,49 @@ var List = {}
   });
 
   List.UsersList = Views.Icon_DataTable.extend({
+   events: {
+    "click .js-delete-user": "delete_user"
+   },
    initialize: function(){
         this.urlroot="users"
+        this.actioncolumn = true
 
         this.headers = [
           {name: "#"},
           {name: "Name"},
           {name: "Email"},
           {name: "Institute"},
-          {name: "Admin"}
+          {name: "Admin"},
+          {name: "Action"}
 
         ]
 
         this.columns = [
-        {name:"id",id:"id"},
-        {name:"name",id:"id"},
-        {name:"email",id:"id"},
-        {name:"institute",id:"id"},
-        {name:"admin",id:"id"},
+        {name:"id",id:"id",clickrow :false},
+        {name:"name",id:"id",clickrow :false},
+        {name:"email",id:"id",clickrow :false},
+        {name:"institute",id:"id",clickrow :false},
+        {name:"admin",id:"id",clickrow :false},
+        {name:"action",id:"id",clickrow :false},
 
         ]
 
     
-        }
+        },
+       delete_user : function(e){
+        var id = $(e.currentTarget).attr('id');
+        var parentrow = $(e.currentTarget).parent().parent();
+        this.trigger("user:delete",id,parentrow);
+     },
+
    
   });
 
-
+  List.AreYouSure = Views.AreYouSure.extend({
+      triggers:{
+     "click .js-yes":"delete:confirm"
+    }
+  })
 
   List.FooterPanel = Views.FooterPanel.extend({
     });
@@ -28001,11 +28043,28 @@ define('apps/users/list/list_controller',["app","common/util","apps/users/list/l
 		usersListLayout = new List.Layout();
 
     	 $.when(fetchingUsers).done(function(users){
-		console.log(users);
 		usersListLayout.on("attach",function(){
 
  			var usersListHeader = new List.Header();
 			var usersListView = new List.UsersList({collection: users.users});
+
+			usersListView.on('user:delete',function(id,delete_row){
+
+				var confirmModal = new List.AreYouSure({title:"Are you sure...",text:"...you want to delete user account "+id+" ?",id:"deleteModal"})
+ 				App.mainLayout.showChildView('dialogRegion',confirmModal)
+
+ 				confirmModal.on('delete:confirm',function(){
+ 					   	var deletingUser = UserEntities.API.deleteUser({id:id});
+			    	 $.when(deletingUser).done(function(result){
+			    	 	$('#deleteModal').modal("hide");
+			    	 	 App.mainmsg.updateContent("User account "+id+" successfully deleted.",'success');              
+			    	 	delete_row.fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100).remove();
+			    	 })
+ 				})
+
+			    
+
+			});
 
 			var usersFooterPanel = new List.FooterPanel();
 
@@ -28069,9 +28128,9 @@ __p+='    <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="c
 ((__t=(email))==null?'':_.escape(__t))+
 '" required="">\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">              \r\n    </div>\r\n  </div>\r\n\r\n   <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">Institute</label>\r\n      <div class="col-md-6">\r\n    <input class="form-control" name="institute" type="text" value="'+
 ((__t=(institute))==null?'':_.escape(__t))+
-'">\r\n    </div>\r\n\r\n    <div class="col-md-3 form-control-comment">\r\n    \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">\r\n              Password\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control" name="password" type="password" value="';
-password
-__p+='" pattern=".{5,}" required="">\r\n            <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span>\r\n          </div>\r\n   \r\n    </div>\r\n    <div class="col-md-3 form-control-comment">   \r\n    </div>\r\n  </div>\r\n       \r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">\r\n               Password (retype)\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control " name="new_password" type="password" value="'+
+'">\r\n    </div>\r\n\r\n    <div class="col-md-3 form-control-comment">\r\n    \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">\r\n              Password\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control" name="password" type="password" value="'+
+((__t=(password))==null?'':_.escape(__t))+
+'" pattern=".{5,}" required="">\r\n            <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span>\r\n          </div>\r\n   \r\n    </div>\r\n    <div class="col-md-3 form-control-comment">   \r\n    </div>\r\n  </div>\r\n       \r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">\r\n               Password (retype)\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control " name="new_password" type="password" value="'+
 ((__t=(password))==null?'':_.escape(__t))+
 '" pattern=".{5,}">\r\n            <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span>\r\n          </div>\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">\r\n    </div>\r\n  </div>\r\n\r\n</div>\r\n</div>\r\n</div>';
 }
@@ -28307,7 +28366,11 @@ define('apps/users/show/show_controller',["app","common/util","apps/users/show/s
 							   App.mainmsg.updateContent("Account updated successfully.",'success');      
 							   $('.loginname').text(user.name);       
 
-						});
+						}).fail(function(response){ 
+
+			            App.mainmsg.updateContent(response.responseText,'warning');             
+
+			          });
 
 			  });
  			userShowPanel.on("show:delete",function(){

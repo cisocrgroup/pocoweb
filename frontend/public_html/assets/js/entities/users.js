@@ -157,7 +157,25 @@ Entities.API = {
   },
      updateUser: function(data){
     data['backend_route'] = "update_user";
-  console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+      deleteUser: function(data){
+    data['backend_route'] = "delete_user";
     var defer = jQuery.Deferred();
        $.ajax({
      
