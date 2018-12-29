@@ -1,11 +1,21 @@
-define(["app","common/views"], function(App,Views){
+define(["app","marionette","common/views","apps/users/common/views",
+        "tpl!apps/users/list/templates/layout.tpl",
+        "tpl!apps/users/list/templates/panel.tpl"], function(App,Marionette,Views,UserViews,layoutTpl,panelTpl){
 
 
 var List = {}
 
-  List.Layout = Views.Layout.extend({    
-  });
+   List.Layout = Marionette.View.extend({
+    template:layoutTpl,
+    regions:{
+      headerRegion: "#hl-region",
+      panelRegion: "#panel-region",
+      infoRegion: "#info-region",
+      footerRegion: "#footer-region"
 
+    }
+
+  });
   
  List.Header = Views.Header.extend({
     initialize: function(){
@@ -53,6 +63,20 @@ var List = {}
 
    
   });
+
+    List.Panel = Marionette.View.extend({
+      template: panelTpl,
+       triggers:{
+        "click button.js-create":   "user:create"
+      },
+     
+  });
+
+  List.Form = UserViews.Form.extend({
+
+  });
+
+
 
   List.AreYouSure = Views.AreYouSure.extend({
       triggers:{

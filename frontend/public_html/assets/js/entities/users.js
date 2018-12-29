@@ -193,6 +193,26 @@ Entities.API = {
 
     return defer.promise();
   },
+
+   createUser: function(data){
+    data['backend_route'] = "create_user";
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
 };
 
 

@@ -6,18 +6,18 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
 
 		showUser: function(id){
 
-	   		require(["entities/users"], function(UserEntitites){
+	   		require(["entities/users"], function(UserEntities){
 
 	   		// var backdropView = new App.Common.Views.LoadingBackdropOpc();
 	   		// App.backdropRegion.show(backdropView);
 
 
-			var fetchingUser = UserEntitites.API.getUser(id);
+			var fetchingUser = UserEntities.API.getUser(id);
 
 			$.when(fetchingUser).done(function(user){
 			// backdropView.destroy();
 
-			var userModel = new UserEntitites.User(user);
+			var userModel = new UserEntities.User(user);
 			console.log(userModel)
 
 			var userShowLayout = new Show.Layout();
@@ -32,10 +32,12 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
 			  userShowHeader = new Show.Header({model:userModel});
 			  userShowPanel = new Show.Panel({model:user});
 			  userShowForm = new Show.Form({model:userModel});
-			 
+			  userShowFooter = new Show.FooterPanel();
+
 		       userShowLayout.showChildView('headerRegion',userShowHeader);
    		       userShowLayout.showChildView('panelRegion',userShowPanel);
 			   userShowLayout.showChildView('infoRegion',userShowForm);
+			   userShowLayout.showChildView('footerRegion',userShowFooter);
 
 
 			   userShowPanel.on("show:back",function(){
@@ -44,7 +46,7 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
 
 			  userShowPanel.on("show:update",function(data){
 			  		data['id'] = user['id'];
-			  		var updatingUser = UserEntitites.API.updateUser(data);
+			  		var updatingUser = UserEntities.API.updateUser(data);
 						$.when(updatingUser).done(function(user){
 							   App.mainmsg.updateContent("Account updated successfully.",'success');      
 							   $('.loginname').text(user.name);       

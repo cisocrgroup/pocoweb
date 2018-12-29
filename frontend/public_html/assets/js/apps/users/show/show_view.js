@@ -14,7 +14,7 @@ var Show = {};
       headerRegion: "#hl-region",
       panelRegion: "#panel-region",
       infoRegion: "#info-region",
-      footerRegion: "#info-region"
+      footerRegion: "#footer-region"
 
     }
 
@@ -69,7 +69,8 @@ var Show = {};
 
 
 
-
+Show.FooterPanel = Views.FooterPanel.extend({
+    });
 
 
 return Show;

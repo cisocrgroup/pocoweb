@@ -25744,6 +25744,26 @@ Entities.API = {
 
     return defer.promise();
   },
+
+   createUser: function(data){
+    data['backend_route'] = "create_user";
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
 };
 
 
@@ -27957,14 +27977,147 @@ return Controller;
 
 });
 
-define('apps/users/list/list_view',["app","common/views"], function(App,Views){
+
+define("tpl!apps/users/common/templates/userform.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='\r\n';
+ if(asModal){
+__p+='\r\n\r\n  <div class="modal-dialog" role="document">\r\n    <div class="modal-content">\r\n      <div class="modal-header">\r\n        <h5 class="modal-title">'+
+((__t=(modaltitle))==null?'':_.escape(__t))+
+'</h5>\r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">×</span>\r\n        </button>\r\n       </div>\r\n \r\n  <div class="modal-body">\r\n       \r\n';
+} else {
+__p+='\r\n\r\n<div class="container">\r\n<div class="row">\r\n <div class="col col-md-12">\r\n\r\n';
+}
+__p+='\r\n\r\n<div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">Username</label>\r\n    <div class="col-md-6">     \r\n          <input class="form-control" name="name" type="text" value="'+
+((__t=(name))==null?'':_.escape(__t))+
+'" required="">\r\n    </div>\r\n    <div class="col-md-3 form-control-comment"> \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">Email</label>\r\n    <div class="col-md-6">\r\n          <input class="form-control" name="email" type="email" value="'+
+((__t=(email))==null?'':_.escape(__t))+
+'" required="">\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">              \r\n    </div>\r\n  </div>\r\n\r\n   <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">Institute</label>\r\n      <div class="col-md-6">\r\n    <input class="form-control" name="institute" type="text" value="'+
+((__t=(institute))==null?'':_.escape(__t))+
+'">\r\n    </div>\r\n\r\n    <div class="col-md-3 form-control-comment">\r\n    \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">\r\n              Password\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control" name="password" type="password" value="'+
+((__t=(password))==null?'':_.escape(__t))+
+'" pattern=".{5,}" required="">\r\n            <!-- <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span> -->\r\n          </div>\r\n   \r\n    </div>\r\n    <div class="col-md-3 form-control-comment">   \r\n    </div>\r\n  </div>\r\n       \r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">\r\n               Password (retype)\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control " name="new_password" type="password" value="'+
+((__t=(password))==null?'':_.escape(__t))+
+'" pattern=".{5,}">\r\n           <!--  <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span> -->\r\n          </div>\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">\r\n    </div>\r\n  </div>\r\n ';
+ if(admincheck) {
+__p+='\r\n \r\n    <div class="form-group form-check">\r\n    <input type="checkbox" class="form-check-input" id="admin_check">\r\n    <label class="form-check-label" for="admin_check">Administrator</label>\r\n  </div>\r\n  ';
+ }
+__p+='\r\n\r\n';
+ if(asModal){
+__p+='\r\n </div>\r\n  <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-submit">Submit</button>\r\n      </div>\r\n    </div>\r\n\r\n</div>\r\n</div>\r\n\r\n';
+} else {
+__p+='\r\n\r\n</div>\r\n</div>\r\n</div>\r\n\r\n';
+}
+__p+='\r\n';
+}
+return __p;
+};});
+
+
+define('apps/users/common/views',["app","marionette",
+        "tpl!apps/users/common/templates/userform.tpl",
+        "common/util"
+	], function(App,Marionette,userformTpl,Util){
+
+var Views = {}
+
+ Views.Form = Marionette.View.extend({
+	 template: userformTpl,
+	 events: {
+	 "click .js-submit": "submitClicked",
+	 "click .js-delete": "deleteClicked",
+	 "click .js-back":   "backClicked",
+	 "click .js-close":  "closeClicked"
+
+	 },
+	 initialize: function(){
+		
+ 	},
+
+   	 serializeData: function(){
+
+         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+          data.asModal = Marionette.getOption(this,"asModal");
+          data.modaltitle = Marionette.getOption(this,"modaltitle");
+          data.admincheck = Marionette.getOption(this,"admincheck");
+
+          data.id = Marionette.getOption(this,"id");
+
+        return data;
+    
+    },
+     onAttach: function(){
+
+			 if(Marionette.getOption(this,"asModal")){
+			  		this.$el.addClass("modal fade");
+					this.$el.attr("tabindex","-1");
+					this.$el.attr("role","dialog");
+					this.$el.attr("id",this.id);
+			      	$("#"+this.id).modal();
+			}
+       },
+
+	 submitClicked: function(e){
+		 e.preventDefault();
+  	    var data = {}
+      data['name'] = $("input[name=name]").val();
+      data['email'] = $("input[name=email]").val();
+      data['institute'] = $("input[name=institute").val();
+      data['password'] = $("input[name=password]").val();
+      data['new_password'] = $("input[name=new_password]").val();
+	  if($('#admin_check').length>0) data['admin'] = $('#admin_check').val();
+		this.trigger("form:submit", data);
+	 }
+
+
+
+	
+	 });
+
+
+
+return Views;
+
+
+});
+
+
+define("tpl!apps/users/list/templates/layout.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<div id="hl-region"></div>\r\n    <div id="panel-region"></div>\r\n    <div id="info-region" ></div>\r\n    <div id="footer-region" ></div>\r\n';
+}
+return __p;
+};});
+
+
+define("tpl!apps/users/list/templates/panel.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+=' <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button style="margin-bottom: 25px;margin-top: 25px;" type="button" class="btn js-create"><i class="fas fa-user-plus"></i> Create new User</button>                     \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
+}
+return __p;
+};});
+
+define('apps/users/list/list_view',["app","marionette","common/views","apps/users/common/views",
+        "tpl!apps/users/list/templates/layout.tpl",
+        "tpl!apps/users/list/templates/panel.tpl"], function(App,Marionette,Views,UserViews,layoutTpl,panelTpl){
 
 
 var List = {}
 
-  List.Layout = Views.Layout.extend({    
-  });
+   List.Layout = Marionette.View.extend({
+    template:layoutTpl,
+    regions:{
+      headerRegion: "#hl-region",
+      panelRegion: "#panel-region",
+      infoRegion: "#info-region",
+      footerRegion: "#footer-region"
 
+    }
+
+  });
   
  List.Header = Views.Header.extend({
     initialize: function(){
@@ -28013,6 +28166,20 @@ var List = {}
    
   });
 
+    List.Panel = Marionette.View.extend({
+      template: panelTpl,
+       triggers:{
+        "click button.js-create":   "user:create"
+      },
+     
+  });
+
+  List.Form = UserViews.Form.extend({
+
+  });
+
+
+
   List.AreYouSure = Views.AreYouSure.extend({
       triggers:{
      "click .js-yes":"delete:confirm"
@@ -28047,6 +28214,7 @@ define('apps/users/list/list_controller',["app","common/util","apps/users/list/l
 
  			var usersListHeader = new List.Header();
 			var usersListView = new List.UsersList({collection: users.users});
+			var usersListPanel = new List.Panel();
 
 			usersListView.on('user:delete',function(id,delete_row){
 
@@ -28058,9 +28226,47 @@ define('apps/users/list/list_controller',["app","common/util","apps/users/list/l
 			    	 $.when(deletingUser).done(function(result){
 			    	 	$('#deleteModal').modal("hide");
 			    	 	 App.mainmsg.updateContent("User account "+id+" successfully deleted.",'success');              
-			    	 	delete_row.fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100).remove();
-			    	 })
+			    	 	delete_row.remove();
+			    	 }).fail(function(response){ 
+				        App.mainmsg.updateContent(response.responseText,'danger');
+				      });    
  				})
+
+			    
+
+			});
+
+
+			usersListPanel.on('user:create',function(){
+				var userForm = new List.Form({model:new UserEntities.User(),asModal:true,id:"userModal",modaltitle:"Create a new User Account",admincheck:true})
+ 				App.mainLayout.showChildView('dialogRegion',userForm)
+
+				 userForm.on('form:submit',function(data){
+				 	console.log(data)
+
+				 	 var creatingUser = UserEntities.API.createUser(data);
+			   	 	$.when(creatingUser).done(function(result){
+			   	 		$('#userModal').modal('hide');
+			   	 		console.log(result)
+				         App.mainmsg.updateContent(result,'success');
+
+				         	var fetchingUsers = UserEntities.API.getUsers();
+
+							usersListLayout = new List.Layout();
+
+					    	 $.when(fetchingUsers).done(function(users){
+					    	 	console.log(users)
+					    	 	console.log("ASD")
+					    	 		usersListView.collection=users.users
+					    	 		usersListView.render();
+
+					    	 });
+
+				       }).fail(function(response){
+   			   	 		$('#userModal').modal('hide');
+     			         App.mainmsg.updateContent(response.responseText,'danger')
+				 		});    
+ 				 });
 
 			    
 
@@ -28069,10 +28275,11 @@ define('apps/users/list/list_controller',["app","common/util","apps/users/list/l
 			var usersFooterPanel = new List.FooterPanel();
 
 			    usersListLayout.showChildView('headerRegion',usersListHeader);
-                usersListLayout.showChildView('contentRegion',usersListView);	
-                usersListLayout.showChildView('panelRegion',usersFooterPanel);	
+                usersListLayout.showChildView('panelRegion',usersListPanel);	
+                usersListLayout.showChildView('infoRegion',usersListView);	
+                usersListLayout.showChildView('footerRegion',usersFooterPanel);	
 
- 		}); // on:show
+ 		}); // on:attach
 
 
 
@@ -28119,106 +28326,6 @@ return App.UsersApp.Login.Controller;
 
 });
 
-define("tpl!apps/users/common/templates/userform.tpl", function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='    <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n\r\n\r\n<div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">Username</label>\r\n    <div class="col-md-6">     \r\n          <input class="form-control" name="name" type="text" value="'+
-((__t=(name))==null?'':_.escape(__t))+
-'" required="">\r\n    </div>\r\n    <div class="col-md-3 form-control-comment"> \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">Email</label>\r\n    <div class="col-md-6">\r\n          <input class="form-control" name="email" type="email" value="'+
-((__t=(email))==null?'':_.escape(__t))+
-'" required="">\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">              \r\n    </div>\r\n  </div>\r\n\r\n   <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">Institute</label>\r\n      <div class="col-md-6">\r\n    <input class="form-control" name="institute" type="text" value="'+
-((__t=(institute))==null?'':_.escape(__t))+
-'">\r\n    </div>\r\n\r\n    <div class="col-md-3 form-control-comment">\r\n    \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">\r\n              Password\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control" name="password" type="password" value="'+
-((__t=(password))==null?'':_.escape(__t))+
-'" pattern=".{5,}" required="">\r\n            <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span>\r\n          </div>\r\n   \r\n    </div>\r\n    <div class="col-md-3 form-control-comment">   \r\n    </div>\r\n  </div>\r\n       \r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">\r\n               Password (retype)\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control " name="new_password" type="password" value="'+
-((__t=(password))==null?'':_.escape(__t))+
-'" pattern=".{5,}">\r\n            <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span>\r\n          </div>\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">\r\n    </div>\r\n  </div>\r\n\r\n</div>\r\n</div>\r\n</div>';
-}
-return __p;
-};});
-
-
-define('apps/users/common/views',["app","marionette",
-        "tpl!apps/users/common/templates/userform.tpl",
-        "common/util"
-	], function(App,Marionette,userformTpl,Util){
-
-var Views = {}
-
- Views.Form = Marionette.View.extend({
-	 template: userformTpl,
-	 events: {
-	 "click .js-submit": "submitClicked",
-	 "click .js-delete": "deleteClicked",
-	 "click .js-back":   "backClicked",
-	 "click .js-close":  "closeClicked"
-
-	 },
-	 initialize: function(){
-		
- 	},
- 
- templateHelpers: function () {
-	    return {
-	           asModal: this.options.asModal,
-   	          id: Marionette.getOption(this,"id")
-	     }
-  	 },
-     onAttach: function(){
-
-			 if(this.options.asModal){
-			  		this.$el.addClass("modal fade");
-					this.$el.attr("tabindex","-1");
-					this.$el.attr("role","dialog");
-					this.$el.attr("id",this.id);
-			      	$("#"+this.id).modal();
-			}
-       },
-
-	 submitClicked: function(e){
-		 e.preventDefault();
-  		var data = Backbone.Syphon.serialize(this);
-  		var role = $('#roles').find(":selected").text();
-  		data['role'] = role;
-  	 var checkBox =$('#notify').is(':checked');
-     var checkBoxValue=0;
-     if(checkBox) checkBoxValue=1;
-     data['notify'] = checkBoxValue;
-
-       checkBox =$('#verified_checkbox').is(':checked');
-       checkBoxValue=0;
-     if(checkBox) checkBoxValue=1;
-     data['verified'] = checkBoxValue;
-		this.trigger("form:submit", data);
-	 },
-
-	 deleteClicked: function(e){
-		  e.preventDefault();
-  		var data = Backbone.Syphon.serialize(this);
-	 },
-
-	 backClicked: function(e){
-		  e.preventDefault();
-			this.trigger("form:back");
-	 },
-
- 	closeClicked: function(e){
-		  e.preventDefault();
-          this.$el.foundation('reveal', 'close');
-	 },
-
-
-	
-	 });
-
-
-
-return Views;
-
-
-});
-
-
 define("tpl!apps/users/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -28252,7 +28359,7 @@ var Show = {};
       headerRegion: "#hl-region",
       panelRegion: "#panel-region",
       infoRegion: "#info-region",
-      footerRegion: "#info-region"
+      footerRegion: "#footer-region"
 
     }
 
@@ -28307,7 +28414,8 @@ var Show = {};
 
 
 
-
+Show.FooterPanel = Views.FooterPanel.extend({
+    });
 
 
 return Show;
@@ -28323,18 +28431,18 @@ define('apps/users/show/show_controller',["app","common/util","apps/users/show/s
 
 		showUser: function(id){
 
-	   		require(["entities/users"], function(UserEntitites){
+	   		require(["entities/users"], function(UserEntities){
 
 	   		// var backdropView = new App.Common.Views.LoadingBackdropOpc();
 	   		// App.backdropRegion.show(backdropView);
 
 
-			var fetchingUser = UserEntitites.API.getUser(id);
+			var fetchingUser = UserEntities.API.getUser(id);
 
 			$.when(fetchingUser).done(function(user){
 			// backdropView.destroy();
 
-			var userModel = new UserEntitites.User(user);
+			var userModel = new UserEntities.User(user);
 			console.log(userModel)
 
 			var userShowLayout = new Show.Layout();
@@ -28349,10 +28457,12 @@ define('apps/users/show/show_controller',["app","common/util","apps/users/show/s
 			  userShowHeader = new Show.Header({model:userModel});
 			  userShowPanel = new Show.Panel({model:user});
 			  userShowForm = new Show.Form({model:userModel});
-			 
+			  userShowFooter = new Show.FooterPanel();
+
 		       userShowLayout.showChildView('headerRegion',userShowHeader);
    		       userShowLayout.showChildView('panelRegion',userShowPanel);
 			   userShowLayout.showChildView('infoRegion',userShowForm);
+			   userShowLayout.showChildView('footerRegion',userShowFooter);
 
 
 			   userShowPanel.on("show:back",function(){
@@ -28361,7 +28471,7 @@ define('apps/users/show/show_controller',["app","common/util","apps/users/show/s
 
 			  userShowPanel.on("show:update",function(data){
 			  		data['id'] = user['id'];
-			  		var updatingUser = UserEntitites.API.updateUser(data);
+			  		var updatingUser = UserEntities.API.updateUser(data);
 						$.when(updatingUser).done(function(user){
 							   App.mainmsg.updateContent("Account updated successfully.",'success');      
 							   $('.loginname').text(user.name);       

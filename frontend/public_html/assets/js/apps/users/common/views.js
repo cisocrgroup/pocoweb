@@ -18,16 +18,22 @@ var Views = {}
 	 initialize: function(){
 		
  	},
- 
- templateHelpers: function () {
-	    return {
-	           asModal: this.options.asModal,
-   	          id: Marionette.getOption(this,"id")
-	     }
-  	 },
+
+   	 serializeData: function(){
+
+         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+          data.asModal = Marionette.getOption(this,"asModal");
+          data.modaltitle = Marionette.getOption(this,"modaltitle");
+          data.admincheck = Marionette.getOption(this,"admincheck");
+
+          data.id = Marionette.getOption(this,"id");
+
+        return data;
+    
+    },
      onAttach: function(){
 
-			 if(this.options.asModal){
+			 if(Marionette.getOption(this,"asModal")){
 			  		this.$el.addClass("modal fade");
 					this.$el.attr("tabindex","-1");
 					this.$el.attr("role","dialog");
@@ -38,35 +44,16 @@ var Views = {}
 
 	 submitClicked: function(e){
 		 e.preventDefault();
-  		var data = Backbone.Syphon.serialize(this);
-  		var role = $('#roles').find(":selected").text();
-  		data['role'] = role;
-  	 var checkBox =$('#notify').is(':checked');
-     var checkBoxValue=0;
-     if(checkBox) checkBoxValue=1;
-     data['notify'] = checkBoxValue;
-
-       checkBox =$('#verified_checkbox').is(':checked');
-       checkBoxValue=0;
-     if(checkBox) checkBoxValue=1;
-     data['verified'] = checkBoxValue;
+  	    var data = {}
+      data['name'] = $("input[name=name]").val();
+      data['email'] = $("input[name=email]").val();
+      data['institute'] = $("input[name=institute").val();
+      data['password'] = $("input[name=password]").val();
+      data['new_password'] = $("input[name=new_password]").val();
+	  if($('#admin_check').length>0) data['admin'] = $('#admin_check').val();
 		this.trigger("form:submit", data);
-	 },
+	 }
 
-	 deleteClicked: function(e){
-		  e.preventDefault();
-  		var data = Backbone.Syphon.serialize(this);
-	 },
-
-	 backClicked: function(e){
-		  e.preventDefault();
-			this.trigger("form:back");
-	 },
-
- 	closeClicked: function(e){
-		  e.preventDefault();
-          this.$el.foundation('reveal', 'close');
-	 },
 
 
 	

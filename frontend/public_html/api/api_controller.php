@@ -27,6 +27,7 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'get_user' : get_user();break;
         case 'update_user' : update_user();break;
         case 'delete_user' : delete_user();break;
+        case 'create_user' : create_user();break;
 
     }
 }
@@ -168,6 +169,58 @@ if (!isset($_POST["name"]) || !isset($_POST["email"]) ||
   }
 }
 }
+function create_user() {
+
+    if ($_POST["password"] != $_POST["new_password"]) {
+       header("status: 500");
+       echo "Error: could not create user '". $_POST['name']."' passwords do not match";
+    } else {
+
+     $admin = isset($_POST['admin']) && $_POST['admin'] == "on";
+
+   $data = array(
+        'user' => array (
+            'name' => $_POST['name'],
+            'email' => $_POST['email'],
+            'institute' => $_POST['institute'],
+            'admin' =>  $admin
+        ),
+    );
+    if ($_POST['password'] != "") {
+        $data['password'] = $_POST['password'];
+    }
+
+  $api = new Api(backend_get_users_route());
+    $api->set_session_id(backend_get_session_cookie());
+    $api->post_request($data);
+
+  $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+
+        echo json_encode("Successfully created new user."); 
+
+
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status).'. Error: Could not create user.';
+    break;
+  default:
+        header("status: ".$status);
+    echo  backend_get_http_status_info($status).'. Error: Could not create user.';
+    break;
+  }
+
+  }
+}
+
+  
+
+
+
 
 function delete_user(){
 

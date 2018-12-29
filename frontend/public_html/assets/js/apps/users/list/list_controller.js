@@ -18,6 +18,7 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 
  			var usersListHeader = new List.Header();
 			var usersListView = new List.UsersList({collection: users.users});
+			var usersListPanel = new List.Panel();
 
 			usersListView.on('user:delete',function(id,delete_row){
 
@@ -31,8 +32,41 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 			    	 	 App.mainmsg.updateContent("User account "+id+" successfully deleted.",'success');              
 			    	 	delete_row.remove();
 			    	 }).fail(function(response){ 
-				        App.mainmsg.updateContent(response.responseText,'danger');    
+				        App.mainmsg.updateContent(response.responseText,'danger');
+				      });    
  				})
+
+			    
+
+			});
+
+
+			usersListPanel.on('user:create',function(){
+				var userForm = new List.Form({model:new UserEntities.User(),asModal:true,id:"userModal",modaltitle:"Create a new User Account",admincheck:true})
+ 				App.mainLayout.showChildView('dialogRegion',userForm)
+
+				 userForm.on('form:submit',function(data){
+
+				 	 var creatingUser = UserEntities.API.createUser(data);
+			   	 	$.when(creatingUser).done(function(result){
+			   	 		$('#userModal').modal('hide');
+				         App.mainmsg.updateContent(result,'success');
+
+				         	var fetchingUsers = UserEntities.API.getUsers();
+
+							usersListLayout = new List.Layout();
+
+					    	 $.when(fetchingUsers).done(function(users){
+					    	 		usersListView.collection=users.users
+					    	 		usersListView.render();
+
+					    	 });
+
+				       }).fail(function(response){
+   			   	 		$('#userModal').modal('hide');
+     			         App.mainmsg.updateContent(response.responseText,'danger')
+				 		});    
+ 				 });
 
 			    
 
@@ -41,10 +75,11 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 			var usersFooterPanel = new List.FooterPanel();
 
 			    usersListLayout.showChildView('headerRegion',usersListHeader);
-                usersListLayout.showChildView('contentRegion',usersListView);	
-                usersListLayout.showChildView('panelRegion',usersFooterPanel);	
+                usersListLayout.showChildView('panelRegion',usersListPanel);	
+                usersListLayout.showChildView('infoRegion',usersListView);	
+                usersListLayout.showChildView('footerRegion',usersFooterPanel);	
 
- 		}); // on:show
+ 		}); // on:attach
 
 
 
