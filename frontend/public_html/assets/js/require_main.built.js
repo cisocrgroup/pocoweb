@@ -24407,7 +24407,6 @@ onAttach: function(){
 
    		  },
    		  hide: function(){
-   		  	console.log("xxx")
    		  	$("#"+this.id).css('display','none');
    		  }
 	
@@ -26296,35 +26295,37 @@ __p+='\n\n\n';
 
 if(asModal) {
 
-__p+='\n\n  <div class="modal-dialog modal-lg" role="document">\n  <div class="modal-content">\n\n\n\n<div class="modal-header red-border-bottom">\n        <h3 class="modal-title">'+
+__p+='\n\n  <div class="modal-dialog modal-lg" role="document">\n  <div class="modal-content">\n\n<div class="modal-header red-border-bottom">\n        <h3 class="modal-title">'+
 ((__t=(text))==null?'':_.escape(__t))+
 ' </h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n<div class="loading_background" style="display: none;">\n         <i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>\n         <div class="loading_text_parent">\n           <div class="loading_text"> '+
 ((__t=(loading_text))==null?'':_.escape(__t))+
 ' </div>\n         </div>\n</div>\n\n';
  } 
-__p+='\n\n<form>\n\n';
+__p+='\n\n<form id="uploadForm">\n\n';
  if(!add_book) { 
-__p+='\n\n<div class="form-group row">\n  <div class="col-6">\n    <label for="title">Title</label>\n    <input class="form-control" type="text" value="'+
+__p+='\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="title">Title</label>\n    <input class="form-control" type="text" value="'+
 ((__t=(title))==null?'':_.escape(__t))+
-'" id="title" name="title">\n  </div>\n   <div class="col-6">\n  <label for="author">Author</label>\n    <input class="form-control" type="text" value="'+
+'" id="title" name="title">\n  </div>\n   <div class="col-4">\n  <label for="author">Author</label>\n    <input class="form-control" type="text" value="'+
 ((__t=(author))==null?'':_.escape(__t))+
-'" id="author" name="author">\n  </div>\n\n</div>\n\n<div class="form-group row">\n  <div class="col-6">\n    <label for="language">Language</label>\n    <input class="form-control" type="text" value="'+
+'" id="author" name="author">\n  </div>\n\n</div>\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="language">Language</label>\n    <input class="form-control" type="text" value="'+
 ((__t=(language))==null?'':_.escape(__t))+
-'" id="language" name="language">\n  </div>\n <div class="col-6">\n    <label for="year">Year</label>\n    <input class="form-control" type="text" value="'+
+'" id="language" name="language">\n  </div>\n <div class="col-4">\n    <label for="year">Year of publication</label>\n    <input class="form-control" type="text" value="'+
 ((__t=(year))==null?'':_.escape(__t))+
-'" id="year" name="year">\n  </div>\n \n  </div>\n\n';
+'" id="year" name="year" placeholder="2018">\n  </div>\n <div class="col-4">\n    <label for="year">Profiler URL</label><small> (use default if in doubt)</small>\n    <input class="form-control" type="text" value="'+
+((__t=(profilerUrl))==null?'':_.escape(__t))+
+'" id="profilerUrl" name="profilerUrl" placeholder="default">\n  </div>\n  </div>\n\n';
  } 
 __p+='\n\n';
  if(!edit_project) { 
-__p+='\n\n\n<div class="form-group row">\n\n\n  <div class="col-3">\n  <label for="ocrEngine">OCR Engine</label>\n\n    <select style="width: 100%" class="form-control" id="ocrEngine">\n      <option value="ocropus">Ocropus</option>\n      <option value="tesseract">Tesseract</option>\n      <option value="abbyy_finereader">Abbyy Finereader</option>\n\n    </select>\n  </div>\n\n</div>\n\n\n\n\n<div class="form-group row">\n<div class="col-6">\n\n\n\n<label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">\n <i class="fa fa-file-archive-o" aria-hidden="true"></i> Upload data (.zip)\n</label>\n<input id="file-upload" type="file" style="display:none">\n\n<div id="selected_file"></div>\n\n</div>\n</div>\n\n';
+__p+='\n\n\n<label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">\n <i class="fa fa-file-archive-o" aria-hidden="true"></i> Upload data (.zip)\n</label>\n<input id="file-upload" type="file" name="archive" style="display:none">\n\n<div id="selected_file"></div>\n <button class="btn no_bg_btn hover js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>\n\n\n';
  } 
 __p+='\n\n</form>\n\n\n\n';
 
 if(asModal) {
 
-__p+='\n\n  </div> \n\n\n\n <div class="modal-footer">\n      <button class="btn no_bg_btn hover js-submit-project"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>\n </div>\n\n  \n\n\n  </div>\n  </div>\n\n';
+__p+='\n\n  </div> \n\n\n\n <div class="modal-footer">\n </div>\n\n\n\n  </div>\n  </div>\n\n';
  } 
-__p+='\n\n\n<div class="modal" tabindex="-1" role="dialog">\n  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header">\n        <h5 class="modal-title">Modal title</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n      </div>\n      <div class="modal-body">\n        <p>Modal body text goes here.</p>\n      </div>\n      <div class="modal-footer">\n        <button type="button" class="btn btn-primary">Save changes</button>\n        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>\n      </div>\n    </div>\n  </div>\n</div>';
+__p+='\n';
 }
 return __p;
 };});
@@ -26410,74 +26411,73 @@ Views.ProjectForm = Marionette.View.extend({
 
     })
 
+    $("#uploadForm").on('submit',(function(e) {
+    e.preventDefault();
+     that.trigger("project:submit_clicked", Backbone.Syphon.serialize(that), this);
+
+    }))
+
   },
 
-   submitClicked: function(e){
+   // submitClicked: function(e){
 
-     e.preventDefault();
-      var data = Backbone.Syphon.serialize(this);
-      var ocrEngine =  $('#ocrEngine').find(":selected").val();
+   //   e.preventDefault();
+   //    var data = Backbone.Syphon.serialize(this);
 
-        $('.loading_background').fadeIn();
+   //      $('.loading_background').fadeIn();
 
-        if(Marionette.getOption(this,"edit_project")) {
+   //      if(Marionette.getOption(this,"edit_project")) {
           
-           this.trigger("project:update_clicked", data);
+   //         this.trigger("project:update_clicked", data);
 
 
-      }
+   //    }
 
-      else if(Marionette.getOption(this,"add_book")) {
+   //    else if(Marionette.getOption(this,"add_book")) {
 
 
-        var that = this
+   //      var that = this
     
-        Util.getBase64(this.selected_file,function(base64){
+   //  //    Util.getBase64(this.selected_file,function(base64){
 
 
-                  var result = {}
+   //                var result = {}
 
-                result['project'] = data;
-                result['project']['books'] = [];
-                result['project']['books'][0] = Backbone.Syphon.serialize(that);
-                result['project']['books'][0]['ocrEngine'] = ocrEngine
-
-
-                result['content'] = base64;
-
-                that.trigger("project:addbook_clicked", result);
+   //              result['project'] = data;
+   //              result['project']['books'] = [];
+   //              result['project']['books'][0] = Backbone.Syphon.serialize(that);
 
 
-        });
-      }
 
-      else {
+   //              that.trigger("project:addbook_clicked", result);
+
+
+   //    //  });
+   //    }
+
+   //    else {
 
        
 
-        var that = this
+   //      var that = this
     
-        Util.getBase64(this.selected_file,function(base64){
+   //      // Util.getBase64(this.selected_file,function(base64){
 
 
-                  var result = {}
+   //                var result = {}
 
-                result['project'] = data;
-                result['project']['books'] = [];
-                result['project']['books'][0] = Backbone.Syphon.serialize(that);
-                result['project']['books'][0]['ocrEngine'] = ocrEngine
+   //              result['project'] = data;
+   //              result['project']['books'] = [];
+   //              result['project']['books'][0] = Backbone.Syphon.serialize(that);
 
-
-                result['content'] = base64;
-
-                that.trigger("project:submit_clicked", result);
+   //             that.trigger("project:submit_clicked", this);
 
 
-        });
+   //      // });
 
-      }
+   //    }
 
-   },
+   // },
 
   
  
@@ -26712,11 +26712,11 @@ Entities.Project = Backbone.Model.extend({
   author:null,
   books:null,
   language:null,
-  profilerUrl:null,
+  profilerUrl:"default",
   projectId:null,
   title:"",
   user:"",
-  year:""
+  year:"2018"
   
      }
   });
@@ -26769,17 +26769,15 @@ getProject: function(id){
   
 },
 
-createProject: function(data){
+uploadProjectData: function(data){
     var defer = jQuery.Deferred();
-       $.ajax({
-        headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-         },
-        url: "api/projects/create",
+      $.ajax({
+        url: "api/upload.php",
         type: "POST",
-        data:JSON.stringify(data),
-        dataType: "json",
+        data: new FormData(data),
+        cache:false,
+        processData:false,
+        contentType: false,
         success: function(data) {
 
               defer.resolve(data);
@@ -26791,6 +26789,28 @@ createProject: function(data){
 
     return defer.promise();
   },
+
+  createProject: function(data){
+    data['backend_route'] = "create_project";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+
 
 updateProject: function(id,data){
     var defer = jQuery.Deferred();
@@ -27173,23 +27193,30 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
           projectsListPanel.on("list:create_clicked",function(){
 
 
-             var projectsListAddProject = new List.ProjectForm({model: new ProjectEntitites.Project, asModal:true,text:"Create a new OCR Project",loading_text:"Upload in progress"});
+             var projectsListAddProject = new List.ProjectForm({model: new ProjectEntitites.Project, asModal:true,text:"Create a new project",loading_text:"Upload in progress"});
 
 
-           projectsListAddProject.on("project:submit_clicked",function(data){
-           var postingProject = ProjectEntitites.API.createProject(data);
+           projectsListAddProject.on("project:submit_clicked",function(data,formdata){
+           var uploadingProjectData = ProjectEntitites.API.uploadProjectData(formdata);
 
 
-                 $.when(postingProject).done(function(result){
-                  $('.loading_background').fadeOut();
+                 $.when(uploadingProjectData).done(function(result){
+
+                  var creatingProject = ProjectEntitites.API.createProject(data);
+                 $.when(uploadingProjectData).done(function(result){
+                  console.log(result);
+
+                    $('.loading_background').fadeOut();
 
                    $('#projects-modal').modal('toggle');
-                   console.log(result)
-                   App.trigger("projects:show",result.projectId)
+                   // App.trigger("projects:show",result.projectId)
 
                    projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
                    $('#selected_file').text("");
                    // projectsListAddProject.render()
+                  
+                 });
+                
 
                 })
 
@@ -28095,7 +28122,7 @@ return __p;
 define("tpl!apps/users/list/templates/panel.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+=' <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button style="margin-bottom: 25px;margin-top: 25px;" type="button" class="btn js-create"><i class="fas fa-user-plus"></i> Create new User</button>                     \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
+__p+=' <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button style="margin-bottom: 25px;margin-top: 25px;" type="button" class="btn js-create"><i class="fas fa-user-plus"></i> Create new user</button>                     \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
 }
 return __p;
 };});
@@ -28238,16 +28265,14 @@ define('apps/users/list/list_controller',["app","common/util","apps/users/list/l
 
 
 			usersListPanel.on('user:create',function(){
-				var userForm = new List.Form({model:new UserEntities.User(),asModal:true,id:"userModal",modaltitle:"Create a new User Account",admincheck:true})
+				var userForm = new List.Form({model:new UserEntities.User(),asModal:true,id:"userModal",modaltitle:"Create a new user account",admincheck:true})
  				App.mainLayout.showChildView('dialogRegion',userForm)
 
 				 userForm.on('form:submit',function(data){
-				 	console.log(data)
 
 				 	 var creatingUser = UserEntities.API.createUser(data);
 			   	 	$.when(creatingUser).done(function(result){
 			   	 		$('#userModal').modal('hide');
-			   	 		console.log(result)
 				         App.mainmsg.updateContent(result,'success');
 
 				         	var fetchingUsers = UserEntities.API.getUsers();
@@ -28255,8 +28280,6 @@ define('apps/users/list/list_controller',["app","common/util","apps/users/list/l
 							usersListLayout = new List.Layout();
 
 					    	 $.when(fetchingUsers).done(function(users){
-					    	 	console.log(users)
-					    	 	console.log("ASD")
 					    	 		usersListView.collection=users.users
 					    	 		usersListView.render();
 

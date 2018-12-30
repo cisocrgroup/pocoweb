@@ -42,7 +42,7 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 
 
 			usersListPanel.on('user:create',function(){
-				var userForm = new List.Form({model:new UserEntities.User(),asModal:true,id:"userModal",modaltitle:"Create a new User Account",admincheck:true})
+				var userForm = new List.Form({model:new UserEntities.User(),asModal:true,id:"userModal",modaltitle:"Create a new user account",admincheck:true})
  				App.mainLayout.showChildView('dialogRegion',userForm)
 
 				 userForm.on('form:submit',function(data){

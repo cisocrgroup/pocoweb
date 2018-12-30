@@ -15,6 +15,8 @@ require_once('backend.php');
 ini_set('max_execution_time', 300);
 ini_set('max_input_vars ', 1000000);
 
+
+
 if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
     $action = $_POST['backend_route'];
     switch($action) {
@@ -23,6 +25,7 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'logout' : logout();break;
         case 'api_version' : get_api_version();break;
         case 'get_projects' : get_projects();break;
+        case 'create_project' : create_project();break;
         case 'get_users' : get_users();break;
         case 'get_user' : get_user();break;
         case 'update_user' : update_user();break;
@@ -30,6 +33,48 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'create_user' : create_user();break;
 
     }
+}
+
+function create_project(){
+  echo "string";
+  print_r($_FILES);
+  //print_r($_POST);
+    global $config;
+  $post = $_POST;
+ // $file = $_FILES["archive"];
+
+
+
+  //   error_log("uploading file size=$file[size] type=$file[type] tmp_name=$file[tmp_name]");
+  // if ($file["error"] != UPLOAD_ERR_OK) {
+  //       $info = backend_get_upload_error_info($file["error"]);
+  //   frontend_render_error_div("Could not upload archive: error: $info");
+  //   return;
+  // }
+  // if ($file["size"] > $config["frontend"]["upload"]["max_size"]) {
+  //   frontend_render_error_div("Could not upload archive: file too big");
+  //   return;
+  // }
+  // if ($file["type"] != "application/zip") {
+  //   frontend_render_error_div("Could not upload archive: not a zip file");
+  //   return;
+  // }
+  // if (!file_exists($file["tmp_name"])) {
+  //   frontend_render_error_div("Could not upload archive: upload file does not exist");
+  // }
+  // if (!chmod($file["tmp_name"], 0755)) {
+  //   frontend_render_error_div("Could not upload archive: could publish upload file");
+  // }
+  // $api = backend_upload_project($post, $file["name"], $file["tmp_name"]);
+  // $status = $api->get_http_status_code();
+  // if ($status != 201 || $status != 200) { # accept 200 OK and 201 Created
+  //   frontend_render_error_div("Could not upload archive: backend returned " .
+  //     backend_get_http_status_info($status));
+  // } else {
+  //   frontend_render_success_div("Successfully uploaded new project");
+  // }
+
+
 }
 
 

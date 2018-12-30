@@ -79,74 +79,73 @@ Views.ProjectForm = Marionette.View.extend({
 
     })
 
+    $("#uploadForm").on('submit',(function(e) {
+    e.preventDefault();
+     that.trigger("project:submit_clicked", Backbone.Syphon.serialize(that), this);
+
+    }))
+
   },
 
-   submitClicked: function(e){
+   // submitClicked: function(e){
 
-     e.preventDefault();
-      var data = Backbone.Syphon.serialize(this);
-      var ocrEngine =  $('#ocrEngine').find(":selected").val();
+   //   e.preventDefault();
+   //    var data = Backbone.Syphon.serialize(this);
 
-        $('.loading_background').fadeIn();
+   //      $('.loading_background').fadeIn();
 
-        if(Marionette.getOption(this,"edit_project")) {
+   //      if(Marionette.getOption(this,"edit_project")) {
           
-           this.trigger("project:update_clicked", data);
+   //         this.trigger("project:update_clicked", data);
 
 
-      }
+   //    }
 
-      else if(Marionette.getOption(this,"add_book")) {
+   //    else if(Marionette.getOption(this,"add_book")) {
 
 
-        var that = this
+   //      var that = this
     
-        Util.getBase64(this.selected_file,function(base64){
+   //  //    Util.getBase64(this.selected_file,function(base64){
 
 
-                  var result = {}
+   //                var result = {}
 
-                result['project'] = data;
-                result['project']['books'] = [];
-                result['project']['books'][0] = Backbone.Syphon.serialize(that);
-                result['project']['books'][0]['ocrEngine'] = ocrEngine
-
-
-                result['content'] = base64;
-
-                that.trigger("project:addbook_clicked", result);
+   //              result['project'] = data;
+   //              result['project']['books'] = [];
+   //              result['project']['books'][0] = Backbone.Syphon.serialize(that);
 
 
-        });
-      }
 
-      else {
+   //              that.trigger("project:addbook_clicked", result);
+
+
+   //    //  });
+   //    }
+
+   //    else {
 
        
 
-        var that = this
+   //      var that = this
     
-        Util.getBase64(this.selected_file,function(base64){
+   //      // Util.getBase64(this.selected_file,function(base64){
 
 
-                  var result = {}
+   //                var result = {}
 
-                result['project'] = data;
-                result['project']['books'] = [];
-                result['project']['books'][0] = Backbone.Syphon.serialize(that);
-                result['project']['books'][0]['ocrEngine'] = ocrEngine
+   //              result['project'] = data;
+   //              result['project']['books'] = [];
+   //              result['project']['books'][0] = Backbone.Syphon.serialize(that);
 
-
-                result['content'] = base64;
-
-                that.trigger("project:submit_clicked", result);
+   //             that.trigger("project:submit_clicked", this);
 
 
-        });
+   //      // });
 
-      }
+   //    }
 
-   },
+   // },
 
   
  

@@ -241,7 +241,6 @@ onAttach: function(){
 
    		  },
    		  hide: function(){
-   		  	console.log("xxx")
    		  	$("#"+this.id).css('display','none');
    		  }
 	

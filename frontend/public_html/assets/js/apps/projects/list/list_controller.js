@@ -47,23 +47,30 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
           projectsListPanel.on("list:create_clicked",function(){
 
 
-             var projectsListAddProject = new List.ProjectForm({model: new ProjectEntitites.Project, asModal:true,text:"Create a new OCR Project",loading_text:"Upload in progress"});
+             var projectsListAddProject = new List.ProjectForm({model: new ProjectEntitites.Project, asModal:true,text:"Create a new project",loading_text:"Upload in progress"});
 
 
-           projectsListAddProject.on("project:submit_clicked",function(data){
-           var postingProject = ProjectEntitites.API.createProject(data);
+           projectsListAddProject.on("project:submit_clicked",function(data,formdata){
+           var uploadingProjectData = ProjectEntitites.API.uploadProjectData(formdata);
 
 
-                 $.when(postingProject).done(function(result){
-                  $('.loading_background').fadeOut();
+                 $.when(uploadingProjectData).done(function(result){
+
+                  var creatingProject = ProjectEntitites.API.createProject(data);
+                 $.when(uploadingProjectData).done(function(result){
+                  console.log(result);
+
+                    $('.loading_background').fadeOut();
 
                    $('#projects-modal').modal('toggle');
-                   console.log(result)
-                   App.trigger("projects:show",result.projectId)
+                   // App.trigger("projects:show",result.projectId)
 
                    projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
                    $('#selected_file').text("");
                    // projectsListAddProject.render()
+                  
+                 });
+                
 
                 })
 

@@ -12,11 +12,11 @@ Entities.Project = Backbone.Model.extend({
   author:null,
   books:null,
   language:null,
-  profilerUrl:null,
+  profilerUrl:"default",
   projectId:null,
   title:"",
   user:"",
-  year:""
+  year:"2018"
   
      }
   });
@@ -69,17 +69,15 @@ getProject: function(id){
   
 },
 
-createProject: function(data){
+uploadProjectData: function(data){
     var defer = jQuery.Deferred();
-       $.ajax({
-        headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-         },
-        url: "api/projects/create",
+      $.ajax({
+        url: "api/upload.php",
         type: "POST",
-        data:JSON.stringify(data),
-        dataType: "json",
+        data: new FormData(data),
+        cache:false,
+        processData:false,
+        contentType: false,
         success: function(data) {
 
               defer.resolve(data);
@@ -91,6 +89,28 @@ createProject: function(data){
 
     return defer.promise();
   },
+
+  createProject: function(data){
+    data['backend_route'] = "create_project";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+
 
 updateProject: function(id,data){
     var defer = jQuery.Deferred();
