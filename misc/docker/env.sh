@@ -8,12 +8,12 @@
 #PCW_BASE_DIR
 
 # Settings for the mysql user
-MYSQL_ROOT_PASSWORD=
-MYSQL_USER=root
-MYSQL_PASSWORD=
+MYSQL_ROOT_PASSWORD=example
+MYSQL_USER=pocoweb
+MYSQL_PASSWORD=pocoweb1998
 MYSQL_DATABASE=pocoweb
 # Misc settings
-PCW_DB_HOST=host.docker.internal
+PCW_DB_HOST=db
 PCW_POCOWEB_HOST=http://pocoweb:8080
 PCW_PCWAUTH_HOST=:8081
 # Settings for the root user of pocoweb
