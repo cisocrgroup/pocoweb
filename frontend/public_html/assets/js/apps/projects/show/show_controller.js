@@ -15,12 +15,12 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
               App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
-   			  var fetchingproject = ProjectEntitites.API.getProject(id);
-
+   			  var fetchingproject = ProjectEntitites.API.getProject({pid:id, page:"first"});
 
         	 $.when(fetchingproject).done(function(project){
 
 			loadingCircleView.destroy();
+            console.log(project)
 
 		 	//currentProposal.set({"url_id":id}); // pass url_id to view..
 			var projectShowLayout = new Show.Layout();
@@ -32,16 +32,15 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 			projectShowLayout.on("attach",function(){
 			  
 
-			  projectShowHeader = new Show.Header({title:"OCR Project: "+project.get('title')});
+			  projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
 			  projectShowInfo = new Show.Info({model:project});
       		  projectShowFooterPanel = new Show.FooterPanel();
-      		  console.log(project)
 
 			  projectShowInfo.on("show:edit_clicked",function(methods){
 
 
 			   var projectsShowEditProject = new Show.ProjectForm({model:project
-          , asModal:true,text:"Edit OCR Project",edit_project:true,loading_text:"Update in progress"});
+          , asModal:true,text:"Edit Project",edit_project:true,loading_text:"Update in progress"});
 
 
            projectsShowEditProject.on("project:update_clicked",function(data){
@@ -69,7 +68,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
             projectShowInfo.on("show:delete_clicked",function(methods){
 
-			   var projectsShowDeleteProject = new Show.DeleteProjectForm({asModal:true,text:"Remove this Project?",title:"Delete OCR Project"});
+			   var projectsShowDeleteProject = new Show.DeleteProjectForm({asModal:true,text:"Remove this Project?",title:"Delete Project"});
 
 
         	   projectsShowDeleteProject.on("project:delete_clicked",function(){

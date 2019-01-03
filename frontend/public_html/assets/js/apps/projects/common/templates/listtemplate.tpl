@@ -1,4 +1,4 @@
- <div class="container" style="padding-bottom:50px;">
+<div class="container" style="padding-bottom:50px;">
  <div class="row">
  <div class="col col-lg-12" >
 
@@ -35,7 +35,11 @@
 
           <% column = columns[i]; %>
           <% if (column.name == "action") {  %>
-          <td><button type="button" class="close btn js-delete-user" id="<%-item[columns[0]['id']]%>"> <span aria-hidden="true"><i class="far fa-times-circle"></i></span></button></td>      
+          <td>
+            <div class="btn-group" role="group">
+            <button type="button" class="close btn js-delete-user" id="<%-item[columns[0]['id']]%>"> <span aria-hidden="true"><i class="fas fa-folder-open"></i></span></button>
+          </div>
+          </td>      
           <% } else { %>
           <td> <%- item[column.name] %> </td>      
           <% } %>

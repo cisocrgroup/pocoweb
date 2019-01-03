@@ -64,7 +64,7 @@ if(asModal) {
 
 
 <label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">
- <i class="fa fa-file-archive-o" aria-hidden="true"></i> Upload data (.zip)
+ <i class="fas fa-file-upload"></i> Upload data (.zip)
 </label>
 <input id="file-upload" type="file" name="archive" style="display:none">
 

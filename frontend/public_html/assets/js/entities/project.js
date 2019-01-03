@@ -47,14 +47,16 @@ Entities.API = {
   },
 
 
-getProject: function(id){
+getProject: function(data){
+    data['backend_route'] = "get_project";
   var defer = jQuery.Deferred();
       $.ajax({
       
-      url: "/api/projects/"+id,
-      type: "GET",
-      dataType:"json",
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
       success: function(data) {
+        console.log(data)
         var result = new Entities.Project(data)
         defer.resolve(result);
 
@@ -83,7 +85,7 @@ uploadProjectData: function(data){
               defer.resolve(data);
             },
             error: function(data){
-              defer.resolve(undefined);
+              defer.reject(data);
             }
     });
 

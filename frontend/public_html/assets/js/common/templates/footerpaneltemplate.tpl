@@ -3,7 +3,7 @@
 	 <div class="row">
 
 	<div class="col col-md-12">
-	<button class="btn back_btn js-back red-border hover"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>
+	<button class="btn back_btn js-back btn-primary hover"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>
 
 
 	</div>

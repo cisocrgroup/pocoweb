@@ -23814,7 +23814,6 @@ __p+='  \n        <th>'+
 __p+='         \n      </tr>\n     </thead>\n     <tbody>\n\n\n     ';
 
      var count = 0; 
-     console.log(items);
      _.each(items, function(item) {
      
       
@@ -24111,7 +24110,7 @@ return __p;
 define("tpl!common/templates/footerpaneltemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="container">\n\n	 <div class="row">\n\n	<div class="col col-md-12">\n	<button class="btn back_btn js-back red-border hover"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\n\n\n	</div>\n	</div>\n\n</div>';
+__p+='<div class="container">\n\n	 <div class="row">\n\n	<div class="col col-md-12">\n	<button class="btn back_btn js-back btn-primary hover"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\n\n\n	</div>\n	</div>\n\n</div>';
 }
 return __p;
 };});
@@ -25826,7 +25825,29 @@ Entities.API = {
     });
 
     return defer.promise();
+  },
+    getLanguages: function(){
+    var data = {};
+    data['backend_route'] = "languages";
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
   }
+
+
 
 
 
@@ -26317,7 +26338,7 @@ __p+='\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="t
  } 
 __p+='\n\n';
  if(!edit_project) { 
-__p+='\n\n\n<label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">\n <i class="fa fa-file-archive-o" aria-hidden="true"></i> Upload data (.zip)\n</label>\n<input id="file-upload" type="file" name="archive" style="display:none">\n\n<div id="selected_file"></div>\n <button class="btn no_bg_btn hover js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>\n\n\n';
+__p+='\n\n\n<label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">\n <i class="fas fa-file-upload"></i> Upload data (.zip)\n</label>\n<input id="file-upload" type="file" name="archive" style="display:none">\n\n<div id="selected_file"></div>\n <button class="btn no_bg_btn hover js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>\n\n\n';
  } 
 __p+='\n\n</form>\n\n\n\n';
 
@@ -26330,6 +26351,59 @@ __p+='\n';
 return __p;
 };});
 
+
+define("tpl!apps/projects/common/templates/listtemplate.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<div class="container" style="padding-bottom:50px;">\r\n <div class="row">\r\n <div class="col col-lg-12" >\r\n\r\n\r\n <table class="table table-bordered ';
+ if(hover){
+__p+='table-hover';
+}
+__p+='" \r\n id="table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\r\n\r\n\r\n     <thead>\r\n      <tr>\r\n      ';
+ _.each(headers, function(header) { 
+__p+='  \r\n        <th>'+
+((__t=(header.name))==null?'':_.escape(__t))+
+'</th>\r\n       ';
+ }); 
+__p+='         \r\n      </tr>\r\n     </thead>\r\n     <tbody>\r\n\r\n\r\n     ';
+
+     var count = 0; 
+     _.each(items, function(item) {
+     
+      
+__p+='\r\n\r\n      ';
+ if(columns[0]['clickrow']) { 
+__p+='\r\n\r\n       <tr class=\'clickable-row\' data-href="#'+
+((__t=(urlroot))==null?'':_.escape(__t))+
+'/'+
+((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
+'">\r\n       \r\n       ';
+ } else { 
+__p+='\r\n       <tr>\r\n       ';
+ } 
+__p+='\r\n\r\n        ';
+ for(var i=0;i<columns.length;i++){ 
+__p+='  \r\n\r\n          ';
+ column = columns[i]; 
+__p+='\r\n          ';
+ if (column.name == "action") {  
+__p+='\r\n          <td>\r\n            <div class="btn-group" role="group">\r\n            <button type="button" class="close btn js-delete-user" id="'+
+((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
+'"> <span aria-hidden="true"><i class="fas fa-folder-open"></i></span></button>\r\n          </div>\r\n          </td>      \r\n          ';
+ } else { 
+__p+='\r\n          <td> '+
+((__t=( item[column.name] ))==null?'':_.escape(__t))+
+' </td>      \r\n          ';
+ } 
+__p+='\r\n        ';
+ } 
+__p+='  \r\n       \r\n     \r\n      </tr>\r\n\r\n    ';
+ count++;  }); 
+__p+='\r\n\r\n     </tbody>\r\n    </table>\r\n\r\n\r\n    </div>\r\n    </div>\r\n    </div>';
+}
+return __p;
+};});
+
 // ==============================
 // apps/projects/common/views.js
 // ==============================
@@ -26337,8 +26411,9 @@ return __p;
 define('apps/projects/common/views',["app","marionette","backbone.syphon",
         "common/util","common/views"
         ,"tpl!apps/projects/common/templates/projectform.tpl"
+        ,"tpl!apps/projects/common/templates/listtemplate.tpl"
 
-        	], function(IPS_App,Marionette,Syphon,Util,CommonViews,projectTpl){
+        	], function(IPS_App,Marionette,Syphon,Util,CommonViews,projectTpl,listTpl){
 
 
 var Views = {};
@@ -26347,26 +26422,28 @@ var Views = {};
 
 
  Views.ProjectsList = CommonViews.Icon_DataTable.extend({
+   template: listTpl,
    initialize: function(){
         this.urlroot="projects",
-        this.border_color="red",
         this.datatable_options={stateSave:true},
         this.headers = [
           {name: "Title"},
           {name: "Author"},
-          {name: "Language"},
           {name: "Year"},
+          {name: "Language"},
           {name: "Pages"},
+          {name: "Book"},
 
 
         ]
 
         this.columns = [
-        {name:"title",id:"projectId"},
-        {name:"author",id:"projectId"},
-        {name:"language",id:"projectId"},
-        {name:"year",id:"projectId"},
-        {name:"pages",id:"projectId"},
+        {name:"title",id:"projectId",clickrow :true},
+        {name:"author",id:"projectId",clickrow :true},
+        {name:"year",id:"projectId",clickrow :true},
+        {name:"language",id:"projectId",clickrow :true},
+        {name:"pages",id:"projectId",clickrow :true},
+        {name:"book",id:"projectId",clickrow :true},
 
 
         ]
@@ -26747,14 +26824,16 @@ Entities.API = {
   },
 
 
-getProject: function(id){
+getProject: function(data){
+    data['backend_route'] = "get_project";
   var defer = jQuery.Deferred();
       $.ajax({
       
-      url: "/api/projects/"+id,
-      type: "GET",
-      dataType:"json",
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
       success: function(data) {
+        console.log(data)
         var result = new Entities.Project(data)
         defer.resolve(result);
 
@@ -26783,7 +26862,7 @@ uploadProjectData: function(data){
               defer.resolve(data);
             },
             error: function(data){
-              defer.resolve(undefined);
+              defer.reject(data);
             }
     });
 
@@ -26907,12 +26986,12 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
               App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
-   			  var fetchingproject = ProjectEntitites.API.getProject(id);
-
+   			  var fetchingproject = ProjectEntitites.API.getProject({pid:id, page:"first"});
 
         	 $.when(fetchingproject).done(function(project){
 
 			loadingCircleView.destroy();
+            console.log(project)
 
 		 	//currentProposal.set({"url_id":id}); // pass url_id to view..
 			var projectShowLayout = new Show.Layout();
@@ -26924,16 +27003,15 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 			projectShowLayout.on("attach",function(){
 			  
 
-			  projectShowHeader = new Show.Header({title:"OCR Project: "+project.get('title')});
+			  projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
 			  projectShowInfo = new Show.Info({model:project});
       		  projectShowFooterPanel = new Show.FooterPanel();
-      		  console.log(project)
 
 			  projectShowInfo.on("show:edit_clicked",function(methods){
 
 
 			   var projectsShowEditProject = new Show.ProjectForm({model:project
-          , asModal:true,text:"Edit OCR Project",edit_project:true,loading_text:"Update in progress"});
+          , asModal:true,text:"Edit Project",edit_project:true,loading_text:"Update in progress"});
 
 
            projectsShowEditProject.on("project:update_clicked",function(data){
@@ -26961,7 +27039,7 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 
             projectShowInfo.on("show:delete_clicked",function(methods){
 
-			   var projectsShowDeleteProject = new Show.DeleteProjectForm({asModal:true,text:"Remove this Project?",title:"Delete OCR Project"});
+			   var projectsShowDeleteProject = new Show.DeleteProjectForm({asModal:true,text:"Remove this Project?",title:"Delete Project"});
 
 
         	   projectsShowDeleteProject.on("project:delete_clicked",function(){
@@ -27081,7 +27159,7 @@ return __p;
 define("tpl!apps/projects/list/templates/listpanel.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="container">\n<div class="row">\n<div class="col-lg-12">\n\n\n<button type="submit" class="btn js-create" style="margin-bottom:15px"> <i class="fa fa-plus" aria-hidden="true"></i> Create new project</button>\n\n</div>\n</div>\n</div>';
+__p+='<div class="container">\n<div class="row">\n<div class="col-lg-12">\n\n\n<button type="submit" class="btn btn btn-primary js-create" style="margin-bottom:15px"> <i class="fa fa-plus" aria-hidden="true"></i> Create new project</button>\n\n</div>\n</div>\n</div>';
 }
 return __p;
 };});
@@ -27155,18 +27233,21 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
  	listProjects: function(){
 
-     		require(["entities/project"], function(ProjectEntitites){
+     		require(["entities/project","entities/util"], function(ProjectEntitites,UtilEntitites){
 
           // var loadingCircleView = new  Views.LoadingBackdrop();
           // App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
 
      var fetchingprojects = ProjectEntitites.API.getProjects();
+     var fetchinglanguages = UtilEntitites.API.getLanguages();
 
 		 var projectsListLayout = new List.Layout();
 
-    	 $.when(fetchingprojects).done(function(projects){
+    	 $.when(fetchingprojects,fetchinglanguages).done(function(projects,languages){
         console.log(projects);
+        console.log(languages);
+
 		   // loadingCircleView.destroy();
 
 
@@ -27174,7 +27255,7 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
 
       var projectsListHeader = new List.Header();
-			var projectsListView = new List.ProjectsList({collection: projects.projects,hover:true});
+			var projectsListView = new List.ProjectsList({collection: projects.books,hover:true});
       var projectsListPanel = new List.Panel();
       var projectsListFooterPanel = new List.FooterPanel();
 
@@ -27184,7 +27265,6 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
           projectsListLayout.showChildView('panelRegion',projectsListPanel);
           projectsListLayout.showChildView('infoRegion',projectsListView);
           projectsListLayout.showChildView('footerRegion',projectsListFooterPanel);
-
 
 
           $(window).scrollTop(0);
@@ -27202,8 +27282,6 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
                  $.when(uploadingProjectData).done(function(result){
 
-                  var creatingProject = ProjectEntitites.API.createProject(data);
-                 $.when(uploadingProjectData).done(function(result){
                   console.log(result);
 
                     $('.loading_background').fadeOut();
@@ -27215,10 +27293,13 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
                    $('#selected_file').text("");
                    // projectsListAddProject.render()
                   
-                 });
                 
 
-                })
+                }).fail(function(response){
+                   $('#projects-modal').modal('hide');
+                   App.mainmsg.updateContent(response.responseText,'danger');                       
+                                    
+          }); // $when fetchingprojects
 
 
           });
@@ -27228,6 +27309,7 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
           })
 
          
+
 
 
 
@@ -28122,7 +28204,7 @@ return __p;
 define("tpl!apps/users/list/templates/panel.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+=' <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button style="margin-bottom: 25px;margin-top: 25px;" type="button" class="btn js-create"><i class="fas fa-user-plus"></i> Create new user</button>                     \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
+__p+=' <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button style="margin-bottom: 25px;margin-top: 25px;" type="button" class="btn btn-primary js-create"><i class="fas fa-user-plus"></i> Create new user</button>                     \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
 }
 return __p;
 };});
@@ -28361,7 +28443,7 @@ return __p;
 define("tpl!apps/users/show/templates/panel.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='    <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button type="button" class="btn js-update"><i class="fas fa-user-edit"></i> Update account settings</button>\r\n  <button type="button" class="btn js-delete"><i class="fas fa-user-times"></i> Delete this account</button>\r\n\r\n  <h3  style="margin-bottom: 25px;margin-top: 25px;"> Personal Information </h3>\r\n                                \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
+__p+='    <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button type="button" class="btn btn-primary js-update"><i class="fas fa-user-edit"></i> Update account settings</button>\r\n  <button type="button" class="btn btn-primary js-delete"><i class="fas fa-user-times"></i> Delete this account</button>\r\n\r\n  <h3  style="margin-bottom: 25px;margin-top: 25px;"> Personal Information </h3>\r\n                                \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
 }
 return __p;
 };});

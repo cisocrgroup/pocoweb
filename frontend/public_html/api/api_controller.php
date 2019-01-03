@@ -24,7 +24,9 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'login_check' : login_check();break;
         case 'logout' : logout();break;
         case 'api_version' : get_api_version();break;
+        case 'languages' : get_languages();break;
         case 'get_projects' : get_projects();break;
+        case 'get_project' : get_project();break;
         case 'create_project' : create_project();break;
         case 'get_users' : get_users();break;
         case 'get_user' : get_user();break;
@@ -35,44 +37,81 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
     }
 }
 
-function create_project(){
-  echo "string";
-  print_r($_FILES);
-  //print_r($_POST);
-    global $config;
-  $post = $_POST;
- // $file = $_FILES["archive"];
+function get_languages(){
+
+  $api = new Api(backend_get_languages_route("local"));
+  $api->set_session_id(backend_get_session_cookie());
+  $api->get_request();
+  $status = $api->get_http_status_code();
+
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        header("status: ".$status);
+        echo json_encode($session); 
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Please login.</a>';
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+}
 
 
+function get_project(){
+}
 
-  //   error_log("uploading file size=$file[size] type=$file[type] tmp_name=$file[tmp_name]");
-  // if ($file["error"] != UPLOAD_ERR_OK) {
-  //       $info = backend_get_upload_error_info($file["error"]);
-  //   frontend_render_error_div("Could not upload archive: error: $info");
-  //   return;
-  // }
-  // if ($file["size"] > $config["frontend"]["upload"]["max_size"]) {
-  //   frontend_render_error_div("Could not upload archive: file too big");
-  //   return;
-  // }
-  // if ($file["type"] != "application/zip") {
-  //   frontend_render_error_div("Could not upload archive: not a zip file");
-  //   return;
-  // }
-  // if (!file_exists($file["tmp_name"])) {
-  //   frontend_render_error_div("Could not upload archive: upload file does not exist");
-  // }
-  // if (!chmod($file["tmp_name"], 0755)) {
-  //   frontend_render_error_div("Could not upload archive: could publish upload file");
-  // }
-  // $api = backend_upload_project($post, $file["name"], $file["tmp_name"]);
-  // $status = $api->get_http_status_code();
-  // if ($status != 201 || $status != 200) { # accept 200 OK and 201 Created
-  //   frontend_render_error_div("Could not upload archive: backend returned " .
-  //     backend_get_http_status_info($status));
-  // } else {
-  //   frontend_render_success_div("Successfully uploaded new project");
-  // }
+function get_page(){
+
+  $pid = $_POST['pid'];
+  $p = $_POST['page'];
+  
+  $api_result;
+
+  if ($p === "first") {
+    $api = new Api(backend_get_first_page_route($pid));
+    $api->set_session_id(backend_get_session_cookie());
+    $api->get_request();
+    $api_result = $api;
+
+  } else if ($p == "last") {
+    $api = new Api(backend_get_last_page_route($pid));
+    $api->set_session_id(backend_get_session_cookie());
+    $api->get_request();
+    $api_result = $api;
+
+  } else {
+    $api = new Api(backend_get_nth_page_route($pid, $p));
+    $api->set_session_id(backend_get_session_cookie());
+    $api->get_request();
+    $api_result = $api;
+
+  }
+
+
+  $status = $api_result->get_http_status_code();
+
+  print_r($status);
+  if ($status != 200) {
+     header("status: ".$status);
+    echo("error: Could not load project #$pid, page #$p: " .backend_get_http_status_info($status));
+
+  } else {
+    $page = $api_result->get_response();
+    print_r($page);
+    // echo '<div id="page-view" onload=\'pcw.setErrorsDropdown(', $pid, ')\'>', "\n";
+    // frontend_render_page_header_div($page);
+    // frontend_render_page_heading_div($page);
+    // frontend_render_page_div($page);
+    // frontend_render_page_correct_all_div($page);
+    // echo '</div>', "\n";
+  }
 
 
 }

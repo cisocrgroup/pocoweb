@@ -5,8 +5,9 @@
 define(["app","marionette","backbone.syphon",
         "common/util","common/views"
         ,"tpl!apps/projects/common/templates/projectform.tpl"
+        ,"tpl!apps/projects/common/templates/listtemplate.tpl"
 
-        	], function(IPS_App,Marionette,Syphon,Util,CommonViews,projectTpl){
+        	], function(IPS_App,Marionette,Syphon,Util,CommonViews,projectTpl,listTpl){
 
 
 var Views = {};
@@ -15,26 +16,28 @@ var Views = {};
 
 
  Views.ProjectsList = CommonViews.Icon_DataTable.extend({
+   template: listTpl,
    initialize: function(){
         this.urlroot="projects",
-        this.border_color="red",
         this.datatable_options={stateSave:true},
         this.headers = [
           {name: "Title"},
           {name: "Author"},
-          {name: "Language"},
           {name: "Year"},
+          {name: "Language"},
           {name: "Pages"},
+          {name: "Book"},
 
 
         ]
 
         this.columns = [
-        {name:"title",id:"projectId"},
-        {name:"author",id:"projectId"},
-        {name:"language",id:"projectId"},
-        {name:"year",id:"projectId"},
-        {name:"pages",id:"projectId"},
+        {name:"title",id:"projectId",clickrow :true},
+        {name:"author",id:"projectId",clickrow :true},
+        {name:"year",id:"projectId",clickrow :true},
+        {name:"language",id:"projectId",clickrow :true},
+        {name:"pages",id:"projectId",clickrow :true},
+        {name:"book",id:"projectId",clickrow :true},
 
 
         ]

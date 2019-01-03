@@ -9,18 +9,21 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
  	listProjects: function(){
 
-     		require(["entities/project"], function(ProjectEntitites){
+     		require(["entities/project","entities/util"], function(ProjectEntitites,UtilEntitites){
 
           // var loadingCircleView = new  Views.LoadingBackdrop();
           // App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
 
      var fetchingprojects = ProjectEntitites.API.getProjects();
+     var fetchinglanguages = UtilEntitites.API.getLanguages();
 
 		 var projectsListLayout = new List.Layout();
 
-    	 $.when(fetchingprojects).done(function(projects){
+    	 $.when(fetchingprojects,fetchinglanguages).done(function(projects,languages){
         console.log(projects);
+        console.log(languages);
+
 		   // loadingCircleView.destroy();
 
 
@@ -28,7 +31,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
 
       var projectsListHeader = new List.Header();
-			var projectsListView = new List.ProjectsList({collection: projects.projects,hover:true});
+			var projectsListView = new List.ProjectsList({collection: projects.books,hover:true});
       var projectsListPanel = new List.Panel();
       var projectsListFooterPanel = new List.FooterPanel();
 
@@ -38,7 +41,6 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
           projectsListLayout.showChildView('panelRegion',projectsListPanel);
           projectsListLayout.showChildView('infoRegion',projectsListView);
           projectsListLayout.showChildView('footerRegion',projectsListFooterPanel);
-
 
 
           $(window).scrollTop(0);
@@ -56,8 +58,6 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
                  $.when(uploadingProjectData).done(function(result){
 
-                  var creatingProject = ProjectEntitites.API.createProject(data);
-                 $.when(uploadingProjectData).done(function(result){
                   console.log(result);
 
                     $('.loading_background').fadeOut();
@@ -69,10 +69,13 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
                    $('#selected_file').text("");
                    // projectsListAddProject.render()
                   
-                 });
                 
 
-                })
+                }).fail(function(response){
+                   $('#projects-modal').modal('hide');
+                   App.mainmsg.updateContent(response.responseText,'danger');                       
+                                    
+          }); // $when fetchingprojects
 
 
           });
@@ -82,6 +85,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
           })
 
          
+
 
 
 
