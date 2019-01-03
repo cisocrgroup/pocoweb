@@ -1,8 +1,9 @@
-FROM ffink/profiler:latest
+FROM ffink/profiler:internal-backend
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
 ENV DATE='Sa 24. Nov 17:39:12 CET 2018'
 
-VOLUME /project-data /www-data /tmp /language-data
+VOLUME /project-data /www-data /tmp
+#/language-data
 COPY dependencies.txt /dependencies.txt
 RUN yum update -y && yum install -y $(cat /dependencies.txt)
 # RUN apt-get update && apt-get install -y $(cat /dependencies.txt)
