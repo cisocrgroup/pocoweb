@@ -1,6 +1,6 @@
 FROM fedora:latest
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
-ENV DATE='Fri Nov 23 15:48:47 CET 2018'
+ENV DATE='Thu Jan  3 20:58:29 CET 2019'
 
 ## dependencies
 COPY dependencies.txt /dependencies.txt
@@ -35,5 +35,8 @@ RUN git clone https://git@github.com/cisocrgroup/Resources.git /resources &&\
 	cp -r greek /language-data/ &&\
 	cp -r german /language-data/ &&\
 	cp -r latin /language-data/ &&\
+	cp greek.ini /language-data/ &&\
+	cp german.ini /language-data/ &&\
+	cp latin.ini /language-data/ &&\
 	cd / &&\
 	rm -rf /resources
