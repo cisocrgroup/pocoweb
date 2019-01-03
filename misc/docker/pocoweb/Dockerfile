@@ -25,4 +25,4 @@ COPY pocoweb.conf /apps/pocoweb.conf
 COPY startup.sh /apps/startup.sh
 
 EXPOSE 8080
-CMD /apps/startup.sh
+CMD sh /apps/startup.sh
