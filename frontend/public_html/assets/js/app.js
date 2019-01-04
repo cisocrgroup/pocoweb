@@ -52,11 +52,10 @@ App.on("start", function(){
                ,"apps/home/home_app"
                ,"apps/footer/footer_app"
                ,"apps/projects/projects_app"
-               ,"apps/ocrd/ocrd_app"
                ,"apps/docs/docs_app"
                ,"apps/users/users_app"
 
-        ], function (HeaderApp,HomeApp,FooterApp,ProjectsApp,OcrdApp,DocsApp,UsersApp) {
+        ], function (HeaderApp,HomeApp,FooterApp,ProjectsApp,DocsApp,UsersApp) {
 
 
     var app_region = App.getRegion();

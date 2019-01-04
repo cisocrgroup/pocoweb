@@ -336,7 +336,6 @@ onAttach: function(){
 
 	  onDomRefresh: function(){
 
-
 	  	var old_table_height = 0;
 
 	  	this.datatable_options['initComplete'] = function(){

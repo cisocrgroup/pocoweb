@@ -7,7 +7,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
  Controller = {
 
-		showProject: function(id){
+		showProject: function(id,page_id){
       		$(window).scrollTop(0);
 
      		require(["entities/project"], function(ProjectEntitites){
@@ -15,12 +15,12 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
               App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
-   			  var fetchingproject = ProjectEntitites.API.getProject({pid:id, page:"first"});
+   			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
 
-        	 $.when(fetchingproject).done(function(project){
+        	 $.when(fetchingpage).done(function(page){
 
-			loadingCircleView.destroy();
-            console.log(project)
+		     	loadingCircleView.destroy();
+            console.log(page)
 
 		 	//currentProposal.set({"url_id":id}); // pass url_id to view..
 			var projectShowLayout = new Show.Layout();
@@ -32,9 +32,25 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 			projectShowLayout.on("attach",function(){
 			  
 
-			  projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
-			  projectShowInfo = new Show.Info({model:project});
-      		  projectShowFooterPanel = new Show.FooterPanel();
+			  // projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
+        projectShowPage = new Show.Page({model:page});
+			  projectShowInfo = new Show.Info({});
+      	projectShowFooterPanel = new Show.FooterPanel();
+
+       projectShowPage.on("page:new",function(page_id){
+                    var fetchingnewpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
+                  $.when(fetchingnewpage).done(function(new_page){
+                      projectShowPage.model=new_page
+                        projectShowPage.render();    
+                     App.navigate("projects/"+id+"/page/"+page_id);
+         
+                  }).fail(function(response){
+                     App.mainmsg.updateContent(response.responseText,'danger');
+                    });  // $when fetchingproject
+          
+       })
+
+
 
 			  projectShowInfo.on("show:edit_clicked",function(methods){
 
@@ -136,8 +152,8 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
   			// projectPanel = new Show.FooterPanel();
 
 
-	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
-	          projectShowLayout.showChildView('infoRegion',projectShowInfo);
+	          // projectShowLayout.showChildView('headerRegion',projectShowHeader);
+	          projectShowLayout.showChildView('infoRegion',projectShowPage);
 	          projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
 
 
@@ -146,21 +162,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
           App.mainLayout.showChildView('mainRegion',projectShowLayout);
 
           }).fail(function(response){
-
-
- 			     // loadingCircleView.destroy();
-				  // var errortext = Util.getErrorText(response);
-      //             var errorView = new List.Error({model: currentUser,errortext:errortext})
-
-      //             errorView.on("currentProject:loggedIn",function(){
-					 //        IPS_App.projectsApp.List.Controller.listprojects();
-      //             });
-
-      //             IPS_App.mainLayout.showChildView('mainRegion',errorView);
-
-
-
-
+                App.mainmsg.updateContent(response.responseText,'danger');
           });  // $when fetchingproject
 
 

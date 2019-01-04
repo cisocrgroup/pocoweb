@@ -19,7 +19,7 @@ if(asModal) {
 <div class="modal-body">
 
 <div class="loading_background" style="display: none;">
-         <i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>
+         <i class="fas fa-sync fa-spin fa-3x fa-fw"></i>
          <div class="loading_text_parent">
            <div class="loading_text"> <%-loading_text%> </div>
          </div>
@@ -69,7 +69,7 @@ if(asModal) {
 <input id="file-upload" type="file" name="archive" style="display:none">
 
 <div id="selected_file"></div>
- <button class="btn no_bg_btn hover js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>
+ <button class="btn btn-primary js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>
 
 
 <% } %>

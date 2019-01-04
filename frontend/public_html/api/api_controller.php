@@ -27,6 +27,7 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'languages' : get_languages();break;
         case 'get_projects' : get_projects();break;
         case 'get_project' : get_project();break;
+        case 'get_page' : get_page();break;
         case 'create_project' : create_project();break;
         case 'get_users' : get_users();break;
         case 'get_user' : get_user();break;
@@ -97,14 +98,17 @@ function get_page(){
 
   $status = $api_result->get_http_status_code();
 
-  print_r($status);
   if ($status != 200) {
      header("status: ".$status);
     echo("error: Could not load project #$pid, page #$p: " .backend_get_http_status_info($status));
 
   } else {
     $page = $api_result->get_response();
-    print_r($page);
+    echo json_encode($page);
+
+
+
+
     // echo '<div id="page-view" onload=\'pcw.setErrorsDropdown(', $pid, ')\'>', "\n";
     // frontend_render_page_header_div($page);
     // frontend_render_page_heading_div($page);

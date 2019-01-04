@@ -52,6 +52,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
              var projectsListAddProject = new List.ProjectForm({model: new ProjectEntitites.Project, asModal:true,text:"Create a new project",loading_text:"Upload in progress"});
 
 
+
            projectsListAddProject.on("project:submit_clicked",function(data,formdata){
            var uploadingProjectData = ProjectEntitites.API.uploadProjectData(formdata);
 
@@ -59,15 +60,23 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
                  $.when(uploadingProjectData).done(function(result){
 
                   console.log(result);
+                            $('.loading_background').fadeOut();
+                           $('#projects-modal').modal('toggle');
+                          $('#selected_file').text("");
 
-                    $('.loading_background').fadeOut();
+                          App.mainmsg.updateContent(result,'success');
 
-                   $('#projects-modal').modal('toggle');
-                   // App.trigger("projects:show",result.projectId)
+                      var fetchingnewprojects = ProjectEntitites.API.getProjects();
 
-                   projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
-                   $('#selected_file').text("");
-                   // projectsListAddProject.render()
+
+                       $.when(fetchingnewprojects).done(function(new_projects){
+                          projectsListView.options.collection=new_projects.books;
+                          projectsListView.render();
+                           projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
+                          
+
+                       });
+
                   
                 
 

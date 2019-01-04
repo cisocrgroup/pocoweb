@@ -25,7 +25,7 @@
 
       <% if(columns[0]['clickrow']) { %>
 
-       <tr class='clickable-row' data-href="#<%-urlroot%>/<%-item[columns[0]['id']]%>">
+       <tr class='clickable-row' data-href="#<%-urlroot%>/<%-item[columns[0]['id']]%>/page/first">
        
        <% } else { %>
        <tr>

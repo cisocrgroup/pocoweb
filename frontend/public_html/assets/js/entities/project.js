@@ -6,6 +6,20 @@ define(["app"], function(IPS_App){
 
   var Entities={};
 
+Entities.Page = Backbone.Model.extend({
+     defaults:{
+  bookId:null,
+  box:null,
+  imgFile:null,
+  lines:[],
+  nextPageId:0,
+  ocrFile:"",
+  prevPageId:0,
+  projectId:""
+  
+     }
+  });
+
 Entities.Project = Backbone.Model.extend({
      urlRoot: "projects",
      defaults:{
@@ -20,7 +34,6 @@ Entities.Project = Backbone.Model.extend({
   
      }
   });
-
 
 Entities.API = {
 
@@ -46,7 +59,28 @@ Entities.API = {
     return defer.promise();
   },
 
+getPage: function(data){
+    data['backend_route'] = "get_page";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        var result = JSON.parse(data)
+        defer.resolve( new Entities.Page(result));
 
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
 getProject: function(data){
     data['backend_route'] = "get_project";
   var defer = jQuery.Deferred();
@@ -114,28 +148,6 @@ uploadProjectData: function(data){
   },
 
 
-updateProject: function(id,data){
-    var defer = jQuery.Deferred();
-       $.ajax({
-        headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-         },
-        url: "api/projects/"+id+"/update",
-        type: "PUT",
-        data:JSON.stringify(data),
-        dataType: "json",
-        success: function(data) {
-
-              defer.resolve(data);
-            },
-            error: function(data){
-              defer.resolve(undefined);
-            }
-    });
-
-    return defer.promise();
-  },
 
 deleteProject: function(id){
     var defer = jQuery.Deferred();
