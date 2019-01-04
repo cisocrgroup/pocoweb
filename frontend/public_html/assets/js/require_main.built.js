@@ -26598,7 +26598,11 @@ return Views;
 define("tpl!apps/page/show/templates/page.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n	<ul class="nav sticky-top navbar-light bg-light">\r\n	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\r\n		<i class="fas fa-fast-backward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-stepback"><a class="nav-link" href="page.php?u=none&p=\', $prevpageid, \'&pid=\', $pid,\'" title="got to previous page #\', $prevpageid, \'">\r\n		<i class="fas fa-step-backward"></i>\r\n		</a></li>\r\n	<li class="nav-item"> <a class="nav-link" href="#">\r\n		<label id="concordance-search-label">Show concordance of (0 occurences)</label>\r\n		</a></li>\r\n	<!-- suggestions -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Correction suggestions<span class="caret"></span></a>\r\n        <ul id="pcw-suggestions-dropdown" class="dropdown-menu">\r\n        </ul>\r\n        </li>\r\n	<!--error-patterns -->\r\n	<li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Error patterns<span class="caret"></span></a>\r\n        <ul id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu">\r\n        </ul>\r\n        </li>\r\n	<!-- error-tokens -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Error tokens<span class="caret"></span></a>\r\n        <ul id="pcw-error-tokens-dropdown" class="dropdown-menu scrollable-menu">\r\n        </ul>\r\n        </li>\r\n	<!--nextpage and last page -->\r\n	<li class="nav-item js-stepforward"><a class="nav-link" href="page.php?u=none&p=\', $nextpageid, \'&pid=\', $pid,\'" title="got to next page #\', $nextpageid, \'">\r\n		<i class="fas fa-step-forward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-lastpage"><a class="nav-link" href="page.php?u=none&p=last&pid=\', $pid,\'" title="got to last page">\r\n		<i class="fas fa-fast-forward"></i>\r\n		</a></li>\r\n	</ul>\r\n\r\n	<div id="page-heading">\r\n	<p><h2>Project '+
+__p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n	<ul class="nav sticky-top navbar-light bg-light">\r\n	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\r\n		<i class="fas fa-fast-backward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
+((__t=(prevPageId))==null?'':_.escape(__t))+
+'">\r\n		<i class="fas fa-step-backward"></i>\r\n		</a></li>\r\n	<li class="nav-item"> <a class="nav-link" href="#">\r\n		<label id="concordance-search-label">Show concordance of (0 occurences)</label>\r\n		</a></li>\r\n	<!-- suggestions -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Correction suggestions<span class="caret"></span></a>\r\n        <ul id="pcw-suggestions-dropdown" class="dropdown-menu">\r\n        </ul>\r\n        </li>\r\n	<!--error-patterns -->\r\n	<li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Error patterns<span class="caret"></span></a>\r\n        <ul id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu">\r\n        </ul>\r\n        </li>\r\n	<!-- error-tokens -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Error tokens<span class="caret"></span></a>\r\n        <ul id="pcw-error-tokens-dropdown" class="dropdown-menu scrollable-menu">\r\n        </ul>\r\n        </li>\r\n	<!--nextpage and last page -->\r\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
+((__t=(nextPageId))==null?'':_.escape(__t))+
+'">\r\n		<i class="fas fa-step-forward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="got to last page">\r\n		<i class="fas fa-fast-forward"></i>\r\n		</a></li>\r\n	</ul>\r\n\r\n	<div id="page-heading">\r\n	<p><h2>Project '+
 ((__t=(projectId))==null?'':_.escape(__t))+
 ', page '+
 ((__t=(pageId))==null?'':_.escape(__t))+
@@ -26666,21 +26670,26 @@ events:{
 
        backward_clicked:function(e){
         e.preventDefault();
-        this.trigger("page:backward");
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        console.log(data)
+        this.trigger("page:new",data.prevPageId);
       },
 
        forward_clicked:function(e){
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
-        this.trigger("page:forward");
+        this.trigger("page:new",data.nextPageId);
       },
 
        firstpage_clicked:function(e){
+         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
-        this.trigger("page:firstpage");
+        this.trigger("page:new","first");
       },
        lastpage_clicked:function(e){
+             var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
-        this.trigger("page:lastpage");
+        this.trigger("page:new","last");
       },
       line_clicked:function(e){
         e.preventDefault();
@@ -26958,11 +26967,11 @@ getPage: function(data){
        data:data,
       success: function(data) {
         var result = JSON.parse(data)
-        defer.resolve(new Entities.Page(result));
+        defer.resolve( new Entities.Page(result));
 
           },
           error: function(data){
-            defer.resolve(undefined);
+            defer.reject(data);
           }
   });
 
@@ -27132,8 +27141,15 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 			  projectShowInfo = new Show.Info({});
       	projectShowFooterPanel = new Show.FooterPanel();
 
-       projectShowPage.on("page:forward",function(){
-          console.log("xxxx")
+       projectShowPage.on("page:new",function(page_id){
+                    var fetchingnewpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
+                  $.when(fetchingnewpage).done(function(new_page){
+                      projectShowPage.model=new_page
+                        projectShowPage.render();             
+                  }).fail(function(response){
+                     App.mainmsg.updateContent(response.responseText,'danger');
+                    });  // $when fetchingproject
+          
        })
 
 
@@ -27248,21 +27264,7 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
           App.mainLayout.showChildView('mainRegion',projectShowLayout);
 
           }).fail(function(response){
-
-
- 			     // loadingCircleView.destroy();
-				  // var errortext = Util.getErrorText(response);
-      //             var errorView = new List.Error({model: currentUser,errortext:errortext})
-
-      //             errorView.on("currentProject:loggedIn",function(){
-					 //        IPS_App.projectsApp.List.Controller.listprojects();
-      //             });
-
-      //             IPS_App.mainLayout.showChildView('mainRegion',errorView);
-
-
-
-
+                App.mainmsg.updateContent(response.responseText,'danger');
           });  // $when fetchingproject
 
 

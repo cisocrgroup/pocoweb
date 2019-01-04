@@ -37,8 +37,15 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 			  projectShowInfo = new Show.Info({});
       	projectShowFooterPanel = new Show.FooterPanel();
 
-       projectShowPage.on("page:forward",function(){
-          console.log("xxxx")
+       projectShowPage.on("page:new",function(page_id){
+                    var fetchingnewpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
+                  $.when(fetchingnewpage).done(function(new_page){
+                      projectShowPage.model=new_page
+                        projectShowPage.render();             
+                  }).fail(function(response){
+                     App.mainmsg.updateContent(response.responseText,'danger');
+                    });  // $when fetchingproject
+          
        })
 
 
@@ -153,21 +160,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
           App.mainLayout.showChildView('mainRegion',projectShowLayout);
 
           }).fail(function(response){
-
-
- 			     // loadingCircleView.destroy();
-				  // var errortext = Util.getErrorText(response);
-      //             var errorView = new List.Error({model: currentUser,errortext:errortext})
-
-      //             errorView.on("currentProject:loggedIn",function(){
-					 //        IPS_App.projectsApp.List.Controller.listprojects();
-      //             });
-
-      //             IPS_App.mainLayout.showChildView('mainRegion',errorView);
-
-
-
-
+                App.mainmsg.updateContent(response.responseText,'danger');
           });  // $when fetchingproject
 
 

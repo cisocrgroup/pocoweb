@@ -69,11 +69,11 @@ getPage: function(data){
        data:data,
       success: function(data) {
         var result = JSON.parse(data)
-        defer.resolve(new Entities.Page(result));
+        defer.resolve( new Entities.Page(result));
 
           },
           error: function(data){
-            defer.resolve(undefined);
+            defer.reject(data);
           }
   });
 

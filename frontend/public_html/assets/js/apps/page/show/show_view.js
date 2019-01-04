@@ -30,21 +30,26 @@ events:{
 
        backward_clicked:function(e){
         e.preventDefault();
-        this.trigger("page:backward");
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        console.log(data)
+        this.trigger("page:new",data.prevPageId);
       },
 
        forward_clicked:function(e){
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
-        this.trigger("page:forward");
+        this.trigger("page:new",data.nextPageId);
       },
 
        firstpage_clicked:function(e){
+         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
-        this.trigger("page:firstpage");
+        this.trigger("page:new","first");
       },
        lastpage_clicked:function(e){
+             var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
-        this.trigger("page:lastpage");
+        this.trigger("page:new","last");
       },
       line_clicked:function(e){
         e.preventDefault();

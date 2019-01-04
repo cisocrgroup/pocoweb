@@ -5,7 +5,7 @@
 	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">
 		<i class="fas fa-fast-backward"></i>
 		</a></li>
-	<li class="nav-item js-stepback"><a class="nav-link" href="page.php?u=none&p=', $prevpageid, '&pid=', $pid,'" title="got to previous page #', $prevpageid, '">
+	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #<%-prevPageId%>">
 		<i class="fas fa-step-backward"></i>
 		</a></li>
 	<li class="nav-item"> <a class="nav-link" href="#">
@@ -33,10 +33,10 @@
         </ul>
         </li>
 	<!--nextpage and last page -->
-	<li class="nav-item js-stepforward"><a class="nav-link" href="page.php?u=none&p=', $nextpageid, '&pid=', $pid,'" title="got to next page #', $nextpageid, '">
+	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #<%-nextPageId%>">
 		<i class="fas fa-step-forward"></i>
 		</a></li>
-	<li class="nav-item js-lastpage"><a class="nav-link" href="page.php?u=none&p=last&pid=', $pid,'" title="got to last page">
+	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="got to last page">
 		<i class="fas fa-fast-forward"></i>
 		</a></li>
 	</ul>
