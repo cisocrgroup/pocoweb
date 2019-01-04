@@ -300,7 +300,7 @@ function frontend_upload_project_archive($post, $file) {
         return;
 	}
 	if (!chmod($file["tmp_name"], 0755)) {
-		frontend_render_error_div("Could not upload archive: could publish upload file");
+		frontend_render_error_div("Could not upload archive: could not publish upload file");
         return;
 	}
 	$api = backend_upload_project($post, $file["name"], $file["tmp_name"]);
