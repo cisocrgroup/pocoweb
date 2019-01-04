@@ -411,3 +411,15 @@ color: #ffc100;
 .loginname{
   color:black;
 }
+
+div.text-image-line {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 5px;
+}
+
+div.text-image-line:hover {
+  box-shadow: 10px 10px 5px lightgrey;
+  border-radius: 3px;
+  /*box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);*/
+}

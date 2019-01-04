@@ -5,6 +5,15 @@
 define({
 
 
+get_correction_class: function(obj) {
+  if (obj["isFullyCorrected"]) {
+    return " fully-corrected";
+  } else if (obj["isPartiallyCorrected"]) {
+    return " partially-corrected";
+  }
+  return "";
+},
+
  getBase64: function(file,callback) {
    var reader = new FileReader();
    reader.readAsDataURL(file);

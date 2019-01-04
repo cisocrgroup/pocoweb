@@ -15,12 +15,12 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
               App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
-   			  var fetchingproject = ProjectEntitites.API.getProject({pid:id, page:"first"});
+   			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:"first"});
 
-        	 $.when(fetchingproject).done(function(project){
+        	 $.when(fetchingpage).done(function(page){
 
-			loadingCircleView.destroy();
-            console.log(project)
+		     	loadingCircleView.destroy();
+            console.log(page)
 
 		 	//currentProposal.set({"url_id":id}); // pass url_id to view..
 			var projectShowLayout = new Show.Layout();
@@ -32,9 +32,16 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 			projectShowLayout.on("attach",function(){
 			  
 
-			  projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
-			  projectShowInfo = new Show.Info({model:project});
-      		  projectShowFooterPanel = new Show.FooterPanel();
+			  // projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
+        projectShowPage = new Show.Page({model:page});
+			  projectShowInfo = new Show.Info({});
+      	projectShowFooterPanel = new Show.FooterPanel();
+
+       projectShowPage.on("page:forward",function(){
+          console.log("xxxx")
+       })
+
+
 
 			  projectShowInfo.on("show:edit_clicked",function(methods){
 
@@ -136,8 +143,8 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
   			// projectPanel = new Show.FooterPanel();
 
 
-	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
-	          projectShowLayout.showChildView('infoRegion',projectShowInfo);
+	          // projectShowLayout.showChildView('headerRegion',projectShowHeader);
+	          projectShowLayout.showChildView('infoRegion',projectShowPage);
 	          projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
 
 
