@@ -26386,7 +26386,7 @@ __p+='\r\n\r\n       <tr class=\'clickable-row\' data-href="#'+
 ((__t=(urlroot))==null?'':_.escape(__t))+
 '/'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'">\r\n       \r\n       ';
+'/page/first">\r\n       \r\n       ';
  } else { 
 __p+='\r\n       <tr>\r\n       ';
  } 
@@ -27111,7 +27111,7 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 
  Controller = {
 
-		showProject: function(id){
+		showProject: function(id,page_id){
       		$(window).scrollTop(0);
 
      		require(["entities/project"], function(ProjectEntitites){
@@ -27119,7 +27119,7 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
               App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
-   			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:"first"});
+   			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
 
         	 $.when(fetchingpage).done(function(page){
 
@@ -27145,7 +27145,9 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
                     var fetchingnewpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
                   $.when(fetchingnewpage).done(function(new_page){
                       projectShowPage.model=new_page
-                        projectShowPage.render();             
+                        projectShowPage.render();    
+                     App.navigate("projects/"+id+"/page/"+page_id);
+         
                   }).fail(function(response){
                      App.mainmsg.updateContent(response.responseText,'danger');
                     });  // $when fetchingproject
@@ -27479,7 +27481,7 @@ define('apps/projects/projects_app',["marionette","app"], function(Marionette,Ap
 	projectsdApp.Router = Marionette.AppRouter.extend({
 		appRoutes: {
 		   "projects"    :"listProjects",
-  		   "projects/:id"    :"showProject"
+  		   "projects/:id/page/:page_id"    :"showProject"
 
 		}
 	});
@@ -27487,9 +27489,9 @@ define('apps/projects/projects_app',["marionette","app"], function(Marionette,Ap
 	var API = {
 	
 	
-		showProject: function(id){
+		showProject: function(id,page_id){
 			require(["apps/projects/show/show_controller"], function(ShowController){
-       				ShowController.showProject(id);
+       				ShowController.showProject(id,page_id);
 				});
 		},
 
@@ -27502,9 +27504,9 @@ define('apps/projects/projects_app',["marionette","app"], function(Marionette,Ap
 	};
 
 
-	App.on("projects:show",function(id){
-		App.navigate("projects/:id");
-		API.showProject(id);
+	App.on("projects:show",function(id,page_id){
+		App.navigate("projects/:id/page/:page_id");
+		API.showProject(id,page_id);
 	});
 
 

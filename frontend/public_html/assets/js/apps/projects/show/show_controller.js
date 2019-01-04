@@ -7,7 +7,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
  Controller = {
 
-		showProject: function(id){
+		showProject: function(id,page_id){
       		$(window).scrollTop(0);
 
      		require(["entities/project"], function(ProjectEntitites){
@@ -15,7 +15,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
               App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
-   			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:"first"});
+   			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
 
         	 $.when(fetchingpage).done(function(page){
 
@@ -41,7 +41,9 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                     var fetchingnewpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
                   $.when(fetchingnewpage).done(function(new_page){
                       projectShowPage.model=new_page
-                        projectShowPage.render();             
+                        projectShowPage.render();    
+                     App.navigate("projects/"+id+"/page/"+page_id);
+         
                   }).fail(function(response){
                      App.mainmsg.updateContent(response.responseText,'danger');
                     });  // $when fetchingproject
