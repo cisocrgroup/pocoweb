@@ -16,7 +16,6 @@ ini_set('max_execution_time', 300);
 ini_set('max_input_vars ', 1000000);
 
 
-
 if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
     $action = $_POST['backend_route'];
     switch($action) {
@@ -27,6 +26,7 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'languages' : get_languages();break;
         case 'get_projects' : get_projects();break;
         case 'get_project' : get_project();break;
+        case 'delete_project' : delete_project();break;
         case 'get_page' : get_page();break;
         case 'create_project' : create_project();break;
         case 'get_users' : get_users();break;
@@ -66,6 +66,34 @@ function get_languages(){
 
 
 function get_project(){
+}
+
+function delete_project(){
+
+  $pid = $_POST['pid'];
+  $api = new Api(backend_get_remove_project_route($pid));
+  $api->set_session_id(backend_get_session_cookie());
+  $api->delete_request();
+
+ $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        print_r($session); 
+        print_r($status); 
+        //echo json_encode("Successfully deleted project '"+$pid+"'"); 
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status);
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
 }
 
 function get_page(){

@@ -46,7 +46,12 @@ if(asModal) {
 <div class="form-group row">
   <div class="col-4">
     <label for="language">Language</label>
-    <input class="form-control" type="text" value="<%-language%>" id="language" name="language">
+    <select class="form-control" type="text" value="<%-language%>" id="language" name="language">
+     <%
+     _.each(languages, function(language) { %>
+        <option><%-language%></option>
+     <% }); %>
+    </select>
   </div>
  <div class="col-4">
     <label for="year">Year of publication</label>

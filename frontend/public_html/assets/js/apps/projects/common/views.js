@@ -17,6 +17,10 @@ var Views = {};
 
  Views.ProjectsList = CommonViews.Icon_DataTable.extend({
    template: listTpl,
+   events:{
+    "click .js-delete-project": "deleteProject",
+    "click .js-open-project": "openProject"
+   },
    initialize: function(){
         this.urlroot="projects",
         this.datatable_options={stateSave:true},
@@ -27,21 +31,33 @@ var Views = {};
           {name: "Language"},
           {name: "Pages"},
           {name: "Book"},
+          {name: "Action"},
 
 
         ]
 
         this.columns = [
-        {name:"title",id:"projectId",clickrow :true},
-        {name:"author",id:"projectId",clickrow :true},
-        {name:"year",id:"projectId",clickrow :true},
-        {name:"language",id:"projectId",clickrow :true},
-        {name:"pages",id:"projectId",clickrow :true},
-        {name:"book",id:"projectId",clickrow :true},
+        {name:"title",id:"projectId",clickrow :false},
+        {name:"author",id:"projectId",clickrow :false},
+        {name:"year",id:"projectId",clickrow :false},
+        {name:"language",id:"projectId",clickrow :false},
+        {name:"pages",id:"projectId",clickrow :false},
+        {name:"book",id:"projectId",clickrow :false},
+        {name:"action",id:"projectId",clickrow :false}
 
 
         ]
 
+
+        },
+        deleteProject : function(e){
+        var id = $(e.currentTarget).attr('id');
+        var parentrow = $(e.currentTarget).parent().parent();
+        this.trigger("list:delete",id,parentrow)
+        },
+        openProject : function(e){
+        var id = $(e.currentTarget).attr('id');
+        this.trigger("list:open",id)
 
         }
 
@@ -163,6 +179,7 @@ Views.ProjectForm = Marionette.View.extend({
           data.add_book = Marionette.getOption(this,"add_book");
           data.edit_project = Marionette.getOption(this,"edit_project");
           data.loading_text = Marionette.getOption(this,"loading_text");
+          data.languages = Marionette.getOption(this,"languages");
 
         return data;
 

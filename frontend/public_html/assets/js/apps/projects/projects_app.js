@@ -33,7 +33,7 @@ define(["marionette","app"], function(Marionette,App){
 
 
 	App.on("projects:show",function(id,page_id){
-		App.navigate("projects/:id/page/:page_id");
+		App.navigate("projects/"+id+"/page/"+page_id);
 		API.showProject(id,page_id);
 	});
 

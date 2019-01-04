@@ -149,22 +149,21 @@ uploadProjectData: function(data){
 
 
 
-deleteProject: function(id){
+deleteProject: function(data){
+    data['backend_route'] = "delete_project";
+    console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-        headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-         },
-        url: "api/projects/"+id+"/delete",
-        type: "DELETE",
-        dataType: "json",
+       
+        url: "api/api_controller.php",
+        type: "POST",
+        data: data,
         success: function(data) {
 
               defer.resolve(data);
             },
             error: function(data){
-              defer.resolve(undefined);
+              defer.reject(data);
             }
     });
 

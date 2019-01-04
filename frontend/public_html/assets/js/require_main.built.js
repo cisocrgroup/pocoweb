@@ -26336,9 +26336,16 @@ __p+='\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="t
 ((__t=(title))==null?'':_.escape(__t))+
 '" id="title" name="title">\n  </div>\n   <div class="col-4">\n  <label for="author">Author</label>\n    <input class="form-control" type="text" value="'+
 ((__t=(author))==null?'':_.escape(__t))+
-'" id="author" name="author">\n  </div>\n\n</div>\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="language">Language</label>\n    <input class="form-control" type="text" value="'+
+'" id="author" name="author">\n  </div>\n\n</div>\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="language">Language</label>\n    <select class="form-control" type="text" value="'+
 ((__t=(language))==null?'':_.escape(__t))+
-'" id="language" name="language">\n  </div>\n <div class="col-4">\n    <label for="year">Year of publication</label>\n    <input class="form-control" type="text" value="'+
+'" id="language" name="language">\n     ';
+
+     _.each(languages, function(language) { 
+__p+='\n        <option>'+
+((__t=(language))==null?'':_.escape(__t))+
+'</option>\n     ';
+ }); 
+__p+='\n    </select>\n  </div>\n <div class="col-4">\n    <label for="year">Year of publication</label>\n    <input class="form-control" type="text" value="'+
 ((__t=(year))==null?'':_.escape(__t))+
 '" id="year" name="year" placeholder="2018">\n  </div>\n <div class="col-4">\n    <label for="year">Profiler URL</label><small> (use default if in doubt)</small>\n    <input class="form-control" type="text" value="'+
 ((__t=(profilerUrl))==null?'':_.escape(__t))+
@@ -26395,9 +26402,15 @@ __p+='  \r\n\r\n          ';
  column = columns[i]; 
 __p+='\r\n          ';
  if (column.name == "action") {  
-__p+='\r\n          <td>\r\n            <div class="btn-group" role="group">\r\n            <button type="button" class="close btn js-delete-user" id="'+
+__p+='\r\n          <td>\r\n            <div class="btn-group" role="group">\r\n            <button title="open project #'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'"> <span aria-hidden="true"><i class="fas fa-folder-open"></i></span></button>\r\n          </div>\r\n          </td>      \r\n          ';
+'" type="button" class="btn btn-outline-dark js-open-project" id="'+
+((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
+'"> <span aria-hidden="true"><i class="fas fa-book-open"></i></span></button>\r\n             <button title="remove project #'+
+((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
+'" type="button" class="btn btn-outline-dark js-delete-project" id="'+
+((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
+'"> <span aria-hidden="true"><i class="fas fa-times"></i></span></button>\r\n          </div>\r\n          </td>      \r\n          ';
  } else { 
 __p+='\r\n          <td> '+
 ((__t=( item[column.name] ))==null?'':_.escape(__t))+
@@ -26431,6 +26444,10 @@ var Views = {};
 
  Views.ProjectsList = CommonViews.Icon_DataTable.extend({
    template: listTpl,
+   events:{
+    "click .js-delete-project": "deleteProject",
+    "click .js-open-project": "openProject"
+   },
    initialize: function(){
         this.urlroot="projects",
         this.datatable_options={stateSave:true},
@@ -26441,21 +26458,33 @@ var Views = {};
           {name: "Language"},
           {name: "Pages"},
           {name: "Book"},
+          {name: "Action"},
 
 
         ]
 
         this.columns = [
-        {name:"title",id:"projectId",clickrow :true},
-        {name:"author",id:"projectId",clickrow :true},
-        {name:"year",id:"projectId",clickrow :true},
-        {name:"language",id:"projectId",clickrow :true},
-        {name:"pages",id:"projectId",clickrow :true},
-        {name:"book",id:"projectId",clickrow :true},
+        {name:"title",id:"projectId",clickrow :false},
+        {name:"author",id:"projectId",clickrow :false},
+        {name:"year",id:"projectId",clickrow :false},
+        {name:"language",id:"projectId",clickrow :false},
+        {name:"pages",id:"projectId",clickrow :false},
+        {name:"book",id:"projectId",clickrow :false},
+        {name:"action",id:"projectId",clickrow :false}
 
 
         ]
 
+
+        },
+        deleteProject : function(e){
+        var id = $(e.currentTarget).attr('id');
+        var parentrow = $(e.currentTarget).parent().parent();
+        this.trigger("list:delete",id,parentrow)
+        },
+        openProject : function(e){
+        var id = $(e.currentTarget).attr('id');
+        this.trigger("list:open",id)
 
         }
 
@@ -26577,6 +26606,7 @@ Views.ProjectForm = Marionette.View.extend({
           data.add_book = Marionette.getOption(this,"add_book");
           data.edit_project = Marionette.getOption(this,"edit_project");
           data.loading_text = Marionette.getOption(this,"loading_text");
+          data.languages = Marionette.getOption(this,"languages");
 
         return data;
 
@@ -27047,22 +27077,21 @@ uploadProjectData: function(data){
 
 
 
-deleteProject: function(id){
+deleteProject: function(data){
+    data['backend_route'] = "delete_project";
+    console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-        headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-         },
-        url: "api/projects/"+id+"/delete",
-        type: "DELETE",
-        dataType: "json",
+       
+        url: "api/api_controller.php",
+        type: "POST",
+        data: data,
         success: function(data) {
 
               defer.resolve(data);
             },
             error: function(data){
-              defer.resolve(undefined);
+              defer.reject(data);
             }
     });
 
@@ -27351,7 +27380,12 @@ define('apps/projects/list/list_view',["marionette","app","common/views","apps/p
 
  List.ProjectForm = Views.ProjectForm.extend({
   });
-
+ 
+List.AreYouSure = CommonViews.AreYouSure.extend({
+      triggers:{
+     "click .js-yes":"delete:confirm"
+    }
+  })
 
 return List;
 
@@ -27368,20 +27402,20 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
  	listProjects: function(){
 
-     		require(["entities/project","entities/util"], function(ProjectEntitites,UtilEntitites){
+     		require(["entities/project","entities/util"], function(ProjectEntities,UtilEntitites){
 
           // var loadingCircleView = new  Views.LoadingBackdrop();
           // App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
 
-     var fetchingprojects = ProjectEntitites.API.getProjects();
+     var fetchingprojects = ProjectEntities.API.getProjects();
      var fetchinglanguages = UtilEntitites.API.getLanguages();
 
 		 var projectsListLayout = new List.Layout();
 
     	 $.when(fetchingprojects,fetchinglanguages).done(function(projects,languages){
         console.log(projects);
-        console.log(languages);
+        console.log(languages.languages);
 
 		   // loadingCircleView.destroy();
 
@@ -27394,26 +27428,52 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
       var projectsListPanel = new List.Panel();
       var projectsListFooterPanel = new List.FooterPanel();
 
-     
-
           projectsListLayout.showChildView('headerRegion',projectsListHeader);
           projectsListLayout.showChildView('panelRegion',projectsListPanel);
           projectsListLayout.showChildView('infoRegion',projectsListView);
           projectsListLayout.showChildView('footerRegion',projectsListFooterPanel);
 
-
           $(window).scrollTop(0);
+
+          projectsListView.on('list:delete',function(id,delete_row){
+
+            var confirmModal = new List.AreYouSure({title:"Are you sure...",text:"...you want to delete project "+id+" ?",id:"deleteModal"})
+            App.mainLayout.showChildView('dialogRegion',confirmModal)
+
+            confirmModal.on('delete:confirm',function(){
+                  var deletingProject = ProjectEntities.API.deleteProject({pid:id});
+                  $('#deleteModal').modal("hide");
+
+                 $.when(deletingProject).done(function(result){
+                   App.mainmsg.updateContent("Project "+id+" successfully deleted.",'success');              
+                   var fetchingnewprojects = ProjectEntities.API.getProjects();
+
+                       $.when(fetchingnewprojects).done(function(new_projects){
+                          projectsListView.options.collection=new_projects.books;
+                          projectsListView.render();
+                       });
+
+                 }).fail(function(response){ 
+                    App.mainmsg.updateContent(response.responseText,'danger');
+                  });    
+            })
+
+          });
+
+               projectsListView.on('list:open',function(id){
+                App.trigger('projects:show',id,"first");
+              });
 
 
           projectsListPanel.on("list:create_clicked",function(){
 
 
-             var projectsListAddProject = new List.ProjectForm({model: new ProjectEntitites.Project, asModal:true,text:"Create a new project",loading_text:"Upload in progress"});
+             var projectsListAddProject = new List.ProjectForm({model: new ProjectEntities.Project,languages:languages.languages,asModal:true,text:"Create a new project",loading_text:"Upload in progress"});
 
 
 
            projectsListAddProject.on("project:submit_clicked",function(data,formdata){
-           var uploadingProjectData = ProjectEntitites.API.uploadProjectData(formdata);
+           var uploadingProjectData = ProjectEntities.API.uploadProjectData(formdata);
 
 
                  $.when(uploadingProjectData).done(function(result){
@@ -27425,9 +27485,7 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
                           App.mainmsg.updateContent(result,'success');
 
-                      var fetchingnewprojects = ProjectEntitites.API.getProjects();
-
-
+                      var fetchingnewprojects = ProjectEntities.API.getProjects();
                        $.when(fetchingnewprojects).done(function(new_projects){
                           projectsListView.options.collection=new_projects.books;
                           projectsListView.render();
@@ -27443,7 +27501,9 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
                    $('#projects-modal').modal('hide');
                    App.mainmsg.updateContent(response.responseText,'danger');                       
                                     
-          }); // $when fetchingprojects
+                }); // $when uploadingProject
+
+
 
 
           });
@@ -27514,7 +27574,7 @@ define('apps/projects/projects_app',["marionette","app"], function(Marionette,Ap
 
 
 	App.on("projects:show",function(id,page_id){
-		App.navigate("projects/:id/page/:page_id");
+		App.navigate("projects/"+id+"/page/"+page_id);
 		API.showProject(id,page_id);
 	});
 
@@ -27969,7 +28029,6 @@ var Views = {}
           data.asModal = Marionette.getOption(this,"asModal");
           data.modaltitle = Marionette.getOption(this,"modaltitle");
           data.admincheck = Marionette.getOption(this,"admincheck");
-
           data.id = Marionette.getOption(this,"id");
 
         return data;
@@ -28151,8 +28210,8 @@ define('apps/users/list/list_controller',["app","common/util","apps/users/list/l
 
  				confirmModal.on('delete:confirm',function(){
  					   	var deletingUser = UserEntities.API.deleteUser({id:id});
+    		    	 	$('#deleteModal').modal("hide");
 			    	 $.when(deletingUser).done(function(result){
-			    	 	$('#deleteModal').modal("hide");
 			    	 	 App.mainmsg.updateContent("User account "+id+" successfully deleted.",'success');              
 			    	 	delete_row.remove();
 			    	 }).fail(function(response){ 

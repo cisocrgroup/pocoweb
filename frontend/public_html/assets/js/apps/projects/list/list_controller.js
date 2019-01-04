@@ -9,20 +9,20 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
  	listProjects: function(){
 
-     		require(["entities/project","entities/util"], function(ProjectEntitites,UtilEntitites){
+     		require(["entities/project","entities/util"], function(ProjectEntities,UtilEntitites){
 
           // var loadingCircleView = new  Views.LoadingBackdrop();
           // App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
 
-     var fetchingprojects = ProjectEntitites.API.getProjects();
+     var fetchingprojects = ProjectEntities.API.getProjects();
      var fetchinglanguages = UtilEntitites.API.getLanguages();
 
 		 var projectsListLayout = new List.Layout();
 
     	 $.when(fetchingprojects,fetchinglanguages).done(function(projects,languages){
         console.log(projects);
-        console.log(languages);
+        console.log(languages.languages);
 
 		   // loadingCircleView.destroy();
 
@@ -35,26 +35,52 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
       var projectsListPanel = new List.Panel();
       var projectsListFooterPanel = new List.FooterPanel();
 
-     
-
           projectsListLayout.showChildView('headerRegion',projectsListHeader);
           projectsListLayout.showChildView('panelRegion',projectsListPanel);
           projectsListLayout.showChildView('infoRegion',projectsListView);
           projectsListLayout.showChildView('footerRegion',projectsListFooterPanel);
 
-
           $(window).scrollTop(0);
+
+          projectsListView.on('list:delete',function(id,delete_row){
+
+            var confirmModal = new List.AreYouSure({title:"Are you sure...",text:"...you want to delete project "+id+" ?",id:"deleteModal"})
+            App.mainLayout.showChildView('dialogRegion',confirmModal)
+
+            confirmModal.on('delete:confirm',function(){
+                  var deletingProject = ProjectEntities.API.deleteProject({pid:id});
+                  $('#deleteModal').modal("hide");
+
+                 $.when(deletingProject).done(function(result){
+                   App.mainmsg.updateContent("Project "+id+" successfully deleted.",'success');              
+                   var fetchingnewprojects = ProjectEntities.API.getProjects();
+
+                       $.when(fetchingnewprojects).done(function(new_projects){
+                          projectsListView.options.collection=new_projects.books;
+                          projectsListView.render();
+                       });
+
+                 }).fail(function(response){ 
+                    App.mainmsg.updateContent(response.responseText,'danger');
+                  });    
+            })
+
+          });
+
+               projectsListView.on('list:open',function(id){
+                App.trigger('projects:show',id,"first");
+              });
 
 
           projectsListPanel.on("list:create_clicked",function(){
 
 
-             var projectsListAddProject = new List.ProjectForm({model: new ProjectEntitites.Project, asModal:true,text:"Create a new project",loading_text:"Upload in progress"});
+             var projectsListAddProject = new List.ProjectForm({model: new ProjectEntities.Project,languages:languages.languages,asModal:true,text:"Create a new project",loading_text:"Upload in progress"});
 
 
 
            projectsListAddProject.on("project:submit_clicked",function(data,formdata){
-           var uploadingProjectData = ProjectEntitites.API.uploadProjectData(formdata);
+           var uploadingProjectData = ProjectEntities.API.uploadProjectData(formdata);
 
 
                  $.when(uploadingProjectData).done(function(result){
@@ -66,9 +92,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
                           App.mainmsg.updateContent(result,'success');
 
-                      var fetchingnewprojects = ProjectEntitites.API.getProjects();
-
-
+                      var fetchingnewprojects = ProjectEntities.API.getProjects();
                        $.when(fetchingnewprojects).done(function(new_projects){
                           projectsListView.options.collection=new_projects.books;
                           projectsListView.render();
@@ -84,7 +108,9 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
                    $('#projects-modal').modal('hide');
                    App.mainmsg.updateContent(response.responseText,'danger');                       
                                     
-          }); // $when fetchingprojects
+                }); // $when uploadingProject
+
+
 
 
           });

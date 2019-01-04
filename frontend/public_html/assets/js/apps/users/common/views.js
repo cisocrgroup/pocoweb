@@ -25,7 +25,6 @@ var Views = {}
           data.asModal = Marionette.getOption(this,"asModal");
           data.modaltitle = Marionette.getOption(this,"modaltitle");
           data.admincheck = Marionette.getOption(this,"admincheck");
-
           data.id = Marionette.getOption(this,"id");
 
         return data;

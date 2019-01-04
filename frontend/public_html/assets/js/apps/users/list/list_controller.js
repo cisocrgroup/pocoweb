@@ -27,8 +27,8 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 
  				confirmModal.on('delete:confirm',function(){
  					   	var deletingUser = UserEntities.API.deleteUser({id:id});
+    		    	 	$('#deleteModal').modal("hide");
 			    	 $.when(deletingUser).done(function(result){
-			    	 	$('#deleteModal').modal("hide");
 			    	 	 App.mainmsg.updateContent("User account "+id+" successfully deleted.",'success');              
 			    	 	delete_row.remove();
 			    	 }).fail(function(response){ 
