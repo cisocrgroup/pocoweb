@@ -24510,7 +24510,6 @@ onAttach: function(){
 
 	  onDomRefresh: function(){
 
-
 	  	var old_table_height = 0;
 
 	  	this.datatable_options['initComplete'] = function(){
@@ -26327,7 +26326,7 @@ if(asModal) {
 
 __p+='\n\n  <div class="modal-dialog modal-lg" role="document">\n  <div class="modal-content">\n\n<div class="modal-header red-border-bottom">\n        <h3 class="modal-title">'+
 ((__t=(text))==null?'':_.escape(__t))+
-' </h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n<div class="loading_background" style="display: none;">\n         <i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>\n         <div class="loading_text_parent">\n           <div class="loading_text"> '+
+' </h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n<div class="loading_background" style="display: none;">\n         <i class="fas fa-sync fa-spin fa-3x fa-fw"></i>\n         <div class="loading_text_parent">\n           <div class="loading_text"> '+
 ((__t=(loading_text))==null?'':_.escape(__t))+
 ' </div>\n         </div>\n</div>\n\n';
  } 
@@ -26347,7 +26346,7 @@ __p+='\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="t
  } 
 __p+='\n\n';
  if(!edit_project) { 
-__p+='\n\n\n<label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">\n <i class="fas fa-file-upload"></i> Upload data (.zip)\n</label>\n<input id="file-upload" type="file" name="archive" style="display:none">\n\n<div id="selected_file"></div>\n <button class="btn no_bg_btn hover js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>\n\n\n';
+__p+='\n\n\n<label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">\n <i class="fas fa-file-upload"></i> Upload data (.zip)\n</label>\n<input id="file-upload" type="file" name="archive" style="display:none">\n\n<div id="selected_file"></div>\n <button class="btn btn-primary js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>\n\n\n';
  } 
 __p+='\n\n</form>\n\n\n\n';
 
@@ -26499,6 +26498,7 @@ Views.ProjectForm = Marionette.View.extend({
 
     $("#uploadForm").on('submit',(function(e) {
     e.preventDefault();
+     $('.loading_background').fadeIn();
      that.trigger("project:submit_clicked", Backbone.Syphon.serialize(that), this);
 
     }))
@@ -26904,7 +26904,7 @@ define('entities/project',["app"], function(IPS_App){
 
   var Entities={};
 
-Entities.Project = Backbone.Model.extend({
+Entities.Page = Backbone.Model.extend({
      defaults:{
   bookId:null,
   box:null,
@@ -26918,7 +26918,7 @@ Entities.Project = Backbone.Model.extend({
      }
   });
 
-Entities.Page = Backbone.Model.extend({
+Entities.Project = Backbone.Model.extend({
      urlRoot: "projects",
      defaults:{
   author:null,
@@ -27411,6 +27411,7 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
              var projectsListAddProject = new List.ProjectForm({model: new ProjectEntitites.Project, asModal:true,text:"Create a new project",loading_text:"Upload in progress"});
 
 
+
            projectsListAddProject.on("project:submit_clicked",function(data,formdata){
            var uploadingProjectData = ProjectEntitites.API.uploadProjectData(formdata);
 
@@ -27418,15 +27419,23 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
                  $.when(uploadingProjectData).done(function(result){
 
                   console.log(result);
+                            $('.loading_background').fadeOut();
+                           $('#projects-modal').modal('toggle');
+                          $('#selected_file').text("");
 
-                    $('.loading_background').fadeOut();
+                          App.mainmsg.updateContent(result,'success');
 
-                   $('#projects-modal').modal('toggle');
-                   // App.trigger("projects:show",result.projectId)
+                      var fetchingnewprojects = ProjectEntitites.API.getProjects();
 
-                   projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
-                   $('#selected_file').text("");
-                   // projectsListAddProject.render()
+
+                       $.when(fetchingnewprojects).done(function(new_projects){
+                          projectsListView.options.collection=new_projects.books;
+                          projectsListView.render();
+                           projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
+                          
+
+                       });
+
                   
                 
 
@@ -28169,12 +28178,14 @@ define('apps/users/list/list_controller',["app","common/util","apps/users/list/l
 
 				         	var fetchingUsers = UserEntities.API.getUsers();
 
-							usersListLayout = new List.Layout();
+					    	 $.when(fetchingUsers).done(function(users_new){
+								  usersListView.collection=users_new.users;
+								   usersListView.options.collection=users_new.users;
 
-					    	 $.when(fetchingUsers).done(function(users){
-					    	 		usersListView.collection=users.users
-					    	 		usersListView.render();
+					    	 	   usersListView.trigger("onAttach");
+  					    	 	   usersListView.render();
 
+                         	
 					    	 });
 
 				       }).fail(function(response){

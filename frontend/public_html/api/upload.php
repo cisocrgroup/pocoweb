@@ -1,7 +1,4 @@
 <?php
-// $ds          = DIRECTORY_SEPARATOR;  //1
- 
-// $storeFolder = '../upload';   //2
 require_once('config.php');
 require_once('api.php');
 require_once('backend.php');
@@ -43,14 +40,11 @@ $post["file"] = $file["tmp_name"];
 	$api->post_request($post);
 
 	$status = $api->get_http_status_code();
-	if ($status != 201 || $status != 200) { # accept 200 OK and 201 Created
-		//frontend_render_error_div("Could not upload archive: backend returned " .
-		print_r(backend_get_http_status_info($status));
+	if ($status == 201 || $status == 200) { # accept 200 OK and 201 Created
+			  echo ("Successfully uploaded new project");
 	} else {
-	  print_r(backend_get_http_status_info($status)." Successfully uploaded new project");
+		print_r(backend_get_http_status_info($status));
 
-		//frontend_render_success_div("Successfully uploaded new project");
 	}
-
 
 ?>     

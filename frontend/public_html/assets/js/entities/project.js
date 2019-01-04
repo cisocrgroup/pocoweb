@@ -6,7 +6,7 @@ define(["app"], function(IPS_App){
 
   var Entities={};
 
-Entities.Project = Backbone.Model.extend({
+Entities.Page = Backbone.Model.extend({
      defaults:{
   bookId:null,
   box:null,
@@ -20,7 +20,7 @@ Entities.Project = Backbone.Model.extend({
      }
   });
 
-Entities.Page = Backbone.Model.extend({
+Entities.Project = Backbone.Model.extend({
      urlRoot: "projects",
      defaults:{
   author:null,

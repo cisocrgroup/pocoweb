@@ -84,6 +84,7 @@ Views.ProjectForm = Marionette.View.extend({
 
     $("#uploadForm").on('submit',(function(e) {
     e.preventDefault();
+     $('.loading_background').fadeIn();
      that.trigger("project:submit_clicked", Backbone.Syphon.serialize(that), this);
 
     }))

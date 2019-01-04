@@ -54,12 +54,14 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 
 				         	var fetchingUsers = UserEntities.API.getUsers();
 
-							usersListLayout = new List.Layout();
+					    	 $.when(fetchingUsers).done(function(users_new){
+								  usersListView.collection=users_new.users;
+								   usersListView.options.collection=users_new.users;
 
-					    	 $.when(fetchingUsers).done(function(users){
-					    	 		usersListView.collection=users.users
-					    	 		usersListView.render();
+					    	 	   usersListView.trigger("onAttach");
+  					    	 	   usersListView.render();
 
+                         	
 					    	 });
 
 				       }).fail(function(response){
