@@ -169,6 +169,26 @@ deleteProject: function(data){
 
     return defer.promise();
   },
+  correctLine: function(data){
+    data['backend_route'] = "correct_line";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
 
 addBook: function(id,data){
     var defer = jQuery.Deferred();

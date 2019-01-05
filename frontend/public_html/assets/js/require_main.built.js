@@ -23269,8 +23269,58 @@ get_correction_class: function(obj) {
       callback(error);
   ;
    };
-}
+},
 
+toggleFromInputToText : function(anchor) {
+  //pcw.log('pcw.toggleFromInputToText(' + anchor + ')');
+
+  var input = document.getElementById('line-input-' + anchor);
+  var text = document.getElementById('line-text-' + anchor);
+  if (input === null || text === null) {
+    return;
+  }
+
+  text.firstChild.data = $('#'+anchor).val();
+  this.toggleBetweenTextAndInput(input, text);
+},
+
+toggleFromTextToInput : function(anchor) {
+ // pcw.log('pcw.toggleFromTextToInput(' + anchor + ')');
+  var input = document.getElementById('line-input-' + anchor);
+  var text = document.getElementById('line-text-' + anchor);
+  var b = 0;
+  var e = 0;
+  if (window.getSelection) {
+    b = window.getSelection().anchorOffset;
+    e = b + window.getSelection().toString().length;
+  }
+  this.toggleBetweenTextAndInput(text, input);
+  // if (input.firstChild !== null) {
+  //   input.firstChild.selectionStart = b;
+  //   input.firstChild.selectionEnd = e;
+  //   input.firstChild.focus();
+  // }
+  input.onkeyup = function(event) {
+    if (event.keyCode === 13) { // <enter>
+      pcw.correctLine(anchor);
+      pcw.toggleFromInputToText(anchor);
+    }
+  };
+},
+toggleBetweenTextAndInput : function(hide, unhide) {
+  if (hide === null || unhide === null) {
+    return;
+  }
+  hide.setAttribute("hidden", ""); 
+  unhide.removeAttribute("hidden");
+},
+getIds : function(anchor) {
+  var ids = anchor.split('-');
+  for (var i = 0; i < ids.length; i++) {
+    ids[i] = parseInt(ids[i]);
+  }
+  return ids;
+}
 
 });
 
@@ -26647,8 +26697,6 @@ __p+='\r\n       <div class="text-image-line" title="'+
 ((__t=(text))==null?'':_.escape(__t))+
 '">\r\n\r\n       	<a class="line-anchor" id="line-anchor-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'" anchor="'+
-((__t=(anchor))==null?'':_.escape(__t))+
 '"></a>\r\n		<img src=\''+
 ((__t=(line["imgFile"]))==null?'':_.escape(__t))+
 '\' alt=\''+
@@ -26657,11 +26705,25 @@ __p+='\r\n       <div class="text-image-line" title="'+
 ((__t=(text))==null?'':_.escape(__t))+
 '\' width="auto" height="25">\r\n		<div id="line-text-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
+'" anchor="'+
+((__t=(anchor))==null?'':_.escape(__t))+
 '" class="line-text '+
 ((__t=(inputclass))==null?'':_.escape(__t))+
 '">\r\n        '+
 ((__t=(line["cor"]))==null?'':_.escape(__t))+
-'\r\n        </div>\r\n\r\n       </div>\r\n	\r\n     \r\n\r\n\r\n      ';
+'\r\n        </div>\r\n        <div id="line-input-'+
+((__t=(anchor))==null?'':_.escape(__t))+
+'" class="line-input input-group" hidden>\r\n	    <div class="input-group">\r\n		    <input id="'+
+((__t=(anchor))==null?'':_.escape(__t))+
+'" class="form-control '+
+((__t=(inputclass))==null?'':_.escape(__t))+
+'" type="text" size="30" value="'+
+((__t=(line['cor']))==null?'':_.escape(__t))+
+'">\r\n		    <div class="input-group-append">\r\n		      <div class="input-group-text js-correct" title="correct line #';
+line['lineId']
+__p+='" id="'+
+((__t=(anchor))==null?'':_.escape(__t))+
+'-btn"><i class="far fa-arrow-alt-circle-up"></i></div>\r\n		    </div>\r\n		  </div>\r\n		</div>\r\n\r\n\r\n\r\n\r\n       </div>\r\n	\r\n     \r\n\r\n\r\n      ';
  }) 
 __p+='\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
 }
@@ -26688,7 +26750,9 @@ events:{
       'click .js-stepforward' : 'forward_clicked',
       'click .js-firstpage' : 'firstpage_clicked',
       'click .js-lastpage' : 'lastpage_clicked',
-      'click .line-text' : 'line_clicked'
+      'click .line-text' : 'line_clicked',
+      'click .js-correct' : 'correct_clicked'
+
       },
 
       serializeData: function(){
@@ -26721,9 +26785,27 @@ events:{
         e.preventDefault();
         this.trigger("page:new","last");
       },
+      correct_clicked:function(e){
+       
+       console.log($(e.currentTarget))
+        var id = $(e.currentTarget).attr('id');
+        console.log(id)
+        var split = id.split("-btn");
+        var anchor = split[0];
+          Util.toggleFromInputToText(anchor);
+
+          var ids = Util.getIds(anchor);
+          this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:$('#'+anchor).val()},anchor)
+
+      },
       line_clicked:function(e){
         e.preventDefault();
-        console.log(e)
+        var anchor = $(e.currentTarget).attr('anchor');
+        console.log(anchor) 
+        Util.toggleFromTextToInput(anchor)
+
+
+        
       }
 
 //href="page.php?u=none&p=first&pid=', $pid,'"
@@ -27097,6 +27179,26 @@ deleteProject: function(data){
 
     return defer.promise();
   },
+  correctLine: function(data){
+    data['backend_route'] = "correct_line";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
 
 addBook: function(id,data){
     var defer = jQuery.Deferred();
@@ -27177,6 +27279,42 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
                         projectShowPage.render();    
                      App.navigate("projects/"+id+"/page/"+page_id);
          
+                  }).fail(function(response){
+                     App.mainmsg.updateContent(response.responseText,'danger');
+                    });  // $when fetchingproject
+          
+       })
+
+
+       projectShowPage.on("page:correct_line",function(data,anchor){
+
+                    var correctingline = ProjectEntitites.API.correctLine(data);
+                  $.when(correctingline).done(function(result){
+                    
+                    $('#line-text-'+anchor).css('background','#d4edda');
+                   /*** TO DO 
+
+                                 var fully = res.isFullyCorrected;
+                  var partial = res.isPartiallyCorrected;
+                  var input = document.getElementById(anchor);
+                  if (input !== null) {
+                    input.value = res.cor;
+                    pcw.setCorrectionStatus(input, fully, partial);
+                  }
+                  var text = document.getElementById('line-text-' + anchor);
+                  if (text !== null) {
+                    pcw.setCorrectionStatus(text, fully, partial);
+                    text.replaceChild(
+                        document.createTextNode(res.cor),
+                        text.childNodes[0]);
+                    var aapi = Object.create(pcw.Api);
+                    aapi.sid = pcw.getSid();
+                    aapi.setupForGetSuspiciousWords(ids[0], ids[1], ids[2]);
+                    aapi.run(pcw.markSuspiciousWordsInLine);
+
+                   ***/
+
+
                   }).fail(function(response){
                      App.mainmsg.updateContent(response.responseText,'danger');
                     });  // $when fetchingproject

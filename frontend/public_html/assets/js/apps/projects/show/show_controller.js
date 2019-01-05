@@ -51,6 +51,42 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
        })
 
 
+       projectShowPage.on("page:correct_line",function(data,anchor){
+
+                    var correctingline = ProjectEntitites.API.correctLine(data);
+                  $.when(correctingline).done(function(result){
+                    
+                    $('#line-text-'+anchor).css('background','#d4edda');
+                   /*** TO DO 
+
+                                 var fully = res.isFullyCorrected;
+                  var partial = res.isPartiallyCorrected;
+                  var input = document.getElementById(anchor);
+                  if (input !== null) {
+                    input.value = res.cor;
+                    pcw.setCorrectionStatus(input, fully, partial);
+                  }
+                  var text = document.getElementById('line-text-' + anchor);
+                  if (text !== null) {
+                    pcw.setCorrectionStatus(text, fully, partial);
+                    text.replaceChild(
+                        document.createTextNode(res.cor),
+                        text.childNodes[0]);
+                    var aapi = Object.create(pcw.Api);
+                    aapi.sid = pcw.getSid();
+                    aapi.setupForGetSuspiciousWords(ids[0], ids[1], ids[2]);
+                    aapi.run(pcw.markSuspiciousWordsInLine);
+
+                   ***/
+
+
+                  }).fail(function(response){
+                     App.mainmsg.updateContent(response.responseText,'danger');
+                    });  // $when fetchingproject
+          
+       })
+
+
 
 			  projectShowInfo.on("show:edit_clicked",function(methods){
 

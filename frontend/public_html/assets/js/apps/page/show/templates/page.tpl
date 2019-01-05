@@ -54,11 +54,22 @@
       %>
        <div class="text-image-line" title="<%-text%>">
 
-       	<a class="line-anchor" id="line-anchor-<%-anchor%>" anchor="<%-anchor%>"></a>
+       	<a class="line-anchor" id="line-anchor-<%-anchor%>"></a>
 		<img src='<%-line["imgFile"]%>' alt='<%-text%>' title='<%-text%>' width="auto" height="25">
-		<div id="line-text-<%-anchor%>" class="line-text <%-inputclass%>">
+		<div id="line-text-<%-anchor%>" anchor="<%-anchor%>" class="line-text <%-inputclass%>">
         <%-line["cor"]%>
         </div>
+        <div id="line-input-<%-anchor%>" class="line-input input-group" hidden>
+	    <div class="input-group">
+		    <input id="<%-anchor%>" class="form-control <%-inputclass%>" type="text" size="30" value="<%-line['cor']%>">
+		    <div class="input-group-append">
+		      <div class="input-group-text js-correct" title="correct line #<%line['lineId']%>" id="<%-anchor%>-btn"><i class="far fa-arrow-alt-circle-up"></i></div>
+		    </div>
+		  </div>
+		</div>
+
+
+
 
        </div>
 	

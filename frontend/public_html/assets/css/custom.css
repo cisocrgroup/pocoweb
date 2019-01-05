@@ -416,10 +416,17 @@ div.text-image-line {
   margin-top: 20px;
   margin-bottom: 20px;
   padding: 5px;
+    border: 2px solid transparent;
+ /* transition-property:transform: scale();
+    transition-duration: 0.25s;
+    transition-timing-function: ease;*/
 }
 
 div.text-image-line:hover {
-  box-shadow: 10px 10px 5px lightgrey;
-  border-radius: 3px;
+  /*box-shadow: 10px 10px 5px lightgrey;*/
+  border: 2px solid;
   /*box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);*/
+  /*background: #d4edda;*/
+  border-color: #007bff;
+  /*transform: scale(1.03);*/
 }

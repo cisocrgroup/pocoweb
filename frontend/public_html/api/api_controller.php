@@ -27,6 +27,8 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'get_projects' : get_projects();break;
         case 'get_project' : get_project();break;
         case 'delete_project' : delete_project();break;
+        case 'correct_line' : correct_line();break;
+
         case 'get_page' : get_page();break;
         case 'create_project' : create_project();break;
         case 'get_users' : get_users();break;
@@ -176,6 +178,34 @@ function get_projects(){
   }
 
   return $api;
+}
+
+function correct_line() {
+
+  $data = array(
+    'correction' => $_POST['text'],
+  );
+
+  $api = new Api(backend_get_correct_line_route($_POST['pid'],$_POST['page_id'],$_POST['line_id']));
+  $api->set_session_id(backend_get_session_cookie());
+  $api->post_request($data);
+  $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        echo json_encode($session); 
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Please login.</a>';
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
 }
 
 function get_users(){

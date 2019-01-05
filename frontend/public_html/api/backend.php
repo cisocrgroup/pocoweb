@@ -280,7 +280,6 @@ function backend_correct_line($pid, $p, $lid, $d) {
 function backend_get_page($pid, $p) {
 	if ($p === "first") {
 		$api = new Api(backend_get_first_page_route($pid));
-		global $SID;
 		$api->set_session_id($SID);
 		$api->get_request();
 		return $api;

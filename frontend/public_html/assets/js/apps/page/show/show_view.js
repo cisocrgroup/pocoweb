@@ -18,7 +18,9 @@ events:{
       'click .js-stepforward' : 'forward_clicked',
       'click .js-firstpage' : 'firstpage_clicked',
       'click .js-lastpage' : 'lastpage_clicked',
-      'click .line-text' : 'line_clicked'
+      'click .line-text' : 'line_clicked',
+      'click .js-correct' : 'correct_clicked'
+
       },
 
       serializeData: function(){
@@ -51,9 +53,27 @@ events:{
         e.preventDefault();
         this.trigger("page:new","last");
       },
+      correct_clicked:function(e){
+       
+       console.log($(e.currentTarget))
+        var id = $(e.currentTarget).attr('id');
+        console.log(id)
+        var split = id.split("-btn");
+        var anchor = split[0];
+          Util.toggleFromInputToText(anchor);
+
+          var ids = Util.getIds(anchor);
+          this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:$('#'+anchor).val()},anchor)
+
+      },
       line_clicked:function(e){
         e.preventDefault();
-        console.log(e)
+        var anchor = $(e.currentTarget).attr('anchor');
+        console.log(anchor) 
+        Util.toggleFromTextToInput(anchor)
+
+
+        
       }
 
 //href="page.php?u=none&p=first&pid=', $pid,'"
