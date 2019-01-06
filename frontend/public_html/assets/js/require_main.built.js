@@ -26683,15 +26683,15 @@ return Views;
 define("tpl!apps/page/show/templates/page.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n	<ul class="nav sticky-top navbar-light bg-light">\r\n	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\r\n		<i class="fas fa-fast-backward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
+__p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n	<ul class="nav sticky-top navbar-light" style="background-color: white; margin-top: 10px;margin-bottom: 10px;">\r\n	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\r\n		<i class="fas fa-fast-backward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
 ((__t=(prevPageId))==null?'':_.escape(__t))+
 '">\r\n		<i class="fas fa-step-backward"></i>\r\n		</a></li>\r\n	<li class="nav-item"> <a class="nav-link" href="#">\r\n		<label id="concordance-search-label">Show concordance of (0 occurences)</label>\r\n		</a></li>\r\n	<!-- suggestions -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Correction suggestions<span class="caret"></span></a>\r\n        <ul id="pcw-suggestions-dropdown" class="dropdown-menu">\r\n        </ul>\r\n        </li>\r\n	<!--error-patterns -->\r\n	<li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Error patterns<span class="caret"></span></a>\r\n        <ul id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu">\r\n        </ul>\r\n        </li>\r\n	<!-- error-tokens -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Error tokens<span class="caret"></span></a>\r\n        <ul id="pcw-error-tokens-dropdown" class="dropdown-menu scrollable-menu">\r\n        </ul>\r\n        </li>\r\n	<!--nextpage and last page -->\r\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
 ((__t=(nextPageId))==null?'':_.escape(__t))+
-'">\r\n		<i class="fas fa-step-forward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="got to last page">\r\n		<i class="fas fa-fast-forward"></i>\r\n		</a></li>\r\n	</ul>\r\n\r\n	<div id="page-heading">\r\n	<p><h2>Project '+
+'">\r\n		<i class="fas fa-step-forward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="got to last page">\r\n		<i class="fas fa-fast-forward"></i>\r\n		</a></li>\r\n	</ul>\r\n\r\n	<div class="defaulthl" style="line-height:1; margin-top:15px;">\r\n    <i class="fas fa-book-open card_main_icon green"></i>\r\n	Project '+
 ((__t=(projectId))==null?'':_.escape(__t))+
-', page '+
+'\r\n	<div style="font-size: 20px; margin-top: 10px;"> page '+
 ((__t=(pageId))==null?'':_.escape(__t))+
-'</h2></p>\r\n	</div>\r\n\r\n\r\n	   ';
+'</div>\r\n	</div>\r\n\r\n	   ';
 
      _.each(lines, function(line) { 
         var split_img = line["imgFile"].split("/");

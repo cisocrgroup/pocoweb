@@ -1,7 +1,7 @@
 	<div class="container">
 	<div class="row">
     <div class="col col-md-12">
-	<ul class="nav sticky-top navbar-light bg-light">
+	<ul class="nav sticky-top navbar-light" style="background-color: white; margin-top: 10px;margin-bottom: 10px;">
 	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">
 		<i class="fas fa-fast-backward"></i>
 		</a></li>
@@ -41,10 +41,11 @@
 		</a></li>
 	</ul>
 
-	<div id="page-heading">
-	<p><h2>Project <%-projectId%>, page <%-pageId%></h2></p>
+	<div class="defaulthl" style="line-height:1; margin-top:15px;">
+    <i class="fas fa-book-open card_main_icon green"></i>
+	Project <%-projectId%>
+	<div style="font-size: 20px; margin-top: 10px;"> page <%-pageId%></div>
 	</div>
-
 
 	   <%
      _.each(lines, function(line) { 
