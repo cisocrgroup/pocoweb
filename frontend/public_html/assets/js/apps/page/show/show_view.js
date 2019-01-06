@@ -26,7 +26,7 @@ events:{
       serializeData: function(){
       var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
           data.Util = Util;
-
+        
         return data;
       },
 

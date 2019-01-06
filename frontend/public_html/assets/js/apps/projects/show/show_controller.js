@@ -50,7 +50,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
           
        })
 
-
+    
        projectShowPage.on("page:correct_line",function(data,anchor){
 
                     var correctingline = ProjectEntitites.API.correctLine(data);

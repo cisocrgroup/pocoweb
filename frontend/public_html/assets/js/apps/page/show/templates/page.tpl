@@ -48,9 +48,14 @@
 
 	   <%
      _.each(lines, function(line) { 
-  	   var text = "line," + line['lineId'] + " " + line["imgFile"];
+        var split_img = line["imgFile"].split("/");
+  	   var imgbasename = split_img[4];
+  	   var text = "line " + line['lineId'] + ", " + imgbasename;
   	   var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
   	   var inputclass = Util.get_correction_class(line);
+
+
+
       %>
        <div class="text-image-line" title="<%-text%>">
 

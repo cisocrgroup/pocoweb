@@ -23892,9 +23892,9 @@ __p+='  \n\n          ';
  column = columns[i]; 
 __p+='\n          ';
  if (column.name == "action") {  
-__p+='\n          <td><button type="button" class="close btn js-delete-user" id="'+
+__p+='\n          <td>\n              <button type="button" class="btn btn-sm btn-outline-dark js-delete-user" id="'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'"> <span aria-hidden="true"><i class="far fa-times-circle"></i></span></button></td>      \n          ';
+'"> <i class="fas fa-times"></i></button>\n          </td>      \n          ';
  } else { 
 __p+='\n          <td> '+
 ((__t=( item[column.name] ))==null?'':_.escape(__t))+
@@ -25990,7 +25990,13 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
                          headerShowTopbar.setLoggedIn(result.user.name);
                           
                           var currentRoute =  App.getCurrentRoute();
+                          var page_re = /projects\/\d+\/page\/.*/;
+                          var page_route_found = App.getCurrentRoute().match(page_re);
 
+                          if(page_route_found!=null){
+                             var split = currentRoute.split("/")
+                             App.trigger("projects:show",split[1],split[3])
+                          }
 
                           switch(currentRoute) {
                             case "projects":
@@ -26002,7 +26008,6 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
                               App.trigger("users:show","account")
                               break;
                             default:
-                              // code block
                           } 
 
                                             
@@ -26454,11 +26459,11 @@ __p+='\r\n          ';
  if (column.name == "action") {  
 __p+='\r\n          <td>\r\n            <div class="btn-group" role="group">\r\n            <button title="open project #'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'" type="button" class="btn btn-outline-dark js-open-project" id="'+
+'" type="button" class="btn btn-sm btn-outline-dark js-open-project" id="'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
 '"> <span aria-hidden="true"><i class="fas fa-book-open"></i></span></button>\r\n             <button title="remove project #'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'" type="button" class="btn btn-outline-dark js-delete-project" id="'+
+'" type="button" class="btn btn-sm btn-outline-dark js-delete-project" id="'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
 '"> <span aria-hidden="true"><i class="fas fa-times"></i></span></button>\r\n          </div>\r\n          </td>      \r\n          ';
  } else { 
@@ -26689,9 +26694,14 @@ __p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-
 '</h2></p>\r\n	</div>\r\n\r\n\r\n	   ';
 
      _.each(lines, function(line) { 
-  	   var text = "line," + line['lineId'] + " " + line["imgFile"];
+        var split_img = line["imgFile"].split("/");
+  	   var imgbasename = split_img[4];
+  	   var text = "line " + line['lineId'] + ", " + imgbasename;
   	   var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
   	   var inputclass = Util.get_correction_class(line);
+
+
+
       
 __p+='\r\n       <div class="text-image-line" title="'+
 ((__t=(text))==null?'':_.escape(__t))+
@@ -26758,7 +26768,7 @@ events:{
       serializeData: function(){
       var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
           data.Util = Util;
-
+        
         return data;
       },
 
@@ -27285,7 +27295,7 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
           
        })
 
-
+    
        projectShowPage.on("page:correct_line",function(data,anchor){
 
                     var correctingline = ProjectEntitites.API.correctLine(data);

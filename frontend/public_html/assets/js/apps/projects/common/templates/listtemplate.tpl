@@ -37,8 +37,8 @@
           <% if (column.name == "action") {  %>
           <td>
             <div class="btn-group" role="group">
-            <button title="open project #<%-item[columns[0]['id']]%>" type="button" class="btn btn-outline-dark js-open-project" id="<%-item[columns[0]['id']]%>"> <span aria-hidden="true"><i class="fas fa-book-open"></i></span></button>
-             <button title="remove project #<%-item[columns[0]['id']]%>" type="button" class="btn btn-outline-dark js-delete-project" id="<%-item[columns[0]['id']]%>"> <span aria-hidden="true"><i class="fas fa-times"></i></span></button>
+            <button title="open project #<%-item[columns[0]['id']]%>" type="button" class="btn btn-sm btn-outline-dark js-open-project" id="<%-item[columns[0]['id']]%>"> <span aria-hidden="true"><i class="fas fa-book-open"></i></span></button>
+             <button title="remove project #<%-item[columns[0]['id']]%>" type="button" class="btn btn-sm btn-outline-dark js-delete-project" id="<%-item[columns[0]['id']]%>"> <span aria-hidden="true"><i class="fas fa-times"></i></span></button>
           </div>
           </td>      
           <% } else { %>

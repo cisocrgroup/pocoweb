@@ -70,7 +70,13 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
                          headerShowTopbar.setLoggedIn(result.user.name);
                           
                           var currentRoute =  App.getCurrentRoute();
+                          var page_re = /projects\/\d+\/page\/.*/;
+                          var page_route_found = App.getCurrentRoute().match(page_re);
 
+                          if(page_route_found!=null){
+                             var split = currentRoute.split("/")
+                             App.trigger("projects:show",split[1],split[3])
+                          }
 
                           switch(currentRoute) {
                             case "projects":
@@ -82,7 +88,6 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
                               App.trigger("users:show","account")
                               break;
                             default:
-                              // code block
                           } 
 
                                             

@@ -35,7 +35,9 @@
 
           <% column = columns[i]; %>
           <% if (column.name == "action") {  %>
-          <td><button type="button" class="close btn js-delete-user" id="<%-item[columns[0]['id']]%>"> <span aria-hidden="true"><i class="far fa-times-circle"></i></span></button></td>      
+          <td>
+              <button type="button" class="btn btn-sm btn-outline-dark js-delete-user" id="<%-item[columns[0]['id']]%>"> <i class="fas fa-times"></i></button>
+          </td>      
           <% } else { %>
           <td> <%- item[column.name] %> </td>      
           <% } %>
