@@ -179,7 +179,6 @@ deleteProject: function(data){
         type: "POST",
         data:data,
         success: function(data) {
-
               defer.resolve(JSON.parse(data));
             },
             error: function(data){

@@ -26507,6 +26507,7 @@ var Views = {};
         this.urlroot="projects",
         this.datatable_options={stateSave:true},
         this.headers = [
+          {name: "#"},
           {name: "Title"},
           {name: "Author"},
           {name: "Year"},
@@ -26519,6 +26520,7 @@ var Views = {};
         ]
 
         this.columns = [
+        {name:"projectId",id:"projectId",clickrow :false},
         {name:"title",id:"projectId",clickrow :false},
         {name:"author",id:"projectId",clickrow :false},
         {name:"year",id:"projectId",clickrow :false},
@@ -27199,7 +27201,6 @@ deleteProject: function(data){
         type: "POST",
         data:data,
         success: function(data) {
-
               defer.resolve(JSON.parse(data));
             },
             error: function(data){
