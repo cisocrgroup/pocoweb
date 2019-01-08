@@ -1,6 +1,6 @@
 FROM golang:1.11-alpine
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
-ENV DATE='Sa 24. Nov 17:34:01 CET 2018'
+ENV DATE='Tue Jan  8 19:57:50 CET 2019'
 
 ENV PCWAUTH_GIT=github.com/finkf/pcwauth
 RUN apk add git &&\
