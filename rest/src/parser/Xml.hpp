@@ -18,8 +18,8 @@ public:
   using Node = pugi::xml_node;
   using DocPtr = std::shared_ptr<pugi::xml_document>;
 
-  Xml(DocPtr doc = nullptr);
-  Xml(const Path& path);
+  explicit Xml(DocPtr doc = nullptr);
+  explicit Xml(const Path& path);
   virtual ~Xml() noexcept = default;
   Doc& doc() noexcept { return *doc_; }
   const Doc& doc() const noexcept { return *doc_; }
