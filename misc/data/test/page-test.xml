@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pc:PcGts xmlns:pc="http://schema.primaresearch.org/PAGE/gts/pagecontent/2017-07-15">
+  <pc:Page imageFilename="path/to/img.png" imageWidth="1756" imageHeight="2440" type="content">
+  </pc:Page>
+</pc:PcGts>

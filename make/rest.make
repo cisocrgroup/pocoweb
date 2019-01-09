@@ -51,6 +51,7 @@ PARSER_OBJS += rest/src/parser/HocrParserLine.o
 PARSER_OBJS += rest/src/parser/OcropusLlocsPageParser.o
 PARSER_OBJS += rest/src/parser/OcropusLlocsParserLine.o
 PARSER_OBJS += rest/src/parser/OcropusLlocsParserPage.o
+PARSER_OBJS += rest/src/parser/PageXmlPageParser.o
 PARSER_OBJS += rest/src/parser/ParserPage.o
 PARSER_OBJS += rest/src/parser/Xml.o
 PARSER_OBJS += rest/src/parser/XmlParserPage.o
