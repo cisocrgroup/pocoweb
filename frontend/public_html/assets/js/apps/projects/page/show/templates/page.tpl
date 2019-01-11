@@ -1,7 +1,7 @@
 	<div class="container">
 	<div class="row">
     <div class="col col-md-12">
-	<ul class="nav sticky-top navbar-light justify-content-center" style="background-color: white; margin-top: 20px;margin-bottom: 10px;">
+	<ul class="nav sticky-top navbar-light justify-content-center" style="background-color: white; margin-top: 15px;margin-bottom: 15px;">
 	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">
 		<i class="fas fa-fast-backward"></i>
 		</a></li>
@@ -36,7 +36,7 @@
 	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #<%-nextPageId%>">
 		<i class="fas fa-step-forward"></i>
 		</a></li>
-	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="got to last page">
+	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">
 		<i class="fas fa-fast-forward"></i>
 		</a></li>
 	</ul>

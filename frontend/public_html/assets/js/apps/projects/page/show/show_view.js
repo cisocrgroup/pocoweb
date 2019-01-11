@@ -68,8 +68,21 @@ events:{
       },
       line_clicked:function(e){
         e.preventDefault();
+        $('.correct-btn').hide();
+        $('.line-text').css('border-bottom','1px solid transparent');
+        $('.line-text').css('border-left','1px solid transparent');
+        $('.line-text').css('border-top','1px solid transparent');
+        $('.line-text').css('border-top-left-radius','0rem');
+        $('.line-text').css('border-bottom-left-radius','0rem');
+
+        $(e.currentTarget).css('border-left','1px solid #ced4da');
+        $(e.currentTarget).css('border-bottom','1px solid #ced4da');
+        $(e.currentTarget).css('border-top','1px solid #ced4da');
+        $(e.currentTarget).css('border-top-left-radius','.25rem');
+        $(e.currentTarget).css('border-bottom-left-radius','.25rem');
+
         $(e.currentTarget).next().find('.correct-btn').show();
-        
+
       },
       onDomRefresh:function(e){
 
