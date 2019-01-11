@@ -14,6 +14,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
           // var loadingCircleView = new  Views.LoadingBackdrop();
           // App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
+          $(window).scrollTop(0);
 
      var fetchingprojects = ProjectEntities.API.getProjects();
      var fetchinglanguages = UtilEntitites.API.getLanguages();
@@ -40,7 +41,6 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
           projectsListLayout.showChildView('infoRegion',projectsListView);
           projectsListLayout.showChildView('footerRegion',projectsListFooterPanel);
 
-          $(window).scrollTop(0);
 
           projectsListView.on('list:delete',function(id,delete_row){
 

@@ -53,9 +53,9 @@ toggleFromTextToInput : function(anchor) {
   }
   this.toggleBetweenTextAndInput(text, input);
   // if (input.firstChild !== null) {
-  //   input.firstChild.selectionStart = b;
-  //   input.firstChild.selectionEnd = e;
-  //   input.firstChild.focus();
+    input.firstChild.selectionStart = b;
+    input.firstChild.selectionEnd = e;
+    input.firstChild.focus();
   // }
   input.onkeyup = function(event) {
     if (event.keyCode === 13) { // <enter>

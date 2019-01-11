@@ -1,23 +1,23 @@
 	<div class="container">
 	<div class="row">
     <div class="col col-md-12">
-	<ul class="nav sticky-top navbar-light" style="background-color: white; margin-top: 10px;margin-bottom: 10px;">
+	<ul class="nav sticky-top navbar-light justify-content-center" style="background-color: white; margin-top: 20px;margin-bottom: 10px;">
 	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">
 		<i class="fas fa-fast-backward"></i>
 		</a></li>
 	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #<%-prevPageId%>">
 		<i class="fas fa-step-backward"></i>
 		</a></li>
-	<li class="nav-item"> <a class="nav-link" href="#">
+	<!-- <li class="nav-item"> <a class="nav-link" href="#">
 		<label id="concordance-search-label">Show concordance of (0 occurences)</label>
-		</a></li>
+		</a></li> -->
 	<!-- suggestions -->
-	<li class="nav-item dropdown"> 
+	<!-- <li class="nav-item dropdown"> 
 	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">
 		Correction suggestions<span class="caret"></span></a>
         <ul id="pcw-suggestions-dropdown" class="dropdown-menu">
         </ul>
-        </li>
+    </li> -->
 	<!--error-patterns -->
 	<li class="nav-item dropdown">
 	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">
@@ -70,12 +70,19 @@
        <div class="text-image-line" title="<%-text%>">
 
        	<a class="line-anchor" id="line-anchor-<%-anchor%>"></a>
-		<img src='<%-line["imgFile"]%>' alt='<%-text%>' title='<%-text%>' width="auto" height="25">
-		<div id="line-text-<%-anchor%>" <% if(setlinehightlighting){ %> style="background-color:<%-linehighlighting%>" <%}%>  anchor="<%-anchor%>" class="line-text <%-inputclass%>">
+		<div><img src='<%-line["imgFile"]%>' alt='<%-text%>' title='<%-text%>' width="auto" height="25"></div>
+
+		<div class="line-text-parent">	
+		<div id="line-text-<%-anchor%>" <% if(setlinehightlighting){ %> style="background-color:<%-linehighlighting%>" <%}%>  anchor="<%-anchor%>"
+	    class="line-text <%-inputclass%>">
 
         <%-line["cor"]%>
         </div>
-        <div id="line-input-<%-anchor%>" class="line-input input-group" hidden>
+        <span>
+		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #<%line['lineId']%>" anchor="<%-anchor%>"><i class="far fa-arrow-alt-circle-up"></i></div>
+        </span>
+	    </div>
+        <!-- <div id="line-input-<%-anchor%>" class="line-input input-group" hidden>
 	    <div class="input-group">
 		    <input id="<%-anchor%>" class="form-control <%-inputclass%>" type="text" size="30" value="<%-line['cor']%>">
 		    <div class="input-group-append">
@@ -83,6 +90,7 @@
 		    </div>
 		  </div>
 		</div>
+ -->
 
 
 

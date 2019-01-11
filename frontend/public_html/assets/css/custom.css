@@ -431,3 +431,35 @@ div.text-image-line:hover {
   border-bottom:2px solid #eee;
   /*transform: scale(1.03);*/
 }
+
+.line-text{
+  display: inline-block;
+  flex-grow: 1;
+  min-height: 30px;
+  padding: 2px;
+}
+
+.line-text:focus {
+outline: 0;
+}
+
+.line-text-parent{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+}
+
+.line-text-parent p {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.correct-btn{
+  display: none;
+  height: 30px;
+  padding: 0;
+  padding-top:2px;
+  width: 31px;
+  border-radius: 0;
+}

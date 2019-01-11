@@ -2,11 +2,11 @@
 // apps/page/show/show_view.js
 // ================================
 
-define(["marionette","app","backbone.syphon","common/views","common/util",
+define(["marionette","app","medium","backbone.syphon","common/views","common/util",
         "tpl!apps/projects/page/show/templates/page.tpl",
 
 
-  ], function(Marionette,App,BackboneSyphon,Views,Util,pageTpl){
+  ], function(Marionette,App,MediumEditor,BackboneSyphon,Views,Util,pageTpl){
 
 
     var Show = {};
@@ -18,9 +18,8 @@ events:{
       'click .js-stepforward' : 'forward_clicked',
       'click .js-firstpage' : 'firstpage_clicked',
       'click .js-lastpage' : 'lastpage_clicked',
-      'click .line-text' : 'line_clicked',
-      'click .js-correct' : 'correct_clicked'
-
+      'click .js-correct' : 'correct_clicked',
+      'click .line-text' : 'line_clicked' 
       },
 
       serializeData: function(){
@@ -56,27 +55,99 @@ events:{
       correct_clicked:function(e){
        
        console.log($(e.currentTarget))
-        var id = $(e.currentTarget).attr('id');
-        console.log(id)
-        var split = id.split("-btn");
-        var anchor = split[0];
-          Util.toggleFromInputToText(anchor);
+        // var id = $(e.currentTarget).attr('id');
+        // console.log(id)
+        var anchor = $(e.currentTarget).attr('anchor');
+
+          // Util.toggleFromInputToText(anchor);
 
           var ids = Util.getIds(anchor);
-          this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:$('#'+anchor).val()},anchor)
+          var text = $('#line-text-'+anchor).text();
+          this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
 
       },
       line_clicked:function(e){
         e.preventDefault();
-        var anchor = $(e.currentTarget).attr('anchor');
-        console.log(anchor) 
-        Util.toggleFromTextToInput(anchor)
-
-
+        $(e.currentTarget).next().find('.correct-btn').show();
         
+      },
+      onDomRefresh:function(e){
+
+        var ConcordanceButton = MediumEditor.Extension.extend({
+              name: 'concordance',
+
+              init: function () {
+
+                this.button = this.document.createElement('button');
+                this.button.classList.add('medium-editor-action');
+                this.button.innerHTML = 'Show concordance of n occurrences</i>';
+                this.button.title = 'Show concordance';
+
+                this.on(this.button, 'click', this.handleClick.bind(this));
+              },
+
+              getButton: function () {
+                return this.button;
+              },
+
+              handleClick: function (event) {
+                this.classApplier.toggleSelection();
+
+                // Ensure the editor knows about an html change so watchers are notified
+                // ie: <textarea> elements depend on the editableInput event to stay synchronized
+                this.base.checkContentChanged();
+              }
+            });
+
+
+            var CorrectionButton = MediumEditor.Extension.extend({
+              name: 'corrections',
+
+              init: function () {
+
+  
+                this.button = this.document.createElement('button');
+                this.button.classList.add('medium-editor-action');
+                this.button.classList.add('dropdown');
+                this.button.classList.add('nav-item');
+
+
+
+
+                this.button.innerHTML = 'Correction suggestions <i class="fas fa-caret-down"></i>';
+                this.button.title = 'Show Correction suggestions';
+
+                this.on(this.button, 'click', this.handleClick.bind(this));
+              },
+
+              getButton: function () {
+                return this.button;
+              },
+
+              handleClick: function (event) {
+                this.classApplier.toggleSelection();
+
+                // Ensure the editor knows about an html change so watchers are notified
+                // ie: <textarea> elements depend on the editableInput event to stay synchronized
+                this.base.checkContentChanged();
+              }
+            });
+
+        var editor = new MediumEditor('.line-text', {
+            disableReturn: true,
+            disableDoubleReturn: true,
+            toolbar: {
+              buttons: ['concordance','corrections']
+            },
+            buttonLabels: 'fontawesome', // use font-awesome icons for other buttons
+            extensions: {
+              'concordance': new ConcordanceButton(),
+              'corrections': new CorrectionButton()
+            }
+        });
+
       }
 
-//href="page.php?u=none&p=first&pid=', $pid,'"
 
 })
 
