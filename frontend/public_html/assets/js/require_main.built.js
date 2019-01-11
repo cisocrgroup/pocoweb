@@ -23987,7 +23987,7 @@ __p+='\n                <div class="col-md-'+
 ((__t=(item['url']))==null?'':_.escape(__t))+
 '" id="'+
 ((__t=(item['id']))==null?'':_.escape(__t))+
-'">\n                 <!-- <img class="card-img-top" src="assets/images/enmap_header_1.png." alt="Card image cap"> -->\n                   <div class="card-header">\n                   <h3 class="card-title"><i class="fa '+
+'">\n                 <!-- <img class="card-img-top" src="assets/images/enmap_header_1.png." alt="Card image cap"> -->\n                   <div class="card-header">\n                   <h3 class="card-title"><i class="fas '+
 ((__t=(item['icon']))==null?'':_.escape(__t))+
 ' card_main_icon '+
 ((__t=(item['color']))==null?'':_.escape(__t))+
@@ -26198,7 +26198,7 @@ define('apps/home/show/show_controller',["app","common/util","apps/home/show/sho
         var cards = [
         {
                 "color": "green",
-                "icon": "fa-align-left",
+                "icon": "fa-list",
                 "id": "test_btn",
                 "name": "Projects",
                 "seq": 1,
@@ -26461,11 +26461,15 @@ __p+='\r\n          <td>\r\n            <div class="btn-group" role="group">\r\n
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
 '" type="button" class="btn btn-sm btn-outline-dark js-open-project" id="'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'"> <span aria-hidden="true"><i class="fas fa-book-open"></i></span></button>\r\n             <button title="remove project #'+
+'"> <span aria-hidden="true"><i class="fas fa-book-open"></i></span></button>\r\n              <button title="order profile for project #'+
+((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
+'" type="button" class="btn btn-sm btn-outline-dark js-start-profiling" id="'+
+((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
+'"> <span aria-hidden="true"><i class="far fa-play-circle"></i></span></button>\r\n             <button title="remove project #'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
 '" type="button" class="btn btn-sm btn-outline-dark js-delete-project" id="'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'"> <span aria-hidden="true"><i class="fas fa-times"></i></span></button>\r\n          </div>\r\n          </td>      \r\n          ';
+'"> <span aria-hidden="true"><i class="fas fa-times"></i></span></button>\r\n                    </div>\r\n          </td>      \r\n          ';
  } else { 
 __p+='\r\n          <td> '+
 ((__t=( item[column.name] ))==null?'':_.escape(__t))+
@@ -26501,7 +26505,10 @@ var Views = {};
    template: listTpl,
    events:{
     "click .js-delete-project": "deleteProject",
-    "click .js-open-project": "openProject"
+    "click .js-open-project": "openProject",
+    "click .js-start-profiling": "startProfiling"
+
+
    },
    initialize: function(){
         this.urlroot="projects",
@@ -26542,6 +26549,10 @@ var Views = {};
         openProject : function(e){
         var id = $(e.currentTarget).attr('id');
         this.trigger("list:open",id)
+        },
+        startProfiling : function(e){
+        var id = $(e.currentTarget).attr('id');
+        this.trigger("list:profile",id)
 
         }
 
@@ -26682,7 +26693,7 @@ return Views;
 });
 
 
-define("tpl!apps/page/show/templates/page.tpl", function () { return function(obj){
+define("tpl!apps/projects/page/show/templates/page.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
 __p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n	<ul class="nav sticky-top navbar-light" style="background-color: white; margin-top: 10px;margin-bottom: 10px;">\r\n	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\r\n		<i class="fas fa-fast-backward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
@@ -26696,12 +26707,21 @@ __p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-
 '</div>\r\n	</div>\r\n\r\n	   ';
 
      _.each(lines, function(line) { 
-        var split_img = line["imgFile"].split("/");
+       var split_img = line["imgFile"].split("/");
   	   var imgbasename = split_img[4];
   	   var text = "line " + line['lineId'] + ", " + imgbasename;
   	   var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
   	   var inputclass = Util.get_correction_class(line);
-
+  	   
+  	   var setlinehightlighting=false;
+  	   if(line['isFullyCorrected']){
+  	  	 linehighlighting = "#d4edda";
+  	  	 setlinehightlighting = true;
+  	   }
+  	   else if(line['isPartiallyCorrected']){
+  	  	 linehighlighting = "#fff3cd";
+   	  	 setlinehightlighting = true;
+  	   }
 
 
       
@@ -26717,11 +26737,17 @@ __p+='\r\n       <div class="text-image-line" title="'+
 ((__t=(text))==null?'':_.escape(__t))+
 '\' width="auto" height="25">\r\n		<div id="line-text-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'" anchor="'+
+'" ';
+ if(setlinehightlighting){ 
+__p+=' style="background-color:'+
+((__t=(linehighlighting))==null?'':_.escape(__t))+
+'" ';
+}
+__p+='  anchor="'+
 ((__t=(anchor))==null?'':_.escape(__t))+
 '" class="line-text '+
 ((__t=(inputclass))==null?'':_.escape(__t))+
-'">\r\n        '+
+'">\r\n\r\n        '+
 ((__t=(line["cor"]))==null?'':_.escape(__t))+
 '\r\n        </div>\r\n        <div id="line-input-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
@@ -26746,8 +26772,8 @@ return __p;
 // apps/page/show/show_view.js
 // ================================
 
-define('apps/page/show/show_view',["marionette","app","backbone.syphon","common/views","common/util",
-        "tpl!apps/page/show/templates/page.tpl",
+define('apps/projects/page/show/show_view',["marionette","app","backbone.syphon","common/views","common/util",
+        "tpl!apps/projects/page/show/templates/page.tpl",
 
 
   ], function(Marionette,App,BackboneSyphon,Views,Util,pageTpl){
@@ -26931,7 +26957,7 @@ return __p;
 // apps/projects/show/show_view.js
 // ================================
 
-define('apps/projects/show/show_view',["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/page/show/show_view",
+define('apps/projects/show/show_view',["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/projects/page/show/show_view",
         "tpl!apps/projects/show/templates/layout.tpl",
         "tpl!apps/projects/show/templates/info.tpl",
         "tpl!apps/projects/show/templates/resp.tpl"
@@ -27210,29 +27236,50 @@ deleteProject: function(data){
 
     return defer.promise();
   },
+profileProject: function(data){
+    data['backend_route'] = "order_profile";
+    console.log(data);
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(data);
 
-addBook: function(id,data){
-    var defer = jQuery.Deferred();
-       $.ajax({
-        headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-         },
-        url: "api/projects/"+id+"/add-book",
-        type: "POST",
-        data:JSON.stringify(data),
-        dataType: "json",
-        success: function(data) {
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
 
-              defer.resolve(data);
-            },
-            error: function(data){
-              defer.resolve(undefined);
-            }
-    });
 
-    return defer.promise();
-  },
+  return defer.promise();
+  
+},
+// addBook: function(id,data){
+//     var defer = jQuery.Deferred();
+//        $.ajax({
+//         headers: {
+//         'Accept': 'application/json',
+//         'Content-Type': 'application/json'
+//          },
+//         url: "api/projects/"+id+"/add-book",
+//         type: "POST",
+//         data:JSON.stringify(data),
+//         dataType: "json",
+//         success: function(data) {
+
+//               defer.resolve(data);
+//             },
+//             error: function(data){
+//               defer.resolve(undefined);
+//             }
+//     });
+
+//     return defer.promise();
+//   },
 
 
 
@@ -27502,7 +27549,7 @@ define('apps/projects/list/list_view',["marionette","app","common/views","apps/p
     List.Header = CommonViews.Header.extend({
     initialize: function(){
         this.title = "Projects"
-        this.icon ="fa fa-align-left"
+        this.icon ="fas fa-list"
         this.color ="green"
       }
   });
@@ -27608,6 +27655,20 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
             })
 
           });
+
+             projectsListView.on('list:profile',function(id){
+               var profilingproject = ProjectEntities.API.profileProject({pid:id});
+
+                       $.when(profilingproject).done(function(result){
+                            App.mainmsg.updateContent(result,'success');
+
+                       }).fail(function(response){
+      
+                             App.mainmsg.updateContent(response.responseText,'danger');                       
+                                                      
+                            }); 
+             });
+
 
                projectsListView.on('list:open',function(id){
                 App.trigger('projects:show',id,"first");

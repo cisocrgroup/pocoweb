@@ -18,7 +18,7 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
         var cards = [
         {
                 "color": "green",
-                "icon": "fa-align-left",
+                "icon": "fa-list",
                 "id": "test_btn",
                 "name": "Projects",
                 "seq": 1,

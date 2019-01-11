@@ -19,7 +19,10 @@ var Views = {};
    template: listTpl,
    events:{
     "click .js-delete-project": "deleteProject",
-    "click .js-open-project": "openProject"
+    "click .js-open-project": "openProject",
+    "click .js-start-profiling": "startProfiling"
+
+
    },
    initialize: function(){
         this.urlroot="projects",
@@ -60,6 +63,10 @@ var Views = {};
         openProject : function(e){
         var id = $(e.currentTarget).attr('id');
         this.trigger("list:open",id)
+        },
+        startProfiling : function(e){
+        var id = $(e.currentTarget).attr('id');
+        this.trigger("list:profile",id)
 
         }
 

@@ -3,7 +3,7 @@
 // ================================
 
 define(["marionette","app","backbone.syphon","common/views","common/util",
-        "tpl!apps/page/show/templates/page.tpl",
+        "tpl!apps/projects/page/show/templates/page.tpl",
 
 
   ], function(Marionette,App,BackboneSyphon,Views,Util,pageTpl){

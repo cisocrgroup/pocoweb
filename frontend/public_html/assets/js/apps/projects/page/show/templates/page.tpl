@@ -49,12 +49,21 @@
 
 	   <%
      _.each(lines, function(line) { 
-        var split_img = line["imgFile"].split("/");
+       var split_img = line["imgFile"].split("/");
   	   var imgbasename = split_img[4];
   	   var text = "line " + line['lineId'] + ", " + imgbasename;
   	   var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
   	   var inputclass = Util.get_correction_class(line);
-
+  	   
+  	   var setlinehightlighting=false;
+  	   if(line['isFullyCorrected']){
+  	  	 linehighlighting = "#d4edda";
+  	  	 setlinehightlighting = true;
+  	   }
+  	   else if(line['isPartiallyCorrected']){
+  	  	 linehighlighting = "#fff3cd";
+   	  	 setlinehightlighting = true;
+  	   }
 
 
       %>
@@ -62,7 +71,8 @@
 
        	<a class="line-anchor" id="line-anchor-<%-anchor%>"></a>
 		<img src='<%-line["imgFile"]%>' alt='<%-text%>' title='<%-text%>' width="auto" height="25">
-		<div id="line-text-<%-anchor%>" anchor="<%-anchor%>" class="line-text <%-inputclass%>">
+		<div id="line-text-<%-anchor%>" <% if(setlinehightlighting){ %> style="background-color:<%-linehighlighting%>" <%}%>  anchor="<%-anchor%>" class="line-text <%-inputclass%>">
+
         <%-line["cor"]%>
         </div>
         <div id="line-input-<%-anchor%>" class="line-input input-group" hidden>

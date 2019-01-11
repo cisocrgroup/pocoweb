@@ -20,7 +20,7 @@
                  <div class="card custom_card active" url="<%-item['url']%>" id="<%-item['id']%>">
                  <!-- <img class="card-img-top" src="assets/images/enmap_header_1.png." alt="Card image cap"> -->
                    <div class="card-header">
-                   <h3 class="card-title"><i class="fa <%-item['icon']%> card_main_icon <%-item['color']%>" aria-hidden="true"></i> <%-item['name']%></h3>
+                   <h3 class="card-title"><i class="fas <%-item['icon']%> card_main_icon <%-item['color']%>" aria-hidden="true"></i> <%-item['name']%></h3>
                       </div>
                   <div class="card-block">
 

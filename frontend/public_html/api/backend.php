@@ -242,6 +242,8 @@ function backend_download_project($pid) {
 	return $api;
 }
 
+
+
 function backend_get_nth_page_route($pid, $p) {
 	global $config;
 	return sprintf($config["backend"]["internalURL"] .
@@ -318,6 +320,13 @@ function backend_get_search_route($pid, $q, $p) {
 	return sprintf($config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["search"],
 		$pid, urlencode($q), (int)$p);
+}
+
+
+function backend_get_order_profile_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["internalURL"] .
+		$config["backend"]["routes"]["orderProfile"], $pid);
 }
 
 function backend_get_concordance($pid, $q, $isErrorPattern) {

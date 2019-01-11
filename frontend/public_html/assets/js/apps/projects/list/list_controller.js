@@ -67,6 +67,20 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
           });
 
+             projectsListView.on('list:profile',function(id){
+               var profilingproject = ProjectEntities.API.profileProject({pid:id});
+
+                       $.when(profilingproject).done(function(result){
+                            App.mainmsg.updateContent(result,'success');
+
+                       }).fail(function(response){
+      
+                             App.mainmsg.updateContent(response.responseText,'danger');                       
+                                                      
+                            }); 
+             });
+
+
                projectsListView.on('list:open',function(id){
                 App.trigger('projects:show',id,"first");
               });

@@ -28,6 +28,7 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'get_project' : get_project();break;
         case 'delete_project' : delete_project();break;
         case 'correct_line' : correct_line();break;
+        case 'order_profile' : order_profile();break;
 
         case 'get_page' : get_page();break;
         case 'create_project' : create_project();break;
@@ -195,6 +196,32 @@ function correct_line() {
         $result=array();
         $session = $api->get_response();
         echo json_encode($session); 
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Please login.</a>';
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+}
+
+function order_profile() {
+
+
+  $api = new Api(backend_get_order_profile_route($_POST['pid']));
+  $api->set_session_id(backend_get_session_cookie());
+  $data = array("pid" => $_POST['pid']);
+  $api->post_request($data);
+  $status = $api->get_http_status_code();
+  switch ($status) {
+  case "202":
+        $result=array();
+        $session = $api->get_response();
+        echo "Profile for project ".$_POST['pid']." successfully ordered."; 
     break;
   case "403":
     header("status: ".$status);

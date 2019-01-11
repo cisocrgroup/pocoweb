@@ -2,7 +2,7 @@
 // apps/projects/show/show_view.js
 // ================================
 
-define(["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/page/show/show_view",
+define(["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/projects/page/show/show_view",
         "tpl!apps/projects/show/templates/layout.tpl",
         "tpl!apps/projects/show/templates/info.tpl",
         "tpl!apps/projects/show/templates/resp.tpl"

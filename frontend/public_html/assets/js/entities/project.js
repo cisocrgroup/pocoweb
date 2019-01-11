@@ -188,29 +188,50 @@ deleteProject: function(data){
 
     return defer.promise();
   },
+profileProject: function(data){
+    data['backend_route'] = "order_profile";
+    console.log(data);
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(data);
 
-addBook: function(id,data){
-    var defer = jQuery.Deferred();
-       $.ajax({
-        headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-         },
-        url: "api/projects/"+id+"/add-book",
-        type: "POST",
-        data:JSON.stringify(data),
-        dataType: "json",
-        success: function(data) {
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
 
-              defer.resolve(data);
-            },
-            error: function(data){
-              defer.resolve(undefined);
-            }
-    });
 
-    return defer.promise();
-  },
+  return defer.promise();
+  
+},
+// addBook: function(id,data){
+//     var defer = jQuery.Deferred();
+//        $.ajax({
+//         headers: {
+//         'Accept': 'application/json',
+//         'Content-Type': 'application/json'
+//          },
+//         url: "api/projects/"+id+"/add-book",
+//         type: "POST",
+//         data:JSON.stringify(data),
+//         dataType: "json",
+//         success: function(data) {
+
+//               defer.resolve(data);
+//             },
+//             error: function(data){
+//               defer.resolve(undefined);
+//             }
+//     });
+
+//     return defer.promise();
+//   },
 
 
 
