@@ -26879,6 +26879,11 @@ events:{
       onDomRefresh:function(e){
 
 
+        if(this.editor!=""){
+          this.editor.destroy();
+        }
+
+
           var ConcordanceButton = MediumEditor.Extension.extend({
               name: 'concordance',
 
@@ -26918,6 +26923,7 @@ events:{
                 dropdown_button.setAttribute('aria-haspopup','true');
                 dropdown_button.setAttribute('aria-expanded','false');
                 dropdown_button.setAttribute('id','dropdownMenuButton');
+                dropdown_button.setAttribute('data-flip','false');
 
                 dropdown_button.innerHTML = 'Correction suggestions <i class="fas fa-caret-down">';
                 dropdown_button.title = 'Show Correction suggestions';
@@ -26964,7 +26970,8 @@ events:{
               }
         });
 
-      }
+      },
+
 
 
 })
@@ -27550,18 +27557,16 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
                    that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
                     
 
-                      var dropdown_content = document.getElementById('dropdown-content');
 
-                      console.log(suggestions)
+                      console.log(suggestions);
+                      console.log($('#dropdown-content').length);
                     $("#dropdown-content").empty();
                      for(i=0;i<suggestions.suggestions.length;i++){
-                     var dropdown_item = document.createElement('a');
-                     dropdown_item.classList.add('dropdown-item');
+                
                      var s = suggestions.suggestions[i];
-                     //dropdown_item.innerHTML = suggestions.suggestions[i].suggestion +" (patts:"+pattsstring+", dist: "+suggestions.suggestions[i].distance+", weight: "+suggestions.suggestions[i].weight.toFixed(2)+")";
-                     dropdown_item.innerHTML = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
-      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
-                     dropdown_content.appendChild(dropdown_item);
+                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
+                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+                     $('#dropdown-content').append($('<a class="dropdown-item">'+content+"</a>"));
                      }
 
 

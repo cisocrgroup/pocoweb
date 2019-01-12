@@ -91,6 +91,11 @@ events:{
       onDomRefresh:function(e){
 
 
+        if(this.editor!=""){
+          this.editor.destroy();
+        }
+
+
           var ConcordanceButton = MediumEditor.Extension.extend({
               name: 'concordance',
 
@@ -130,6 +135,7 @@ events:{
                 dropdown_button.setAttribute('aria-haspopup','true');
                 dropdown_button.setAttribute('aria-expanded','false');
                 dropdown_button.setAttribute('id','dropdownMenuButton');
+                dropdown_button.setAttribute('data-flip','false');
 
                 dropdown_button.innerHTML = 'Correction suggestions <i class="fas fa-caret-down">';
                 dropdown_button.title = 'Show Correction suggestions';
@@ -176,7 +182,8 @@ events:{
               }
         });
 
-      }
+      },
+
 
 
 })
