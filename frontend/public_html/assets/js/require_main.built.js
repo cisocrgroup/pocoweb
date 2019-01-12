@@ -23271,6 +23271,16 @@ get_correction_class: function(obj) {
    };
 },
 
+ arrayToString: function(array,delimiter) {
+   var result = "";
+   var d=""
+   for(var i=0;i<array.length;i++){
+    result+=d+array[i];
+    d = delimiter;
+   }
+   return result;
+},
+
 toggleFromInputToText : function(anchor) {
   //pcw.log('pcw.toggleFromInputToText(' + anchor + ')');
 
@@ -26791,13 +26801,16 @@ define('apps/projects/page/show/show_view',["marionette","app","medium","backbon
 
   Show.Page = Marionette.View.extend({
   template:pageTpl,
+  editor:"",
 events:{
       'click .js-stepbackward' : 'backward_clicked',
       'click .js-stepforward' : 'forward_clicked',
       'click .js-firstpage' : 'firstpage_clicked',
       'click .js-lastpage' : 'lastpage_clicked',
       'click .js-correct' : 'correct_clicked',
-      'click .line-text' : 'line_clicked' 
+      'click .line-text' : 'line_clicked',
+      'mouseup .line-text' : 'line_selected',
+
       },
 
       serializeData: function(){
@@ -26832,13 +26845,7 @@ events:{
       },
       correct_clicked:function(e){
        
-       console.log($(e.currentTarget))
-        // var id = $(e.currentTarget).attr('id');
-        // console.log(id)
         var anchor = $(e.currentTarget).attr('anchor');
-
-          // Util.toggleFromInputToText(anchor);
-
           var ids = Util.getIds(anchor);
           var text = $('#line-text-'+anchor).text();
           this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
@@ -26853,6 +26860,7 @@ events:{
         $('.line-text').css('border-top-left-radius','0rem');
         $('.line-text').css('border-bottom-left-radius','0rem');
 
+  
         $(e.currentTarget).css('border-left','1px solid #ced4da');
         $(e.currentTarget).css('border-bottom','1px solid #ced4da');
         $(e.currentTarget).css('border-top','1px solid #ced4da');
@@ -26860,18 +26868,25 @@ events:{
         $(e.currentTarget).css('border-bottom-left-radius','.25rem');
 
         $(e.currentTarget).next().find('.correct-btn').show();
-
+        
       },
+      line_selected:function(e){
+        var selection = window.getSelection().toString();
+       
+        this.trigger("page:line_selected",selection)
+      },
+     
       onDomRefresh:function(e){
 
-        var ConcordanceButton = MediumEditor.Extension.extend({
+
+          var ConcordanceButton = MediumEditor.Extension.extend({
               name: 'concordance',
 
               init: function () {
 
                 this.button = this.document.createElement('button');
                 this.button.classList.add('medium-editor-action');
-                this.button.innerHTML = 'Show concordance of n occurrences</i>';
+                this.button.innerHTML = 'Show concordance of (n occurrences)';
                 this.button.title = 'Show concordance';
 
                 this.on(this.button, 'click', this.handleClick.bind(this));
@@ -26882,11 +26897,6 @@ events:{
               },
 
               handleClick: function (event) {
-                this.classApplier.toggleSelection();
-
-                // Ensure the editor knows about an html change so watchers are notified
-                // ie: <textarea> elements depend on the editableInput event to stay synchronized
-                this.base.checkContentChanged();
               }
             });
 
@@ -26896,17 +26906,31 @@ events:{
 
               init: function () {
 
-  
-                this.button = this.document.createElement('button');
+
+
+                this.button = this.document.createElement('div');
                 this.button.classList.add('medium-editor-action');
                 this.button.classList.add('dropdown');
-                this.button.classList.add('nav-item');
+                this.button.setAttribute('id','suggestions-menu');
+
+                var dropdown_button = this.document.createElement('button');
+                dropdown_button.setAttribute('data-toggle','dropdown');
+                dropdown_button.setAttribute('aria-haspopup','true');
+                dropdown_button.setAttribute('aria-expanded','false');
+                dropdown_button.setAttribute('id','dropdownMenuButton');
+
+                dropdown_button.innerHTML = 'Correction suggestions <i class="fas fa-caret-down">';
+                dropdown_button.title = 'Show Correction suggestions';
+
+                this.button.appendChild(dropdown_button);
+
+                 var dropdown_content = document.createElement('div');
+                 dropdown_content.classList.add('dropdown-menu');
+                 dropdown_content.setAttribute('id','dropdown-content');
+                 dropdown_content.setAttribute('aria-labelledby','dropdownMenuButton');
+                 this.button.appendChild(dropdown_content);
 
 
-
-
-                this.button.innerHTML = 'Correction suggestions <i class="fas fa-caret-down"></i>';
-                this.button.title = 'Show Correction suggestions';
 
                 this.on(this.button, 'click', this.handleClick.bind(this));
               },
@@ -26916,15 +26940,10 @@ events:{
               },
 
               handleClick: function (event) {
-                this.classApplier.toggleSelection();
-
-                // Ensure the editor knows about an html change so watchers are notified
-                // ie: <textarea> elements depend on the editableInput event to stay synchronized
-                this.base.checkContentChanged();
               }
             });
 
-        var editor = new MediumEditor('.line-text', {
+        this.editor = new MediumEditor('.line-text', {
             disableReturn: true,
             disableDoubleReturn: true,
             toolbar: {
@@ -26934,7 +26953,15 @@ events:{
             extensions: {
               'concordance': new ConcordanceButton(),
               'corrections': new CorrectionButton()
-            }
+            },
+               handleClick: function (event) {
+                this.classApplier.toggleSelection();
+                console.log("ACLSLKD")
+
+                // Ensure the editor knows about an html change so watchers are notified
+                // ie: <textarea> elements depend on the editableInput event to stay synchronized
+                this.base.checkContentChanged();
+              }
         });
 
       }
@@ -27330,7 +27357,6 @@ deleteProject: function(data){
   },
 profileProject: function(data){
     data['backend_route'] = "order_profile";
-    console.log(data);
   var defer = jQuery.Deferred();
       $.ajax({
       
@@ -27339,6 +27365,50 @@ profileProject: function(data){
        data:data,
       success: function(data) {
         defer.resolve(data);
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+
+searchToken: function(data){
+    data['backend_route'] = "search_token";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+
+getCorrectionSuggestions: function(data){
+    data['backend_route'] = "get_correction_suggestions";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
 
           },
           error: function(data){
@@ -27470,6 +27540,39 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
                     });  // $when fetchingproject
           
        })
+
+           projectShowPage.on("page:line_selected",function(selection){
+                    var that = this;
+                    var searchingToken = ProjectEntitites.API.searchToken({q:selection,p:page_id,pid:id});
+                    var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:selection,pid:id});
+
+                  $.when(searchingToken,gettingCorrectionSuggestions).done(function(token,suggestions){
+                   that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
+                    
+
+                      var dropdown_content = document.getElementById('dropdown-content');
+
+                      console.log(suggestions)
+                    $("#dropdown-content").empty();
+                     for(i=0;i<suggestions.suggestions.length;i++){
+                     var dropdown_item = document.createElement('a');
+                     dropdown_item.classList.add('dropdown-item');
+                     var s = suggestions.suggestions[i];
+                     //dropdown_item.innerHTML = suggestions.suggestions[i].suggestion +" (patts:"+pattsstring+", dist: "+suggestions.suggestions[i].distance+", weight: "+suggestions.suggestions[i].weight.toFixed(2)+")";
+                     dropdown_item.innerHTML = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
+      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+                     dropdown_content.appendChild(dropdown_item);
+                     }
+
+
+
+
+                  }).fail(function(response){
+                     App.mainmsg.updateContent(response.responseText,'danger');
+                    });  // $when fetchingproject
+          
+       })
+
 
 
 

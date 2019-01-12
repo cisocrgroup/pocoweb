@@ -86,6 +86,38 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
           
        })
 
+           projectShowPage.on("page:line_selected",function(selection){
+                    var that = this;
+                    var searchingToken = ProjectEntitites.API.searchToken({q:selection,p:page_id,pid:id});
+                    var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:selection,pid:id});
+
+                  $.when(searchingToken,gettingCorrectionSuggestions).done(function(token,suggestions){
+                   that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
+                    
+
+                      var dropdown_content = document.getElementById('dropdown-content');
+
+                      console.log(suggestions)
+                    $("#dropdown-content").empty();
+                     for(i=0;i<suggestions.suggestions.length;i++){
+                     var dropdown_item = document.createElement('a');
+                     dropdown_item.classList.add('dropdown-item');
+                     var s = suggestions.suggestions[i];
+                     dropdown_item.innerHTML = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
+                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+                     dropdown_content.appendChild(dropdown_item);
+                     }
+
+
+
+
+                  }).fail(function(response){
+                     App.mainmsg.updateContent(response.responseText,'danger');
+                    });  // $when fetchingproject
+          
+       })
+
+
 
 
 			  projectShowInfo.on("show:edit_clicked",function(methods){

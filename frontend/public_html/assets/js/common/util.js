@@ -28,6 +28,16 @@ get_correction_class: function(obj) {
    };
 },
 
+ arrayToString: function(array,delimiter) {
+   var result = "";
+   var d=""
+   for(var i=0;i<array.length;i++){
+    result+=d+array[i];
+    d = delimiter;
+   }
+   return result;
+},
+
 toggleFromInputToText : function(anchor) {
   //pcw.log('pcw.toggleFromInputToText(' + anchor + ')');
 

@@ -190,7 +190,6 @@ deleteProject: function(data){
   },
 profileProject: function(data){
     data['backend_route'] = "order_profile";
-    console.log(data);
   var defer = jQuery.Deferred();
       $.ajax({
       
@@ -199,6 +198,50 @@ profileProject: function(data){
        data:data,
       success: function(data) {
         defer.resolve(data);
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+
+searchToken: function(data){
+    data['backend_route'] = "search_token";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+
+getCorrectionSuggestions: function(data){
+    data['backend_route'] = "get_correction_suggestions";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
 
           },
           error: function(data){
