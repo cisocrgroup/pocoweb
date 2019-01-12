@@ -84,7 +84,6 @@ events:{
       },
       line_selected:function(e){
         var selection = window.getSelection().toString();
-       
         this.trigger("page:line_selected",selection)
       },
      

@@ -23271,16 +23271,22 @@ get_correction_class: function(obj) {
    };
 },
 
- arrayToString: function(array,delimiter) {
-   var result = "";
-   var d=""
-   for(var i=0;i<array.length;i++){
-    result+=d+array[i];
-    d = delimiter;
-   }
-   return result;
-},
+replaceSelectedText:function(replacementText) {
+    var sel, range;
+    if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.rangeCount) {
+            range = sel.getRangeAt(0);
+            range.deleteContents();
 
+            range.insertNode(document.createTextNode(replacementText));
+
+        }
+    } else if (document.selection && document.selection.createRange) {
+        range = document.selection.createRange();
+        range.text = replacementText;
+    }
+},
 toggleFromInputToText : function(anchor) {
   //pcw.log('pcw.toggleFromInputToText(' + anchor + ')');
 
@@ -26743,7 +26749,7 @@ __p+='\r\n       <div class="text-image-line" title="'+
 ((__t=(text))==null?'':_.escape(__t))+
 '">\r\n\r\n       	<a class="line-anchor" id="line-anchor-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"></a>\r\n		<div><img src=\''+
+'"></a>\r\n		<div style="margin-bottom: 5px;"><img src=\''+
 ((__t=(line["imgFile"]))==null?'':_.escape(__t))+
 '\' alt=\''+
 ((__t=(text))==null?'':_.escape(__t))+
@@ -26872,7 +26878,6 @@ events:{
       },
       line_selected:function(e){
         var selection = window.getSelection().toString();
-       
         this.trigger("page:line_selected",selection)
       },
      
@@ -27557,8 +27562,7 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
                    that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
                     
 
-
-                      console.log(suggestions);
+                     console.log(suggestions);
                       console.log($('#dropdown-content').length);
                     $("#dropdown-content").empty();
                      for(i=0;i<suggestions.suggestions.length;i++){
@@ -27566,10 +27570,14 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
                      var s = suggestions.suggestions[i];
                      var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
                       s.distance + ", weight: " + s.weight.toFixed(2) + ")";
-                     $('#dropdown-content').append($('<a class="dropdown-item">'+content+"</a>"));
+                     $('#dropdown-content').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
 
+                     $('.dropdown-item').on('click',function(){
+                      var split = $(this).text().split(" ");
+                      Util.replaceSelectedText(split[0]);
 
+                     })
 
 
                   }).fail(function(response){

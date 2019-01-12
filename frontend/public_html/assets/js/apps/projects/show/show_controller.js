@@ -95,8 +95,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                    that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
                     
 
-
-                      console.log(suggestions);
+                     console.log(suggestions);
                       console.log($('#dropdown-content').length);
                     $("#dropdown-content").empty();
                      for(i=0;i<suggestions.suggestions.length;i++){
@@ -104,10 +103,14 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                      var s = suggestions.suggestions[i];
                      var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
                       s.distance + ", weight: " + s.weight.toFixed(2) + ")";
-                     $('#dropdown-content').append($('<a class="dropdown-item">'+content+"</a>"));
+                     $('#dropdown-content').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
 
+                     $('.dropdown-item').on('click',function(){
+                      var split = $(this).text().split(" ");
+                      Util.replaceSelectedText(split[0]);
 
+                     })
 
 
                   }).fail(function(response){

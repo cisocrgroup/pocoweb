@@ -413,8 +413,7 @@ color: #ffc100;
 }
 
 div.text-image-line {
-  margin-top: 20px;
-  margin-bottom: 20px;
+
   padding: 5px;
     border:2px solid transparent;
  /* transition-property:transform: scale();
@@ -470,4 +469,14 @@ outline: 0;
   width: 31px;
   border-radius: 0;
   border: 1px solid #ced4da;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
 }

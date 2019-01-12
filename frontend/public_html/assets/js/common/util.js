@@ -28,16 +28,22 @@ get_correction_class: function(obj) {
    };
 },
 
- arrayToString: function(array,delimiter) {
-   var result = "";
-   var d=""
-   for(var i=0;i<array.length;i++){
-    result+=d+array[i];
-    d = delimiter;
-   }
-   return result;
-},
+replaceSelectedText:function(replacementText) {
+    var sel, range;
+    if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.rangeCount) {
+            range = sel.getRangeAt(0);
+            range.deleteContents();
 
+            range.insertNode(document.createTextNode(replacementText));
+
+        }
+    } else if (document.selection && document.selection.createRange) {
+        range = document.selection.createRange();
+        range.text = replacementText;
+    }
+},
 toggleFromInputToText : function(anchor) {
   //pcw.log('pcw.toggleFromInputToText(' + anchor + ')');
 
