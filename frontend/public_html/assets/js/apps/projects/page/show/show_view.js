@@ -183,6 +183,97 @@ events:{
 
       },
 
+  setErrorDropdowns: function(res,pid) {
+  var ddep = document.getElementById("pcw-error-patterns-dropdown");
+  var ddet = document.getElementById("pcw-error-tokens-dropdown");
+  if (ddep === null || ddet === null) {
+    return;
+  }
+    if (ddep !== null) {
+      this.setErrorPatternsDropdown(pid, ddep, res);
+    }
+    if (ddet !== null) {
+      this.setErrorTokensDropdown(pid, ddet, res);
+    }
+  
+},
+setErrorPatternsDropdown : function(pid, dropdown, res) {
+  var patterns = {};
+  var suggs = res.suggestions || [];
+  for (var i = 0; i < suggs.length; i++) {
+    var id = suggs[i].pageId + '-' + suggs[i].lineId + '-' +
+        suggs[i].tokenId;
+    for (var j = 0; j < suggs[i].ocrPatterns.length; j++) {
+      var pat = suggs[i].ocrPatterns[j].toLowerCase();
+      var set = patterns[pat] || {};
+      set[i] = true;
+      patterns[pat] = set;
+    }
+  }
+  var counts = [];
+  for (var p in patterns) {
+    counts.push(
+        {pattern: p, count: Object.keys(patterns[p]).length});
+  }
+  counts.sort(function(a, b) { return b.count - a.count; });
+  var onclick = function(pid, c) {
+    return function() {
+    //  pcw.log(c.pattern + ": " + c.count);
+      var pat = encodeURI(c.pattern);
+      var href = "concordance.php?pid=" + pid + "&q=" + pat +
+          "&error-pattern";
+      window.location.href = href;
+    };
+  };
+  for (var ii = 0; ii < counts.length; ii++) {
+    var c = counts[ii];
+    var a = this.appendErrorCountItem(dropdown, c.pattern, c.count);
+    a.onclick = onclick(pid, c);
+  }
+},
+
+setErrorTokensDropdown : function(pid, dropdown, res) {
+  // pcw.log("setErrorsDropdown");
+  var tokens = {};
+  var suggs = res.suggestions || [];
+  for (var i = 0; i < suggs.length; i++) {
+    var id = suggs[i].pageId + '-' + suggs[i].lineId + '-' +
+        suggs[i].tokenId;
+    var tok = suggs[i].token.toLowerCase();
+    var set = tokens[tok] || {};
+    set[id] = true;
+    tokens[tok] = set;
+  }
+  var counts = [];
+  for (var p in tokens) {
+    counts.push({token: p, count: Object.keys(tokens[p]).length});
+  }
+  counts.sort(function(a, b) { return b.count - a.count; });
+  var onclick = function(pid, c) {
+    return function() {
+      // pcw.log(c.token + ": " + c.count);
+      var pat = encodeURI(c.token);
+      var href = "concordance.php?pid=" + pid + "&q=" + pat;
+      window.location.href = href;
+    };
+  };
+  for (var ii = 0; ii < counts.length; ii++) {
+    c = counts[ii];
+    var a = this.appendErrorCountItem(dropdown, c.token, c.count);
+    a.onclick = onclick(pid, c);
+  }
+},
+appendErrorCountItem : function(dropdown, item, count) {
+  var li = document.createElement("li");
+  var a = document.createElement("a");
+  var t = document.createTextNode(item + ": " + count);
+  a.appendChild(t);
+  li.appendChild(a);
+  dropdown.appendChild(li);
+  return a;
+}
+
+
 
 
 })

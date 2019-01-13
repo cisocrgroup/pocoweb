@@ -30,6 +30,8 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'correct_line' : correct_line();break;
         case 'search_token' : search_token();break;
         case 'get_correction_suggestions' : get_correction_suggestions();break;
+        case 'get_all_correction_suggestions' : get_all_correction_suggestions();break;
+
         case 'order_profile' : order_profile();break;
 
         case 'get_page' : get_page();break;
@@ -286,7 +288,30 @@ function get_correction_suggestions() {
   }
 
 }
+function get_all_correction_suggestions() {
 
+
+  $api = new Api(backend_get_all_suggestions_route($_POST['pid']));
+  $api->set_session_id(backend_get_session_cookie());
+  $api->get_request();
+  $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        print_r(json_encode($session));
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Please login.</a>';
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+}
 
 function get_users(){
 

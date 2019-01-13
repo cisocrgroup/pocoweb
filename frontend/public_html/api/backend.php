@@ -329,6 +329,13 @@ function backend_get_suggestions_route($pid, $q) {
 		$pid,urlencode($q));
 }
 
+function backend_get_all_suggestions_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["internalURL"] .
+		$config["backend"]["routes"]["getAllSuggestions"],
+		$pid);
+}
+
 
 function backend_get_order_profile_route($pid) {
 	global $config;

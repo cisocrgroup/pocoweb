@@ -20,18 +20,21 @@
     </li> -->
 	<!--error-patterns -->
 	<li class="nav-item dropdown">
-	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">
+	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"" data-flip="false">
 		Error patterns<span class="caret"></span></a>
-        <ul id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu">
-        </ul>
+        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">
+        </div>
         </li>
 	<!-- error-tokens -->
 	<li class="nav-item dropdown"> 
-	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">
+	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"" data-flip="false">
 		Error tokens<span class="caret"></span></a>
-        <ul id="pcw-error-tokens-dropdown" class="dropdown-menu scrollable-menu">
-        </ul>
-        </li>
+		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">
+        </div>
+     </li>
+
+   
+
 	<!--nextpage and last page -->
 	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #<%-nextPageId%>">
 		<i class="fas fa-step-forward"></i>

@@ -26718,7 +26718,7 @@ var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments
 with(obj||{}){
 __p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n	<ul class="nav sticky-top navbar-light justify-content-center" style="background-color: white; margin-top: 15px;margin-bottom: 15px;">\r\n	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\r\n		<i class="fas fa-fast-backward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
 ((__t=(prevPageId))==null?'':_.escape(__t))+
-'">\r\n		<i class="fas fa-step-backward"></i>\r\n		</a></li>\r\n	<!-- <li class="nav-item"> <a class="nav-link" href="#">\r\n		<label id="concordance-search-label">Show concordance of (0 occurences)</label>\r\n		</a></li> -->\r\n	<!-- suggestions -->\r\n	<!-- <li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Correction suggestions<span class="caret"></span></a>\r\n        <ul id="pcw-suggestions-dropdown" class="dropdown-menu">\r\n        </ul>\r\n    </li> -->\r\n	<!--error-patterns -->\r\n	<li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Error patterns<span class="caret"></span></a>\r\n        <ul id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu">\r\n        </ul>\r\n        </li>\r\n	<!-- error-tokens -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Error tokens<span class="caret"></span></a>\r\n        <ul id="pcw-error-tokens-dropdown" class="dropdown-menu scrollable-menu">\r\n        </ul>\r\n        </li>\r\n	<!--nextpage and last page -->\r\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
+'">\r\n		<i class="fas fa-step-backward"></i>\r\n		</a></li>\r\n	<!-- <li class="nav-item"> <a class="nav-link" href="#">\r\n		<label id="concordance-search-label">Show concordance of (0 occurences)</label>\r\n		</a></li> -->\r\n	<!-- suggestions -->\r\n	<!-- <li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Correction suggestions<span class="caret"></span></a>\r\n        <ul id="pcw-suggestions-dropdown" class="dropdown-menu">\r\n        </ul>\r\n    </li> -->\r\n	<!--error-patterns -->\r\n	<li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"" data-flip="false">\r\n		Error patterns<span class="caret"></span></a>\r\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\r\n        </div>\r\n        </li>\r\n	<!-- error-tokens -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"" data-flip="false">\r\n		Error tokens<span class="caret"></span></a>\r\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\r\n        </div>\r\n     </li>\r\n\r\n   \r\n\r\n	<!--nextpage and last page -->\r\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
 ((__t=(nextPageId))==null?'':_.escape(__t))+
 '">\r\n		<i class="fas fa-step-forward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\r\n		<i class="fas fa-fast-forward"></i>\r\n		</a></li>\r\n	</ul>\r\n\r\n	<div class="defaulthl" style="line-height:1; margin-top:15px;">\r\n    <i class="fas fa-book-open card_main_icon green"></i>\r\n	Project '+
 ((__t=(projectId))==null?'':_.escape(__t))+
@@ -26976,6 +26976,97 @@ events:{
         });
 
       },
+
+  setErrorDropdowns: function(res,pid) {
+  var ddep = document.getElementById("pcw-error-patterns-dropdown");
+  var ddet = document.getElementById("pcw-error-tokens-dropdown");
+  if (ddep === null || ddet === null) {
+    return;
+  }
+    if (ddep !== null) {
+      this.setErrorPatternsDropdown(pid, ddep, res);
+    }
+    if (ddet !== null) {
+      this.setErrorTokensDropdown(pid, ddet, res);
+    }
+  
+},
+setErrorPatternsDropdown : function(pid, dropdown, res) {
+  var patterns = {};
+  var suggs = res.suggestions || [];
+  for (var i = 0; i < suggs.length; i++) {
+    var id = suggs[i].pageId + '-' + suggs[i].lineId + '-' +
+        suggs[i].tokenId;
+    for (var j = 0; j < suggs[i].ocrPatterns.length; j++) {
+      var pat = suggs[i].ocrPatterns[j].toLowerCase();
+      var set = patterns[pat] || {};
+      set[i] = true;
+      patterns[pat] = set;
+    }
+  }
+  var counts = [];
+  for (var p in patterns) {
+    counts.push(
+        {pattern: p, count: Object.keys(patterns[p]).length});
+  }
+  counts.sort(function(a, b) { return b.count - a.count; });
+  var onclick = function(pid, c) {
+    return function() {
+    //  pcw.log(c.pattern + ": " + c.count);
+      var pat = encodeURI(c.pattern);
+      var href = "concordance.php?pid=" + pid + "&q=" + pat +
+          "&error-pattern";
+      window.location.href = href;
+    };
+  };
+  for (var ii = 0; ii < counts.length; ii++) {
+    var c = counts[ii];
+    var a = this.appendErrorCountItem(dropdown, c.pattern, c.count);
+    a.onclick = onclick(pid, c);
+  }
+},
+
+setErrorTokensDropdown : function(pid, dropdown, res) {
+  // pcw.log("setErrorsDropdown");
+  var tokens = {};
+  var suggs = res.suggestions || [];
+  for (var i = 0; i < suggs.length; i++) {
+    var id = suggs[i].pageId + '-' + suggs[i].lineId + '-' +
+        suggs[i].tokenId;
+    var tok = suggs[i].token.toLowerCase();
+    var set = tokens[tok] || {};
+    set[id] = true;
+    tokens[tok] = set;
+  }
+  var counts = [];
+  for (var p in tokens) {
+    counts.push({token: p, count: Object.keys(tokens[p]).length});
+  }
+  counts.sort(function(a, b) { return b.count - a.count; });
+  var onclick = function(pid, c) {
+    return function() {
+      // pcw.log(c.token + ": " + c.count);
+      var pat = encodeURI(c.token);
+      var href = "concordance.php?pid=" + pid + "&q=" + pat;
+      window.location.href = href;
+    };
+  };
+  for (var ii = 0; ii < counts.length; ii++) {
+    c = counts[ii];
+    var a = this.appendErrorCountItem(dropdown, c.token, c.count);
+    a.onclick = onclick(pid, c);
+  }
+},
+appendErrorCountItem : function(dropdown, item, count) {
+  var li = document.createElement("li");
+  var a = document.createElement("a");
+  var t = document.createTextNode(item + ": " + count);
+  a.appendChild(t);
+  li.appendChild(a);
+  dropdown.appendChild(li);
+  return a;
+}
+
 
 
 
@@ -27432,6 +27523,28 @@ getCorrectionSuggestions: function(data){
   return defer.promise();
   
 },
+
+getAllCorrectionSuggestions: function(data){
+    data['backend_route'] = "get_all_correction_suggestions";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
 // addBook: function(id,data){
 //     var defer = jQuery.Deferred();
 //        $.ajax({
@@ -27484,10 +27597,11 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 
    			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
 
+   
         	 $.when(fetchingpage).done(function(page){
 
 		     	loadingCircleView.destroy();
-            console.log(page)
+            console.log(page);
 
 		 	//currentProposal.set({"url_id":id}); // pass url_id to view..
 			var projectShowLayout = new Show.Layout();
@@ -27498,6 +27612,15 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 	
 			projectShowLayout.on("attach",function(){
 			  
+
+        // ** to do: get junks from server
+        var fetchingallcorrections = ProjectEntitites.API.getAllCorrectionSuggestions({pid:id, page:page_id});
+           $.when(fetchingallcorrections).done(function(allsuggestions){
+            console.log(allsuggestions);
+             projectShowPage.setErrorDropdowns(allsuggestions,id);
+           });
+
+
 
 			  // projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
         projectShowPage = new Show.Page({model:page});
@@ -27562,8 +27685,6 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
                    that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
                     
 
-                     console.log(suggestions);
-                      console.log($('#dropdown-content').length);
                     $("#dropdown-content").empty();
                      for(i=0;i<suggestions.suggestions.length;i++){
                 
@@ -27576,7 +27697,6 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
                      $('.dropdown-item').on('click',function(){
                       var split = $(this).text().split(" ");
                       Util.replaceSelectedText(split[0]);
-
                      })
 
 

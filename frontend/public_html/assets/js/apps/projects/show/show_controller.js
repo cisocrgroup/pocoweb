@@ -17,10 +17,11 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
    			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
 
+   
         	 $.when(fetchingpage).done(function(page){
 
 		     	loadingCircleView.destroy();
-            console.log(page)
+            console.log(page);
 
 		 	//currentProposal.set({"url_id":id}); // pass url_id to view..
 			var projectShowLayout = new Show.Layout();
@@ -31,6 +32,15 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 	
 			projectShowLayout.on("attach",function(){
 			  
+
+        // ** to do: get junks from server
+        var fetchingallcorrections = ProjectEntitites.API.getAllCorrectionSuggestions({pid:id, page:page_id});
+           $.when(fetchingallcorrections).done(function(allsuggestions){
+            console.log(allsuggestions);
+             projectShowPage.setErrorDropdowns(allsuggestions,id);
+           });
+
+
 
 			  // projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
         projectShowPage = new Show.Page({model:page});
@@ -95,8 +105,6 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                    that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
                     
 
-                     console.log(suggestions);
-                      console.log($('#dropdown-content').length);
                     $("#dropdown-content").empty();
                      for(i=0;i<suggestions.suggestions.length;i++){
                 
@@ -109,7 +117,6 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                      $('.dropdown-item').on('click',function(){
                       var split = $(this).text().split(" ");
                       Util.replaceSelectedText(split[0]);
-
                      })
 
 
