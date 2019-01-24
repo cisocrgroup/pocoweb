@@ -13,6 +13,7 @@ define(["marionette","app","medium","backbone.syphon","common/views","common/uti
 
   Show.Page = Marionette.View.extend({
   template:pageTpl,
+  saved_selection:"",
   editor:"",
 events:{
       'click .js-stepbackward' : 'backward_clicked',
@@ -83,12 +84,21 @@ events:{
         
       },
       line_selected:function(e){
-        var selection = window.getSelection().toString();
+
+              var selection = window.getSelection().toString();
+        if(selection==""){
+          return;
+        }
+        this.saved_selection = selection;
+        $('#selected_token').removeAttr("id");
+          Util.replaceSelectedText(selection);
+
         this.trigger("page:line_selected",selection)
       },
      
       onDomRefresh:function(e){
 
+        var that = this;
 
         if(this.editor!=""){
           this.editor.destroy();
@@ -113,6 +123,7 @@ events:{
               },
 
               handleClick: function (event) {
+                that.trigger("page:concordance_clicked")
               }
             });
 
@@ -173,7 +184,6 @@ events:{
             },
                handleClick: function (event) {
                 this.classApplier.toggleSelection();
-                console.log("ACLSLKD")
 
                 // Ensure the editor knows about an html change so watchers are notified
                 // ie: <textarea> elements depend on the editableInput event to stay synchronized

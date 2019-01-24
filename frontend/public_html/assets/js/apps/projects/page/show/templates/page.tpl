@@ -51,7 +51,9 @@
 	</div>
 
 	   <%
-     _.each(lines, function(line) { 
+     _.each(lines, function(line) {
+
+  
        var split_img = line["imgFile"].split("/");
   	   var imgbasename = split_img[4];
   	   var text = "line " + line['lineId'] + ", " + imgbasename;

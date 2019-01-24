@@ -2,12 +2,12 @@
 // apps/projects/show/show_view.js
 // ================================
 
-define(["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/projects/page/show/show_view",
+define(["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/projects/page/show/show_view","apps/projects/concordance/show/show_view",
         "tpl!apps/projects/show/templates/layout.tpl",
         "tpl!apps/projects/show/templates/info.tpl",
         "tpl!apps/projects/show/templates/resp.tpl"
 
-  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,layoutTpl,infoTpl,respTpl){
+  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl,respTpl){
 
 
     var Show = {};
@@ -66,7 +66,8 @@ define(["marionette","app","backbone.syphon","common/views","apps/projects/commo
     
   });
 
-Show.Page = Page.Page.extend({})
+Show.Page = Page.Page.extend({});
+Show.Concordance = Concordance.Concordance.extend({});
 
 Show.FooterPanel = Views.FooterPanel.extend({
     });

@@ -26726,7 +26726,9 @@ __p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-
 ((__t=(pageId))==null?'':_.escape(__t))+
 '</div>\r\n	</div>\r\n\r\n	   ';
 
-     _.each(lines, function(line) { 
+     _.each(lines, function(line) {
+
+  
        var split_img = line["imgFile"].split("/");
   	   var imgbasename = split_img[4];
   	   var text = "line " + line['lineId'] + ", " + imgbasename;
@@ -26807,6 +26809,7 @@ define('apps/projects/page/show/show_view',["marionette","app","medium","backbon
 
   Show.Page = Marionette.View.extend({
   template:pageTpl,
+  saved_selection:"",
   editor:"",
 events:{
       'click .js-stepbackward' : 'backward_clicked',
@@ -26877,12 +26880,21 @@ events:{
         
       },
       line_selected:function(e){
-        var selection = window.getSelection().toString();
+
+              var selection = window.getSelection().toString();
+        if(selection==""){
+          return;
+        }
+        this.saved_selection = selection;
+        $('#selected_token').removeAttr("id");
+          Util.replaceSelectedText(selection);
+
         this.trigger("page:line_selected",selection)
       },
      
       onDomRefresh:function(e){
 
+        var that = this;
 
         if(this.editor!=""){
           this.editor.destroy();
@@ -26907,6 +26919,7 @@ events:{
               },
 
               handleClick: function (event) {
+                that.trigger("page:concordance_clicked")
               }
             });
 
@@ -26967,7 +26980,6 @@ events:{
             },
                handleClick: function (event) {
                 this.classApplier.toggleSelection();
-                console.log("ACLSLKD")
 
                 // Ensure the editor knows about an html change so watchers are notified
                 // ie: <textarea> elements depend on the editableInput event to stay synchronized
@@ -27080,6 +27092,137 @@ return Show;
 
 
 
+define("tpl!apps/projects/concordance/show/templates/concordance.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='	\r\n';
+
+if(asModal) {
+
+__p+='\r\n\r\n  <div class="modal-dialog modal-xl" role="document">\r\n  <div class="modal-content">\r\n\r\n<div class="modal-header">\r\n        <h3 class="modal-title">Concordance view for</h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n';
+ } else { 
+__p+='\r\n\r\n\r\n	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n\r\n			<!-- #frontend_render_concordance_header_div(); -->\r\n			<div id="concordance-heading">\r\n			<!--<p><h2>Concordance view for \'", urldecode($q), "\'</h2></p>-->\r\n			<p><h2>Concordance view for</h2></p>\r\n\r\n			</div>\r\n\r\n	\r\n';
+ } 
+__p+='\r\n\r\n	\r\n\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
+}
+return __p;
+};});
+
+// ================================
+// apps/concordance/show/show_view.js
+// ================================
+
+define('apps/projects/concordance/show/show_view',["marionette","app","medium","backbone.syphon","common/views","common/util",
+        "tpl!apps/projects/concordance/show/templates/concordance.tpl",
+
+
+  ], function(Marionette,App,MediumEditor,BackboneSyphon,Views,Util,concordanceTpl){
+
+
+    var Show = {};
+
+  Show.Concordance = Marionette.View.extend({
+  template:concordanceTpl,
+  editor:"",
+events:{
+      'click .js-stepbackward' : 'backward_clicked',
+      'click .js-stepforward' : 'forward_clicked',
+      'click .js-firstconcordance' : 'firstconcordance_clicked',
+      'click .js-lastconcordance' : 'lastconcordance_clicked',
+      'click .js-correct' : 'correct_clicked',
+      'click .line-text' : 'line_clicked',
+      'mouseup .line-text' : 'line_selected',
+
+      },
+
+
+      serializeData: function(){
+      var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+      var asModal = Marionette.getOption(this,"asModal");
+
+          data.Util = Util;
+          data.asModal = asModal;
+
+        return data;
+      },
+
+       backward_clicked:function(e){
+        e.preventDefault();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        console.log(data)
+        this.trigger("concordance:new",data.prevPageId);
+      },
+
+       forward_clicked:function(e){
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        e.preventDefault();
+        this.trigger("concordance:new",data.nextPageId);
+      },
+
+       firstconcordance_clicked:function(e){
+         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        e.preventDefault();
+        this.trigger("concordance:new","first");
+      },
+       lastconcordance_clicked:function(e){
+             var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        e.preventDefault();
+        this.trigger("concordance:new","last");
+      },
+      correct_clicked:function(e){
+       
+        var anchor = $(e.currentTarget).attr('anchor');
+          var ids = Util.getIds(anchor);
+          var text = $('#line-text-'+anchor).text();
+          this.trigger("concordance:correct_line",{pid:ids[0],concordance_id:ids[1],line_id:ids[2],text:text},anchor)
+
+      },
+      line_clicked:function(e){
+        e.preventDefault();
+        $('.correct-btn').hide();
+        $('.line-text').css('border-bottom','1px solid transparent');
+        $('.line-text').css('border-left','1px solid transparent');
+        $('.line-text').css('border-top','1px solid transparent');
+        $('.line-text').css('border-top-left-radius','0rem');
+        $('.line-text').css('border-bottom-left-radius','0rem');
+
+  
+        $(e.currentTarget).css('border-left','1px solid #ced4da');
+        $(e.currentTarget).css('border-bottom','1px solid #ced4da');
+        $(e.currentTarget).css('border-top','1px solid #ced4da');
+        $(e.currentTarget).css('border-top-left-radius','.25rem');
+        $(e.currentTarget).css('border-bottom-left-radius','.25rem');
+
+        $(e.currentTarget).next().find('.correct-btn').show();
+        
+      },
+      line_selected:function(e){
+        var selection = window.getSelection().toString();
+        this.trigger("concordance:line_selected",selection)
+      },
+     
+
+    onAttach : function(){
+       if(this.options.asModal){
+
+          this.$el.attr("id","conc-modal");
+          this.$el.addClass("modal fade conc-modal");
+        
+
+           this.$el.modal();
+       }
+  }
+
+})
+
+
+
+return Show;
+
+});
+
+
+
 define("tpl!apps/projects/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -27179,12 +27322,12 @@ return __p;
 // apps/projects/show/show_view.js
 // ================================
 
-define('apps/projects/show/show_view',["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/projects/page/show/show_view",
+define('apps/projects/show/show_view',["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/projects/page/show/show_view","apps/projects/concordance/show/show_view",
         "tpl!apps/projects/show/templates/layout.tpl",
         "tpl!apps/projects/show/templates/info.tpl",
         "tpl!apps/projects/show/templates/resp.tpl"
 
-  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,layoutTpl,infoTpl,respTpl){
+  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl,respTpl){
 
 
     var Show = {};
@@ -27243,7 +27386,8 @@ define('apps/projects/show/show_view',["marionette","app","backbone.syphon","com
     
   });
 
-Show.Page = Page.Page.extend({})
+Show.Page = Page.Page.extend({});
+Show.Concordance = Concordance.Concordance.extend({});
 
 Show.FooterPanel = Views.FooterPanel.extend({
     });
@@ -27684,6 +27828,7 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
                   $.when(searchingToken,gettingCorrectionSuggestions).done(function(token,suggestions){
                    that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
                     
+                    that.tokendata = token;
 
                     $("#dropdown-content").empty();
                      for(i=0;i<suggestions.suggestions.length;i++){
@@ -27707,6 +27852,19 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
        })
 
 
+       projectShowPage.on("page:concordance_clicked",function(selection){
+
+        var projectConcView = new Show.Concordance({asModal:true});
+        console.log(this.saved_selection);
+         App.mainLayout.showChildView('dialogRegion',projectConcView);
+          console.log(this.tokendata);
+             // var searchingToken = ProjectEntitites.API.searchToken({q:this.saved_selection,p:page_id,pid:id});
+
+             //      $.when(searchingToken).done(function(token){
+             //      });
+
+        });
+   
 
 
 			  projectShowInfo.on("show:edit_clicked",function(methods){

@@ -104,6 +104,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                   $.when(searchingToken,gettingCorrectionSuggestions).done(function(token,suggestions){
                    that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
                     
+                    that.tokendata = token;
 
                     $("#dropdown-content").empty();
                      for(i=0;i<suggestions.suggestions.length;i++){
@@ -127,6 +128,19 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
        })
 
 
+       projectShowPage.on("page:concordance_clicked",function(selection){
+
+        var projectConcView = new Show.Concordance({asModal:true});
+        console.log(this.saved_selection);
+         App.mainLayout.showChildView('dialogRegion',projectConcView);
+          console.log(this.tokendata);
+             // var searchingToken = ProjectEntitites.API.searchToken({q:this.saved_selection,p:page_id,pid:id});
+
+             //      $.when(searchingToken).done(function(token){
+             //      });
+
+        });
+   
 
 
 			  projectShowInfo.on("show:edit_clicked",function(methods){
