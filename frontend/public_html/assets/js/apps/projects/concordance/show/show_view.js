@@ -28,13 +28,17 @@ events:{
 
       serializeData: function(){
       var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+      console.log(data);
       var asModal = Marionette.getOption(this,"asModal");
-
+          data.tokendata =  Marionette.getOption(this,"tokendata");
+          data.suggestions =  Marionette.getOption(this,"suggestions");
           data.Util = Util;
           data.asModal = asModal;
 
         return data;
       },
+
+
 
        backward_clicked:function(e){
         e.preventDefault();
@@ -98,8 +102,15 @@ events:{
           this.$el.attr("id","conc-modal");
           this.$el.addClass("modal fade conc-modal");
         
-
-           this.$el.modal();
+          $('#conc-modal').on('show.bs.modal', function () {
+                $('#medium-editor-toolbar-1').hide();
+            })
+            $('#conc-modal').on('hidden.bs.modal', function () {
+                $('#medium-editor-toolbar-1').show();
+            })
+           this.$el.modal('show');
+         
+   
        }
   }
 

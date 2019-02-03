@@ -36,7 +36,6 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
         // ** to do: get junks from server
         var fetchingallcorrections = ProjectEntitites.API.getAllCorrectionSuggestions({pid:id, page:page_id});
            $.when(fetchingallcorrections).done(function(allsuggestions){
-            console.log(allsuggestions);
              projectShowPage.setErrorDropdowns(allsuggestions,id);
            });
 
@@ -130,14 +129,39 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
        projectShowPage.on("page:concordance_clicked",function(selection){
 
-        var projectConcView = new Show.Concordance({asModal:true});
-        console.log(this.saved_selection);
-         App.mainLayout.showChildView('dialogRegion',projectConcView);
-          console.log(this.tokendata);
-             // var searchingToken = ProjectEntitites.API.searchToken({q:this.saved_selection,p:page_id,pid:id});
+       var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:this.saved_selection,pid:id});
+       var that = this;
+         $.when(gettingCorrectionSuggestions).done(function(suggestions){
+            var tokendata = that.tokendata;
+            console.log(suggestions)
+            console.log(tokendata)
 
-             //      $.when(searchingToken).done(function(token){
-             //      });
+           var projectConcView = new Show.Concordance({tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
+          var cnt = 0;
+
+           _.each(that.tokendata.matches, function(match) {
+            var line = match['line'];
+              _.each(match['tokens'], function(word) {
+
+                var gettingSplitImages = ProjectEntitites.API.getSplitImages({word:word});
+                         $.when(gettingSplitImages).done(function(images){
+
+                          line['leftImg'] = images.leftImg;
+                          line['rightImg'] = images.rightImg;
+                          line['middleImg'] = images.middleImg;
+                         projectConcView.render();
+                         });
+
+
+              });
+
+            });
+
+             App.mainLayout.showChildView('dialogRegion',projectConcView);
+
+            
+                   
+              });
 
         });
    

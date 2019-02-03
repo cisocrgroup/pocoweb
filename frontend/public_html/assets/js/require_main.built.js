@@ -26718,7 +26718,7 @@ var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments
 with(obj||{}){
 __p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n	<ul class="nav sticky-top navbar-light justify-content-center" style="background-color: white; margin-top: 15px;margin-bottom: 15px;">\r\n	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\r\n		<i class="fas fa-fast-backward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
 ((__t=(prevPageId))==null?'':_.escape(__t))+
-'">\r\n		<i class="fas fa-step-backward"></i>\r\n		</a></li>\r\n	<!-- <li class="nav-item"> <a class="nav-link" href="#">\r\n		<label id="concordance-search-label">Show concordance of (0 occurences)</label>\r\n		</a></li> -->\r\n	<!-- suggestions -->\r\n	<!-- <li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Correction suggestions<span class="caret"></span></a>\r\n        <ul id="pcw-suggestions-dropdown" class="dropdown-menu">\r\n        </ul>\r\n    </li> -->\r\n	<!--error-patterns -->\r\n	<li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"" data-flip="false">\r\n		Error patterns<span class="caret"></span></a>\r\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\r\n        </div>\r\n        </li>\r\n	<!-- error-tokens -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"" data-flip="false">\r\n		Error tokens<span class="caret"></span></a>\r\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\r\n        </div>\r\n     </li>\r\n\r\n   \r\n\r\n	<!--nextpage and last page -->\r\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
+'">\r\n		<i class="fas fa-step-backward"></i>\r\n		</a></li>\r\n	<!-- <li class="nav-item"> <a class="nav-link" href="#">\r\n		<label id="concordance-search-label">Show concordance of (0 occurences)</label>\r\n		</a></li> -->\r\n	<!-- suggestions -->\r\n	<!-- <li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Correction suggestions<span class="caret"></span></a>\r\n        <ul id="pcw-suggestions-dropdown" class="dropdown-menu">\r\n        </ul>\r\n    </li> -->\r\n	<!--error-patterns -->\r\n	<li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false">\r\n		Error patterns<span class="caret"></span></a>\r\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\r\n        </div>\r\n        </li>\r\n	<!-- error-tokens -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false">\r\n		Error tokens<span class="caret"></span></a>\r\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\r\n        </div>\r\n     </li>\r\n\r\n   \r\n\r\n	<!--nextpage and last page -->\r\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
 ((__t=(nextPageId))==null?'':_.escape(__t))+
 '">\r\n		<i class="fas fa-step-forward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\r\n		<i class="fas fa-fast-forward"></i>\r\n		</a></li>\r\n	</ul>\r\n\r\n	<div class="defaulthl" style="line-height:1; margin-top:15px;">\r\n    <i class="fas fa-book-open card_main_icon green"></i>\r\n	Project '+
 ((__t=(projectId))==null?'':_.escape(__t))+
@@ -27099,11 +27099,82 @@ __p+='	\r\n';
 
 if(asModal) {
 
-__p+='\r\n\r\n  <div class="modal-dialog modal-xl" role="document">\r\n  <div class="modal-content">\r\n\r\n<div class="modal-header">\r\n        <h3 class="modal-title">Concordance view for</h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n';
+__p+='\r\n\r\n  <div class="modal-dialog modal-xl" role="document">\r\n  <div class="modal-content">\r\n\r\n<div class="modal-header">\r\n        <h3 class="modal-title">Concordance view for "'+
+((__t=(tokendata.query))==null?'':_.escape(__t))+
+'"</h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n';
  } else { 
-__p+='\r\n\r\n\r\n	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n\r\n			<!-- #frontend_render_concordance_header_div(); -->\r\n			<div id="concordance-heading">\r\n			<!--<p><h2>Concordance view for \'", urldecode($q), "\'</h2></p>-->\r\n			<p><h2>Concordance view for</h2></p>\r\n\r\n			</div>\r\n\r\n	\r\n';
+__p+='\r\n\r\n\r\n	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n\r\n			<div id="concordance-heading">\r\n			<p><h2>Concordance view for "'+
+((__t=(tokendata.query))==null?'':_.escape(__t))+
+'"</h2></p>\r\n			</div>\r\n\r\n	\r\n';
  } 
-__p+='\r\n\r\n	\r\n\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
+__p+='\r\n\r\n\r\n<div>\r\n	  ';
+
+      _.each(tokendata.matches, function(match) {
+      console.log(match);
+      var line = match['line'];
+    	  _.each(match['tokens'], function(word) {
+
+    var offset = word['offset'];
+    var anchor = word['projectId']+"-"+word['pageId']+"-"+word['lineId']+"-"+word['tokenId'];
+    var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];
+    var inputclass = "";
+      
+__p+='\r\n<div class="text-image-line row">\r\n\r\n<div class="left_div div_inline">\r\n	<!-- if ($images["leftImg"] != NULL) { -->\r\n		<a class="invisible=link" href="'+
+((__t=(link))==null?'':_.escape(__t))+
+'">\r\n		<img src="'+
+((__t=(line['leftImg']))==null?'':_.escape(__t))+
+'" width="auto" height="25"/>\r\n		<br/>\r\n		<label>\r\n			';
+
+			 var left_side = line['cor'].trim();
+			 left_side = left_side.substring(0,offset);
+			
+__p+='\r\n			'+
+((__t=(left_side))==null?'':_.escape(__t))+
+'\r\n			</label>\r\n		</a>\r\n	<!-- } -->\r\n	</div>\r\n	<div class="middle_div div_inline">\r\n	<!-- if ($images["middleImg"] != NULL) {\r\n		$inputclass = frontend_get_correction_class($word); -->\r\n		<a class="invisible=link" href="'+
+((__t=(link))==null?'':_.escape(__t))+
+'">\r\n		<img src="'+
+((__t=(line['middleImg']))==null?'':_.escape(__t))+
+'" width="auto" height="25"/>\r\n\r\n		</a>\r\n		<br/>\r\n\r\n\r\n\r\n		<div class="input-group">\r\n	    <!-- checkbox -->\r\n		<div class="input-group-prepend">\r\n			<div class="input-group-text">\r\n				<input id="concordance-token-checkbox-'+
+((__t=(anchor))==null?'':_.escape(__t))+
+'"	type="checkbox" aria-label="...">\r\n			</div>\r\n		</div>\r\n\r\n		<!--  input -->\r\n		<input id="concordance-token-input-'+
+((__t=(anchor))==null?'':_.escape(__t))+
+'" class="form-control '+
+((__t=(inputclass))==null?'':_.escape(__t))+
+'" type="text" value="'+
+((__t=(word['cor']))==null?'':_.escape(__t))+
+'" title="Correction"/>\r\n		<div class="input-group-append">\r\n		    <button class="btn btn-outline-secondary dropdown-toggle" style="border-right:0; border-top-right-radius: 0;border-bottom-right-radius: 0;" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>\r\n		<div id="concordance-token-suggestions-'+
+((__t=(anchor))==null?'':_.escape(__t))+
+'" class="dropdown-menu dropdown-menu-right">\r\n			';
+
+				_.each(suggestions, function(s) {                
+                      var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
+                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+                      
+__p+='\r\n                    <a class="dropdown-item noselect">'+
+((__t=(content))==null?'':_.escape(__t))+
+'</a>\r\n              ';
+ }); 
+__p+='\r\n		</div>\r\n		  <button class=" btn btn-outline-secondary js-correct" title="correct line #';
+line['lineId']
+__p+='" anchor="'+
+((__t=(anchor))==null?'':_.escape(__t))+
+'"><i class="far fa-arrow-alt-circle-up"></i></button>\r\n	\r\n		</div>\r\n\r\n\r\n		</div>\r\n\r\n	</div>\r\n	<div class="right_div div_inline">\r\n	<!-- if ($images["rightImg"] != NULL) { -->\r\n		<a class="invisible=link" href="'+
+((__t=(link))==null?'':_.escape(__t))+
+'">\r\n		<img src="'+
+((__t=(line['rightImg']))==null?'':_.escape(__t))+
+'" width="auto" height="25"/>\r\n\r\n		<br/>\r\n		<label>\r\n			';
+
+			 var right_side = line['cor'].trim();
+			 right_side = right_side.substring(offset+1,line['cor'].length+1);
+			
+__p+='\r\n			'+
+((__t=(right_side))==null?'':_.escape(__t))+
+'\r\n			</label>\r\n		</a>\r\n	<!-- } -->\r\n	</div>\r\n	</div>\r\n\r\n\r\n     ';
+
+     		});
+     	});
+     
+__p+='\r\n\r\n</div>\r\n</div>\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
 }
 return __p;
 };});
@@ -27138,13 +27209,17 @@ events:{
 
       serializeData: function(){
       var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+      console.log(data);
       var asModal = Marionette.getOption(this,"asModal");
-
+          data.tokendata =  Marionette.getOption(this,"tokendata");
+          data.suggestions =  Marionette.getOption(this,"suggestions");
           data.Util = Util;
           data.asModal = asModal;
 
         return data;
       },
+
+
 
        backward_clicked:function(e){
         e.preventDefault();
@@ -27208,8 +27283,15 @@ events:{
           this.$el.attr("id","conc-modal");
           this.$el.addClass("modal fade conc-modal");
         
-
-           this.$el.modal();
+          $('#conc-modal').on('show.bs.modal', function () {
+                $('#medium-editor-toolbar-1').hide();
+            })
+            $('#conc-modal').on('hidden.bs.modal', function () {
+                $('#medium-editor-toolbar-1').show();
+            })
+           this.$el.modal('show');
+         
+   
        }
   }
 
@@ -27689,6 +27771,28 @@ getAllCorrectionSuggestions: function(data){
   return defer.promise();
   
 },
+getSplitImages: function(data){
+    data['backend_route'] = "get_split_images";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+
 // addBook: function(id,data){
 //     var defer = jQuery.Deferred();
 //        $.ajax({
@@ -27760,7 +27864,6 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
         // ** to do: get junks from server
         var fetchingallcorrections = ProjectEntitites.API.getAllCorrectionSuggestions({pid:id, page:page_id});
            $.when(fetchingallcorrections).done(function(allsuggestions){
-            console.log(allsuggestions);
              projectShowPage.setErrorDropdowns(allsuggestions,id);
            });
 
@@ -27854,14 +27957,39 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 
        projectShowPage.on("page:concordance_clicked",function(selection){
 
-        var projectConcView = new Show.Concordance({asModal:true});
-        console.log(this.saved_selection);
-         App.mainLayout.showChildView('dialogRegion',projectConcView);
-          console.log(this.tokendata);
-             // var searchingToken = ProjectEntitites.API.searchToken({q:this.saved_selection,p:page_id,pid:id});
+       var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:this.saved_selection,pid:id});
+       var that = this;
+         $.when(gettingCorrectionSuggestions).done(function(suggestions){
+            var tokendata = that.tokendata;
+            console.log(suggestions)
+            console.log(tokendata)
 
-             //      $.when(searchingToken).done(function(token){
-             //      });
+           var projectConcView = new Show.Concordance({tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
+          var cnt = 0;
+
+           _.each(that.tokendata.matches, function(match) {
+            var line = match['line'];
+              _.each(match['tokens'], function(word) {
+
+                var gettingSplitImages = ProjectEntitites.API.getSplitImages({word:word});
+                         $.when(gettingSplitImages).done(function(images){
+
+                          line['leftImg'] = images.leftImg;
+                          line['rightImg'] = images.rightImg;
+                          line['middleImg'] = images.middleImg;
+                         projectConcView.render();
+                         });
+
+
+              });
+
+            });
+
+             App.mainLayout.showChildView('dialogRegion',projectConcView);
+
+            
+                   
+              });
 
         });
    
