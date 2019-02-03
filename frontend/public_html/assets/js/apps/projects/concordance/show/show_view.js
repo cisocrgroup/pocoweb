@@ -97,16 +97,16 @@ events:{
      
 
     onAttach : function(){
+      var that = this;
        if(this.options.asModal){
 
           this.$el.attr("id","conc-modal");
           this.$el.addClass("modal fade conc-modal");
         
           $('#conc-modal').on('show.bs.modal', function () {
-                $('#medium-editor-toolbar-1').hide();
+                that.trigger("conc:destroy:editor")
             })
             $('#conc-modal').on('hidden.bs.modal', function () {
-                $('#medium-editor-toolbar-1').show();
             })
            this.$el.modal('show');
          

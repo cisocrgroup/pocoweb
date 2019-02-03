@@ -157,6 +157,10 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
             });
 
+           projectConcView.on("conc:destroy:editor",function(){
+            projectShowPage.render();
+           })
+
              App.mainLayout.showChildView('dialogRegion',projectConcView);
 
             

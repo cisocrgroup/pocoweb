@@ -5,6 +5,10 @@
 define({
 
 
+replace_all : function(string,search, replacement) {
+    return string.replace(new RegExp(search, 'g'), replacement);
+},
+
 get_correction_class: function(obj) {
   if (obj["isFullyCorrected"]) {
     return " fully-corrected";

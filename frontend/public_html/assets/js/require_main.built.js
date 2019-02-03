@@ -23248,6 +23248,10 @@ return hooks;
 define('common/util',{
 
 
+replace_all : function(string,search, replacement) {
+    return string.replace(new RegExp(search, 'g'), replacement);
+},
+
 get_correction_class: function(obj) {
   if (obj["isFullyCorrected"]) {
     return " fully-corrected";
@@ -27107,7 +27111,7 @@ __p+='\r\n\r\n\r\n	<div class="container">\r\n	<div class="row">\r\n    <div cla
 ((__t=(tokendata.query))==null?'':_.escape(__t))+
 '"</h2></p>\r\n			</div>\r\n\r\n	\r\n';
  } 
-__p+='\r\n\r\n\r\n<div>\r\n	  ';
+__p+='\r\n\r\n\r\n	  ';
 
       _.each(tokendata.matches, function(match) {
       console.log(match);
@@ -27118,63 +27122,21 @@ __p+='\r\n\r\n\r\n<div>\r\n	  ';
     var anchor = word['projectId']+"-"+word['pageId']+"-"+word['lineId']+"-"+word['tokenId'];
     var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];
     var inputclass = "";
+    var linecor = line['cor'].trim();
+    linecor = Util.replace_all(linecor,word['cor'],'<span class="badge badge-pill badge-primary">'+word['cor']+'</span>');
       
-__p+='\r\n<div class="text-image-line row">\r\n\r\n<div class="left_div div_inline">\r\n	<!-- if ($images["leftImg"] != NULL) { -->\r\n		<a class="invisible=link" href="'+
+__p+='\r\n<div class="text-image-line row">\r\n\r\n<div class="left_div div_inline">\r\n	<!-- if ($images["leftImg"] != NULL) { -->\r\n		<div class="invisible=link" href="'+
 ((__t=(link))==null?'':_.escape(__t))+
 '">\r\n		<img src="'+
-((__t=(line['leftImg']))==null?'':_.escape(__t))+
-'" width="auto" height="25"/>\r\n		<br/>\r\n		<label>\r\n			';
-
-			 var left_side = line['cor'].trim();
-			 left_side = left_side.substring(0,offset);
-			
-__p+='\r\n			'+
-((__t=(left_side))==null?'':_.escape(__t))+
-'\r\n			</label>\r\n		</a>\r\n	<!-- } -->\r\n	</div>\r\n	<div class="middle_div div_inline">\r\n	<!-- if ($images["middleImg"] != NULL) {\r\n		$inputclass = frontend_get_correction_class($word); -->\r\n		<a class="invisible=link" href="'+
-((__t=(link))==null?'':_.escape(__t))+
-'">\r\n		<img src="'+
-((__t=(line['middleImg']))==null?'':_.escape(__t))+
-'" width="auto" height="25"/>\r\n\r\n		</a>\r\n		<br/>\r\n\r\n\r\n\r\n		<div class="input-group">\r\n	    <!-- checkbox -->\r\n		<div class="input-group-prepend">\r\n			<div class="input-group-text">\r\n				<input id="concordance-token-checkbox-'+
-((__t=(anchor))==null?'':_.escape(__t))+
-'"	type="checkbox" aria-label="...">\r\n			</div>\r\n		</div>\r\n\r\n		<!--  input -->\r\n		<input id="concordance-token-input-'+
-((__t=(anchor))==null?'':_.escape(__t))+
-'" class="form-control '+
-((__t=(inputclass))==null?'':_.escape(__t))+
-'" type="text" value="'+
-((__t=(word['cor']))==null?'':_.escape(__t))+
-'" title="Correction"/>\r\n		<div class="input-group-append">\r\n		    <button class="btn btn-outline-secondary dropdown-toggle" style="border-right:0; border-top-right-radius: 0;border-bottom-right-radius: 0;" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>\r\n		<div id="concordance-token-suggestions-'+
-((__t=(anchor))==null?'':_.escape(__t))+
-'" class="dropdown-menu dropdown-menu-right">\r\n			';
-
-				_.each(suggestions, function(s) {                
-                      var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
-                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
-                      
-__p+='\r\n                    <a class="dropdown-item noselect">'+
-((__t=(content))==null?'':_.escape(__t))+
-'</a>\r\n              ';
- }); 
-__p+='\r\n		</div>\r\n		  <button class=" btn btn-outline-secondary js-correct" title="correct line #';
-line['lineId']
-__p+='" anchor="'+
-((__t=(anchor))==null?'':_.escape(__t))+
-'"><i class="far fa-arrow-alt-circle-up"></i></button>\r\n	\r\n		</div>\r\n\r\n\r\n		</div>\r\n\r\n	</div>\r\n	<div class="right_div div_inline">\r\n	<!-- if ($images["rightImg"] != NULL) { -->\r\n		<a class="invisible=link" href="'+
-((__t=(link))==null?'':_.escape(__t))+
-'">\r\n		<img src="'+
-((__t=(line['rightImg']))==null?'':_.escape(__t))+
-'" width="auto" height="25"/>\r\n\r\n		<br/>\r\n		<label>\r\n			';
-
-			 var right_side = line['cor'].trim();
-			 right_side = right_side.substring(offset+1,line['cor'].length+1);
-			
-__p+='\r\n			'+
-((__t=(right_side))==null?'':_.escape(__t))+
-'\r\n			</label>\r\n		</a>\r\n	<!-- } -->\r\n	</div>\r\n	</div>\r\n\r\n\r\n     ';
+((__t=(line['imgFile']))==null?'':_.escape(__t))+
+'" width="auto" height="25"/>\r\n		<br/>\r\n		<div>\r\n			'+
+((__t=(linecor))==null?'':__t)+
+'\r\n		</div>\r\n		</div>\r\n	</div>\r\n	\r\n	</div>\r\n\r\n\r\n     ';
 
      		});
      	});
      
-__p+='\r\n\r\n</div>\r\n</div>\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
+__p+='\r\n\r\n\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
 }
 return __p;
 };});
@@ -27278,16 +27240,16 @@ events:{
      
 
     onAttach : function(){
+      var that = this;
        if(this.options.asModal){
 
           this.$el.attr("id","conc-modal");
           this.$el.addClass("modal fade conc-modal");
         
           $('#conc-modal').on('show.bs.modal', function () {
-                $('#medium-editor-toolbar-1').hide();
+                that.trigger("conc:destroy:editor")
             })
             $('#conc-modal').on('hidden.bs.modal', function () {
-                $('#medium-editor-toolbar-1').show();
             })
            this.$el.modal('show');
          
@@ -27984,6 +27946,10 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
               });
 
             });
+
+           projectConcView.on("conc:destroy:editor",function(){
+            projectShowPage.render();
+           })
 
              App.mainLayout.showChildView('dialogRegion',projectConcView);
 
