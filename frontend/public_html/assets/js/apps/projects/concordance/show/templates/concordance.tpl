@@ -33,7 +33,6 @@ if(asModal) {
 
 	  <%
       _.each(tokendata.matches, function(match) {
-      console.log(match);
       var line = match['line'];
     	  _.each(match['tokens'], function(word) {
 
@@ -41,19 +40,20 @@ if(asModal) {
     var anchor = word['projectId']+"-"+word['pageId']+"-"+word['lineId']+"-"+word['tokenId'];
     var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];
     var inputclass = "";
-    var linecor = line['cor'].trim();
-    linecor = Util.replace_all(linecor,word['cor'],'<span class="badge badge-pill badge-primary">'+word['cor']+'</span>');
+   
       %>
-<div class="text-image-line row">
+
+
+
+<div class="text-image-line">
 
 <div class="left_div div_inline">
 	<!-- if ($images["leftImg"] != NULL) { -->
 		<div class="invisible=link" href="<%-link%>">
-		<img src="<%-line['imgFile']%>" width="auto" height="25"/>
-		<br/>
-		<div>
-			<%=linecor%>
-		</div>
+    <div id ="img_<%-line['pageId']%>_<%-line['lineId']%>_parent">
+		<img src="<%-line['imgFile']%>" id="img_<%-line['pageId']%>_<%-line['lineId']%>" width="auto" height="25"/>
+    </div>
+	
 		</div>
 	</div>
 	

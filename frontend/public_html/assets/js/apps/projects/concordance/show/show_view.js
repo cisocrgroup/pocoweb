@@ -2,11 +2,11 @@
 // apps/concordance/show/show_view.js
 // ================================
 
-define(["marionette","app","medium","backbone.syphon","common/views","common/util",
+define(["marionette","app","medium","imagesLoaded","backbone.syphon","common/views","common/util",
         "tpl!apps/projects/concordance/show/templates/concordance.tpl",
 
 
-  ], function(Marionette,App,MediumEditor,BackboneSyphon,Views,Util,concordanceTpl){
+  ], function(Marionette,App,MediumEditor,ImagesLoaded,BackboneSyphon,Views,Util,concordanceTpl){
 
 
     var Show = {};
@@ -108,10 +108,94 @@ events:{
             })
             $('#conc-modal').on('hidden.bs.modal', function () {
             })
-           this.$el.modal('show');
-         
-   
+
+             $('#conc-modal').on('shown.bs.modal', function () {
+            })
+           
+        
        }
+
+$('#conc-modal').imagesLoaded( function() {
+
+  $('#conc-modal').css('opacity','1').show();
+
+          var tokendata =  Marionette.getOption(that,"tokendata");
+          var query = tokendata.query;
+ 
+
+           _.each(tokendata.matches, function(match) {
+            var line = match['line'];
+            var linetokens = line.tokens;
+            var splitImgLine = $('<div class="splitLine"></div>');
+            $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").append(splitImgLine);
+
+            var cnt = 0;
+            var offset = 0;
+            var img_id = "img_"+line['pageId']+"_"+line['lineId'];
+
+             // linecor = Util.replace_all(linecor,word['cor'],'<span class="badge badge-pill badge-primary">'+word['cor']+'</span>');
+
+              _.each(linetokens, function(token) {
+
+                // var gettingSplitImages = ProjectEntitites.API.getSplitImages({word:word});
+                //          $.when(gettingSplitImages).done(function(images){
+
+                //           line['leftImg'] = images.leftImg;
+                //           line['rightImg'] = images.rightImg;
+                //           line['middleImg'] = images.middleImg;
+                //          projectConcView.render();
+                //          });
+
+                 var box = token['box'];
+
+                var line_img = document.getElementById(img_id);
+
+                // console.log(line_img);
+
+                var c = document.createElement("canvas");
+                c.width=box.width;
+                c.height=box.height;
+
+                  var ctx = c.getContext("2d");
+                  ctx.drawImage(line_img, offset, 0, box.width, box.height, 0, 0, box.width, box.height);
+
+                    var img = new Image();
+                    img.src = c.toDataURL();
+                    img.setAttribute('id','splitImg_'+line['pageId']+"_"+line['lineId']+"_"+cnt);
+                    img.height = '25';
+
+                    $('#splitImg_'+line['lineId']+"_"+cnt).css('width','auto');
+
+                    var cordiv = $("<div>"+token.cor.trim()+"</div>");
+                    if(query==token.cor){
+                       cordiv = $("<div><span class='badge badge-primary'>"+token.cor.trim()+"</span></div>");
+                   //  cordiv = $("<div style='color:green;'>"+token.cor.trim()+"</div>");
+                    }
+
+
+                    var div = $("<div style='display:inline-block;'></div>").append(img).append(cordiv);
+
+                    $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").find('.splitLine').append(div);
+                    cnt++;
+                    offset +=box.width;
+              });
+           $("#"+img_id).remove();
+
+     });
+
+    that.$el.modal('show');
+
+
+
+
+});
+
+
+     
+
+
+
+
   }
 
 })

@@ -137,25 +137,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
             console.log(tokendata)
 
            var projectConcView = new Show.Concordance({tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
-          var cnt = 0;
-
-           _.each(that.tokendata.matches, function(match) {
-            var line = match['line'];
-              _.each(match['tokens'], function(word) {
-
-                var gettingSplitImages = ProjectEntitites.API.getSplitImages({word:word});
-                         $.when(gettingSplitImages).done(function(images){
-
-                          line['leftImg'] = images.leftImg;
-                          line['rightImg'] = images.rightImg;
-                          line['middleImg'] = images.middleImg;
-                         projectConcView.render();
-                         });
-
-
-              });
-
-            });
+    
 
            projectConcView.on("conc:destroy:editor",function(){
             projectShowPage.render();

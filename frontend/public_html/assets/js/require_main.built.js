@@ -27095,6 +27095,13 @@ return Show;
 });
 
 
+/*!
+ * imagesLoaded PACKAGED v4.1.4
+ * JavaScript is all like "You images are done yet or what?"
+ * MIT License
+ */
+
+!function(e,t){"function"==typeof define&&define.amd?define("ev-emitter/ev-emitter",t):"object"==typeof module&&module.exports?module.exports=t():e.EvEmitter=t()}("undefined"!=typeof window?window:this,function(){function e(){}var t=e.prototype;return t.on=function(e,t){if(e&&t){var i=this._events=this._events||{},n=i[e]=i[e]||[];return n.indexOf(t)==-1&&n.push(t),this}},t.once=function(e,t){if(e&&t){this.on(e,t);var i=this._onceEvents=this._onceEvents||{},n=i[e]=i[e]||{};return n[t]=!0,this}},t.off=function(e,t){var i=this._events&&this._events[e];if(i&&i.length){var n=i.indexOf(t);return n!=-1&&i.splice(n,1),this}},t.emitEvent=function(e,t){var i=this._events&&this._events[e];if(i&&i.length){i=i.slice(0),t=t||[];for(var n=this._onceEvents&&this._onceEvents[e],o=0;o<i.length;o++){var r=i[o],s=n&&n[r];s&&(this.off(e,r),delete n[r]),r.apply(this,t)}return this}},t.allOff=function(){delete this._events,delete this._onceEvents},e}),function(e,t){"function"==typeof define&&define.amd?define('imagesLoaded',["ev-emitter/ev-emitter"],function(i){return t(e,i)}):"object"==typeof module&&module.exports?module.exports=t(e,require("ev-emitter")):e.imagesLoaded=t(e,e.EvEmitter)}("undefined"!=typeof window?window:this,function(e,t){function i(e,t){for(var i in t)e[i]=t[i];return e}function n(e){if(Array.isArray(e))return e;var t="object"==typeof e&&"number"==typeof e.length;return t?d.call(e):[e]}function o(e,t,r){if(!(this instanceof o))return new o(e,t,r);var s=e;return"string"==typeof e&&(s=document.querySelectorAll(e)),s?(this.elements=n(s),this.options=i({},this.options),"function"==typeof t?r=t:i(this.options,t),r&&this.on("always",r),this.getImages(),h&&(this.jqDeferred=new h.Deferred),void setTimeout(this.check.bind(this))):void a.error("Bad element for imagesLoaded "+(s||e))}function r(e){this.img=e}function s(e,t){this.url=e,this.element=t,this.img=new Image}var h=e.jQuery,a=e.console,d=Array.prototype.slice;o.prototype=Object.create(t.prototype),o.prototype.options={},o.prototype.getImages=function(){this.images=[],this.elements.forEach(this.addElementImages,this)},o.prototype.addElementImages=function(e){"IMG"==e.nodeName&&this.addImage(e),this.options.background===!0&&this.addElementBackgroundImages(e);var t=e.nodeType;if(t&&u[t]){for(var i=e.querySelectorAll("img"),n=0;n<i.length;n++){var o=i[n];this.addImage(o)}if("string"==typeof this.options.background){var r=e.querySelectorAll(this.options.background);for(n=0;n<r.length;n++){var s=r[n];this.addElementBackgroundImages(s)}}}};var u={1:!0,9:!0,11:!0};return o.prototype.addElementBackgroundImages=function(e){var t=getComputedStyle(e);if(t)for(var i=/url\((['"])?(.*?)\1\)/gi,n=i.exec(t.backgroundImage);null!==n;){var o=n&&n[2];o&&this.addBackground(o,e),n=i.exec(t.backgroundImage)}},o.prototype.addImage=function(e){var t=new r(e);this.images.push(t)},o.prototype.addBackground=function(e,t){var i=new s(e,t);this.images.push(i)},o.prototype.check=function(){function e(e,i,n){setTimeout(function(){t.progress(e,i,n)})}var t=this;return this.progressedCount=0,this.hasAnyBroken=!1,this.images.length?void this.images.forEach(function(t){t.once("progress",e),t.check()}):void this.complete()},o.prototype.progress=function(e,t,i){this.progressedCount++,this.hasAnyBroken=this.hasAnyBroken||!e.isLoaded,this.emitEvent("progress",[this,e,t]),this.jqDeferred&&this.jqDeferred.notify&&this.jqDeferred.notify(this,e),this.progressedCount==this.images.length&&this.complete(),this.options.debug&&a&&a.log("progress: "+i,e,t)},o.prototype.complete=function(){var e=this.hasAnyBroken?"fail":"done";if(this.isComplete=!0,this.emitEvent(e,[this]),this.emitEvent("always",[this]),this.jqDeferred){var t=this.hasAnyBroken?"reject":"resolve";this.jqDeferred[t](this)}},r.prototype=Object.create(t.prototype),r.prototype.check=function(){var e=this.getIsImageComplete();return e?void this.confirm(0!==this.img.naturalWidth,"naturalWidth"):(this.proxyImage=new Image,this.proxyImage.addEventListener("load",this),this.proxyImage.addEventListener("error",this),this.img.addEventListener("load",this),this.img.addEventListener("error",this),void(this.proxyImage.src=this.img.src))},r.prototype.getIsImageComplete=function(){return this.img.complete&&this.img.naturalWidth},r.prototype.confirm=function(e,t){this.isLoaded=e,this.emitEvent("progress",[this,this.img,t])},r.prototype.handleEvent=function(e){var t="on"+e.type;this[t]&&this[t](e)},r.prototype.onload=function(){this.confirm(!0,"onload"),this.unbindEvents()},r.prototype.onerror=function(){this.confirm(!1,"onerror"),this.unbindEvents()},r.prototype.unbindEvents=function(){this.proxyImage.removeEventListener("load",this),this.proxyImage.removeEventListener("error",this),this.img.removeEventListener("load",this),this.img.removeEventListener("error",this)},s.prototype=Object.create(r.prototype),s.prototype.check=function(){this.img.addEventListener("load",this),this.img.addEventListener("error",this),this.img.src=this.url;var e=this.getIsImageComplete();e&&(this.confirm(0!==this.img.naturalWidth,"naturalWidth"),this.unbindEvents())},s.prototype.unbindEvents=function(){this.img.removeEventListener("load",this),this.img.removeEventListener("error",this)},s.prototype.confirm=function(e,t){this.isLoaded=e,this.emitEvent("progress",[this,this.element,t])},o.makeJQueryPlugin=function(t){t=t||e.jQuery,t&&(h=t,h.fn.imagesLoaded=function(e,t){var i=new o(this,e,t);return i.jqDeferred.promise(h(this))})},o.makeJQueryPlugin(),o});
 
 define("tpl!apps/projects/concordance/show/templates/concordance.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
@@ -27114,7 +27121,6 @@ __p+='\r\n\r\n\r\n	<div class="container">\r\n	<div class="row">\r\n    <div cla
 __p+='\r\n\r\n\r\n	  ';
 
       _.each(tokendata.matches, function(match) {
-      console.log(match);
       var line = match['line'];
     	  _.each(match['tokens'], function(word) {
 
@@ -27122,16 +27128,21 @@ __p+='\r\n\r\n\r\n	  ';
     var anchor = word['projectId']+"-"+word['pageId']+"-"+word['lineId']+"-"+word['tokenId'];
     var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];
     var inputclass = "";
-    var linecor = line['cor'].trim();
-    linecor = Util.replace_all(linecor,word['cor'],'<span class="badge badge-pill badge-primary">'+word['cor']+'</span>');
+   
       
-__p+='\r\n<div class="text-image-line row">\r\n\r\n<div class="left_div div_inline">\r\n	<!-- if ($images["leftImg"] != NULL) { -->\r\n		<div class="invisible=link" href="'+
+__p+='\r\n\r\n\r\n\r\n<div class="text-image-line">\r\n\r\n<div class="left_div div_inline">\r\n	<!-- if ($images["leftImg"] != NULL) { -->\r\n		<div class="invisible=link" href="'+
 ((__t=(link))==null?'':_.escape(__t))+
-'">\r\n		<img src="'+
+'">\r\n    <div id ="img_'+
+((__t=(line['pageId']))==null?'':_.escape(__t))+
+'_'+
+((__t=(line['lineId']))==null?'':_.escape(__t))+
+'_parent">\r\n		<img src="'+
 ((__t=(line['imgFile']))==null?'':_.escape(__t))+
-'" width="auto" height="25"/>\r\n		<br/>\r\n		<div>\r\n			'+
-((__t=(linecor))==null?'':__t)+
-'\r\n		</div>\r\n		</div>\r\n	</div>\r\n	\r\n	</div>\r\n\r\n\r\n     ';
+'" id="img_'+
+((__t=(line['pageId']))==null?'':_.escape(__t))+
+'_'+
+((__t=(line['lineId']))==null?'':_.escape(__t))+
+'" width="auto" height="25"/>\r\n    </div>\r\n	\r\n		</div>\r\n	</div>\r\n	\r\n	</div>\r\n\r\n\r\n     ';
 
      		});
      	});
@@ -27145,11 +27156,11 @@ return __p;
 // apps/concordance/show/show_view.js
 // ================================
 
-define('apps/projects/concordance/show/show_view',["marionette","app","medium","backbone.syphon","common/views","common/util",
+define('apps/projects/concordance/show/show_view',["marionette","app","medium","imagesLoaded","backbone.syphon","common/views","common/util",
         "tpl!apps/projects/concordance/show/templates/concordance.tpl",
 
 
-  ], function(Marionette,App,MediumEditor,BackboneSyphon,Views,Util,concordanceTpl){
+  ], function(Marionette,App,MediumEditor,ImagesLoaded,BackboneSyphon,Views,Util,concordanceTpl){
 
 
     var Show = {};
@@ -27251,10 +27262,95 @@ events:{
             })
             $('#conc-modal').on('hidden.bs.modal', function () {
             })
-           this.$el.modal('show');
-         
-   
+
+             $('#conc-modal').on('shown.bs.modal', function () {
+            })
+           
+        
        }
+
+$('#conc-modal').imagesLoaded( function() {
+
+  $('#conc-modal').css('opacity','1').show();
+
+          var tokendata =  Marionette.getOption(that,"tokendata");
+          var query = tokendata.query;
+ 
+
+           _.each(tokendata.matches, function(match) {
+            var line = match['line'];
+            var linetokens = line.tokens;
+            console.log(line['pageId']);
+            var splitImgLine = $('<div class="splitLine"></div>');
+            $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").append(splitImgLine);
+
+            var cnt = 0;
+            var offset = 0;
+            var img_id = "img_"+line['pageId']+"_"+line['lineId'];
+
+             // linecor = Util.replace_all(linecor,word['cor'],'<span class="badge badge-pill badge-primary">'+word['cor']+'</span>');
+
+              _.each(linetokens, function(token) {
+
+                // var gettingSplitImages = ProjectEntitites.API.getSplitImages({word:word});
+                //          $.when(gettingSplitImages).done(function(images){
+
+                //           line['leftImg'] = images.leftImg;
+                //           line['rightImg'] = images.rightImg;
+                //           line['middleImg'] = images.middleImg;
+                //          projectConcView.render();
+                //          });
+
+                 var box = token['box'];
+
+                var line_img = document.getElementById(img_id);
+
+                // console.log(line_img);
+
+                var c = document.createElement("canvas");
+                c.width=box.width;
+                c.height=box.height;
+
+                  var ctx = c.getContext("2d");
+                  ctx.drawImage(line_img, offset, 0, box.width, box.height, 0, 0, box.width, box.height);
+
+                    var img = new Image();
+                    img.src = c.toDataURL();
+                    img.setAttribute('id','splitImg_'+line['pageId']+"_"+line['lineId']+"_"+cnt);
+                    img.height = '25';
+
+                    $('#splitImg_'+line['lineId']+"_"+cnt).css('width','auto');
+
+                    var cordiv = $("<div>"+token.cor.trim()+"</div>");
+                    if(query==token.cor){
+                     cordiv = $("<div><span class='badge badge-primary'>"+token.cor.trim()+"</span></div>");
+                   //  cordiv = $("<div style='color:green;'>"+token.cor.trim()+"</div>");
+                    }
+
+
+                    var div = $("<div style='display:inline-block;'></div>").append(img).append(cordiv);
+
+                    $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").find('.splitLine').append(div);
+                    cnt++;
+                    offset +=box.width;
+              });
+           $("#"+img_id).remove();
+
+     });
+
+    that.$el.modal('show');
+
+
+
+
+});
+
+
+     
+
+
+
+
   }
 
 })
@@ -27927,25 +28023,7 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
             console.log(tokendata)
 
            var projectConcView = new Show.Concordance({tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
-          var cnt = 0;
-
-           _.each(that.tokendata.matches, function(match) {
-            var line = match['line'];
-              _.each(match['tokens'], function(word) {
-
-                var gettingSplitImages = ProjectEntitites.API.getSplitImages({word:word});
-                         $.when(gettingSplitImages).done(function(images){
-
-                          line['leftImg'] = images.leftImg;
-                          line['rightImg'] = images.rightImg;
-                          line['middleImg'] = images.middleImg;
-                         projectConcView.render();
-                         });
-
-
-              });
-
-            });
+    
 
            projectConcView.on("conc:destroy:editor",function(){
             projectShowPage.render();
@@ -29610,6 +29688,7 @@ requirejs.config({
 
     jquery: "vendor/jquery",
     "jquery-ui": "vendor/jquery-ui",
+    "imagesLoaded": "vendor/imagesloaded.min",
 
     "select2": "vendor/select2.min",
     "moment":"vendor/moment",

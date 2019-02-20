@@ -10,6 +10,7 @@ requirejs.config({
 
     jquery: "vendor/jquery",
     "jquery-ui": "vendor/jquery-ui",
+    "imagesLoaded": "vendor/imagesloaded.min",
 
     "select2": "vendor/select2.min",
     "moment":"vendor/moment",
