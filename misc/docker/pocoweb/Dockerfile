@@ -9,7 +9,7 @@ RUN yum update -y && yum install -y $(cat /dependencies.txt)
 # RUN apt-get update && apt-get install -y $(cat /dependencies.txt)
 
 # pocoweb
-ENV POCOWEB_CHECKOUT_BRANCH devel
+ENV POCOWEB_CHECKOUT_BRANCH jsapp
 RUN git clone https://git@github.com/cisocrgroup/pocoweb.git \
 	--single-branch -b $POCOWEB_CHECKOUT_BRANCH &&\
 	cd /pocoweb &&\
