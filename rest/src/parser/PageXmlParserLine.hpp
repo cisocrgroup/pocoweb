@@ -3,6 +3,8 @@
 
 #include "ParserPage.hpp"
 #include "Xml.hpp"
+#include "pugixml.hpp"
+#include <vector>
 
 namespace pcw {
 class PageXmlParserLine : public ParserLine
@@ -16,6 +18,27 @@ public:
   virtual std::wstring wstring() const override;
   virtual std::string string() const override;
   virtual LinePtr line(int id) const override;
+
+private:
+  struct glyph
+  {
+    Xml::Node node;
+    size_t pos;
+  };
+
+  struct word
+  {
+    void parse();
+    Xml::Node node;
+    size_t begin, end;
+    std::vector<glyph> glyphs;
+  };
+
+  void parse();
+
+  Xml::Node node_;
+  std::wstring string_;
+  std::vector<word> words_;
 };
 }
 

@@ -1,6 +1,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE PageXmlTest
 
+#include "core/Line.hpp"
 #include "core/WagnerFischer.hpp"
 #include "parser/PageXmlPageParser.hpp"
 #include "parser/ParserPage.hpp"
@@ -47,6 +48,24 @@ BOOST_AUTO_TEST_CASE(PageXmlParserParsesImageFileName)
 BOOST_AUTO_TEST_CASE(PageXmlParserParsesTwoLines)
 {
   BOOST_CHECK_EQUAL(2, page->size());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(PageXmlParserCheckFirstLine)
+{
+  BOOST_CHECK_EQUAL(std::string("x y"), page->get(0).string());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(PageXmlParserCheckSecondLine)
+{
+  BOOST_CHECK_EQUAL(std::string("ab cd"), page->get(1).string());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(PageXmlParserCheckFirstLineBox)
+{
+  BOOST_CHECK_EQUAL(Box(1, 2, 11, 12), page->get(0).line(1)->box);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
