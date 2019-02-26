@@ -107,3 +107,10 @@ Box::is_within(const Box& other) const noexcept
     return false;
   return true;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+bool
+Box::is_empty() const noexcept
+{
+  return left_ == 0 and top_ == 0 and right_ == 0 and bottom_ == 0;
+}

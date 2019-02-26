@@ -31,6 +31,7 @@ public:
 
   std::vector<Box> split(int n) const;
   bool is_within(const Box& other) const noexcept;
+  bool is_empty() const noexcept;
 
 private:
   int left_, top_, right_, bottom_;
