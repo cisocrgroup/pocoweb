@@ -243,7 +243,7 @@ sid=""
 login $name $pass 200
 loggedin $name 200
 ## HOBBES
-wget http://www.cis.lmu.de/~finkf/pocoweb/hobbes-ocropus.zip
+wget -N http://www.cis.lmu.de/~finkf/pocoweb/hobbes-ocropus.zip
 upload hobbes-ocropus.zip 201
 #exit $error
 update_book $bid "title" "Leviathan"
@@ -271,7 +271,7 @@ get_line $bid 42 40 "mi"
 remove_book $bid
 check_book_does_not_exist $bid
 ## ROLLENHAGEN
-wget http://www.cis.lmu.de/~finkf/pocoweb/rollenhagen_reysen_1603.zip
+wget -N http://www.cis.lmu.de/~finkf/pocoweb/rollenhagen_reysen_1603.zip
 upload rollenhagen_reysen_1603.zip 201
 update_book $bid "title" "Reysen"
 update_book $bid "author" "Rollenhagen"
