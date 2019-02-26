@@ -41,11 +41,11 @@
           <Coords points="1382,460 1483,460 1483,508 1382,508"/>
 		  <Glyph id="glyph_2_1_2_1">
 			<Coords points="1382,460 1483,460 1483,508 1382,508"/>
-            <TextEquiv>
+            <TextEquiv conf=".1">
               <Unicode>y</Unicode>
             </TextEquiv>
 		  </Glyph>
-          <TextEquiv>
+          <TextEquiv conf=".2">
             <Unicode>x</Unicode>
           </TextEquiv>
         </Word>
