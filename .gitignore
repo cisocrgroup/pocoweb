@@ -21,3 +21,4 @@ misc/systemd/pocoweb.service
 env
 tests.log
 profile-tmp.xml
+TAGS
