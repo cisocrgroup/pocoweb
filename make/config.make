@@ -11,7 +11,8 @@ LIBDIR := $(DESTDIR)/$(PREFIX)/lib
 
 CXX ?= g++
 
-CXXFLAGS := -MP -MD -std=gnu++14 -Wall -Werror -fpic
+CXXFLAGS ?= ""
+CXXFLAGS += -MP -MD -std=gnu++14 -Wall -Werror -fpic
 CXXFLAGS += -g
 CXXFLAGS += -Irest/src
 CXXFLAGS += -Wundef
