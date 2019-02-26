@@ -18,11 +18,13 @@ public:
     : path_(path)
     , xml_(path)
     , done_(false)
-  {}
+  {
+  }
   explicit PageXmlPageParser(Xml xml)
     : xml_(xml)
     , done_(false)
-  {}
+  {
+  }
   virtual ~PageXmlPageParser() noexcept override = default;
   virtual bool has_next() const noexcept override { return not done_; }
   virtual ParserPagePtr parse() override;
