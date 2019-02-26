@@ -23,7 +23,6 @@ struct Fixture
     page = parser.parse();
     BOOST_REQUIRE(not parser.has_next());
     BOOST_REQUIRE(page);
-    // BOOST_REQUIRE(page->size() == 3);
   }
   ParserPagePtr page;
 };
@@ -42,6 +41,12 @@ BOOST_AUTO_TEST_CASE(PageXmlParserParsesPageBox)
 BOOST_AUTO_TEST_CASE(PageXmlParserParsesImageFileName)
 {
   BOOST_CHECK_EQUAL("path/to/img.png", page->img);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(PageXmlParserParsesTwoLines)
+{
+  BOOST_CHECK_EQUAL(2, page->size());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

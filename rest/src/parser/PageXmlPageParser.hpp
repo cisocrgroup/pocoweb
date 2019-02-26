@@ -32,7 +32,8 @@ public:
 private:
   void add_line(const Xml::Node& linenode, XmlParserPage& page) const;
   void parse(const Xml::Node& pagenode, XmlParserPage& page) const;
-  static Box get_box(const Xml::Node& node);
+  void parse_line(const Xml::Node& line_node, XmlParserPage& page) const;
+  static Box get_page_box(const Xml::Node& node);
 
   Path path_;
   Xml xml_;
