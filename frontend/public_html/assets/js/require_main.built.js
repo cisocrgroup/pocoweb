@@ -26722,7 +26722,7 @@ var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments
 with(obj||{}){
 __p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n	<ul class="nav sticky-top navbar-light justify-content-center" style="background-color: white; margin-top: 15px;margin-bottom: 15px;">\r\n	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\r\n		<i class="fas fa-fast-backward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
 ((__t=(prevPageId))==null?'':_.escape(__t))+
-'">\r\n		<i class="fas fa-step-backward"></i>\r\n		</a></li>\r\n	<!-- <li class="nav-item"> <a class="nav-link" href="#">\r\n		<label id="concordance-search-label">Show concordance of (0 occurences)</label>\r\n		</a></li> -->\r\n	<!-- suggestions -->\r\n	<!-- <li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Correction suggestions<span class="caret"></span></a>\r\n        <ul id="pcw-suggestions-dropdown" class="dropdown-menu">\r\n        </ul>\r\n    </li> -->\r\n	<!--error-patterns -->\r\n	<li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false">\r\n		Error patterns<span class="caret"></span></a>\r\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\r\n        </div>\r\n        </li>\r\n	<!-- error-tokens -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false">\r\n		Error tokens<span class="caret"></span></a>\r\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\r\n        </div>\r\n     </li>\r\n\r\n   \r\n\r\n	<!--nextpage and last page -->\r\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
+'">\r\n		<i class="fas fa-step-backward"></i>\r\n		</a></li>\r\n\r\n	<!--error-patterns -->\r\n	<li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false">\r\n		Error patterns<span class="caret"></span></a>\r\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\r\n        </div>\r\n        </li>\r\n	<!-- error-tokens -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false">\r\n		Error tokens<span class="caret"></span></a>\r\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\r\n        </div>\r\n     </li>\r\n\r\n   \r\n\r\n	<!--nextpage and last page -->\r\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
 ((__t=(nextPageId))==null?'':_.escape(__t))+
 '">\r\n		<i class="fas fa-step-forward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\r\n		<i class="fas fa-fast-forward"></i>\r\n		</a></li>\r\n	</ul>\r\n\r\n	<div class="defaulthl" style="line-height:1; margin-top:15px;">\r\n    <i class="fas fa-book-open card_main_icon green"></i>\r\n	Project '+
 ((__t=(projectId))==null?'':_.escape(__t))+
@@ -26755,7 +26755,9 @@ __p+='\r\n       <div class="text-image-line" title="'+
 ((__t=(text))==null?'':_.escape(__t))+
 '">\r\n\r\n       	<a class="line-anchor" id="line-anchor-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"></a>\r\n		<div style="margin-bottom: 5px;"><img src=\''+
+'"></a>\r\n		<div style="margin-bottom: 5px;" class="line-img"><img id="line-img-'+
+((__t=(anchor))==null?'':_.escape(__t))+
+'" src=\''+
 ((__t=(line["imgFile"]))==null?'':_.escape(__t))+
 '\' alt=\''+
 ((__t=(text))==null?'':_.escape(__t))+
@@ -26773,25 +26775,11 @@ __p+='  anchor="'+
 ((__t=(anchor))==null?'':_.escape(__t))+
 '"\r\n	    class="line-text '+
 ((__t=(inputclass))==null?'':_.escape(__t))+
-'">\r\n\r\n        '+
-((__t=(line["cor"]))==null?'':_.escape(__t))+
-'\r\n        </div>\r\n        <span>\r\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
+'">\r\n\r\n      \r\n\r\n\r\n      \r\n\r\n        </div>\r\n        <span>\r\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
 line['lineId']
 __p+='" anchor="'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"><i class="far fa-arrow-alt-circle-up"></i></div>\r\n        </span>\r\n	    </div>\r\n        <!-- <div id="line-input-'+
-((__t=(anchor))==null?'':_.escape(__t))+
-'" class="line-input input-group" hidden>\r\n	    <div class="input-group">\r\n		    <input id="'+
-((__t=(anchor))==null?'':_.escape(__t))+
-'" class="form-control '+
-((__t=(inputclass))==null?'':_.escape(__t))+
-'" type="text" size="30" value="'+
-((__t=(line['cor']))==null?'':_.escape(__t))+
-'">\r\n		    <div class="input-group-append">\r\n		      <div class="input-group-text js-correct" title="correct line #';
-line['lineId']
-__p+='" id="'+
-((__t=(anchor))==null?'':_.escape(__t))+
-'-btn"><i class="far fa-arrow-alt-circle-up"></i></div>\r\n		    </div>\r\n		  </div>\r\n		</div>\r\n -->\r\n\r\n\r\n\r\n\r\n       </div>\r\n	\r\n     \r\n\r\n\r\n      ';
+'"><i class="far fa-arrow-alt-circle-up"></i></div>\r\n        </span>\r\n	    </div>\r\n\r\n\r\n\r\n       </div>\r\n	\r\n     \r\n\r\n\r\n      ';
  }) 
 __p+='\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
 }
@@ -26860,7 +26848,7 @@ events:{
        
         var anchor = $(e.currentTarget).attr('anchor');
           var ids = Util.getIds(anchor);
-          var text = $('#line-text-'+anchor).text();
+          var text = $('#line-text-'+anchor).text().trim();
           this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
 
       },
@@ -26885,8 +26873,8 @@ events:{
       },
       line_selected:function(e){
 
-              var selection = window.getSelection().toString();
-        if(selection==""){
+       var selection = window.getSelection().toString();
+        if(selection==""||selection==" "){
           return;
         }
         this.saved_selection = selection;
@@ -26895,14 +26883,55 @@ events:{
 
         this.trigger("page:line_selected",selection)
       },
+
+      onAttach:function(e){
+
+        var that = this;
+
+   
+
+      },
      
       onDomRefresh:function(e){
 
         var that = this;
+     $('.line-img').each(function(index){
+       $(this).imagesLoaded( function() {
+          
+
+            var line = that.model.get('lines')[index];
+            var linetokens = line.tokens;
+            var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
+
+            var img_id = "line-img-"+anchor;
+            var line_img = document.getElementById(img_id);
+            var line_text =  $('#line-text-'+anchor);
+         
+            var scalefactor = line_img.width / line.box.width;
+
+              for(var i=0;i<linetokens.length;i++) {
+
+                var token = linetokens[i];
+
+                var cordiv = $("<div>"+token.cor.trim()+"</div>");
+                var div = $('<div class="tokendiv"></div>').append(cordiv);
+                line_text.append(div);
+                var box = token['box'];
+                 
+                    var div_length = token.box.width*scalefactor ;
+                    cordiv.css('width',div_length);
+                      
+               }
+
+
+        });
+
+     });
 
         if(this.editor!=""){
           this.editor.destroy();
         }
+
 
 
           var ConcordanceButton = MediumEditor.Extension.extend({
@@ -26971,25 +27000,25 @@ events:{
               }
             });
 
-        this.editor = new MediumEditor('.line-text', {
-            disableReturn: true,
-            disableDoubleReturn: true,
-            toolbar: {
-              buttons: ['concordance','corrections']
-            },
-            buttonLabels: 'fontawesome', // use font-awesome icons for other buttons
-            extensions: {
-              'concordance': new ConcordanceButton(),
-              'corrections': new CorrectionButton()
-            },
-               handleClick: function (event) {
-                this.classApplier.toggleSelection();
+        // this.editor = new MediumEditor('.line-text', {
+        //     disableReturn: true,
+        //     disableDoubleReturn: true,
+        //     toolbar: {
+        //       buttons: ['concordance','corrections']
+        //     },
+        //     buttonLabels: 'fontawesome', // use font-awesome icons for other buttons
+        //     extensions: {
+        //       'concordance': new ConcordanceButton(),
+        //       'corrections': new CorrectionButton()
+        //     },
+        //        handleClick: function (event) {
+        //         this.classApplier.toggleSelection();
 
-                // Ensure the editor knows about an html change so watchers are notified
-                // ie: <textarea> elements depend on the editableInput event to stay synchronized
-                this.base.checkContentChanged();
-              }
-        });
+        //         // Ensure the editor knows about an html change so watchers are notified
+        //         // ie: <textarea> elements depend on the editableInput event to stay synchronized
+        //         this.base.checkContentChanged();
+        //       }
+        // });
 
       },
 
@@ -27276,65 +27305,86 @@ $('#conc-modal').imagesLoaded( function() {
           var tokendata =  Marionette.getOption(that,"tokendata");
           var query = tokendata.query;
  
-
+          console.log(tokendata);
            _.each(tokendata.matches, function(match) {
             var line = match['line'];
             var linetokens = line.tokens;
-            console.log(line['pageId']);
             var splitImgLine = $('<div class="splitLine"></div>');
             $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").append(splitImgLine);
 
             var cnt = 0;
-            var offset = 0;
+            var current_position = 0;
             var img_id = "img_"+line['pageId']+"_"+line['lineId'];
+            var line_img = document.getElementById(img_id);
 
+            var scalefactor = line_img.width / line.box.width;
              // linecor = Util.replace_all(linecor,word['cor'],'<span class="badge badge-pill badge-primary">'+word['cor']+'</span>');
 
-              _.each(linetokens, function(token) {
+              for(var i=0;i<linetokens.length;i++) {
 
-                // var gettingSplitImages = ProjectEntitites.API.getSplitImages({word:word});
-                //          $.when(gettingSplitImages).done(function(images){
+                var token = linetokens[i];
 
-                //           line['leftImg'] = images.leftImg;
-                //           line['rightImg'] = images.rightImg;
-                //           line['middleImg'] = images.middleImg;
-                //          projectConcView.render();
-                //          });
+              
+                var whitespace_width=0; 
+                if (token.ocr.includes(" ")){
+                  whitespace_width = token.box.width;
+                }
 
-                 var box = token['box'];
+                var box = token['box'];
 
-                var line_img = document.getElementById(img_id);
-
+                // var line_img = document.getElementById(img_id);
+                // var boxwidth = box.width + whitespace_length;
                 // console.log(line_img);
 
-                var c = document.createElement("canvas");
-                c.width=box.width;
-                c.height=box.height;
+                // console.log(token);
 
-                  var ctx = c.getContext("2d");
-                  ctx.drawImage(line_img, offset, 0, box.width, box.height, 0, 0, box.width, box.height);
+                // var c = document.createElement("canvas");
+                // c.width=boxwidth;
+                // c.height=box.height;
 
-                    var img = new Image();
-                    img.src = c.toDataURL();
-                    img.setAttribute('id','splitImg_'+line['pageId']+"_"+line['lineId']+"_"+cnt);
-                    img.height = '25';
+                //   var ctx = c.getContext("2d");
+                //   ctx.drawImage(line_img, offset, 0, boxwidth, box.height, 0, 0, boxwidth, box.height);
+
+                //     var img = new Image();
+                //     img.src = c.toDataURL();
+                //     img.setAttribute('id','splitImg_'+line['pageId']+"_"+line['lineId']+"_"+cnt);
+                //     img.height = '25';
 
                     $('#splitImg_'+line['lineId']+"_"+cnt).css('width','auto');
 
-                    var cordiv = $("<div>"+token.cor.trim()+"</div>");
+                    
+                    var cordiv = $("<div>"+token.cor+"</div>");
+
+
+
                     if(query==token.cor){
-                     cordiv = $("<div><span class='badge badge-primary'>"+token.cor.trim()+"</span></div>");
+                       cordiv = $("<div><span class='badge badge-primary'>"+token.cor.trim()+"</span></div>");
                    //  cordiv = $("<div style='color:green;'>"+token.cor.trim()+"</div>");
                     }
 
+                  
 
-                    var div = $("<div style='display:inline-block;'></div>").append(img).append(cordiv);
+                    // var div = $("<div style='display:inline-block;'></div>").append(img).append(cordiv);
+                    var div = $('<div class="tokendiv"></div>').append(cordiv);
 
                     $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").find('.splitLine').append(div);
                     cnt++;
-                    offset +=box.width;
-              });
-           $("#"+img_id).remove();
+
+                       // if (token.ocr.includes(" ")){
+
+                        var prev_div_width = div.prev().width();
+                     
+                        var whitespace_div_length = token.box.width*scalefactor ;
+
+                        cordiv.css('width',whitespace_div_length);
+
+                       //  current_position+=(prev_div_width + whitespace_div_length);
+                       // }
+                     
+                      
+
+               }
+           // $("#"+img_id).remove();
 
      });
 

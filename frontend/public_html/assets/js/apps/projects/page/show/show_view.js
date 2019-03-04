@@ -60,7 +60,7 @@ events:{
        
         var anchor = $(e.currentTarget).attr('anchor');
           var ids = Util.getIds(anchor);
-          var text = $('#line-text-'+anchor).text();
+          var text = $('#line-text-'+anchor).text().trim();
           this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
 
       },
@@ -85,8 +85,8 @@ events:{
       },
       line_selected:function(e){
 
-              var selection = window.getSelection().toString();
-        if(selection==""){
+       var selection = window.getSelection().toString();
+        if(selection==""||selection==" "){
           return;
         }
         this.saved_selection = selection;
@@ -95,14 +95,55 @@ events:{
 
         this.trigger("page:line_selected",selection)
       },
+
+      onAttach:function(e){
+
+        var that = this;
+
+   
+
+      },
      
       onDomRefresh:function(e){
 
         var that = this;
+     $('.line-img').each(function(index){
+       $(this).imagesLoaded( function() {
+          
+
+            var line = that.model.get('lines')[index];
+            var linetokens = line.tokens;
+            var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
+
+            var img_id = "line-img-"+anchor;
+            var line_img = document.getElementById(img_id);
+            var line_text =  $('#line-text-'+anchor);
+         
+            var scalefactor = line_img.width / line.box.width;
+
+              for(var i=0;i<linetokens.length;i++) {
+
+                var token = linetokens[i];
+
+                var cordiv = $("<div>"+token.cor.trim()+"</div>");
+                var div = $('<div class="tokendiv"></div>').append(cordiv);
+                line_text.append(div);
+                var box = token['box'];
+                 
+                    var div_length = token.box.width*scalefactor ;
+                    cordiv.css('width',div_length);
+                      
+               }
+
+
+        });
+
+     });
 
         if(this.editor!=""){
           this.editor.destroy();
         }
+
 
 
           var ConcordanceButton = MediumEditor.Extension.extend({
@@ -171,25 +212,25 @@ events:{
               }
             });
 
-        this.editor = new MediumEditor('.line-text', {
-            disableReturn: true,
-            disableDoubleReturn: true,
-            toolbar: {
-              buttons: ['concordance','corrections']
-            },
-            buttonLabels: 'fontawesome', // use font-awesome icons for other buttons
-            extensions: {
-              'concordance': new ConcordanceButton(),
-              'corrections': new CorrectionButton()
-            },
-               handleClick: function (event) {
-                this.classApplier.toggleSelection();
+        // this.editor = new MediumEditor('.line-text', {
+        //     disableReturn: true,
+        //     disableDoubleReturn: true,
+        //     toolbar: {
+        //       buttons: ['concordance','corrections']
+        //     },
+        //     buttonLabels: 'fontawesome', // use font-awesome icons for other buttons
+        //     extensions: {
+        //       'concordance': new ConcordanceButton(),
+        //       'corrections': new CorrectionButton()
+        //     },
+        //        handleClick: function (event) {
+        //         this.classApplier.toggleSelection();
 
-                // Ensure the editor knows about an html change so watchers are notified
-                // ie: <textarea> elements depend on the editableInput event to stay synchronized
-                this.base.checkContentChanged();
-              }
-        });
+        //         // Ensure the editor knows about an html change so watchers are notified
+        //         // ie: <textarea> elements depend on the editableInput event to stay synchronized
+        //         this.base.checkContentChanged();
+        //       }
+        // });
 
       },
 

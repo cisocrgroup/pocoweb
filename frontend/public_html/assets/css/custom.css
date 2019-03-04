@@ -489,3 +489,8 @@ outline: 0;
   width: 100%;
   
 }
+
+.tokendiv{
+  display:inline-block;
+  text-align: center;
+}

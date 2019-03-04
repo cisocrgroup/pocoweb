@@ -122,7 +122,7 @@ $('#conc-modal').imagesLoaded( function() {
           var tokendata =  Marionette.getOption(that,"tokendata");
           var query = tokendata.query;
  
-
+          console.log(tokendata);
            _.each(tokendata.matches, function(match) {
             var line = match['line'];
             var linetokens = line.tokens;
@@ -130,56 +130,78 @@ $('#conc-modal').imagesLoaded( function() {
             $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").append(splitImgLine);
 
             var cnt = 0;
-            var offset = 0;
+            var current_position = 0;
             var img_id = "img_"+line['pageId']+"_"+line['lineId'];
+            var line_img = document.getElementById(img_id);
 
+            var scalefactor = line_img.width / line.box.width;
              // linecor = Util.replace_all(linecor,word['cor'],'<span class="badge badge-pill badge-primary">'+word['cor']+'</span>');
 
-              _.each(linetokens, function(token) {
+              for(var i=0;i<linetokens.length;i++) {
 
-                // var gettingSplitImages = ProjectEntitites.API.getSplitImages({word:word});
-                //          $.when(gettingSplitImages).done(function(images){
+                var token = linetokens[i];
 
-                //           line['leftImg'] = images.leftImg;
-                //           line['rightImg'] = images.rightImg;
-                //           line['middleImg'] = images.middleImg;
-                //          projectConcView.render();
-                //          });
+              
+                var whitespace_width=0; 
+                if (token.ocr.includes(" ")){
+                  whitespace_width = token.box.width;
+                }
 
-                 var box = token['box'];
+                var box = token['box'];
 
-                var line_img = document.getElementById(img_id);
-
+                // var line_img = document.getElementById(img_id);
+                // var boxwidth = box.width + whitespace_length;
                 // console.log(line_img);
 
-                var c = document.createElement("canvas");
-                c.width=box.width;
-                c.height=box.height;
+                // console.log(token);
 
-                  var ctx = c.getContext("2d");
-                  ctx.drawImage(line_img, offset, 0, box.width, box.height, 0, 0, box.width, box.height);
+                // var c = document.createElement("canvas");
+                // c.width=boxwidth;
+                // c.height=box.height;
 
-                    var img = new Image();
-                    img.src = c.toDataURL();
-                    img.setAttribute('id','splitImg_'+line['pageId']+"_"+line['lineId']+"_"+cnt);
-                    img.height = '25';
+                //   var ctx = c.getContext("2d");
+                //   ctx.drawImage(line_img, offset, 0, boxwidth, box.height, 0, 0, boxwidth, box.height);
+
+                //     var img = new Image();
+                //     img.src = c.toDataURL();
+                //     img.setAttribute('id','splitImg_'+line['pageId']+"_"+line['lineId']+"_"+cnt);
+                //     img.height = '25';
 
                     $('#splitImg_'+line['lineId']+"_"+cnt).css('width','auto');
 
-                    var cordiv = $("<div>"+token.cor.trim()+"</div>");
+                    
+                    var cordiv = $("<div>"+token.cor+"</div>");
+
+
+
                     if(query==token.cor){
                        cordiv = $("<div><span class='badge badge-primary'>"+token.cor.trim()+"</span></div>");
                    //  cordiv = $("<div style='color:green;'>"+token.cor.trim()+"</div>");
                     }
 
+                  
 
-                    var div = $("<div style='display:inline-block;'></div>").append(img).append(cordiv);
+                    // var div = $("<div style='display:inline-block;'></div>").append(img).append(cordiv);
+                    var div = $('<div class="tokendiv"></div>').append(cordiv);
 
                     $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").find('.splitLine').append(div);
                     cnt++;
-                    offset +=box.width;
-              });
-           $("#"+img_id).remove();
+
+                       // if (token.ocr.includes(" ")){
+
+                        var prev_div_width = div.prev().width();
+                     
+                        var whitespace_div_length = token.box.width*scalefactor ;
+
+                        cordiv.css('width',whitespace_div_length);
+
+                       //  current_position+=(prev_div_width + whitespace_div_length);
+                       // }
+                     
+                      
+
+               }
+           // $("#"+img_id).remove();
 
      });
 
