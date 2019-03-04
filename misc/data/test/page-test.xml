@@ -42,7 +42,7 @@
 		  <Glyph id="glyph_2_1_2_1">
 			<Coords points="1382,460 1483,460 1483,508 1382,508"/>
             <TextEquiv conf=".1">
-              <Unicode>y</Unicode>
+              <Unicode>x</Unicode>
             </TextEquiv>
 		  </Glyph>
           <TextEquiv conf=".2">

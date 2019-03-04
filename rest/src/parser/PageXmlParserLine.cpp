@@ -78,17 +78,23 @@ PageXmlParserLine::line(int id) const
     const auto conf = get_text_equiv_conf(node_);
     return builder.append(string_, lbox.right(), conf).build();
   }
-  for (const auto& w : words_) {
-    if (w.glyphs.empty()) {
-      const auto conf = get_text_equiv_conf(w.node);
-      const auto wbox = get_coords_points(w.node);
-      builder.append(get_text_equiv_unicode(w.node), wbox.right(), conf);
+  for (auto i = 0U; i < words_.size(); i++) {
+    if (words_[i].glyphs.empty()) {
+      const auto conf = get_text_equiv_conf(words_[i].node);
+      const auto wbox = get_coords_points(words_[i].node);
+      builder.append(
+        get_text_equiv_unicode(words_[i].node), wbox.right(), conf);
     } else {
-      for (const auto& g : w.glyphs) {
+      for (const auto& g : words_[i].glyphs) {
         const auto conf = get_text_equiv_conf(g.node);
         const auto gbox = get_coords_points(g.node);
         builder.append(get_text_equiv_unicode(g.node), gbox.right(), conf);
       }
+    }
+    if ((i + 1) < words_.size()) {
+      const auto nbox = get_coords_points(words_[i + 1].node);
+      const auto conf = get_text_equiv_conf(words_[i + 1].node);
+      builder.append(' ', nbox.left(), conf);
     }
   }
   return builder.build();
