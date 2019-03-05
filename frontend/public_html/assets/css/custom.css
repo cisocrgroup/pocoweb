@@ -459,6 +459,7 @@ outline: 0;
 .line-text-parent p {
   margin: 0 !important;
   padding: 0 !important;
+  width: auto;
 }
 
 .correct-btn{
@@ -489,8 +490,19 @@ outline: 0;
   width: 100%;
   
 }
-
 .tokendiv{
-  display:inline-block;
+  display: inline-block;
   text-align: center;
+  min-height: 1px;
+}
+
+
+.line{
+  display: flex;
+  justify-content: space-between;
+}
+
+/* remember to define focus styles! */
+.line-tokens:focus {
+outline: 0;
 }

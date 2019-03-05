@@ -65,7 +65,22 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                     var correctingline = ProjectEntitites.API.correctLine(data);
                   $.when(correctingline).done(function(result){
                     
-                    $('#line-text-'+anchor).css('background','#d4edda');
+                    console.log(result);
+                    var lineanchor = $('#line-'+anchor);
+                    lineanchor.css('background','#d4edda');
+
+                 
+
+                    lineanchor.fadeOut(200,function(){
+                      lineanchor.fadeIn(200,function(){
+                          lineanchor.find('.line-tokens').empty();
+                          Util.addAlignedLine(result);
+                          lineanchor.find('.line').hide();
+                          lineanchor.find('.line-tokens').show();
+                      });
+                    });
+                   
+
                    /*** TO DO 
 
                                  var fully = res.isFullyCorrected;

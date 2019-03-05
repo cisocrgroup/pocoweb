@@ -69,11 +69,14 @@
 		<div style="margin-bottom: 5px;" class="line-img"><img id="line-img-<%-anchor%>" src='<%-line["imgFile"]%>' alt='<%-text%>' title='<%-text%>' width="auto" height="25"></div>
 
 		<div class="line-text-parent">	
-		<div id="line-text-<%-anchor%>" <% if(setlinehightlighting){ %> style="background-color:<%-linehighlighting%>" <%}%>  anchor="<%-anchor%>"
-	    class="line-text <%-inputclass%>">
+		<div id="line-<%-anchor%>" <% if(setlinehightlighting){ %> style="background-color:<%-linehighlighting%>" <%}%>  anchor="<%-anchor%>"
+	    class="<%-inputclass%> line-text">
+       <div class="line" style="display: none;" contenteditable="true">
+       	<%-line['cor']%>
+      	</div>
 
-      
-
+      	<div class="line-tokens" >
+      	</div>
 
       
 

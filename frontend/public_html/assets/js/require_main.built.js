@@ -23340,6 +23340,37 @@ getIds : function(anchor) {
     ids[i] = parseInt(ids[i]);
   }
   return ids;
+},
+
+addAlignedLine : function(line){
+     var linetokens = line.tokens;
+            var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
+
+            var img_id = "line-img-"+anchor;
+            var line_img = document.getElementById(img_id);
+            var line_text =  $('#line-'+anchor);
+         
+            var scalefactor = line_img.width / line.box.width;
+
+              for(var i=0;i<linetokens.length;i++) {
+
+                var token = linetokens[i];
+                var cordiv;
+                if(token.cor.includes(" ")){
+                   cordiv = $('<div>'+token.cor+"</div>");
+                }
+                else {
+                   cordiv = $('<div>'+token.cor.trim()+"</div>");
+                }
+
+                 var div = $('<div class="tokendiv"></div>').append(cordiv);
+                line_text.find('.line-tokens').css('width',line_img.width+'px').append(div);
+                var box = token['box'];
+                 
+                    var div_length = token.box.width*scalefactor ;
+                    cordiv.css('width',div_length);
+                      
+               }
 }
 
 });
@@ -26763,7 +26794,7 @@ __p+='\r\n       <div class="text-image-line" title="'+
 ((__t=(text))==null?'':_.escape(__t))+
 '\' title=\''+
 ((__t=(text))==null?'':_.escape(__t))+
-'\' width="auto" height="25"></div>\r\n\r\n		<div class="line-text-parent">	\r\n		<div id="line-text-'+
+'\' width="auto" height="25"></div>\r\n\r\n		<div class="line-text-parent">	\r\n		<div id="line-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
 '" ';
  if(setlinehightlighting){ 
@@ -26773,9 +26804,11 @@ __p+=' style="background-color:'+
 }
 __p+='  anchor="'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"\r\n	    class="line-text '+
+'"\r\n	    class="'+
 ((__t=(inputclass))==null?'':_.escape(__t))+
-'">\r\n\r\n      \r\n\r\n\r\n      \r\n\r\n        </div>\r\n        <span>\r\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
+' line-text">\r\n       <div class="line" style="display: none;" contenteditable="true">\r\n       	'+
+((__t=(line['cor']))==null?'':_.escape(__t))+
+'\r\n      	</div>\r\n\r\n      	<div class="line-tokens" >\r\n      	</div>\r\n\r\n      \r\n\r\n        </div>\r\n        <span>\r\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
 line['lineId']
 __p+='" anchor="'+
 ((__t=(anchor))==null?'':_.escape(__t))+
@@ -26811,6 +26844,8 @@ events:{
       'click .js-correct' : 'correct_clicked',
       'click .line-text' : 'line_clicked',
       'mouseup .line-text' : 'line_selected',
+      'mouseover .line-tokens' : 'tokens_hovered',
+      'mouseleave .line-text-parent' : 'line_left',
 
       },
 
@@ -26848,20 +26883,35 @@ events:{
        
         var anchor = $(e.currentTarget).attr('anchor');
           var ids = Util.getIds(anchor);
-          var text = $('#line-text-'+anchor).text().trim();
-          this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
+          var text = $('#line-'+anchor).find('.line').text().trim();
+                    console.log(text);
 
+          this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
+      },
+      tokens_hovered:function(e){
+         $('.line-tokens').show();
+         $('.line').hide();
+         $(e.currentTarget).hide();
+         $(e.currentTarget).prev().show();
+      },
+      line_left:function(e){
+        // console.log("mouseleave")
+        
+        
       },
       line_clicked:function(e){
         e.preventDefault();
+
+
+
         $('.correct-btn').hide();
         $('.line-text').css('border-bottom','1px solid transparent');
         $('.line-text').css('border-left','1px solid transparent');
         $('.line-text').css('border-top','1px solid transparent');
         $('.line-text').css('border-top-left-radius','0rem');
         $('.line-text').css('border-bottom-left-radius','0rem');
+   
 
-  
         $(e.currentTarget).css('border-left','1px solid #ced4da');
         $(e.currentTarget).css('border-bottom','1px solid #ced4da');
         $(e.currentTarget).css('border-top','1px solid #ced4da');
@@ -26869,6 +26919,25 @@ events:{
         $(e.currentTarget).css('border-bottom-left-radius','.25rem');
 
         $(e.currentTarget).next().find('.correct-btn').show();
+      
+
+        //  $(e.currentTarget).find('.line').focusout(function() {
+
+        // $(e.currentTarget).find('.line-tokens').show();
+        // $(e.currentTarget).find('.line').hide();
+
+        // // $(e.currentTarget).next().find('.correct-btn').hide();
+        // $(e.currentTarget).css('border-bottom','1px solid transparent');
+        // $(e.currentTarget).css('border-left','1px solid transparent');
+        // $(e.currentTarget).css('border-top','1px solid transparent');
+        // $(e.currentTarget).css('border-top-left-radius','0rem');
+        // $(e.currentTarget).css('border-bottom-left-radius','0rem');
+        // $(e.currentTarget).find('.line-tokens').css('display','flex');
+
+
+        //  });
+
+
         
       },
       line_selected:function(e){
@@ -26880,8 +26949,8 @@ events:{
         this.saved_selection = selection;
         $('#selected_token').removeAttr("id");
           Util.replaceSelectedText(selection);
-
-        this.trigger("page:line_selected",selection)
+          console.log(selection);
+      //  this.trigger("page:line_selected",selection)
       },
 
       onAttach:function(e){
@@ -26900,28 +26969,7 @@ events:{
           
 
             var line = that.model.get('lines')[index];
-            var linetokens = line.tokens;
-            var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
-
-            var img_id = "line-img-"+anchor;
-            var line_img = document.getElementById(img_id);
-            var line_text =  $('#line-text-'+anchor);
-         
-            var scalefactor = line_img.width / line.box.width;
-
-              for(var i=0;i<linetokens.length;i++) {
-
-                var token = linetokens[i];
-
-                var cordiv = $("<div>"+token.cor.trim()+"</div>");
-                var div = $('<div class="tokendiv"></div>').append(cordiv);
-                line_text.append(div);
-                var box = token['box'];
-                 
-                    var div_length = token.box.width*scalefactor ;
-                    cordiv.css('width',div_length);
-                      
-               }
+            Util.addAlignedLine(line);
 
 
         });
@@ -28001,7 +28049,22 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
                     var correctingline = ProjectEntitites.API.correctLine(data);
                   $.when(correctingline).done(function(result){
                     
-                    $('#line-text-'+anchor).css('background','#d4edda');
+                    console.log(result);
+                    var lineanchor = $('#line-'+anchor);
+                    lineanchor.css('background','#d4edda');
+
+                 
+
+                    lineanchor.fadeOut(200,function(){
+                      lineanchor.fadeIn(200,function(){
+                          lineanchor.find('.line-tokens').empty();
+                          Util.addAlignedLine(result);
+                          lineanchor.find('.line').hide();
+                          lineanchor.find('.line-tokens').show();
+                      });
+                    });
+                   
+
                    /*** TO DO 
 
                                  var fully = res.isFullyCorrected;
