@@ -26875,18 +26875,16 @@ events:{
         this.trigger("page:new","first");
       },
        lastpage_clicked:function(e){
-             var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
         this.trigger("page:new","last");
       },
       correct_clicked:function(e){
        
         var anchor = $(e.currentTarget).attr('anchor');
-          var ids = Util.getIds(anchor);
-          var text = $('#line-'+anchor).find('.line').text().trim();
-                    console.log(text);
-
-          this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
+        var ids = Util.getIds(anchor);
+        var text = $('#line-'+anchor).find('.line').text().trim();
+        this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
       },
       tokens_hovered:function(e){
          $('.line-tokens').show();
@@ -26941,16 +26939,23 @@ events:{
         
       },
       line_selected:function(e){
-
+        console.log(window.getSelection());
        var selection = window.getSelection().toString();
         if(selection==""||selection==" "){
           return;
         }
+
+        $('#current_selection').removeAttr('id');
+
+        var element = document.createElement("span");
+        window.getSelection().getRangeAt(0).surroundContents(element)
+        element.id="current_selection";
+        
         this.saved_selection = selection;
         $('#selected_token').removeAttr("id");
-          Util.replaceSelectedText(selection);
+          // Util.replaceSelectedText(selection);
           console.log(selection);
-      //  this.trigger("page:line_selected",selection)
+         this.trigger("page:line_selected",selection,window.getSelection().baseNode)
       },
 
       onAttach:function(e){
@@ -28094,15 +28099,19 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
           
        })
 
-           projectShowPage.on("page:line_selected",function(selection){
+           projectShowPage.on("page:line_selected",function(selection,baseNode){
                     var that = this;
                     var searchingToken = ProjectEntitites.API.searchToken({q:selection,p:page_id,pid:id});
                     var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:selection,pid:id});
 
                   $.when(searchingToken,gettingCorrectionSuggestions).done(function(token,suggestions){
-                   that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
+                   // that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
                     
                     that.tokendata = token;
+
+                    $('#current_selection').popover({
+                        container: 'body'
+                      });
 
                     $("#dropdown-content").empty();
                      for(i=0;i<suggestions.suggestions.length;i++){
@@ -28121,7 +28130,7 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 
                   }).fail(function(response){
                      App.mainmsg.updateContent(response.responseText,'danger');
-                    });  // $when fetchingproject
+                    });  // $when gettingCorrectionSuggestions
           
        })
 

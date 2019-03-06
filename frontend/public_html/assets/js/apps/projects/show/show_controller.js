@@ -110,15 +110,19 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
           
        })
 
-           projectShowPage.on("page:line_selected",function(selection){
+           projectShowPage.on("page:line_selected",function(selection,baseNode){
                     var that = this;
                     var searchingToken = ProjectEntitites.API.searchToken({q:selection,p:page_id,pid:id});
                     var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:selection,pid:id});
 
                   $.when(searchingToken,gettingCorrectionSuggestions).done(function(token,suggestions){
-                   that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
+                   // that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
                     
                     that.tokendata = token;
+
+                    $('#current_selection').popover({
+                        container: 'body'
+                      });
 
                     $("#dropdown-content").empty();
                      for(i=0;i<suggestions.suggestions.length;i++){
@@ -137,7 +141,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
                   }).fail(function(response){
                      App.mainmsg.updateContent(response.responseText,'danger');
-                    });  // $when fetchingproject
+                    });  // $when gettingCorrectionSuggestions
           
        })
 

@@ -497,12 +497,4 @@ outline: 0;
 }
 
 
-.line{
-  display: flex;
-  justify-content: space-between;
-}
 
-/* remember to define focus styles! */
-.line-tokens:focus {
-outline: 0;
-}
