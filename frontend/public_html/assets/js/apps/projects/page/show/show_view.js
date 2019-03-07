@@ -118,23 +118,35 @@ events:{
         
       },
       line_selected:function(e){
-        console.log(window.getSelection());
-       var selection = window.getSelection().toString();
-        if(selection==""||selection==" "){
-          return;
-        }
+          rangy.init();
+         var sel =  rangy.getSelection().toString();
+         if(sel==""||sel==" "){
+           return;
+          }
 
-        $('#current_selection').removeAttr('id');
 
-        var element = document.createElement("span");
-        window.getSelection().getRangeAt(0).surroundContents(element)
-        element.id="current_selection";
-        
-        this.saved_selection = selection;
-        $('#selected_token').removeAttr("id");
-          // Util.replaceSelectedText(selection);
-          console.log(selection);
-         this.trigger("page:line_selected",selection,window.getSelection().baseNode)
+var content = '<div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-secondary">Left</button><button type="button" class="btn btn-secondary">Middle</button>  <button type="button" class="btn btn-secondary">Right</button></div>';
+        var span = $(e.target);
+         $('#current_selection').removeAttr('id');
+        $('[data-toggle="popover"]').popover('hide');
+
+        // var element = document.createElement("span");
+        // window.getSelection().getRangeAt(0).surroundContents(element)
+        // element.id="current_selection";
+        if(span.parent().hasClass('line')){
+        span.attr('data-container','body').attr("data-placement","top")
+        .attr('data-content',content)
+        .attr("data-toggle","popover").attr('id','current_selection');
+        span.popover({html:true,template:'<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-body"></div></div>'});
+         span.popover('show');
+      }
+
+
+        // this.saved_selection = selection;
+        // $('#selected_token').removeAttr("id");
+        //   // Util.replaceSelectedText(selection);
+        //   console.log(selection);
+        //  this.trigger("page:line_selected",selection,window.getSelection().baseNode)
       },
 
       onAttach:function(e){

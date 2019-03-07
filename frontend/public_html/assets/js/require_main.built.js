@@ -26806,9 +26806,13 @@ __p+='  anchor="'+
 ((__t=(anchor))==null?'':_.escape(__t))+
 '"\r\n	    class="'+
 ((__t=(inputclass))==null?'':_.escape(__t))+
-' line-text">\r\n       <div class="line" style="display: none;" contenteditable="true">\r\n       	'+
-((__t=(line['cor']))==null?'':_.escape(__t))+
-'\r\n      	</div>\r\n\r\n      	<div class="line-tokens" >\r\n      	</div>\r\n\r\n      \r\n\r\n        </div>\r\n        <span>\r\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
+' line-text">\r\n       <div class="line" style="display: none;" contenteditable="true">\r\n        ';
+	_.each(line['tokens'], function(token) {
+__p+='\r\n        <span> '+
+((__t=(token.cor))==null?'':_.escape(__t))+
+' </span>\r\n        ';
+ }); 
+__p+='\r\n      	</div>\r\n\r\n      	<div class="line-tokens" >\r\n      	</div>\r\n\r\n      \r\n\r\n        </div>\r\n        <span>\r\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
 line['lineId']
 __p+='" anchor="'+
 ((__t=(anchor))==null?'':_.escape(__t))+
@@ -26939,23 +26943,35 @@ events:{
         
       },
       line_selected:function(e){
-        console.log(window.getSelection());
-       var selection = window.getSelection().toString();
-        if(selection==""||selection==" "){
-          return;
-        }
+          rangy.init();
+         var sel =  rangy.getSelection().toString();
+         if(sel==""||sel==" "){
+           return;
+          }
 
-        $('#current_selection').removeAttr('id');
 
-        var element = document.createElement("span");
-        window.getSelection().getRangeAt(0).surroundContents(element)
-        element.id="current_selection";
-        
-        this.saved_selection = selection;
-        $('#selected_token').removeAttr("id");
-          // Util.replaceSelectedText(selection);
-          console.log(selection);
-         this.trigger("page:line_selected",selection,window.getSelection().baseNode)
+var content = '<div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-secondary">Left</button><button type="button" class="btn btn-secondary">Middle</button>  <button type="button" class="btn btn-secondary">Right</button></div>';
+        var span = $(e.target);
+         $('#current_selection').removeAttr('id');
+        $('[data-toggle="popover"]').popover('hide');
+
+        // var element = document.createElement("span");
+        // window.getSelection().getRangeAt(0).surroundContents(element)
+        // element.id="current_selection";
+        if(span.parent().hasClass('line')){
+        span.attr('data-container','body').attr("data-placement","top")
+        .attr('data-content',content)
+        .attr("data-toggle","popover").attr('id','current_selection');
+        span.popover({html:true,template:'<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-body"></div></div>'});
+         span.popover('show');
+      }
+
+
+        // this.saved_selection = selection;
+        // $('#selected_token').removeAttr("id");
+        //   // Util.replaceSelectedText(selection);
+        //   console.log(selection);
+        //  this.trigger("page:line_selected",selection,window.getSelection().baseNode)
       },
 
       onAttach:function(e){
@@ -28109,9 +28125,11 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
                     
                     that.tokendata = token;
 
-                    $('#current_selection').popover({
-                        container: 'body'
-                      });
+                    // $('#current_selection').popover({
+                    //     container: 'body'
+                    //   });
+
+                   
 
                     $("#dropdown-content").empty();
                      for(i=0;i<suggestions.suggestions.length;i++){

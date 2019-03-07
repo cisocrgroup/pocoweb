@@ -120,9 +120,11 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                     
                     that.tokendata = token;
 
-                    $('#current_selection').popover({
-                        container: 'body'
-                      });
+                    // $('#current_selection').popover({
+                    //     container: 'body'
+                    //   });
+
+                   
 
                     $("#dropdown-content").empty();
                      for(i=0;i<suggestions.suggestions.length;i++){
