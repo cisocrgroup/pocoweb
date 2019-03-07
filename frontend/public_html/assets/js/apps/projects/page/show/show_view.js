@@ -62,14 +62,17 @@ events:{
        
         var anchor = $(e.currentTarget).attr('anchor');
         var ids = Util.getIds(anchor);
-        var text = $('#line-'+anchor).find('.line').text().trim();
+        var text = $('#line-'+anchor).find('.line').text().replace(/\s\s+/g, ' ').trim();
+
+        console.log(text);
+
         this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
       },
       tokens_hovered:function(e){
-         $('.line-tokens').show();
-         $('.line').hide();
-         $(e.currentTarget).hide();
-         $(e.currentTarget).prev().show();
+         // $('.line-tokens').show();
+         // $('.line').hide();
+         // $(e.currentTarget).hide();
+         // $(e.currentTarget).prev().show();
       },
       line_left:function(e){
         // console.log("mouseleave")
@@ -79,7 +82,11 @@ events:{
       line_clicked:function(e){
         e.preventDefault();
 
+        $('.line').hide();
+        $('.line-tokens').show();
 
+        $(e.currentTarget).find('.line').show();
+         $(e.currentTarget).find('.line-tokens').hide();
 
         $('.correct-btn').hide();
         $('.line-text').css('border-bottom','1px solid transparent');
@@ -134,7 +141,7 @@ var content = '<div class="btn-group" role="group" aria-label="Basic example"><b
         // window.getSelection().getRangeAt(0).surroundContents(element)
         // element.id="current_selection";
         if(span.parent().hasClass('line')){
-        span.attr('data-container','body').attr("data-placement","top")
+        span.attr('data-container','body').attr("data-placement","bottom")
         .attr('data-content',content)
         .attr("data-toggle","popover").attr('id','current_selection');
         span.popover({html:true,template:'<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-body"></div></div>'});

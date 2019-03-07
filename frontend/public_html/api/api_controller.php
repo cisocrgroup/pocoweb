@@ -222,6 +222,7 @@ function correct_line() {
     'correction' => $_POST['text'],
   );
 
+
   $api = new Api(backend_get_correct_line_route($_POST['pid'],$_POST['page_id'],$_POST['line_id']));
   $api->set_session_id(backend_get_session_cookie());
   $api->post_request($data);
