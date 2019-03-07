@@ -21,11 +21,10 @@ events:{
       'click .js-firstpage' : 'firstpage_clicked',
       'click .js-lastpage' : 'lastpage_clicked',
       'click .js-correct' : 'correct_clicked',
-      'click .line-text' : 'line_clicked',
+      'click .line-tokens' : 'line_tokens_clicked',
       'mouseup .line-text' : 'line_selected',
       'mouseover .line-tokens' : 'tokens_hovered',
       'mouseleave .line-text-parent' : 'line_left',
-
       },
 
       serializeData: function(){
@@ -77,16 +76,20 @@ events:{
       line_left:function(e){
         // console.log("mouseleave")
         
-        
       },
-      line_clicked:function(e){
+      
+      line_tokens_clicked:function(e){
         e.preventDefault();
+       $(".custom-popover").remove();
 
         $('.line').hide();
         $('.line-tokens').show();
+        var line_parent = $(e.currentTarget).parent();
 
-        $(e.currentTarget).find('.line').show();
-         $(e.currentTarget).find('.line-tokens').hide();
+        console.log(line_parent);
+        console.log($(e.currentTarget));
+        line_parent.find('.line').show();
+        $(e.currentTarget).hide();
 
         $('.correct-btn').hide();
         $('.line-text').css('border-bottom','1px solid transparent');
@@ -96,13 +99,13 @@ events:{
         $('.line-text').css('border-bottom-left-radius','0rem');
    
 
-        $(e.currentTarget).css('border-left','1px solid #ced4da');
-        $(e.currentTarget).css('border-bottom','1px solid #ced4da');
-        $(e.currentTarget).css('border-top','1px solid #ced4da');
-        $(e.currentTarget).css('border-top-left-radius','.25rem');
-        $(e.currentTarget).css('border-bottom-left-radius','.25rem');
+        line_parent.css('border-left','1px solid #ced4da');
+        line_parent.css('border-bottom','1px solid #ced4da');
+        line_parent.css('border-top','1px solid #ced4da');
+        line_parent.css('border-top-left-radius','.25rem');
+        line_parent.css('border-bottom-left-radius','.25rem');
 
-        $(e.currentTarget).next().find('.correct-btn').show();
+        line_parent.next().find('.correct-btn').show();
       
 
         //  $(e.currentTarget).find('.line').focusout(function() {
@@ -122,38 +125,48 @@ events:{
         //  });
 
 
+
         
       },
       line_selected:function(e){
-          rangy.init();
+        var that = this;
+
+         rangy.init();
          var sel =  rangy.getSelection().toString();
          if(sel==""||sel==" "){
            return;
           }
 
+    console.log(sel);     
+    if($(e.target).hasClass('line')){
 
-var content = '<div class="btn-group" role="group" aria-label="Basic example"><button type="button" class="btn btn-secondary">Left</button><button type="button" class="btn btn-secondary">Middle</button>  <button type="button" class="btn btn-secondary">Right</button></div>';
-        var span = $(e.target);
-         $('#current_selection').removeAttr('id');
-        $('[data-toggle="popover"]').popover('hide');
+       $(".custom-popover").remove();
 
-        // var element = document.createElement("span");
-        // window.getSelection().getRangeAt(0).surroundContents(element)
-        // element.id="current_selection";
-        if(span.parent().hasClass('line')){
-        span.attr('data-container','body').attr("data-placement","bottom")
-        .attr('data-content',content)
-        .attr("data-toggle","popover").attr('id','current_selection');
-        span.popover({html:true,template:'<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-body"></div></div>'});
-         span.popover('show');
-      }
+      var btn_group = $('<div class="btn-group"></div>'); 
 
 
-        // this.saved_selection = selection;
-        // $('#selected_token').removeAttr("id");
-        //   // Util.replaceSelectedText(selection);
+      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary">Show concordance of (n occurrences)</button>'))
+      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary">Correction suggestions <i class="fas fa-caret-down"></button>'))
+ 
+      var div = $('<div class="custom-popover">')
+      .css({
+        "left": e.pageX + 'px',
+        "top": (e.pageY+35) + 'px'
+      })
+       .append($('<div><i class="fas fa-caret-up custom-popover-arrow"></i></div>'))
+       .append(btn_group)
+       .appendTo(document.body);
+
+       $('#js-concordance').on('click',function(){
+        that.trigger("page:concordance_clicked",sel);
+       });
+
+       
+         this.saved_selection = sel;
+         // Util.replaceSelectedText(selection);
         //   console.log(selection);
-        //  this.trigger("page:line_selected",selection,window.getSelection().baseNode)
+         this.trigger("page:line_selected",sel);
+      }
       },
 
       onAttach:function(e){
@@ -177,99 +190,7 @@ var content = '<div class="btn-group" role="group" aria-label="Basic example"><b
 
         });
 
-     });
-
-        if(this.editor!=""){
-          this.editor.destroy();
-        }
-
-
-
-          var ConcordanceButton = MediumEditor.Extension.extend({
-              name: 'concordance',
-
-              init: function () {
-
-                this.button = this.document.createElement('button');
-                this.button.classList.add('medium-editor-action');
-                this.button.innerHTML = 'Show concordance of (n occurrences)';
-                this.button.title = 'Show concordance';
-
-                this.on(this.button, 'click', this.handleClick.bind(this));
-              },
-
-              getButton: function () {
-                return this.button;
-              },
-
-              handleClick: function (event) {
-                that.trigger("page:concordance_clicked")
-              }
-            });
-
-
-            var CorrectionButton = MediumEditor.Extension.extend({
-              name: 'corrections',
-
-              init: function () {
-
-
-
-                this.button = this.document.createElement('div');
-                this.button.classList.add('medium-editor-action');
-                this.button.classList.add('dropdown');
-                this.button.setAttribute('id','suggestions-menu');
-
-                var dropdown_button = this.document.createElement('button');
-                dropdown_button.setAttribute('data-toggle','dropdown');
-                dropdown_button.setAttribute('aria-haspopup','true');
-                dropdown_button.setAttribute('aria-expanded','false');
-                dropdown_button.setAttribute('id','dropdownMenuButton');
-                dropdown_button.setAttribute('data-flip','false');
-
-                dropdown_button.innerHTML = 'Correction suggestions <i class="fas fa-caret-down">';
-                dropdown_button.title = 'Show Correction suggestions';
-
-                this.button.appendChild(dropdown_button);
-
-                 var dropdown_content = document.createElement('div');
-                 dropdown_content.classList.add('dropdown-menu');
-                 dropdown_content.setAttribute('id','dropdown-content');
-                 dropdown_content.setAttribute('aria-labelledby','dropdownMenuButton');
-                 this.button.appendChild(dropdown_content);
-
-
-
-                this.on(this.button, 'click', this.handleClick.bind(this));
-              },
-
-              getButton: function () {
-                return this.button;
-              },
-
-              handleClick: function (event) {
-              }
-            });
-
-        // this.editor = new MediumEditor('.line-text', {
-        //     disableReturn: true,
-        //     disableDoubleReturn: true,
-        //     toolbar: {
-        //       buttons: ['concordance','corrections']
-        //     },
-        //     buttonLabels: 'fontawesome', // use font-awesome icons for other buttons
-        //     extensions: {
-        //       'concordance': new ConcordanceButton(),
-        //       'corrections': new CorrectionButton()
-        //     },
-        //        handleClick: function (event) {
-        //         this.classApplier.toggleSelection();
-
-        //         // Ensure the editor knows about an html change so watchers are notified
-        //         // ie: <textarea> elements depend on the editableInput event to stay synchronized
-        //         this.base.checkContentChanged();
-        //       }
-        // });
+     }); 
 
       },
 

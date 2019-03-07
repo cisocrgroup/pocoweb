@@ -72,12 +72,10 @@
 		<div id="line-<%-anchor%>" <% if(setlinehightlighting){ %> style="background-color:<%-linehighlighting%>" <%}%>  anchor="<%-anchor%>"
 	    class="<%-inputclass%> line-text">
        <div class="line" style="display: none;" contenteditable="true">
-        <%	_.each(line['tokens'], function(token) {%>
-        <span> <%-token.cor%> </span>
-        <% }); %>
-      	</div>
-
-      	<div class="line-tokens" >
+       
+        <%-line['cor']%>
+      	</div> 
+      	<div class="line-tokens">
       	</div>
 
       

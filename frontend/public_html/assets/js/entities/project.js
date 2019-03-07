@@ -234,6 +234,7 @@ searchToken: function(data){
 
 getCorrectionSuggestions: function(data){
     data['backend_route'] = "get_correction_suggestions";
+    console.log(data);
   var defer = jQuery.Deferred();
       $.ajax({
       

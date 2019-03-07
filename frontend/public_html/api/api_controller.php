@@ -298,7 +298,6 @@ function search_token() {
 
 function get_correction_suggestions() {
 
-
   $api = new Api(backend_get_suggestions_route($_POST['pid'],$_POST['q']));
   $api->set_session_id(backend_get_session_cookie());
   $api->get_request();

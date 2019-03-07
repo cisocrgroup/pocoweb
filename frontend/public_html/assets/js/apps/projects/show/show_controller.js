@@ -112,21 +112,39 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
            projectShowPage.on("page:line_selected",function(selection,baseNode){
                     var that = this;
-                    var searchingToken = ProjectEntitites.API.searchToken({q:selection,p:page_id,pid:id});
                     var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:selection,pid:id});
+                    var searchingToken = ProjectEntitites.API.searchToken({q:selection,p:page_id,pid:id});
 
-                  $.when(searchingToken,gettingCorrectionSuggestions).done(function(token,suggestions){
-                   // that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
+                  $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
                     
-                    that.tokendata = token;
-
                     // $('#current_selection').popover({
                     //     container: 'body'
                     //   });
+                    that.tokendata = tokens;
+                    $('#js-concordance').html('Show concordance of <b>'+ selection+'</b> ('+tokens.nWords+' occurrences)');
 
-                   
 
                     $("#dropdown-content").empty();
+
+
+                var suggestions_btn = $('#js-suggestions'); 
+                  
+                suggestions_btn.addClass('dropdown');
+
+                suggestions_btn.attr('data-toggle','dropdown');
+                suggestions_btn.attr('aria-haspopup','true');
+                suggestions_btn.attr('aria-expanded','false');
+                suggestions_btn.attr('id','dropdownMenuButton');
+                suggestions_btn.attr('data-flip','false');
+
+
+                 var dropdown_content = $('<div></div>');
+                 dropdown_content.addClass('dropdown-menu');
+                 dropdown_content.attr('id','dropdown-content');
+                 dropdown_content.attr('aria-labelledby','dropdownMenuButton');
+                 suggestions_btn.append(dropdown_content);
+
+
                      for(i=0;i<suggestions.suggestions.length;i++){
                 
                      var s = suggestions.suggestions[i];
@@ -150,19 +168,19 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
        projectShowPage.on("page:concordance_clicked",function(selection){
 
-       var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:this.saved_selection,pid:id});
+       var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:selection,pid:id});
        var that = this;
          $.when(gettingCorrectionSuggestions).done(function(suggestions){
             var tokendata = that.tokendata;
             console.log(suggestions)
             console.log(tokendata)
 
+
+
            var projectConcView = new Show.Concordance({tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
     
-
-           projectConcView.on("conc:destroy:editor",function(){
-            projectShowPage.render();
-           })
+           $('.custom-popover').remove();
+        
 
              App.mainLayout.showChildView('dialogRegion',projectConcView);
 
