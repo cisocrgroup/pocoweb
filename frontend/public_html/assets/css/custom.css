@@ -505,6 +505,7 @@ outline: 0;
   transform: translate(-50%, -50%);
     opacity: 1;
     text-align: center;
+    z-index: 10001;
 }
 
 .custom-popover-arrow{
@@ -513,3 +514,23 @@ outline: 0;
     color: #007bff;
 }
 
+.concbtn_right{
+    margin-left: 2px;
+    border-left: 1px solid;
+}
+
+.concbtn_right i{
+  margin-left: 3px;
+}
+
+.concbtn_left i{
+  margin-right: 3px;
+}
+
+.cordiv{
+  cursor: pointer;
+}
+
+.cor_selected{
+  background-color: #d4edda;
+}

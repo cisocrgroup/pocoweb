@@ -22,7 +22,8 @@ events:{
       'click .js-correct' : 'correct_clicked',
       'click .line-text' : 'line_clicked',
       'mouseup .line-text' : 'line_selected',
-
+      'click .cordiv' : 'cordiv_clicked',
+      'dblclick .cordiv' : 'cordiv_dbclicked'
       },
 
 
@@ -71,6 +72,40 @@ events:{
           this.trigger("concordance:correct_line",{pid:ids[0],concordance_id:ids[1],line_id:ids[2],text:text},anchor)
 
       },
+  cordiv_clicked:function(e){
+    $(e.currentTarget).find('span').toggleClass('cor_selected');
+  },
+  cordiv_dbclicked:function(e){
+        console.log('dbclick')
+      if($(e.currentTarget).hasClass('cordiv')){
+        console.log("ASDASDSß")
+       $(".custom-popover").remove();
+
+      var checkbox = $('<span class="correction_box"><i class="far fa-square"></i></span>'); 
+    //  $(e.currentTarget).find('span').append(checkbox);
+
+      // btn_group.append($('<div class="input-group-prepend"><div class="input-group-text"><input type="checkbox" id="js-select"></div></div>'))
+      // btn_group.append($('<input type="text" class="form-control" id="corinput">'))
+      // btn_group.append($('<div class="input-group-append" style="background:white;"><button type="button" class="btn btn-outline-secondary dropdown-toggle"></button><button type="button" class="btn btn-outline-secondary"><i class="far fa-arrow-alt-circle-up"></i></button></div>'))
+
+      // var div = $('<div class="custom-popover">')
+      // .css({
+      //   "left": e.pageX + 'px',
+      //   "top": (e.pageY+35) + 'px'
+      // })
+      //  .append($('<div><i class="fas fa-caret-up custom-popover-arrow"></i></div>'))
+      //  .append(btn_group)
+      //  .appendTo(document.body);
+
+      //  $('#js-concordance').on('click',function(){
+      //   that.trigger("page:concordance_clicked",sel);
+      //  });
+
+      
+      }
+      },
+
+
       line_clicked:function(e){
         e.preventDefault();
         $('.correct-btn').hide();
@@ -135,6 +170,7 @@ $('#conc-modal').imagesLoaded( function() {
             var line_img = document.getElementById(img_id);
 
             var scalefactor = line_img.width / line.box.width;
+            var prevdiv;
              // linecor = Util.replace_all(linecor,word['cor'],'<span class="badge badge-pill badge-primary">'+word['cor']+'</span>');
 
               for(var i=0;i<linetokens.length;i++) {
@@ -172,10 +208,15 @@ $('#conc-modal').imagesLoaded( function() {
                     
                     var cordiv = $("<div>"+token.cor+"</div>");
 
-
-
                     if(query==token.cor){
-                       cordiv = $("<div><span class='badge badge-primary'>"+token.cor.trim()+"</span></div>");
+                       cordiv = $("<div class='cordiv' contenteditable='true'><span class='badge badge-primary'>"+token.cor.trim()+"</div></span>");
+                       //var grp = $ ("<div class='input-group-mb-3'></div>");
+                       // grp.append($("<span class='concbtn_left'><i class='far fa-square'></i></span>"));
+                       // grp.append($("<span class='cortoken' contenteditable='true'>"+token.cor.trim()+"</span>"));
+                       // grp.append($("<span class='concbtn_right'><i class='fas fa-caret-down'></i></span>"));
+
+                       // cordiv.find('span').append(grp);
+                      //    
                    //  cordiv = $("<div style='color:green;'>"+token.cor.trim()+"</div>");
                     }
 
@@ -189,12 +230,12 @@ $('#conc-modal').imagesLoaded( function() {
 
                        // if (token.ocr.includes(" ")){
 
-                        var prev_div_width = div.prev().width();
-                     
+
                         var whitespace_div_length = token.box.width*scalefactor ;
+                         cordiv.css('width',whitespace_div_length);
+                       
 
-                        cordiv.css('width',whitespace_div_length);
-
+                        prevdiv = cordiv;
                        //  current_position+=(prev_div_width + whitespace_div_length);
                        // }
                      

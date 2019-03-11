@@ -27136,11 +27136,11 @@ __p+='\n\n  <div class="modal-dialog modal-xl" role="document">\n  <div class="m
 ((__t=(tokendata.query))==null?'':_.escape(__t))+
 '"</h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n';
  } else { 
-__p+='\n\n\n	<div class="container">\n	<div class="row">\n    <div class="col col-md-12">\n\n			<div id="concordance-heading">\n			<p><h2>Concordance view for "'+
+__p+='\n\n\n	<div class="container">\n	<div class="row">\n    <div class="col col-md-12">\n\n	<div id="concordance-heading">\n	<p><h2>Concordance view for "'+
 ((__t=(tokendata.query))==null?'':_.escape(__t))+
-'"</h2></p>\n			</div>\n\n	\n';
+'"</h2></p>\n	</div>\n\n	\n';
  } 
-__p+='\n\n\n	  ';
+__p+='\n\n <!--  <nav class="navbar navbar-static-top" id="page-header" data-spy="affix" data-offset-top="197">\n  <div class="container-fluid">\n  <div class="collapse navbar-collapse">\n  <ul class="nav navbar-nav">\n  <li> \n  <form class="navbar-form">-->\n  <div class="input-group mb-3">\n  <div class="input-group-prepend">\n  <button class="js-toggle-selection btn btn-outline-secondary" title="Toggle selection">\n  Toggle selection\n  </button>\n  </div>\n  <input class="js-global-correction-suggestion form-control" title="correction" type="text" placeholder="Correction"/>\n  <div class="input-group-append">\n  <button class="js-set-correction btn btn-outline-secondary" title="Set correction">\n  Set correction\n  </button>\n  <button class="js-correct selected btn btn-outline-secondary" title="Correct selected">\n  Correct selected\n  </button>\n  </div>\n  </div>\n <!-- </form>\n   </li>\n  </ul>\n  </div>\n  </div>\n  </nav> -->\n\n\n	  ';
 
       _.each(tokendata.matches, function(match) {
       var line = match['line'];
@@ -27198,7 +27198,8 @@ events:{
       'click .js-correct' : 'correct_clicked',
       'click .line-text' : 'line_clicked',
       'mouseup .line-text' : 'line_selected',
-
+      'click .cordiv' : 'cordiv_clicked',
+      'dblclick .cordiv' : 'cordiv_dbclicked'
       },
 
 
@@ -27247,6 +27248,40 @@ events:{
           this.trigger("concordance:correct_line",{pid:ids[0],concordance_id:ids[1],line_id:ids[2],text:text},anchor)
 
       },
+  cordiv_clicked:function(e){
+    $(e.currentTarget).find('span').toggleClass('cor_selected');
+  },
+  cordiv_dbclicked:function(e){
+        console.log('dbclick')
+      if($(e.currentTarget).hasClass('cordiv')){
+        console.log("ASDASDSß")
+       $(".custom-popover").remove();
+
+      var checkbox = $('<span class="correction_box"><i class="far fa-square"></i></span>'); 
+    //  $(e.currentTarget).find('span').append(checkbox);
+
+      // btn_group.append($('<div class="input-group-prepend"><div class="input-group-text"><input type="checkbox" id="js-select"></div></div>'))
+      // btn_group.append($('<input type="text" class="form-control" id="corinput">'))
+      // btn_group.append($('<div class="input-group-append" style="background:white;"><button type="button" class="btn btn-outline-secondary dropdown-toggle"></button><button type="button" class="btn btn-outline-secondary"><i class="far fa-arrow-alt-circle-up"></i></button></div>'))
+
+      // var div = $('<div class="custom-popover">')
+      // .css({
+      //   "left": e.pageX + 'px',
+      //   "top": (e.pageY+35) + 'px'
+      // })
+      //  .append($('<div><i class="fas fa-caret-up custom-popover-arrow"></i></div>'))
+      //  .append(btn_group)
+      //  .appendTo(document.body);
+
+      //  $('#js-concordance').on('click',function(){
+      //   that.trigger("page:concordance_clicked",sel);
+      //  });
+
+      
+      }
+      },
+
+
       line_clicked:function(e){
         e.preventDefault();
         $('.correct-btn').hide();
@@ -27311,6 +27346,7 @@ $('#conc-modal').imagesLoaded( function() {
             var line_img = document.getElementById(img_id);
 
             var scalefactor = line_img.width / line.box.width;
+            var prevdiv;
              // linecor = Util.replace_all(linecor,word['cor'],'<span class="badge badge-pill badge-primary">'+word['cor']+'</span>');
 
               for(var i=0;i<linetokens.length;i++) {
@@ -27348,10 +27384,15 @@ $('#conc-modal').imagesLoaded( function() {
                     
                     var cordiv = $("<div>"+token.cor+"</div>");
 
-
-
                     if(query==token.cor){
-                       cordiv = $("<div><span class='badge badge-primary'>"+token.cor.trim()+"</span></div>");
+                       cordiv = $("<div class='cordiv' contenteditable='true'><span class='badge badge-primary'>"+token.cor.trim()+"</div></span>");
+                       //var grp = $ ("<div class='input-group-mb-3'></div>");
+                       // grp.append($("<span class='concbtn_left'><i class='far fa-square'></i></span>"));
+                       // grp.append($("<span class='cortoken' contenteditable='true'>"+token.cor.trim()+"</span>"));
+                       // grp.append($("<span class='concbtn_right'><i class='fas fa-caret-down'></i></span>"));
+
+                       // cordiv.find('span').append(grp);
+                      //    
                    //  cordiv = $("<div style='color:green;'>"+token.cor.trim()+"</div>");
                     }
 
@@ -27365,12 +27406,12 @@ $('#conc-modal').imagesLoaded( function() {
 
                        // if (token.ocr.includes(" ")){
 
-                        var prev_div_width = div.prev().width();
-                     
+
                         var whitespace_div_length = token.box.width*scalefactor ;
+                         cordiv.css('width',whitespace_div_length);
+                       
 
-                        cordiv.css('width',whitespace_div_length);
-
+                        prevdiv = cordiv;
                        //  current_position+=(prev_div_width + whitespace_div_length);
                        // }
                      
