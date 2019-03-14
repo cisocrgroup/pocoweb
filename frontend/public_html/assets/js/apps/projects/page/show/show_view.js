@@ -303,7 +303,7 @@ setErrorTokensDropdown : function(pid, dropdown, res) {
 appendErrorCountItem : function(dropdown, item, count) {
   var a = document.createElement("a");
   var t = document.createTextNode(item + ": " + count);
-  a.className = "dropdown-item";
+  a.className = "dropdown-item noselect";
   a.appendChild(t);
   dropdown.appendChild(a);
   return a;
