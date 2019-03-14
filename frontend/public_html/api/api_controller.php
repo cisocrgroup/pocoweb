@@ -27,7 +27,9 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'get_projects' : get_projects();break;
         case 'get_project' : get_project();break;
         case 'delete_project' : delete_project();break;
+        case 'get_line' : get_line();break;
         case 'correct_line' : correct_line();break;
+        case 'correct_token' : correct_token();break;
         case 'search_token' : search_token();break;
         case 'get_correction_suggestions' : get_correction_suggestions();break;
         case 'get_all_correction_suggestions' : get_all_correction_suggestions();break;
@@ -244,6 +246,62 @@ function correct_line() {
   }
 
 }
+
+
+
+function get_line() {
+
+  $api = new Api(backend_get_correct_line_route($_POST['pid'],$_POST['page_id'],$_POST['line_id']));
+  $api->set_session_id(backend_get_session_cookie());
+  $api->get_request();
+  $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        echo json_encode($session); 
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Please login.</a>';
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+}
+
+function correct_token() {
+
+  $data = array(
+    'correction' => $_POST['token'],
+  );
+
+
+  $api = new Api(backend_get_correct_word_route($_POST['pid'],$_POST['page_id'],$_POST['line_id'],$_POST['token_id']));
+  $api->set_session_id(backend_get_session_cookie());
+  $api->post_request($data);
+  $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        echo json_encode($session); 
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Please login.</a>';
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+}
+
 
 function order_profile() {
 

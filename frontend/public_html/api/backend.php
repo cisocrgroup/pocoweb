@@ -279,6 +279,25 @@ function backend_correct_line($pid, $p, $lid, $d) {
 	return $api;
 }
 
+function backend_get_correct_word_route($pid, $p, $lid,$tid) {
+	global $config;
+	return sprintf($config["backend"]["internalURL"] .
+		$config["backend"]["routes"]["correctWord"], $pid, $p, $lid,$tid);
+}
+
+function backend_correct_word($pid, $p, $lid, $tid, $d) {
+	$data = array(
+		'correction' => $d,
+	);
+	$api = new Api(backend_get_correct_word_route($pid, $p, $lid,$tid));
+	global $SID;
+	$api->set_session_id($SID);
+	$api->post_request($data);
+	return $api;
+}
+
+
+
 function backend_get_page($pid, $p) {
 	if ($p === "first") {
 		$api = new Api(backend_get_first_page_route($pid));

@@ -182,33 +182,39 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
            var projectConcView = new Show.Concordance({tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
            $('.custom-popover').remove();
         
-            projectConcView.on("concordance:correct_line",function(data,anchor){
+            projectConcView.on("concordance:correct_token",function(data,anchor){
 
                console.log(anchor);
                console.log(data);
 
-                    var correctingline = ProjectEntitites.API.correctLine(data);
-                  $.when(correctingline).done(function(result){
+                    var correctingtoken = ProjectEntitites.API.correctToken(data);
+                  $.when(correctingtoken).done(function(result){
                     
                     console.log(result);
 
+                       // update lines in background with corrections
 
-                    var lineanchor = $('#line-'+anchor);
-                    
-                    if(lineanchor.length>0) {
-                    lineanchor.addClass('line_partially_corrected');
-                    console.log("lineanchor")
-                    console.log(lineanchor);
-                     lineanchor.find('.line').empty().text(result['cor']);
-                     lineanchor.find('.line-tokens').empty();
-                     Util.addAlignedLine(result);
+                       var gettingLine = ProjectEntitites.API.getLine(data);
+                      $.when(gettingLine).done(function(line_result){
+                        console.log(line_result);
 
-                    lineanchor.find('.line').hide();
-                    lineanchor.find('.line-tokens').show();
-                 
-                   }
-        
+                        var lineanchor = $('#line-'+anchor);
+                            
+                            if(lineanchor.length>0) {
+                            lineanchor.removeClass('line_fully_corrected');
+                            lineanchor.addClass('line_partially_corrected');
+                            console.log("lineanchor")
+                            console.log(lineanchor);
+                             lineanchor.find('.line').empty().text(line_result['cor']);
+                             lineanchor.find('.line-tokens').empty();
+                             Util.addAlignedLine(line_result);
 
+                            lineanchor.find('.line').hide();
+                            lineanchor.find('.line-tokens').show();
+                         
+                            }
+            
+                        });
 
                   }).fail(function(response){
                      App.mainmsg.updateContent(response.responseText,'danger');

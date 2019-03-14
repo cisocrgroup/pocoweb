@@ -50,12 +50,17 @@ define(["marionette","app","medium","imagesLoaded","backbone.syphon","common/vie
              var cordiv_left = $(this).find('.cordiv_left');
              if(cordiv_left.find('i').hasClass('fa-check-square')){
 
-            var pid = $(this).attr('projectId');
-            var lineid =  $(this).attr('lineId');
-            var pageid =  $(this).attr('pageId');
-            var text  = $(this).text().trim();
-            var anchor = $(this).attr('anchor');
-            that.trigger("concordance:correct_line",{pid:pid,page_id:pageid,line_id:lineid,text:text},anchor);
+              var tokendiv = cordiv_left.parent();
+
+              var pid = tokendiv.attr('projectId');
+              var lineid =  tokendiv.attr('lineId');
+              var pageid =  tokendiv.attr('pageId');
+              var tokenid =  tokendiv.attr('tokenId');
+
+              var token  = tokendiv.text().trim();
+              var anchor = $(this).attr('anchor');
+              // console.log({pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token});
+              that.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token},anchor);
             
             }
           });
@@ -128,14 +133,17 @@ define(["marionette","app","medium","imagesLoaded","backbone.syphon","common/vie
       },
       cor_correct:function(e){
         e.stopPropagation();
+        console.log($(e.currentTarget));
         var concLine = $(e.currentTarget).parent().parent();
-         var pid = concLine.attr('projectId');
-            var lineid =  concLine.attr('lineId');
-            var pageid =  concLine.attr('pageId');
-            var text  = concLine.text().trim();
+        var tokendiv = $(e.currentTarget).parent();
+
+            var pid = tokendiv.attr('projectId');
+            var lineid =  tokendiv.attr('lineId');
+            var pageid =  tokendiv.attr('pageId');
+            var tokenid =  tokendiv.attr('tokenId');
+            var token  = tokendiv.text();
             var anchor = concLine.attr('anchor');
-            console.log(anchor);
-            this.trigger("concordance:correct_line",{pid:pid,page_id:pageid,line_id:lineid,text:text},anchor)
+            this.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token},anchor)
       },
       cor_suggestions:function(e){
          e.stopPropagation();
@@ -143,17 +151,11 @@ define(["marionette","app","medium","imagesLoaded","backbone.syphon","common/vie
       },
       cordiv_clicked:function(e){
 
-        console.log('cordiv_clicked')
-        console.log($(e.currentTarget))
-
-
-     $("#conc-modal").find('.cordiv_left').hide();
+      $("#conc-modal").find('.cordiv_left').hide();
       $("#conc-modal").find('.cordiv_right').hide();
-
 
       $(e.currentTarget).find('.cordiv_left').show();
       $(e.currentTarget).find('.cordiv_right').show();
-
 
 
       if($(e.currentTarget).hasClass('cordiv')){
@@ -285,10 +287,10 @@ $('#conc-modal').imagesLoaded( function() {
            _.each(tokendata.matches, function(match) {
             var line = match['line'];
             var linetokens = line.tokens;
-            var concLine = $('<div class="concLine"></div>');
+            var concLine = $('<div class="concLine"></div>')
             var anchor = line['projectId']+"-"+line['pageId']+"-"+line['lineId'];
+            concLine.attr('anchor',anchor);
 
-            concLine.attr('pageId',line['pageId']).attr('lineId',line['lineId']).attr('projectId',line['projectId']).attr('anchor',anchor);
             $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().append(concLine);
 
             var cnt = 0;
@@ -356,7 +358,8 @@ $('#conc-modal').imagesLoaded( function() {
                       tokendiv = $('<div class="tokendiv"></div>').append(cordiv);
                     }
                   
-
+                        tokendiv.attr('pageId',token['pageId']).attr('lineId',token['lineId']).attr('projectId',token['projectId']).
+                       attr('tokenId',token['tokenId']);
                     // var div = $("<div style='display:inline-block;'></div>").append(img).append(cordiv);
                     $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().find('.concLine').append(tokendiv);
 
