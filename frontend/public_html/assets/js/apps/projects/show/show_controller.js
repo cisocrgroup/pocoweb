@@ -192,11 +192,13 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                     
                     console.log(result);
 
-                    if(page_id==data.page_id) {
 
                     var lineanchor = $('#line-'+anchor);
+                    
+                    if(lineanchor.length>0) {
                     lineanchor.addClass('line_partially_corrected');
-          
+                    console.log("lineanchor")
+                    console.log(lineanchor);
                      lineanchor.find('.line').empty().text(result['cor']);
                      lineanchor.find('.line-tokens').empty();
                      Util.addAlignedLine(result);
@@ -205,27 +207,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                     lineanchor.find('.line-tokens').show();
                  
                    }
-                   /*** TO DO 
-
-                                 var fully = res.isFullyCorrected;
-                  var partial = res.isPartiallyCorrected;
-                  var input = document.getElementById(anchor);
-                  if (input !== null) {
-                    input.value = res.cor;
-                    pcw.setCorrectionStatus(input, fully, partial);
-                  }
-                  var text = document.getElementById('line-text-' + anchor);
-                  if (text !== null) {
-                    pcw.setCorrectionStatus(text, fully, partial);
-                    text.replaceChild(
-                        document.createTextNode(res.cor),
-                        text.childNodes[0]);
-                    var aapi = Object.create(pcw.Api);
-                    aapi.sid = pcw.getSid();
-                    aapi.setupForGetSuspiciousWords(ids[0], ids[1], ids[2]);
-                    aapi.run(pcw.markSuspiciousWordsInLine);
-
-                   ***/
+        
 
 
                   }).fail(function(response){
