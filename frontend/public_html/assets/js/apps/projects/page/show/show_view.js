@@ -25,6 +25,8 @@ events:{
       'mouseup .line-text' : 'line_selected',
       'mouseover .line-tokens' : 'tokens_hovered',
       'mouseleave .line-text-parent' : 'line_left',
+      'keydown .line' : 'line_edited',
+
       },
 
       serializeData: function(){
@@ -76,6 +78,10 @@ events:{
       line_left:function(e){
         // console.log("mouseleave")
         
+      },
+
+       line_edited:function(e){
+        $('.custom-popover').remove();
       },
       
       line_tokens_clicked:function(e){
@@ -137,7 +143,7 @@ events:{
            return;
           }
 
-    console.log(sel);     
+     console.log(sel);     
     if($(e.target).hasClass('line')){
 
        $(".custom-popover").remove();
@@ -145,9 +151,13 @@ events:{
       var btn_group = $('<div class="btn-group"></div>'); 
 
 
-      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary">Show concordance of (0 occurrences)</button>'))
-      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary">Correction suggestions <i class="fas fa-caret-down"></button>'))
+      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary btn-sm"><i class="fas fa-align-justify"></i> Concordance </button>'))
+      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary btn-sm"> <i class="fas fa-list-ol"></i> Suggestions <i class="fas fa-caret-down"></button>'))
  
+ // btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary">Show concordance of (0 occurrences)</button>'))
+ //      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary">Correction suggestions <i class="fas fa-caret-down"></button>'))
+ 
+
       var div = $('<div class="custom-popover">')
       .css({
         "left": e.pageX + 'px',
@@ -158,10 +168,20 @@ events:{
        .appendTo(document.body);
 
        $('#js-concordance').on('click',function(){
-        that.trigger("page:concordance_clicked",sel);
+        that.trigger("page:concordance_clicked",sel,0);
        });
 
        
+          $(document).mousedown(function(e) 
+          {
+              var container = $(".custom-popover");
+              // if the target of the click isn't the container nor a descendant of the container
+              if (!container.is(e.target) && container.has(e.target).length === 0) 
+              {          
+                  container.remove();
+              }
+          });
+
          this.saved_selection = sel;
          // Util.replaceSelectedText(selection);
         //   console.log(selection);
@@ -179,16 +199,17 @@ events:{
      
       onDomRefresh:function(e){
 
-        var that = this;
-     $('.line-img').each(function(index){
-       $(this).imagesLoaded( function() {
-          
-            var line = that.model.get('lines')[index];
-            Util.addAlignedLine(line);
+            var that = this;
+         $('.line-img').each(function(index){
+           $(this).imagesLoaded( function() {
+              
+                var line = that.model.get('lines')[index];
+                if(line!=undefined){
+                  Util.addAlignedLine(line);
+                }
+            });
 
-        });
-
-     }); 
+         }); 
 
       },
 
@@ -207,6 +228,7 @@ events:{
   
 },
 setErrorPatternsDropdown : function(pid, dropdown, res) {
+  var that = this;
   var patterns = {};
   var suggs = res.suggestions || [];
   for (var i = 0; i < suggs.length; i++) {
@@ -228,10 +250,13 @@ setErrorPatternsDropdown : function(pid, dropdown, res) {
   var onclick = function(pid, c) {
     return function() {
     //  pcw.log(c.pattern + ": " + c.count);
-      var pat = encodeURI(c.pattern);
-      var href = "concordance.php?pid=" + pid + "&q=" + pat +
-          "&error-pattern";
-      window.location.href = href;
+      // var pat = encodeURI(c.pattern);
+      var pat = c.pattern;
+      // var href = "concordance.php?pid=" + pid + "&q=" + pat +
+      //     "&error-pattern";
+      // window.location.href = href;
+      that.trigger("page:error-patterns-clicked",pid,pat);
+
     };
   };
   for (var ii = 0; ii < counts.length; ii++) {
@@ -243,6 +268,7 @@ setErrorPatternsDropdown : function(pid, dropdown, res) {
 
 setErrorTokensDropdown : function(pid, dropdown, res) {
   // pcw.log("setErrorsDropdown");
+  var that = this;
   var tokens = {};
   var suggs = res.suggestions || [];
   for (var i = 0; i < suggs.length; i++) {
@@ -261,9 +287,11 @@ setErrorTokensDropdown : function(pid, dropdown, res) {
   var onclick = function(pid, c) {
     return function() {
       // pcw.log(c.token + ": " + c.count);
-      var pat = encodeURI(c.token);
-      var href = "concordance.php?pid=" + pid + "&q=" + pat;
-      window.location.href = href;
+      // var pat = encodeURI(c.token);
+      var pat = c.token;
+      // var href = "concordance.php?pid=" + pid + "&q=" + pat;
+      // window.location.href = href;
+       that.trigger("page:error-tokens-clicked",pid,pat);
     };
   };
   for (var ii = 0; ii < counts.length; ii++) {
@@ -273,12 +301,11 @@ setErrorTokensDropdown : function(pid, dropdown, res) {
   }
 },
 appendErrorCountItem : function(dropdown, item, count) {
-  var li = document.createElement("li");
   var a = document.createElement("a");
   var t = document.createTextNode(item + ": " + count);
+  a.className = "dropdown-item";
   a.appendChild(t);
-  li.appendChild(a);
-  dropdown.appendChild(li);
+  dropdown.appendChild(a);
   return a;
 }
 

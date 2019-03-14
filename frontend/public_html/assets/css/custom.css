@@ -590,3 +590,8 @@ outline: 0;
 .cor_selected{
   background-color: #d4edda;
 }
+
+ .dropdown-menu{
+          max-height:200px;
+          overflow-y:scroll;
+  }

@@ -147,7 +147,17 @@ define(["marionette","app","medium","imagesLoaded","backbone.syphon","common/vie
       },
       cor_suggestions:function(e){
          e.stopPropagation();
-        console.log("corr suggestions");
+         var concLine = $(e.currentTarget).parent().parent();
+        var tokendiv = $(e.currentTarget).parent();
+
+            var pid = tokendiv.attr('projectId');
+            var lineid =  tokendiv.attr('lineId');
+            var pageid =  tokendiv.attr('pageId');
+            var tokenid =  tokendiv.attr('tokenId');
+            var token  = tokendiv.text();
+            var anchor = concLine.attr('anchor');
+            this.trigger("concordance:show_suggestions",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token},$(e.currentTarget),anchor)
+
       },
       cordiv_clicked:function(e){
 

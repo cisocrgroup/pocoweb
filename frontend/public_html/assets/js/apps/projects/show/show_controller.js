@@ -8,7 +8,6 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
  Controller = {
 
 		showProject: function(id,page_id){
-      		$(window).scrollTop(0);
 
      		require(["entities/project"], function(ProjectEntitites){
 
@@ -46,6 +45,13 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 			  projectShowInfo = new Show.Info({});
       	projectShowFooterPanel = new Show.FooterPanel();
 
+       projectShowPage.on("page:error-patterns-clicked",function(pid,pat){
+          this.trigger('page:concordance_clicked',pat,1);
+       });
+
+       projectShowPage.on("page:error-tokens-clicked",function(pid,pat){
+        this.trigger('page:concordance_clicked',pat,0);
+       });
        projectShowPage.on("page:new",function(page_id){
                     var fetchingnewpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
                   $.when(fetchingnewpage).done(function(new_page){
@@ -112,10 +118,10 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
           
        })
 
-           projectShowPage.on("page:line_selected",function(selection,baseNode){
+           projectShowPage.on("page:line_selected",function(selection){
                     var that = this;
                     var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:selection,pid:id});
-                    var searchingToken = ProjectEntitites.API.searchToken({q:selection,p:page_id,pid:id});
+                    var searchingToken = ProjectEntitites.API.searchToken({q:selection,p:page_id,pid:id,isErrorPattern:0});
 
                   $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
                     
@@ -123,8 +129,9 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                     //     container: 'body'
                     //   });
                     that.tokendata = tokens;
-                    $('#js-concordance').html('Show concordance of <b>'+ selection+'</b> ('+tokens.nWords+' occurrences)');
+                    // $('#js-concordance').html('Show concordance of <b>'+ selection+'</b> ('+tokens.nWords+' occurrences)');
 
+                   $('#js-concordance').attr('title','Show concordance of <b>'+ selection+'</b> ('+tokens.nWords+' occurrences)');
 
                     $("#dropdown-content").empty();
 
@@ -168,12 +175,13 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
        })
 
 
-       projectShowPage.on("page:concordance_clicked",function(selection){
-
+       projectShowPage.on("page:concordance_clicked",function(selection,isErrorPattern){
+        console.log(selection);
        var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:selection,pid:id});
+       var searchingToken = ProjectEntitites.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern});
        var that = this;
-         $.when(gettingCorrectionSuggestions).done(function(suggestions){
-            var tokendata = that.tokendata;
+         $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
+            var tokendata = tokens;
             console.log(suggestions)
             console.log(tokendata)
 
@@ -220,7 +228,51 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                      App.mainmsg.updateContent(response.responseText,'danger');
                     });  // $when fetchingproject
           
-       })
+           }) // correct token
+
+
+             projectConcView.on("concordance:show_suggestions",function(data,div,anchor){
+
+                    var that = this;
+                  
+                  $('#dropdown-content-conc').remove();
+
+
+                var suggestions_btn = div;
+                  
+                suggestions_btn.addClass('dropdown');
+
+                suggestions_btn.attr('data-toggle','dropdown');
+                suggestions_btn.attr('aria-haspopup','true');
+                suggestions_btn.attr('aria-expanded','false');
+                suggestions_btn.attr('id','dropdownMenuConc');
+                suggestions_btn.attr('data-flip','false');
+
+
+                 var dropdown_content = $('<div></div>');
+                 dropdown_content.addClass('dropdown-menu');
+                 dropdown_content.attr('id','dropdown-content-conc');
+                 dropdown_content.attr('aria-labelledby','dropdownMenuConc');
+                 suggestions_btn.append(dropdown_content);
+
+
+                     for(i=0;i<suggestions.suggestions.length;i++){
+                    
+                     var s = suggestions.suggestions[i];
+                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
+                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+                     $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
+                     }
+                    suggestions_btn.dropdown();
+
+                     // $('.dropdown-item').on('click',function(){
+                     //  var split = $(this).text().split(" ");
+                     //  Util.replaceSelectedText(split[0]);
+                     // })
+
+
+          
+       }) // conc
 
 
 

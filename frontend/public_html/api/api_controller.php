@@ -331,8 +331,7 @@ function order_profile() {
 
 function search_token() {
 
-
-  $api = new Api(backend_get_search_route($_POST['pid'],$_POST['q'],0));
+  $api = new Api(backend_get_search_route($_POST['pid'],$_POST['q'],$_POST['isErrorPattern']));
   $api->set_session_id(backend_get_session_cookie());
   $api->get_request();
   $status = $api->get_http_status_code();

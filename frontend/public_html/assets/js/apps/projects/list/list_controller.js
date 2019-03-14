@@ -14,7 +14,6 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
           // var loadingCircleView = new  Views.LoadingBackdrop();
           // App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
-          $(window).scrollTop(0);
 
      var fetchingprojects = ProjectEntities.API.getProjects();
      var fetchinglanguages = UtilEntitites.API.getLanguages();
