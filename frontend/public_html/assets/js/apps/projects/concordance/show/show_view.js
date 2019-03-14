@@ -13,17 +13,17 @@ define(["marionette","app","medium","imagesLoaded","backbone.syphon","common/vie
 
   Show.Concordance = Marionette.View.extend({
   template:concordanceTpl,
-  editor:"",
-events:{
-      'click .js-stepbackward' : 'backward_clicked',
-      'click .js-stepforward' : 'forward_clicked',
-      'click .js-firstconcordance' : 'firstconcordance_clicked',
-      'click .js-lastconcordance' : 'lastconcordance_clicked',
-      'click .js-correct' : 'correct_clicked',
+  events:{
+      'click .js-correct-conc' : 'correct_clicked',
       'click .line-text' : 'line_clicked',
       'mouseup .line-text' : 'line_selected',
-      'click .cordiv' : 'cordiv_clicked',
-      'dblclick .cordiv' : 'cordiv_dbclicked'
+      'click .js-select-cor' : 'cor_checked',
+      'click .js-suggestions-cor' : 'cor_suggestions',
+      'click .js-correct-cor' : 'cor_correct',
+      'click .cordiv_container' :'cordiv_clicked',
+      'click .js-toggle-selection' :'toggle_selection',
+      'click .js-set-correction' :'set_correction'
+
       },
 
 
@@ -41,45 +41,123 @@ events:{
 
 
 
-       backward_clicked:function(e){
-        e.preventDefault();
-        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        console.log(data)
-        this.trigger("concordance:new",data.prevPageId);
-      },
-
-       forward_clicked:function(e){
-        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        e.preventDefault();
-        this.trigger("concordance:new",data.nextPageId);
-      },
-
-       firstconcordance_clicked:function(e){
-         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        e.preventDefault();
-        this.trigger("concordance:new","first");
-      },
-       lastconcordance_clicked:function(e){
-             var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        e.preventDefault();
-        this.trigger("concordance:new","last");
-      },
       correct_clicked:function(e){
+
+        var that = this;
        
-        var anchor = $(e.currentTarget).attr('anchor');
-          var ids = Util.getIds(anchor);
-          var text = $('#line-text-'+anchor).text();
-          this.trigger("concordance:correct_line",{pid:ids[0],concordance_id:ids[1],line_id:ids[2],text:text},anchor)
+          $('.concLine').each(function(){
+
+             var cordiv_left = $(this).find('.cordiv_left');
+             if(cordiv_left.find('i').hasClass('fa-check-square')){
+
+            var pid = $(this).attr('projectId');
+            var lineid =  $(this).attr('lineId');
+            var pageid =  $(this).attr('pageId');
+            var text  = $(this).text().trim();
+            var anchor = $(this).attr('anchor');
+            that.trigger("concordance:correct_line",{pid:pid,page_id:pageid,line_id:lineid,text:text},anchor);
+            
+            }
+          });
 
       },
-  cordiv_clicked:function(e){
-    $(e.currentTarget).find('span').toggleClass('cor_selected');
-  },
-  cordiv_dbclicked:function(e){
-        console.log('dbclick')
+
+      toggle_selection:function(e){
+
+        $('.cordiv_container').each(function(){
+          console.log($(this));
+          var cordiv_left = $(this).find('.cordiv_left');
+
+        if(cordiv_left.find('i').hasClass('fa-square')){
+          cordiv_left.empty();
+          cordiv_left.append($('<i class="far fa-check-square"></i>'));
+          cordiv_left.parent().css('background-color','#d4edda');
+          cordiv_left.parent().css('border-color','#c3e6cb');
+
+         }
+        else{
+          cordiv_left.empty();
+          cordiv_left.append($('<i class="far fa-square"></i>'));
+          cordiv_left.parent().css('background-color','#cce5ff');
+          cordiv_left.parent().css('border-color','#b8daff');
+
+        }
+
+        })
+
+      },
+
+      set_correction:function(e){
+
+        $('.cordiv_container').each(function(){
+          console.log($(this));
+          var cordiv_left = $(this).find('.cordiv_left');
+          var cordiv = $(this).find('.cordiv');
+
+        if(cordiv_left.find('i').hasClass('fa-check-square')){
+          cordiv.text($(".js-global-correction-suggestion").val());
+         }
+      
+
+        })
+
+
+      },
+
+      cor_checked:function(e){
+         e.stopPropagation();
+        var currentTarget = $(e.currentTarget);
+
+        if(currentTarget.find('i').hasClass('fa-square')){
+          currentTarget.empty();
+          currentTarget.append($('<i class="far fa-check-square"></i>'));
+          currentTarget.parent().css('background-color','#d4edda');
+          currentTarget.parent().css('border-color','#c3e6cb');
+
+         }
+        else{
+          currentTarget.empty();
+          currentTarget.append($('<i class="far fa-square"></i>'));
+          currentTarget.parent().css('background-color','#cce5ff');
+          currentTarget.parent().css('border-color','#b8daff');
+
+        }
+
+
+
+      },
+      cor_correct:function(e){
+        e.stopPropagation();
+        var concLine = $(e.currentTarget).parent().parent();
+         var pid = concLine.attr('projectId');
+            var lineid =  concLine.attr('lineId');
+            var pageid =  concLine.attr('pageId');
+            var text  = concLine.text().trim();
+            var anchor = concLine.attr('anchor');
+            console.log(anchor);
+            this.trigger("concordance:correct_line",{pid:pid,page_id:pageid,line_id:lineid,text:text},anchor)
+      },
+      cor_suggestions:function(e){
+         e.stopPropagation();
+        console.log("corr suggestions");
+      },
+      cordiv_clicked:function(e){
+
+        console.log('cordiv_clicked')
+        console.log($(e.currentTarget))
+
+
+     $("#conc-modal").find('.cordiv_left').hide();
+      $("#conc-modal").find('.cordiv_right').hide();
+
+
+      $(e.currentTarget).find('.cordiv_left').show();
+      $(e.currentTarget).find('.cordiv_right').show();
+
+
+
       if($(e.currentTarget).hasClass('cordiv')){
-        console.log("ASDASDSß")
-       $(".custom-popover").remove();
+       // $(".custom-popover").remove();
 
       var checkbox = $('<span class="correction_box"><i class="far fa-square"></i></span>'); 
     //  $(e.currentTarget).find('span').append(checkbox);
@@ -132,19 +210,65 @@ events:{
      
 
     onAttach : function(){
+
       var that = this;
+
+      var timer = 0;
+      var delay = 200;
+      var prevent = false;
+      var after_db_click = false;
+
+      console.log($('.cordiv').length);
+
+ 
+
+
        if(this.options.asModal){
 
           this.$el.attr("id","conc-modal");
           this.$el.addClass("modal fade conc-modal");
         
           $('#conc-modal').on('show.bs.modal', function () {
-                that.trigger("conc:destroy:editor")
             })
             $('#conc-modal').on('hidden.bs.modal', function () {
             })
 
              $('#conc-modal').on('shown.bs.modal', function () {
+
+
+                   // $(".cordiv")
+                   //  .on("click", function() {
+                   //    var that = this;
+
+                   //    if(!after_db_click){
+
+                   //    timer = setTimeout(function() {
+                   //      if (!prevent) {
+                   //         console.log('single click '+prevent);
+                   //         $(that).toggleClass('cor_selected');
+                   //         console.log($(that));
+                   //         $(that).attr('contenteditable','false');
+
+                   //      }
+                   //      prevent = false;
+                   //    }, delay);
+
+                   //    }
+                   //    else {
+                   //      after_db_click = false;
+                   //    }
+
+                   //  })
+                   //  .on("dblclick", function() {
+                   //    clearTimeout(timer);
+                   //    prevent = true;
+                   //    console.log('double click '+prevent);
+                   //    $(this).attr('contenteditable','true');
+                   //    after_db_click = true;
+                   //    $(this).click();
+                   //  });
+
+
             })
            
         
@@ -161,11 +285,13 @@ $('#conc-modal').imagesLoaded( function() {
            _.each(tokendata.matches, function(match) {
             var line = match['line'];
             var linetokens = line.tokens;
-            var splitImgLine = $('<div class="splitLine"></div>');
-            $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").append(splitImgLine);
+            var concLine = $('<div class="concLine"></div>');
+            var anchor = line['projectId']+"-"+line['pageId']+"-"+line['lineId'];
+
+            concLine.attr('pageId',line['pageId']).attr('lineId',line['lineId']).attr('projectId',line['projectId']).attr('anchor',anchor);
+            $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().append(concLine);
 
             var cnt = 0;
-            var current_position = 0;
             var img_id = "img_"+line['pageId']+"_"+line['lineId'];
             var line_img = document.getElementById(img_id);
 
@@ -205,11 +331,12 @@ $('#conc-modal').imagesLoaded( function() {
 
                     $('#splitImg_'+line['lineId']+"_"+cnt).css('width','auto');
 
-                    
+                    var tokendiv;
                     var cordiv = $("<div>"+token.cor+"</div>");
 
-                    if(query==token.cor){
-                       cordiv = $("<div class='cordiv' contenteditable='true'><span class='badge badge-primary'>"+token.cor.trim()+"</div></span>");
+                    if(query.toLowerCase()==token.cor.toLowerCase()){
+                       cordiv = $("<div class='cordiv' contenteditable='true'>"+token.cor.trim()+"</div>");
+                        
                        //var grp = $ ("<div class='input-group-mb-3'></div>");
                        // grp.append($("<span class='concbtn_left'><i class='far fa-square'></i></span>"));
                        // grp.append($("<span class='cortoken' contenteditable='true'>"+token.cor.trim()+"</span>"));
@@ -218,14 +345,23 @@ $('#conc-modal').imagesLoaded( function() {
                        // cordiv.find('span').append(grp);
                       //    
                    //  cordiv = $("<div style='color:green;'>"+token.cor.trim()+"</div>");
+
+                    tokendiv = $('<div class="tokendiv cordiv_container"></div>')
+                    tokendiv.append($("<span class='cordiv_left js-select-cor'><i class='cor_item far fa-square'></i></span>")).append(cordiv);;
+                    tokendiv.append($("<span class='cordiv_right js-suggestions-cor'><i class='far fa-caret-square-down cor_item '></i></span><span class='cordiv_right js-correct-cor'><i class='cor_item far fa-arrow-alt-circle-up'></i></span>"));
+
                     }
 
+                    else{
+                      tokendiv = $('<div class="tokendiv"></div>').append(cordiv);
+                    }
                   
 
                     // var div = $("<div style='display:inline-block;'></div>").append(img).append(cordiv);
-                    var div = $('<div class="tokendiv"></div>').append(cordiv);
+                    $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().find('.concLine').append(tokendiv);
 
-                    $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").find('.splitLine').append(div);
+
+
                     cnt++;
 
                        // if (token.ocr.includes(" ")){

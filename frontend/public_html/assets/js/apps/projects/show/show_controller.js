@@ -62,12 +62,14 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
     
        projectShowPage.on("page:correct_line",function(data,anchor){
 
+          console.log(data);
+
                     var correctingline = ProjectEntitites.API.correctLine(data);
                   $.when(correctingline).done(function(result){
                     
                     console.log(result);
                     var lineanchor = $('#line-'+anchor);
-                    lineanchor.css('background','#d4edda');
+                    lineanchor.addClass('line_fully_corrected');
 
                  
 
@@ -178,9 +180,61 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
 
            var projectConcView = new Show.Concordance({tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
-    
            $('.custom-popover').remove();
         
+            projectConcView.on("concordance:correct_line",function(data,anchor){
+
+               console.log(anchor);
+               console.log(data);
+
+                    var correctingline = ProjectEntitites.API.correctLine(data);
+                  $.when(correctingline).done(function(result){
+                    
+                    console.log(result);
+
+                    if(page_id==data.page_id) {
+
+                    var lineanchor = $('#line-'+anchor);
+                    lineanchor.addClass('line_partially_corrected');
+          
+                     lineanchor.find('.line').empty().text(result['cor']);
+                     lineanchor.find('.line-tokens').empty();
+                     Util.addAlignedLine(result);
+
+                    lineanchor.find('.line').hide();
+                    lineanchor.find('.line-tokens').show();
+                 
+                   }
+                   /*** TO DO 
+
+                                 var fully = res.isFullyCorrected;
+                  var partial = res.isPartiallyCorrected;
+                  var input = document.getElementById(anchor);
+                  if (input !== null) {
+                    input.value = res.cor;
+                    pcw.setCorrectionStatus(input, fully, partial);
+                  }
+                  var text = document.getElementById('line-text-' + anchor);
+                  if (text !== null) {
+                    pcw.setCorrectionStatus(text, fully, partial);
+                    text.replaceChild(
+                        document.createTextNode(res.cor),
+                        text.childNodes[0]);
+                    var aapi = Object.create(pcw.Api);
+                    aapi.sid = pcw.getSid();
+                    aapi.setupForGetSuspiciousWords(ids[0], ids[1], ids[2]);
+                    aapi.run(pcw.markSuspiciousWordsInLine);
+
+                   ***/
+
+
+                  }).fail(function(response){
+                     App.mainmsg.updateContent(response.responseText,'danger');
+                    });  // $when fetchingproject
+          
+       })
+
+
 
              App.mainLayout.showChildView('dialogRegion',projectConcView);
 

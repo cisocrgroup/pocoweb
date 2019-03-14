@@ -431,6 +431,12 @@ div.text-image-line:hover {
   /*transform: scale(1.03);*/
 }
 
+.line-img{
+  margin-bottom: 5px;
+}
+
+
+
 .line-text{
   display: inline-block;
   flex-grow: 1;
@@ -440,9 +446,31 @@ div.text-image-line:hover {
   border-left: 1px solid transparent;
   border-bottom: 1px solid transparent;
 
+border-top-left-radius: .25rem;
+border-bottom-left-radius: .25rem;
+border-top-right-radius: .25rem;
+border-bottom-right-radius: .25rem;
 
 
+}
 
+.line{
+  display: none;
+  margin-right: 10px;
+}
+
+.line-tokens{
+  margin-right: 10px;
+}
+
+.line_partially_corrected{
+  background-color: #fff3cd;
+  border-color: #ffeeba !important;
+}
+
+.line_fully_corrected{
+  background-color: #d4edda;
+  border-color: #c3e6cb !important;
 }
 
 .line-text:focus {
@@ -450,7 +478,7 @@ outline: 0;
 }
 
 .line-text-parent{
-  display: flex;
+  display: inline-flex;
 
 }
 
@@ -462,12 +490,12 @@ outline: 0;
 
 .correct-btn{
   display: none;
-  height: 30px;
   padding: 0;
   padding-top:2px;
   width: 31px;
   border-radius: 0;
   border: 1px solid #ced4da;
+  height: 30px;
 }
 
 .noselect {
@@ -480,9 +508,6 @@ outline: 0;
                                   supported by Chrome and Opera */
 }
 
-.cor{
-  background-color: lightblue;
-}
 
 .splitLine{
   width: 100%;
@@ -492,6 +517,7 @@ outline: 0;
   display: inline-block;
   text-align: center;
   min-height: 1px;
+
 }
 
 
@@ -514,21 +540,51 @@ outline: 0;
     color: #007bff;
 }
 
-.concbtn_right{
-    margin-left: 2px;
-    border-left: 1px solid;
+.cordiv_right{
+    display: none;
 }
 
-.concbtn_right i{
-  margin-left: 3px;
+
+.cordiv_left{
+    display: none;
 }
 
-.concbtn_left i{
-  margin-right: 3px;
+.cordiv_left i{
+  margin-right: 4px;
+    margin-left: 4px;
+}
+
+.cor_item{
+    color: black;
+   margin: 3px;
+   color: #004085;
+}
+.cor_item:hover{
+    color: #434444;
+}
+
+.cordiv_container{
+  border: 2px solid;
+  border-radius: 0.25rem;
+  background-color: #cce5ff;
+  border-color: #b8daff;
+  cursor: pointer;
+  /*padding:1px 6px 1px 6px;*/
+  padding-right: 4px;
+  padding-left: 4px;
+  font-size: 14px;
+}
+
+
+.cordiv_container:focus{
+  outline: none;
 }
 
 .cordiv{
-  cursor: pointer;
+  display: inline;
+}
+.cordiv:focus{
+  outline: none;
 }
 
 .cor_selected{

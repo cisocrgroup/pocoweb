@@ -120,7 +120,7 @@ addAlignedLine : function(line){
                    cordiv = $('<div>'+token.cor.trim()+"</div>");
                 }
 
-                 var div = $('<div class="tokendiv"></div>').append(cordiv);
+                 var div = $('<div class="tokendiv noselect"></div>').append(cordiv);
                 line_text.find('.line-tokens').css('width',line_img.width+'px').append(div);
                 var box = token['box'];
                  

@@ -3,10 +3,10 @@
     <div class="col col-md-12">
 	<ul class="nav sticky-top navbar-light justify-content-center" style="background-color: white; margin-top: 15px;margin-bottom: 15px;">
 	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">
-		<i class="fas fa-fast-backward"></i>
+		<i class="fas fa-angle-double-left"></i>
 		</a></li>
 	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #<%-prevPageId%>">
-		<i class="fas fa-step-backward"></i>
+		<i class="fas fas fa-angle-left"></i>
 		</a></li>
 
 	<!--error-patterns -->
@@ -28,10 +28,10 @@
 
 	<!--nextpage and last page -->
 	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #<%-nextPageId%>">
-		<i class="fas fa-step-forward"></i>
+		<i class="fas fa-angle-right"></i>
 		</a></li>
 	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">
-		<i class="fas fa-fast-forward"></i>
+		<i class="fas fa-angle-double-right"></i>
 		</a></li>
 	</ul>
 
@@ -50,15 +50,13 @@
   	   var text = "line " + line['lineId'] + ", " + imgbasename;
   	   var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
   	   var inputclass = Util.get_correction_class(line);
-  	   
+  	   var correction_class="";
   	   var setlinehightlighting=false;
   	   if(line['isFullyCorrected']){
-  	  	 linehighlighting = "#d4edda";
-  	  	 setlinehightlighting = true;
+  	  	 correction_class = "line_fully_corrected";
   	   }
   	   else if(line['isPartiallyCorrected']){
-  	  	 linehighlighting = "#fff3cd";
-   	  	 setlinehightlighting = true;
+  	  	 correction_class = "line_partially_corrected";
   	   }
 
 
@@ -66,19 +64,18 @@
        <div class="text-image-line" title="<%-text%>">
 
        	<a class="line-anchor" id="line-anchor-<%-anchor%>"></a>
-		<div style="margin-bottom: 5px;" class="line-img"><img id="line-img-<%-anchor%>" src='<%-line["imgFile"]%>' alt='<%-text%>' title='<%-text%>' width="auto" height="25"></div>
+		<div class="line-img"><img id="line-img-<%-anchor%>" src='<%-line["imgFile"]%>' alt='<%-text%>' title='<%-text%>' width="auto" height="25"></div>
 
 		<div class="line-text-parent">	
-		<div id="line-<%-anchor%>" <% if(setlinehightlighting){ %> style="background-color:<%-linehighlighting%>" <%}%>  anchor="<%-anchor%>"
+		<div id="line-<%-anchor%>" class="<%-correction_class%> line-text" anchor="<%-anchor%>"
 	    class="<%-inputclass%> line-text">
-       <div class="line" style="display: none;" contenteditable="true">
+       <div class="line" contenteditable="true">
        
         <%-line['cor']%>
       	</div> 
       	<div class="line-tokens">
       	</div>
 
-      
 
         </div>
         <span>

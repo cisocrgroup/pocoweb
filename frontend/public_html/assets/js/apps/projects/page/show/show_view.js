@@ -95,15 +95,15 @@ events:{
         $('.line-text').css('border-bottom','1px solid transparent');
         $('.line-text').css('border-left','1px solid transparent');
         $('.line-text').css('border-top','1px solid transparent');
-        $('.line-text').css('border-top-left-radius','0rem');
-        $('.line-text').css('border-bottom-left-radius','0rem');
+        $('.line-text').css('border-top-right-radius','.25rem');
+        $('.line-text').css('border-bottom-right-radius','.25rem');
    
 
         line_parent.css('border-left','1px solid #ced4da');
         line_parent.css('border-bottom','1px solid #ced4da');
         line_parent.css('border-top','1px solid #ced4da');
-        line_parent.css('border-top-left-radius','.25rem');
-        line_parent.css('border-bottom-left-radius','.25rem');
+        line_parent.css('border-top-right-radius','.0rem');
+        line_parent.css('border-bottom-right-radius','.0rem');
 
         line_parent.next().find('.correct-btn').show();
       
@@ -145,7 +145,7 @@ events:{
       var btn_group = $('<div class="btn-group"></div>'); 
 
 
-      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary">Show concordance of (n occurrences)</button>'))
+      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary">Show concordance of (0 occurrences)</button>'))
       .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary">Correction suggestions <i class="fas fa-caret-down"></button>'))
  
       var div = $('<div class="custom-popover">')
@@ -183,10 +183,8 @@ events:{
      $('.line-img').each(function(index){
        $(this).imagesLoaded( function() {
           
-
             var line = that.model.get('lines')[index];
             Util.addAlignedLine(line);
-
 
         });
 
