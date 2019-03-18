@@ -81,7 +81,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
 
                projectsListView.on('list:open',function(id){
-                App.trigger('projects:show',id,"first");
+                App.trigger('projects:show',id);
               });
 
 

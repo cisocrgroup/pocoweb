@@ -26755,9 +26755,9 @@ __p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-
 ((__t=(prevPageId))==null?'':_.escape(__t))+
 '">\r\n		<i class="fas fas fa-angle-left"></i>\r\n		</a></li>\r\n\r\n	<!--error-patterns -->\r\n	<li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-patterns-dropdown">\r\n		Error patterns<span class="caret"></span></a>\r\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\r\n        </div>\r\n    </li>\r\n	<!-- error-tokens -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-tokens-dropdown">\r\n		Error tokens<span class="caret"></span></a>\r\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\r\n        </div>\r\n     </li>\r\n\r\n   \r\n\r\n	<!--nextpage and last page -->\r\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
 ((__t=(nextPageId))==null?'':_.escape(__t))+
-'">\r\n		<i class="fas fa-angle-right"></i>\r\n		</a></li>\r\n	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\r\n		<i class="fas fa-angle-double-right"></i>\r\n		</a></li>\r\n	</ul>\r\n\r\n	<div class="defaulthl" style="line-height:1; margin-top:15px;">\r\n    <i class="fas fa-book-open card_main_icon green"></i>\r\n	Project '+
+'">\r\n		<i class="fas fa-angle-right"></i>\r\n		</a></li>\r\n	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\r\n		<i class="fas fa-angle-double-right"></i>\r\n		</a></li>\r\n	</ul>\r\n\r\n	<div class="defaulthl" style="line-height:1; margin-top:15px;">\r\n <!--    <i class="fas fa-book-open card_main_icon green"></i>\r\n	Project '+
 ((__t=(projectId))==null?'':_.escape(__t))+
-'\r\n	<div style="font-size: 20px; margin-top: 10px;"> page '+
+' -->\r\n	<div style="font-size: 20px; margin-top: 10px;"> Page '+
 ((__t=(pageId))==null?'':_.escape(__t))+
 '</div>\r\n	</div>\r\n\r\n	   ';
 
@@ -27369,7 +27369,15 @@ define('apps/projects/concordance/show/show_view',["marionette","app","medium","
       },
       cor_suggestions:function(e){
          e.stopPropagation();
-         var concLine = $(e.currentTarget).parent().parent();
+
+         if($('#dropdown-content-conc').length>0){
+          if($('#dropdown-content-conc:visible')){
+           $('#dropdown-content-conc').toggle();
+           return;
+          }
+         }
+
+        var concLine = $(e.currentTarget).parent().parent();
         var tokendiv = $(e.currentTarget).parent();
 
             var pid = tokendiv.attr('projectId');
@@ -27382,6 +27390,7 @@ define('apps/projects/concordance/show/show_view',["marionette","app","medium","
 
       },
       cordiv_clicked:function(e){
+      $('#dropdown-content-conc').remove();
 
       $("#conc-modal").find('.cordiv_left').hide();
       $("#conc-modal").find('.cordiv_right').hide();
@@ -27785,6 +27794,8 @@ define('apps/projects/show/show_view',["marionette","app","backbone.syphon","com
   });
 
 
+ Show.Hub = Views.CardHub.extend({
+ })
 
   Show.Info = Marionette.View.extend({
       template: infoTpl,
@@ -28225,16 +28236,217 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 
  Controller = {
 
-		showProject: function(id,page_id){
+		showProject: function(id){
 
      		require(["entities/project"], function(ProjectEntitites){
 
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
-              App.mainLayout.showChildView('backdropRegion',loadingCircleView);
-
-   			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
+            App.mainLayout.showChildView('backdropRegion',loadingCircleView);
+     			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:1});
 
    
+      $.when(fetchingpage).done(function(project){
+
+		     	loadingCircleView.destroy();
+      console.log(project);
+
+			var projectShowLayout = new Show.Layout();
+			var projectShowHeader;
+			var projectShowInfo;
+			var projectShowFooterPanel;
+			// console.log(reviews);
+	
+			projectShowLayout.on("attach",function(){
+      var cards = [
+          {
+                  "color": "green",
+                  "icon": "fas fa-history",
+                  "id": "test_btn",
+                  "name": "Automatic Postcorrection",
+                  "seq": 1,
+                  "text": "Start automatic postcorrection process.",
+                  "url": "projects:list",
+              }, {
+                  "color": "green",
+                  "icon": "fas fa-file-signature",
+                  "id": "users_button",
+                  "name": "Interactive Postcorrection",
+                  "seq": 3,
+                  "text": "Manually correct pages.",
+                  "url": "projects:show_page",
+              },
+               {
+                  "color": "green",
+                  "icon": "far fa-edit",
+                  "id": "doc_button",
+                  "name": "Edit",
+                  "seq": 5,
+                  "text": "Edit the project.",
+                  "url": "docs:show",
+              }, {
+                  "color": "green",
+                  "icon": "far fa-times-circle",
+                  "id": "about_btn",
+                  "name": "Delete",
+                  "seq": 4,
+                  "text": "Delete the project.",
+                  "url": "about:home",
+          }]
+
+
+        var projectShowInfo = new Show.Hub({cards:cards,currentRoute:"home"});
+
+        projectShowInfo.on('cardHub:clicked',function(data){
+          if(data.url=="projects:show_page"){
+             App.trigger("projects:show_page",id,1);
+          }
+        });
+
+			  projectShowHeader = new Show.Header({title:"Project "+project.get('projectId'),icon:"fas fa-book-open",color:"green"});
+      	projectShowFooterPanel = new Show.FooterPanel();
+
+    	  projectShowInfo.on("show:edit_clicked",function(methods){
+
+
+			   var projectsShowEditProject = new Show.ProjectForm({model:project
+          , asModal:true,text:"Edit Project",edit_project:true,loading_text:"Update in progress"});
+
+
+           projectsShowEditProject.on("project:update_clicked",function(data){
+            project.set(data)
+
+            var puttingProject = ProjectEntitites.API.updateProject(id,project);
+
+
+                 $.when(postingProject).done(function(result){
+                  $('.loading_background').fadeOut();
+
+                   $('#projects-modal').modal('toggle');
+
+                    // TO DO
+                })
+
+
+          });
+
+
+          App.mainLayout.showChildView('dialogRegion',projectsShowEditProject);
+
+          });
+
+
+            projectShowInfo.on("show:delete_clicked",function(methods){
+
+			   var projectsShowDeleteProject = new Show.DeleteProjectForm({asModal:true,text:"Remove this Project?",title:"Delete Project"});
+
+
+        	   projectsShowDeleteProject.on("project:delete_clicked",function(){
+               var deletingProject = ProjectEntitites.API.deleteProject(id);
+
+
+                 $.when(deletingProject).done(function(result){
+                  $('.loading_background').fadeOut();
+
+                   $('#confirm-modal').modal('toggle');
+
+
+                   	App.trigger("projects:list");   
+
+
+                   projectsShowDeleteProject.model.clear().set(projectsListDeleteProject.model.defaults);
+                   $('#selected_file').text("");
+                   // projectsListAddProject.render()
+
+                })
+
+
+          });
+
+        
+
+          App.mainLayout.showChildView('dialogRegion',projectsShowDeleteProject);
+
+
+
+		  });
+
+
+         projectShowInfo.on("show:add_book_clicked",function(methods){
+
+
+		   var projectsShowAddBook = new Show.ProjectForm({model: new ProjectEntitites.Project(), asModal:true,text:"Add a book to the OCR Project",add_book:true,loading_text:"Adding book"});
+
+
+       projectsShowAddBook.on("project:addbook_clicked",function(data){
+		   var addingBook = ProjectEntitites.API.addBook(id,data);
+
+
+		         $.when(addingBook).done(function(result){
+		          $('.loading_background').fadeOut();
+
+		           $('#projects-modal').modal('toggle');
+
+
+		           projectsShowAddBook.model.clear().set(projectsListEditProject.model.defaults);
+		           $('#selected_file').text("");
+		           // projectsListAddProject.render()
+
+		        })
+
+
+      });
+
+
+          App.mainLayout.showChildView('dialogRegion',projectsShowAddBook);
+
+          });
+
+
+  			// projectPanel = new Show.FooterPanel();
+
+
+	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
+	          projectShowLayout.showChildView('infoRegion',projectShowInfo);
+	          projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
+
+
+    		}); // on.attach()
+
+          App.mainLayout.showChildView('mainRegion',projectShowLayout);
+
+          }).fail(function(response){
+                App.mainmsg.updateContent(response.responseText,'danger');
+          });  // $when fetchingproject
+
+
+    	}) // require
+    	
+		}
+
+	}
+
+
+return Controller;
+
+});
+
+// ======================================
+// apps/project/page/show/show_controller.js
+// ======================================
+
+define('apps/projects/page/show/show_controller',["app","common/util","common/views","apps/projects/show/show_view"], function(App,Util,Views,Show){
+
+
+ Controller = {
+
+		showPage: function(id,page_id){
+
+     		require(["entities/project"], function(ProjectEntitites){
+
+	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
+            App.mainLayout.showChildView('backdropRegion',loadingCircleView);
+    			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
+            
         	 $.when(fetchingpage).done(function(page){
 
 		     	loadingCircleView.destroy();
@@ -28802,7 +29014,7 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
 
                projectsListView.on('list:open',function(id){
-                App.trigger('projects:show',id,"first");
+                App.trigger('projects:show',id);
               });
 
 
@@ -28891,17 +29103,22 @@ define('apps/projects/projects_app',["marionette","app"], function(Marionette,Ap
 	projectsdApp.Router = Marionette.AppRouter.extend({
 		appRoutes: {
 		   "projects"    :"listProjects",
-  		   "projects/:id/page/:page_id"    :"showProject"
+  		   "projects/:id"    :"showProject",
+  		   "projects/:id/page/:page_id"    :"showPage"
 
 		}
 	});
 
 	var API = {
-	
-	
-		showProject: function(id,page_id){
+		showProject: function(id){
 			require(["apps/projects/show/show_controller"], function(ShowController){
-       				ShowController.showProject(id,page_id);
+       				ShowController.showProject(id);
+				});
+		},
+	
+		showPage: function(id,page_id){
+			require(["apps/projects/page/show/show_controller"], function(ShowController){
+       				ShowController.showPage(id,page_id);
 				});
 		},
 
@@ -28914,11 +29131,16 @@ define('apps/projects/projects_app',["marionette","app"], function(Marionette,Ap
 	};
 
 
-	App.on("projects:show",function(id,page_id){
-		App.navigate("projects/"+id+"/page/"+page_id);
-		API.showProject(id,page_id);
+	App.on("projects:show",function(id){
+		App.navigate("projects/"+id);
+		API.showProject(id);
 	});
 
+
+	App.on("projects:show_page",function(id,page_id){
+		App.navigate("projects/"+id+"/page/"+page_id);
+		API.showPage(id,page_id);
+	});
 
 	App.on("projects:list",function(){
 		App.navigate("projects");

@@ -31,6 +31,8 @@ define(["marionette","app","backbone.syphon","common/views","apps/projects/commo
   });
 
 
+ Show.Hub = Views.CardHub.extend({
+ })
 
   Show.Info = Marionette.View.extend({
       template: infoTpl,

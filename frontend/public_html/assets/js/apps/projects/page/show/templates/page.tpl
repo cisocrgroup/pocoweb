@@ -36,9 +36,9 @@
 	</ul>
 
 	<div class="defaulthl" style="line-height:1; margin-top:15px;">
-    <i class="fas fa-book-open card_main_icon green"></i>
-	Project <%-projectId%>
-	<div style="font-size: 20px; margin-top: 10px;"> page <%-pageId%></div>
+ <!--    <i class="fas fa-book-open card_main_icon green"></i>
+	Project <%-projectId%> -->
+	<div style="font-size: 20px; margin-top: 10px;"> Page <%-pageId%></div>
 	</div>
 
 	   <%
