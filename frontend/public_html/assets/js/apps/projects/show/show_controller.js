@@ -164,9 +164,8 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
                      $('#js-suggestions').click(function(e){
                       e.stopPropagation();
-                     // $(this).dropdown();
-                     $('#suggestionsDropdown').show();
-                     console.log("DDDD");
+                      $(".dropdown-menu").hide();
+                      $('#suggestionsDropdown').toggle();
                      });
 
                      $('.dropdown-item').on('click',function(e){
@@ -255,7 +254,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                 suggestions_btn.attr('aria-expanded','false');
                 suggestions_btn.attr('id','dropdownMenuConc');
                 suggestions_btn.attr('data-flip','false');
-
+                suggestions_btn.attr('data-target','dropdown-content-conc');
 
                  var dropdown_content = $('<div></div>');
                  dropdown_content.addClass('dropdown-menu');
@@ -271,12 +270,14 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                       s.distance + ", weight: " + s.weight.toFixed(2) + ")";
                      $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
-                    suggestions_btn.dropdown();
+                    dropdown_content.toggle();
 
-                     // $('.dropdown-item').on('click',function(){
-                     //  var split = $(this).text().split(" ");
-                     //  Util.replaceSelectedText(split[0]);
-                     // })
+                     $('#dropdown-content-conc .dropdown-item').on('click',function(e){
+                      e.stopPropagation();
+                      var split = $(this).text().split(" ");
+                      $(this).parent().parent().prev().text(split[0]);
+                      $(this).parent().hide();
+                     })
 
 
           

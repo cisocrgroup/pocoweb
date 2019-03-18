@@ -23,10 +23,27 @@ events:{
       'click .js-correct' : 'correct_clicked',
       'click .line-tokens' : 'line_tokens_clicked',
       'click .line-text' : 'line_selected',
+      'click #pcw-error-tokens-link' : 'error_tokens_clicked',
+      'click #pcw-error-patterns-link' : 'error_patterns_clicked',
+
       'mouseover .line-tokens' : 'tokens_hovered',
       'mouseleave .line-text-parent' : 'line_left',
       'keydown .line' : 'line_edited',
 
+      },
+
+      error_tokens_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".dropdown-menu").hide();
+        $('#pcw-error-tokens-dropdown').toggle();
+      },
+
+        error_patterns_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".dropdown-menu").hide();
+        $('#pcw-error-patterns-dropdown').toggle();
       },
 
       serializeData: function(){
@@ -179,29 +196,7 @@ events:{
        $('#js-concordance').on('click',function(){
         that.trigger("page:concordance_clicked",sel,0);
        });
-           // remove when clicked somewhere else
-
-          $(document).off().click(function(e) 
-          {
-            e.stopPropagation();
-           console.log(e.target);
-                      console.log(e.currentTarget);
-
-// 'click .js-stepbackward' : 'backward_clicked',
-//       'click .js-stepforward' : 'forward_clicked',
-//       'click .js-firstpage' : 'firstpage_clicked',
-//       'click .js-lastpage' : 'lastpage_clicked',
-//       'click .js-correct' : 'correct_clicked',
-//       'click .line-tokens' : 'line_tokens_clicked',
-
-            console.log('asdkaksd')
-              var custom_popover = $(".custom-popover");
-              if (!custom_popover.is(e.target) && custom_popover.has(e.target).length === 0) 
-              {          
-                  custom_popover.remove();
-              }
-          });
-
+      
          this.saved_selection = sel;
          // Util.replaceSelectedText(selection);
         //   console.log(selection);
@@ -212,6 +207,20 @@ events:{
       onAttach:function(e){
         var that = this;
 
+        // remove when clicked somewhere else
+
+          $(document).off().click(function(e) 
+          {
+            e.stopPropagation();
+            
+            $(".dropdown-menu").hide();
+
+              var custom_popover = $(".custom-popover");
+              if (!custom_popover.is(e.target) && custom_popover.has(e.target).length === 0) 
+              {          
+                  custom_popover.remove();
+              }
+          });
 
 
    
