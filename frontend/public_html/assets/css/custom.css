@@ -555,9 +555,8 @@ outline: 0;
 }
 
 .cor_item{
-    color: black;
+   color: black;
    margin: 3px;
-   color: #004085;
 }
 .cor_item:hover{
     color: #434444;

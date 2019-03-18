@@ -301,6 +301,8 @@ $('#conc-modal').imagesLoaded( function() {
             var anchor = line['projectId']+"-"+line['pageId']+"-"+line['lineId'];
             concLine.attr('anchor',anchor);
 
+            var querytoken = match['tokens'][0]['cor'];
+
             $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().append(concLine);
 
             var cnt = 0;
@@ -346,7 +348,7 @@ $('#conc-modal').imagesLoaded( function() {
                     var tokendiv;
                     var cordiv = $("<div>"+token.cor+"</div>");
 
-                    if(query.toLowerCase()==token.cor.toLowerCase()){
+                    if(querytoken.toLowerCase()==token.cor.toLowerCase()){
                        cordiv = $("<div class='cordiv' contenteditable='true'>"+token.cor.trim()+"</div>");
                         
                        //var grp = $ ("<div class='input-group-mb-3'></div>");
@@ -387,13 +389,26 @@ $('#conc-modal').imagesLoaded( function() {
                         prevdiv = cordiv;
                        //  current_position+=(prev_div_width + whitespace_div_length);
                        // }
-                     
-                      
+
 
                }
            // $("#"+img_id).remove();
 
+
+
+
      });
+
+          // remove when clicked somewhere else
+         $(that.el).click(function(e) 
+          {
+              var container = $(".cordiv");
+                if (!container.is(e.target) && container.has(e.target).length === 0) 
+                {          
+                    container.parent().find('.cordiv_left').hide();
+                    container.parent().find('.cordiv_right').hide();
+                }
+          });   
 
     that.$el.modal('show');
 

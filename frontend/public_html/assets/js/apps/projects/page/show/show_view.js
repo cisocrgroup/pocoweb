@@ -22,7 +22,7 @@ events:{
       'click .js-lastpage' : 'lastpage_clicked',
       'click .js-correct' : 'correct_clicked',
       'click .line-tokens' : 'line_tokens_clicked',
-      'mouseup .line-text' : 'line_selected',
+      'click .line-text' : 'line_selected',
       'mouseover .line-tokens' : 'tokens_hovered',
       'mouseleave .line-text-parent' : 'line_left',
       'keydown .line' : 'line_edited',
@@ -37,6 +37,7 @@ events:{
       },
 
        backward_clicked:function(e){
+        e.stopPropagation();
         e.preventDefault();
         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         console.log(data)
@@ -44,23 +45,27 @@ events:{
       },
 
        forward_clicked:function(e){
+        e.stopPropagation();
         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
         this.trigger("page:new",data.nextPageId);
       },
 
        firstpage_clicked:function(e){
+         e.stopPropagation();
          var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
         this.trigger("page:new","first");
       },
        lastpage_clicked:function(e){
+       e.stopPropagation();
         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
         this.trigger("page:new","last");
       },
       correct_clicked:function(e){
-       
+      e.stopPropagation();
+
         var anchor = $(e.currentTarget).attr('anchor');
         var ids = Util.getIds(anchor);
         var text = $('#line-'+anchor).find('.line').text().replace(/\s\s+/g, ' ').trim();
@@ -81,11 +86,13 @@ events:{
       },
 
        line_edited:function(e){
+        e.stopPropagation();
         $('.custom-popover').remove();
       },
       
       line_tokens_clicked:function(e){
         e.preventDefault();
+         e.stopPropagation();
        $(".custom-popover").remove();
 
         $('.line').hide();
@@ -135,6 +142,8 @@ events:{
         
       },
       line_selected:function(e){
+        e.stopPropagation();
+
         var that = this;
 
          rangy.init();
@@ -143,8 +152,8 @@ events:{
            return;
           }
 
-     console.log(sel);     
-    if($(e.target).hasClass('line')){
+      console.log(sel);     
+      if($(e.target).hasClass('line')){
 
        $(".custom-popover").remove();
 
@@ -170,15 +179,26 @@ events:{
        $('#js-concordance').on('click',function(){
         that.trigger("page:concordance_clicked",sel,0);
        });
+           // remove when clicked somewhere else
 
-       
-          $(document).mousedown(function(e) 
+          $(document).off().click(function(e) 
           {
-              var container = $(".custom-popover");
-              // if the target of the click isn't the container nor a descendant of the container
-              if (!container.is(e.target) && container.has(e.target).length === 0) 
+            e.stopPropagation();
+           console.log(e.target);
+                      console.log(e.currentTarget);
+
+// 'click .js-stepbackward' : 'backward_clicked',
+//       'click .js-stepforward' : 'forward_clicked',
+//       'click .js-firstpage' : 'firstpage_clicked',
+//       'click .js-lastpage' : 'lastpage_clicked',
+//       'click .js-correct' : 'correct_clicked',
+//       'click .line-tokens' : 'line_tokens_clicked',
+
+            console.log('asdkaksd')
+              var custom_popover = $(".custom-popover");
+              if (!custom_popover.is(e.target) && custom_popover.has(e.target).length === 0) 
               {          
-                  container.remove();
+                  custom_popover.remove();
               }
           });
 
@@ -190,8 +210,9 @@ events:{
       },
 
       onAttach:function(e){
-
         var that = this;
+
+
 
    
 

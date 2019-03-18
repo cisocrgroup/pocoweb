@@ -133,7 +133,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
                    $('#js-concordance').attr('title','Show concordance of <b>'+ selection+'</b> ('+tokens.nWords+' occurrences)');
 
-                    $("#dropdown-content").empty();
+                    $("#suggestionsDropdown").empty();
 
 
                 var suggestions_btn = $('#js-suggestions'); 
@@ -143,14 +143,14 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                 suggestions_btn.attr('data-toggle','dropdown');
                 suggestions_btn.attr('aria-haspopup','true');
                 suggestions_btn.attr('aria-expanded','false');
-                suggestions_btn.attr('id','dropdownMenuButton');
                 suggestions_btn.attr('data-flip','false');
+                suggestions_btn.attr('data-target','#suggestionsDropdown');
 
 
                  var dropdown_content = $('<div></div>');
                  dropdown_content.addClass('dropdown-menu');
-                 dropdown_content.attr('id','dropdown-content');
-                 dropdown_content.attr('aria-labelledby','dropdownMenuButton');
+                 dropdown_content.attr('id','suggestionsDropdown');
+                 dropdown_content.attr('aria-labelledby','js-suggestions');
                  suggestions_btn.append(dropdown_content);
 
 
@@ -159,10 +159,18 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                      var s = suggestions.suggestions[i];
                      var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
                       s.distance + ", weight: " + s.weight.toFixed(2) + ")";
-                     $('#dropdown-content').append($('<a class="dropdown-item noselect">'+content+"</a>"));
+                     $('#suggestionsDropdown').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
 
-                     $('.dropdown-item').on('click',function(){
+                     $('#js-suggestions').click(function(e){
+                      e.stopPropagation();
+                     // $(this).dropdown();
+                     $('#suggestionsDropdown').show();
+                     console.log("DDDD");
+                     });
+
+                     $('.dropdown-item').on('click',function(e){
+                      e.stopPropagation();
                       var split = $(this).text().split(" ");
                       Util.replaceSelectedText(split[0]);
                      })
