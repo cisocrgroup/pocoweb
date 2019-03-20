@@ -106,6 +106,28 @@ function get_languages(){
 
 
 function get_project(){
+
+  $pid = $_POST['pid'];
+  $api = new Api(backend_get_remove_project_route($pid));
+  $api->set_session_id(backend_get_session_cookie());
+  $api->get_request();
+
+ $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        echo json_encode($session); 
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status);
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
 }
 
 function delete_project(){
@@ -120,9 +142,7 @@ function delete_project(){
   case "200":
         $result=array();
         $session = $api->get_response();
-        print_r($session); 
-        print_r($status); 
-        //echo json_encode("Successfully deleted project '"+$pid+"'"); 
+        echo json_encode("Successfully deleted project '"+$pid+"'"); 
     break;
   case "403":
     header("status: ".$status);

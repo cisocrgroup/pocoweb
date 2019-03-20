@@ -41,30 +41,6 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
           projectsListLayout.showChildView('footerRegion',projectsListFooterPanel);
 
 
-          projectsListView.on('list:delete',function(id,delete_row){
-
-            var confirmModal = new List.AreYouSure({title:"Are you sure...",text:"...you want to delete project "+id+" ?",id:"deleteModal"})
-            App.mainLayout.showChildView('dialogRegion',confirmModal)
-
-            confirmModal.on('delete:confirm',function(){
-                  var deletingProject = ProjectEntities.API.deleteProject({pid:id});
-                  $('#deleteModal').modal("hide");
-
-                 $.when(deletingProject).done(function(result){
-                   App.mainmsg.updateContent("Project "+id+" successfully deleted.",'success');              
-                   var fetchingnewprojects = ProjectEntities.API.getProjects();
-
-                       $.when(fetchingnewprojects).done(function(new_projects){
-                          projectsListView.options.collection=new_projects.books;
-                          projectsListView.render();
-                       });
-
-                 }).fail(function(response){ 
-                    App.mainmsg.updateContent(response.responseText,'danger');
-                  });    
-            })
-
-          });
 
              projectsListView.on('list:profile',function(id){
                var profilingproject = ProjectEntities.API.profileProject({pid:id});

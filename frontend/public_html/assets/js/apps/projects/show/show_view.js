@@ -5,9 +5,8 @@
 define(["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/projects/page/show/show_view","apps/projects/concordance/show/show_view",
         "tpl!apps/projects/show/templates/layout.tpl",
         "tpl!apps/projects/show/templates/info.tpl",
-        "tpl!apps/projects/show/templates/resp.tpl"
 
-  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl,respTpl){
+  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl){
 
 
     var Show = {};
@@ -17,7 +16,9 @@ define(["marionette","app","backbone.syphon","common/views","apps/projects/commo
     regions:{
        headerRegion: "#hl-region"
       ,infoRegion: "#info-region"
-      ,respRegion: "#resp-region"
+      ,hubRegion: "#hub-region"
+      ,hubRegion2: "#hub2-region"
+
       ,footerRegion: "#footer-region"
     }
 
@@ -80,13 +81,11 @@ Show.FooterPanel = Views.FooterPanel.extend({
 Show.ProjectForm = CommonViews.ProjectForm.extend({
   });
 
-Show.DeleteProjectForm = Views.Confirm.extend({
-   confirmClicked: function(e){
-     e.preventDefault();
-     this.trigger("project:delete_clicked");
-   },
-
-  });
+Show.AreYouSure = Views.AreYouSure.extend({
+      triggers:{
+     "click .js-yes":"delete:confirm"
+    }
+  })
 
 
 return Show;

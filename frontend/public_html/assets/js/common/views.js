@@ -304,7 +304,7 @@ onAttach: function(){
 	datatable_options:{},
 
 	events:{
-	'click .clickable-row' : 'row_clicked'
+	'click .clickable-row' : 'row_clicked',
 	},
 
 		serializeData: function(){
@@ -326,7 +326,8 @@ onAttach: function(){
 		},
 
 		row_clicked : function(e){
-
+			e.stopPropagation();
+			console.log("sadsa")
 			var url = $(e.currentTarget).attr('data-href')
 
 			if(url=="#"){ var idx = $(e.currentTarget).attr('data-idx'); this.trigger('go:list_clicked',{idx:idx}); }
@@ -335,6 +336,12 @@ onAttach: function(){
 		},
 
 	  onDomRefresh: function(){
+
+	  	$(".clickable-row").on("click",function(e){
+	  		var url = $(e.currentTarget).attr('data-href')
+			if(url=="#"){ var idx = $(e.currentTarget).attr('data-idx'); this.trigger('go:list_clicked',{idx:idx}); }
+			else window.location = url;
+	  	})
 
 	  	var old_table_height = 0;
 

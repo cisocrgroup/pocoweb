@@ -77,6 +77,10 @@ if(asModal) {
  <button class="btn btn-primary js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>
 
 
+<% } else { %>
+
+ <button class="btn btn-primary js-edit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Update</button>
+
 <% } %>
 
 </form>

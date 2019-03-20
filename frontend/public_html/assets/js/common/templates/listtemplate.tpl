@@ -3,7 +3,7 @@
  <div class="col col-lg-12" >
 
 
- <table class="table table-bordered <% if(hover){%>table-hover<%}%>" 
+ <table class="table table-bordered table-striped <% if(hover){%>table-hover<%}%>" 
  id="table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >
 
 

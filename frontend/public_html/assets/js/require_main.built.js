@@ -23911,7 +23911,7 @@ define('tpl',['underscore', 'text'], function (_, text) {
 define("tpl!common/templates/listtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+=' <div class="container" style="padding-bottom:50px;">\n <div class="row">\n <div class="col col-lg-12" >\n\n\n <table class="table table-bordered ';
+__p+=' <div class="container" style="padding-bottom:50px;">\n <div class="row">\n <div class="col col-lg-12" >\n\n\n <table class="table table-bordered table-striped ';
  if(hover){
 __p+='table-hover';
 }
@@ -24046,13 +24046,13 @@ __p+='\n                <div class="col-md-'+
 ((__t=(item['name']))==null?'':_.escape(__t))+
 '</h3>\n                      </div>\n                  <div class="card-block">\n\n\n                    <p class="card-text"> '+
 ((__t=(item['text']))==null?'':_.escape(__t))+
-'  </p>\n                    <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->\n\n                  </div>\n\n\n                  <div class="card-footer text-muted">\n\n                   <div class="row">\n\n                     <div class="footer_item_container">\n\n                          <div style="visibility: hidden" class="dummy footer_item "><i class="fa fa-user-o" aria-hidden="true"></i> <span class="rolename">X</span> </div>\n\n                     </div>\n\n                     <div class="footer_item_enter_container">  \n                        <div class="footer_item footer_item_enter hover ';
+'  </p>\n                    <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->\n\n                  </div>\n\n\n                  <div class="card-footer text-muted">\n\n                   <div class="row">\n\n                     <div class="footer_item_container">\n\n                          <div style="visibility: hidden" class="dummy footer_item "><i class="fa fa-user-o" aria-hidden="true"></i> <span class="rolename">X</span> </div>\n\n                     </div>\n\n                     <div class="footer_item_enter_container">  \n                       <!-- <div class="footer_item footer_item_enter hover ';
 if(item['available']!=undefined&&item['available']==true){
 __p+=''+
 ((__t=(item.color))==null?'':_.escape(__t))+
 '-border';
 }
-__p+='">  <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Enter </div>\n                     </div>\n\n                   </div>\n                     \n                  </div>\n\n\n                </div>\n\n                </div>\n\n              ';
+__p+='">  <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Enter </div> -->\n                     </div>\n\n                   </div>\n                     \n                  </div>\n\n\n                </div>\n\n                </div>\n\n              ';
  col_count++;  } 
 __p+='\n    </div> \n  ';
  } 
@@ -24260,7 +24260,7 @@ return __p;
 define("tpl!common/templates/msgtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n<div class="container" style="margin-top: 35px">\r\n  <div id="'+
+__p+='\n<div class="container" style="margin-top: 35px">\n  <div id="'+
 ((__t=(id))==null?'':_.escape(__t))+
 '" class="alert alert-'+
 ((__t=(type))==null?'':_.escape(__t))+
@@ -24268,7 +24268,7 @@ __p+='\r\n<div class="container" style="margin-top: 35px">\r\n  <div id="'+
 ((__t=(role))==null?'':_.escape(__t))+
 '">'+
 ((__t=(message))==null?'':__t)+
-'\r\n  	  <button type="button" class="close js-close-msg">\r\n    <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\r\n  </button>\r\n  </div>\r\n</div>\r\n';
+'\n  	  <button type="button" class="close js-close-msg">\n    <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\n  </button>\n  </div>\n</div>\n';
 }
 return __p;
 };});
@@ -24579,7 +24579,7 @@ onAttach: function(){
 	datatable_options:{},
 
 	events:{
-	'click .clickable-row' : 'row_clicked'
+	'click .clickable-row' : 'row_clicked',
 	},
 
 		serializeData: function(){
@@ -24601,7 +24601,8 @@ onAttach: function(){
 		},
 
 		row_clicked : function(e){
-
+			e.stopPropagation();
+			console.log("sadsa")
 			var url = $(e.currentTarget).attr('data-href')
 
 			if(url=="#"){ var idx = $(e.currentTarget).attr('data-idx'); this.trigger('go:list_clicked',{idx:idx}); }
@@ -24610,6 +24611,12 @@ onAttach: function(){
 		},
 
 	  onDomRefresh: function(){
+
+	  	$(".clickable-row").on("click",function(e){
+	  		var url = $(e.currentTarget).attr('data-href')
+			if(url=="#"){ var idx = $(e.currentTarget).attr('data-idx'); this.trigger('go:list_clicked',{idx:idx}); }
+			else window.location = url;
+	  	})
 
 	  	var old_table_height = 0;
 
@@ -25091,7 +25098,7 @@ return Show;
 define("tpl!apps/users/login/templates/loginform.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n<div class="modal fade" id="loginModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\r\n <div class="modal-dialog">\r\n <div class="modal-content">\r\n      <div class="modal-header">\r\n            <legend>Login</legend>\r\n              <div class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\r\n        </div>\r\n      </div>\r\n       <div class="modal-body">\r\n<form>\r\n  <div class="form-group">\r\n    <label for="email">Email address</label>\r\n    <input type="email" class="form-control" id="email" name="email"aria-describedby="emailHelp" placeholder="Enter email">\r\n  </div>\r\n  <div class="form-group">\r\n    <label for="password">Password</label>\r\n    <input type="password" class="form-control" name="password" id="password" placeholder="Password">\r\n  </div>\r\n\r\n  <button type="submit" class="btn btn-primary js-loginsubmit">Submit</button>\r\n</form>\r\n</div>\r\n</div>\r\n\r\n</div>\r\n</div>\r\n\r\n';
+__p+='\n<div class="modal fade" id="loginModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\n <div class="modal-dialog">\n <div class="modal-content">\n      <div class="modal-header">\n            <legend>Login</legend>\n              <div class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\n        </div>\n      </div>\n       <div class="modal-body">\n<form>\n  <div class="form-group">\n    <label for="email">Email address</label>\n    <input type="email" class="form-control" id="email" name="email"aria-describedby="emailHelp" placeholder="Enter email">\n  </div>\n  <div class="form-group">\n    <label for="password">Password</label>\n    <input type="password" class="form-control" name="password" id="password" placeholder="Password">\n  </div>\n\n  <button type="submit" class="btn btn-primary js-loginsubmit">Submit</button>\n</form>\n</div>\n</div>\n\n</div>\n</div>\n\n';
 }
 return __p;
 };});
@@ -26460,6 +26467,8 @@ __p+='\n    </select>\n  </div>\n <div class="col-4">\n    <label for="year">Yea
 __p+='\n\n';
  if(!edit_project) { 
 __p+='\n\n\n<label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">\n <i class="fas fa-file-upload"></i> Upload data (.zip)\n</label>\n<input id="file-upload" type="file" name="archive" style="display:none">\n\n<div id="selected_file"></div>\n <button class="btn btn-primary js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>\n\n\n';
+ } else { 
+__p+='\n\n <button class="btn btn-primary js-edit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Update</button>\n\n';
  } 
 __p+='\n\n</form>\n\n\n\n';
 
@@ -26472,69 +26481,6 @@ __p+='\n';
 return __p;
 };});
 
-
-define("tpl!apps/projects/common/templates/listtemplate.tpl", function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="container" style="padding-bottom:50px;">\r\n <div class="row">\r\n <div class="col col-lg-12" >\r\n\r\n\r\n <table class="table table-bordered ';
- if(hover){
-__p+='table-hover';
-}
-__p+='" \r\n id="table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\r\n\r\n\r\n     <thead>\r\n      <tr>\r\n      ';
- _.each(headers, function(header) { 
-__p+='  \r\n        <th>'+
-((__t=(header.name))==null?'':_.escape(__t))+
-'</th>\r\n       ';
- }); 
-__p+='         \r\n      </tr>\r\n     </thead>\r\n     <tbody>\r\n\r\n\r\n     ';
-
-     var count = 0; 
-     _.each(items, function(item) {
-     
-      
-__p+='\r\n\r\n      ';
- if(columns[0]['clickrow']) { 
-__p+='\r\n\r\n       <tr class=\'clickable-row\' data-href="#'+
-((__t=(urlroot))==null?'':_.escape(__t))+
-'/'+
-((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'/page/first">\r\n       \r\n       ';
- } else { 
-__p+='\r\n       <tr>\r\n       ';
- } 
-__p+='\r\n\r\n        ';
- for(var i=0;i<columns.length;i++){ 
-__p+='  \r\n\r\n          ';
- column = columns[i]; 
-__p+='\r\n          ';
- if (column.name == "action") {  
-__p+='\r\n          <td>\r\n            <div class="btn-group" role="group">\r\n            <button title="open project #'+
-((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'" type="button" class="btn btn-sm btn-outline-dark js-open-project" id="'+
-((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'"> <span aria-hidden="true"><i class="fas fa-book-open"></i></span></button>\r\n              <button title="order profile for project #'+
-((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'" type="button" class="btn btn-sm btn-outline-dark js-start-profiling" id="'+
-((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'"> <span aria-hidden="true"><i class="far fa-play-circle"></i></span></button>\r\n             <button title="remove project #'+
-((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'" type="button" class="btn btn-sm btn-outline-dark js-delete-project" id="'+
-((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'"> <span aria-hidden="true"><i class="fas fa-times"></i></span></button>\r\n                    </div>\r\n          </td>      \r\n          ';
- } else { 
-__p+='\r\n          <td> '+
-((__t=( item[column.name] ))==null?'':_.escape(__t))+
-' </td>      \r\n          ';
- } 
-__p+='\r\n        ';
- } 
-__p+='  \r\n       \r\n     \r\n      </tr>\r\n\r\n    ';
- count++;  }); 
-__p+='\r\n\r\n     </tbody>\r\n    </table>\r\n\r\n\r\n    </div>\r\n    </div>\r\n    </div>';
-}
-return __p;
-};});
-
 // ==============================
 // apps/projects/common/views.js
 // ==============================
@@ -26542,9 +26488,8 @@ return __p;
 define('apps/projects/common/views',["app","marionette","backbone.syphon",
         "common/util","common/views"
         ,"tpl!apps/projects/common/templates/projectform.tpl"
-        ,"tpl!apps/projects/common/templates/listtemplate.tpl"
 
-        	], function(IPS_App,Marionette,Syphon,Util,CommonViews,projectTpl,listTpl){
+        	], function(IPS_App,Marionette,Syphon,Util,CommonViews,projectTpl){
 
 
 var Views = {};
@@ -26553,7 +26498,6 @@ var Views = {};
 
 
  Views.ProjectsList = CommonViews.Icon_DataTable.extend({
-   template: listTpl,
    events:{
     "click .js-delete-project": "deleteProject",
     "click .js-open-project": "openProject",
@@ -26571,21 +26515,18 @@ var Views = {};
           {name: "Year"},
           {name: "Language"},
           {name: "Pages"},
-          {name: "Book"},
-          {name: "Action"},
-
+          {name: "Book"}
 
         ]
 
         this.columns = [
-        {name:"projectId",id:"projectId",clickrow :false},
-        {name:"title",id:"projectId",clickrow :false},
-        {name:"author",id:"projectId",clickrow :false},
-        {name:"year",id:"projectId",clickrow :false},
-        {name:"language",id:"projectId",clickrow :false},
-        {name:"pages",id:"projectId",clickrow :false},
-        {name:"book",id:"projectId",clickrow :false},
-        {name:"action",id:"projectId",clickrow :false}
+        {name:"projectId",id:"projectId",clickrow :true},
+        {name:"title",id:"projectId",clickrow :true},
+        {name:"author",id:"projectId",clickrow :true},
+        {name:"year",id:"projectId",clickrow :true},
+        {name:"language",id:"projectId",clickrow :true},
+        {name:"pages",id:"projectId",clickrow :true},
+        {name:"book",id:"projectId",clickrow :true},
 
 
         ]
@@ -26616,10 +26557,14 @@ Views.ProjectForm = Marionette.View.extend({
    events: {
    "click .js-submit-project": "submitClicked",
    "click .js-upload": "chooseFile",
-  
+   "click .js-edit-project": "updateClicked"
 
    },
    initialize: function(){
+
+  },
+  updateClicked:function(){
+     this.trigger("project:update", Backbone.Syphon.serialize(this));
 
   },
   onAttach : function(){
@@ -26751,15 +26696,15 @@ c.setAttribute("max","7"),c.className="medium-editor-toolbar-input",b.appendChil
 define("tpl!apps/projects/page/show/templates/page.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n	<ul class="nav sticky-top navbar-light justify-content-center" style="background-color: white; margin-top: 15px;margin-bottom: 15px;">\r\n	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\r\n		<i class="fas fa-angle-double-left"></i>\r\n		</a></li>\r\n	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
+__p+='	<div class="container">\n	<div class="row">\n    <div class="col col-md-12">\n	<ul class="nav sticky-top navbar-light justify-content-center" style="background-color: white; margin-top: 15px;margin-bottom: 15px;">\n	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\n		<i class="fas fa-angle-double-left"></i>\n		</a></li>\n	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
 ((__t=(prevPageId))==null?'':_.escape(__t))+
-'">\r\n		<i class="fas fas fa-angle-left"></i>\r\n		</a></li>\r\n\r\n	<!--error-patterns -->\r\n	<li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-patterns-dropdown">\r\n		Error patterns<span class="caret"></span></a>\r\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\r\n        </div>\r\n    </li>\r\n	<!-- error-tokens -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-tokens-dropdown">\r\n		Error tokens<span class="caret"></span></a>\r\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\r\n        </div>\r\n     </li>\r\n\r\n   \r\n\r\n	<!--nextpage and last page -->\r\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
+'">\n		<i class="fas fas fa-angle-left"></i>\n		</a></li>\n\n	<!--error-patterns -->\n	<li class="nav-item dropdown">\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-patterns-dropdown">\n		Error patterns<span class="caret"></span></a>\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\n        </div>\n    </li>\n	<!-- error-tokens -->\n	<li class="nav-item dropdown"> \n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-tokens-dropdown">\n		Error tokens<span class="caret"></span></a>\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\n        </div>\n     </li>\n\n   \n\n	<!--nextpage and last page -->\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
 ((__t=(nextPageId))==null?'':_.escape(__t))+
-'">\r\n		<i class="fas fa-angle-right"></i>\r\n		</a></li>\r\n	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\r\n		<i class="fas fa-angle-double-right"></i>\r\n		</a></li>\r\n	</ul>\r\n\r\n	<div class="defaulthl" style="line-height:1; margin-top:15px;">\r\n <!--    <i class="fas fa-book-open card_main_icon green"></i>\r\n	Project '+
+'">\n		<i class="fas fa-angle-right"></i>\n		</a></li>\n	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\n		<i class="fas fa-angle-double-right"></i>\n		</a></li>\n	</ul>\n\n	<div class="defaulthl" style="line-height:1; margin-top:15px;">\n <!--    <i class="fas fa-book-open card_main_icon green"></i>\n	Project '+
 ((__t=(projectId))==null?'':_.escape(__t))+
-' -->\r\n	<div style="font-size: 20px; margin-top: 10px;"> Page '+
+' -->\n	<div style="font-size: 20px; margin-top: 10px;"> Page '+
 ((__t=(pageId))==null?'':_.escape(__t))+
-'</div>\r\n	</div>\r\n\r\n	   ';
+'</div>\n	</div>\n\n	   ';
 
      _.each(lines, function(line) {
 
@@ -26780,11 +26725,11 @@ __p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-
 
 
       
-__p+='\r\n       <div class="text-image-line" title="'+
+__p+='\n       <div class="text-image-line" title="'+
 ((__t=(text))==null?'':_.escape(__t))+
-'">\r\n\r\n       	<a class="line-anchor" id="line-anchor-'+
+'">\n\n       	<a class="line-anchor" id="line-anchor-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"></a>\r\n		<div class="line-img"><img id="line-img-'+
+'"></a>\n		<div class="line-img"><img id="line-img-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
 '" src=\''+
 ((__t=(line["imgFile"]))==null?'':_.escape(__t))+
@@ -26792,23 +26737,23 @@ __p+='\r\n       <div class="text-image-line" title="'+
 ((__t=(text))==null?'':_.escape(__t))+
 '\' title=\''+
 ((__t=(text))==null?'':_.escape(__t))+
-'\' width="auto" height="25"></div>\r\n\r\n		<div class="line-text-parent">	\r\n		<div id="line-'+
+'\' width="auto" height="25"></div>\n\n		<div class="line-text-parent">	\n		<div id="line-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
 '" class="'+
 ((__t=(correction_class))==null?'':_.escape(__t))+
 ' line-text" anchor="'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"\r\n	    class="'+
+'"\n	    class="'+
 ((__t=(inputclass))==null?'':_.escape(__t))+
-' line-text">\r\n       <div class="line" contenteditable="true">\r\n       \r\n        '+
+' line-text">\n       <div class="line" contenteditable="true">\n       \n        '+
 ((__t=(line['cor']))==null?'':_.escape(__t))+
-'\r\n      	</div> \r\n      	<div class="line-tokens">\r\n      	</div>\r\n\r\n\r\n        </div>\r\n        <span>\r\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
+'\n      	</div> \n      	<div class="line-tokens">\n      	</div>\n\n\n        </div>\n        <span>\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
 line['lineId']
 __p+='" anchor="'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"><i class="far fa-arrow-alt-circle-up"></i></div>\r\n        </span>\r\n	    </div>\r\n\r\n\r\n\r\n       </div>\r\n	\r\n     \r\n\r\n\r\n      ';
+'"><i class="far fa-arrow-alt-circle-up"></i></div>\n        </span>\n	    </div>\n\n\n\n       </div>\n	\n     \n\n\n      ';
  }) 
-__p+='\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
+__p+='\n	</div>\n    </div>\n 	</div>\n';
 }
 return __p;
 };});
@@ -27177,19 +27122,19 @@ return Show;
 define("tpl!apps/projects/concordance/show/templates/concordance.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='	\r\n';
+__p+='	\n';
 
 if(asModal) {
 
-__p+='\r\n\r\n  <div class="modal-dialog modal-xl" role="document">\r\n  <div class="modal-content">\r\n\r\n<div class="modal-header">\r\n        <h3 class="modal-title">Concordance view for "'+
+__p+='\n\n  <div class="modal-dialog modal-xl" role="document">\n  <div class="modal-content">\n\n<div class="modal-header">\n        <h3 class="modal-title">Concordance view for "'+
 ((__t=(tokendata.query))==null?'':_.escape(__t))+
-'"</h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n';
+'"</h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n';
  } else { 
-__p+='\r\n\r\n\r\n	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n\r\n	<div id="concordance-heading">\r\n	<p><h2>Concordance view for "'+
+__p+='\n\n\n	<div class="container">\n	<div class="row">\n    <div class="col col-md-12">\n\n	<div id="concordance-heading">\n	<p><h2>Concordance view for "'+
 ((__t=(tokendata.query))==null?'':_.escape(__t))+
-'"</h2></p>\r\n	</div>\r\n\r\n	\r\n';
+'"</h2></p>\n	</div>\n\n	\n';
  } 
-__p+='\r\n\r\n <!--  <nav class="navbar navbar-static-top" id="page-header" data-spy="affix" data-offset-top="197">\r\n  <div class="container-fluid">\r\n  <div class="collapse navbar-collapse">\r\n  <ul class="nav navbar-nav">\r\n  <li> \r\n  <form class="navbar-form">-->\r\n \r\n  <div class="input-group mb-3">\r\n  <div class="input-group-prepend">\r\n  <button class="js-toggle-selection btn btn-outline-secondary" title="Toggle selection">\r\n  Toggle selection\r\n  </button>\r\n  </div>\r\n  <input class="js-global-correction-suggestion form-control" title="correction" type="text" placeholder="Correction"/>\r\n  <div class="input-group-append">\r\n  <button class="js-set-correction btn btn-outline-secondary" title="Set correction">\r\n  Set correction\r\n  </button>\r\n  <button class="js-correct-conc selected btn btn-outline-secondary" title="Correct selected">\r\n  Correct selected\r\n  </button>\r\n  </div>\r\n  </div>\r\n\r\n <!-- </form>\r\n   </li>\r\n  </ul>\r\n  </div>\r\n  </div>\r\n  </nav> -->\r\n\r\n  <div class="all_lines_parent">\r\n	  ';
+__p+='\n\n <!--  <nav class="navbar navbar-static-top" id="page-header" data-spy="affix" data-offset-top="197">\n  <div class="container-fluid">\n  <div class="collapse navbar-collapse">\n  <ul class="nav navbar-nav">\n  <li> \n  <form class="navbar-form">-->\n \n  <div class="input-group mb-3">\n  <div class="input-group-prepend">\n  <button class="js-toggle-selection btn btn-outline-secondary" title="Toggle selection">\n  Toggle selection\n  </button>\n  </div>\n  <input class="js-global-correction-suggestion form-control" title="correction" type="text" placeholder="Correction"/>\n  <div class="input-group-append">\n  <button class="js-set-correction btn btn-outline-secondary" title="Set correction">\n  Set correction\n  </button>\n  <button class="js-correct-conc selected btn btn-outline-secondary" title="Correct selected">\n  Correct selected\n  </button>\n  </div>\n  </div>\n\n <!-- </form>\n   </li>\n  </ul>\n  </div>\n  </div>\n  </nav> -->\n\n  <div class="all_lines_parent">\n	  ';
 
       _.each(tokendata.matches, function(match) {
       var line = match['line'];
@@ -27198,24 +27143,24 @@ __p+='\r\n\r\n <!--  <nav class="navbar navbar-static-top" id="page-header" data
     var offset = word['offset'];
     var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];   
       
-__p+='\r\n\r\n\r\n\r\n<div class="text-image-line">\r\n\r\n<div class="left_div div_inline">\r\n	<!-- if ($images["leftImg"] != NULL) { -->\r\n		<div class="invisible=link" href="'+
+__p+='\n\n\n\n<div class="text-image-line">\n\n<div class="left_div div_inline">\n	<!-- if ($images["leftImg"] != NULL) { -->\n		<div class="invisible=link" href="'+
 ((__t=(link))==null?'':_.escape(__t))+
-'">\r\n    <div id ="img_'+
+'">\n    <div id ="img_'+
 ((__t=(line['pageId']))==null?'':_.escape(__t))+
 '_'+
 ((__t=(line['lineId']))==null?'':_.escape(__t))+
-'_parent" class="line-img">\r\n		<img src="'+
+'_parent" class="line-img">\n		<img src="'+
 ((__t=(line['imgFile']))==null?'':_.escape(__t))+
 '" id="img_'+
 ((__t=(line['pageId']))==null?'':_.escape(__t))+
 '_'+
 ((__t=(line['lineId']))==null?'':_.escape(__t))+
-'" width="auto" height="25"/>\r\n    </div>\r\n	\r\n		</div>\r\n	</div>\r\n	\r\n	</div>\r\n\r\n\r\n\r\n\r\n     ';
+'" width="auto" height="25"/>\n    </div>\n	\n		</div>\n	</div>\n	\n	</div>\n\n\n\n\n     ';
 
      		});
      	});
      
-__p+='\r\n\r\n</div>\r\n\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
+__p+='\n\n</div>\n\n	</div>\n    </div>\n 	</div>\n';
 }
 return __p;
 };});
@@ -27669,7 +27614,7 @@ return Show;
 define("tpl!apps/projects/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\n<div id="info-region" ></div>\n<div id="resp-region" ></div>\n\n<div id="footer-region" ></div>\n';
+__p+='<div id="hl-region"></div>\n<div id="info-region" ></div>\n<div id="hub-region" ></div>\n<div id="hub2-region" ></div>\n\n<div id="footer-region" ></div>\n';
 }
 return __p;
 };});
@@ -27678,17 +27623,15 @@ return __p;
 define("tpl!apps/projects/show/templates/info.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n\n<div class="container">\n<div class="row">\n\n   <div class="col-md-5">\n\n\n    <div style="margin-bottom:15px">\n\n    <button type="button" class="btn js-edit-project"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</button>\n    <button type="button" class="btn js-delete-project btn-danger"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</button>\n    <button type="button" class="btn js-add-book"> <i class="fa fa-plus" aria-hidden="true"></i> Add Book</button>\n\n    </div>\n\n\n    <h4> <b>Project Information:</b>  </h4> \n\n\n  </div>\n   <div class="col-md-7">\n   </div>\n\n</div>\n\n<div class="row">\n<div class="col-lg-12">\n\n<div style="margin-bottom:15px">\n\n	<div>\n	<b>Title : </b> '+
+__p+='\n\n<div class="container">\n<hr>\n\n\n<div class="row">\n<div class="col-lg-12">\n\n\n<table class="table table-bordered" style=\'margin-bottom: 30px;\'> \n\n<thead class="thead-light">\n      <tr>\n        <th>Title</th>\n        <th>Author</th>\n        <th>Language</th>\n        <th>Pages</th>\n      </tr>\n </thead>\n <tbody>\n\n  <tr>  \n        <td>'+
 ((__t=(title))==null?'':_.escape(__t))+
-'\n	</div>\n\n	<div>\n	<b>Author : </b> '+
+'</td>\n        <td>'+
 ((__t=(author))==null?'':_.escape(__t))+
-'\n	</div>\n\n	<div>\n	<b>Year : </b> '+
-((__t=(year))==null?'':_.escape(__t))+
-'\n	</div>\n\n	<div>\n	<b>Language : </b> '+
+'</td>\n        <td>'+
 ((__t=(language))==null?'':_.escape(__t))+
-'\n	</div>\n\n\n	<div>\n	<b>User : </b> '+
-((__t=(user))==null?'':_.escape(__t))+
-'\n	</div>\n\n<hr>\n\n</div>\n\n</div>\n</div>\n\n<div class="row">\n<div class="col-lg-12">\n\n<h4> <b>Books:</b>  </h4> \n\n\n</div>\n</div>\n\n<table class="table table-bordered" \n id="book_table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\n\n <thead>\n      <tr>\n        <th>Title</th>\n        <th>Author</th>\n        <th>Language</th>\n        <th>Ocr Engine</th>\n        <th></th>\n      </tr>\n </thead>\n <tbody>\n\n 	';
+'</td>\n        <td>'+
+((__t=(pages))==null?'':_.escape(__t))+
+'</td>\n\n    </tr>\n\n </tbody>\n\n</table> \n\n</div>\n\n</div>\n</div>\n<!--\n<div class="row">\n<div class="col-lg-12">\n\n<h4> <b>Books:</b>  </h4> \n\n\n</div>\n</div>\n \n<table class="table table-bordered" \n id="book_table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\n\n <thead>\n      <tr>\n        <th>Title</th>\n        <th>Author</th>\n        <th>Language</th>\n        <th>Ocr Engine</th>\n        <th></th>\n      </tr>\n </thead>\n <tbody>\n\n 	';
  _.each(books, function(book) { 
 __p+='\n 	<tr>  \n        <td>'+
 ((__t=(book.title))==null?'':_.escape(__t))+
@@ -27700,63 +27643,7 @@ __p+='\n 	<tr>  \n        <td>'+
 ((__t=(book.ocrEngine))==null?'':_.escape(__t))+
 '</td>\n        <td><button class="btn no_bg_btn float-right js-delete-book table_row_button btn-warning"><i class="fa fa-minus" aria-hidden="true"></i> Remove</button></td>\n\n    </tr>\n    ';
  }); 
-__p+='   \n\n </tbody>\n\n</table>\n\n</div>\n\n';
-}
-return __p;
-};});
-
-
-define("tpl!apps/projects/show/templates/resp.tpl", function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='\n<div class="container" style="margin-top: 40px">\n\n<div class="row">\n\n<div class="col-12-md">\n\n<div class="loading_background">\n         <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>\n</div>\n\n\n';
- if(results.length>0){ 
-__p+='\n\n<ul id="tabs" class="nav nav-tabs" role="tablist">\n\n\n';
-
-var count=0;
- _.each(results, function(result) { count++; 
-__p+='\n\n<li class="nav-item">\n    ';
- if(count==1) { 
-__p+='\n    <a class="nav-link active" data-toggle="tab" href="#'+
-((__t=(result.type))==null?'':_.escape(__t))+
-'" role="tab">'+
-((__t=(result.name))==null?'':_.escape(__t))+
-'</a>\n    ';
- } else { 
-__p+='\n    <a class="nav-link" data-toggle="tab" href="#'+
-((__t=(result.type))==null?'':_.escape(__t))+
-'" role="tab">'+
-((__t=(result.name))==null?'':_.escape(__t))+
-'</a>\n    ';
- } 
-__p+='\n\n  </li>\n\n\n';
- }); 
-__p+='\n\n</ul>\n\n<div class="tab-content">\n \n';
-
-var count=0;
- _.each(results, function(result) { 
- count++; 
- 
-__p+='\n';
- if(count==1) { 
- 
-__p+='\n <div class="tab-pane active" id="'+
-((__t=(result.type))==null?'':_.escape(__t))+
-'" role="tabpanel">\n '+
-((__t=(  result.evalstring  ))==null?'':__t)+
-'\n </div>\n';
- } else { 
-__p+='\n <div class="tab-pane" id="'+
-((__t=(result.type))==null?'':_.escape(__t))+
-'" role="tabpanel">\n'+
-((__t=( result.evalstring ))==null?'':__t)+
-'\n </div>\n';
- } 
-__p+='\n\n\n';
- }); 
-__p+='\n\n</div>\n\n';
- } 
-__p+='\n\n\n\n</div>\n\n</div>\n\n</div>';
+__p+='   \n\n </tbody>\n\n</table> \n-->\n</div>\n\n';
 }
 return __p;
 };});
@@ -27768,9 +27655,8 @@ return __p;
 define('apps/projects/show/show_view',["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/projects/page/show/show_view","apps/projects/concordance/show/show_view",
         "tpl!apps/projects/show/templates/layout.tpl",
         "tpl!apps/projects/show/templates/info.tpl",
-        "tpl!apps/projects/show/templates/resp.tpl"
 
-  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl,respTpl){
+  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl){
 
 
     var Show = {};
@@ -27780,7 +27666,9 @@ define('apps/projects/show/show_view',["marionette","app","backbone.syphon","com
     regions:{
        headerRegion: "#hl-region"
       ,infoRegion: "#info-region"
-      ,respRegion: "#resp-region"
+      ,hubRegion: "#hub-region"
+      ,hubRegion2: "#hub2-region"
+
       ,footerRegion: "#footer-region"
     }
 
@@ -27843,13 +27731,11 @@ Show.FooterPanel = Views.FooterPanel.extend({
 Show.ProjectForm = CommonViews.ProjectForm.extend({
   });
 
-Show.DeleteProjectForm = Views.Confirm.extend({
-   confirmClicked: function(e){
-     e.preventDefault();
-     this.trigger("project:delete_clicked");
-   },
-
-  });
+Show.AreYouSure = Views.AreYouSure.extend({
+      triggers:{
+     "click .js-yes":"delete:confirm"
+    }
+  })
 
 
 return Show;
@@ -27949,8 +27835,7 @@ getProject: function(data){
       type: "POST",
        data:data,
       success: function(data) {
-        console.log(data)
-        var result = new Entities.Project(data)
+        var result = new Entities.Project(JSON.parse(data));
         defer.resolve(result);
 
           },
@@ -28238,11 +28123,11 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 
 		showProject: function(id){
 
-     		require(["entities/project"], function(ProjectEntitites){
+     		require(["entities/project"], function(ProjectEntities){
 
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
-     			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:1});
+     			  var fetchingpage = ProjectEntities.API.getProject({pid:id});
 
    
       $.when(fetchingpage).done(function(project){
@@ -28258,64 +28143,118 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 	
 			projectShowLayout.on("attach",function(){
       var cards = [
-          {
+        
+         
+           {
                   "color": "green",
                   "icon": "fas fa-history",
                   "id": "test_btn",
-                  "name": "Automatic Postcorrection",
+                  "name": "Order Profile",
                   "seq": 1,
-                  "text": "Start automatic postcorrection process.",
+                  "text": "Start profiling the project.",
                   "url": "projects:list",
-              }, {
-                  "color": "green",
-                  "icon": "fas fa-file-signature",
-                  "id": "users_button",
-                  "name": "Interactive Postcorrection",
-                  "seq": 3,
-                  "text": "Manually correct pages.",
-                  "url": "projects:show_page",
-              },
+              }, 
                {
-                  "color": "green",
+                  "color": "blue",
                   "icon": "far fa-edit",
                   "id": "doc_button",
+                  "name": "Adaptive tokens",
+                  "seq": 5,
+                  "text": "List adaptive tokens.",
+                  "url": "docs:show",
+              }, {
+                  "color": "red",
+                  "icon": "fas fa-copy",
+                  "id": "about_btn",
+                  "name": "Split",
+                  "seq": 4,
+                  "text": "Split the project.",
+                  "url": "about:home",
+          },
+                {
+                  "color": "green",
+                  "icon": "far fa-edit",
+                  "id": "delete_button",
                   "name": "Edit",
                   "seq": 5,
                   "text": "Edit the project.",
-                  "url": "docs:show",
-              }, {
-                  "color": "green",
+                  "url": "edit",
+              },
+               {
+                  "color": "blue",
+                  "icon": "fas fa-download",
+                  "id": "test_btn",
+                  "name": "Download",
+                  "seq": 1,
+                  "text": "Save project files to disk.",
+                  "url": "projects:list",
+              }, 
+
+               {
+                  "color": "red",
                   "icon": "far fa-times-circle",
                   "id": "about_btn",
                   "name": "Delete",
                   "seq": 4,
                   "text": "Delete the project.",
-                  "url": "about:home",
-          }]
+                  "url": "delete",
+          }
+           
+          ];
 
+var cards2 = [
+          {
+                  "color": "blue",
+                  "icon": "fas fa-cogs",
+                  "id": "test_btn",
+                  "name": "PoCoTo-A",
+                  "seq": 1,
+                  "text": "Fully automatic OCR postcorrection.",
+                  "url": "projects:list",
+              }, {
+                  "color": "green",
+                  "icon": "fas fa-file-signature",
+                  "id": "users_button",
+                  "name": "PoCoTo-A-I",
+                  "seq": 2,
+                  "text": "Manual interactive postcorrection tools.",
+                  "url": "projects:show_page",
+              }
+          ]
 
-        var projectShowInfo = new Show.Hub({cards:cards,currentRoute:"home"});
+        var projectShowHub = new Show.Hub({columns:3,cards:cards,currentRoute:"home"});
+        var projectShowHub2 = new Show.Hub({columns:2,cards:cards2,currentRoute:"home"});
 
-        projectShowInfo.on('cardHub:clicked',function(data){
-          if(data.url=="projects:show_page"){
-             App.trigger("projects:show_page",id,1);
+        projectShowHub.on('cardHub:clicked',function(data){
+          if(data.url=="delete"){
+             this.trigger("show:delete_clicked");
+          }
+          if(data.url=="edit"){
+             this.trigger("show:edit_clicked");
           }
         });
 
-			  projectShowHeader = new Show.Header({title:"Project "+project.get('projectId'),icon:"fas fa-book-open",color:"green"});
+         projectShowHub2.on('cardHub:clicked',function(data){
+          if(data.url=="projects:show_page"){
+             App.trigger("projects:show_page",id,'first');
+          }
+        });
+
+			  projectShowHeader = new Show.Header({title:project.get('title'),icon:"fas fa-book-open",color:"green"});
+        projectShowInfo = new Show.Info({model:project});
       	projectShowFooterPanel = new Show.FooterPanel();
 
-    	  projectShowInfo.on("show:edit_clicked",function(methods){
+    	  projectShowHub.on("show:edit_clicked",function(){
 
 
 			   var projectsShowEditProject = new Show.ProjectForm({model:project
           , asModal:true,text:"Edit Project",edit_project:true,loading_text:"Update in progress"});
 
 
-           projectsShowEditProject.on("project:update_clicked",function(data){
-            project.set(data)
+           projectsShowEditProject.on("project:update",function(data){
+            project.set(data);
 
-            var puttingProject = ProjectEntitites.API.updateProject(id,project);
+            var puttingProject = ProjectEntities.API.updateProject(id,project);
 
 
                  $.when(postingProject).done(function(result){
@@ -28335,50 +28274,37 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
           });
 
 
-            projectShowInfo.on("show:delete_clicked",function(methods){
+       projectShowHub.on('show:delete_clicked',function(){
 
-			   var projectsShowDeleteProject = new Show.DeleteProjectForm({asModal:true,text:"Remove this Project?",title:"Delete Project"});
+            var confirmModal = new Show.AreYouSure({title:"Are you sure...",text:"...you want to delete project "+project.get('title')+" ?",id:"deleteModal"})
+            App.mainLayout.showChildView('dialogRegion',confirmModal)
 
-
-        	   projectsShowDeleteProject.on("project:delete_clicked",function(){
-               var deletingProject = ProjectEntitites.API.deleteProject(id);
-
+            confirmModal.on('delete:confirm',function(){
+                  var deletingProject = ProjectEntities.API.deleteProject({pid:id});
+                  $('#deleteModal').modal("hide");
 
                  $.when(deletingProject).done(function(result){
-                  $('.loading_background').fadeOut();
+                   App.mainmsg.updateContent("Project "+id+" successfully deleted.",'success');              
 
-                   $('#confirm-modal').modal('toggle');
+                     App.trigger('projects:list');
 
-
-                   	App.trigger("projects:list");   
-
-
-                   projectsShowDeleteProject.model.clear().set(projectsListDeleteProject.model.defaults);
-                   $('#selected_file').text("");
-                   // projectsListAddProject.render()
-
-                })
-
+                 }).fail(function(response){ 
+                    App.mainmsg.updateContent(response.responseText,'danger');
+                  });    
+            })
 
           });
 
-        
-
-          App.mainLayout.showChildView('dialogRegion',projectsShowDeleteProject);
 
 
-
-		  });
-
-
-         projectShowInfo.on("show:add_book_clicked",function(methods){
+         projectShowHub.on("show:add_book_clicked",function(methods){
 
 
 		   var projectsShowAddBook = new Show.ProjectForm({model: new ProjectEntitites.Project(), asModal:true,text:"Add a book to the OCR Project",add_book:true,loading_text:"Adding book"});
 
 
        projectsShowAddBook.on("project:addbook_clicked",function(data){
-		   var addingBook = ProjectEntitites.API.addBook(id,data);
+		   var addingBook = ProjectEntities.API.addBook(id,data);
 
 
 		         $.when(addingBook).done(function(result){
@@ -28407,6 +28333,9 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 
 	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
 	          projectShowLayout.showChildView('infoRegion',projectShowInfo);
+            projectShowLayout.showChildView('hubRegion',projectShowHub2);
+            projectShowLayout.showChildView('hubRegion2',projectShowHub);
+
 	          projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
 
 
@@ -28921,11 +28850,7 @@ define('apps/projects/list/list_view',["marionette","app","common/views","apps/p
  List.ProjectForm = Views.ProjectForm.extend({
   });
  
-List.AreYouSure = CommonViews.AreYouSure.extend({
-      triggers:{
-     "click .js-yes":"delete:confirm"
-    }
-  })
+
 
 return List;
 
@@ -28974,30 +28899,6 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
           projectsListLayout.showChildView('footerRegion',projectsListFooterPanel);
 
 
-          projectsListView.on('list:delete',function(id,delete_row){
-
-            var confirmModal = new List.AreYouSure({title:"Are you sure...",text:"...you want to delete project "+id+" ?",id:"deleteModal"})
-            App.mainLayout.showChildView('dialogRegion',confirmModal)
-
-            confirmModal.on('delete:confirm',function(){
-                  var deletingProject = ProjectEntities.API.deleteProject({pid:id});
-                  $('#deleteModal').modal("hide");
-
-                 $.when(deletingProject).done(function(result){
-                   App.mainmsg.updateContent("Project "+id+" successfully deleted.",'success');              
-                   var fetchingnewprojects = ProjectEntities.API.getProjects();
-
-                       $.when(fetchingnewprojects).done(function(new_projects){
-                          projectsListView.options.collection=new_projects.books;
-                          projectsListView.render();
-                       });
-
-                 }).fail(function(response){ 
-                    App.mainmsg.updateContent(response.responseText,'danger');
-                  });    
-            })
-
-          });
 
              projectsListView.on('list:profile',function(id){
                var profilingproject = ProjectEntities.API.profileProject({pid:id});
@@ -29532,35 +29433,35 @@ return Controller;
 define("tpl!apps/users/common/templates/userform.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n';
+__p+='\n';
  if(asModal){
-__p+='\r\n\r\n  <div class="modal-dialog" role="document">\r\n    <div class="modal-content">\r\n      <div class="modal-header">\r\n        <h5 class="modal-title">'+
+__p+='\n\n  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header">\n        <h5 class="modal-title">'+
 ((__t=(modaltitle))==null?'':_.escape(__t))+
-'</h5>\r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">×</span>\r\n        </button>\r\n       </div>\r\n \r\n  <div class="modal-body">\r\n       \r\n';
+'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">×</span>\n        </button>\n       </div>\n \n  <div class="modal-body">\n       \n';
 } else {
-__p+='\r\n\r\n<div class="container">\r\n<div class="row">\r\n <div class="col col-md-12">\r\n\r\n';
+__p+='\n\n<div class="container">\n<div class="row">\n <div class="col col-md-12">\n\n';
 }
-__p+='\r\n\r\n<div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">Username</label>\r\n    <div class="col-md-6">     \r\n          <input class="form-control" name="name" type="text" value="'+
+__p+='\n\n<div class="form-group row ">\n    <label class="col-md-3 form-control-label required">Username</label>\n    <div class="col-md-6">     \n          <input class="form-control" name="name" type="text" value="'+
 ((__t=(name))==null?'':_.escape(__t))+
-'" required="">\r\n    </div>\r\n    <div class="col-md-3 form-control-comment"> \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">Email</label>\r\n    <div class="col-md-6">\r\n          <input class="form-control" name="email" type="email" value="'+
+'" required="">\n    </div>\n    <div class="col-md-3 form-control-comment"> \n    </div>\n  </div>\n\n  <div class="form-group row ">\n    <label class="col-md-3 form-control-label required">Email</label>\n    <div class="col-md-6">\n          <input class="form-control" name="email" type="email" value="'+
 ((__t=(email))==null?'':_.escape(__t))+
-'" required="">\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">              \r\n    </div>\r\n  </div>\r\n\r\n   <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">Institute</label>\r\n      <div class="col-md-6">\r\n    <input class="form-control" name="institute" type="text" value="'+
+'" required="">\n    </div>\n    <div class="col-md-3 form-control-comment">              \n    </div>\n  </div>\n\n   <div class="form-group row ">\n    <label class="col-md-3 form-control-label">Institute</label>\n      <div class="col-md-6">\n    <input class="form-control" name="institute" type="text" value="'+
 ((__t=(institute))==null?'':_.escape(__t))+
-'">\r\n    </div>\r\n\r\n    <div class="col-md-3 form-control-comment">\r\n    \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">\r\n              Password\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control" name="password" type="password" value="'+
+'">\n    </div>\n\n    <div class="col-md-3 form-control-comment">\n    \n    </div>\n  </div>\n\n  <div class="form-group row ">\n    <label class="col-md-3 form-control-label required">\n              Password\n          </label>\n    <div class="col-md-6">\n\n          <div class="input-group">\n            <input class="form-control" name="password" type="password" value="'+
 ((__t=(password))==null?'':_.escape(__t))+
-'" pattern=".{5,}" required="">\r\n            <!-- <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span> -->\r\n          </div>\r\n   \r\n    </div>\r\n    <div class="col-md-3 form-control-comment">   \r\n    </div>\r\n  </div>\r\n       \r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">\r\n               Password (retype)\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control " name="new_password" type="password" value="'+
+'" pattern=".{5,}" required="">\n            <!-- <span class="input-group-btn">\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\n                Show\n              </button>\n            </span> -->\n          </div>\n   \n    </div>\n    <div class="col-md-3 form-control-comment">   \n    </div>\n  </div>\n       \n  <div class="form-group row ">\n    <label class="col-md-3 form-control-label">\n               Password (retype)\n          </label>\n    <div class="col-md-6">\n\n          <div class="input-group">\n            <input class="form-control " name="new_password" type="password" value="'+
 ((__t=(password))==null?'':_.escape(__t))+
-'" pattern=".{5,}">\r\n           <!--  <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span> -->\r\n          </div>\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">\r\n    </div>\r\n  </div>\r\n ';
+'" pattern=".{5,}">\n           <!--  <span class="input-group-btn">\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\n                Show\n              </button>\n            </span> -->\n          </div>\n    </div>\n    <div class="col-md-3 form-control-comment">\n    </div>\n  </div>\n ';
  if(admincheck) {
-__p+='\r\n \r\n    <div class="form-group form-check">\r\n    <input type="checkbox" class="form-check-input" id="admin_check">\r\n    <label class="form-check-label" for="admin_check">Administrator</label>\r\n  </div>\r\n  ';
+__p+='\n \n    <div class="form-group form-check">\n    <input type="checkbox" class="form-check-input" id="admin_check">\n    <label class="form-check-label" for="admin_check">Administrator</label>\n  </div>\n  ';
  }
-__p+='\r\n\r\n';
+__p+='\n\n';
  if(asModal){
-__p+='\r\n </div>\r\n  <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-submit">Submit</button>\r\n      </div>\r\n    </div>\r\n\r\n</div>\r\n</div>\r\n\r\n';
+__p+='\n </div>\n  <div class="modal-footer">\n        <button type="button" class="btn btn-primary js-submit">Submit</button>\n      </div>\n    </div>\n\n</div>\n</div>\n\n';
 } else {
-__p+='\r\n\r\n</div>\r\n</div>\r\n</div>\r\n\r\n';
+__p+='\n\n</div>\n</div>\n</div>\n\n';
 }
-__p+='\r\n';
+__p+='\n';
 }
 return __p;
 };});
@@ -29636,7 +29537,7 @@ return Views;
 define("tpl!apps/users/list/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\r\n    <div id="panel-region"></div>\r\n    <div id="info-region" ></div>\r\n    <div id="footer-region" ></div>\r\n';
+__p+='<div id="hl-region"></div>\n    <div id="panel-region"></div>\n    <div id="info-region" ></div>\n    <div id="footer-region" ></div>\n';
 }
 return __p;
 };});
@@ -29645,7 +29546,7 @@ return __p;
 define("tpl!apps/users/list/templates/panel.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+=' <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button style="margin-bottom: 25px;margin-top: 25px;" type="button" class="btn btn-primary js-create"><i class="fas fa-user-plus"></i> Create new user</button>                     \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
+__p+=' <div class="container">\n\n<div class="row">\n\n <div class="col col-md-12">\n\n  <button style="margin-bottom: 25px;margin-top: 25px;" type="button" class="btn btn-primary js-create"><i class="fas fa-user-plus"></i> Create new user</button>                     \n  \n</div>\n\n</div>\n\n</div>';
 }
 return __p;
 };});
@@ -29877,7 +29778,7 @@ return App.UsersApp.Login.Controller;
 define("tpl!apps/users/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\r\n    <div id="panel-region"></div>\r\n    <div id="info-region" ></div>\r\n    <div id="footer-region" ></div>\r\n';
+__p+='<div id="hl-region"></div>\n    <div id="panel-region"></div>\n    <div id="info-region" ></div>\n    <div id="footer-region" ></div>\n';
 }
 return __p;
 };});
@@ -29886,7 +29787,7 @@ return __p;
 define("tpl!apps/users/show/templates/panel.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='    <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button type="button" class="btn btn-primary js-update"><i class="fas fa-user-edit"></i> Update account settings</button>\r\n  <button type="button" class="btn btn-primary js-delete"><i class="fas fa-user-times"></i> Delete this account</button>\r\n\r\n  <h3  style="margin-bottom: 25px;margin-top: 25px;"> Personal Information </h3>\r\n                                \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
+__p+='    <div class="container">\n\n<div class="row">\n\n <div class="col col-md-12">\n\n  <button type="button" class="btn btn-primary js-update"><i class="fas fa-user-edit"></i> Update account settings</button>\n  <button type="button" class="btn btn-primary js-delete"><i class="fas fa-user-times"></i> Delete this account</button>\n\n  <h3  style="margin-bottom: 25px;margin-top: 25px;"> Personal Information </h3>\n                                \n  \n</div>\n\n</div>\n\n</div>';
 }
 return __p;
 };});

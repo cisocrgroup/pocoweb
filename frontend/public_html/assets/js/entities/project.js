@@ -90,8 +90,7 @@ getProject: function(data){
       type: "POST",
        data:data,
       success: function(data) {
-        console.log(data)
-        var result = new Entities.Project(data)
+        var result = new Entities.Project(JSON.parse(data));
         defer.resolve(result);
 
           },

@@ -51,11 +51,7 @@ define(["marionette","app","common/views","apps/projects/common/views",
  List.ProjectForm = Views.ProjectForm.extend({
   });
  
-List.AreYouSure = CommonViews.AreYouSure.extend({
-      triggers:{
-     "click .js-yes":"delete:confirm"
-    }
-  })
+
 
 return List;
 
