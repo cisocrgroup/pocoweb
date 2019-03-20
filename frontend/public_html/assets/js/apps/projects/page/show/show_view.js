@@ -35,6 +35,7 @@ events:{
       error_tokens_clicked : function(e){
         e.stopPropagation();
         e.preventDefault();
+        $(".custom-popover").remove();
         $(".dropdown-menu").hide();
         $('#pcw-error-tokens-dropdown').toggle();
       },
@@ -42,6 +43,7 @@ events:{
         error_patterns_clicked : function(e){
         e.stopPropagation();
         e.preventDefault();
+        $(".custom-popover").remove();
         $(".dropdown-menu").hide();
         $('#pcw-error-patterns-dropdown').toggle();
       },
@@ -171,7 +173,7 @@ events:{
 
       console.log(sel);     
       if($(e.target).hasClass('line')){
-
+       $(".dropdown-menu").hide();
        $(".custom-popover").remove();
 
       var btn_group = $('<div class="btn-group"></div>'); 
@@ -225,6 +227,9 @@ events:{
 
    
 
+      },
+      onDestroy:function(e){
+       $(".custom-popover").remove();
       },
      
       onDomRefresh:function(e){

@@ -5,8 +5,9 @@
 define(["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/projects/page/show/show_view","apps/projects/concordance/show/show_view",
         "tpl!apps/projects/show/templates/layout.tpl",
         "tpl!apps/projects/show/templates/info.tpl",
+        "tpl!apps/projects/show/templates/split.tpl"
 
-  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl){
+  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl,splitTpl){
 
 
     var Show = {};
@@ -87,6 +88,64 @@ Show.AreYouSure = Views.AreYouSure.extend({
     }
   })
 
+Show.OkDialog = Views.OkDialog.extend({
+  })
+
+Show.Split = Marionette.View.extend({
+    template: splitTpl,
+    events:{
+     "click .js-confirm":"confirmClicked",
+    },
+  serializeData: function(){
+      return {
+        title: Marionette.getOption(this,"title"),
+        text: Marionette.getOption(this,"text"),
+        id: Marionette.getOption(this,"id"),
+        n: Marionette.getOption(this,"n")
+
+      }
+  },
+  confirmClicked: function(){
+    var n = $("#split-n").val();
+    var random = false;
+     if($("#checkRnd").is(":checked")) {
+        random=true;
+      }
+    var data={n:n,random:random};
+    this.trigger("split:confirmed",data);
+  },
+
+   onAttach: function(){
+
+    this.$el.addClass("modal fade");
+    this.$el.attr("tabindex","-1");
+    this.$el.attr("role","dialog");
+    this.$el.attr("id","splitModal");
+
+    $("#splitModal").modal();
+    var that = this;
+
+    $("#split-n").on('input',function(){
+      var n = $(this).val();
+      $('#splitLabel').text("Split into " + n + " pages");
+    })
+
+     $('#checkRnd').change(function() {
+        if($(this).is(":checked")) {
+          $("#split-n").attr('disabled',true);
+          $('#splitLabel').text("Split randomly");
+        }
+        else{
+          $("#split-n").attr('disabled',false);
+          var n = $("#split-n").val();
+          $('#splitLabel').text("Split into " + n + " pages");
+       }        
+    });
+
+
+    }
+     
+  });
 
 return Show;
 

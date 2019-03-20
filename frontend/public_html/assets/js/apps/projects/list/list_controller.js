@@ -74,10 +74,10 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
                  $.when(uploadingProjectData).done(function(result){
 
-                  console.log(result);
+                           console.log(result);
                             $('.loading_background').fadeOut();
-                           $('#projects-modal').modal('toggle');
-                          $('#selected_file').text("");
+                            $('#projects-modal').modal('toggle');
+                            $('#selected_file').text("");
 
                           App.mainmsg.updateContent(result,'success');
 
@@ -85,7 +85,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
                        $.when(fetchingnewprojects).done(function(new_projects){
                           projectsListView.options.collection=new_projects.books;
                           projectsListView.render();
-                           projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
+                          projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
                           
 
                        });

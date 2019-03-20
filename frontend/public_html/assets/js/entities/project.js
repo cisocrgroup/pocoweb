@@ -95,7 +95,7 @@ getProject: function(data){
 
           },
           error: function(data){
-            defer.resolve(undefined);
+            defer.reject(data);
           }
   });
 
@@ -125,6 +125,29 @@ uploadProjectData: function(data){
     return defer.promise();
   },
 
+downloadProject: function(data){
+    data['backend_route'] = "download_project";
+    var defer = jQuery.Deferred();  
+     $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        var result = new Entities.Project(JSON.parse(data));
+        defer.resolve(result);
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+
   createProject: function(data){
     data['backend_route'] = "create_project";
     console.log(data)
@@ -146,10 +169,48 @@ uploadProjectData: function(data){
     return defer.promise();
   },
 
-
-
 deleteProject: function(data){
     data['backend_route'] = "delete_project";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+       
+        url: "api/api_controller.php",
+        type: "POST",
+        data: data,
+        success: function(data) {
+
+              defer.resolve(data);
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+  updateProject: function(data){
+    data['backend_route'] = "update_project";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+       
+        url: "api/api_controller.php",
+        type: "POST",
+        data: data,
+        success: function(data) {
+
+              defer.resolve(data);
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+   splitProject: function(data){
+    data['backend_route'] = "split_project";
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({

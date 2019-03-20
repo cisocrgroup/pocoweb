@@ -214,14 +214,14 @@ function backend_finish_project($pid) {
 	return $api;
 }
 
-function backend_get_remove_project_route($pid) {
+function backend_get_project_route($pid) {
 	global $config;
 	return sprintf($config["backend"]["internalURL"] .
-	  $config["backend"]["routes"]["removeProject"], $pid);
+	  $config["backend"]["routes"]["getProject"], $pid);
 }
 
 function backend_remove_project($pid) {
-	$api = new Api(backend_get_remove_project_route($pid));
+	$api = new Api(backend_get_project_route($pid));
 	global $SID;
 	$api->set_session_id($SID);
 	$api->delete_request();

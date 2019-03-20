@@ -23911,51 +23911,51 @@ define('tpl',['underscore', 'text'], function (_, text) {
 define("tpl!common/templates/listtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+=' <div class="container" style="padding-bottom:50px;">\n <div class="row">\n <div class="col col-lg-12" >\n\n\n <table class="table table-bordered table-striped ';
+__p+=' <div class="container" style="padding-bottom:50px;">\r\n <div class="row">\r\n <div class="col col-lg-12" >\r\n\r\n\r\n <table class="table table-bordered table-striped ';
  if(hover){
 __p+='table-hover';
 }
-__p+='" \n id="table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\n\n\n     <thead>\n      <tr>\n      ';
+__p+='" \r\n id="table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\r\n\r\n\r\n     <thead>\r\n      <tr>\r\n      ';
  _.each(headers, function(header) { 
-__p+='  \n        <th>'+
+__p+='  \r\n        <th>'+
 ((__t=(header.name))==null?'':_.escape(__t))+
-'</th>\n       ';
+'</th>\r\n       ';
  }); 
-__p+='         \n      </tr>\n     </thead>\n     <tbody>\n\n\n     ';
+__p+='         \r\n      </tr>\r\n     </thead>\r\n     <tbody>\r\n\r\n\r\n     ';
 
      var count = 0; 
      _.each(items, function(item) {
      
       
-__p+='\n\n      ';
+__p+='\r\n\r\n      ';
  if(columns[0]['clickrow']) { 
-__p+='\n\n       <tr class=\'clickable-row\' data-href="#'+
+__p+='\r\n\r\n       <tr class=\'clickable-row\' data-href="#'+
 ((__t=(urlroot))==null?'':_.escape(__t))+
 '/'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'">\n       \n       ';
+'">\r\n       \r\n       ';
  } else { 
-__p+='\n       <tr>\n       ';
+__p+='\r\n       <tr>\r\n       ';
  } 
-__p+='\n\n        ';
+__p+='\r\n\r\n        ';
  for(var i=0;i<columns.length;i++){ 
-__p+='  \n\n          ';
+__p+='  \r\n\r\n          ';
  column = columns[i]; 
-__p+='\n          ';
+__p+='\r\n          ';
  if (column.name == "action") {  
-__p+='\n          <td>\n              <button type="button" class="btn btn-sm btn-outline-dark js-delete-user" id="'+
+__p+='\r\n          <td>\r\n              <button type="button" class="btn btn-sm btn-outline-dark js-delete-user" id="'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'"> <i class="fas fa-times"></i></button>\n          </td>      \n          ';
+'"> <i class="fas fa-times"></i></button>\r\n          </td>      \r\n          ';
  } else { 
-__p+='\n          <td> '+
+__p+='\r\n          <td> '+
 ((__t=( item[column.name] ))==null?'':_.escape(__t))+
-' </td>      \n          ';
+' </td>      \r\n          ';
  } 
-__p+='\n        ';
+__p+='\r\n        ';
  } 
-__p+='  \n       \n     \n      </tr>\n\n    ';
+__p+='  \r\n       \r\n     \r\n      </tr>\r\n\r\n    ';
  count++;  }); 
-__p+='\n\n     </tbody>\n    </table>\n\n\n    </div>\n    </div>\n    </div>';
+__p+='\r\n\r\n     </tbody>\r\n    </table>\r\n\r\n\r\n    </div>\r\n    </div>\r\n    </div>';
 }
 return __p;
 };});
@@ -24018,51 +24018,51 @@ return __p;
 define("tpl!common/templates/cardhubtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n\n<div class="container">\n\n';
+__p+='\r\n\r\n\r\n<div class="container">\r\n\r\n';
 
  var rows = Math.ceil(cards.length/columns);
  var col_count = 0 
 
  
-__p+='\n\n';
+__p+='\r\n\r\n';
  for(var i = 0; i < rows; i++) { 
-__p+='\n <div class="row card_row">\n          ';
+__p+='\r\n <div class="row card_row">\r\n          ';
  for(var j = 0; j < columns; j++) {
           if(col_count+1>cards.length){break;}
           
-__p+='\n          ';
+__p+='\r\n          ';
  var item = cards[col_count];
-__p+='\n                <div class="col-md-'+
+__p+='\r\n                <div class="col-md-'+
 ((__t=(12/columns))==null?'':_.escape(__t))+
-' hub_col">\n              \n                 <div class="card custom_card active" url="'+
+' hub_col">\r\n              \r\n                 <div class="card custom_card active" url="'+
 ((__t=(item['url']))==null?'':_.escape(__t))+
 '" id="'+
 ((__t=(item['id']))==null?'':_.escape(__t))+
-'">\n                 <!-- <img class="card-img-top" src="assets/images/enmap_header_1.png." alt="Card image cap"> -->\n                   <div class="card-header">\n                   <h3 class="card-title"><i class="fas '+
+'">\r\n                 <!-- <img class="card-img-top" src="assets/images/enmap_header_1.png." alt="Card image cap"> -->\r\n                   <div class="card-header">\r\n                   <h3 class="card-title"><i class="fas '+
 ((__t=(item['icon']))==null?'':_.escape(__t))+
 ' card_main_icon '+
 ((__t=(item['color']))==null?'':_.escape(__t))+
 '" aria-hidden="true"></i> '+
 ((__t=(item['name']))==null?'':_.escape(__t))+
-'</h3>\n                      </div>\n                  <div class="card-block">\n\n\n                    <p class="card-text"> '+
+'</h3>\r\n                      </div>\r\n                  <div class="card-block">\r\n\r\n\r\n                    <p class="card-text"> '+
 ((__t=(item['text']))==null?'':_.escape(__t))+
-'  </p>\n                    <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->\n\n                  </div>\n\n\n                  <div class="card-footer text-muted">\n\n                   <div class="row">\n\n                     <div class="footer_item_container">\n\n                          <div style="visibility: hidden" class="dummy footer_item "><i class="fa fa-user-o" aria-hidden="true"></i> <span class="rolename">X</span> </div>\n\n                     </div>\n\n                     <div class="footer_item_enter_container">  \n                       <!-- <div class="footer_item footer_item_enter hover ';
+'  </p>\r\n                    <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->\r\n\r\n                  </div>\r\n\r\n\r\n                  <div class="card-footer text-muted">\r\n\r\n                   <div class="row">\r\n\r\n                     <div class="footer_item_container">\r\n\r\n                          <div style="visibility: hidden" class="dummy footer_item "><i class="fa fa-user-o" aria-hidden="true"></i> <span class="rolename">X</span> </div>\r\n\r\n                     </div>\r\n\r\n                     <div class="footer_item_enter_container">  \r\n                       <!-- <div class="footer_item footer_item_enter hover ';
 if(item['available']!=undefined&&item['available']==true){
 __p+=''+
 ((__t=(item.color))==null?'':_.escape(__t))+
 '-border';
 }
-__p+='">  <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Enter </div> -->\n                     </div>\n\n                   </div>\n                     \n                  </div>\n\n\n                </div>\n\n                </div>\n\n              ';
+__p+='">  <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Enter </div> -->\r\n                     </div>\r\n\r\n                   </div>\r\n                     \r\n                  </div>\r\n\r\n\r\n                </div>\r\n\r\n                </div>\r\n\r\n              ';
  col_count++;  } 
-__p+='\n    </div> \n  ';
+__p+='\r\n    </div> \r\n  ';
  } 
-__p+='\n  </div>\n\n';
+__p+='\r\n  </div>\r\n\r\n';
  if (back_btn !=undefined) { 
-__p+='\n\n<div class="container">\n   <div class="row">\n  <div class="col col-md-12">\n  <button class="btn back_btn js-back '+
+__p+='\r\n\r\n<div class="container">\r\n   <div class="row">\r\n  <div class="col col-md-12">\r\n  <button class="btn back_btn js-back '+
 ((__t=(cards[0]['color']))==null?'':_.escape(__t))+
-'-border hover" style="margin-left:0px;"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\n\n\n  </div>\n  </div>\n\n</div>\n\n\n';
+'-border hover" style="margin-left:0px;"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\r\n\r\n\r\n  </div>\r\n  </div>\r\n\r\n</div>\r\n\r\n\r\n';
  } 
-__p+='\n';
+__p+='\r\n';
 }
 return __p;
 };});
@@ -24131,11 +24131,11 @@ return __p;
 define("tpl!common/templates/okdialog.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<a class="close-reveal-modal">×</a> \n <h3> '+
-((__t=( massagetitle))==null?'':_.escape(__t))+
-' </h3>\n <h5> '+
-((__t=( massagecontent))==null?'':_.escape(__t))+
-'</h5>\n\n<div class="center">\n\n\n\n<div class="small_icon_parent">\n\n                 \n                  <img src="assets/images/icons/bg_icon.png">\n                  <a class="js-ok">\n                  <div class="small_btniconcontainer">\n                  <i class="fa fa-check"></i>\n                  </div>\n                  </a>\n                 \n\n                  <a class="js-ok">\n                  <div class="small_bubblebtnbackground"> </div>\n                  </a>\n                  <div class="small_bubbleshadow"> </div>\n        </div>\n</div>\n';
+__p+='  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header">\n        <h5 class="modal-title">'+
+((__t=(title))==null?'':_.escape(__t))+
+'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n      </div>\n      <div class="modal-body">\n        <p>'+
+((__t=(text))==null?'':_.escape(__t))+
+'</p>\n      </div>\n      <div class="modal-footer">\n        <button type="button" class="btn btn-primary js-ok" data-dismiss="modal">Ok</button>\n      </div>\n    </div>\n  </div>\n';
 }
 return __p;
 };});
@@ -24260,7 +24260,7 @@ return __p;
 define("tpl!common/templates/msgtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n<div class="container" style="margin-top: 35px">\n  <div id="'+
+__p+='\r\n<div class="container" style="margin-top: 35px">\r\n  <div id="'+
 ((__t=(id))==null?'':_.escape(__t))+
 '" class="alert alert-'+
 ((__t=(type))==null?'':_.escape(__t))+
@@ -24268,7 +24268,7 @@ __p+='\n<div class="container" style="margin-top: 35px">\n  <div id="'+
 ((__t=(role))==null?'':_.escape(__t))+
 '">'+
 ((__t=(message))==null?'':__t)+
-'\n  	  <button type="button" class="close js-close-msg">\n    <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\n  </button>\n  </div>\n</div>\n';
+'\r\n  	  <button type="button" class="close js-close-msg">\r\n    <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\r\n  </button>\r\n  </div>\r\n</div>\r\n';
 }
 return __p;
 };});
@@ -24898,20 +24898,26 @@ Views.Layout = Marionette.View.extend({
 	 },
 	serializeData: function(){
 			return {
-		massagetitle: Marionette.getOption(this,"massagetitle"),
-		massagecontent: Marionette.getOption(this,"massagecontent")
+		title: Marionette.getOption(this,"title"),
+		text: Marionette.getOption(this,"text")
 		}
 	},
-	 onShow: function(){
+	 onAttach: function(){
 		 if(this.options.asModal){
-		  this.$el.addClass("reveal-modal");
-  		  this.$el.append('<a class="close-reveal-modal">&#215;</a>');
-		  this.$el.attr("data-reveal","");
 
-          
+          this.$el.attr("ID","ok-modal");
+          this.$el.addClass("modal fade ok-modal");
+	 	  this.$el.on('shown.bs.modal', function (e) {
+          })
 
-		}
-
+          var that = this;
+         
+           this.$el.modal();
+    }
+     else {
+       var $title = $('#formhl');
+     $title.text(this.title);
+    }
   }
 
 
@@ -25098,7 +25104,7 @@ return Show;
 define("tpl!apps/users/login/templates/loginform.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n<div class="modal fade" id="loginModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\n <div class="modal-dialog">\n <div class="modal-content">\n      <div class="modal-header">\n            <legend>Login</legend>\n              <div class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\n        </div>\n      </div>\n       <div class="modal-body">\n<form>\n  <div class="form-group">\n    <label for="email">Email address</label>\n    <input type="email" class="form-control" id="email" name="email"aria-describedby="emailHelp" placeholder="Enter email">\n  </div>\n  <div class="form-group">\n    <label for="password">Password</label>\n    <input type="password" class="form-control" name="password" id="password" placeholder="Password">\n  </div>\n\n  <button type="submit" class="btn btn-primary js-loginsubmit">Submit</button>\n</form>\n</div>\n</div>\n\n</div>\n</div>\n\n';
+__p+='\r\n<div class="modal fade" id="loginModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\r\n <div class="modal-dialog">\r\n <div class="modal-content">\r\n      <div class="modal-header">\r\n            <legend>Login</legend>\r\n              <div class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\r\n        </div>\r\n      </div>\r\n       <div class="modal-body">\r\n<form>\r\n  <div class="form-group">\r\n    <label for="email">Email address</label>\r\n    <input type="email" class="form-control" id="email" name="email"aria-describedby="emailHelp" placeholder="Enter email">\r\n  </div>\r\n  <div class="form-group">\r\n    <label for="password">Password</label>\r\n    <input type="password" class="form-control" name="password" id="password" placeholder="Password">\r\n  </div>\r\n\r\n  <button type="submit" class="btn btn-primary js-loginsubmit">Submit</button>\r\n</form>\r\n</div>\r\n</div>\r\n\r\n</div>\r\n</div>\r\n\r\n';
 }
 return __p;
 };});
@@ -26433,50 +26439,50 @@ define('apps/footer/footer_app',["marionette","app"], function(Marionette,IPS_Ap
 define("tpl!apps/projects/common/templates/projectform.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n\n';
+__p+='\r\n\r\n\r\n';
 
 if(asModal) {
 
-__p+='\n\n  <div class="modal-dialog modal-lg" role="document">\n  <div class="modal-content">\n\n<div class="modal-header red-border-bottom">\n        <h3 class="modal-title">'+
+__p+='\r\n\r\n  <div class="modal-dialog modal-lg" role="document">\r\n  <div class="modal-content">\r\n\r\n<div class="modal-header red-border-bottom">\r\n        <h3 class="modal-title">'+
 ((__t=(text))==null?'':_.escape(__t))+
-' </h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n<div class="loading_background" style="display: none;">\n         <i class="fas fa-sync fa-spin fa-3x fa-fw"></i>\n         <div class="loading_text_parent">\n           <div class="loading_text"> '+
+' </h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n<div class="loading_background" style="display: none;">\r\n         <i class="fas fa-sync fa-spin fa-3x fa-fw"></i>\r\n         <div class="loading_text_parent">\r\n           <div class="loading_text"> '+
 ((__t=(loading_text))==null?'':_.escape(__t))+
-' </div>\n         </div>\n</div>\n\n';
+' </div>\r\n         </div>\r\n</div>\r\n\r\n';
  } 
-__p+='\n\n<form id="uploadForm">\n\n';
+__p+='\r\n\r\n<form id="uploadForm">\r\n\r\n';
  if(!add_book) { 
-__p+='\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="title">Title</label>\n    <input class="form-control" type="text" value="'+
+__p+='\r\n\r\n<div class="form-group row">\r\n  <div class="col-4">\r\n    <label for="title">Title</label>\r\n    <input class="form-control" type="text" value="'+
 ((__t=(title))==null?'':_.escape(__t))+
-'" id="title" name="title">\n  </div>\n   <div class="col-4">\n  <label for="author">Author</label>\n    <input class="form-control" type="text" value="'+
+'" id="title" name="title">\r\n  </div>\r\n   <div class="col-4">\r\n  <label for="author">Author</label>\r\n    <input class="form-control" type="text" value="'+
 ((__t=(author))==null?'':_.escape(__t))+
-'" id="author" name="author">\n  </div>\n\n</div>\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="language">Language</label>\n    <select class="form-control" type="text" value="'+
+'" id="author" name="author">\r\n  </div>\r\n\r\n</div>\r\n\r\n<div class="form-group row">\r\n  <div class="col-4">\r\n    <label for="language">Language</label>\r\n    <select class="form-control" type="text" value="'+
 ((__t=(language))==null?'':_.escape(__t))+
-'" id="language" name="language">\n     ';
+'" id="language" name="language">\r\n     ';
 
      _.each(languages, function(language) { 
-__p+='\n        <option>'+
+__p+='\r\n        <option>'+
 ((__t=(language))==null?'':_.escape(__t))+
-'</option>\n     ';
+'</option>\r\n     ';
  }); 
-__p+='\n    </select>\n  </div>\n <div class="col-4">\n    <label for="year">Year of publication</label>\n    <input class="form-control" type="text" value="'+
+__p+='\r\n    </select>\r\n  </div>\r\n <div class="col-4">\r\n    <label for="year">Year of publication</label>\r\n    <input class="form-control" type="text" value="'+
 ((__t=(year))==null?'':_.escape(__t))+
-'" id="year" name="year" placeholder="2018">\n  </div>\n <div class="col-4">\n    <label for="year">Profiler URL</label><small> (use default if in doubt)</small>\n    <input class="form-control" type="text" value="'+
+'" id="year" name="year" placeholder="2018">\r\n  </div>\r\n <div class="col-4">\r\n    <label for="year">Profiler URL</label><small> (use default if in doubt)</small>\r\n    <input class="form-control" type="text" value="'+
 ((__t=(profilerUrl))==null?'':_.escape(__t))+
-'" id="profilerUrl" name="profilerUrl" placeholder="default">\n  </div>\n  </div>\n\n';
+'" id="profilerUrl" name="profilerUrl" placeholder="default">\r\n  </div>\r\n  </div>\r\n\r\n';
  } 
-__p+='\n\n';
+__p+='\r\n\r\n';
  if(!edit_project) { 
-__p+='\n\n\n<label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">\n <i class="fas fa-file-upload"></i> Upload data (.zip)\n</label>\n<input id="file-upload" type="file" name="archive" style="display:none">\n\n<div id="selected_file"></div>\n <button class="btn btn-primary js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>\n\n\n';
+__p+='\r\n\r\n\r\n<label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">\r\n <i class="fas fa-file-upload"></i> Upload data (.zip)\r\n</label>\r\n<input id="file-upload" type="file" name="archive" style="display:none">\r\n\r\n<div id="selected_file"></div>\r\n <button class="btn btn-primary js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>\r\n\r\n\r\n';
  } else { 
-__p+='\n\n <button class="btn btn-primary js-edit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Update</button>\n\n';
+__p+='\r\n\r\n <button class="btn btn-primary js-edit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Update</button>\r\n\r\n';
  } 
-__p+='\n\n</form>\n\n\n\n';
+__p+='\r\n\r\n</form>\r\n\r\n\r\n\r\n';
 
 if(asModal) {
 
-__p+='\n\n  </div> \n\n\n\n <div class="modal-footer">\n </div>\n\n\n\n  </div>\n  </div>\n\n';
+__p+='\r\n\r\n  </div> \r\n\r\n\r\n\r\n <div class="modal-footer">\r\n </div>\r\n\r\n\r\n\r\n  </div>\r\n  </div>\r\n\r\n';
  } 
-__p+='\n';
+__p+='\r\n';
 }
 return __p;
 };});
@@ -26696,15 +26702,15 @@ c.setAttribute("max","7"),c.className="medium-editor-toolbar-input",b.appendChil
 define("tpl!apps/projects/page/show/templates/page.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='	<div class="container">\n	<div class="row">\n    <div class="col col-md-12">\n	<ul class="nav sticky-top navbar-light justify-content-center" style="background-color: white; margin-top: 15px;margin-bottom: 15px;">\n	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\n		<i class="fas fa-angle-double-left"></i>\n		</a></li>\n	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
+__p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n	<ul class="nav sticky-top navbar-light justify-content-center" style="background-color: white; margin-top: 15px;margin-bottom: 15px;">\r\n	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\r\n		<i class="fas fa-angle-double-left"></i>\r\n		</a></li>\r\n	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
 ((__t=(prevPageId))==null?'':_.escape(__t))+
-'">\n		<i class="fas fas fa-angle-left"></i>\n		</a></li>\n\n	<!--error-patterns -->\n	<li class="nav-item dropdown">\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-patterns-dropdown">\n		Error patterns<span class="caret"></span></a>\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\n        </div>\n    </li>\n	<!-- error-tokens -->\n	<li class="nav-item dropdown"> \n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-tokens-dropdown">\n		Error tokens<span class="caret"></span></a>\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\n        </div>\n     </li>\n\n   \n\n	<!--nextpage and last page -->\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
+'">\r\n		<i class="fas fas fa-angle-left"></i>\r\n		</a></li>\r\n\r\n	<!--error-patterns -->\r\n	<li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-patterns-dropdown">\r\n		Error patterns<span class="caret"></span></a>\r\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\r\n        </div>\r\n    </li>\r\n	<!-- error-tokens -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-tokens-dropdown">\r\n		Error tokens<span class="caret"></span></a>\r\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\r\n        </div>\r\n     </li>\r\n\r\n   \r\n\r\n	<!--nextpage and last page -->\r\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
 ((__t=(nextPageId))==null?'':_.escape(__t))+
-'">\n		<i class="fas fa-angle-right"></i>\n		</a></li>\n	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\n		<i class="fas fa-angle-double-right"></i>\n		</a></li>\n	</ul>\n\n	<div class="defaulthl" style="line-height:1; margin-top:15px;">\n <!--    <i class="fas fa-book-open card_main_icon green"></i>\n	Project '+
+'">\r\n		<i class="fas fa-angle-right"></i>\r\n		</a></li>\r\n	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\r\n		<i class="fas fa-angle-double-right"></i>\r\n		</a></li>\r\n	</ul>\r\n\r\n	<div class="defaulthl" style="line-height:1; margin-top:15px;">\r\n <!--    <i class="fas fa-book-open card_main_icon green"></i>\r\n	Project '+
 ((__t=(projectId))==null?'':_.escape(__t))+
-' -->\n	<div style="font-size: 20px; margin-top: 10px;"> Page '+
+' -->\r\n	<div style="font-size: 20px; margin-top: 10px;"> Page '+
 ((__t=(pageId))==null?'':_.escape(__t))+
-'</div>\n	</div>\n\n	   ';
+'</div>\r\n	</div>\r\n\r\n	   ';
 
      _.each(lines, function(line) {
 
@@ -26725,11 +26731,11 @@ __p+='	<div class="container">\n	<div class="row">\n    <div class="col col-md-1
 
 
       
-__p+='\n       <div class="text-image-line" title="'+
+__p+='\r\n       <div class="text-image-line" title="'+
 ((__t=(text))==null?'':_.escape(__t))+
-'">\n\n       	<a class="line-anchor" id="line-anchor-'+
+'">\r\n\r\n       	<a class="line-anchor" id="line-anchor-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"></a>\n		<div class="line-img"><img id="line-img-'+
+'"></a>\r\n		<div class="line-img"><img id="line-img-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
 '" src=\''+
 ((__t=(line["imgFile"]))==null?'':_.escape(__t))+
@@ -26737,23 +26743,23 @@ __p+='\n       <div class="text-image-line" title="'+
 ((__t=(text))==null?'':_.escape(__t))+
 '\' title=\''+
 ((__t=(text))==null?'':_.escape(__t))+
-'\' width="auto" height="25"></div>\n\n		<div class="line-text-parent">	\n		<div id="line-'+
+'\' width="auto" height="25"></div>\r\n\r\n		<div class="line-text-parent">	\r\n		<div id="line-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
 '" class="'+
 ((__t=(correction_class))==null?'':_.escape(__t))+
 ' line-text" anchor="'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"\n	    class="'+
+'"\r\n	    class="'+
 ((__t=(inputclass))==null?'':_.escape(__t))+
-' line-text">\n       <div class="line" contenteditable="true">\n       \n        '+
+' line-text">\r\n       <div class="line" contenteditable="true">\r\n       \r\n        '+
 ((__t=(line['cor']))==null?'':_.escape(__t))+
-'\n      	</div> \n      	<div class="line-tokens">\n      	</div>\n\n\n        </div>\n        <span>\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
+'\r\n      	</div> \r\n      	<div class="line-tokens">\r\n      	</div>\r\n\r\n\r\n        </div>\r\n        <span>\r\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
 line['lineId']
 __p+='" anchor="'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"><i class="far fa-arrow-alt-circle-up"></i></div>\n        </span>\n	    </div>\n\n\n\n       </div>\n	\n     \n\n\n      ';
+'"><i class="far fa-arrow-alt-circle-up"></i></div>\r\n        </span>\r\n	    </div>\r\n\r\n\r\n\r\n       </div>\r\n	\r\n     \r\n\r\n\r\n      ';
  }) 
-__p+='\n	</div>\n    </div>\n 	</div>\n';
+__p+='\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
 }
 return __p;
 };});
@@ -26795,6 +26801,7 @@ events:{
       error_tokens_clicked : function(e){
         e.stopPropagation();
         e.preventDefault();
+        $(".custom-popover").remove();
         $(".dropdown-menu").hide();
         $('#pcw-error-tokens-dropdown').toggle();
       },
@@ -26802,6 +26809,7 @@ events:{
         error_patterns_clicked : function(e){
         e.stopPropagation();
         e.preventDefault();
+        $(".custom-popover").remove();
         $(".dropdown-menu").hide();
         $('#pcw-error-patterns-dropdown').toggle();
       },
@@ -26931,7 +26939,7 @@ events:{
 
       console.log(sel);     
       if($(e.target).hasClass('line')){
-
+       $(".dropdown-menu").hide();
        $(".custom-popover").remove();
 
       var btn_group = $('<div class="btn-group"></div>'); 
@@ -26985,6 +26993,9 @@ events:{
 
    
 
+      },
+      onDestroy:function(e){
+       $(".custom-popover").remove();
       },
      
       onDomRefresh:function(e){
@@ -27122,19 +27133,19 @@ return Show;
 define("tpl!apps/projects/concordance/show/templates/concordance.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='	\n';
+__p+='	\r\n';
 
 if(asModal) {
 
-__p+='\n\n  <div class="modal-dialog modal-xl" role="document">\n  <div class="modal-content">\n\n<div class="modal-header">\n        <h3 class="modal-title">Concordance view for "'+
+__p+='\r\n\r\n  <div class="modal-dialog modal-xl" role="document">\r\n  <div class="modal-content">\r\n\r\n<div class="modal-header">\r\n        <h3 class="modal-title">Concordance view for "'+
 ((__t=(tokendata.query))==null?'':_.escape(__t))+
-'"</h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n';
+'"</h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n';
  } else { 
-__p+='\n\n\n	<div class="container">\n	<div class="row">\n    <div class="col col-md-12">\n\n	<div id="concordance-heading">\n	<p><h2>Concordance view for "'+
+__p+='\r\n\r\n\r\n	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n\r\n	<div id="concordance-heading">\r\n	<p><h2>Concordance view for "'+
 ((__t=(tokendata.query))==null?'':_.escape(__t))+
-'"</h2></p>\n	</div>\n\n	\n';
+'"</h2></p>\r\n	</div>\r\n\r\n	\r\n';
  } 
-__p+='\n\n <!--  <nav class="navbar navbar-static-top" id="page-header" data-spy="affix" data-offset-top="197">\n  <div class="container-fluid">\n  <div class="collapse navbar-collapse">\n  <ul class="nav navbar-nav">\n  <li> \n  <form class="navbar-form">-->\n \n  <div class="input-group mb-3">\n  <div class="input-group-prepend">\n  <button class="js-toggle-selection btn btn-outline-secondary" title="Toggle selection">\n  Toggle selection\n  </button>\n  </div>\n  <input class="js-global-correction-suggestion form-control" title="correction" type="text" placeholder="Correction"/>\n  <div class="input-group-append">\n  <button class="js-set-correction btn btn-outline-secondary" title="Set correction">\n  Set correction\n  </button>\n  <button class="js-correct-conc selected btn btn-outline-secondary" title="Correct selected">\n  Correct selected\n  </button>\n  </div>\n  </div>\n\n <!-- </form>\n   </li>\n  </ul>\n  </div>\n  </div>\n  </nav> -->\n\n  <div class="all_lines_parent">\n	  ';
+__p+='\r\n\r\n <!--  <nav class="navbar navbar-static-top" id="page-header" data-spy="affix" data-offset-top="197">\r\n  <div class="container-fluid">\r\n  <div class="collapse navbar-collapse">\r\n  <ul class="nav navbar-nav">\r\n  <li> \r\n  <form class="navbar-form">-->\r\n \r\n  <div class="input-group mb-3">\r\n  <div class="input-group-prepend">\r\n  <button class="js-toggle-selection btn btn-outline-secondary" title="Toggle selection">\r\n  Toggle selection\r\n  </button>\r\n  </div>\r\n  <input class="js-global-correction-suggestion form-control" title="correction" type="text" placeholder="Correction"/>\r\n  <div class="input-group-append">\r\n  <button class="js-set-correction btn btn-outline-secondary" title="Set correction">\r\n  Set correction\r\n  </button>\r\n  <button class="js-correct-conc selected btn btn-outline-secondary" title="Correct selected">\r\n  Correct selected\r\n  </button>\r\n  </div>\r\n  </div>\r\n\r\n <!-- </form>\r\n   </li>\r\n  </ul>\r\n  </div>\r\n  </div>\r\n  </nav> -->\r\n\r\n  <div class="all_lines_parent">\r\n	  ';
 
       _.each(tokendata.matches, function(match) {
       var line = match['line'];
@@ -27143,24 +27154,24 @@ __p+='\n\n <!--  <nav class="navbar navbar-static-top" id="page-header" data-spy
     var offset = word['offset'];
     var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];   
       
-__p+='\n\n\n\n<div class="text-image-line">\n\n<div class="left_div div_inline">\n	<!-- if ($images["leftImg"] != NULL) { -->\n		<div class="invisible=link" href="'+
+__p+='\r\n\r\n\r\n\r\n<div class="text-image-line">\r\n\r\n<div class="left_div div_inline">\r\n	<!-- if ($images["leftImg"] != NULL) { -->\r\n		<div class="invisible=link" href="'+
 ((__t=(link))==null?'':_.escape(__t))+
-'">\n    <div id ="img_'+
+'">\r\n    <div id ="img_'+
 ((__t=(line['pageId']))==null?'':_.escape(__t))+
 '_'+
 ((__t=(line['lineId']))==null?'':_.escape(__t))+
-'_parent" class="line-img">\n		<img src="'+
+'_parent" class="line-img">\r\n		<img src="'+
 ((__t=(line['imgFile']))==null?'':_.escape(__t))+
 '" id="img_'+
 ((__t=(line['pageId']))==null?'':_.escape(__t))+
 '_'+
 ((__t=(line['lineId']))==null?'':_.escape(__t))+
-'" width="auto" height="25"/>\n    </div>\n	\n		</div>\n	</div>\n	\n	</div>\n\n\n\n\n     ';
+'" width="auto" height="25"/>\r\n    </div>\r\n	\r\n		</div>\r\n	</div>\r\n	\r\n	</div>\r\n\r\n\r\n\r\n\r\n     ';
 
      		});
      	});
      
-__p+='\n\n</div>\n\n	</div>\n    </div>\n 	</div>\n';
+__p+='\r\n\r\n</div>\r\n\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
 }
 return __p;
 };});
@@ -27614,7 +27625,7 @@ return Show;
 define("tpl!apps/projects/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\n<div id="info-region" ></div>\n<div id="hub-region" ></div>\n<div id="hub2-region" ></div>\n\n<div id="footer-region" ></div>\n';
+__p+='<div id="hl-region"></div>\r\n<div id="info-region" ></div>\r\n<div id="hub-region" ></div>\r\n<div id="hub2-region" ></div>\r\n\r\n<div id="footer-region" ></div>\r\n';
 }
 return __p;
 };});
@@ -27623,27 +27634,42 @@ return __p;
 define("tpl!apps/projects/show/templates/info.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n<div class="container">\n<hr>\n\n\n<div class="row">\n<div class="col-lg-12">\n\n\n<table class="table table-bordered" style=\'margin-bottom: 30px;\'> \n\n<thead class="thead-light">\n      <tr>\n        <th>Title</th>\n        <th>Author</th>\n        <th>Language</th>\n        <th>Pages</th>\n      </tr>\n </thead>\n <tbody>\n\n  <tr>  \n        <td>'+
+__p+='\r\n\r\n<div class="container">\r\n<hr>\r\n\r\n\r\n<div class="row">\r\n<div class="col-lg-12">\r\n\r\n\r\n<table class="table table-bordered" style=\'margin-bottom: 30px;\'> \r\n\r\n<thead class="thead-light">\r\n      <tr>\r\n        <th>Title</th>\r\n        <th>Author</th>\r\n        <th>Language</th>\r\n        <th>Pages</th>\r\n      </tr>\r\n </thead>\r\n <tbody>\r\n\r\n  <tr>  \r\n        <td>'+
 ((__t=(title))==null?'':_.escape(__t))+
-'</td>\n        <td>'+
+'</td>\r\n        <td>'+
 ((__t=(author))==null?'':_.escape(__t))+
-'</td>\n        <td>'+
+'</td>\r\n        <td>'+
 ((__t=(language))==null?'':_.escape(__t))+
-'</td>\n        <td>'+
+'</td>\r\n        <td>'+
 ((__t=(pages))==null?'':_.escape(__t))+
-'</td>\n\n    </tr>\n\n </tbody>\n\n</table> \n\n</div>\n\n</div>\n</div>\n<!--\n<div class="row">\n<div class="col-lg-12">\n\n<h4> <b>Books:</b>  </h4> \n\n\n</div>\n</div>\n \n<table class="table table-bordered" \n id="book_table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\n\n <thead>\n      <tr>\n        <th>Title</th>\n        <th>Author</th>\n        <th>Language</th>\n        <th>Ocr Engine</th>\n        <th></th>\n      </tr>\n </thead>\n <tbody>\n\n 	';
+'</td>\r\n\r\n    </tr>\r\n\r\n </tbody>\r\n\r\n</table> \r\n\r\n</div>\r\n\r\n</div>\r\n</div>\r\n<!--\r\n<div class="row">\r\n<div class="col-lg-12">\r\n\r\n<h4> <b>Books:</b>  </h4> \r\n\r\n\r\n</div>\r\n</div>\r\n \r\n<table class="table table-bordered" \r\n id="book_table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\r\n\r\n <thead>\r\n      <tr>\r\n        <th>Title</th>\r\n        <th>Author</th>\r\n        <th>Language</th>\r\n        <th>Ocr Engine</th>\r\n        <th></th>\r\n      </tr>\r\n </thead>\r\n <tbody>\r\n\r\n 	';
  _.each(books, function(book) { 
-__p+='\n 	<tr>  \n        <td>'+
+__p+='\r\n 	<tr>  \r\n        <td>'+
 ((__t=(book.title))==null?'':_.escape(__t))+
-'</td>\n        <td>'+
+'</td>\r\n        <td>'+
 ((__t=(book.autdor))==null?'':_.escape(__t))+
-'</td>\n        <td>'+
+'</td>\r\n        <td>'+
 ((__t=(book.language))==null?'':_.escape(__t))+
-'</td>\n        <td>'+
+'</td>\r\n        <td>'+
 ((__t=(book.ocrEngine))==null?'':_.escape(__t))+
-'</td>\n        <td><button class="btn no_bg_btn float-right js-delete-book table_row_button btn-warning"><i class="fa fa-minus" aria-hidden="true"></i> Remove</button></td>\n\n    </tr>\n    ';
+'</td>\r\n        <td><button class="btn no_bg_btn float-right js-delete-book table_row_button btn-warning"><i class="fa fa-minus" aria-hidden="true"></i> Remove</button></td>\r\n\r\n    </tr>\r\n    ';
  }); 
-__p+='   \n\n </tbody>\n\n</table> \n-->\n</div>\n\n';
+__p+='   \r\n\r\n </tbody>\r\n\r\n</table> \r\n-->\r\n</div>\r\n\r\n';
+}
+return __p;
+};});
+
+
+define("tpl!apps/projects/show/templates/split.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='  <div class="modal-dialog" role="document">\r\n    <div class="modal-content">\r\n      <div class="modal-header">\r\n        <h5 class="modal-title">Split project ';
+title
+__p+='</h5>\r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class="modal-body">\r\n        <form>\r\n        <div class="form-group row">\r\n          <div class="col-4">\r\n          <label id="splitLabel" for="splitPage">Split into '+
+((__t=(n))==null?'':_.escape(__t))+
+' pages</label>\r\n          <input id="split-n" name="split-n" size="3" type="number" min="1" max="100" step="1" value="'+
+((__t=(n))==null?'':_.escape(__t))+
+'" class="form-control">\r\n          </div>\r\n        </div>\r\n        <div class="form-group form-check">\r\n          <input type="checkbox" class="form-check-input" id="checkRnd">\r\n          <label class="form-check-label" for="checkRnd">Random</label>\r\n        </div>\r\n      </form>\r\n      </div>\r\n      <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-confirm">Confirm</button>\r\n        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n';
 }
 return __p;
 };});
@@ -27655,8 +27681,9 @@ return __p;
 define('apps/projects/show/show_view',["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/projects/page/show/show_view","apps/projects/concordance/show/show_view",
         "tpl!apps/projects/show/templates/layout.tpl",
         "tpl!apps/projects/show/templates/info.tpl",
+        "tpl!apps/projects/show/templates/split.tpl"
 
-  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl){
+  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl,splitTpl){
 
 
     var Show = {};
@@ -27737,6 +27764,64 @@ Show.AreYouSure = Views.AreYouSure.extend({
     }
   })
 
+Show.OkDialog = Views.OkDialog.extend({
+  })
+
+Show.Split = Marionette.View.extend({
+    template: splitTpl,
+    events:{
+     "click .js-confirm":"confirmClicked",
+    },
+  serializeData: function(){
+      return {
+        title: Marionette.getOption(this,"title"),
+        text: Marionette.getOption(this,"text"),
+        id: Marionette.getOption(this,"id"),
+        n: Marionette.getOption(this,"n")
+
+      }
+  },
+  confirmClicked: function(){
+    var n = $("#split-n").val();
+    var random = false;
+     if($("#checkRnd").is(":checked")) {
+        random=true;
+      }
+    var data={n:n,random:random};
+    this.trigger("split:confirmed",data);
+  },
+
+   onAttach: function(){
+
+    this.$el.addClass("modal fade");
+    this.$el.attr("tabindex","-1");
+    this.$el.attr("role","dialog");
+    this.$el.attr("id","splitModal");
+
+    $("#splitModal").modal();
+    var that = this;
+
+    $("#split-n").on('input',function(){
+      var n = $(this).val();
+      $('#splitLabel').text("Split into " + n + " pages");
+    })
+
+     $('#checkRnd').change(function() {
+        if($(this).is(":checked")) {
+          $("#split-n").attr('disabled',true);
+          $('#splitLabel').text("Split randomly");
+        }
+        else{
+          $("#split-n").attr('disabled',false);
+          var n = $("#split-n").val();
+          $('#splitLabel').text("Split into " + n + " pages");
+       }        
+    });
+
+
+    }
+     
+  });
 
 return Show;
 
@@ -27840,7 +27925,7 @@ getProject: function(data){
 
           },
           error: function(data){
-            defer.resolve(undefined);
+            defer.reject(data);
           }
   });
 
@@ -27870,6 +27955,29 @@ uploadProjectData: function(data){
     return defer.promise();
   },
 
+downloadProject: function(data){
+    data['backend_route'] = "download_project";
+    var defer = jQuery.Deferred();  
+     $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        var result = new Entities.Project(JSON.parse(data));
+        defer.resolve(result);
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+
   createProject: function(data){
     data['backend_route'] = "create_project";
     console.log(data)
@@ -27891,10 +27999,48 @@ uploadProjectData: function(data){
     return defer.promise();
   },
 
-
-
 deleteProject: function(data){
     data['backend_route'] = "delete_project";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+       
+        url: "api/api_controller.php",
+        type: "POST",
+        data: data,
+        success: function(data) {
+
+              defer.resolve(data);
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+  updateProject: function(data){
+    data['backend_route'] = "update_project";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+       
+        url: "api/api_controller.php",
+        type: "POST",
+        data: data,
+        success: function(data) {
+
+              defer.resolve(data);
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+   splitProject: function(data){
+    data['backend_route'] = "split_project";
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
@@ -28123,14 +28269,15 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 
 		showProject: function(id){
 
-     		require(["entities/project"], function(ProjectEntities){
+     		require(["entities/project","entities/util"], function(ProjectEntities,UtilEntitites){
 
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
-     			  var fetchingpage = ProjectEntities.API.getProject({pid:id});
+     			  var fetchingproject = ProjectEntities.API.getProject({pid:id});
+            var fetchinglanguages = UtilEntitites.API.getLanguages();
 
    
-      $.when(fetchingpage).done(function(project){
+      $.when(fetchingproject,fetchinglanguages).done(function(project,languages){
 
 		     	loadingCircleView.destroy();
       console.log(project);
@@ -28142,9 +28289,7 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 			// console.log(reviews);
 	
 			projectShowLayout.on("attach",function(){
-      var cards = [
-        
-         
+      var cards = [         
            {
                   "color": "green",
                   "icon": "fas fa-history",
@@ -28152,7 +28297,7 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
                   "name": "Order Profile",
                   "seq": 1,
                   "text": "Start profiling the project.",
-                  "url": "projects:list",
+                  "url": "profile",
               }, 
                {
                   "color": "blue",
@@ -28164,12 +28309,12 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
                   "url": "docs:show",
               }, {
                   "color": "red",
-                  "icon": "fas fa-copy",
+                  "icon": "fas fa-columns",
                   "id": "about_btn",
                   "name": "Split",
                   "seq": 4,
                   "text": "Split the project.",
-                  "url": "about:home",
+                  "url": "split",
           },
                 {
                   "color": "green",
@@ -28187,7 +28332,7 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
                   "name": "Download",
                   "seq": 1,
                   "text": "Save project files to disk.",
-                  "url": "projects:list",
+                  "url": "download",
               }, 
 
                {
@@ -28232,6 +28377,15 @@ var cards2 = [
           if(data.url=="edit"){
              this.trigger("show:edit_clicked");
           }
+          if(data.url=="profile"){
+             this.trigger("show:profile");
+          }
+            if(data.url=="split"){
+             this.trigger("show:split");
+          }
+            if(data.url=="download"){
+             this.trigger("show:download");
+          }
         });
 
          projectShowHub2.on('cardHub:clicked',function(data){
@@ -28244,26 +28398,78 @@ var cards2 = [
         projectShowInfo = new Show.Info({model:project});
       	projectShowFooterPanel = new Show.FooterPanel();
 
+        projectShowHub.on('show:profile',function(){
+           var profilingproject = ProjectEntities.API.profileProject({pid:id});
+
+             $.when(profilingproject).done(function(result){
+
+                   App.mainmsg.updateContent(result,'success');
+                   var confirmModal = new Show.OkDialog({asModal:true,title:"Profiling started",text:"Profile for "+project.get('title')+" ordered.",id:"profileModal"})
+                   App.mainLayout.showChildView('dialogRegion',confirmModal)
+
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
+            });
+
+
+       projectShowHub.on('show:split',function(){
+
+          var projectsShowSplitProject = new Show.Split({model:project, asModal:true,text:"Split Project",n:"10"});
+             App.mainLayout.showChildView('dialogRegion',projectsShowSplitProject)
+
+             projectsShowSplitProject.on("split:confirmed",function(data){
+              data['pid'] = id;
+              var splitingproject = ProjectEntities.API.splitProject(data);
+
+               $.when(splitingproject).done(function(result){
+                    $("#splitModal").modal('hide');
+                   App.mainmsg.updateContent(result,'success');
+                   App.trigger("projects:list");
+
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
+
+             })
+   
+             });
+
+       projectShowHub.on('show:download',function(){
+
+              var downloadinggproject = ProjectEntities.API.downloadProject({pid:id});
+
+               $.when(downloadinggproject).done(function(result){
+                   // App.mainmsg.updateContent(result,'success');
+
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
+
+         
+   
+             });
+
     	  projectShowHub.on("show:edit_clicked",function(){
 
-
 			   var projectsShowEditProject = new Show.ProjectForm({model:project
-          , asModal:true,text:"Edit Project",edit_project:true,loading_text:"Update in progress"});
-
+          , asModal:true,text:"Edit Project",edit_project:true,loading_text:"Update in progress",languages:languages.languages});
 
            projectsShowEditProject.on("project:update",function(data){
             project.set(data);
 
-            var puttingProject = ProjectEntities.API.updateProject(id,project);
+            var puttingProject = ProjectEntities.API.updateProject({pid:id,projectdata:data});
 
-
-                 $.when(postingProject).done(function(result){
+                 $.when(puttingProject).done(function(result){
                   $('.loading_background').fadeOut();
 
                    $('#projects-modal').modal('toggle');
+                     projectShowHeader.options.title = data.title;
+                     projectShowHeader.render();
+                     projectShowInfo.render();
+                     App.mainmsg.updateContent("Project "+id+" successfully updated.",'success');              
 
-                    // TO DO
-                })
+                    })
 
 
           });
@@ -28344,6 +28550,7 @@ var cards2 = [
           App.mainLayout.showChildView('mainRegion',projectShowLayout);
 
           }).fail(function(response){
+               loadingCircleView.destroy();
                 App.mainmsg.updateContent(response.responseText,'danger');
           });  // $when fetchingproject
 
@@ -28932,10 +29139,10 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
                  $.when(uploadingProjectData).done(function(result){
 
-                  console.log(result);
+                           console.log(result);
                             $('.loading_background').fadeOut();
-                           $('#projects-modal').modal('toggle');
-                          $('#selected_file').text("");
+                            $('#projects-modal').modal('toggle');
+                            $('#selected_file').text("");
 
                           App.mainmsg.updateContent(result,'success');
 
@@ -28943,7 +29150,7 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
                        $.when(fetchingnewprojects).done(function(new_projects){
                           projectsListView.options.collection=new_projects.books;
                           projectsListView.render();
-                           projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
+                          projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
                           
 
                        });
@@ -29433,35 +29640,35 @@ return Controller;
 define("tpl!apps/users/common/templates/userform.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n';
+__p+='\r\n';
  if(asModal){
-__p+='\n\n  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header">\n        <h5 class="modal-title">'+
+__p+='\r\n\r\n  <div class="modal-dialog" role="document">\r\n    <div class="modal-content">\r\n      <div class="modal-header">\r\n        <h5 class="modal-title">'+
 ((__t=(modaltitle))==null?'':_.escape(__t))+
-'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">×</span>\n        </button>\n       </div>\n \n  <div class="modal-body">\n       \n';
+'</h5>\r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">×</span>\r\n        </button>\r\n       </div>\r\n \r\n  <div class="modal-body">\r\n       \r\n';
 } else {
-__p+='\n\n<div class="container">\n<div class="row">\n <div class="col col-md-12">\n\n';
+__p+='\r\n\r\n<div class="container">\r\n<div class="row">\r\n <div class="col col-md-12">\r\n\r\n';
 }
-__p+='\n\n<div class="form-group row ">\n    <label class="col-md-3 form-control-label required">Username</label>\n    <div class="col-md-6">     \n          <input class="form-control" name="name" type="text" value="'+
+__p+='\r\n\r\n<div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">Username</label>\r\n    <div class="col-md-6">     \r\n          <input class="form-control" name="name" type="text" value="'+
 ((__t=(name))==null?'':_.escape(__t))+
-'" required="">\n    </div>\n    <div class="col-md-3 form-control-comment"> \n    </div>\n  </div>\n\n  <div class="form-group row ">\n    <label class="col-md-3 form-control-label required">Email</label>\n    <div class="col-md-6">\n          <input class="form-control" name="email" type="email" value="'+
+'" required="">\r\n    </div>\r\n    <div class="col-md-3 form-control-comment"> \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">Email</label>\r\n    <div class="col-md-6">\r\n          <input class="form-control" name="email" type="email" value="'+
 ((__t=(email))==null?'':_.escape(__t))+
-'" required="">\n    </div>\n    <div class="col-md-3 form-control-comment">              \n    </div>\n  </div>\n\n   <div class="form-group row ">\n    <label class="col-md-3 form-control-label">Institute</label>\n      <div class="col-md-6">\n    <input class="form-control" name="institute" type="text" value="'+
+'" required="">\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">              \r\n    </div>\r\n  </div>\r\n\r\n   <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">Institute</label>\r\n      <div class="col-md-6">\r\n    <input class="form-control" name="institute" type="text" value="'+
 ((__t=(institute))==null?'':_.escape(__t))+
-'">\n    </div>\n\n    <div class="col-md-3 form-control-comment">\n    \n    </div>\n  </div>\n\n  <div class="form-group row ">\n    <label class="col-md-3 form-control-label required">\n              Password\n          </label>\n    <div class="col-md-6">\n\n          <div class="input-group">\n            <input class="form-control" name="password" type="password" value="'+
+'">\r\n    </div>\r\n\r\n    <div class="col-md-3 form-control-comment">\r\n    \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">\r\n              Password\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control" name="password" type="password" value="'+
 ((__t=(password))==null?'':_.escape(__t))+
-'" pattern=".{5,}" required="">\n            <!-- <span class="input-group-btn">\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\n                Show\n              </button>\n            </span> -->\n          </div>\n   \n    </div>\n    <div class="col-md-3 form-control-comment">   \n    </div>\n  </div>\n       \n  <div class="form-group row ">\n    <label class="col-md-3 form-control-label">\n               Password (retype)\n          </label>\n    <div class="col-md-6">\n\n          <div class="input-group">\n            <input class="form-control " name="new_password" type="password" value="'+
+'" pattern=".{5,}" required="">\r\n            <!-- <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span> -->\r\n          </div>\r\n   \r\n    </div>\r\n    <div class="col-md-3 form-control-comment">   \r\n    </div>\r\n  </div>\r\n       \r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">\r\n               Password (retype)\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control " name="new_password" type="password" value="'+
 ((__t=(password))==null?'':_.escape(__t))+
-'" pattern=".{5,}">\n           <!--  <span class="input-group-btn">\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\n                Show\n              </button>\n            </span> -->\n          </div>\n    </div>\n    <div class="col-md-3 form-control-comment">\n    </div>\n  </div>\n ';
+'" pattern=".{5,}">\r\n           <!--  <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span> -->\r\n          </div>\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">\r\n    </div>\r\n  </div>\r\n ';
  if(admincheck) {
-__p+='\n \n    <div class="form-group form-check">\n    <input type="checkbox" class="form-check-input" id="admin_check">\n    <label class="form-check-label" for="admin_check">Administrator</label>\n  </div>\n  ';
+__p+='\r\n \r\n    <div class="form-group form-check">\r\n    <input type="checkbox" class="form-check-input" id="admin_check">\r\n    <label class="form-check-label" for="admin_check">Administrator</label>\r\n  </div>\r\n  ';
  }
-__p+='\n\n';
+__p+='\r\n\r\n';
  if(asModal){
-__p+='\n </div>\n  <div class="modal-footer">\n        <button type="button" class="btn btn-primary js-submit">Submit</button>\n      </div>\n    </div>\n\n</div>\n</div>\n\n';
+__p+='\r\n </div>\r\n  <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-submit">Submit</button>\r\n      </div>\r\n    </div>\r\n\r\n</div>\r\n</div>\r\n\r\n';
 } else {
-__p+='\n\n</div>\n</div>\n</div>\n\n';
+__p+='\r\n\r\n</div>\r\n</div>\r\n</div>\r\n\r\n';
 }
-__p+='\n';
+__p+='\r\n';
 }
 return __p;
 };});
@@ -29537,7 +29744,7 @@ return Views;
 define("tpl!apps/users/list/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\n    <div id="panel-region"></div>\n    <div id="info-region" ></div>\n    <div id="footer-region" ></div>\n';
+__p+='<div id="hl-region"></div>\r\n    <div id="panel-region"></div>\r\n    <div id="info-region" ></div>\r\n    <div id="footer-region" ></div>\r\n';
 }
 return __p;
 };});
@@ -29546,7 +29753,7 @@ return __p;
 define("tpl!apps/users/list/templates/panel.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+=' <div class="container">\n\n<div class="row">\n\n <div class="col col-md-12">\n\n  <button style="margin-bottom: 25px;margin-top: 25px;" type="button" class="btn btn-primary js-create"><i class="fas fa-user-plus"></i> Create new user</button>                     \n  \n</div>\n\n</div>\n\n</div>';
+__p+=' <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button style="margin-bottom: 25px;margin-top: 25px;" type="button" class="btn btn-primary js-create"><i class="fas fa-user-plus"></i> Create new user</button>                     \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
 }
 return __p;
 };});
@@ -29778,7 +29985,7 @@ return App.UsersApp.Login.Controller;
 define("tpl!apps/users/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\n    <div id="panel-region"></div>\n    <div id="info-region" ></div>\n    <div id="footer-region" ></div>\n';
+__p+='<div id="hl-region"></div>\r\n    <div id="panel-region"></div>\r\n    <div id="info-region" ></div>\r\n    <div id="footer-region" ></div>\r\n';
 }
 return __p;
 };});
@@ -29787,7 +29994,7 @@ return __p;
 define("tpl!apps/users/show/templates/panel.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='    <div class="container">\n\n<div class="row">\n\n <div class="col col-md-12">\n\n  <button type="button" class="btn btn-primary js-update"><i class="fas fa-user-edit"></i> Update account settings</button>\n  <button type="button" class="btn btn-primary js-delete"><i class="fas fa-user-times"></i> Delete this account</button>\n\n  <h3  style="margin-bottom: 25px;margin-top: 25px;"> Personal Information </h3>\n                                \n  \n</div>\n\n</div>\n\n</div>';
+__p+='    <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button type="button" class="btn btn-primary js-update"><i class="fas fa-user-edit"></i> Update account settings</button>\r\n  <button type="button" class="btn btn-primary js-delete"><i class="fas fa-user-times"></i> Delete this account</button>\r\n\r\n  <h3  style="margin-bottom: 25px;margin-top: 25px;"> Personal Information </h3>\r\n                                \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
 }
 return __p;
 };});

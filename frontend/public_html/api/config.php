@@ -30,7 +30,7 @@ $config = array(
 			"splitProject"        => "/books/%d/split",
 			"assignProject"       => "/books/%d/assign?uid=%d",
 			"finishProject"       => "/books/%d/finish",
-			"removeProject"       => "/books/%d",
+			"getProject"          => "/books/%d",
 			"downloadProject"     => "/books/%d/download",
 			"getUsers"            => "/users",
 			"deleteUser"          => "/users/%d",

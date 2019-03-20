@@ -9,14 +9,15 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
 		showProject: function(id){
 
-     		require(["entities/project"], function(ProjectEntities){
+     		require(["entities/project","entities/util"], function(ProjectEntities,UtilEntitites){
 
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
-     			  var fetchingpage = ProjectEntities.API.getProject({pid:id});
+     			  var fetchingproject = ProjectEntities.API.getProject({pid:id});
+            var fetchinglanguages = UtilEntitites.API.getLanguages();
 
    
-      $.when(fetchingpage).done(function(project){
+      $.when(fetchingproject,fetchinglanguages).done(function(project,languages){
 
 		     	loadingCircleView.destroy();
       console.log(project);
@@ -28,9 +29,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 			// console.log(reviews);
 	
 			projectShowLayout.on("attach",function(){
-      var cards = [
-        
-         
+      var cards = [         
            {
                   "color": "green",
                   "icon": "fas fa-history",
@@ -38,7 +37,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                   "name": "Order Profile",
                   "seq": 1,
                   "text": "Start profiling the project.",
-                  "url": "projects:list",
+                  "url": "profile",
               }, 
                {
                   "color": "blue",
@@ -50,12 +49,12 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                   "url": "docs:show",
               }, {
                   "color": "red",
-                  "icon": "fas fa-copy",
+                  "icon": "fas fa-columns",
                   "id": "about_btn",
                   "name": "Split",
                   "seq": 4,
                   "text": "Split the project.",
-                  "url": "about:home",
+                  "url": "split",
           },
                 {
                   "color": "green",
@@ -73,7 +72,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                   "name": "Download",
                   "seq": 1,
                   "text": "Save project files to disk.",
-                  "url": "projects:list",
+                  "url": "download",
               }, 
 
                {
@@ -118,6 +117,15 @@ var cards2 = [
           if(data.url=="edit"){
              this.trigger("show:edit_clicked");
           }
+          if(data.url=="profile"){
+             this.trigger("show:profile");
+          }
+            if(data.url=="split"){
+             this.trigger("show:split");
+          }
+            if(data.url=="download"){
+             this.trigger("show:download");
+          }
         });
 
          projectShowHub2.on('cardHub:clicked',function(data){
@@ -130,26 +138,78 @@ var cards2 = [
         projectShowInfo = new Show.Info({model:project});
       	projectShowFooterPanel = new Show.FooterPanel();
 
+        projectShowHub.on('show:profile',function(){
+           var profilingproject = ProjectEntities.API.profileProject({pid:id});
+
+             $.when(profilingproject).done(function(result){
+
+                   App.mainmsg.updateContent(result,'success');
+                   var confirmModal = new Show.OkDialog({asModal:true,title:"Profiling started",text:"Profile for "+project.get('title')+" ordered.",id:"profileModal"})
+                   App.mainLayout.showChildView('dialogRegion',confirmModal)
+
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
+            });
+
+
+       projectShowHub.on('show:split',function(){
+
+          var projectsShowSplitProject = new Show.Split({model:project, asModal:true,text:"Split Project",n:"10"});
+             App.mainLayout.showChildView('dialogRegion',projectsShowSplitProject)
+
+             projectsShowSplitProject.on("split:confirmed",function(data){
+              data['pid'] = id;
+              var splitingproject = ProjectEntities.API.splitProject(data);
+
+               $.when(splitingproject).done(function(result){
+                    $("#splitModal").modal('hide');
+                   App.mainmsg.updateContent(result,'success');
+                   App.trigger("projects:list");
+
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
+
+             })
+   
+             });
+
+       projectShowHub.on('show:download',function(){
+
+              var downloadinggproject = ProjectEntities.API.downloadProject({pid:id});
+
+               $.when(downloadinggproject).done(function(result){
+                   // App.mainmsg.updateContent(result,'success');
+
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
+
+         
+   
+             });
+
     	  projectShowHub.on("show:edit_clicked",function(){
 
-
 			   var projectsShowEditProject = new Show.ProjectForm({model:project
-          , asModal:true,text:"Edit Project",edit_project:true,loading_text:"Update in progress"});
-
+          , asModal:true,text:"Edit Project",edit_project:true,loading_text:"Update in progress",languages:languages.languages});
 
            projectsShowEditProject.on("project:update",function(data){
             project.set(data);
 
-            var puttingProject = ProjectEntities.API.updateProject(id,project);
+            var puttingProject = ProjectEntities.API.updateProject({pid:id,projectdata:data});
 
-
-                 $.when(postingProject).done(function(result){
+                 $.when(puttingProject).done(function(result){
                   $('.loading_background').fadeOut();
 
                    $('#projects-modal').modal('toggle');
+                     projectShowHeader.options.title = data.title;
+                     projectShowHeader.render();
+                     projectShowInfo.render();
+                     App.mainmsg.updateContent("Project "+id+" successfully updated.",'success');              
 
-                    // TO DO
-                })
+                    })
 
 
           });
@@ -230,6 +290,7 @@ var cards2 = [
           App.mainLayout.showChildView('mainRegion',projectShowLayout);
 
           }).fail(function(response){
+               loadingCircleView.destroy();
                 App.mainmsg.updateContent(response.responseText,'danger');
           });  // $when fetchingproject
 

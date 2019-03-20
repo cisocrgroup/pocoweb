@@ -26,6 +26,10 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'languages' : get_languages();break;
         case 'get_projects' : get_projects();break;
         case 'get_project' : get_project();break;
+        case 'update_project' : update_project();break;
+        case 'split_project' : split_up_project();break;
+        case 'download_project' : download_project();break;
+
         case 'delete_project' : delete_project();break;
         case 'get_line' : get_line();break;
         case 'correct_line' : correct_line();break;
@@ -108,7 +112,7 @@ function get_languages(){
 function get_project(){
 
   $pid = $_POST['pid'];
-  $api = new Api(backend_get_remove_project_route($pid));
+  $api = new Api(backend_get_project_route($pid));
   $api->set_session_id(backend_get_session_cookie());
   $api->get_request();
 
@@ -133,7 +137,7 @@ function get_project(){
 function delete_project(){
 
   $pid = $_POST['pid'];
-  $api = new Api(backend_get_remove_project_route($pid));
+  $api = new Api(backend_get_project_route($pid));
   $api->set_session_id(backend_get_session_cookie());
   $api->delete_request();
 
@@ -155,6 +159,128 @@ function delete_project(){
   }
 
 }
+
+function update_project(){
+
+  $pid = $_POST['pid'];
+  $api = new Api(backend_get_project_route($pid));
+  $api->set_session_id(backend_get_session_cookie());
+  $api->post_request($_POST['projectdata']);
+
+ $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        echo json_encode("Successfully deleted project '"+$pid+"'"); 
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status);
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+}
+
+function split_up_project(){
+
+  $pid = $_POST['pid'];
+  $api = new Api(backend_get_split_project_route($pid));
+  $api->set_session_id(backend_get_session_cookie());
+
+
+  $data = array("n" => $_POST['n']);
+
+  if ($_POST['random'] && $_POST["random"] == true) {
+    $data["random"] = true;
+  } else {
+    $data["random"] = false;
+  }
+
+
+  $api->post_request($data);
+
+ $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        echo ('Project "'.$pid." successfully splitted"); 
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status);
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+}
+
+function download_project(){
+  
+  $pid = $_POST['pid'];
+  $api = new Api(backend_get_download_project_route($pid));
+  $api->set_session_id(backend_get_session_cookie());
+
+  $api->get_request();
+
+ $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        echo json_encode($session);
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status);
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+}
+
+
+
+function get_projects(){
+  //print_r(backend_get_session_cookie());
+
+  $api = new Api(backend_get_projects_route());
+  $api->set_session_id(backend_get_session_cookie());
+  $api->get_request();
+ 
+  $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+
+        echo json_encode($session); 
+
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Please login.</a>';
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+  return $api;
+}
+
 
 function get_page(){
 
@@ -208,35 +334,6 @@ function get_page(){
 
 }
 
-
-function get_projects(){
-  //print_r(backend_get_session_cookie());
-
-  $api = new Api(backend_get_projects_route());
-  $api->set_session_id(backend_get_session_cookie());
-  $api->get_request();
- 
-  $status = $api->get_http_status_code();
-  switch ($status) {
-  case "200":
-        $result=array();
-        $session = $api->get_response();
-
-        echo json_encode($session); 
-
-    break;
-  case "403":
-    header("status: ".$status);
-    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Please login.</a>';
-    break;
-  default:
-        header("status: ".$status);
-        echo backend_get_http_status_info($status);
-    break;
-  }
-
-  return $api;
-}
 
 function correct_line() {
 
