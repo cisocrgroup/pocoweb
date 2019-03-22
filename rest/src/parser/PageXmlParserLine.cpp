@@ -30,24 +30,40 @@ PageXmlParserLine::PageXmlParserLine(const Xml::Node& line_node)
 void
 PageXmlParserLine::end_wagner_fischer()
 {
+  // update lines before regions
+  update_line();
+  update_in_region();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 PageXmlParserLine::insert(size_t i, wchar_t c)
 {
+  string_.insert(i, c);
+  for (auto& word : words_) {
+    if (word.begin >= i and i < word.end) {
+      word.insert(i - word.begin, c);
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 PageXmlParserLine::erase(size_t i)
 {
+  string_.erase(i);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 PageXmlParserLine::set(size_t i, wchar_t c)
 {
+  string_[i] = c;
+  for (auto& word : words_) {
+    if (word.begin >= i and i < word.end) {
+      word.set(i - word.begin, c);
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -120,6 +136,14 @@ PageXmlParserLine::parse()
     w.begin = pos;
     w.end = pos + wstr.size();
     w.parse();
+    if (not words_.empty()) { // add an explicit whitepsace
+      const auto begin = words.back().end;
+      const auto end = w.begin;
+      words_.push_back(word());
+      words_.back().isspace = true;
+      words_.back().begin = begin;
+      words_.back().end = end;
+    }
     words_.push_back(w);
   }
 }
@@ -136,6 +160,13 @@ PageXmlParserLine::word::parse()
     this->glyphs.push_back(g);
     i++;
   }
+  isspace = false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+PageXmlParserLine::word::erase(size_t i)
+{
 }
 
 ////////////////////////////////////////////////////////////////////////////////

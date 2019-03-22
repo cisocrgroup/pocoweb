@@ -28,9 +28,17 @@ private:
 
   struct word
   {
+    word()
+      : node()
+      , begin()
+      , end()
+      , isspace()
+    {
+    }
     void parse();
     Xml::Node node;
     size_t begin, end;
+    bool isspace;
     std::vector<glyph> glyphs;
   };
 
