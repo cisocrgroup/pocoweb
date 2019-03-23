@@ -29,7 +29,6 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'update_project' : update_project();break;
         case 'split_project' : split_up_project();break;
         case 'download_project' : download_project();break;
-
         case 'delete_project' : delete_project();break;
         case 'get_line' : get_line();break;
         case 'correct_line' : correct_line();break;
@@ -40,6 +39,7 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'get_split_images' : get_split_images();break;
 
         case 'order_profile' : order_profile();break;
+        case 'documentation' : get_documentation();break;
 
         case 'get_page' : get_page();break;
         case 'create_project' : create_project();break;
@@ -105,6 +105,46 @@ function get_languages(){
         echo backend_get_http_status_info($status);
     break;
   }
+
+}
+
+function get_documentation(){
+
+
+
+ $text = file_get_contents("../doc.md");
+
+ // print_r($text);
+
+
+  $data = array(
+    'text' => $text,
+    'mode' => "markdown"
+  );
+
+ $data_string = json_encode($data);    
+
+  $url = "https://api.github.com/markdown";
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_USERAGENT, "pocoweb");
+  curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__)."/cacert.pem");
+  curl_setopt($ch, CURLOPT_URL,$url);
+  curl_setopt($ch, CURLOPT_POST,1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS,$data_string);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
+      'Content-Type: application/json',                                                                                
+      'Content-Length: ' . strlen($data_string))                                                                       
+  );  
+
+  curl_setopt($ch, CURLOPT_TIMEOUT, 30); 
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+  $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);  
+
+  $htmlstring=curl_exec ($ch);
+
+  echo $htmlstring;
+
+;
 
 }
 

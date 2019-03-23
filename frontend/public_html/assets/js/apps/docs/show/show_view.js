@@ -37,28 +37,12 @@ define(["marionette","app","common/views",
   Show.Info = Marionette.View.extend({
       template: infoTpl,
       className: "",
-      events:{
-      'click .js-build' : 'build_clicked'
-      },
-     
-  
+      onAttach: function(){
 
-      build_clicked: function(){
-
-     var structures =[];
-
-     $('.index_select').children().each(function(){
-
-            if($(this).is(':checked')){
-              structures.push("{type:"+$(this).val()+"}")
-
-            }
-      })
-
-      var text  = $('#inputext').val();
-      text = text.replace(/(\r\n|\n|\r)/gm,"");
-     this.trigger("show:build_clicked",structures,text);
-      }          
+         var content =  Marionette.getOption(this,"data");
+         $('#docs').append(content);
+         this.trigger('doc:append');
+      }
 
   });
 

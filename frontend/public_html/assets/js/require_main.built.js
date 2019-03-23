@@ -25967,6 +25967,26 @@ Entities.API = {
     });
 
     return defer.promise();
+  },
+  getDocumentation: function(){
+    var data = {};
+    data['backend_route'] = "documentation";
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(data);
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
   }
 
 
@@ -29324,28 +29344,12 @@ define('apps/docs/show/show_view',["marionette","app","common/views",
   Show.Info = Marionette.View.extend({
       template: infoTpl,
       className: "",
-      events:{
-      'click .js-build' : 'build_clicked'
-      },
-     
-  
+      onAttach: function(){
 
-      build_clicked: function(){
-
-     var structures =[];
-
-     $('.index_select').children().each(function(){
-
-            if($(this).is(':checked')){
-              structures.push("{type:"+$(this).val()+"}")
-
-            }
-      })
-
-      var text  = $('#inputext').val();
-      text = text.replace(/(\r\n|\n|\r)/gm,"");
-     this.trigger("show:build_clicked",structures,text);
-      }          
+         var content =  Marionette.getOption(this,"data");
+         $('#docs').append(content);
+         this.trigger('doc:append');
+      }
 
   });
 
@@ -29365,60 +29369,11 @@ return Show;
 });
 
 
-// ================
-// entities/docs.js
-// ================
-
-define('entities/docs',["app"], function(IPS_App){
-
-  var Entities={};
-
-Entities.API = {
-
-
-  getJson: function(data){
-    var defer = jQuery.Deferred();
-        $.ajax({
-        headers: { 
-        'Accept': 'application/json',
-        'Content-Type': 'application/json' 
-         },
-        url: "assets/js/api.json",
-        type: "GET",
-        dataType:"json",
-        success: function(data) {
-          console.log(data)
-          defer.resolve(data);
-
-            },
-            error: function(data){
-              defer.resolve(undefined);
-            }
-    });
-
-
-    return defer.promise();
-    
-},
-
-  
-
-
-
-
-};
-
-
-
-return Entities;
-
-});
-
 // ======================================
 // apps/docs/show/show_controller.js
 // ======================================
 
-define('apps/docs/show/show_controller',["app","common/util","common/views","apps/docs/show/show_view"], function(IPS_App,Util,Views,Show){
+define('apps/docs/show/show_controller',["app","common/util","common/views","apps/docs/show/show_view"], function(App,Util,Views,Show){
 
 
  Controller = {
@@ -29426,22 +29381,18 @@ define('apps/docs/show/show_controller',["app","common/util","common/views","app
 		showDocs: function(id){
       		$(window).scrollTop(0);
 
-	   		require(["entities/docs"], function(DocsEntitites){
+	   		require(["entities/util"], function(UtilEntitites){
 
-	   	      // var loadingCircleView = new  Views.LoadingBackdrop();
-           //    IPS_App.mainLayout.showChildView('backdropRegion',loadingCircleView);
-              // var currentUser = IPS_App.getCurrentUser();
+	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
+              App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
-
-			// loadingCircleView.destroy();
 
 		 	//currentdocs.set({"url_id":id}); // pass url_id to view..
 
-     		var fetchingDocs = DocsEntitites.API.getJson();
+     		var fetchingDocs = UtilEntitites.API.getDocumentation();
 
 	    	$.when(fetchingDocs).done(function(data){
 
-	    	console.log(data)
 
 
 			var docsShowLayout = new Show.Layout();
@@ -29454,25 +29405,30 @@ define('apps/docs/show/show_controller',["app","common/util","common/views","app
 			  
 
 			  docsShowHeader = new Show.Header({});
-			  docsShowInfo = new Show.Info();
+			  docsShowInfo = new Show.Info({data:data});
   			  docsPanel = new Show.FooterPanel({color:"blue"});
 
-	          docsShowLayout.showChildView('headerRegion',docsShowHeader);
-	          docsShowLayout.showChildView('infoRegion',docsShowInfo);
+  			  docsShowInfo.on("doc:append",function(){
+	         		loadingCircleView.destroy();
+	         });
 
+	          // docsShowLayout.showChildView('headerRegion',docsShowHeader);
+	          docsShowLayout.showChildView('infoRegion',docsShowInfo);
 	          docsShowLayout.showChildView('panelRegion',docsPanel);
 
-	        
 
+	  		
+				
 
 			   docsPanel.on("go:back",function(){
-			  	 IPS_App.trigger("docs:list");
+			  	 App.trigger("docs:list");
 			  });
 
 
     		}); // on.attach()
 
-          IPS_App.mainLayout.showChildView('mainRegion',docsShowLayout);
+  			
+          App.mainLayout.showChildView('mainRegion',docsShowLayout);
 
            });
 
