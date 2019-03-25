@@ -131,6 +131,9 @@ LineRoute::correct(MysqlConnection& conn,
   wf.set_gt(c);
   const auto b = token->offset();
   const auto n = token->size();
+  if (b <= 0 || b >= line.size() || (b + n) > line.size()) {
+    THROW(Error, "invalid token offset: ", b, ", ", n);
+  }
   const auto lev = wf(b, n);
   CROW_LOG_DEBUG << "(LineRoute) correction: " << c;
   CROW_LOG_DEBUG << "(LineRoute) line.cor(): " << line.cor();
