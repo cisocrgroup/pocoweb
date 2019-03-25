@@ -825,6 +825,7 @@ function login_check(){
 
       if(isset(backend_get_session_cookie()['user'])){
         $session = backend_get_session_cookie();
+        unset($session['user']['password']);
         echo json_encode($session['user']);
 
       }

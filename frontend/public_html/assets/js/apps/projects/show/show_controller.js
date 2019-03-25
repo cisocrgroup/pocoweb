@@ -9,15 +9,17 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
 		showProject: function(id){
 
-     		require(["entities/project","entities/util"], function(ProjectEntities,UtilEntitites){
+     		require(["entities/project","entities/util","entities/users"], function(ProjectEntities,UtilEntities,UserEntities){
 
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
      			  var fetchingproject = ProjectEntities.API.getProject({pid:id});
-            var fetchinglanguages = UtilEntitites.API.getLanguages();
+            var fetchinglanguages = UtilEntities.API.getLanguages();
+            var fetchingprojects = ProjectEntities.API.getProjects();
+            var fetchinguser = UserEntities.API.loginCheck();
 
    
-      $.when(fetchingproject,fetchinglanguages).done(function(project,languages){
+      $.when(fetchingproject,fetchinglanguages,fetchingprojects,fetchinguser).done(function(project,languages,projects,user){
 
 		     	loadingCircleView.destroy();
       console.log(project);
@@ -27,6 +29,14 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 			var projectShowInfo;
 			var projectShowFooterPanel;
 			// console.log(reviews);
+
+        // only show packages of this project
+        var packages = [];
+       _.each(projects.books,function(book,index){
+        if(user.admin&&(book.bookId!=book.projectId)&&(book.bookId==id)){
+           packages.push(book);
+        }
+       });
 	
 			projectShowLayout.on("attach",function(){
       var cards = [         
@@ -137,6 +147,7 @@ var cards2 = [
 			  projectShowHeader = new Show.Header({title:project.get('title'),icon:"fas fa-book-open",color:"green"});
         projectShowInfo = new Show.Info({model:project});
       	projectShowFooterPanel = new Show.FooterPanel();
+        var projectShowPackages= new Show.Packages({packages:packages});
 
         projectShowHub.on('show:profile',function(){
            var profilingproject = ProjectEntities.API.profileProject({pid:id});
@@ -281,6 +292,7 @@ var cards2 = [
 	          projectShowLayout.showChildView('infoRegion',projectShowInfo);
             projectShowLayout.showChildView('hubRegion',projectShowHub2);
             projectShowLayout.showChildView('hubRegion2',projectShowHub);
+            projectShowLayout.showChildView('packagesRegion',projectShowPackages);
 
 	          projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
 

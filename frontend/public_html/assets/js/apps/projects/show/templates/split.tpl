@@ -7,7 +7,9 @@
         </button>
       </div>
       <div class="modal-body">
-        <form>
+        <button type="button" class="btn btn-primary js-addpackage"><i class="fas fa-folder-plus"></i> Add new package</button>
+
+        <form class="splitform">
         <div class="form-group row">
           <div class="col-4">
           <label id="splitLabel" for="splitPage">Split into <%-n%> pages</label>

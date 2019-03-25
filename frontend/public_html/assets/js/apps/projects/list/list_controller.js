@@ -9,22 +9,29 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
  	listProjects: function(){
 
-     		require(["entities/project","entities/util"], function(ProjectEntities,UtilEntitites){
+     		require(["entities/project","entities/util","entities/users"], function(ProjectEntities,UtilEntities,UserEntities){
 
           // var loadingCircleView = new  Views.LoadingBackdrop();
           // App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
 
      var fetchingprojects = ProjectEntities.API.getProjects();
-     var fetchinglanguages = UtilEntitites.API.getLanguages();
+     var fetchinglanguages = UtilEntities.API.getLanguages();
+     var fetchinguser = UserEntities.API.loginCheck();
 
 		 var projectsListLayout = new List.Layout();
 
-    	 $.when(fetchingprojects,fetchinglanguages).done(function(projects,languages){
+    	 $.when(fetchingprojects,fetchinglanguages,fetchinguser).done(function(projects,languages,user){
         console.log(projects);
         console.log(languages.languages);
+        console.log(user)
 
-		   // loadingCircleView.destroy();
+        // only show projects not packages
+		   _.each(projects.books,function(book,index){
+        if(user.admin&!book.isBook){
+           projects.books.splice(index);
+        }
+       });
 
 
     		projectsListLayout.on("attach",function(){

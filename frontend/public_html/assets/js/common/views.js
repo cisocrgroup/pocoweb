@@ -327,7 +327,6 @@ onAttach: function(){
 
 		row_clicked : function(e){
 			e.stopPropagation();
-			console.log("sadsa")
 			var url = $(e.currentTarget).attr('data-href')
 
 			if(url=="#"){ var idx = $(e.currentTarget).attr('data-idx'); this.trigger('go:list_clicked',{idx:idx}); }

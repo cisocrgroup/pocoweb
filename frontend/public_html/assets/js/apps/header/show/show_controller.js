@@ -15,7 +15,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
     var fetchingVersion = UtilEntities.API.getApiVersion();
     var fetchingLoginCheck = UserEntities.API.loginCheck();
-      $.when(fetchingVersion,fetchingLoginCheck).done(function(api_version,login_check){
+      $.when(fetchingVersion,fetchingLoginCheck).done(function(api_version,logged_in_user){
 
         var headerShowLayout = new Show.Layout();
          var headerLogin ;
@@ -65,7 +65,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
 
                  $.when(loggingInUser).done(function(result){
-
+                                            
                         App.mainmsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedIn(result.user.name);
                           
@@ -84,6 +84,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
                               break;
                             case "users/list":
                               App.trigger("users:list")
+                              break;
                             case "users/account":
                               App.trigger("users:show","account")
                               break;
@@ -133,9 +134,9 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
      
 
   headerShowTopbar.on("attach",function(){
-       if(login_check!=-1){
-      App.mainmsg.updateContent("Welcome back to PoCoWeb: "+login_check.name+"!",'success');
-      headerShowTopbar.setLoggedIn(login_check.name);
+       if(logged_in_user!=-1){
+      App.mainmsg.updateContent("Welcome back to PoCoWeb: "+logged_in_user.name+"!",'success');
+      headerShowTopbar.setLoggedIn(logged_in_user.name);
         headerShowLayout.showChildView('msgRegion',App.mainmsg)
 
       }

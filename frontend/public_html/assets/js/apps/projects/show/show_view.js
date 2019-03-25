@@ -5,9 +5,10 @@
 define(["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/projects/page/show/show_view","apps/projects/concordance/show/show_view",
         "tpl!apps/projects/show/templates/layout.tpl",
         "tpl!apps/projects/show/templates/info.tpl",
-        "tpl!apps/projects/show/templates/split.tpl"
+        "tpl!apps/projects/show/templates/split.tpl",
+        "tpl!apps/projects/show/templates/packages.tpl"
 
-  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl,splitTpl){
+  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl,splitTpl,packagesTpl){
 
 
     var Show = {};
@@ -19,7 +20,7 @@ define(["marionette","app","backbone.syphon","common/views","apps/projects/commo
       ,infoRegion: "#info-region"
       ,hubRegion: "#hub-region"
       ,hubRegion2: "#hub2-region"
-
+      ,packagesRegion: "#packages-region"
       ,footerRegion: "#footer-region"
     }
 
@@ -43,7 +44,14 @@ define(["marionette","app","backbone.syphon","common/views","apps/projects/commo
       'click .js-delete-project' : 'delete_clicked',
       'click .js-add-book' : 'add_book_clicked'
 
-      },
+      }, 
+      serializeData: function(){
+
+         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+
+        return data;
+    
+    },
      
 
       edit_clicked:function(e){
@@ -70,6 +78,53 @@ define(["marionette","app","backbone.syphon","common/views","apps/projects/commo
     
   });
 
+ Show.Packages = Marionette.View.extend({
+      template: packagesTpl,
+      events:{
+        'click .clickable-row' : 'row_clicked',
+
+
+      }, 
+      row_clicked : function(e){
+      e.stopPropagation();
+      var url = $(e.currentTarget).attr('data-href')
+
+      if(url=="#"){ var idx = $(e.currentTarget).attr('data-idx'); this.trigger('go:list_clicked',{idx:idx}); }
+      else window.location = url;
+
+    },
+
+      serializeData: function(){
+        return{
+          packages : Marionette.getOption(this,"packages")
+        }
+  
+    },
+     
+
+      edit_clicked:function(e){
+        e.preventDefault();
+        this.trigger("show:edit_clicked");
+      },
+
+       delete_clicked:function(e){
+        e.preventDefault();
+        this.trigger("show:delete_clicked");
+
+      },
+
+       add_book_clicked:function(e){
+        e.preventDefault();
+        this.trigger("show:add_book_clicked");
+
+
+      },
+     onAttach: function(){
+       var table = $('#packages_table').DataTable();
+
+      }
+    
+  });
 Show.Page = Page.Page.extend({});
 Show.Concordance = Concordance.Concordance.extend({});
 
@@ -95,6 +150,7 @@ Show.Split = Marionette.View.extend({
     template: splitTpl,
     events:{
      "click .js-confirm":"confirmClicked",
+     "click .js-addpackage":"addSplitrow"
     },
   serializeData: function(){
       return {
@@ -113,6 +169,9 @@ Show.Split = Marionette.View.extend({
       }
     var data={n:n,random:random};
     this.trigger("split:confirmed",data);
+  },
+  addSplitrow:function(){
+    $(".splitform").append("<div>tes</div>");
   },
 
    onAttach: function(){
