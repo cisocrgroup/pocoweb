@@ -32,11 +32,12 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
         // only show packages of this project
         var packages = [];
-       _.each(projects.books,function(book,index){
+       for(var i=0;i<projects.books.length;i++){
+        var book = projects.books[i];
         if(user.admin&&(book.bookId!=book.projectId)&&(book.bookId==id)){
            packages.push(book);
         }
-       });
+       };
 	
 			projectShowLayout.on("attach",function(){
       var cards = [         
@@ -166,23 +167,57 @@ var cards2 = [
 
        projectShowHub.on('show:split',function(){
 
-          var projectsShowSplitProject = new Show.Split({model:project, asModal:true,text:"Split Project",n:"10"});
-             App.mainLayout.showChildView('dialogRegion',projectsShowSplitProject)
+            var fetchingusers = UserEntities.API.getUsers();
 
-             projectsShowSplitProject.on("split:confirmed",function(data){
-              data['pid'] = id;
-              var splitingproject = ProjectEntities.API.splitProject(data);
+             $.when(fetchingusers).done(function(users){
 
-               $.when(splitingproject).done(function(result){
-                    $("#splitModal").modal('hide');
-                   App.mainmsg.updateContent(result,'success');
-                   App.trigger("projects:list");
 
-                   }).fail(function(response){
-                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                   }); 
+            var projectsShowSplitProject = new Show.Split({users:users.users,model:project, asModal:true,text:"Split Project",n:project.get('pages')});
+                App.mainLayout.showChildView('dialogRegion',projectsShowSplitProject)
 
-             })
+               projectsShowSplitProject.on("split:confirmed",function(data){
+                console.log(data);
+                data['pid'] = id;
+                var splitingproject = ProjectEntities.API.splitProject(data);
+
+                 $.when(splitingproject).done(function(result){
+                      $("#splitModal").modal('hide');
+                  //   App.mainmsg.updateContent(result,'success');
+                        var assign_data = {pairs:[]};
+                        _.each(result.books,function(book,index){
+                          assign_data['pairs'].push({uid:data.ids[index],pid:book.projectId});
+                        });
+
+                         var assigningprojects = ProjectEntities.API.assignPackages(assign_data);
+                            $.when(assigningprojects).done(function(assign_result){
+                                 // show message and update table
+                                  App.mainmsg.updateContent(result,'success');
+
+                                  for(var i=0;i<result.length;i++){
+                                    var string = "";
+                                    string+='<tr class="clickable-row" data-href="#projects/"'+result[i]['pid']+'><td>';
+                                    string+= '<td>'+result[i]['title']+'</td>';
+                                    string+= '<td>'+result[i]['language']+'</td>';
+                                    string+= '<td>'+result[i]['pages']+'</td></tr>';
+
+                                    $('#book_table').find('tbody').append($(string));
+
+                                  }
+
+
+                            });
+
+
+                        console.log(assign_data);
+
+                     }).fail(function(response){
+                           App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                     }); 
+
+                });
+
+              });
+
    
              });
 

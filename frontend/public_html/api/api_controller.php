@@ -30,6 +30,9 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'split_project' : split_up_project();break;
         case 'download_project' : download_project();break;
         case 'delete_project' : delete_project();break;
+        case 'assign_package' : assign_package();break;
+        case 'assign_packages' : assign_packages();break;
+
         case 'get_line' : get_line();break;
         case 'correct_line' : correct_line();break;
         case 'correct_token' : correct_token();break;
@@ -51,6 +54,7 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
 
     }
 }
+
 
 function get_split_images(){
 
@@ -249,7 +253,8 @@ function split_up_project(){
   case "200":
         $result=array();
         $session = $api->get_response();
-        echo ('Project "'.$pid." successfully splitted"); 
+        echo json_encode($session);
+        // echo ('Project '.$pid." successfully splitted"); 
     break;
   case "403":
     header("status: ".$status);
@@ -262,6 +267,71 @@ function split_up_project(){
   }
 
 }
+
+function assign_packages(){
+  $pairs = $_POST['pairs'];
+
+  // print_r($pairs);
+  $count = 0;
+  for($i=0;$i<sizeof($pairs);$i++){
+
+      $api = new Api(backend_get_assign_project_route($pairs[$i]['pid'],$pairs[$i]['uid']));
+      $api->set_session_id(backend_get_session_cookie());
+
+      $api->get_request();
+
+     $status = $api->get_http_status_code();
+      switch ($status) {
+      case "200":
+            $result=array();
+            $session = $api->get_response();
+            // echo ('Successfully assigned project '.$pairs[$i]['pid']." to user ".$pairs[$i]['uid']); 
+        break;
+      case "403":
+        header("status: ".$status);
+        echo  backend_get_http_status_info($status);
+        break;
+      default:
+            header("status: ".$status);
+            echo backend_get_http_status_info($status);
+        break;
+      }
+    $count ++;
+  }
+
+  echo ('Successfully assigned '.$count.' projects.');
+
+}
+
+function assign_package(){
+  $pid = $_POST['pid'];
+  $pid = $_POST['uid'];
+  $api = new Api(backend_get_assign_project_route($pid,$uid));
+  $api->set_session_id(backend_get_session_cookie());
+
+  $api->get_request();
+
+ $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        echo ('Successfully assigned project '.$pid." to user "+$uid); 
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status);
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+}
+
+
+
 
 function download_project(){
   

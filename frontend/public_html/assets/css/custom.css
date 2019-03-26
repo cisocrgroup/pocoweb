@@ -598,3 +598,12 @@ outline: 0;
   .clickable-row{
     cursor: pointer;
   }
+
+.close-x{
+  float: right;
+  color:rgb(108,117,125);
+}
+
+.close-x:hover{
+  color:black;
+}

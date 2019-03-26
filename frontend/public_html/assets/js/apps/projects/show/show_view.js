@@ -150,7 +150,8 @@ Show.Split = Marionette.View.extend({
     template: splitTpl,
     events:{
      "click .js-confirm":"confirmClicked",
-     "click .js-addpackage":"addSplitrow"
+     "click .js-addpackage":"addSplitrow",
+     "click .js-close": "closeClicked"
     },
   serializeData: function(){
       return {
@@ -162,16 +163,47 @@ Show.Split = Marionette.View.extend({
       }
   },
   confirmClicked: function(){
-    var n = $("#split-n").val();
+    var n = $('.userrows').find('.row').length;
     var random = false;
      if($("#checkRnd").is(":checked")) {
         random=true;
       }
-    var data={n:n,random:random};
+
+    var ids=[];
+    $('.userrows').find('.row').each(function(){
+      var selected = $(this).find('select').val();
+      ids.push(Number(selected));
+    });
+
+    var data={n:n,random:random,ids:ids};
     this.trigger("split:confirmed",data);
   },
   addSplitrow:function(){
-    $(".splitform").append("<div>tes</div>");
+    var pages = Marionette.getOption(this,"n");
+    var length = $('.userrows').find('.row').length;
+    //only add max pages row
+    if(length==pages){
+      return;
+    }
+
+
+   var row = $('<div class="form-group"><i class="js-close close-x fa fa-times"></i><div class="row"><div class="col-4"><label id="splitLabel" for="splitPage">Select User</label><select class="form-control"></select></div></div></div>');
+   var users = Marionette.getOption(this,'users');      
+   
+    $(".userrows").prepend($('<hr>')); 
+    $(".userrows").prepend(row);
+
+    for(i in users){
+      row.find('select').append($('<option value="'+users[i].id+'">'+users[i].name+'</option>'));
+    }
+
+
+
+  },
+  closeClicked: function(e){
+        $(e.currentTarget).parent().next().remove();
+
+    $(e.currentTarget).parent().remove();
   },
 
    onAttach: function(){
@@ -184,22 +216,22 @@ Show.Split = Marionette.View.extend({
     $("#splitModal").modal();
     var that = this;
 
-    $("#split-n").on('input',function(){
-      var n = $(this).val();
-      $('#splitLabel').text("Split into " + n + " pages");
-    })
+    // $("#split-n").on('input',function(){
+    //   var n = $(this).val();
+    //   $('#splitLabel').text("Split into " + n + " pages");
+    // })
 
-     $('#checkRnd').change(function() {
-        if($(this).is(":checked")) {
-          $("#split-n").attr('disabled',true);
-          $('#splitLabel').text("Split randomly");
-        }
-        else{
-          $("#split-n").attr('disabled',false);
-          var n = $("#split-n").val();
-          $('#splitLabel').text("Split into " + n + " pages");
-       }        
-    });
+    //  $('#checkRnd').change(function() {
+    //     if($(this).is(":checked")) {
+    //       $("#split-n").attr('disabled',true);
+    //       $('#splitLabel').text("Split randomly");
+    //     }
+    //     else{
+    //       $("#split-n").attr('disabled',false);
+    //       var n = $("#split-n").val();
+    //       $('#splitLabel').text("Split into " + n + " pages");
+    //    }        
+    // });
 
 
     }
