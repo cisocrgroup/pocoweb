@@ -49,7 +49,13 @@ var Views = {}
       data['institute'] = $("input[name=institute").val();
       data['password'] = $("input[name=password]").val();
       data['new_password'] = $("input[name=new_password]").val();
-	  if($('#admin_check').length>0) data['admin'] = $('#admin_check').val();
+      if($("#admin_check").is(":checked")) {
+         data['admin']=true;
+      }
+      else{
+      	data['admin']=false;
+      }
+	  console.log(data);
 		this.trigger("form:submit", data);
 	 }
 

@@ -275,6 +275,8 @@ function assign_packages(){
   $count = 0;
   for($i=0;$i<sizeof($pairs);$i++){
 
+      // echo $pairs[$i]['pid']." ".$pairs[$i]['uid'];
+
       $api = new Api(backend_get_assign_project_route($pairs[$i]['pid'],$pairs[$i]['uid']));
       $api->set_session_id(backend_get_session_cookie());
 

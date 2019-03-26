@@ -21,7 +21,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
    
       $.when(fetchingproject,fetchinglanguages,fetchingprojects,fetchinguser).done(function(project,languages,projects,user){
 
-		     	loadingCircleView.destroy();
+		  loadingCircleView.destroy();
       console.log(project);
 
 			var projectShowLayout = new Show.Layout();
@@ -31,6 +31,8 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 			// console.log(reviews);
 
         // only show packages of this project
+           console.log(projects);
+
         var packages = [];
        for(var i=0;i<projects.books.length;i++){
         var book = projects.books[i];
@@ -38,7 +40,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
            packages.push(book);
         }
        };
-	
+	 console.log(packages);
 			projectShowLayout.on("attach",function(){
       var cards = [         
            {
@@ -188,10 +190,11 @@ var cards2 = [
                           assign_data['pairs'].push({uid:data.ids[index],pid:book.projectId});
                         });
 
+
                          var assigningprojects = ProjectEntities.API.assignPackages(assign_data);
                             $.when(assigningprojects).done(function(assign_result){
                                  // show message and update table
-                                  App.mainmsg.updateContent(result,'success');
+                                  App.mainmsg.updateContent(assign_result,'success');
 
                                   for(var i=0;i<result.length;i++){
                                     var string = "";

@@ -181,7 +181,7 @@ Show.Split = Marionette.View.extend({
   addSplitrow:function(){
     var pages = Marionette.getOption(this,"n");
     var length = $('.userrows').find('.row').length;
-    //only add max pages row
+    //only add max pages rows
     if(length==pages){
       return;
     }
@@ -194,7 +194,9 @@ Show.Split = Marionette.View.extend({
     $(".userrows").prepend(row);
 
     for(i in users){
+      if(!users[i].admin){
       row.find('select').append($('<option value="'+users[i].id+'">'+users[i].name+'</option>'));
+      }
     }
 
 

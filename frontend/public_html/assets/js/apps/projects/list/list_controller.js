@@ -26,22 +26,29 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
         console.log(languages.languages);
         console.log(user)
 
+
+
         // only show projects not packages
-       var filtered_projects=[];
-       for(var i=0;i<projects.books.length;i++){
-        var book = projects.books[i];
-        if(user.admin&&book.isBook){
-           filtered_projects.push(book);
-        }
+         var filtered_projects=[];
+        if(projects.books){
+         for(var i=0;i<projects.books.length;i++){
+          var book = projects.books[i];
+          if(user.admin&&book.isBook){
+             filtered_projects.push(book);
+          }
+         }
+
        }
 
-       projects = filtered_projects;
+       if(user.admin){
+        projects.books=filtered_projects;
+       }
 
     		projectsListLayout.on("attach",function(){
 
 
       var projectsListHeader = new List.Header();
-			var projectsListView = new List.ProjectsList({collection: filtered_projects,hover:true});
+			var projectsListView = new List.ProjectsList({collection: projects.books,hover:true});
       var projectsListPanel = new List.Panel();
       var projectsListFooterPanel = new List.FooterPanel();
 

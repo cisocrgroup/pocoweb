@@ -42,7 +42,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
                        App.mainmsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedOut();
-                        
+                         App.trigger('home:portal');
                   
                 }).fail(function(response){ 
                   App.mainmsg.updateContent(response.responseText,'danger');                       
