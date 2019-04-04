@@ -1,14 +1,16 @@
-FROM golang:latest
+FROM golang:alpine
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
-ENV DATE='Do 4. Apr 10:45:21 CEST 2019'
+ENV DATE='Do 4. Apr 14:09:00 CEST 2019'
 
 ENV PCWAUTH_GIT=github.com/finkf/pcwauth
 ENV GO111MODULE=on
-RUN git clone https://${PCWAUTH_GIT} &&\
+RUN apk add git &&\
+	git clone https://${PCWAUTH_GIT} &&\
     cd pcwauth &&\
 	go install . &&\
 	cd / &&\
-    rm -rf pcwauth
+	rm -rf pcwauth &&\
+	apk del git
 
 CMD sleep 15 && pcwauth -db "${MYSQL_USER}:${MYSQL_PASSWORD}@(${PCW_DB_HOST})/${MYSQL_DATABASE}" \
 	-pocoweb ${PCW_POCOWEB_HOST} -listen ${PCW_PCWAUTH_HOST} \
