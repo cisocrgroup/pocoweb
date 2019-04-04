@@ -4,11 +4,7 @@ ENV DATE='Do 4. Apr 18:31:59 CEST 2019'
 
 ENV PCWAUTH_GIT=github.com/finkf/pcwauth
 RUN apk add git &&\
-	git checkout https://${PCWAUTH_GIT} &&\
-	cd pcwauth &&\
-	go install . &&\
-	cd / &&\
-	rm -rf pcwauth &&\
+	go get -u ${PCWAUTH_GIT} &&\
 	apk del git
 CMD sleep 15 && pcwauth -db "${MYSQL_USER}:${MYSQL_PASSWORD}@(${PCW_DB_HOST})/${MYSQL_DATABASE}" \
 	-pocoweb ${PCW_POCOWEB_HOST} -listen ${PCW_PCWAUTH_HOST} \
