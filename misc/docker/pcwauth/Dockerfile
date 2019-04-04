@@ -4,7 +4,7 @@ ENV DATE='Do 4. Apr 18:31:59 CEST 2019'
 
 ENV PCWAUTH_GIT=github.com/finkf/pcwauth
 RUN apk add git &&\
-	git checkout http://${PCWAUTH_GIT} &&\
+	git checkout https://${PCWAUTH_GIT} &&\
 	cd pcwauth &&\
 	go install . &&\
 	cd / &&\
