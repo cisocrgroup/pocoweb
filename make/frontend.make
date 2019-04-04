@@ -4,7 +4,14 @@ FE_FILES += $(PCW_FRONTEND_DIR)/public_html/LICENSE
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/about.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/account.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/adaptive.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/assets/js/r.js
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/api.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/api_controller.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/backend.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/cacert.pem
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/config.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/upload.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/utils.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/assets/js/build.js
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/concordance.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/css/pcw.css
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/doc.html
@@ -51,7 +58,8 @@ $(PCW_FRONTEND_DIR)/public_html/doc.html: frontend/public_html/doc.md
 	$(call ECHO,$@)
 	$V bash misc/scripts/md2html.sh $< | sed -e 's#<br>##g' > $@
 
-$(PCW_FRONTEND_DIR)/public_html/assets/js/r.js: frontend/public_html/assets/js/r.js
+# TODO: not that nice
+$(PCW_FRONTEND_DIR)/public_html/assets/js/build.js: frontend/public_html/assets/js/r.js
 	cd frontend/public_html/assets/js && node r.js -o build.js
 	cp -r frontend/public_html/assets $(PCW_FRONTEND_DIR)/public_html
 
