@@ -24602,7 +24602,6 @@ onAttach: function(){
 
 		row_clicked : function(e){
 			e.stopPropagation();
-			console.log("sadsa")
 			var url = $(e.currentTarget).attr('data-href')
 
 			if(url=="#"){ var idx = $(e.currentTarget).attr('data-idx'); this.trigger('go:list_clicked',{idx:idx}); }
@@ -25967,6 +25966,26 @@ Entities.API = {
     });
 
     return defer.promise();
+  },
+  getDocumentation: function(){
+    var data = {};
+    data['backend_route'] = "documentation";
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(data);
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
   }
 
 
@@ -25999,7 +26018,7 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
     var fetchingVersion = UtilEntities.API.getApiVersion();
     var fetchingLoginCheck = UserEntities.API.loginCheck();
-      $.when(fetchingVersion,fetchingLoginCheck).done(function(api_version,login_check){
+      $.when(fetchingVersion,fetchingLoginCheck).done(function(api_version,logged_in_user){
 
         var headerShowLayout = new Show.Layout();
          var headerLogin ;
@@ -26026,7 +26045,7 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
                        App.mainmsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedOut();
-                        
+                         App.trigger('home:portal');
                   
                 }).fail(function(response){ 
                   App.mainmsg.updateContent(response.responseText,'danger');                       
@@ -26049,7 +26068,7 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
 
                  $.when(loggingInUser).done(function(result){
-
+                                            
                         App.mainmsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedIn(result.user.name);
                           
@@ -26068,6 +26087,7 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
                               break;
                             case "users/list":
                               App.trigger("users:list")
+                              break;
                             case "users/account":
                               App.trigger("users:show","account")
                               break;
@@ -26117,9 +26137,9 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
      
 
   headerShowTopbar.on("attach",function(){
-       if(login_check!=-1){
-      App.mainmsg.updateContent("Welcome back to PoCoWeb: "+login_check.name+"!",'success');
-      headerShowTopbar.setLoggedIn(login_check.name);
+       if(logged_in_user!=-1){
+      App.mainmsg.updateContent("Welcome back to PoCoWeb: "+logged_in_user.name+"!",'success');
+      headerShowTopbar.setLoggedIn(logged_in_user.name);
         headerShowLayout.showChildView('msgRegion',App.mainmsg)
 
       }
@@ -27625,7 +27645,7 @@ return Show;
 define("tpl!apps/projects/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\r\n<div id="info-region" ></div>\r\n<div id="hub-region" ></div>\r\n<div id="hub2-region" ></div>\r\n\r\n<div id="footer-region" ></div>\r\n';
+__p+='<div id="hl-region"></div>\r\n<div id="info-region" ></div>\r\n<div id="hub-region" ></div>\r\n<div id="hub2-region" ></div>\r\n<div id="packages-region" ></div>\r\n\r\n<div id="footer-region" ></div>\r\n';
 }
 return __p;
 };});
@@ -27642,19 +27662,7 @@ __p+='\r\n\r\n<div class="container">\r\n<hr>\r\n\r\n\r\n<div class="row">\r\n<d
 ((__t=(language))==null?'':_.escape(__t))+
 '</td>\r\n        <td>'+
 ((__t=(pages))==null?'':_.escape(__t))+
-'</td>\r\n\r\n    </tr>\r\n\r\n </tbody>\r\n\r\n</table> \r\n\r\n</div>\r\n\r\n</div>\r\n</div>\r\n<!--\r\n<div class="row">\r\n<div class="col-lg-12">\r\n\r\n<h4> <b>Books:</b>  </h4> \r\n\r\n\r\n</div>\r\n</div>\r\n \r\n<table class="table table-bordered" \r\n id="book_table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\r\n\r\n <thead>\r\n      <tr>\r\n        <th>Title</th>\r\n        <th>Author</th>\r\n        <th>Language</th>\r\n        <th>Ocr Engine</th>\r\n        <th></th>\r\n      </tr>\r\n </thead>\r\n <tbody>\r\n\r\n 	';
- _.each(books, function(book) { 
-__p+='\r\n 	<tr>  \r\n        <td>'+
-((__t=(book.title))==null?'':_.escape(__t))+
-'</td>\r\n        <td>'+
-((__t=(book.autdor))==null?'':_.escape(__t))+
-'</td>\r\n        <td>'+
-((__t=(book.language))==null?'':_.escape(__t))+
-'</td>\r\n        <td>'+
-((__t=(book.ocrEngine))==null?'':_.escape(__t))+
-'</td>\r\n        <td><button class="btn no_bg_btn float-right js-delete-book table_row_button btn-warning"><i class="fa fa-minus" aria-hidden="true"></i> Remove</button></td>\r\n\r\n    </tr>\r\n    ';
- }); 
-__p+='   \r\n\r\n </tbody>\r\n\r\n</table> \r\n-->\r\n</div>\r\n\r\n';
+'</td>\r\n\r\n    </tr>\r\n\r\n </tbody>\r\n\r\n</table> \r\n\r\n</div>\r\n\r\n</div>\r\n\r\n</div>\r\n\r\n';
 }
 return __p;
 };});
@@ -27665,11 +27673,38 @@ var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments
 with(obj||{}){
 __p+='  <div class="modal-dialog" role="document">\r\n    <div class="modal-content">\r\n      <div class="modal-header">\r\n        <h5 class="modal-title">Split project ';
 title
-__p+='</h5>\r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class="modal-body">\r\n        <form>\r\n        <div class="form-group row">\r\n          <div class="col-4">\r\n          <label id="splitLabel" for="splitPage">Split into '+
+__p+='</h5>\r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class="modal-body">\r\n\r\n        <form class="splitform">\r\n          <div class="form-group row">\r\n          <div class="col-12">\r\n             <button type="button" class="btn btn-primary js-addpackage"><i class="fas fa-folder-plus"></i> Add new package</button>\r\n          </div>\r\n        </div> \r\n        <div class="userrows">\r\n        </div>\r\n\r\n       <!--  <div class="form-group row">\r\n          <div class="col-4">\r\n          <label id="splitLabel" for="splitPage">Split into '+
 ((__t=(n))==null?'':_.escape(__t))+
 ' pages</label>\r\n          <input id="split-n" name="split-n" size="3" type="number" min="1" max="100" step="1" value="'+
 ((__t=(n))==null?'':_.escape(__t))+
-'" class="form-control">\r\n          </div>\r\n        </div>\r\n        <div class="form-group form-check">\r\n          <input type="checkbox" class="form-check-input" id="checkRnd">\r\n          <label class="form-check-label" for="checkRnd">Random</label>\r\n        </div>\r\n      </form>\r\n      </div>\r\n      <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-confirm">Confirm</button>\r\n        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n';
+'" class="form-control">\r\n          </div>\r\n        </div> -->\r\n        <div class="form-group form-check">\r\n          <input type="checkbox" class="form-check-input" id="checkRnd">\r\n          <label class="form-check-label" for="checkRnd">Random</label>\r\n        </div>\r\n      </form>\r\n      </div>\r\n      <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-confirm">Confirm</button>\r\n        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n';
+}
+return __p;
+};});
+
+
+define("tpl!apps/projects/show/templates/packages.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='\r\n';
+ if(packages.length>0){ 
+__p+='\r\n\r\n<div class="container">\r\n\r\n<hr>\r\n\r\n<div class="row">\r\n<div class="col-lg-12">\r\n\r\n\r\n<h4> <b>Packages:</b>  </h4> \r\n\r\n\r\n \r\n<table class="table table-bordered" \r\n id="book_table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\r\n\r\n <thead class="thead-light">\r\n      <tr>\r\n        <th>Title</th>\r\n        <th>Author</th>\r\n        <th>Language</th>\r\n        <th>Pages</th>\r\n      </tr>\r\n </thead>\r\n <tbody>\r\n\r\n 	';
+ _.each(packages, function(package) { 
+__p+='\r\n 	<tr class="clickable-row" data-href="#projects/'+
+((__t=(package.projectId))==null?'':_.escape(__t))+
+'">  \r\n        <td>'+
+((__t=(package.title))==null?'':_.escape(__t))+
+'</td>\r\n        <td>'+
+((__t=(package.author))==null?'':_.escape(__t))+
+'</td>\r\n        <td>'+
+((__t=(package.year))==null?'':_.escape(__t))+
+'</td>\r\n        <td>'+
+((__t=(package.pages))==null?'':_.escape(__t))+
+'</td>\r\n    </tr>\r\n    ';
+ }); 
+__p+='   \r\n\r\n </tbody>\r\n\r\n</table> \r\n\r\n</div>\r\n</div>\r\n</div>\r\n\r\n';
+ } 
+__p+='';
 }
 return __p;
 };});
@@ -27681,9 +27716,10 @@ return __p;
 define('apps/projects/show/show_view',["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/projects/page/show/show_view","apps/projects/concordance/show/show_view",
         "tpl!apps/projects/show/templates/layout.tpl",
         "tpl!apps/projects/show/templates/info.tpl",
-        "tpl!apps/projects/show/templates/split.tpl"
+        "tpl!apps/projects/show/templates/split.tpl",
+        "tpl!apps/projects/show/templates/packages.tpl"
 
-  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl,splitTpl){
+  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl,splitTpl,packagesTpl){
 
 
     var Show = {};
@@ -27695,7 +27731,7 @@ define('apps/projects/show/show_view',["marionette","app","backbone.syphon","com
       ,infoRegion: "#info-region"
       ,hubRegion: "#hub-region"
       ,hubRegion2: "#hub2-region"
-
+      ,packagesRegion: "#packages-region"
       ,footerRegion: "#footer-region"
     }
 
@@ -27719,7 +27755,14 @@ define('apps/projects/show/show_view',["marionette","app","backbone.syphon","com
       'click .js-delete-project' : 'delete_clicked',
       'click .js-add-book' : 'add_book_clicked'
 
-      },
+      }, 
+      serializeData: function(){
+
+         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+
+        return data;
+    
+    },
      
 
       edit_clicked:function(e){
@@ -27746,6 +27789,53 @@ define('apps/projects/show/show_view',["marionette","app","backbone.syphon","com
     
   });
 
+ Show.Packages = Marionette.View.extend({
+      template: packagesTpl,
+      events:{
+        'click .clickable-row' : 'row_clicked',
+
+
+      }, 
+      row_clicked : function(e){
+      e.stopPropagation();
+      var url = $(e.currentTarget).attr('data-href')
+
+      if(url=="#"){ var idx = $(e.currentTarget).attr('data-idx'); this.trigger('go:list_clicked',{idx:idx}); }
+      else window.location = url;
+
+    },
+
+      serializeData: function(){
+        return{
+          packages : Marionette.getOption(this,"packages")
+        }
+  
+    },
+     
+
+      edit_clicked:function(e){
+        e.preventDefault();
+        this.trigger("show:edit_clicked");
+      },
+
+       delete_clicked:function(e){
+        e.preventDefault();
+        this.trigger("show:delete_clicked");
+
+      },
+
+       add_book_clicked:function(e){
+        e.preventDefault();
+        this.trigger("show:add_book_clicked");
+
+
+      },
+     onAttach: function(){
+       var table = $('#packages_table').DataTable();
+
+      }
+    
+  });
 Show.Page = Page.Page.extend({});
 Show.Concordance = Concordance.Concordance.extend({});
 
@@ -27771,6 +27861,8 @@ Show.Split = Marionette.View.extend({
     template: splitTpl,
     events:{
      "click .js-confirm":"confirmClicked",
+     "click .js-addpackage":"addSplitrow",
+     "click .js-close": "closeClicked"
     },
   serializeData: function(){
       return {
@@ -27782,13 +27874,49 @@ Show.Split = Marionette.View.extend({
       }
   },
   confirmClicked: function(){
-    var n = $("#split-n").val();
+    var n = $('.userrows').find('.row').length;
     var random = false;
      if($("#checkRnd").is(":checked")) {
         random=true;
       }
-    var data={n:n,random:random};
+
+    var ids=[];
+    $('.userrows').find('.row').each(function(){
+      var selected = $(this).find('select').val();
+      ids.push(Number(selected));
+    });
+
+    var data={n:n,random:random,ids:ids};
     this.trigger("split:confirmed",data);
+  },
+  addSplitrow:function(){
+    var pages = Marionette.getOption(this,"n");
+    var length = $('.userrows').find('.row').length;
+    //only add max pages rows
+    if(length==pages){
+      return;
+    }
+
+
+   var row = $('<div class="form-group"><i class="js-close close-x fa fa-times"></i><div class="row"><div class="col-4"><label id="splitLabel" for="splitPage">Select User</label><select class="form-control"></select></div></div></div>');
+   var users = Marionette.getOption(this,'users');      
+   
+    $(".userrows").prepend($('<hr>')); 
+    $(".userrows").prepend(row);
+
+    for(i in users){
+      if(!users[i].admin){
+      row.find('select').append($('<option value="'+users[i].id+'">'+users[i].name+'</option>'));
+      }
+    }
+
+
+
+  },
+  closeClicked: function(e){
+        $(e.currentTarget).parent().next().remove();
+
+    $(e.currentTarget).parent().remove();
   },
 
    onAttach: function(){
@@ -27801,22 +27929,22 @@ Show.Split = Marionette.View.extend({
     $("#splitModal").modal();
     var that = this;
 
-    $("#split-n").on('input',function(){
-      var n = $(this).val();
-      $('#splitLabel').text("Split into " + n + " pages");
-    })
+    // $("#split-n").on('input',function(){
+    //   var n = $(this).val();
+    //   $('#splitLabel').text("Split into " + n + " pages");
+    // })
 
-     $('#checkRnd').change(function() {
-        if($(this).is(":checked")) {
-          $("#split-n").attr('disabled',true);
-          $('#splitLabel').text("Split randomly");
-        }
-        else{
-          $("#split-n").attr('disabled',false);
-          var n = $("#split-n").val();
-          $('#splitLabel').text("Split into " + n + " pages");
-       }        
-    });
+    //  $('#checkRnd').change(function() {
+    //     if($(this).is(":checked")) {
+    //       $("#split-n").attr('disabled',true);
+    //       $('#splitLabel').text("Split randomly");
+    //     }
+    //     else{
+    //       $("#split-n").attr('disabled',false);
+    //       var n = $("#split-n").val();
+    //       $('#splitLabel').text("Split into " + n + " pages");
+    //    }        
+    // });
 
 
     }
@@ -27878,7 +28006,6 @@ Entities.API = {
         type: "POST",
         data:data,
         success: function(data) {
-
               defer.resolve(JSON.parse(data));
             },
             error: function(data){
@@ -28050,7 +28177,7 @@ deleteProject: function(data){
         data: data,
         success: function(data) {
 
-              defer.resolve(data);
+              defer.resolve(JSON.parse(data));
             },
             error: function(data){
               defer.reject(data);
@@ -28059,6 +28186,29 @@ deleteProject: function(data){
 
     return defer.promise();
   },
+
+assignPackages: function(data){
+  console.log(data);
+    data['backend_route'] = "assign_packages";
+    var defer = jQuery.Deferred();  
+     $.ajax({
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(data);
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+
     getLine: function(data){
     data['backend_route'] = "get_line";
     console.log(data)
@@ -28269,17 +28419,19 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 
 		showProject: function(id){
 
-     		require(["entities/project","entities/util"], function(ProjectEntities,UtilEntitites){
+     		require(["entities/project","entities/util","entities/users"], function(ProjectEntities,UtilEntities,UserEntities){
 
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
      			  var fetchingproject = ProjectEntities.API.getProject({pid:id});
-            var fetchinglanguages = UtilEntitites.API.getLanguages();
+            var fetchinglanguages = UtilEntities.API.getLanguages();
+            var fetchingprojects = ProjectEntities.API.getProjects();
+            var fetchinguser = UserEntities.API.loginCheck();
 
    
-      $.when(fetchingproject,fetchinglanguages).done(function(project,languages){
+      $.when(fetchingproject,fetchinglanguages,fetchingprojects,fetchinguser).done(function(project,languages,projects,user){
 
-		     	loadingCircleView.destroy();
+		  loadingCircleView.destroy();
       console.log(project);
 
 			var projectShowLayout = new Show.Layout();
@@ -28287,7 +28439,18 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 			var projectShowInfo;
 			var projectShowFooterPanel;
 			// console.log(reviews);
-	
+
+        // only show packages of this project
+           console.log(projects);
+
+        var packages = [];
+       for(var i=0;i<projects.books.length;i++){
+        var book = projects.books[i];
+        if(user.admin&&(book.bookId!=book.projectId)&&(book.bookId==id)){
+           packages.push(book);
+        }
+       };
+	 console.log(packages);
 			projectShowLayout.on("attach",function(){
       var cards = [         
            {
@@ -28397,6 +28560,7 @@ var cards2 = [
 			  projectShowHeader = new Show.Header({title:project.get('title'),icon:"fas fa-book-open",color:"green"});
         projectShowInfo = new Show.Info({model:project});
       	projectShowFooterPanel = new Show.FooterPanel();
+        var projectShowPackages= new Show.Packages({packages:packages});
 
         projectShowHub.on('show:profile',function(){
            var profilingproject = ProjectEntities.API.profileProject({pid:id});
@@ -28415,23 +28579,58 @@ var cards2 = [
 
        projectShowHub.on('show:split',function(){
 
-          var projectsShowSplitProject = new Show.Split({model:project, asModal:true,text:"Split Project",n:"10"});
-             App.mainLayout.showChildView('dialogRegion',projectsShowSplitProject)
+            var fetchingusers = UserEntities.API.getUsers();
 
-             projectsShowSplitProject.on("split:confirmed",function(data){
-              data['pid'] = id;
-              var splitingproject = ProjectEntities.API.splitProject(data);
+             $.when(fetchingusers).done(function(users){
 
-               $.when(splitingproject).done(function(result){
-                    $("#splitModal").modal('hide');
-                   App.mainmsg.updateContent(result,'success');
-                   App.trigger("projects:list");
 
-                   }).fail(function(response){
-                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                   }); 
+            var projectsShowSplitProject = new Show.Split({users:users.users,model:project, asModal:true,text:"Split Project",n:project.get('pages')});
+                App.mainLayout.showChildView('dialogRegion',projectsShowSplitProject)
 
-             })
+               projectsShowSplitProject.on("split:confirmed",function(data){
+                console.log(data);
+                data['pid'] = id;
+                var splitingproject = ProjectEntities.API.splitProject(data);
+
+                 $.when(splitingproject).done(function(result){
+                      $("#splitModal").modal('hide');
+                  //   App.mainmsg.updateContent(result,'success');
+                        var assign_data = {pairs:[]};
+                        _.each(result.books,function(book,index){
+                          assign_data['pairs'].push({uid:data.ids[index],pid:book.projectId});
+                        });
+
+
+                         var assigningprojects = ProjectEntities.API.assignPackages(assign_data);
+                            $.when(assigningprojects).done(function(assign_result){
+                                 // show message and update table
+                                  App.mainmsg.updateContent(assign_result,'success');
+
+                                  for(var i=0;i<result.length;i++){
+                                    var string = "";
+                                    string+='<tr class="clickable-row" data-href="#projects/"'+result[i]['pid']+'><td>';
+                                    string+= '<td>'+result[i]['title']+'</td>';
+                                    string+= '<td>'+result[i]['language']+'</td>';
+                                    string+= '<td>'+result[i]['pages']+'</td></tr>';
+
+                                    $('#book_table').find('tbody').append($(string));
+
+                                  }
+
+
+                            });
+
+
+                        console.log(assign_data);
+
+                     }).fail(function(response){
+                           App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                     }); 
+
+                });
+
+              });
+
    
              });
 
@@ -28541,6 +28740,7 @@ var cards2 = [
 	          projectShowLayout.showChildView('infoRegion',projectShowInfo);
             projectShowLayout.showChildView('hubRegion',projectShowHub2);
             projectShowLayout.showChildView('hubRegion2',projectShowHub);
+            projectShowLayout.showChildView('packagesRegion',projectShowPackages);
 
 	          projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
 
@@ -29074,23 +29274,40 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
  	listProjects: function(){
 
-     		require(["entities/project","entities/util"], function(ProjectEntities,UtilEntitites){
+     		require(["entities/project","entities/util","entities/users"], function(ProjectEntities,UtilEntities,UserEntities){
 
           // var loadingCircleView = new  Views.LoadingBackdrop();
           // App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
 
      var fetchingprojects = ProjectEntities.API.getProjects();
-     var fetchinglanguages = UtilEntitites.API.getLanguages();
+     var fetchinglanguages = UtilEntities.API.getLanguages();
+     var fetchinguser = UserEntities.API.loginCheck();
 
 		 var projectsListLayout = new List.Layout();
 
-    	 $.when(fetchingprojects,fetchinglanguages).done(function(projects,languages){
+    	 $.when(fetchingprojects,fetchinglanguages,fetchinguser).done(function(projects,languages,user){
         console.log(projects);
         console.log(languages.languages);
+        console.log(user)
 
-		   // loadingCircleView.destroy();
 
+
+        // only show projects not packages
+         var filtered_projects=[];
+        if(projects.books){
+         for(var i=0;i<projects.books.length;i++){
+          var book = projects.books[i];
+          if(user.admin&&book.isBook){
+             filtered_projects.push(book);
+          }
+         }
+
+       }
+
+       if(user.admin){
+        projects.books=filtered_projects;
+       }
 
     		projectsListLayout.on("attach",function(){
 
@@ -29324,28 +29541,12 @@ define('apps/docs/show/show_view',["marionette","app","common/views",
   Show.Info = Marionette.View.extend({
       template: infoTpl,
       className: "",
-      events:{
-      'click .js-build' : 'build_clicked'
-      },
-     
-  
+      onAttach: function(){
 
-      build_clicked: function(){
-
-     var structures =[];
-
-     $('.index_select').children().each(function(){
-
-            if($(this).is(':checked')){
-              structures.push("{type:"+$(this).val()+"}")
-
-            }
-      })
-
-      var text  = $('#inputext').val();
-      text = text.replace(/(\r\n|\n|\r)/gm,"");
-     this.trigger("show:build_clicked",structures,text);
-      }          
+         var content =  Marionette.getOption(this,"data");
+         $('#docs').append(content);
+         this.trigger('doc:append');
+      }
 
   });
 
@@ -29365,60 +29566,11 @@ return Show;
 });
 
 
-// ================
-// entities/docs.js
-// ================
-
-define('entities/docs',["app"], function(IPS_App){
-
-  var Entities={};
-
-Entities.API = {
-
-
-  getJson: function(data){
-    var defer = jQuery.Deferred();
-        $.ajax({
-        headers: { 
-        'Accept': 'application/json',
-        'Content-Type': 'application/json' 
-         },
-        url: "assets/js/api.json",
-        type: "GET",
-        dataType:"json",
-        success: function(data) {
-          console.log(data)
-          defer.resolve(data);
-
-            },
-            error: function(data){
-              defer.resolve(undefined);
-            }
-    });
-
-
-    return defer.promise();
-    
-},
-
-  
-
-
-
-
-};
-
-
-
-return Entities;
-
-});
-
 // ======================================
 // apps/docs/show/show_controller.js
 // ======================================
 
-define('apps/docs/show/show_controller',["app","common/util","common/views","apps/docs/show/show_view"], function(IPS_App,Util,Views,Show){
+define('apps/docs/show/show_controller',["app","common/util","common/views","apps/docs/show/show_view"], function(App,Util,Views,Show){
 
 
  Controller = {
@@ -29426,22 +29578,18 @@ define('apps/docs/show/show_controller',["app","common/util","common/views","app
 		showDocs: function(id){
       		$(window).scrollTop(0);
 
-	   		require(["entities/docs"], function(DocsEntitites){
+	   		require(["entities/util"], function(UtilEntitites){
 
-	   	      // var loadingCircleView = new  Views.LoadingBackdrop();
-           //    IPS_App.mainLayout.showChildView('backdropRegion',loadingCircleView);
-              // var currentUser = IPS_App.getCurrentUser();
+	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
+              App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
-
-			// loadingCircleView.destroy();
 
 		 	//currentdocs.set({"url_id":id}); // pass url_id to view..
 
-     		var fetchingDocs = DocsEntitites.API.getJson();
+     		var fetchingDocs = UtilEntitites.API.getDocumentation();
 
 	    	$.when(fetchingDocs).done(function(data){
 
-	    	console.log(data)
 
 
 			var docsShowLayout = new Show.Layout();
@@ -29454,25 +29602,30 @@ define('apps/docs/show/show_controller',["app","common/util","common/views","app
 			  
 
 			  docsShowHeader = new Show.Header({});
-			  docsShowInfo = new Show.Info();
+			  docsShowInfo = new Show.Info({data:data});
   			  docsPanel = new Show.FooterPanel({color:"blue"});
 
-	          docsShowLayout.showChildView('headerRegion',docsShowHeader);
-	          docsShowLayout.showChildView('infoRegion',docsShowInfo);
+  			  docsShowInfo.on("doc:append",function(){
+	         		loadingCircleView.destroy();
+	         });
 
+	          // docsShowLayout.showChildView('headerRegion',docsShowHeader);
+	          docsShowLayout.showChildView('infoRegion',docsShowInfo);
 	          docsShowLayout.showChildView('panelRegion',docsPanel);
 
-	        
 
+	  		
+				
 
 			   docsPanel.on("go:back",function(){
-			  	 IPS_App.trigger("docs:list");
+			  	 App.trigger("docs:list");
 			  });
 
 
     		}); // on.attach()
 
-          IPS_App.mainLayout.showChildView('mainRegion',docsShowLayout);
+  			
+          App.mainLayout.showChildView('mainRegion',docsShowLayout);
 
            });
 
@@ -29594,7 +29747,7 @@ define('apps/users/home/home_controller',["app","common/util","apps/users/home/h
                 "name": "Create User",
                 "seq": 3,
                 "text": "Create a new user account.",
-                "url": "users:create",
+                "url": "users:new",
             },
              {
                 "color": "red",
@@ -29665,10 +29818,14 @@ __p+='\r\n \r\n    <div class="form-group form-check">\r\n    <input type="check
 __p+='\r\n\r\n';
  if(asModal){
 __p+='\r\n </div>\r\n  <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-submit">Submit</button>\r\n      </div>\r\n    </div>\r\n\r\n</div>\r\n</div>\r\n\r\n';
-} else {
-__p+='\r\n\r\n</div>\r\n</div>\r\n</div>\r\n\r\n';
-}
+} else  { 
 __p+='\r\n';
+ if (create) {
+__p+='\r\n<div class="row">\r\n<div class="col-md-3"></div>\r\n  <div class="col-md-6">\r\n     <button type="button" style="float:right;" class="btn btn-primary js-submit">Submit</button>\r\n  </div>\r\n  </div>\r\n\r\n';
+ } 
+__p+='\r\n\r\n</div>\r\n</div>\r\n</div>\r\n';
+}
+__p+='\r\n\r\n';
 }
 return __p;
 };});
@@ -29700,6 +29857,8 @@ var Views = {}
           data.asModal = Marionette.getOption(this,"asModal");
           data.modaltitle = Marionette.getOption(this,"modaltitle");
           data.admincheck = Marionette.getOption(this,"admincheck");
+          data.create = Marionette.getOption(this,"create");
+
           data.id = Marionette.getOption(this,"id");
 
         return data;
@@ -29724,7 +29883,13 @@ var Views = {}
       data['institute'] = $("input[name=institute").val();
       data['password'] = $("input[name=password]").val();
       data['new_password'] = $("input[name=new_password]").val();
-	  if($('#admin_check').length>0) data['admin'] = $('#admin_check').val();
+      if($("#admin_check").is(":checked")) {
+         data['admin']=true;
+      }
+      else{
+      	data['admin']=false;
+      }
+	  console.log(data);
 		this.trigger("form:submit", data);
 	 }
 
@@ -29909,7 +30074,7 @@ define('apps/users/list/list_controller',["app","common/util","apps/users/list/l
 				         	var fetchingUsers = UserEntities.API.getUsers();
 
 					    	 $.when(fetchingUsers).done(function(users_new){
-								  usersListView.collection=users_new.users;
+								   usersListView.collection=users_new.users;
 								   usersListView.options.collection=users_new.users;
 
 					    	 	   usersListView.trigger("onAttach");
@@ -30296,6 +30461,105 @@ return Controller;
 
 });
 
+define('apps/users/new/new_view',["app","common/util","common/views","apps/users/common/views"], function(App,Util,Views,UserViews){
+
+var New = {}
+ 
+ New.Header = Views.Header.extend({
+    initialize: function(){
+        this.title = "Create a new user account"
+        this.icon ="fas fa-user-plus"
+        this.color ="red"
+      }
+  });
+
+
+ New.Layout = Views.Layout.extend({
+ });
+
+  New.Form = UserViews.Form.extend({
+  });
+
+  New.FooterPanel = Views.FooterPanel.extend({
+    });
+
+
+return New;
+
+});
+
+
+define('apps/users/new/new_controller',["app","common/util","apps/users/new/new_view"], function(App,Util,New){
+
+
+ var Controller = {
+
+ 	newUser: function(){
+		
+   		require(["entities/users"], function(UserEntities){
+
+ 
+       	var fetchingUsers = UserEntities.API.getUsers();
+
+		usersNewLayout = new New.Layout();
+
+    	 $.when(fetchingUsers).done(function(users){
+		usersNewLayout.on("attach",function(){
+
+ 			var usersNewHeader = new New.Header();
+			var userForm = new New.Form({model:new UserEntities.User(),asModal:false,admincheck:true,create:true})
+
+				 userForm.on('form:submit',function(data){
+
+				 	 var creatingUser = UserEntities.API.createUser(data);
+			   	 	$.when(creatingUser).done(function(result){
+			   	 		$('#userModal').modal('hide');
+				         App.mainmsg.updateContent(result,'success');
+
+				         App.trigger('users:list');
+
+				       }).fail(function(response){
+   			   	 		$('#userModal').modal('hide');
+     			         App.mainmsg.updateContent(response.responseText,'danger')
+				 		});    
+ 				 });
+
+			    
+
+		
+
+			var usersFooterPanel = new New.FooterPanel();
+
+			    usersNewLayout.showChildView('headerRegion',usersNewHeader);
+                usersNewLayout.showChildView('contentRegion',userForm);	
+                usersNewLayout.showChildView('panelRegion',usersFooterPanel);	
+
+ 		}); // on:attach
+
+
+
+         App.mainLayout.showChildView('mainRegion',usersNewLayout);
+
+		}).fail(function(response){ 
+
+		      var mainRegion = App.mainLayout.getRegion('mainRegion');
+		       mainRegion.empty();
+
+		         App.mainmsg.updateContent(response.responseText,'danger');              
+		                          
+                         
+                                        
+          }); //  $.when(fetchingAuth).done // $when fetchingUsers
+
+		}); // require
+	}
+ }
+
+
+return Controller;
+
+});
+
 define('apps/users/users_app',["marionette","app"], function(Marionette,App){
 
 	var UsersApp = {};
@@ -30305,7 +30569,7 @@ define('apps/users/users_app',["marionette","app"], function(Marionette,App){
 			"users":"usersPortal",
 			"users/list":"listUsers",
 			"users/login":"login",
-    		"users/newUser":"newUser",
+    		"users/new":"newUser",
     		"users/:id":"showUser",
 			"users/:id/edit":"editUser",
 			"users/account":"showUser"
@@ -30329,8 +30593,6 @@ define('apps/users/users_app',["marionette","app"], function(Marionette,App){
        				LoginController.showLogin();
 				});
 		},
-		newUser: function(){
-		},
 		showUser: function(id){
 			require(["apps/users/show/show_controller"], function(ShowController){
        				ShowController.showUser(id);
@@ -30339,6 +30601,11 @@ define('apps/users/users_app',["marionette","app"], function(Marionette,App){
 		editUser: function(id){
 			require(["apps/users/edit/edit_controller"], function(EditController){
        				EditController.editUser(id);
+				});
+		},
+		newUser: function(id){
+			require(["apps/users/new/new_controller"], function(NewController){
+       				NewController.newUser(id);
 				});
 		}
 	};
@@ -30370,6 +30637,11 @@ define('apps/users/users_app',["marionette","app"], function(Marionette,App){
 	API.showUser(id);
 	});
 
+	App.on("users:new",function(id){
+	 	App.navigate("users/new");
+	API.newUser(id);
+	});
+
 	var router = new UsersApp.Router({
 		controller: API,
 	});
@@ -30388,7 +30660,6 @@ var App = Marionette.Application.extend({
 });
 
 var App = new App();
-
 
  const MainView = Marionette.View.extend({
     regions:{
@@ -30421,6 +30692,9 @@ Backbone.history.navigate(route, options);
 App.getCurrentRoute = function(){
  return Backbone.history.fragment
 };
+
+
+
 App.on("start", function(){
 
 
@@ -30439,7 +30713,7 @@ App.on("start", function(){
     var app_region = App.getRegion();
 
     App.mainLayout = new MainView();
-     App.mainmsg  = new Views.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
+    App.mainmsg  = new Views.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
 
      App.showView(App.mainLayout);
 

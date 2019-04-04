@@ -11,7 +11,6 @@ var App = Marionette.Application.extend({
 
 var App = new App();
 
-
  const MainView = Marionette.View.extend({
     regions:{
      headerRegion:"#header-region",
@@ -43,6 +42,9 @@ Backbone.history.navigate(route, options);
 App.getCurrentRoute = function(){
  return Backbone.history.fragment
 };
+
+
+
 App.on("start", function(){
 
 
@@ -61,7 +63,7 @@ App.on("start", function(){
     var app_region = App.getRegion();
 
     App.mainLayout = new MainView();
-     App.mainmsg  = new Views.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
+    App.mainmsg  = new Views.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
 
      App.showView(App.mainLayout);
 

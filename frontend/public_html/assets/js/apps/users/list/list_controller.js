@@ -55,7 +55,7 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 				         	var fetchingUsers = UserEntities.API.getUsers();
 
 					    	 $.when(fetchingUsers).done(function(users_new){
-								  usersListView.collection=users_new.users;
+								   usersListView.collection=users_new.users;
 								   usersListView.options.collection=users_new.users;
 
 					    	 	   usersListView.trigger("onAttach");

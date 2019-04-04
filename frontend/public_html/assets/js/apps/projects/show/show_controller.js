@@ -9,17 +9,19 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
 		showProject: function(id){
 
-     		require(["entities/project","entities/util"], function(ProjectEntities,UtilEntitites){
+     		require(["entities/project","entities/util","entities/users"], function(ProjectEntities,UtilEntities,UserEntities){
 
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
      			  var fetchingproject = ProjectEntities.API.getProject({pid:id});
-            var fetchinglanguages = UtilEntitites.API.getLanguages();
+            var fetchinglanguages = UtilEntities.API.getLanguages();
+            var fetchingprojects = ProjectEntities.API.getProjects();
+            var fetchinguser = UserEntities.API.loginCheck();
 
    
-      $.when(fetchingproject,fetchinglanguages).done(function(project,languages){
+      $.when(fetchingproject,fetchinglanguages,fetchingprojects,fetchinguser).done(function(project,languages,projects,user){
 
-		     	loadingCircleView.destroy();
+		  loadingCircleView.destroy();
       console.log(project);
 
 			var projectShowLayout = new Show.Layout();
@@ -27,7 +29,18 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 			var projectShowInfo;
 			var projectShowFooterPanel;
 			// console.log(reviews);
-	
+
+        // only show packages of this project
+           console.log(projects);
+
+        var packages = [];
+       for(var i=0;i<projects.books.length;i++){
+        var book = projects.books[i];
+        if(user.admin&&(book.bookId!=book.projectId)&&(book.bookId==id)){
+           packages.push(book);
+        }
+       };
+	 console.log(packages);
 			projectShowLayout.on("attach",function(){
       var cards = [         
            {
@@ -137,6 +150,7 @@ var cards2 = [
 			  projectShowHeader = new Show.Header({title:project.get('title'),icon:"fas fa-book-open",color:"green"});
         projectShowInfo = new Show.Info({model:project});
       	projectShowFooterPanel = new Show.FooterPanel();
+        var projectShowPackages= new Show.Packages({packages:packages});
 
         projectShowHub.on('show:profile',function(){
            var profilingproject = ProjectEntities.API.profileProject({pid:id});
@@ -155,23 +169,58 @@ var cards2 = [
 
        projectShowHub.on('show:split',function(){
 
-          var projectsShowSplitProject = new Show.Split({model:project, asModal:true,text:"Split Project",n:"10"});
-             App.mainLayout.showChildView('dialogRegion',projectsShowSplitProject)
+            var fetchingusers = UserEntities.API.getUsers();
 
-             projectsShowSplitProject.on("split:confirmed",function(data){
-              data['pid'] = id;
-              var splitingproject = ProjectEntities.API.splitProject(data);
+             $.when(fetchingusers).done(function(users){
 
-               $.when(splitingproject).done(function(result){
-                    $("#splitModal").modal('hide');
-                   App.mainmsg.updateContent(result,'success');
-                   App.trigger("projects:list");
 
-                   }).fail(function(response){
-                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                   }); 
+            var projectsShowSplitProject = new Show.Split({users:users.users,model:project, asModal:true,text:"Split Project",n:project.get('pages')});
+                App.mainLayout.showChildView('dialogRegion',projectsShowSplitProject)
 
-             })
+               projectsShowSplitProject.on("split:confirmed",function(data){
+                console.log(data);
+                data['pid'] = id;
+                var splitingproject = ProjectEntities.API.splitProject(data);
+
+                 $.when(splitingproject).done(function(result){
+                      $("#splitModal").modal('hide');
+                  //   App.mainmsg.updateContent(result,'success');
+                        var assign_data = {pairs:[]};
+                        _.each(result.books,function(book,index){
+                          assign_data['pairs'].push({uid:data.ids[index],pid:book.projectId});
+                        });
+
+
+                         var assigningprojects = ProjectEntities.API.assignPackages(assign_data);
+                            $.when(assigningprojects).done(function(assign_result){
+                                 // show message and update table
+                                  App.mainmsg.updateContent(assign_result,'success');
+
+                                  for(var i=0;i<result.length;i++){
+                                    var string = "";
+                                    string+='<tr class="clickable-row" data-href="#projects/"'+result[i]['pid']+'><td>';
+                                    string+= '<td>'+result[i]['title']+'</td>';
+                                    string+= '<td>'+result[i]['language']+'</td>';
+                                    string+= '<td>'+result[i]['pages']+'</td></tr>';
+
+                                    $('#book_table').find('tbody').append($(string));
+
+                                  }
+
+
+                            });
+
+
+                        console.log(assign_data);
+
+                     }).fail(function(response){
+                           App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                     }); 
+
+                });
+
+              });
+
    
              });
 
@@ -281,6 +330,7 @@ var cards2 = [
 	          projectShowLayout.showChildView('infoRegion',projectShowInfo);
             projectShowLayout.showChildView('hubRegion',projectShowHub2);
             projectShowLayout.showChildView('hubRegion2',projectShowHub);
+            projectShowLayout.showChildView('packagesRegion',projectShowPackages);
 
 	          projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
 

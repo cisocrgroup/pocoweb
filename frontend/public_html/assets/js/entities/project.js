@@ -48,7 +48,6 @@ Entities.API = {
         type: "POST",
         data:data,
         success: function(data) {
-
               defer.resolve(JSON.parse(data));
             },
             error: function(data){
@@ -220,7 +219,7 @@ deleteProject: function(data){
         data: data,
         success: function(data) {
 
-              defer.resolve(data);
+              defer.resolve(JSON.parse(data));
             },
             error: function(data){
               defer.reject(data);
@@ -229,6 +228,29 @@ deleteProject: function(data){
 
     return defer.promise();
   },
+
+assignPackages: function(data){
+  console.log(data);
+    data['backend_route'] = "assign_packages";
+    var defer = jQuery.Deferred();  
+     $.ajax({
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(data);
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+
     getLine: function(data){
     data['backend_route'] = "get_line";
     console.log(data)

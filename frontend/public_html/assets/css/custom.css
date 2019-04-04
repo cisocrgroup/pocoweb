@@ -594,3 +594,16 @@ outline: 0;
           max-height:200px;
           overflow-y:scroll;
   }
+
+  .clickable-row{
+    cursor: pointer;
+  }
+
+.close-x{
+  float: right;
+  color:rgb(108,117,125);
+}
+
+.close-x:hover{
+  color:black;
+}

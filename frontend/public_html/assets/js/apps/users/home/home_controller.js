@@ -31,7 +31,7 @@ define(["app","common/util","apps/users/home/home_view","apps/header/show/show_v
                 "name": "Create User",
                 "seq": 3,
                 "text": "Create a new user account.",
-                "url": "users:create",
+                "url": "users:new",
             },
              {
                 "color": "red",

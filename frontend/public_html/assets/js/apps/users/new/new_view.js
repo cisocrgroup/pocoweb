@@ -1,17 +1,27 @@
 
-define(["app","apps/users/common/views"], function(ResearchTool){
+define(["app","common/util","common/views","apps/users/common/views"], function(App,Util,Views,UserViews){
 
-ResearchTool.module("UsersApp.New", function(New,ResearchTool,Backbone,Marionette,$,_){
+var New = {}
+ 
+ New.Header = Views.Header.extend({
+    initialize: function(){
+        this.title = "Create a new user account"
+        this.icon ="fas fa-user-plus"
+        this.color ="red"
+      }
+  });
 
-		New.User = ResearchTool.UsersApp.Common.Views.Form.extend({
-			
-			initialize: function(){
-		 	this.title = "Create New Account";
-		 	}
-		});
 
-});
+ New.Layout = Views.Layout.extend({
+ });
 
-return ResearchTool.UsersApp.New.User;
+  New.Form = UserViews.Form.extend({
+  });
+
+  New.FooterPanel = Views.FooterPanel.extend({
+    });
+
+
+return New;
 
 });

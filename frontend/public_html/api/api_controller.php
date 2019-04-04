@@ -29,8 +29,10 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'update_project' : update_project();break;
         case 'split_project' : split_up_project();break;
         case 'download_project' : download_project();break;
-
         case 'delete_project' : delete_project();break;
+        case 'assign_package' : assign_package();break;
+        case 'assign_packages' : assign_packages();break;
+
         case 'get_line' : get_line();break;
         case 'correct_line' : correct_line();break;
         case 'correct_token' : correct_token();break;
@@ -40,6 +42,7 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'get_split_images' : get_split_images();break;
 
         case 'order_profile' : order_profile();break;
+        case 'documentation' : get_documentation();break;
 
         case 'get_page' : get_page();break;
         case 'create_project' : create_project();break;
@@ -51,6 +54,7 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
 
     }
 }
+
 
 function get_split_images(){
 
@@ -105,6 +109,46 @@ function get_languages(){
         echo backend_get_http_status_info($status);
     break;
   }
+
+}
+
+function get_documentation(){
+
+
+
+ $text = file_get_contents("../doc.md");
+
+ // print_r($text);
+
+
+  $data = array(
+    'text' => $text,
+    'mode' => "markdown"
+  );
+
+ $data_string = json_encode($data);    
+
+  $url = "https://api.github.com/markdown";
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_USERAGENT, "pocoweb");
+  curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__)."/cacert.pem");
+  curl_setopt($ch, CURLOPT_URL,$url);
+  curl_setopt($ch, CURLOPT_POST,1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS,$data_string);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
+      'Content-Type: application/json',                                                                                
+      'Content-Length: ' . strlen($data_string))                                                                       
+  );  
+
+  curl_setopt($ch, CURLOPT_TIMEOUT, 30); 
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+  $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);  
+
+  $htmlstring=curl_exec ($ch);
+
+  echo $htmlstring;
+
+;
 
 }
 
@@ -209,7 +253,8 @@ function split_up_project(){
   case "200":
         $result=array();
         $session = $api->get_response();
-        echo ('Project "'.$pid." successfully splitted"); 
+        echo json_encode($session);
+        // echo ('Project '.$pid." successfully splitted"); 
     break;
   case "403":
     header("status: ".$status);
@@ -222,6 +267,73 @@ function split_up_project(){
   }
 
 }
+
+function assign_packages(){
+  $pairs = $_POST['pairs'];
+
+  // print_r($pairs);
+  $count = 0;
+  for($i=0;$i<sizeof($pairs);$i++){
+
+      // echo $pairs[$i]['pid']." ".$pairs[$i]['uid'];
+
+      $api = new Api(backend_get_assign_project_route($pairs[$i]['pid'],$pairs[$i]['uid']));
+      $api->set_session_id(backend_get_session_cookie());
+
+      $api->get_request();
+
+     $status = $api->get_http_status_code();
+      switch ($status) {
+      case "200":
+            $result=array();
+            $session = $api->get_response();
+            // echo ('Successfully assigned project '.$pairs[$i]['pid']." to user ".$pairs[$i]['uid']); 
+        break;
+      case "403":
+        header("status: ".$status);
+        echo  backend_get_http_status_info($status);
+        break;
+      default:
+            header("status: ".$status);
+            echo backend_get_http_status_info($status);
+        break;
+      }
+    $count ++;
+  }
+
+  echo ('Successfully assigned '.$count.' projects.');
+
+}
+
+function assign_package(){
+  $pid = $_POST['pid'];
+  $pid = $_POST['uid'];
+  $api = new Api(backend_get_assign_project_route($pid,$uid));
+  $api->set_session_id(backend_get_session_cookie());
+
+  $api->get_request();
+
+ $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        echo ('Successfully assigned project '.$pid." to user "+$uid); 
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status);
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+}
+
+
+
 
 function download_project(){
   
@@ -785,6 +897,7 @@ function login_check(){
 
       if(isset(backend_get_session_cookie()['user'])){
         $session = backend_get_session_cookie();
+        unset($session['user']['password']);
         echo json_encode($session['user']);
 
       }
