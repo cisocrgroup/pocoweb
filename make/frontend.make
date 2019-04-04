@@ -76,6 +76,10 @@ $(PCW_FRONTEND_DIR)/public_html/assets/js/build.js: frontend/public_html/assets/
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
+%.pem: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
+	$(call ECHO,$@)
+	$V install -d $(dir $@)
+	$V install -m 644 $< $@
 %.png: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
