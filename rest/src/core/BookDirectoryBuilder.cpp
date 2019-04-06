@@ -93,7 +93,7 @@ void BookDirectoryBuilder::unzip() {
 	const auto tdir = tmp_dir();
 	const auto zipfile = zip_file();
 	std::string command =
-	    "unzip -qq -d " + tdir.string() + " " + zipfile.string();
+	    "unzip -qq -d -o" + tdir.string() + " " + zipfile.string();
 	// CROW_LOG_DEBUG << "(BookDirectoryBuilder) Unzip command: " <<
 	// command;
 	auto err = system(command.data());
