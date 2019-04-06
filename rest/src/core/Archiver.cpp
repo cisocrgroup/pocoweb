@@ -54,7 +54,7 @@ void Archiver::zip(const Path& dir, const Path& archive) const {
 	// change into the directory to fix file paths in the resulting zip
 	// archive.
 	fs::current_path(new__);
-	const auto command = "zip -qq -r -o" + archive.filename().string() + " " +
+	const auto command = "zip -o -qq -r" + archive.filename().string() + " " +
 			     dir.filename().string();
 	CROW_LOG_DEBUG << "(Archiver) zip command: " << command;
 	const auto err = system(command.data());
