@@ -97,9 +97,9 @@ void BookDirectoryBuilder::unzip() {
 	// CROW_LOG_DEBUG << "(BookDirectoryBuilder) Unzip command: " <<
 	// command;
 	auto err = system(command.data());
-	if (err)
-		THROW(Error, "Cannot unzip file: `", command, "` returned ",
-		      err);
+	if (err) {
+		THROW(Error, "Cannot unzip file: `", command, "` returned ", err);
+	}
 	fs::recursive_directory_iterator i(tdir), e;
 	for (; i != e; ++i) {
 		add_file(*i);

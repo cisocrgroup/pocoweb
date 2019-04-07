@@ -23,9 +23,9 @@ using namespace pcw;
 ////////////////////////////////////////////////////////////////////////////////
 OcropusLlocsPageParser::OcropusLlocsPageParser(Path path)
     : dir_(path), id_(0), done_(false) {
-	if (not fs::is_directory(dir_))
-		THROW(Error, "(OcropusLlocsPageParser) not a directory: ",
-		      dir_);
+  if (not fs::is_directory(dir_)) {
+		THROW(Error, "(OcropusLlocsPageParser) not a directory: ", dir_);
+  }
 	CROW_LOG_DEBUG << "(OcropusLlocsPageParser) dir: " << dir_;
 	id_ = std::stoi(path.filename().string(), nullptr, 10);
 }
