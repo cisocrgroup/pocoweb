@@ -108,6 +108,7 @@ template<class M>
 SearchRoute::Response
 make_response(const M& matches, int bookid, const std::string& q, bool ep)
 {
+  CROW_LOG_DEBUG << "(SearchRoute::search) building response";
   Json json;
   size_t i = 0;
   size_t words = 0;
@@ -127,5 +128,6 @@ make_response(const M& matches, int bookid, const std::string& q, bool ep)
     ++i;
   }
   json["nWords"] = words;
+  CROW_LOG_DEBUG << "(SearchRoute::search) built response";
   return json;
 }
