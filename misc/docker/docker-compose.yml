@@ -41,7 +41,7 @@ services:
       - ${PCW_BASE_DIR}/project-data:/project-data:rw
       - ${PCW_BASE_DIR}/tmp-data:/tmp:rw
       - ${PCW_BASE_DIR}/www-data:/www-data:rw
-      - ${PCW_BASE_DIR}/language-data:/language-data:ro
+      # - ${PCW_BASE_DIR}/language-data:/language-data:ro
     depends_on:
       - db
     restart: always

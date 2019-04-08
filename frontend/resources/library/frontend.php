@@ -297,17 +297,19 @@ function frontend_upload_project_archive($post, $file) {
 	}
 	if (!file_exists($file["tmp_name"])) {
 		frontend_render_error_div("Could not upload archive: upload file does not exist");
+        return;
 	}
 	if (!chmod($file["tmp_name"], 0755)) {
-		frontend_render_error_div("Could not upload archive: could publish upload file");
+		frontend_render_error_div("Could not upload archive: could not publish upload file");
+        return;
 	}
 	$api = backend_upload_project($post, $file["name"], $file["tmp_name"]);
 	$status = $api->get_http_status_code();
-	if ($status != 201 || $status != 200) { # accept 200 OK and 201 Created
+	if ($status == 201 || $status == 200) { # accept 200 OK and 201 Created
+		frontend_render_success_div("Successfully uploaded new project");
+	} else {
 		frontend_render_error_div("Could not upload archive: backend returned " .
 			backend_get_http_status_info($status));
-	} else {
-		frontend_render_success_div("Successfully uploaded new project");
 	}
 }
 

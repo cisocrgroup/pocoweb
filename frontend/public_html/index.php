@@ -8,6 +8,7 @@ if (isset($_GET["upload"])) {
 	if (isset($_FILES["archive"])) {
 		$_POST["uri"] = "";
 		$_POST["description"] = "";
+		print_r($_FILES);
 		frontend_upload_project_archive($_POST, $_FILES["archive"]);
 	} else {
 		frontend_render_error_div("Could not upload project: missing file");

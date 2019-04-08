@@ -154,7 +154,7 @@ button (see [Account settings](#user-content-account-settings) above).
 Project management is done via the [Projects](/index.php) tab.
 On this page you can manage the projects and packages (see below) that your
 user owns.
-
+n
 Pocoweb uses two different kinds of correctable documents.
 *Projects* on the one hand represent whole documents that should be corrected.
 *Packages* on the other hand are smaller subsets of projects that contain
@@ -1026,8 +1026,31 @@ Get the content of a page with id `pageid` of a package or project with id `pid`
         "width": 1,
         "height": 1
       }
-    },
-    ...
+      "tokens": [
+        {
+          "projectId": 27,
+          "pageId": 38,
+          "lineId": 13,
+          "tokenId": 17,
+          "offset": 8,
+          "isFullyCorrected": true|false,
+          "isPartiallyCorrected": true|false,
+          "cor": "corrected content of token",
+          "ocr": "ocr content of token",
+          "averageConf": 0.3,
+          "isNormal": true|false,
+          "box": {
+            "left": 1,
+            "right": 2,
+            "top": 3,
+            "bottom": 4,
+            "width": 1,
+            "height": 1
+          },
+        },
+        ...
+      ]
+	}
   ]
 }
 ```

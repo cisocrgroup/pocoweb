@@ -71,6 +71,10 @@ pcw.Api = {
 		this.post = null;
 		this.url =
 		    pcw.config.backend.externalURL + pcw.config.backend.routes.search;
+		    console.log("LKAKLSDJKSKLJDJKAKLSJDJklaslk")
+				 console.log(this.url);
+		 console.log(pcw.config.backend.routes.search);
+
 		this.url = this.url.replace('%d', pid);
 		this.url = this.url.replace('%s', encodeURI(q));
 		this.url = this.url.replace('%d', '0');
@@ -92,6 +96,8 @@ pcw.Api = {
 		    pcw.config.backend.routes.searchSuggestions;
 		this.url = this.url.replace('%d', pid);
 		this.url = this.url.replace('%s', encodeURI(q));
+			 console.log(this.url);
+		 console.log(pcw.config.backend.routes.searchSuggestions);
 		// 202 -> accepted
 		this.acceptedStatuses = [200];
 	},
