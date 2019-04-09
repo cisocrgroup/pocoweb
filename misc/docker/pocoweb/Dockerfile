@@ -9,9 +9,8 @@ RUN yum update -y && yum install -y $(cat /dependencies.txt)
 # RUN apt-get update && apt-get install -y $(cat /dependencies.txt)
 
 # pocoweb
-ENV POCOWEB_CHECKOUT_BRANCH jsapp
 RUN git clone https://git@github.com/cisocrgroup/pocoweb.git \
-	--single-branch -b devel &&\
+	--single-branch -b docker &&\
 	cd /pocoweb &&\
 	git submodule update --init --recursive &&\
 	make V="" CXX=clang++ -j $(nproc) &&\
