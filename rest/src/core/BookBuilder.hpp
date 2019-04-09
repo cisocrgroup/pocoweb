@@ -3,6 +3,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <memory>
+#include <vector>
 
 namespace pcw {
 struct BookData;
@@ -34,10 +35,11 @@ public:
   BookSptr build() const;
 
 private:
-  static bool has_unique_page_ids(const Book& book);
-  static void reorder_pages(Book& book);
+  bool has_unique_page_ids() const;
+  void reorder_pages() const;
 
   BookSptr book_;
+  mutable std::vector<std::shared_ptr<Page>> pages_;
 };
 }
 #endif // pcw_BookBuilder_hpp__

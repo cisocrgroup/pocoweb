@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 namespace pcw {
@@ -22,7 +23,8 @@ public:
 
   Project(int id = 0)
     : id_(id)
-  {}
+  {
+  }
   virtual ~Project() noexcept = default;
   virtual const Book& origin() const noexcept = 0;
   virtual int owner() const noexcept = 0;
@@ -45,7 +47,10 @@ public:
   using Base::size;
 
 private:
+  const_iterator find_page_id(int pageid) const noexcept;
+
   int id_;
+  std::unordered_map<int, size_t> pageIDs2Index_;
 };
 std::ostream&
 operator<<(std::ostream& os, const Project& proj);

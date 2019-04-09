@@ -11,6 +11,7 @@ using namespace pcw;
 ////////////////////////////////////////////////////////////////////////////////
 BookBuilder::BookBuilder()
   : book_()
+  , pages_()
 {
   reset();
 }
@@ -27,27 +28,17 @@ BookBuilder::reset()
 const BookBuilder&
 BookBuilder::append(Page& page) const
 {
-  assert(book_);
-  book_->push_back(page);
-  assert(not book_->empty());
-  // Set page id only if page id = 0
-  std::cout << "setting id for page: " << book_->back()->ocr << "("
-            << book_->back()->id_ << ")\n";
-  if (not book_->back()->id_) {
-    const auto n = book_->size();
-    if (n == 1) {
-      book_->back()->id_ = 1;
+  // automatically assign valid page ids
+  if (page.id() == 0) {
+    if (pages_.empty()) {
+      page.id_ = 1;
     } else {
       // assume current_page_id = prev_page_id + 1
-      assert(n > 1);
-      auto prev_page = *(book_->begin() + (n - 2));
-      assert(prev_page);
-      book_->back()->id_ = prev_page->id_ + 1;
+      page.id_ = pages_.back()->id() + 1;
     }
   }
-  book_->back()->book_ = book_;
-  std::cout << "added page " << book_->back()->ocr << ": " << book_->back()->id_
-            << "\n";
+  page.book_ = book_;
+  pages_.push_back(page.shared_from_this());
   return *this;
 }
 
@@ -148,20 +139,25 @@ BookBuilder::build() const
   assert(book_);
   // Handle cases where multiple ocr pages have
   // the same page sequence number set in the ocr files.
-  if (not has_unique_page_ids(*book_)) {
-    reorder_pages(*book_);
+  if (not has_unique_page_ids()) {
+    reorder_pages();
+  }
+  // Add pages to the book.
+  for (auto& page : pages_) {
+    book_->push_back(*page);
   }
   return book_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 bool
-BookBuilder::has_unique_page_ids(const Book& book)
+BookBuilder::has_unique_page_ids() const
 {
   std::set<int> ids;
-  for (const auto& page : book) {
-    if (ids.count(page->id()))
+  for (const auto& page : pages_) {
+    if (ids.count(page->id())) {
       return false;
+    }
     ids.insert(page->id());
   }
   return true;
@@ -169,10 +165,10 @@ BookBuilder::has_unique_page_ids(const Book& book)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-BookBuilder::reorder_pages(Book& book)
+BookBuilder::reorder_pages() const
 {
   // skip empty books
-  if (book.empty())
+  if (pages_.empty())
     return;
   static const auto cmp = [](const PagePtr& a, const PagePtr& b) {
     assert(a);
@@ -180,10 +176,10 @@ BookBuilder::reorder_pages(Book& book)
     return a->ocr.filename().stem() < b->ocr.filename().stem();
   };
   // sort by ocr file name
-  std::sort(begin(book), end(book), cmp);
+  std::sort(begin(pages_), end(pages_), cmp);
   // set ids from 1 to n
   int id = 1;
-  for (auto& page : book) {
+  for (auto& page : pages_) {
     assert(page);
     page->id_ = id++;
   }
