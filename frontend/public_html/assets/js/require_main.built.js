@@ -23340,6 +23340,37 @@ getIds : function(anchor) {
     ids[i] = parseInt(ids[i]);
   }
   return ids;
+},
+
+addAlignedLine : function(line){
+     var linetokens = line.tokens;
+            var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
+
+            var img_id = "line-img-"+anchor;
+            var line_img = document.getElementById(img_id);
+            var line_text =  $('#line-'+anchor);
+         
+            var scalefactor = line_img.width / line.box.width;
+
+              for(var i=0;i<linetokens.length;i++) {
+
+                var token = linetokens[i];
+                var cordiv;
+                if(token.cor.includes(" ")){
+                   cordiv = $('<div>'+token.cor+"</div>");
+                }
+                else {
+                   cordiv = $('<div>'+token.cor.trim()+"</div>");
+                }
+
+                 var div = $('<div class="tokendiv noselect"></div>').append(cordiv);
+                line_text.find('.line-tokens').css('width',line_img.width+'px').append(div);
+                var box = token['box'];
+                 
+                    var div_length = token.box.width*scalefactor ;
+                    cordiv.css('width',div_length);
+                      
+               }
 }
 
 });
@@ -23880,51 +23911,51 @@ define('tpl',['underscore', 'text'], function (_, text) {
 define("tpl!common/templates/listtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+=' <div class="container" style="padding-bottom:50px;">\n <div class="row">\n <div class="col col-lg-12" >\n\n\n <table class="table table-bordered ';
+__p+=' <div class="container" style="padding-bottom:50px;">\r\n <div class="row">\r\n <div class="col col-lg-12" >\r\n\r\n\r\n <table class="table table-bordered table-striped ';
  if(hover){
 __p+='table-hover';
 }
-__p+='" \n id="table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\n\n\n     <thead>\n      <tr>\n      ';
+__p+='" \r\n id="table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\r\n\r\n\r\n     <thead>\r\n      <tr>\r\n      ';
  _.each(headers, function(header) { 
-__p+='  \n        <th>'+
+__p+='  \r\n        <th>'+
 ((__t=(header.name))==null?'':_.escape(__t))+
-'</th>\n       ';
+'</th>\r\n       ';
  }); 
-__p+='         \n      </tr>\n     </thead>\n     <tbody>\n\n\n     ';
+__p+='         \r\n      </tr>\r\n     </thead>\r\n     <tbody>\r\n\r\n\r\n     ';
 
      var count = 0; 
      _.each(items, function(item) {
      
       
-__p+='\n\n      ';
+__p+='\r\n\r\n      ';
  if(columns[0]['clickrow']) { 
-__p+='\n\n       <tr class=\'clickable-row\' data-href="#'+
+__p+='\r\n\r\n       <tr class=\'clickable-row\' data-href="#'+
 ((__t=(urlroot))==null?'':_.escape(__t))+
 '/'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'">\n       \n       ';
+'">\r\n       \r\n       ';
  } else { 
-__p+='\n       <tr>\n       ';
+__p+='\r\n       <tr>\r\n       ';
  } 
-__p+='\n\n        ';
+__p+='\r\n\r\n        ';
  for(var i=0;i<columns.length;i++){ 
-__p+='  \n\n          ';
+__p+='  \r\n\r\n          ';
  column = columns[i]; 
-__p+='\n          ';
+__p+='\r\n          ';
  if (column.name == "action") {  
-__p+='\n          <td>\n              <button type="button" class="btn btn-sm btn-outline-dark js-delete-user" id="'+
+__p+='\r\n          <td>\r\n              <button type="button" class="btn btn-sm btn-outline-dark js-delete-user" id="'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'"> <i class="fas fa-times"></i></button>\n          </td>      \n          ';
+'"> <i class="fas fa-times"></i></button>\r\n          </td>      \r\n          ';
  } else { 
-__p+='\n          <td> '+
+__p+='\r\n          <td> '+
 ((__t=( item[column.name] ))==null?'':_.escape(__t))+
-' </td>      \n          ';
+' </td>      \r\n          ';
  } 
-__p+='\n        ';
+__p+='\r\n        ';
  } 
-__p+='  \n       \n     \n      </tr>\n\n    ';
+__p+='  \r\n       \r\n     \r\n      </tr>\r\n\r\n    ';
  count++;  }); 
-__p+='\n\n     </tbody>\n    </table>\n\n\n    </div>\n    </div>\n    </div>';
+__p+='\r\n\r\n     </tbody>\r\n    </table>\r\n\r\n\r\n    </div>\r\n    </div>\r\n    </div>';
 }
 return __p;
 };});
@@ -23987,51 +24018,51 @@ return __p;
 define("tpl!common/templates/cardhubtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n\n<div class="container">\n\n';
+__p+='\r\n\r\n\r\n<div class="container">\r\n\r\n';
 
  var rows = Math.ceil(cards.length/columns);
  var col_count = 0 
 
  
-__p+='\n\n';
+__p+='\r\n\r\n';
  for(var i = 0; i < rows; i++) { 
-__p+='\n <div class="row card_row">\n          ';
+__p+='\r\n <div class="row card_row">\r\n          ';
  for(var j = 0; j < columns; j++) {
           if(col_count+1>cards.length){break;}
           
-__p+='\n          ';
+__p+='\r\n          ';
  var item = cards[col_count];
-__p+='\n                <div class="col-md-'+
+__p+='\r\n                <div class="col-md-'+
 ((__t=(12/columns))==null?'':_.escape(__t))+
-' hub_col">\n              \n                 <div class="card custom_card active" url="'+
+' hub_col">\r\n              \r\n                 <div class="card custom_card active" url="'+
 ((__t=(item['url']))==null?'':_.escape(__t))+
 '" id="'+
 ((__t=(item['id']))==null?'':_.escape(__t))+
-'">\n                 <!-- <img class="card-img-top" src="assets/images/enmap_header_1.png." alt="Card image cap"> -->\n                   <div class="card-header">\n                   <h3 class="card-title"><i class="fas '+
+'">\r\n                 <!-- <img class="card-img-top" src="assets/images/enmap_header_1.png." alt="Card image cap"> -->\r\n                   <div class="card-header">\r\n                   <h3 class="card-title"><i class="fas '+
 ((__t=(item['icon']))==null?'':_.escape(__t))+
 ' card_main_icon '+
 ((__t=(item['color']))==null?'':_.escape(__t))+
 '" aria-hidden="true"></i> '+
 ((__t=(item['name']))==null?'':_.escape(__t))+
-'</h3>\n                      </div>\n                  <div class="card-block">\n\n\n                    <p class="card-text"> '+
+'</h3>\r\n                      </div>\r\n                  <div class="card-block">\r\n\r\n\r\n                    <p class="card-text"> '+
 ((__t=(item['text']))==null?'':_.escape(__t))+
-'  </p>\n                    <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->\n\n                  </div>\n\n\n                  <div class="card-footer text-muted">\n\n                   <div class="row">\n\n                     <div class="footer_item_container">\n\n                          <div style="visibility: hidden" class="dummy footer_item "><i class="fa fa-user-o" aria-hidden="true"></i> <span class="rolename">X</span> </div>\n\n                     </div>\n\n                     <div class="footer_item_enter_container">  \n                        <div class="footer_item footer_item_enter hover ';
+'  </p>\r\n                    <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->\r\n\r\n                  </div>\r\n\r\n\r\n                  <div class="card-footer text-muted">\r\n\r\n                   <div class="row">\r\n\r\n                     <div class="footer_item_container">\r\n\r\n                          <div style="visibility: hidden" class="dummy footer_item "><i class="fa fa-user-o" aria-hidden="true"></i> <span class="rolename">X</span> </div>\r\n\r\n                     </div>\r\n\r\n                     <div class="footer_item_enter_container">  \r\n                       <!-- <div class="footer_item footer_item_enter hover ';
 if(item['available']!=undefined&&item['available']==true){
 __p+=''+
 ((__t=(item.color))==null?'':_.escape(__t))+
 '-border';
 }
-__p+='">  <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Enter </div>\n                     </div>\n\n                   </div>\n                     \n                  </div>\n\n\n                </div>\n\n                </div>\n\n              ';
+__p+='">  <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Enter </div> -->\r\n                     </div>\r\n\r\n                   </div>\r\n                     \r\n                  </div>\r\n\r\n\r\n                </div>\r\n\r\n                </div>\r\n\r\n              ';
  col_count++;  } 
-__p+='\n    </div> \n  ';
+__p+='\r\n    </div> \r\n  ';
  } 
-__p+='\n  </div>\n\n';
+__p+='\r\n  </div>\r\n\r\n';
  if (back_btn !=undefined) { 
-__p+='\n\n<div class="container">\n   <div class="row">\n  <div class="col col-md-12">\n  <button class="btn back_btn js-back '+
+__p+='\r\n\r\n<div class="container">\r\n   <div class="row">\r\n  <div class="col col-md-12">\r\n  <button class="btn back_btn js-back '+
 ((__t=(cards[0]['color']))==null?'':_.escape(__t))+
-'-border hover" style="margin-left:0px;"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\n\n\n  </div>\n  </div>\n\n</div>\n\n\n';
+'-border hover" style="margin-left:0px;"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\r\n\r\n\r\n  </div>\r\n  </div>\r\n\r\n</div>\r\n\r\n\r\n';
  } 
-__p+='\n';
+__p+='\r\n';
 }
 return __p;
 };});
@@ -24100,11 +24131,11 @@ return __p;
 define("tpl!common/templates/okdialog.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<a class="close-reveal-modal">×</a> \n <h3> '+
-((__t=( massagetitle))==null?'':_.escape(__t))+
-' </h3>\n <h5> '+
-((__t=( massagecontent))==null?'':_.escape(__t))+
-'</h5>\n\n<div class="center">\n\n\n\n<div class="small_icon_parent">\n\n                 \n                  <img src="assets/images/icons/bg_icon.png">\n                  <a class="js-ok">\n                  <div class="small_btniconcontainer">\n                  <i class="fa fa-check"></i>\n                  </div>\n                  </a>\n                 \n\n                  <a class="js-ok">\n                  <div class="small_bubblebtnbackground"> </div>\n                  </a>\n                  <div class="small_bubbleshadow"> </div>\n        </div>\n</div>\n';
+__p+='  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header">\n        <h5 class="modal-title">'+
+((__t=(title))==null?'':_.escape(__t))+
+'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n      </div>\n      <div class="modal-body">\n        <p>'+
+((__t=(text))==null?'':_.escape(__t))+
+'</p>\n      </div>\n      <div class="modal-footer">\n        <button type="button" class="btn btn-primary js-ok" data-dismiss="modal">Ok</button>\n      </div>\n    </div>\n  </div>\n';
 }
 return __p;
 };});
@@ -24548,7 +24579,7 @@ onAttach: function(){
 	datatable_options:{},
 
 	events:{
-	'click .clickable-row' : 'row_clicked'
+	'click .clickable-row' : 'row_clicked',
 	},
 
 		serializeData: function(){
@@ -24570,7 +24601,7 @@ onAttach: function(){
 		},
 
 		row_clicked : function(e){
-
+			e.stopPropagation();
 			var url = $(e.currentTarget).attr('data-href')
 
 			if(url=="#"){ var idx = $(e.currentTarget).attr('data-idx'); this.trigger('go:list_clicked',{idx:idx}); }
@@ -24579,6 +24610,12 @@ onAttach: function(){
 		},
 
 	  onDomRefresh: function(){
+
+	  	$(".clickable-row").on("click",function(e){
+	  		var url = $(e.currentTarget).attr('data-href')
+			if(url=="#"){ var idx = $(e.currentTarget).attr('data-idx'); this.trigger('go:list_clicked',{idx:idx}); }
+			else window.location = url;
+	  	})
 
 	  	var old_table_height = 0;
 
@@ -24860,20 +24897,26 @@ Views.Layout = Marionette.View.extend({
 	 },
 	serializeData: function(){
 			return {
-		massagetitle: Marionette.getOption(this,"massagetitle"),
-		massagecontent: Marionette.getOption(this,"massagecontent")
+		title: Marionette.getOption(this,"title"),
+		text: Marionette.getOption(this,"text")
 		}
 	},
-	 onShow: function(){
+	 onAttach: function(){
 		 if(this.options.asModal){
-		  this.$el.addClass("reveal-modal");
-  		  this.$el.append('<a class="close-reveal-modal">&#215;</a>');
-		  this.$el.attr("data-reveal","");
 
-          
+          this.$el.attr("ID","ok-modal");
+          this.$el.addClass("modal fade ok-modal");
+	 	  this.$el.on('shown.bs.modal', function (e) {
+          })
 
-		}
-
+          var that = this;
+         
+           this.$el.modal();
+    }
+     else {
+       var $title = $('#formhl');
+     $title.text(this.title);
+    }
   }
 
 
@@ -25923,6 +25966,26 @@ Entities.API = {
     });
 
     return defer.promise();
+  },
+  getDocumentation: function(){
+    var data = {};
+    data['backend_route'] = "documentation";
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+
+              defer.resolve(data);
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
   }
 
 
@@ -25955,7 +26018,7 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
     var fetchingVersion = UtilEntities.API.getApiVersion();
     var fetchingLoginCheck = UserEntities.API.loginCheck();
-      $.when(fetchingVersion,fetchingLoginCheck).done(function(api_version,login_check){
+      $.when(fetchingVersion,fetchingLoginCheck).done(function(api_version,logged_in_user){
 
         var headerShowLayout = new Show.Layout();
          var headerLogin ;
@@ -25982,7 +26045,7 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
                        App.mainmsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedOut();
-                        
+                         App.trigger('home:portal');
                   
                 }).fail(function(response){ 
                   App.mainmsg.updateContent(response.responseText,'danger');                       
@@ -26005,7 +26068,7 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
 
                  $.when(loggingInUser).done(function(result){
-
+                                            
                         App.mainmsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedIn(result.user.name);
                           
@@ -26024,6 +26087,7 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
                               break;
                             case "users/list":
                               App.trigger("users:list")
+                              break;
                             case "users/account":
                               App.trigger("users:show","account")
                               break;
@@ -26073,9 +26137,9 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
      
 
   headerShowTopbar.on("attach",function(){
-       if(login_check!=-1){
-      App.mainmsg.updateContent("Welcome back to PoCoWeb: "+login_check.name+"!",'success');
-      headerShowTopbar.setLoggedIn(login_check.name);
+       if(logged_in_user!=-1){
+      App.mainmsg.updateContent("Welcome back to PoCoWeb: "+logged_in_user.name+"!",'success');
+      headerShowTopbar.setLoggedIn(logged_in_user.name);
         headerShowLayout.showChildView('msgRegion',App.mainmsg)
 
       }
@@ -26395,111 +26459,50 @@ define('apps/footer/footer_app',["marionette","app"], function(Marionette,IPS_Ap
 define("tpl!apps/projects/common/templates/projectform.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n\n';
+__p+='\r\n\r\n\r\n';
 
 if(asModal) {
 
-__p+='\n\n  <div class="modal-dialog modal-lg" role="document">\n  <div class="modal-content">\n\n<div class="modal-header red-border-bottom">\n        <h3 class="modal-title">'+
+__p+='\r\n\r\n  <div class="modal-dialog modal-lg" role="document">\r\n  <div class="modal-content">\r\n\r\n<div class="modal-header red-border-bottom">\r\n        <h3 class="modal-title">'+
 ((__t=(text))==null?'':_.escape(__t))+
-' </h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n<div class="loading_background" style="display: none;">\n         <i class="fas fa-sync fa-spin fa-3x fa-fw"></i>\n         <div class="loading_text_parent">\n           <div class="loading_text"> '+
+' </h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n<div class="loading_background" style="display: none;">\r\n         <i class="fas fa-sync fa-spin fa-3x fa-fw"></i>\r\n         <div class="loading_text_parent">\r\n           <div class="loading_text"> '+
 ((__t=(loading_text))==null?'':_.escape(__t))+
-' </div>\n         </div>\n</div>\n\n';
+' </div>\r\n         </div>\r\n</div>\r\n\r\n';
  } 
-__p+='\n\n<form id="uploadForm">\n\n';
+__p+='\r\n\r\n<form id="uploadForm">\r\n\r\n';
  if(!add_book) { 
-__p+='\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="title">Title</label>\n    <input class="form-control" type="text" value="'+
+__p+='\r\n\r\n<div class="form-group row">\r\n  <div class="col-4">\r\n    <label for="title">Title</label>\r\n    <input class="form-control" type="text" value="'+
 ((__t=(title))==null?'':_.escape(__t))+
-'" id="title" name="title">\n  </div>\n   <div class="col-4">\n  <label for="author">Author</label>\n    <input class="form-control" type="text" value="'+
+'" id="title" name="title">\r\n  </div>\r\n   <div class="col-4">\r\n  <label for="author">Author</label>\r\n    <input class="form-control" type="text" value="'+
 ((__t=(author))==null?'':_.escape(__t))+
-'" id="author" name="author">\n  </div>\n\n</div>\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="language">Language</label>\n    <select class="form-control" type="text" value="'+
+'" id="author" name="author">\r\n  </div>\r\n\r\n</div>\r\n\r\n<div class="form-group row">\r\n  <div class="col-4">\r\n    <label for="language">Language</label>\r\n    <select class="form-control" type="text" value="'+
 ((__t=(language))==null?'':_.escape(__t))+
-'" id="language" name="language">\n     ';
+'" id="language" name="language">\r\n     ';
 
      _.each(languages, function(language) { 
-__p+='\n        <option>'+
+__p+='\r\n        <option>'+
 ((__t=(language))==null?'':_.escape(__t))+
-'</option>\n     ';
+'</option>\r\n     ';
  }); 
-__p+='\n    </select>\n  </div>\n <div class="col-4">\n    <label for="year">Year of publication</label>\n    <input class="form-control" type="text" value="'+
+__p+='\r\n    </select>\r\n  </div>\r\n <div class="col-4">\r\n    <label for="year">Year of publication</label>\r\n    <input class="form-control" type="text" value="'+
 ((__t=(year))==null?'':_.escape(__t))+
-'" id="year" name="year" placeholder="2018">\n  </div>\n <div class="col-4">\n    <label for="year">Profiler URL</label><small> (use default if in doubt)</small>\n    <input class="form-control" type="text" value="'+
+'" id="year" name="year" placeholder="2018">\r\n  </div>\r\n <div class="col-4">\r\n    <label for="year">Profiler URL</label><small> (use default if in doubt)</small>\r\n    <input class="form-control" type="text" value="'+
 ((__t=(profilerUrl))==null?'':_.escape(__t))+
-'" id="profilerUrl" name="profilerUrl" placeholder="default">\n  </div>\n  </div>\n\n';
+'" id="profilerUrl" name="profilerUrl" placeholder="default">\r\n  </div>\r\n  </div>\r\n\r\n';
  } 
-__p+='\n\n';
+__p+='\r\n\r\n';
  if(!edit_project) { 
-__p+='\n\n\n<label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">\n <i class="fas fa-file-upload"></i> Upload data (.zip)\n</label>\n<input id="file-upload" type="file" name="archive" style="display:none">\n\n<div id="selected_file"></div>\n <button class="btn btn-primary js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>\n\n\n';
+__p+='\r\n\r\n\r\n<label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">\r\n <i class="fas fa-file-upload"></i> Upload data (.zip)\r\n</label>\r\n<input id="file-upload" type="file" name="archive" style="display:none">\r\n\r\n<div id="selected_file"></div>\r\n <button class="btn btn-primary js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>\r\n\r\n\r\n';
+ } else { 
+__p+='\r\n\r\n <button class="btn btn-primary js-edit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Update</button>\r\n\r\n';
  } 
-__p+='\n\n</form>\n\n\n\n';
+__p+='\r\n\r\n</form>\r\n\r\n\r\n\r\n';
 
 if(asModal) {
 
-__p+='\n\n  </div> \n\n\n\n <div class="modal-footer">\n </div>\n\n\n\n  </div>\n  </div>\n\n';
+__p+='\r\n\r\n  </div> \r\n\r\n\r\n\r\n <div class="modal-footer">\r\n </div>\r\n\r\n\r\n\r\n  </div>\r\n  </div>\r\n\r\n';
  } 
-__p+='\n';
-}
-return __p;
-};});
-
-
-define("tpl!apps/projects/common/templates/listtemplate.tpl", function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='<div class="container" style="padding-bottom:50px;">\r\n <div class="row">\r\n <div class="col col-lg-12" >\r\n\r\n\r\n <table class="table table-bordered ';
- if(hover){
-__p+='table-hover';
-}
-__p+='" \r\n id="table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\r\n\r\n\r\n     <thead>\r\n      <tr>\r\n      ';
- _.each(headers, function(header) { 
-__p+='  \r\n        <th>'+
-((__t=(header.name))==null?'':_.escape(__t))+
-'</th>\r\n       ';
- }); 
-__p+='         \r\n      </tr>\r\n     </thead>\r\n     <tbody>\r\n\r\n\r\n     ';
-
-     var count = 0; 
-     _.each(items, function(item) {
-     
-      
-__p+='\r\n\r\n      ';
- if(columns[0]['clickrow']) { 
-__p+='\r\n\r\n       <tr class=\'clickable-row\' data-href="#'+
-((__t=(urlroot))==null?'':_.escape(__t))+
-'/'+
-((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'/page/first">\r\n       \r\n       ';
- } else { 
-__p+='\r\n       <tr>\r\n       ';
- } 
-__p+='\r\n\r\n        ';
- for(var i=0;i<columns.length;i++){ 
-__p+='  \r\n\r\n          ';
- column = columns[i]; 
-__p+='\r\n          ';
- if (column.name == "action") {  
-__p+='\r\n          <td>\r\n            <div class="btn-group" role="group">\r\n            <button title="open project #'+
-((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'" type="button" class="btn btn-sm btn-outline-dark js-open-project" id="'+
-((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'"> <span aria-hidden="true"><i class="fas fa-book-open"></i></span></button>\r\n              <button title="order profile for project #'+
-((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'" type="button" class="btn btn-sm btn-outline-dark js-start-profiling" id="'+
-((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'"> <span aria-hidden="true"><i class="far fa-play-circle"></i></span></button>\r\n             <button title="remove project #'+
-((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'" type="button" class="btn btn-sm btn-outline-dark js-delete-project" id="'+
-((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'"> <span aria-hidden="true"><i class="fas fa-times"></i></span></button>\r\n                    </div>\r\n          </td>      \r\n          ';
- } else { 
-__p+='\r\n          <td> '+
-((__t=( item[column.name] ))==null?'':_.escape(__t))+
-' </td>      \r\n          ';
- } 
-__p+='\r\n        ';
- } 
-__p+='  \r\n       \r\n     \r\n      </tr>\r\n\r\n    ';
- count++;  }); 
-__p+='\r\n\r\n     </tbody>\r\n    </table>\r\n\r\n\r\n    </div>\r\n    </div>\r\n    </div>';
+__p+='\r\n';
 }
 return __p;
 };});
@@ -26511,9 +26514,8 @@ return __p;
 define('apps/projects/common/views',["app","marionette","backbone.syphon",
         "common/util","common/views"
         ,"tpl!apps/projects/common/templates/projectform.tpl"
-        ,"tpl!apps/projects/common/templates/listtemplate.tpl"
 
-        	], function(IPS_App,Marionette,Syphon,Util,CommonViews,projectTpl,listTpl){
+        	], function(IPS_App,Marionette,Syphon,Util,CommonViews,projectTpl){
 
 
 var Views = {};
@@ -26522,7 +26524,6 @@ var Views = {};
 
 
  Views.ProjectsList = CommonViews.Icon_DataTable.extend({
-   template: listTpl,
    events:{
     "click .js-delete-project": "deleteProject",
     "click .js-open-project": "openProject",
@@ -26540,21 +26541,18 @@ var Views = {};
           {name: "Year"},
           {name: "Language"},
           {name: "Pages"},
-          {name: "Book"},
-          {name: "Action"},
-
+          {name: "Book"}
 
         ]
 
         this.columns = [
-        {name:"projectId",id:"projectId",clickrow :false},
-        {name:"title",id:"projectId",clickrow :false},
-        {name:"author",id:"projectId",clickrow :false},
-        {name:"year",id:"projectId",clickrow :false},
-        {name:"language",id:"projectId",clickrow :false},
-        {name:"pages",id:"projectId",clickrow :false},
-        {name:"book",id:"projectId",clickrow :false},
-        {name:"action",id:"projectId",clickrow :false}
+        {name:"projectId",id:"projectId",clickrow :true},
+        {name:"title",id:"projectId",clickrow :true},
+        {name:"author",id:"projectId",clickrow :true},
+        {name:"year",id:"projectId",clickrow :true},
+        {name:"language",id:"projectId",clickrow :true},
+        {name:"pages",id:"projectId",clickrow :true},
+        {name:"book",id:"projectId",clickrow :true},
 
 
         ]
@@ -26585,10 +26583,14 @@ Views.ProjectForm = Marionette.View.extend({
    events: {
    "click .js-submit-project": "submitClicked",
    "click .js-upload": "chooseFile",
-  
+   "click .js-edit-project": "updateClicked"
 
    },
    initialize: function(){
+
+  },
+  updateClicked:function(){
+     this.trigger("project:update", Backbone.Syphon.serialize(this));
 
   },
   onAttach : function(){
@@ -26720,13 +26722,13 @@ c.setAttribute("max","7"),c.className="medium-editor-toolbar-input",b.appendChil
 define("tpl!apps/projects/page/show/templates/page.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n	<ul class="nav sticky-top navbar-light justify-content-center" style="background-color: white; margin-top: 15px;margin-bottom: 15px;">\r\n	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\r\n		<i class="fas fa-fast-backward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
+__p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n	<ul class="nav sticky-top navbar-light justify-content-center" style="background-color: white; margin-top: 15px;margin-bottom: 15px;">\r\n	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\r\n		<i class="fas fa-angle-double-left"></i>\r\n		</a></li>\r\n	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
 ((__t=(prevPageId))==null?'':_.escape(__t))+
-'">\r\n		<i class="fas fa-step-backward"></i>\r\n		</a></li>\r\n	<!-- <li class="nav-item"> <a class="nav-link" href="#">\r\n		<label id="concordance-search-label">Show concordance of (0 occurences)</label>\r\n		</a></li> -->\r\n	<!-- suggestions -->\r\n	<!-- <li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button">\r\n		Correction suggestions<span class="caret"></span></a>\r\n        <ul id="pcw-suggestions-dropdown" class="dropdown-menu">\r\n        </ul>\r\n    </li> -->\r\n	<!--error-patterns -->\r\n	<li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false">\r\n		Error patterns<span class="caret"></span></a>\r\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\r\n        </div>\r\n        </li>\r\n	<!-- error-tokens -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false">\r\n		Error tokens<span class="caret"></span></a>\r\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\r\n        </div>\r\n     </li>\r\n\r\n   \r\n\r\n	<!--nextpage and last page -->\r\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
+'">\r\n		<i class="fas fas fa-angle-left"></i>\r\n		</a></li>\r\n\r\n	<!--error-patterns -->\r\n	<li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-patterns-dropdown">\r\n		Error patterns<span class="caret"></span></a>\r\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\r\n        </div>\r\n    </li>\r\n	<!-- error-tokens -->\r\n	<li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-tokens-dropdown">\r\n		Error tokens<span class="caret"></span></a>\r\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\r\n        </div>\r\n     </li>\r\n\r\n   \r\n\r\n	<!--nextpage and last page -->\r\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
 ((__t=(nextPageId))==null?'':_.escape(__t))+
-'">\r\n		<i class="fas fa-step-forward"></i>\r\n		</a></li>\r\n	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\r\n		<i class="fas fa-fast-forward"></i>\r\n		</a></li>\r\n	</ul>\r\n\r\n	<div class="defaulthl" style="line-height:1; margin-top:15px;">\r\n    <i class="fas fa-book-open card_main_icon green"></i>\r\n	Project '+
+'">\r\n		<i class="fas fa-angle-right"></i>\r\n		</a></li>\r\n	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\r\n		<i class="fas fa-angle-double-right"></i>\r\n		</a></li>\r\n	</ul>\r\n\r\n	<div class="defaulthl" style="line-height:1; margin-top:15px;">\r\n <!--    <i class="fas fa-book-open card_main_icon green"></i>\r\n	Project '+
 ((__t=(projectId))==null?'':_.escape(__t))+
-'\r\n	<div style="font-size: 20px; margin-top: 10px;"> page '+
+' -->\r\n	<div style="font-size: 20px; margin-top: 10px;"> Page '+
 ((__t=(pageId))==null?'':_.escape(__t))+
 '</div>\r\n	</div>\r\n\r\n	   ';
 
@@ -26738,15 +26740,13 @@ __p+='	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-
   	   var text = "line " + line['lineId'] + ", " + imgbasename;
   	   var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
   	   var inputclass = Util.get_correction_class(line);
-  	   
+  	   var correction_class="";
   	   var setlinehightlighting=false;
   	   if(line['isFullyCorrected']){
-  	  	 linehighlighting = "#d4edda";
-  	  	 setlinehightlighting = true;
+  	  	 correction_class = "line_fully_corrected";
   	   }
   	   else if(line['isPartiallyCorrected']){
-  	  	 linehighlighting = "#fff3cd";
-   	  	 setlinehightlighting = true;
+  	  	 correction_class = "line_partially_corrected";
   	   }
 
 
@@ -26755,43 +26755,29 @@ __p+='\r\n       <div class="text-image-line" title="'+
 ((__t=(text))==null?'':_.escape(__t))+
 '">\r\n\r\n       	<a class="line-anchor" id="line-anchor-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"></a>\r\n		<div style="margin-bottom: 5px;"><img src=\''+
+'"></a>\r\n		<div class="line-img"><img id="line-img-'+
+((__t=(anchor))==null?'':_.escape(__t))+
+'" src=\''+
 ((__t=(line["imgFile"]))==null?'':_.escape(__t))+
 '\' alt=\''+
 ((__t=(text))==null?'':_.escape(__t))+
 '\' title=\''+
 ((__t=(text))==null?'':_.escape(__t))+
-'\' width="auto" height="25"></div>\r\n\r\n		<div class="line-text-parent">	\r\n		<div id="line-text-'+
+'\' width="auto" height="25"></div>\r\n\r\n		<div class="line-text-parent">	\r\n		<div id="line-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'" ';
- if(setlinehightlighting){ 
-__p+=' style="background-color:'+
-((__t=(linehighlighting))==null?'':_.escape(__t))+
-'" ';
-}
-__p+='  anchor="'+
+'" class="'+
+((__t=(correction_class))==null?'':_.escape(__t))+
+' line-text" anchor="'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"\r\n	    class="line-text '+
+'"\r\n	    class="'+
 ((__t=(inputclass))==null?'':_.escape(__t))+
-'">\r\n\r\n        '+
-((__t=(line["cor"]))==null?'':_.escape(__t))+
-'\r\n        </div>\r\n        <span>\r\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
+' line-text">\r\n       <div class="line" contenteditable="true">\r\n       \r\n        '+
+((__t=(line['cor']))==null?'':_.escape(__t))+
+'\r\n      	</div> \r\n      	<div class="line-tokens">\r\n      	</div>\r\n\r\n\r\n        </div>\r\n        <span>\r\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
 line['lineId']
 __p+='" anchor="'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"><i class="far fa-arrow-alt-circle-up"></i></div>\r\n        </span>\r\n	    </div>\r\n        <!-- <div id="line-input-'+
-((__t=(anchor))==null?'':_.escape(__t))+
-'" class="line-input input-group" hidden>\r\n	    <div class="input-group">\r\n		    <input id="'+
-((__t=(anchor))==null?'':_.escape(__t))+
-'" class="form-control '+
-((__t=(inputclass))==null?'':_.escape(__t))+
-'" type="text" size="30" value="'+
-((__t=(line['cor']))==null?'':_.escape(__t))+
-'">\r\n		    <div class="input-group-append">\r\n		      <div class="input-group-text js-correct" title="correct line #';
-line['lineId']
-__p+='" id="'+
-((__t=(anchor))==null?'':_.escape(__t))+
-'-btn"><i class="far fa-arrow-alt-circle-up"></i></div>\r\n		    </div>\r\n		  </div>\r\n		</div>\r\n -->\r\n\r\n\r\n\r\n\r\n       </div>\r\n	\r\n     \r\n\r\n\r\n      ';
+'"><i class="far fa-arrow-alt-circle-up"></i></div>\r\n        </span>\r\n	    </div>\r\n\r\n\r\n\r\n       </div>\r\n	\r\n     \r\n\r\n\r\n      ';
  }) 
 __p+='\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
 }
@@ -26821,9 +26807,31 @@ events:{
       'click .js-firstpage' : 'firstpage_clicked',
       'click .js-lastpage' : 'lastpage_clicked',
       'click .js-correct' : 'correct_clicked',
-      'click .line-text' : 'line_clicked',
-      'mouseup .line-text' : 'line_selected',
+      'click .line-tokens' : 'line_tokens_clicked',
+      'click .line-text' : 'line_selected',
+      'click #pcw-error-tokens-link' : 'error_tokens_clicked',
+      'click #pcw-error-patterns-link' : 'error_patterns_clicked',
 
+      'mouseover .line-tokens' : 'tokens_hovered',
+      'mouseleave .line-text-parent' : 'line_left',
+      'keydown .line' : 'line_edited',
+
+      },
+
+      error_tokens_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".custom-popover").remove();
+        $(".dropdown-menu").hide();
+        $('#pcw-error-tokens-dropdown').toggle();
+      },
+
+        error_patterns_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".custom-popover").remove();
+        $(".dropdown-menu").hide();
+        $('#pcw-error-patterns-dropdown').toggle();
       },
 
       serializeData: function(){
@@ -26834,6 +26842,7 @@ events:{
       },
 
        backward_clicked:function(e){
+        e.stopPropagation();
         e.preventDefault();
         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         console.log(data)
@@ -26841,155 +26850,187 @@ events:{
       },
 
        forward_clicked:function(e){
+        e.stopPropagation();
         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
         this.trigger("page:new",data.nextPageId);
       },
 
        firstpage_clicked:function(e){
+         e.stopPropagation();
          var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
         this.trigger("page:new","first");
       },
        lastpage_clicked:function(e){
-             var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+       e.stopPropagation();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
         this.trigger("page:new","last");
       },
       correct_clicked:function(e){
-       
-        var anchor = $(e.currentTarget).attr('anchor');
-          var ids = Util.getIds(anchor);
-          var text = $('#line-text-'+anchor).text();
-          this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
+      e.stopPropagation();
 
+        var anchor = $(e.currentTarget).attr('anchor');
+        var ids = Util.getIds(anchor);
+        var text = $('#line-'+anchor).find('.line').text().replace(/\s\s+/g, ' ').trim();
+
+        console.log(text);
+
+        this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
       },
-      line_clicked:function(e){
+      tokens_hovered:function(e){
+         // $('.line-tokens').show();
+         // $('.line').hide();
+         // $(e.currentTarget).hide();
+         // $(e.currentTarget).prev().show();
+      },
+      line_left:function(e){
+        // console.log("mouseleave")
+        
+      },
+
+       line_edited:function(e){
+        e.stopPropagation();
+        $('.custom-popover').remove();
+      },
+      
+      line_tokens_clicked:function(e){
         e.preventDefault();
+         e.stopPropagation();
+       $(".custom-popover").remove();
+
+        $('.line').hide();
+        $('.line-tokens').show();
+        var line_parent = $(e.currentTarget).parent();
+
+        console.log(line_parent);
+        console.log($(e.currentTarget));
+        line_parent.find('.line').show();
+        $(e.currentTarget).hide();
+
         $('.correct-btn').hide();
         $('.line-text').css('border-bottom','1px solid transparent');
         $('.line-text').css('border-left','1px solid transparent');
         $('.line-text').css('border-top','1px solid transparent');
-        $('.line-text').css('border-top-left-radius','0rem');
-        $('.line-text').css('border-bottom-left-radius','0rem');
+        $('.line-text').css('border-top-right-radius','.25rem');
+        $('.line-text').css('border-bottom-right-radius','.25rem');
+   
 
-  
-        $(e.currentTarget).css('border-left','1px solid #ced4da');
-        $(e.currentTarget).css('border-bottom','1px solid #ced4da');
-        $(e.currentTarget).css('border-top','1px solid #ced4da');
-        $(e.currentTarget).css('border-top-left-radius','.25rem');
-        $(e.currentTarget).css('border-bottom-left-radius','.25rem');
+        line_parent.css('border-left','1px solid #ced4da');
+        line_parent.css('border-bottom','1px solid #ced4da');
+        line_parent.css('border-top','1px solid #ced4da');
+        line_parent.css('border-top-right-radius','.0rem');
+        line_parent.css('border-bottom-right-radius','.0rem');
 
-        $(e.currentTarget).next().find('.correct-btn').show();
+        line_parent.next().find('.correct-btn').show();
+      
+
+        //  $(e.currentTarget).find('.line').focusout(function() {
+
+        // $(e.currentTarget).find('.line-tokens').show();
+        // $(e.currentTarget).find('.line').hide();
+
+        // // $(e.currentTarget).next().find('.correct-btn').hide();
+        // $(e.currentTarget).css('border-bottom','1px solid transparent');
+        // $(e.currentTarget).css('border-left','1px solid transparent');
+        // $(e.currentTarget).css('border-top','1px solid transparent');
+        // $(e.currentTarget).css('border-top-left-radius','0rem');
+        // $(e.currentTarget).css('border-bottom-left-radius','0rem');
+        // $(e.currentTarget).find('.line-tokens').css('display','flex');
+
+
+        //  });
+
+
+
         
       },
       line_selected:function(e){
+        e.stopPropagation();
 
-              var selection = window.getSelection().toString();
-        if(selection==""){
-          return;
-        }
-        this.saved_selection = selection;
-        $('#selected_token').removeAttr("id");
-          Util.replaceSelectedText(selection);
+        var that = this;
 
-        this.trigger("page:line_selected",selection)
+         rangy.init();
+         var sel =  rangy.getSelection().toString();
+         if(sel==""||sel==" "){
+           return;
+          }
+
+      console.log(sel);     
+      if($(e.target).hasClass('line')){
+       $(".dropdown-menu").hide();
+       $(".custom-popover").remove();
+
+      var btn_group = $('<div class="btn-group"></div>'); 
+
+
+      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary btn-sm"><i class="fas fa-align-justify"></i> Concordance </button>'))
+      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary btn-sm"> <i class="fas fa-list-ol"></i> Suggestions <i class="fas fa-caret-down"></button>'))
+ 
+ // btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary">Show concordance of (0 occurrences)</button>'))
+ //      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary">Correction suggestions <i class="fas fa-caret-down"></button>'))
+ 
+
+      var div = $('<div class="custom-popover">')
+      .css({
+        "left": e.pageX + 'px',
+        "top": (e.pageY+35) + 'px'
+      })
+       .append($('<div><i class="fas fa-caret-up custom-popover-arrow"></i></div>'))
+       .append(btn_group)
+       .appendTo(document.body);
+
+       $('#js-concordance').on('click',function(){
+        that.trigger("page:concordance_clicked",sel,0);
+       });
+      
+         this.saved_selection = sel;
+         // Util.replaceSelectedText(selection);
+        //   console.log(selection);
+         this.trigger("page:line_selected",sel);
+      }
+      },
+
+      onAttach:function(e){
+        var that = this;
+
+        // remove when clicked somewhere else
+
+          $(document).off().click(function(e) 
+          {
+            e.stopPropagation();
+            
+            $(".dropdown-menu").hide();
+
+              var custom_popover = $(".custom-popover");
+              if (!custom_popover.is(e.target) && custom_popover.has(e.target).length === 0) 
+              {          
+                  custom_popover.remove();
+              }
+          });
+
+
+   
+
+      },
+      onDestroy:function(e){
+       $(".custom-popover").remove();
       },
      
       onDomRefresh:function(e){
 
-        var that = this;
-
-        if(this.editor!=""){
-          this.editor.destroy();
-        }
-
-
-          var ConcordanceButton = MediumEditor.Extension.extend({
-              name: 'concordance',
-
-              init: function () {
-
-                this.button = this.document.createElement('button');
-                this.button.classList.add('medium-editor-action');
-                this.button.innerHTML = 'Show concordance of (n occurrences)';
-                this.button.title = 'Show concordance';
-
-                this.on(this.button, 'click', this.handleClick.bind(this));
-              },
-
-              getButton: function () {
-                return this.button;
-              },
-
-              handleClick: function (event) {
-                that.trigger("page:concordance_clicked")
-              }
+            var that = this;
+         $('.line-img').each(function(index){
+           $(this).imagesLoaded( function() {
+              
+                var line = that.model.get('lines')[index];
+                if(line!=undefined){
+                  Util.addAlignedLine(line);
+                }
             });
 
-
-            var CorrectionButton = MediumEditor.Extension.extend({
-              name: 'corrections',
-
-              init: function () {
-
-
-
-                this.button = this.document.createElement('div');
-                this.button.classList.add('medium-editor-action');
-                this.button.classList.add('dropdown');
-                this.button.setAttribute('id','suggestions-menu');
-
-                var dropdown_button = this.document.createElement('button');
-                dropdown_button.setAttribute('data-toggle','dropdown');
-                dropdown_button.setAttribute('aria-haspopup','true');
-                dropdown_button.setAttribute('aria-expanded','false');
-                dropdown_button.setAttribute('id','dropdownMenuButton');
-                dropdown_button.setAttribute('data-flip','false');
-
-                dropdown_button.innerHTML = 'Correction suggestions <i class="fas fa-caret-down">';
-                dropdown_button.title = 'Show Correction suggestions';
-
-                this.button.appendChild(dropdown_button);
-
-                 var dropdown_content = document.createElement('div');
-                 dropdown_content.classList.add('dropdown-menu');
-                 dropdown_content.setAttribute('id','dropdown-content');
-                 dropdown_content.setAttribute('aria-labelledby','dropdownMenuButton');
-                 this.button.appendChild(dropdown_content);
-
-
-
-                this.on(this.button, 'click', this.handleClick.bind(this));
-              },
-
-              getButton: function () {
-                return this.button;
-              },
-
-              handleClick: function (event) {
-              }
-            });
-
-        this.editor = new MediumEditor('.line-text', {
-            disableReturn: true,
-            disableDoubleReturn: true,
-            toolbar: {
-              buttons: ['concordance','corrections']
-            },
-            buttonLabels: 'fontawesome', // use font-awesome icons for other buttons
-            extensions: {
-              'concordance': new ConcordanceButton(),
-              'corrections': new CorrectionButton()
-            },
-               handleClick: function (event) {
-                this.classApplier.toggleSelection();
-
-                // Ensure the editor knows about an html change so watchers are notified
-                // ie: <textarea> elements depend on the editableInput event to stay synchronized
-                this.base.checkContentChanged();
-              }
-        });
+         }); 
 
       },
 
@@ -27008,6 +27049,7 @@ events:{
   
 },
 setErrorPatternsDropdown : function(pid, dropdown, res) {
+  var that = this;
   var patterns = {};
   var suggs = res.suggestions || [];
   for (var i = 0; i < suggs.length; i++) {
@@ -27029,10 +27071,13 @@ setErrorPatternsDropdown : function(pid, dropdown, res) {
   var onclick = function(pid, c) {
     return function() {
     //  pcw.log(c.pattern + ": " + c.count);
-      var pat = encodeURI(c.pattern);
-      var href = "concordance.php?pid=" + pid + "&q=" + pat +
-          "&error-pattern";
-      window.location.href = href;
+      // var pat = encodeURI(c.pattern);
+      var pat = c.pattern;
+      // var href = "concordance.php?pid=" + pid + "&q=" + pat +
+      //     "&error-pattern";
+      // window.location.href = href;
+      that.trigger("page:error-patterns-clicked",pid,pat);
+
     };
   };
   for (var ii = 0; ii < counts.length; ii++) {
@@ -27044,6 +27089,7 @@ setErrorPatternsDropdown : function(pid, dropdown, res) {
 
 setErrorTokensDropdown : function(pid, dropdown, res) {
   // pcw.log("setErrorsDropdown");
+  var that = this;
   var tokens = {};
   var suggs = res.suggestions || [];
   for (var i = 0; i < suggs.length; i++) {
@@ -27062,9 +27108,11 @@ setErrorTokensDropdown : function(pid, dropdown, res) {
   var onclick = function(pid, c) {
     return function() {
       // pcw.log(c.token + ": " + c.count);
-      var pat = encodeURI(c.token);
-      var href = "concordance.php?pid=" + pid + "&q=" + pat;
-      window.location.href = href;
+      // var pat = encodeURI(c.token);
+      var pat = c.token;
+      // var href = "concordance.php?pid=" + pid + "&q=" + pat;
+      // window.location.href = href;
+       that.trigger("page:error-tokens-clicked",pid,pat);
     };
   };
   for (var ii = 0; ii < counts.length; ii++) {
@@ -27074,12 +27122,11 @@ setErrorTokensDropdown : function(pid, dropdown, res) {
   }
 },
 appendErrorCountItem : function(dropdown, item, count) {
-  var li = document.createElement("li");
   var a = document.createElement("a");
   var t = document.createTextNode(item + ": " + count);
+  a.className = "dropdown-item noselect";
   a.appendChild(t);
-  li.appendChild(a);
-  dropdown.appendChild(li);
+  dropdown.appendChild(a);
   return a;
 }
 
@@ -27114,21 +27161,18 @@ __p+='\r\n\r\n  <div class="modal-dialog modal-xl" role="document">\r\n  <div cl
 ((__t=(tokendata.query))==null?'':_.escape(__t))+
 '"</h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n';
  } else { 
-__p+='\r\n\r\n\r\n	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n\r\n			<div id="concordance-heading">\r\n			<p><h2>Concordance view for "'+
+__p+='\r\n\r\n\r\n	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n\r\n	<div id="concordance-heading">\r\n	<p><h2>Concordance view for "'+
 ((__t=(tokendata.query))==null?'':_.escape(__t))+
-'"</h2></p>\r\n			</div>\r\n\r\n	\r\n';
+'"</h2></p>\r\n	</div>\r\n\r\n	\r\n';
  } 
-__p+='\r\n\r\n\r\n	  ';
+__p+='\r\n\r\n <!--  <nav class="navbar navbar-static-top" id="page-header" data-spy="affix" data-offset-top="197">\r\n  <div class="container-fluid">\r\n  <div class="collapse navbar-collapse">\r\n  <ul class="nav navbar-nav">\r\n  <li> \r\n  <form class="navbar-form">-->\r\n \r\n  <div class="input-group mb-3">\r\n  <div class="input-group-prepend">\r\n  <button class="js-toggle-selection btn btn-outline-secondary" title="Toggle selection">\r\n  Toggle selection\r\n  </button>\r\n  </div>\r\n  <input class="js-global-correction-suggestion form-control" title="correction" type="text" placeholder="Correction"/>\r\n  <div class="input-group-append">\r\n  <button class="js-set-correction btn btn-outline-secondary" title="Set correction">\r\n  Set correction\r\n  </button>\r\n  <button class="js-correct-conc selected btn btn-outline-secondary" title="Correct selected">\r\n  Correct selected\r\n  </button>\r\n  </div>\r\n  </div>\r\n\r\n <!-- </form>\r\n   </li>\r\n  </ul>\r\n  </div>\r\n  </div>\r\n  </nav> -->\r\n\r\n  <div class="all_lines_parent">\r\n	  ';
 
       _.each(tokendata.matches, function(match) {
       var line = match['line'];
     	  _.each(match['tokens'], function(word) {
 
     var offset = word['offset'];
-    var anchor = word['projectId']+"-"+word['pageId']+"-"+word['lineId']+"-"+word['tokenId'];
-    var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];
-    var inputclass = "";
-   
+    var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];   
       
 __p+='\r\n\r\n\r\n\r\n<div class="text-image-line">\r\n\r\n<div class="left_div div_inline">\r\n	<!-- if ($images["leftImg"] != NULL) { -->\r\n		<div class="invisible=link" href="'+
 ((__t=(link))==null?'':_.escape(__t))+
@@ -27136,18 +27180,18 @@ __p+='\r\n\r\n\r\n\r\n<div class="text-image-line">\r\n\r\n<div class="left_div 
 ((__t=(line['pageId']))==null?'':_.escape(__t))+
 '_'+
 ((__t=(line['lineId']))==null?'':_.escape(__t))+
-'_parent">\r\n		<img src="'+
+'_parent" class="line-img">\r\n		<img src="'+
 ((__t=(line['imgFile']))==null?'':_.escape(__t))+
 '" id="img_'+
 ((__t=(line['pageId']))==null?'':_.escape(__t))+
 '_'+
 ((__t=(line['lineId']))==null?'':_.escape(__t))+
-'" width="auto" height="25"/>\r\n    </div>\r\n	\r\n		</div>\r\n	</div>\r\n	\r\n	</div>\r\n\r\n\r\n     ';
+'" width="auto" height="25"/>\r\n    </div>\r\n	\r\n		</div>\r\n	</div>\r\n	\r\n	</div>\r\n\r\n\r\n\r\n\r\n     ';
 
      		});
      	});
      
-__p+='\r\n\r\n\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
+__p+='\r\n\r\n</div>\r\n\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
 }
 return __p;
 };});
@@ -27167,15 +27211,16 @@ define('apps/projects/concordance/show/show_view',["marionette","app","medium","
 
   Show.Concordance = Marionette.View.extend({
   template:concordanceTpl,
-  editor:"",
-events:{
-      'click .js-stepbackward' : 'backward_clicked',
-      'click .js-stepforward' : 'forward_clicked',
-      'click .js-firstconcordance' : 'firstconcordance_clicked',
-      'click .js-lastconcordance' : 'lastconcordance_clicked',
-      'click .js-correct' : 'correct_clicked',
+  events:{
+      'click .js-correct-conc' : 'correct_clicked',
       'click .line-text' : 'line_clicked',
       'mouseup .line-text' : 'line_selected',
+      'click .js-select-cor' : 'cor_checked',
+      'click .js-suggestions-cor' : 'cor_suggestions',
+      'click .js-correct-cor' : 'cor_correct',
+      'click .cordiv_container' :'cordiv_clicked',
+      'click .js-toggle-selection' :'toggle_selection',
+      'click .js-set-correction' :'set_correction'
 
       },
 
@@ -27194,37 +27239,170 @@ events:{
 
 
 
-       backward_clicked:function(e){
-        e.preventDefault();
-        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        console.log(data)
-        this.trigger("concordance:new",data.prevPageId);
-      },
-
-       forward_clicked:function(e){
-        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        e.preventDefault();
-        this.trigger("concordance:new",data.nextPageId);
-      },
-
-       firstconcordance_clicked:function(e){
-         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        e.preventDefault();
-        this.trigger("concordance:new","first");
-      },
-       lastconcordance_clicked:function(e){
-             var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        e.preventDefault();
-        this.trigger("concordance:new","last");
-      },
       correct_clicked:function(e){
+
+        var that = this;
        
-        var anchor = $(e.currentTarget).attr('anchor');
-          var ids = Util.getIds(anchor);
-          var text = $('#line-text-'+anchor).text();
-          this.trigger("concordance:correct_line",{pid:ids[0],concordance_id:ids[1],line_id:ids[2],text:text},anchor)
+          $('.concLine').each(function(){
+
+             var cordiv_left = $(this).find('.cordiv_left');
+             if(cordiv_left.find('i').hasClass('fa-check-square')){
+
+              var tokendiv = cordiv_left.parent();
+
+              var pid = tokendiv.attr('projectId');
+              var lineid =  tokendiv.attr('lineId');
+              var pageid =  tokendiv.attr('pageId');
+              var tokenid =  tokendiv.attr('tokenId');
+
+              var token  = tokendiv.text().trim();
+              var anchor = $(this).attr('anchor');
+              // console.log({pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token});
+              that.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token},anchor);
+            
+            }
+          });
 
       },
+
+      toggle_selection:function(e){
+
+        $('.cordiv_container').each(function(){
+          console.log($(this));
+          var cordiv_left = $(this).find('.cordiv_left');
+
+        if(cordiv_left.find('i').hasClass('fa-square')){
+          cordiv_left.empty();
+          cordiv_left.append($('<i class="far fa-check-square"></i>'));
+          cordiv_left.parent().css('background-color','#d4edda');
+          cordiv_left.parent().css('border-color','#c3e6cb');
+
+         }
+        else{
+          cordiv_left.empty();
+          cordiv_left.append($('<i class="far fa-square"></i>'));
+          cordiv_left.parent().css('background-color','#cce5ff');
+          cordiv_left.parent().css('border-color','#b8daff');
+
+        }
+
+        })
+
+      },
+
+      set_correction:function(e){
+
+        $('.cordiv_container').each(function(){
+          console.log($(this));
+          var cordiv_left = $(this).find('.cordiv_left');
+          var cordiv = $(this).find('.cordiv');
+
+        if(cordiv_left.find('i').hasClass('fa-check-square')){
+          cordiv.text($(".js-global-correction-suggestion").val());
+         }
+      
+
+        })
+
+
+      },
+
+      cor_checked:function(e){
+         e.stopPropagation();
+        var currentTarget = $(e.currentTarget);
+
+        if(currentTarget.find('i').hasClass('fa-square')){
+          currentTarget.empty();
+          currentTarget.append($('<i class="far fa-check-square"></i>'));
+          currentTarget.parent().css('background-color','#d4edda');
+          currentTarget.parent().css('border-color','#c3e6cb');
+
+         }
+        else{
+          currentTarget.empty();
+          currentTarget.append($('<i class="far fa-square"></i>'));
+          currentTarget.parent().css('background-color','#cce5ff');
+          currentTarget.parent().css('border-color','#b8daff');
+
+        }
+
+
+
+      },
+      cor_correct:function(e){
+        e.stopPropagation();
+        console.log($(e.currentTarget));
+        var concLine = $(e.currentTarget).parent().parent();
+        var tokendiv = $(e.currentTarget).parent();
+
+            var pid = tokendiv.attr('projectId');
+            var lineid =  tokendiv.attr('lineId');
+            var pageid =  tokendiv.attr('pageId');
+            var tokenid =  tokendiv.attr('tokenId');
+            var token  = tokendiv.text();
+            var anchor = concLine.attr('anchor');
+            this.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token},anchor)
+      },
+      cor_suggestions:function(e){
+         e.stopPropagation();
+
+         if($('#dropdown-content-conc').length>0){
+          if($('#dropdown-content-conc:visible')){
+           $('#dropdown-content-conc').toggle();
+           return;
+          }
+         }
+
+        var concLine = $(e.currentTarget).parent().parent();
+        var tokendiv = $(e.currentTarget).parent();
+
+            var pid = tokendiv.attr('projectId');
+            var lineid =  tokendiv.attr('lineId');
+            var pageid =  tokendiv.attr('pageId');
+            var tokenid =  tokendiv.attr('tokenId');
+            var token  = tokendiv.text();
+            var anchor = concLine.attr('anchor');
+            this.trigger("concordance:show_suggestions",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token},$(e.currentTarget),anchor)
+
+      },
+      cordiv_clicked:function(e){
+      $('#dropdown-content-conc').remove();
+
+      $("#conc-modal").find('.cordiv_left').hide();
+      $("#conc-modal").find('.cordiv_right').hide();
+
+      $(e.currentTarget).find('.cordiv_left').show();
+      $(e.currentTarget).find('.cordiv_right').show();
+
+
+      if($(e.currentTarget).hasClass('cordiv')){
+       // $(".custom-popover").remove();
+
+      var checkbox = $('<span class="correction_box"><i class="far fa-square"></i></span>'); 
+    //  $(e.currentTarget).find('span').append(checkbox);
+
+      // btn_group.append($('<div class="input-group-prepend"><div class="input-group-text"><input type="checkbox" id="js-select"></div></div>'))
+      // btn_group.append($('<input type="text" class="form-control" id="corinput">'))
+      // btn_group.append($('<div class="input-group-append" style="background:white;"><button type="button" class="btn btn-outline-secondary dropdown-toggle"></button><button type="button" class="btn btn-outline-secondary"><i class="far fa-arrow-alt-circle-up"></i></button></div>'))
+
+      // var div = $('<div class="custom-popover">')
+      // .css({
+      //   "left": e.pageX + 'px',
+      //   "top": (e.pageY+35) + 'px'
+      // })
+      //  .append($('<div><i class="fas fa-caret-up custom-popover-arrow"></i></div>'))
+      //  .append(btn_group)
+      //  .appendTo(document.body);
+
+      //  $('#js-concordance').on('click',function(){
+      //   that.trigger("page:concordance_clicked",sel);
+      //  });
+
+      
+      }
+      },
+
+
       line_clicked:function(e){
         e.preventDefault();
         $('.correct-btn').hide();
@@ -27251,19 +27429,65 @@ events:{
      
 
     onAttach : function(){
+
       var that = this;
+
+      var timer = 0;
+      var delay = 200;
+      var prevent = false;
+      var after_db_click = false;
+
+      console.log($('.cordiv').length);
+
+ 
+
+
        if(this.options.asModal){
 
           this.$el.attr("id","conc-modal");
           this.$el.addClass("modal fade conc-modal");
         
           $('#conc-modal').on('show.bs.modal', function () {
-                that.trigger("conc:destroy:editor")
             })
             $('#conc-modal').on('hidden.bs.modal', function () {
             })
 
              $('#conc-modal').on('shown.bs.modal', function () {
+
+
+                   // $(".cordiv")
+                   //  .on("click", function() {
+                   //    var that = this;
+
+                   //    if(!after_db_click){
+
+                   //    timer = setTimeout(function() {
+                   //      if (!prevent) {
+                   //         console.log('single click '+prevent);
+                   //         $(that).toggleClass('cor_selected');
+                   //         console.log($(that));
+                   //         $(that).attr('contenteditable','false');
+
+                   //      }
+                   //      prevent = false;
+                   //    }, delay);
+
+                   //    }
+                   //    else {
+                   //      after_db_click = false;
+                   //    }
+
+                   //  })
+                   //  .on("dblclick", function() {
+                   //    clearTimeout(timer);
+                   //    prevent = true;
+                   //    console.log('double click '+prevent);
+                   //    $(this).attr('contenteditable','true');
+                   //    after_db_click = true;
+                   //    $(this).click();
+                   //  });
+
+
             })
            
         
@@ -27276,67 +27500,122 @@ $('#conc-modal').imagesLoaded( function() {
           var tokendata =  Marionette.getOption(that,"tokendata");
           var query = tokendata.query;
  
-
+          console.log(tokendata);
            _.each(tokendata.matches, function(match) {
             var line = match['line'];
             var linetokens = line.tokens;
-            console.log(line['pageId']);
-            var splitImgLine = $('<div class="splitLine"></div>');
-            $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").append(splitImgLine);
+            var concLine = $('<div class="concLine"></div>')
+            var anchor = line['projectId']+"-"+line['pageId']+"-"+line['lineId'];
+            concLine.attr('anchor',anchor);
+
+            var querytoken = match['tokens'][0]['cor'];
+
+            $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().append(concLine);
 
             var cnt = 0;
-            var offset = 0;
             var img_id = "img_"+line['pageId']+"_"+line['lineId'];
+            var line_img = document.getElementById(img_id);
 
+            var scalefactor = line_img.width / line.box.width;
+            var prevdiv;
              // linecor = Util.replace_all(linecor,word['cor'],'<span class="badge badge-pill badge-primary">'+word['cor']+'</span>');
 
-              _.each(linetokens, function(token) {
+              for(var i=0;i<linetokens.length;i++) {
 
-                // var gettingSplitImages = ProjectEntitites.API.getSplitImages({word:word});
-                //          $.when(gettingSplitImages).done(function(images){
+                var token = linetokens[i];
 
-                //           line['leftImg'] = images.leftImg;
-                //           line['rightImg'] = images.rightImg;
-                //           line['middleImg'] = images.middleImg;
-                //          projectConcView.render();
-                //          });
+              
+                var whitespace_width=0; 
+                if (token.ocr.includes(" ")){
+                  whitespace_width = token.box.width;
+                }
 
-                 var box = token['box'];
+                var box = token['box'];
 
-                var line_img = document.getElementById(img_id);
-
+                // var line_img = document.getElementById(img_id);
+                // var boxwidth = box.width + whitespace_length;
                 // console.log(line_img);
 
-                var c = document.createElement("canvas");
-                c.width=box.width;
-                c.height=box.height;
+                // console.log(token);
 
-                  var ctx = c.getContext("2d");
-                  ctx.drawImage(line_img, offset, 0, box.width, box.height, 0, 0, box.width, box.height);
+                // var c = document.createElement("canvas");
+                // c.width=boxwidth;
+                // c.height=box.height;
 
-                    var img = new Image();
-                    img.src = c.toDataURL();
-                    img.setAttribute('id','splitImg_'+line['pageId']+"_"+line['lineId']+"_"+cnt);
-                    img.height = '25';
+                //   var ctx = c.getContext("2d");
+                //   ctx.drawImage(line_img, offset, 0, boxwidth, box.height, 0, 0, boxwidth, box.height);
+
+                //     var img = new Image();
+                //     img.src = c.toDataURL();
+                //     img.setAttribute('id','splitImg_'+line['pageId']+"_"+line['lineId']+"_"+cnt);
+                //     img.height = '25';
 
                     $('#splitImg_'+line['lineId']+"_"+cnt).css('width','auto');
 
-                    var cordiv = $("<div>"+token.cor.trim()+"</div>");
-                    if(query==token.cor){
-                     cordiv = $("<div><span class='badge badge-primary'>"+token.cor.trim()+"</span></div>");
+                    var tokendiv;
+                    var cordiv = $("<div>"+token.cor+"</div>");
+
+                    if(querytoken.toLowerCase()==token.cor.toLowerCase()){
+                       cordiv = $("<div class='cordiv' contenteditable='true'>"+token.cor.trim()+"</div>");
+                        
+                       //var grp = $ ("<div class='input-group-mb-3'></div>");
+                       // grp.append($("<span class='concbtn_left'><i class='far fa-square'></i></span>"));
+                       // grp.append($("<span class='cortoken' contenteditable='true'>"+token.cor.trim()+"</span>"));
+                       // grp.append($("<span class='concbtn_right'><i class='fas fa-caret-down'></i></span>"));
+
+                       // cordiv.find('span').append(grp);
+                      //    
                    //  cordiv = $("<div style='color:green;'>"+token.cor.trim()+"</div>");
+
+                    tokendiv = $('<div class="tokendiv cordiv_container"></div>')
+                    tokendiv.append($("<span class='cordiv_left js-select-cor'><i class='cor_item far fa-square'></i></span>")).append(cordiv);;
+                    tokendiv.append($("<span class='cordiv_right js-suggestions-cor'><i class='far fa-caret-square-down cor_item '></i></span><span class='cordiv_right js-correct-cor'><i class='cor_item far fa-arrow-alt-circle-up'></i></span>"));
+
                     }
 
+                    else{
+                      tokendiv = $('<div class="tokendiv"></div>').append(cordiv);
+                    }
+                  
+                        tokendiv.attr('pageId',token['pageId']).attr('lineId',token['lineId']).attr('projectId',token['projectId']).
+                       attr('tokenId',token['tokenId']);
+                    // var div = $("<div style='display:inline-block;'></div>").append(img).append(cordiv);
+                    $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().find('.concLine').append(tokendiv);
 
-                    var div = $("<div style='display:inline-block;'></div>").append(img).append(cordiv);
 
-                    $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").find('.splitLine').append(div);
+
                     cnt++;
-                    offset +=box.width;
-              });
-           $("#"+img_id).remove();
+
+                       // if (token.ocr.includes(" ")){
+
+
+                        var whitespace_div_length = token.box.width*scalefactor ;
+                         cordiv.css('width',whitespace_div_length);
+                       
+
+                        prevdiv = cordiv;
+                       //  current_position+=(prev_div_width + whitespace_div_length);
+                       // }
+
+
+               }
+           // $("#"+img_id).remove();
+
+
+
 
      });
+
+          // remove when clicked somewhere else
+         $(that.el).click(function(e) 
+          {
+              var container = $(".cordiv");
+                if (!container.is(e.target) && container.has(e.target).length === 0) 
+                {          
+                    container.parent().find('.cordiv_left').hide();
+                    container.parent().find('.cordiv_right').hide();
+                }
+          });   
 
     that.$el.modal('show');
 
@@ -27366,7 +27645,7 @@ return Show;
 define("tpl!apps/projects/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\n<div id="info-region" ></div>\n<div id="resp-region" ></div>\n\n<div id="footer-region" ></div>\n';
+__p+='<div id="hl-region"></div>\r\n<div id="info-region" ></div>\r\n<div id="hub-region" ></div>\r\n<div id="hub2-region" ></div>\r\n<div id="packages-region" ></div>\r\n\r\n<div id="footer-region" ></div>\r\n';
 }
 return __p;
 };});
@@ -27375,85 +27654,57 @@ return __p;
 define("tpl!apps/projects/show/templates/info.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n\n<div class="container">\n<div class="row">\n\n   <div class="col-md-5">\n\n\n    <div style="margin-bottom:15px">\n\n    <button type="button" class="btn js-edit-project"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</button>\n    <button type="button" class="btn js-delete-project btn-danger"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</button>\n    <button type="button" class="btn js-add-book"> <i class="fa fa-plus" aria-hidden="true"></i> Add Book</button>\n\n    </div>\n\n\n    <h4> <b>Project Information:</b>  </h4> \n\n\n  </div>\n   <div class="col-md-7">\n   </div>\n\n</div>\n\n<div class="row">\n<div class="col-lg-12">\n\n<div style="margin-bottom:15px">\n\n	<div>\n	<b>Title : </b> '+
+__p+='\r\n\r\n<div class="container">\r\n<hr>\r\n\r\n\r\n<div class="row">\r\n<div class="col-lg-12">\r\n\r\n\r\n<table class="table table-bordered" style=\'margin-bottom: 30px;\'> \r\n\r\n<thead class="thead-light">\r\n      <tr>\r\n        <th>Title</th>\r\n        <th>Author</th>\r\n        <th>Language</th>\r\n        <th>Pages</th>\r\n      </tr>\r\n </thead>\r\n <tbody>\r\n\r\n  <tr>  \r\n        <td>'+
 ((__t=(title))==null?'':_.escape(__t))+
-'\n	</div>\n\n	<div>\n	<b>Author : </b> '+
+'</td>\r\n        <td>'+
 ((__t=(author))==null?'':_.escape(__t))+
-'\n	</div>\n\n	<div>\n	<b>Year : </b> '+
-((__t=(year))==null?'':_.escape(__t))+
-'\n	</div>\n\n	<div>\n	<b>Language : </b> '+
+'</td>\r\n        <td>'+
 ((__t=(language))==null?'':_.escape(__t))+
-'\n	</div>\n\n\n	<div>\n	<b>User : </b> '+
-((__t=(user))==null?'':_.escape(__t))+
-'\n	</div>\n\n<hr>\n\n</div>\n\n</div>\n</div>\n\n<div class="row">\n<div class="col-lg-12">\n\n<h4> <b>Books:</b>  </h4> \n\n\n</div>\n</div>\n\n<table class="table table-bordered" \n id="book_table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\n\n <thead>\n      <tr>\n        <th>Title</th>\n        <th>Author</th>\n        <th>Language</th>\n        <th>Ocr Engine</th>\n        <th></th>\n      </tr>\n </thead>\n <tbody>\n\n 	';
- _.each(books, function(book) { 
-__p+='\n 	<tr>  \n        <td>'+
-((__t=(book.title))==null?'':_.escape(__t))+
-'</td>\n        <td>'+
-((__t=(book.autdor))==null?'':_.escape(__t))+
-'</td>\n        <td>'+
-((__t=(book.language))==null?'':_.escape(__t))+
-'</td>\n        <td>'+
-((__t=(book.ocrEngine))==null?'':_.escape(__t))+
-'</td>\n        <td><button class="btn no_bg_btn float-right js-delete-book table_row_button btn-warning"><i class="fa fa-minus" aria-hidden="true"></i> Remove</button></td>\n\n    </tr>\n    ';
- }); 
-__p+='   \n\n </tbody>\n\n</table>\n\n</div>\n\n';
+'</td>\r\n        <td>'+
+((__t=(pages))==null?'':_.escape(__t))+
+'</td>\r\n\r\n    </tr>\r\n\r\n </tbody>\r\n\r\n</table> \r\n\r\n</div>\r\n\r\n</div>\r\n\r\n</div>\r\n\r\n';
 }
 return __p;
 };});
 
 
-define("tpl!apps/projects/show/templates/resp.tpl", function () { return function(obj){
+define("tpl!apps/projects/show/templates/split.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n<div class="container" style="margin-top: 40px">\n\n<div class="row">\n\n<div class="col-12-md">\n\n<div class="loading_background">\n         <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>\n</div>\n\n\n';
- if(results.length>0){ 
-__p+='\n\n<ul id="tabs" class="nav nav-tabs" role="tablist">\n\n\n';
+__p+='  <div class="modal-dialog" role="document">\r\n    <div class="modal-content">\r\n      <div class="modal-header">\r\n        <h5 class="modal-title">Split project ';
+title
+__p+='</h5>\r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class="modal-body">\r\n\r\n        <form class="splitform">\r\n          <div class="form-group row">\r\n          <div class="col-12">\r\n             <button type="button" class="btn btn-primary js-addpackage"><i class="fas fa-folder-plus"></i> Add new package</button>\r\n          </div>\r\n        </div> \r\n        <div class="userrows">\r\n        </div>\r\n\r\n       <!--  <div class="form-group row">\r\n          <div class="col-4">\r\n          <label id="splitLabel" for="splitPage">Split into '+
+((__t=(n))==null?'':_.escape(__t))+
+' pages</label>\r\n          <input id="split-n" name="split-n" size="3" type="number" min="1" max="100" step="1" value="'+
+((__t=(n))==null?'':_.escape(__t))+
+'" class="form-control">\r\n          </div>\r\n        </div> -->\r\n        <div class="form-group form-check">\r\n          <input type="checkbox" class="form-check-input" id="checkRnd">\r\n          <label class="form-check-label" for="checkRnd">Random</label>\r\n        </div>\r\n      </form>\r\n      </div>\r\n      <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-confirm">Confirm</button>\r\n        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n';
+}
+return __p;
+};});
 
-var count=0;
- _.each(results, function(result) { count++; 
-__p+='\n\n<li class="nav-item">\n    ';
- if(count==1) { 
-__p+='\n    <a class="nav-link active" data-toggle="tab" href="#'+
-((__t=(result.type))==null?'':_.escape(__t))+
-'" role="tab">'+
-((__t=(result.name))==null?'':_.escape(__t))+
-'</a>\n    ';
- } else { 
-__p+='\n    <a class="nav-link" data-toggle="tab" href="#'+
-((__t=(result.type))==null?'':_.escape(__t))+
-'" role="tab">'+
-((__t=(result.name))==null?'':_.escape(__t))+
-'</a>\n    ';
- } 
-__p+='\n\n  </li>\n\n\n';
- }); 
-__p+='\n\n</ul>\n\n<div class="tab-content">\n \n';
 
-var count=0;
- _.each(results, function(result) { 
- count++; 
- 
-__p+='\n';
- if(count==1) { 
- 
-__p+='\n <div class="tab-pane active" id="'+
-((__t=(result.type))==null?'':_.escape(__t))+
-'" role="tabpanel">\n '+
-((__t=(  result.evalstring  ))==null?'':__t)+
-'\n </div>\n';
- } else { 
-__p+='\n <div class="tab-pane" id="'+
-((__t=(result.type))==null?'':_.escape(__t))+
-'" role="tabpanel">\n'+
-((__t=( result.evalstring ))==null?'':__t)+
-'\n </div>\n';
- } 
-__p+='\n\n\n';
+define("tpl!apps/projects/show/templates/packages.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='\r\n';
+ if(packages.length>0){ 
+__p+='\r\n\r\n<div class="container">\r\n\r\n<hr>\r\n\r\n<div class="row">\r\n<div class="col-lg-12">\r\n\r\n\r\n<h4> <b>Packages:</b>  </h4> \r\n\r\n\r\n \r\n<table class="table table-bordered" \r\n id="book_table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\r\n\r\n <thead class="thead-light">\r\n      <tr>\r\n        <th>Title</th>\r\n        <th>Author</th>\r\n        <th>Language</th>\r\n        <th>Pages</th>\r\n      </tr>\r\n </thead>\r\n <tbody>\r\n\r\n 	';
+ _.each(packages, function(package) { 
+__p+='\r\n 	<tr class="clickable-row" data-href="#projects/'+
+((__t=(package.projectId))==null?'':_.escape(__t))+
+'">  \r\n        <td>'+
+((__t=(package.title))==null?'':_.escape(__t))+
+'</td>\r\n        <td>'+
+((__t=(package.author))==null?'':_.escape(__t))+
+'</td>\r\n        <td>'+
+((__t=(package.year))==null?'':_.escape(__t))+
+'</td>\r\n        <td>'+
+((__t=(package.pages))==null?'':_.escape(__t))+
+'</td>\r\n    </tr>\r\n    ';
  }); 
-__p+='\n\n</div>\n\n';
+__p+='   \r\n\r\n </tbody>\r\n\r\n</table> \r\n\r\n</div>\r\n</div>\r\n</div>\r\n\r\n';
  } 
-__p+='\n\n\n\n</div>\n\n</div>\n\n</div>';
+__p+='';
 }
 return __p;
 };});
@@ -27465,9 +27716,10 @@ return __p;
 define('apps/projects/show/show_view',["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/projects/page/show/show_view","apps/projects/concordance/show/show_view",
         "tpl!apps/projects/show/templates/layout.tpl",
         "tpl!apps/projects/show/templates/info.tpl",
-        "tpl!apps/projects/show/templates/resp.tpl"
+        "tpl!apps/projects/show/templates/split.tpl",
+        "tpl!apps/projects/show/templates/packages.tpl"
 
-  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl,respTpl){
+  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl,splitTpl,packagesTpl){
 
 
     var Show = {};
@@ -27477,7 +27729,9 @@ define('apps/projects/show/show_view',["marionette","app","backbone.syphon","com
     regions:{
        headerRegion: "#hl-region"
       ,infoRegion: "#info-region"
-      ,respRegion: "#resp-region"
+      ,hubRegion: "#hub-region"
+      ,hubRegion2: "#hub2-region"
+      ,packagesRegion: "#packages-region"
       ,footerRegion: "#footer-region"
     }
 
@@ -27491,6 +27745,8 @@ define('apps/projects/show/show_view',["marionette","app","backbone.syphon","com
   });
 
 
+ Show.Hub = Views.CardHub.extend({
+ })
 
   Show.Info = Marionette.View.extend({
       template: infoTpl,
@@ -27499,7 +27755,14 @@ define('apps/projects/show/show_view',["marionette","app","backbone.syphon","com
       'click .js-delete-project' : 'delete_clicked',
       'click .js-add-book' : 'add_book_clicked'
 
-      },
+      }, 
+      serializeData: function(){
+
+         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+
+        return data;
+    
+    },
      
 
       edit_clicked:function(e){
@@ -27526,6 +27789,53 @@ define('apps/projects/show/show_view',["marionette","app","backbone.syphon","com
     
   });
 
+ Show.Packages = Marionette.View.extend({
+      template: packagesTpl,
+      events:{
+        'click .clickable-row' : 'row_clicked',
+
+
+      }, 
+      row_clicked : function(e){
+      e.stopPropagation();
+      var url = $(e.currentTarget).attr('data-href')
+
+      if(url=="#"){ var idx = $(e.currentTarget).attr('data-idx'); this.trigger('go:list_clicked',{idx:idx}); }
+      else window.location = url;
+
+    },
+
+      serializeData: function(){
+        return{
+          packages : Marionette.getOption(this,"packages")
+        }
+  
+    },
+     
+
+      edit_clicked:function(e){
+        e.preventDefault();
+        this.trigger("show:edit_clicked");
+      },
+
+       delete_clicked:function(e){
+        e.preventDefault();
+        this.trigger("show:delete_clicked");
+
+      },
+
+       add_book_clicked:function(e){
+        e.preventDefault();
+        this.trigger("show:add_book_clicked");
+
+
+      },
+     onAttach: function(){
+       var table = $('#packages_table').DataTable();
+
+      }
+    
+  });
 Show.Page = Page.Page.extend({});
 Show.Concordance = Concordance.Concordance.extend({});
 
@@ -27538,14 +27848,108 @@ Show.FooterPanel = Views.FooterPanel.extend({
 Show.ProjectForm = CommonViews.ProjectForm.extend({
   });
 
-Show.DeleteProjectForm = Views.Confirm.extend({
-   confirmClicked: function(e){
-     e.preventDefault();
-     this.trigger("project:delete_clicked");
-   },
+Show.AreYouSure = Views.AreYouSure.extend({
+      triggers:{
+     "click .js-yes":"delete:confirm"
+    }
+  })
 
+Show.OkDialog = Views.OkDialog.extend({
+  })
+
+Show.Split = Marionette.View.extend({
+    template: splitTpl,
+    events:{
+     "click .js-confirm":"confirmClicked",
+     "click .js-addpackage":"addSplitrow",
+     "click .js-close": "closeClicked"
+    },
+  serializeData: function(){
+      return {
+        title: Marionette.getOption(this,"title"),
+        text: Marionette.getOption(this,"text"),
+        id: Marionette.getOption(this,"id"),
+        n: Marionette.getOption(this,"n")
+
+      }
+  },
+  confirmClicked: function(){
+    var n = $('.userrows').find('.row').length;
+    var random = false;
+     if($("#checkRnd").is(":checked")) {
+        random=true;
+      }
+
+    var ids=[];
+    $('.userrows').find('.row').each(function(){
+      var selected = $(this).find('select').val();
+      ids.push(Number(selected));
+    });
+
+    var data={n:n,random:random,ids:ids};
+    this.trigger("split:confirmed",data);
+  },
+  addSplitrow:function(){
+    var pages = Marionette.getOption(this,"n");
+    var length = $('.userrows').find('.row').length;
+    //only add max pages rows
+    if(length==pages){
+      return;
+    }
+
+
+   var row = $('<div class="form-group"><i class="js-close close-x fa fa-times"></i><div class="row"><div class="col-4"><label id="splitLabel" for="splitPage">Select User</label><select class="form-control"></select></div></div></div>');
+   var users = Marionette.getOption(this,'users');      
+   
+    $(".userrows").prepend($('<hr>')); 
+    $(".userrows").prepend(row);
+
+    for(i in users){
+      if(!users[i].admin){
+      row.find('select').append($('<option value="'+users[i].id+'">'+users[i].name+'</option>'));
+      }
+    }
+
+
+
+  },
+  closeClicked: function(e){
+        $(e.currentTarget).parent().next().remove();
+
+    $(e.currentTarget).parent().remove();
+  },
+
+   onAttach: function(){
+
+    this.$el.addClass("modal fade");
+    this.$el.attr("tabindex","-1");
+    this.$el.attr("role","dialog");
+    this.$el.attr("id","splitModal");
+
+    $("#splitModal").modal();
+    var that = this;
+
+    // $("#split-n").on('input',function(){
+    //   var n = $(this).val();
+    //   $('#splitLabel').text("Split into " + n + " pages");
+    // })
+
+    //  $('#checkRnd').change(function() {
+    //     if($(this).is(":checked")) {
+    //       $("#split-n").attr('disabled',true);
+    //       $('#splitLabel').text("Split randomly");
+    //     }
+    //     else{
+    //       $("#split-n").attr('disabled',false);
+    //       var n = $("#split-n").val();
+    //       $('#splitLabel').text("Split into " + n + " pages");
+    //    }        
+    // });
+
+
+    }
+     
   });
-
 
 return Show;
 
@@ -27602,7 +28006,6 @@ Entities.API = {
         type: "POST",
         data:data,
         success: function(data) {
-
               defer.resolve(JSON.parse(data));
             },
             error: function(data){
@@ -27644,13 +28047,12 @@ getProject: function(data){
       type: "POST",
        data:data,
       success: function(data) {
-        console.log(data)
-        var result = new Entities.Project(data)
+        var result = new Entities.Project(JSON.parse(data));
         defer.resolve(result);
 
           },
           error: function(data){
-            defer.resolve(undefined);
+            defer.reject(data);
           }
   });
 
@@ -27680,6 +28082,29 @@ uploadProjectData: function(data){
     return defer.promise();
   },
 
+downloadProject: function(data){
+    data['backend_route'] = "download_project";
+    var defer = jQuery.Deferred();  
+     $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        var result = new Entities.Project(JSON.parse(data));
+        defer.resolve(result);
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+
   createProject: function(data){
     data['backend_route'] = "create_project";
     console.log(data)
@@ -27701,8 +28126,6 @@ uploadProjectData: function(data){
     return defer.promise();
   },
 
-
-
 deleteProject: function(data){
     data['backend_route'] = "delete_project";
     console.log(data)
@@ -27723,8 +28146,108 @@ deleteProject: function(data){
 
     return defer.promise();
   },
+  updateProject: function(data){
+    data['backend_route'] = "update_project";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+       
+        url: "api/api_controller.php",
+        type: "POST",
+        data: data,
+        success: function(data) {
+
+              defer.resolve(data);
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+   splitProject: function(data){
+    data['backend_route'] = "split_project";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+       
+        url: "api/api_controller.php",
+        type: "POST",
+        data: data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+
+assignPackages: function(data){
+  console.log(data);
+    data['backend_route'] = "assign_packages";
+    var defer = jQuery.Deferred();  
+     $.ajax({
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(data);
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+
+    getLine: function(data){
+    data['backend_route'] = "get_line";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
   correctLine: function(data){
     data['backend_route'] = "correct_line";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+    correctToken: function(data){
+    data['backend_route'] = "correct_token";
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
@@ -27788,6 +28311,7 @@ searchToken: function(data){
 
 getCorrectionSuggestions: function(data){
     data['backend_route'] = "get_correction_suggestions";
+    console.log(data);
   var defer = jQuery.Deferred();
       $.ajax({
       
@@ -27893,17 +28417,372 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 
  Controller = {
 
-		showProject: function(id,page_id){
-      		$(window).scrollTop(0);
+		showProject: function(id){
+
+     		require(["entities/project","entities/util","entities/users"], function(ProjectEntities,UtilEntities,UserEntities){
+
+	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
+            App.mainLayout.showChildView('backdropRegion',loadingCircleView);
+     			  var fetchingproject = ProjectEntities.API.getProject({pid:id});
+            var fetchinglanguages = UtilEntities.API.getLanguages();
+            var fetchingprojects = ProjectEntities.API.getProjects();
+            var fetchinguser = UserEntities.API.loginCheck();
+
+   
+      $.when(fetchingproject,fetchinglanguages,fetchingprojects,fetchinguser).done(function(project,languages,projects,user){
+
+		  loadingCircleView.destroy();
+      console.log(project);
+
+			var projectShowLayout = new Show.Layout();
+			var projectShowHeader;
+			var projectShowInfo;
+			var projectShowFooterPanel;
+			// console.log(reviews);
+
+        // only show packages of this project
+           console.log(projects);
+
+        var packages = [];
+       for(var i=0;i<projects.books.length;i++){
+        var book = projects.books[i];
+        if(user.admin&&(book.bookId!=book.projectId)&&(book.bookId==id)){
+           packages.push(book);
+        }
+       };
+	 console.log(packages);
+			projectShowLayout.on("attach",function(){
+      var cards = [         
+           {
+                  "color": "green",
+                  "icon": "fas fa-history",
+                  "id": "test_btn",
+                  "name": "Order Profile",
+                  "seq": 1,
+                  "text": "Start profiling the project.",
+                  "url": "profile",
+              }, 
+               {
+                  "color": "blue",
+                  "icon": "far fa-edit",
+                  "id": "doc_button",
+                  "name": "Adaptive tokens",
+                  "seq": 5,
+                  "text": "List adaptive tokens.",
+                  "url": "docs:show",
+              }, {
+                  "color": "red",
+                  "icon": "fas fa-columns",
+                  "id": "about_btn",
+                  "name": "Split",
+                  "seq": 4,
+                  "text": "Split the project.",
+                  "url": "split",
+          },
+                {
+                  "color": "green",
+                  "icon": "far fa-edit",
+                  "id": "delete_button",
+                  "name": "Edit",
+                  "seq": 5,
+                  "text": "Edit the project.",
+                  "url": "edit",
+              },
+               {
+                  "color": "blue",
+                  "icon": "fas fa-download",
+                  "id": "test_btn",
+                  "name": "Download",
+                  "seq": 1,
+                  "text": "Save project files to disk.",
+                  "url": "download",
+              }, 
+
+               {
+                  "color": "red",
+                  "icon": "far fa-times-circle",
+                  "id": "about_btn",
+                  "name": "Delete",
+                  "seq": 4,
+                  "text": "Delete the project.",
+                  "url": "delete",
+          }
+           
+          ];
+
+var cards2 = [
+          {
+                  "color": "blue",
+                  "icon": "fas fa-cogs",
+                  "id": "test_btn",
+                  "name": "PoCoTo-A",
+                  "seq": 1,
+                  "text": "Fully automatic OCR postcorrection.",
+                  "url": "projects:list",
+              }, {
+                  "color": "green",
+                  "icon": "fas fa-file-signature",
+                  "id": "users_button",
+                  "name": "PoCoTo-A-I",
+                  "seq": 2,
+                  "text": "Manual interactive postcorrection tools.",
+                  "url": "projects:show_page",
+              }
+          ]
+
+        var projectShowHub = new Show.Hub({columns:3,cards:cards,currentRoute:"home"});
+        var projectShowHub2 = new Show.Hub({columns:2,cards:cards2,currentRoute:"home"});
+
+        projectShowHub.on('cardHub:clicked',function(data){
+          if(data.url=="delete"){
+             this.trigger("show:delete_clicked");
+          }
+          if(data.url=="edit"){
+             this.trigger("show:edit_clicked");
+          }
+          if(data.url=="profile"){
+             this.trigger("show:profile");
+          }
+            if(data.url=="split"){
+             this.trigger("show:split");
+          }
+            if(data.url=="download"){
+             this.trigger("show:download");
+          }
+        });
+
+         projectShowHub2.on('cardHub:clicked',function(data){
+          if(data.url=="projects:show_page"){
+             App.trigger("projects:show_page",id,'first');
+          }
+        });
+
+			  projectShowHeader = new Show.Header({title:project.get('title'),icon:"fas fa-book-open",color:"green"});
+        projectShowInfo = new Show.Info({model:project});
+      	projectShowFooterPanel = new Show.FooterPanel();
+        var projectShowPackages= new Show.Packages({packages:packages});
+
+        projectShowHub.on('show:profile',function(){
+           var profilingproject = ProjectEntities.API.profileProject({pid:id});
+
+             $.when(profilingproject).done(function(result){
+
+                   App.mainmsg.updateContent(result,'success');
+                   var confirmModal = new Show.OkDialog({asModal:true,title:"Profiling started",text:"Profile for "+project.get('title')+" ordered.",id:"profileModal"})
+                   App.mainLayout.showChildView('dialogRegion',confirmModal)
+
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
+            });
+
+
+       projectShowHub.on('show:split',function(){
+
+            var fetchingusers = UserEntities.API.getUsers();
+
+             $.when(fetchingusers).done(function(users){
+
+
+            var projectsShowSplitProject = new Show.Split({users:users.users,model:project, asModal:true,text:"Split Project",n:project.get('pages')});
+                App.mainLayout.showChildView('dialogRegion',projectsShowSplitProject)
+
+               projectsShowSplitProject.on("split:confirmed",function(data){
+                console.log(data);
+                data['pid'] = id;
+                var splitingproject = ProjectEntities.API.splitProject(data);
+
+                 $.when(splitingproject).done(function(result){
+                      $("#splitModal").modal('hide');
+                  //   App.mainmsg.updateContent(result,'success');
+                        var assign_data = {pairs:[]};
+                        _.each(result.books,function(book,index){
+                          assign_data['pairs'].push({uid:data.ids[index],pid:book.projectId});
+                        });
+
+
+                         var assigningprojects = ProjectEntities.API.assignPackages(assign_data);
+                            $.when(assigningprojects).done(function(assign_result){
+                                 // show message and update table
+                                  App.mainmsg.updateContent(assign_result,'success');
+
+                                  for(var i=0;i<result.length;i++){
+                                    var string = "";
+                                    string+='<tr class="clickable-row" data-href="#projects/"'+result[i]['pid']+'><td>';
+                                    string+= '<td>'+result[i]['title']+'</td>';
+                                    string+= '<td>'+result[i]['language']+'</td>';
+                                    string+= '<td>'+result[i]['pages']+'</td></tr>';
+
+                                    $('#book_table').find('tbody').append($(string));
+
+                                  }
+
+
+                            });
+
+
+                        console.log(assign_data);
+
+                     }).fail(function(response){
+                           App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                     }); 
+
+                });
+
+              });
+
+   
+             });
+
+       projectShowHub.on('show:download',function(){
+
+              var downloadinggproject = ProjectEntities.API.downloadProject({pid:id});
+
+               $.when(downloadinggproject).done(function(result){
+                   // App.mainmsg.updateContent(result,'success');
+
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
+
+         
+   
+             });
+
+    	  projectShowHub.on("show:edit_clicked",function(){
+
+			   var projectsShowEditProject = new Show.ProjectForm({model:project
+          , asModal:true,text:"Edit Project",edit_project:true,loading_text:"Update in progress",languages:languages.languages});
+
+           projectsShowEditProject.on("project:update",function(data){
+            project.set(data);
+
+            var puttingProject = ProjectEntities.API.updateProject({pid:id,projectdata:data});
+
+                 $.when(puttingProject).done(function(result){
+                  $('.loading_background').fadeOut();
+
+                   $('#projects-modal').modal('toggle');
+                     projectShowHeader.options.title = data.title;
+                     projectShowHeader.render();
+                     projectShowInfo.render();
+                     App.mainmsg.updateContent("Project "+id+" successfully updated.",'success');              
+
+                    })
+
+
+          });
+
+
+          App.mainLayout.showChildView('dialogRegion',projectsShowEditProject);
+
+          });
+
+
+       projectShowHub.on('show:delete_clicked',function(){
+
+            var confirmModal = new Show.AreYouSure({title:"Are you sure...",text:"...you want to delete project "+project.get('title')+" ?",id:"deleteModal"})
+            App.mainLayout.showChildView('dialogRegion',confirmModal)
+
+            confirmModal.on('delete:confirm',function(){
+                  var deletingProject = ProjectEntities.API.deleteProject({pid:id});
+                  $('#deleteModal').modal("hide");
+
+                 $.when(deletingProject).done(function(result){
+                   App.mainmsg.updateContent("Project "+id+" successfully deleted.",'success');              
+
+                     App.trigger('projects:list');
+
+                 }).fail(function(response){ 
+                    App.mainmsg.updateContent(response.responseText,'danger');
+                  });    
+            })
+
+          });
+
+
+
+         projectShowHub.on("show:add_book_clicked",function(methods){
+
+
+		   var projectsShowAddBook = new Show.ProjectForm({model: new ProjectEntitites.Project(), asModal:true,text:"Add a book to the OCR Project",add_book:true,loading_text:"Adding book"});
+
+
+       projectsShowAddBook.on("project:addbook_clicked",function(data){
+		   var addingBook = ProjectEntities.API.addBook(id,data);
+
+
+		         $.when(addingBook).done(function(result){
+		          $('.loading_background').fadeOut();
+
+		           $('#projects-modal').modal('toggle');
+
+
+		           projectsShowAddBook.model.clear().set(projectsListEditProject.model.defaults);
+		           $('#selected_file').text("");
+		           // projectsListAddProject.render()
+
+		        })
+
+
+      });
+
+
+          App.mainLayout.showChildView('dialogRegion',projectsShowAddBook);
+
+          });
+
+
+  			// projectPanel = new Show.FooterPanel();
+
+
+	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
+	          projectShowLayout.showChildView('infoRegion',projectShowInfo);
+            projectShowLayout.showChildView('hubRegion',projectShowHub2);
+            projectShowLayout.showChildView('hubRegion2',projectShowHub);
+            projectShowLayout.showChildView('packagesRegion',projectShowPackages);
+
+	          projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
+
+
+    		}); // on.attach()
+
+          App.mainLayout.showChildView('mainRegion',projectShowLayout);
+
+          }).fail(function(response){
+               loadingCircleView.destroy();
+                App.mainmsg.updateContent(response.responseText,'danger');
+          });  // $when fetchingproject
+
+
+    	}) // require
+    	
+		}
+
+	}
+
+
+return Controller;
+
+});
+
+// ======================================
+// apps/project/page/show/show_controller.js
+// ======================================
+
+define('apps/projects/page/show/show_controller',["app","common/util","common/views","apps/projects/show/show_view"], function(App,Util,Views,Show){
+
+
+ Controller = {
+
+		showPage: function(id,page_id){
 
      		require(["entities/project"], function(ProjectEntitites){
 
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
-              App.mainLayout.showChildView('backdropRegion',loadingCircleView);
-
-   			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
-
-   
+            App.mainLayout.showChildView('backdropRegion',loadingCircleView);
+    			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
+            
         	 $.when(fetchingpage).done(function(page){
 
 		     	loadingCircleView.destroy();
@@ -27932,6 +28811,13 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 			  projectShowInfo = new Show.Info({});
       	projectShowFooterPanel = new Show.FooterPanel();
 
+       projectShowPage.on("page:error-patterns-clicked",function(pid,pat){
+          this.trigger('page:concordance_clicked',pat,1);
+       });
+
+       projectShowPage.on("page:error-tokens-clicked",function(pid,pat){
+        this.trigger('page:concordance_clicked',pat,0);
+       });
        projectShowPage.on("page:new",function(page_id){
                     var fetchingnewpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
                   $.when(fetchingnewpage).done(function(new_page){
@@ -27948,10 +28834,27 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
     
        projectShowPage.on("page:correct_line",function(data,anchor){
 
+          console.log(data);
+
                     var correctingline = ProjectEntitites.API.correctLine(data);
                   $.when(correctingline).done(function(result){
                     
-                    $('#line-text-'+anchor).css('background','#d4edda');
+                    console.log(result);
+                    var lineanchor = $('#line-'+anchor);
+                    lineanchor.addClass('line_fully_corrected');
+
+                 
+
+                    lineanchor.fadeOut(200,function(){
+                      lineanchor.fadeIn(200,function(){
+                          lineanchor.find('.line-tokens').empty();
+                          Util.addAlignedLine(result);
+                          lineanchor.find('.line').hide();
+                          lineanchor.find('.line-tokens').show();
+                      });
+                    });
+                   
+
                    /*** TO DO 
 
                                  var fully = res.isFullyCorrected;
@@ -27983,24 +28886,56 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 
            projectShowPage.on("page:line_selected",function(selection){
                     var that = this;
-                    var searchingToken = ProjectEntitites.API.searchToken({q:selection,p:page_id,pid:id});
                     var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:selection,pid:id});
+                    var searchingToken = ProjectEntitites.API.searchToken({q:selection,p:page_id,pid:id,isErrorPattern:0});
 
-                  $.when(searchingToken,gettingCorrectionSuggestions).done(function(token,suggestions){
-                   that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
+                  $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
                     
-                    that.tokendata = token;
+                    // $('#current_selection').popover({
+                    //     container: 'body'
+                    //   });
+                    that.tokendata = tokens;
+                    // $('#js-concordance').html('Show concordance of <b>'+ selection+'</b> ('+tokens.nWords+' occurrences)');
 
-                    $("#dropdown-content").empty();
+                   $('#js-concordance').attr('title','Show concordance of <b>'+ selection+'</b> ('+tokens.nWords+' occurrences)');
+
+                    $("#suggestionsDropdown").empty();
+
+
+                var suggestions_btn = $('#js-suggestions'); 
+                  
+                suggestions_btn.addClass('dropdown');
+
+                suggestions_btn.attr('data-toggle','dropdown');
+                suggestions_btn.attr('aria-haspopup','true');
+                suggestions_btn.attr('aria-expanded','false');
+                suggestions_btn.attr('data-flip','false');
+                suggestions_btn.attr('data-target','#suggestionsDropdown');
+
+
+                 var dropdown_content = $('<div></div>');
+                 dropdown_content.addClass('dropdown-menu');
+                 dropdown_content.attr('id','suggestionsDropdown');
+                 dropdown_content.attr('aria-labelledby','js-suggestions');
+                 suggestions_btn.append(dropdown_content);
+
+
                      for(i=0;i<suggestions.suggestions.length;i++){
                 
                      var s = suggestions.suggestions[i];
                      var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
                       s.distance + ", weight: " + s.weight.toFixed(2) + ")";
-                     $('#dropdown-content').append($('<a class="dropdown-item noselect">'+content+"</a>"));
+                     $('#suggestionsDropdown').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
 
-                     $('.dropdown-item').on('click',function(){
+                     $('#js-suggestions').click(function(e){
+                      e.stopPropagation();
+                      $(".dropdown-menu").hide();
+                      $('#suggestionsDropdown').toggle();
+                     });
+
+                     $('.dropdown-item').on('click',function(e){
+                      e.stopPropagation();
                       var split = $(this).text().split(" ");
                       Util.replaceSelectedText(split[0]);
                      })
@@ -28008,26 +28943,113 @@ define('apps/projects/show/show_controller',["app","common/util","common/views",
 
                   }).fail(function(response){
                      App.mainmsg.updateContent(response.responseText,'danger');
-                    });  // $when fetchingproject
+                    });  // $when gettingCorrectionSuggestions
           
        })
 
 
-       projectShowPage.on("page:concordance_clicked",function(selection){
-
-       var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:this.saved_selection,pid:id});
+       projectShowPage.on("page:concordance_clicked",function(selection,isErrorPattern){
+        console.log(selection);
+       var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:selection,pid:id});
+       var searchingToken = ProjectEntitites.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern});
        var that = this;
-         $.when(gettingCorrectionSuggestions).done(function(suggestions){
-            var tokendata = that.tokendata;
+         $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
+            var tokendata = tokens;
             console.log(suggestions)
             console.log(tokendata)
 
-           var projectConcView = new Show.Concordance({tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
-    
 
-           projectConcView.on("conc:destroy:editor",function(){
-            projectShowPage.render();
-           })
+
+           var projectConcView = new Show.Concordance({tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
+           $('.custom-popover').remove();
+        
+            projectConcView.on("concordance:correct_token",function(data,anchor){
+
+               console.log(anchor);
+               console.log(data);
+
+                    var correctingtoken = ProjectEntitites.API.correctToken(data);
+                  $.when(correctingtoken).done(function(result){
+                    
+                    console.log(result);
+
+                       // update lines in background with corrections
+
+                       var gettingLine = ProjectEntitites.API.getLine(data);
+                      $.when(gettingLine).done(function(line_result){
+                        console.log(line_result);
+
+                        var lineanchor = $('#line-'+anchor);
+                            
+                            if(lineanchor.length>0) {
+                            lineanchor.removeClass('line_fully_corrected');
+                            lineanchor.addClass('line_partially_corrected');
+                            console.log("lineanchor")
+                            console.log(lineanchor);
+                             lineanchor.find('.line').empty().text(line_result['cor']);
+                             lineanchor.find('.line-tokens').empty();
+                             Util.addAlignedLine(line_result);
+
+                            lineanchor.find('.line').hide();
+                            lineanchor.find('.line-tokens').show();
+                         
+                            }
+            
+                        });
+
+                  }).fail(function(response){
+                     App.mainmsg.updateContent(response.responseText,'danger');
+                    });  // $when fetchingproject
+          
+           }) // correct token
+
+
+             projectConcView.on("concordance:show_suggestions",function(data,div,anchor){
+
+                    var that = this;
+                  
+                  $('#dropdown-content-conc').remove();
+
+
+                var suggestions_btn = div;
+                  
+                suggestions_btn.addClass('dropdown');
+
+                suggestions_btn.attr('data-toggle','dropdown');
+                suggestions_btn.attr('aria-haspopup','true');
+                suggestions_btn.attr('aria-expanded','false');
+                suggestions_btn.attr('id','dropdownMenuConc');
+                suggestions_btn.attr('data-flip','false');
+                suggestions_btn.attr('data-target','dropdown-content-conc');
+
+                 var dropdown_content = $('<div></div>');
+                 dropdown_content.addClass('dropdown-menu');
+                 dropdown_content.attr('id','dropdown-content-conc');
+                 dropdown_content.attr('aria-labelledby','dropdownMenuConc');
+                 suggestions_btn.append(dropdown_content);
+
+
+                     for(i=0;i<suggestions.suggestions.length;i++){
+                    
+                     var s = suggestions.suggestions[i];
+                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
+                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+                     $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
+                     }
+                    dropdown_content.toggle();
+
+                     $('#dropdown-content-conc .dropdown-item').on('click',function(e){
+                      e.stopPropagation();
+                      var split = $(this).text().split(" ");
+                      $(this).parent().parent().prev().text(split[0]);
+                      $(this).parent().hide();
+                     })
+
+
+          
+       }) // conc
+
+
 
              App.mainLayout.showChildView('dialogRegion',projectConcView);
 
@@ -28235,11 +29257,7 @@ define('apps/projects/list/list_view',["marionette","app","common/views","apps/p
  List.ProjectForm = Views.ProjectForm.extend({
   });
  
-List.AreYouSure = CommonViews.AreYouSure.extend({
-      triggers:{
-     "click .js-yes":"delete:confirm"
-    }
-  })
+
 
 return List;
 
@@ -28256,24 +29274,40 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
  	listProjects: function(){
 
-     		require(["entities/project","entities/util"], function(ProjectEntities,UtilEntitites){
+     		require(["entities/project","entities/util","entities/users"], function(ProjectEntities,UtilEntities,UserEntities){
 
           // var loadingCircleView = new  Views.LoadingBackdrop();
           // App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
-          $(window).scrollTop(0);
 
      var fetchingprojects = ProjectEntities.API.getProjects();
-     var fetchinglanguages = UtilEntitites.API.getLanguages();
+     var fetchinglanguages = UtilEntities.API.getLanguages();
+     var fetchinguser = UserEntities.API.loginCheck();
 
 		 var projectsListLayout = new List.Layout();
 
-    	 $.when(fetchingprojects,fetchinglanguages).done(function(projects,languages){
+    	 $.when(fetchingprojects,fetchinglanguages,fetchinguser).done(function(projects,languages,user){
         console.log(projects);
         console.log(languages.languages);
+        console.log(user)
 
-		   // loadingCircleView.destroy();
 
+
+        // only show projects not packages
+         var filtered_projects=[];
+        if(projects.books){
+         for(var i=0;i<projects.books.length;i++){
+          var book = projects.books[i];
+          if(user.admin&&book.isBook){
+             filtered_projects.push(book);
+          }
+         }
+
+       }
+
+       if(user.admin){
+        projects.books=filtered_projects;
+       }
 
     		projectsListLayout.on("attach",function(){
 
@@ -28289,30 +29323,6 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
           projectsListLayout.showChildView('footerRegion',projectsListFooterPanel);
 
 
-          projectsListView.on('list:delete',function(id,delete_row){
-
-            var confirmModal = new List.AreYouSure({title:"Are you sure...",text:"...you want to delete project "+id+" ?",id:"deleteModal"})
-            App.mainLayout.showChildView('dialogRegion',confirmModal)
-
-            confirmModal.on('delete:confirm',function(){
-                  var deletingProject = ProjectEntities.API.deleteProject({pid:id});
-                  $('#deleteModal').modal("hide");
-
-                 $.when(deletingProject).done(function(result){
-                   App.mainmsg.updateContent("Project "+id+" successfully deleted.",'success');              
-                   var fetchingnewprojects = ProjectEntities.API.getProjects();
-
-                       $.when(fetchingnewprojects).done(function(new_projects){
-                          projectsListView.options.collection=new_projects.books;
-                          projectsListView.render();
-                       });
-
-                 }).fail(function(response){ 
-                    App.mainmsg.updateContent(response.responseText,'danger');
-                  });    
-            })
-
-          });
 
              projectsListView.on('list:profile',function(id){
                var profilingproject = ProjectEntities.API.profileProject({pid:id});
@@ -28329,7 +29339,7 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
 
                projectsListView.on('list:open',function(id){
-                App.trigger('projects:show',id,"first");
+                App.trigger('projects:show',id);
               });
 
 
@@ -28346,10 +29356,10 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
                  $.when(uploadingProjectData).done(function(result){
 
-                  console.log(result);
+                           console.log(result);
                             $('.loading_background').fadeOut();
-                           $('#projects-modal').modal('toggle');
-                          $('#selected_file').text("");
+                            $('#projects-modal').modal('toggle');
+                            $('#selected_file').text("");
 
                           App.mainmsg.updateContent(result,'success');
 
@@ -28357,7 +29367,7 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
                        $.when(fetchingnewprojects).done(function(new_projects){
                           projectsListView.options.collection=new_projects.books;
                           projectsListView.render();
-                           projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
+                          projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
                           
 
                        });
@@ -28418,17 +29428,22 @@ define('apps/projects/projects_app',["marionette","app"], function(Marionette,Ap
 	projectsdApp.Router = Marionette.AppRouter.extend({
 		appRoutes: {
 		   "projects"    :"listProjects",
-  		   "projects/:id/page/:page_id"    :"showProject"
+  		   "projects/:id"    :"showProject",
+  		   "projects/:id/page/:page_id"    :"showPage"
 
 		}
 	});
 
 	var API = {
-	
-	
-		showProject: function(id,page_id){
+		showProject: function(id){
 			require(["apps/projects/show/show_controller"], function(ShowController){
-       				ShowController.showProject(id,page_id);
+       				ShowController.showProject(id);
+				});
+		},
+	
+		showPage: function(id,page_id){
+			require(["apps/projects/page/show/show_controller"], function(ShowController){
+       				ShowController.showPage(id,page_id);
 				});
 		},
 
@@ -28441,11 +29456,16 @@ define('apps/projects/projects_app',["marionette","app"], function(Marionette,Ap
 	};
 
 
-	App.on("projects:show",function(id,page_id){
-		App.navigate("projects/"+id+"/page/"+page_id);
-		API.showProject(id,page_id);
+	App.on("projects:show",function(id){
+		App.navigate("projects/"+id);
+		API.showProject(id);
 	});
 
+
+	App.on("projects:show_page",function(id,page_id){
+		App.navigate("projects/"+id+"/page/"+page_id);
+		API.showPage(id,page_id);
+	});
 
 	App.on("projects:list",function(){
 		App.navigate("projects");
@@ -28521,28 +29541,12 @@ define('apps/docs/show/show_view',["marionette","app","common/views",
   Show.Info = Marionette.View.extend({
       template: infoTpl,
       className: "",
-      events:{
-      'click .js-build' : 'build_clicked'
-      },
-     
-  
+      onAttach: function(){
 
-      build_clicked: function(){
-
-     var structures =[];
-
-     $('.index_select').children().each(function(){
-
-            if($(this).is(':checked')){
-              structures.push("{type:"+$(this).val()+"}")
-
-            }
-      })
-
-      var text  = $('#inputext').val();
-      text = text.replace(/(\r\n|\n|\r)/gm,"");
-     this.trigger("show:build_clicked",structures,text);
-      }          
+         var content =  Marionette.getOption(this,"data");
+         $('#docs').append(content);
+         this.trigger('doc:append');
+      }
 
   });
 
@@ -28562,60 +29566,11 @@ return Show;
 });
 
 
-// ================
-// entities/docs.js
-// ================
-
-define('entities/docs',["app"], function(IPS_App){
-
-  var Entities={};
-
-Entities.API = {
-
-
-  getJson: function(data){
-    var defer = jQuery.Deferred();
-        $.ajax({
-        headers: { 
-        'Accept': 'application/json',
-        'Content-Type': 'application/json' 
-         },
-        url: "assets/js/api.json",
-        type: "GET",
-        dataType:"json",
-        success: function(data) {
-          console.log(data)
-          defer.resolve(data);
-
-            },
-            error: function(data){
-              defer.resolve(undefined);
-            }
-    });
-
-
-    return defer.promise();
-    
-},
-
-  
-
-
-
-
-};
-
-
-
-return Entities;
-
-});
-
 // ======================================
 // apps/docs/show/show_controller.js
 // ======================================
 
-define('apps/docs/show/show_controller',["app","common/util","common/views","apps/docs/show/show_view"], function(IPS_App,Util,Views,Show){
+define('apps/docs/show/show_controller',["app","common/util","common/views","apps/docs/show/show_view"], function(App,Util,Views,Show){
 
 
  Controller = {
@@ -28623,22 +29578,18 @@ define('apps/docs/show/show_controller',["app","common/util","common/views","app
 		showDocs: function(id){
       		$(window).scrollTop(0);
 
-	   		require(["entities/docs"], function(DocsEntitites){
+	   		require(["entities/util"], function(UtilEntitites){
 
-	   	      // var loadingCircleView = new  Views.LoadingBackdrop();
-           //    IPS_App.mainLayout.showChildView('backdropRegion',loadingCircleView);
-              // var currentUser = IPS_App.getCurrentUser();
+	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
+              App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
-
-			// loadingCircleView.destroy();
 
 		 	//currentdocs.set({"url_id":id}); // pass url_id to view..
 
-     		var fetchingDocs = DocsEntitites.API.getJson();
+     		var fetchingDocs = UtilEntitites.API.getDocumentation();
 
 	    	$.when(fetchingDocs).done(function(data){
 
-	    	console.log(data)
 
 
 			var docsShowLayout = new Show.Layout();
@@ -28651,25 +29602,30 @@ define('apps/docs/show/show_controller',["app","common/util","common/views","app
 			  
 
 			  docsShowHeader = new Show.Header({});
-			  docsShowInfo = new Show.Info();
+			  docsShowInfo = new Show.Info({data:data});
   			  docsPanel = new Show.FooterPanel({color:"blue"});
 
-	          docsShowLayout.showChildView('headerRegion',docsShowHeader);
-	          docsShowLayout.showChildView('infoRegion',docsShowInfo);
+  			  docsShowInfo.on("doc:append",function(){
+	         		loadingCircleView.destroy();
+	         });
 
+	          // docsShowLayout.showChildView('headerRegion',docsShowHeader);
+	          docsShowLayout.showChildView('infoRegion',docsShowInfo);
 	          docsShowLayout.showChildView('panelRegion',docsPanel);
 
-	        
 
+	  		
+				
 
 			   docsPanel.on("go:back",function(){
-			  	 IPS_App.trigger("docs:list");
+			  	 App.trigger("docs:list");
 			  });
 
 
     		}); // on.attach()
 
-          IPS_App.mainLayout.showChildView('mainRegion',docsShowLayout);
+  			
+          App.mainLayout.showChildView('mainRegion',docsShowLayout);
 
            });
 
@@ -28791,7 +29747,7 @@ define('apps/users/home/home_controller',["app","common/util","apps/users/home/h
                 "name": "Create User",
                 "seq": 3,
                 "text": "Create a new user account.",
-                "url": "users:create",
+                "url": "users:new",
             },
              {
                 "color": "red",
@@ -28862,10 +29818,14 @@ __p+='\r\n \r\n    <div class="form-group form-check">\r\n    <input type="check
 __p+='\r\n\r\n';
  if(asModal){
 __p+='\r\n </div>\r\n  <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-submit">Submit</button>\r\n      </div>\r\n    </div>\r\n\r\n</div>\r\n</div>\r\n\r\n';
-} else {
-__p+='\r\n\r\n</div>\r\n</div>\r\n</div>\r\n\r\n';
-}
+} else  { 
 __p+='\r\n';
+ if (create) {
+__p+='\r\n<div class="row">\r\n<div class="col-md-3"></div>\r\n  <div class="col-md-6">\r\n     <button type="button" style="float:right;" class="btn btn-primary js-submit">Submit</button>\r\n  </div>\r\n  </div>\r\n\r\n';
+ } 
+__p+='\r\n\r\n</div>\r\n</div>\r\n</div>\r\n';
+}
+__p+='\r\n\r\n';
 }
 return __p;
 };});
@@ -28897,6 +29857,8 @@ var Views = {}
           data.asModal = Marionette.getOption(this,"asModal");
           data.modaltitle = Marionette.getOption(this,"modaltitle");
           data.admincheck = Marionette.getOption(this,"admincheck");
+          data.create = Marionette.getOption(this,"create");
+
           data.id = Marionette.getOption(this,"id");
 
         return data;
@@ -28921,7 +29883,13 @@ var Views = {}
       data['institute'] = $("input[name=institute").val();
       data['password'] = $("input[name=password]").val();
       data['new_password'] = $("input[name=new_password]").val();
-	  if($('#admin_check').length>0) data['admin'] = $('#admin_check').val();
+      if($("#admin_check").is(":checked")) {
+         data['admin']=true;
+      }
+      else{
+      	data['admin']=false;
+      }
+	  console.log(data);
 		this.trigger("form:submit", data);
 	 }
 
@@ -29106,7 +30074,7 @@ define('apps/users/list/list_controller',["app","common/util","apps/users/list/l
 				         	var fetchingUsers = UserEntities.API.getUsers();
 
 					    	 $.when(fetchingUsers).done(function(users_new){
-								  usersListView.collection=users_new.users;
+								   usersListView.collection=users_new.users;
 								   usersListView.options.collection=users_new.users;
 
 					    	 	   usersListView.trigger("onAttach");
@@ -29493,6 +30461,105 @@ return Controller;
 
 });
 
+define('apps/users/new/new_view',["app","common/util","common/views","apps/users/common/views"], function(App,Util,Views,UserViews){
+
+var New = {}
+ 
+ New.Header = Views.Header.extend({
+    initialize: function(){
+        this.title = "Create a new user account"
+        this.icon ="fas fa-user-plus"
+        this.color ="red"
+      }
+  });
+
+
+ New.Layout = Views.Layout.extend({
+ });
+
+  New.Form = UserViews.Form.extend({
+  });
+
+  New.FooterPanel = Views.FooterPanel.extend({
+    });
+
+
+return New;
+
+});
+
+
+define('apps/users/new/new_controller',["app","common/util","apps/users/new/new_view"], function(App,Util,New){
+
+
+ var Controller = {
+
+ 	newUser: function(){
+		
+   		require(["entities/users"], function(UserEntities){
+
+ 
+       	var fetchingUsers = UserEntities.API.getUsers();
+
+		usersNewLayout = new New.Layout();
+
+    	 $.when(fetchingUsers).done(function(users){
+		usersNewLayout.on("attach",function(){
+
+ 			var usersNewHeader = new New.Header();
+			var userForm = new New.Form({model:new UserEntities.User(),asModal:false,admincheck:true,create:true})
+
+				 userForm.on('form:submit',function(data){
+
+				 	 var creatingUser = UserEntities.API.createUser(data);
+			   	 	$.when(creatingUser).done(function(result){
+			   	 		$('#userModal').modal('hide');
+				         App.mainmsg.updateContent(result,'success');
+
+				         App.trigger('users:list');
+
+				       }).fail(function(response){
+   			   	 		$('#userModal').modal('hide');
+     			         App.mainmsg.updateContent(response.responseText,'danger')
+				 		});    
+ 				 });
+
+			    
+
+		
+
+			var usersFooterPanel = new New.FooterPanel();
+
+			    usersNewLayout.showChildView('headerRegion',usersNewHeader);
+                usersNewLayout.showChildView('contentRegion',userForm);	
+                usersNewLayout.showChildView('panelRegion',usersFooterPanel);	
+
+ 		}); // on:attach
+
+
+
+         App.mainLayout.showChildView('mainRegion',usersNewLayout);
+
+		}).fail(function(response){ 
+
+		      var mainRegion = App.mainLayout.getRegion('mainRegion');
+		       mainRegion.empty();
+
+		         App.mainmsg.updateContent(response.responseText,'danger');              
+		                          
+                         
+                                        
+          }); //  $.when(fetchingAuth).done // $when fetchingUsers
+
+		}); // require
+	}
+ }
+
+
+return Controller;
+
+});
+
 define('apps/users/users_app',["marionette","app"], function(Marionette,App){
 
 	var UsersApp = {};
@@ -29502,7 +30569,7 @@ define('apps/users/users_app',["marionette","app"], function(Marionette,App){
 			"users":"usersPortal",
 			"users/list":"listUsers",
 			"users/login":"login",
-    		"users/newUser":"newUser",
+    		"users/new":"newUser",
     		"users/:id":"showUser",
 			"users/:id/edit":"editUser",
 			"users/account":"showUser"
@@ -29526,8 +30593,6 @@ define('apps/users/users_app',["marionette","app"], function(Marionette,App){
        				LoginController.showLogin();
 				});
 		},
-		newUser: function(){
-		},
 		showUser: function(id){
 			require(["apps/users/show/show_controller"], function(ShowController){
        				ShowController.showUser(id);
@@ -29536,6 +30601,11 @@ define('apps/users/users_app',["marionette","app"], function(Marionette,App){
 		editUser: function(id){
 			require(["apps/users/edit/edit_controller"], function(EditController){
        				EditController.editUser(id);
+				});
+		},
+		newUser: function(id){
+			require(["apps/users/new/new_controller"], function(NewController){
+       				NewController.newUser(id);
 				});
 		}
 	};
@@ -29567,6 +30637,11 @@ define('apps/users/users_app',["marionette","app"], function(Marionette,App){
 	API.showUser(id);
 	});
 
+	App.on("users:new",function(id){
+	 	App.navigate("users/new");
+	API.newUser(id);
+	});
+
 	var router = new UsersApp.Router({
 		controller: API,
 	});
@@ -29585,7 +30660,6 @@ var App = Marionette.Application.extend({
 });
 
 var App = new App();
-
 
  const MainView = Marionette.View.extend({
     regions:{
@@ -29618,6 +30692,9 @@ Backbone.history.navigate(route, options);
 App.getCurrentRoute = function(){
  return Backbone.history.fragment
 };
+
+
+
 App.on("start", function(){
 
 
@@ -29636,7 +30713,7 @@ App.on("start", function(){
     var app_region = App.getRegion();
 
     App.mainLayout = new MainView();
-     App.mainmsg  = new Views.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
+    App.mainmsg  = new Views.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
 
      App.showView(App.mainLayout);
 

@@ -93,13 +93,13 @@ void BookDirectoryBuilder::unzip() {
 	const auto tdir = tmp_dir();
 	const auto zipfile = zip_file();
 	std::string command =
-	    "unzip -qq -d " + tdir.string() + " " + zipfile.string();
+	    "unzip -o -qq -d" + tdir.string() + " " + zipfile.string();
 	// CROW_LOG_DEBUG << "(BookDirectoryBuilder) Unzip command: " <<
 	// command;
 	auto err = system(command.data());
-	if (err)
-		THROW(Error, "Cannot unzip file: `", command, "` returned ",
-		      err);
+	if (err) {
+		THROW(Error, "Cannot unzip file: `", command, "` returned ", err);
+	}
 	fs::recursive_directory_iterator i(tdir), e;
 	for (; i != e; ++i) {
 		add_file(*i);

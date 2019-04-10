@@ -105,10 +105,19 @@
 </div>
 </div>
 
-<%} else {%>
+<%} else  { %>
+<% if (create) {%>
+<div class="row">
+<div class="col-md-3"></div>
+  <div class="col-md-6">
+     <button type="button" style="float:right;" class="btn btn-primary js-submit">Submit</button>
+  </div>
+  </div>
+
+<% } %>
 
 </div>
 </div>
 </div>
-
 <%}%>
+

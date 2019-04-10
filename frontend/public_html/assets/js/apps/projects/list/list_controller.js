@@ -9,24 +9,40 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
  	listProjects: function(){
 
-     		require(["entities/project","entities/util"], function(ProjectEntities,UtilEntitites){
+     		require(["entities/project","entities/util","entities/users"], function(ProjectEntities,UtilEntities,UserEntities){
 
           // var loadingCircleView = new  Views.LoadingBackdrop();
           // App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
-          $(window).scrollTop(0);
 
      var fetchingprojects = ProjectEntities.API.getProjects();
-     var fetchinglanguages = UtilEntitites.API.getLanguages();
+     var fetchinglanguages = UtilEntities.API.getLanguages();
+     var fetchinguser = UserEntities.API.loginCheck();
 
 		 var projectsListLayout = new List.Layout();
 
-    	 $.when(fetchingprojects,fetchinglanguages).done(function(projects,languages){
+    	 $.when(fetchingprojects,fetchinglanguages,fetchinguser).done(function(projects,languages,user){
         console.log(projects);
         console.log(languages.languages);
+        console.log(user)
 
-		   // loadingCircleView.destroy();
 
+
+        // only show projects not packages
+         var filtered_projects=[];
+        if(projects.books){
+         for(var i=0;i<projects.books.length;i++){
+          var book = projects.books[i];
+          if(user.admin&&book.isBook){
+             filtered_projects.push(book);
+          }
+         }
+
+       }
+
+       if(user.admin){
+        projects.books=filtered_projects;
+       }
 
     		projectsListLayout.on("attach",function(){
 
@@ -42,30 +58,6 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
           projectsListLayout.showChildView('footerRegion',projectsListFooterPanel);
 
 
-          projectsListView.on('list:delete',function(id,delete_row){
-
-            var confirmModal = new List.AreYouSure({title:"Are you sure...",text:"...you want to delete project "+id+" ?",id:"deleteModal"})
-            App.mainLayout.showChildView('dialogRegion',confirmModal)
-
-            confirmModal.on('delete:confirm',function(){
-                  var deletingProject = ProjectEntities.API.deleteProject({pid:id});
-                  $('#deleteModal').modal("hide");
-
-                 $.when(deletingProject).done(function(result){
-                   App.mainmsg.updateContent("Project "+id+" successfully deleted.",'success');              
-                   var fetchingnewprojects = ProjectEntities.API.getProjects();
-
-                       $.when(fetchingnewprojects).done(function(new_projects){
-                          projectsListView.options.collection=new_projects.books;
-                          projectsListView.render();
-                       });
-
-                 }).fail(function(response){ 
-                    App.mainmsg.updateContent(response.responseText,'danger');
-                  });    
-            })
-
-          });
 
              projectsListView.on('list:profile',function(id){
                var profilingproject = ProjectEntities.API.profileProject({pid:id});
@@ -82,7 +74,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
 
                projectsListView.on('list:open',function(id){
-                App.trigger('projects:show',id,"first");
+                App.trigger('projects:show',id);
               });
 
 
@@ -99,10 +91,10 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
                  $.when(uploadingProjectData).done(function(result){
 
-                  console.log(result);
+                           console.log(result);
                             $('.loading_background').fadeOut();
-                           $('#projects-modal').modal('toggle');
-                          $('#selected_file').text("");
+                            $('#projects-modal').modal('toggle');
+                            $('#selected_file').text("");
 
                           App.mainmsg.updateContent(result,'success');
 
@@ -110,7 +102,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
                        $.when(fetchingnewprojects).done(function(new_projects){
                           projectsListView.options.collection=new_projects.books;
                           projectsListView.render();
-                           projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
+                          projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
                           
 
                        });

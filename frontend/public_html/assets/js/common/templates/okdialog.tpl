@@ -1,25 +1,16 @@
-<a class="close-reveal-modal">×</a> 
- <h3> <%- massagetitle%> </h3>
- <h5> <%- massagecontent%></h5>
-
-<div class="center">
-
-
-
-<div class="small_icon_parent">
-
-                 
-                  <img src="assets/images/icons/bg_icon.png">
-                  <a class="js-ok">
-                  <div class="small_btniconcontainer">
-                  <i class="fa fa-check"></i>
-                  </div>
-                  </a>
-                 
-
-                  <a class="js-ok">
-                  <div class="small_bubblebtnbackground"> </div>
-                  </a>
-                  <div class="small_bubbleshadow"> </div>
-        </div>
-</div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><%-title%></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p><%-text%></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary js-ok" data-dismiss="modal">Ok</button>
+      </div>
+    </div>
+  </div>

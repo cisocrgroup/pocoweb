@@ -97,6 +97,37 @@ getIds : function(anchor) {
     ids[i] = parseInt(ids[i]);
   }
   return ids;
+},
+
+addAlignedLine : function(line){
+     var linetokens = line.tokens;
+            var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
+
+            var img_id = "line-img-"+anchor;
+            var line_img = document.getElementById(img_id);
+            var line_text =  $('#line-'+anchor);
+         
+            var scalefactor = line_img.width / line.box.width;
+
+              for(var i=0;i<linetokens.length;i++) {
+
+                var token = linetokens[i];
+                var cordiv;
+                if(token.cor.includes(" ")){
+                   cordiv = $('<div>'+token.cor+"</div>");
+                }
+                else {
+                   cordiv = $('<div>'+token.cor.trim()+"</div>");
+                }
+
+                 var div = $('<div class="tokendiv noselect"></div>').append(cordiv);
+                line_text.find('.line-tokens').css('width',line_img.width+'px').append(div);
+                var box = token['box'];
+                 
+                    var div_length = token.box.width*scalefactor ;
+                    cordiv.css('width',div_length);
+                      
+               }
 }
 
 });

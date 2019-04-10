@@ -48,7 +48,6 @@ Entities.API = {
         type: "POST",
         data:data,
         success: function(data) {
-
               defer.resolve(JSON.parse(data));
             },
             error: function(data){
@@ -90,13 +89,12 @@ getProject: function(data){
       type: "POST",
        data:data,
       success: function(data) {
-        console.log(data)
-        var result = new Entities.Project(data)
+        var result = new Entities.Project(JSON.parse(data));
         defer.resolve(result);
 
           },
           error: function(data){
-            defer.resolve(undefined);
+            defer.reject(data);
           }
   });
 
@@ -126,6 +124,29 @@ uploadProjectData: function(data){
     return defer.promise();
   },
 
+downloadProject: function(data){
+    data['backend_route'] = "download_project";
+    var defer = jQuery.Deferred();  
+     $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        var result = new Entities.Project(JSON.parse(data));
+        defer.resolve(result);
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+
   createProject: function(data){
     data['backend_route'] = "create_project";
     console.log(data)
@@ -147,8 +168,6 @@ uploadProjectData: function(data){
     return defer.promise();
   },
 
-
-
 deleteProject: function(data){
     data['backend_route'] = "delete_project";
     console.log(data)
@@ -169,8 +188,108 @@ deleteProject: function(data){
 
     return defer.promise();
   },
+  updateProject: function(data){
+    data['backend_route'] = "update_project";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+       
+        url: "api/api_controller.php",
+        type: "POST",
+        data: data,
+        success: function(data) {
+
+              defer.resolve(data);
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+   splitProject: function(data){
+    data['backend_route'] = "split_project";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+       
+        url: "api/api_controller.php",
+        type: "POST",
+        data: data,
+        success: function(data) {
+
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+
+assignPackages: function(data){
+  console.log(data);
+    data['backend_route'] = "assign_packages";
+    var defer = jQuery.Deferred();  
+     $.ajax({
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(data);
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+
+    getLine: function(data){
+    data['backend_route'] = "get_line";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
   correctLine: function(data){
     data['backend_route'] = "correct_line";
+    console.log(data)
+    var defer = jQuery.Deferred();
+       $.ajax({
+     
+        url: "api/api_controller.php",
+        type: "POST",
+        data:data,
+        success: function(data) {
+              defer.resolve(JSON.parse(data));
+            },
+            error: function(data){
+              defer.reject(data);
+            }
+    });
+
+    return defer.promise();
+  },
+    correctToken: function(data){
+    data['backend_route'] = "correct_token";
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
@@ -234,6 +353,7 @@ searchToken: function(data){
 
 getCorrectionSuggestions: function(data){
     data['backend_route'] = "get_correction_suggestions";
+    console.log(data);
   var defer = jQuery.Deferred();
       $.ajax({
       

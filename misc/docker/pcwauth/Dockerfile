@@ -5,11 +5,7 @@ ENV DATE='Do 4. Apr 14:09:00 CEST 2019'
 ENV PCWAUTH_GIT=github.com/finkf/pcwauth
 ENV GO111MODULE=on
 RUN apk add git &&\
-	git clone https://${PCWAUTH_GIT} &&\
-    cd pcwauth &&\
-	go install . &&\
-	cd / &&\
-	rm -rf pcwauth &&\
+	go get -u ${PCWAUTH_GIT} &&\
 	apk del git
 
 CMD sleep 15 && pcwauth -db "${MYSQL_USER}:${MYSQL_PASSWORD}@(${PCW_DB_HOST})/${MYSQL_DATABASE}" \

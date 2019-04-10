@@ -4,6 +4,14 @@ FE_FILES += $(PCW_FRONTEND_DIR)/public_html/LICENSE
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/about.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/account.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/adaptive.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/api.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/api_controller.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/backend.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/cacert.pem
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/config.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/upload.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/utils.php
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/assets/js/build.js
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/concordance.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/css/pcw.css
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/doc.html
@@ -27,6 +35,7 @@ FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-remove.png
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-split-project.png
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/favicon.ico
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/logo.jpg
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/index.html
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/index.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/info.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/js/api.js
@@ -49,6 +58,11 @@ $(PCW_FRONTEND_DIR)/public_html/doc.html: frontend/public_html/doc.md
 	$(call ECHO,$@)
 	$V bash misc/scripts/md2html.sh $< | sed -e 's#<br>##g' > $@
 
+# TODO: not that nice
+$(PCW_FRONTEND_DIR)/public_html/assets/js/build.js: frontend/public_html/assets/js/r.js
+	cd frontend/public_html/assets/js && node r.js -o build.js
+	cp -r frontend/public_html/assets $(PCW_FRONTEND_DIR)/public_html
+
 .SECONDEXPANSION:
 %.js: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
@@ -59,6 +73,10 @@ $(PCW_FRONTEND_DIR)/public_html/doc.html: frontend/public_html/doc.md
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
 %.jpg: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
+	$(call ECHO,$@)
+	$V install -d $(dir $@)
+	$V install -m 644 $< $@
+%.pem: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@

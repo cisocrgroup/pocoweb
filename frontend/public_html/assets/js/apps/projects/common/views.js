@@ -5,9 +5,8 @@
 define(["app","marionette","backbone.syphon",
         "common/util","common/views"
         ,"tpl!apps/projects/common/templates/projectform.tpl"
-        ,"tpl!apps/projects/common/templates/listtemplate.tpl"
 
-        	], function(IPS_App,Marionette,Syphon,Util,CommonViews,projectTpl,listTpl){
+        	], function(IPS_App,Marionette,Syphon,Util,CommonViews,projectTpl){
 
 
 var Views = {};
@@ -16,7 +15,6 @@ var Views = {};
 
 
  Views.ProjectsList = CommonViews.Icon_DataTable.extend({
-   template: listTpl,
    events:{
     "click .js-delete-project": "deleteProject",
     "click .js-open-project": "openProject",
@@ -34,21 +32,18 @@ var Views = {};
           {name: "Year"},
           {name: "Language"},
           {name: "Pages"},
-          {name: "Book"},
-          {name: "Action"},
-
+          {name: "Book"}
 
         ]
 
         this.columns = [
-        {name:"projectId",id:"projectId",clickrow :false},
-        {name:"title",id:"projectId",clickrow :false},
-        {name:"author",id:"projectId",clickrow :false},
-        {name:"year",id:"projectId",clickrow :false},
-        {name:"language",id:"projectId",clickrow :false},
-        {name:"pages",id:"projectId",clickrow :false},
-        {name:"book",id:"projectId",clickrow :false},
-        {name:"action",id:"projectId",clickrow :false}
+        {name:"projectId",id:"projectId",clickrow :true},
+        {name:"title",id:"projectId",clickrow :true},
+        {name:"author",id:"projectId",clickrow :true},
+        {name:"year",id:"projectId",clickrow :true},
+        {name:"language",id:"projectId",clickrow :true},
+        {name:"pages",id:"projectId",clickrow :true},
+        {name:"book",id:"projectId",clickrow :true},
 
 
         ]
@@ -79,10 +74,14 @@ Views.ProjectForm = Marionette.View.extend({
    events: {
    "click .js-submit-project": "submitClicked",
    "click .js-upload": "chooseFile",
-  
+   "click .js-edit-project": "updateClicked"
 
    },
    initialize: function(){
+
+  },
+  updateClicked:function(){
+     this.trigger("project:update", Backbone.Syphon.serialize(this));
 
   },
   onAttach : function(){

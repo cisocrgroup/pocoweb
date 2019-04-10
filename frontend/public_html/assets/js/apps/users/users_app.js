@@ -8,7 +8,7 @@ define(["marionette","app"], function(Marionette,App){
 			"users":"usersPortal",
 			"users/list":"listUsers",
 			"users/login":"login",
-    		"users/newUser":"newUser",
+    		"users/new":"newUser",
     		"users/:id":"showUser",
 			"users/:id/edit":"editUser",
 			"users/account":"showUser"
@@ -32,8 +32,6 @@ define(["marionette","app"], function(Marionette,App){
        				LoginController.showLogin();
 				});
 		},
-		newUser: function(){
-		},
 		showUser: function(id){
 			require(["apps/users/show/show_controller"], function(ShowController){
        				ShowController.showUser(id);
@@ -42,6 +40,11 @@ define(["marionette","app"], function(Marionette,App){
 		editUser: function(id){
 			require(["apps/users/edit/edit_controller"], function(EditController){
        				EditController.editUser(id);
+				});
+		},
+		newUser: function(id){
+			require(["apps/users/new/new_controller"], function(NewController){
+       				NewController.newUser(id);
 				});
 		}
 	};
@@ -71,6 +74,11 @@ define(["marionette","app"], function(Marionette,App){
 	App.on("users:account",function(id){
 	 	App.navigate("users/account");
 	API.showUser(id);
+	});
+
+	App.on("users:new",function(id){
+	 	App.navigate("users/new");
+	API.newUser(id);
 	});
 
 	var router = new UsersApp.Router({

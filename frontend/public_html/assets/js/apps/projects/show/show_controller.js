@@ -7,172 +7,258 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
  Controller = {
 
-		showProject: function(id,page_id){
-      		$(window).scrollTop(0);
+		showProject: function(id){
 
-     		require(["entities/project"], function(ProjectEntitites){
+     		require(["entities/project","entities/util","entities/users"], function(ProjectEntities,UtilEntities,UserEntities){
 
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
-              App.mainLayout.showChildView('backdropRegion',loadingCircleView);
-
-   			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
+            App.mainLayout.showChildView('backdropRegion',loadingCircleView);
+     			  var fetchingproject = ProjectEntities.API.getProject({pid:id});
+            var fetchinglanguages = UtilEntities.API.getLanguages();
+            var fetchingprojects = ProjectEntities.API.getProjects();
+            var fetchinguser = UserEntities.API.loginCheck();
 
    
-        	 $.when(fetchingpage).done(function(page){
+      $.when(fetchingproject,fetchinglanguages,fetchingprojects,fetchinguser).done(function(project,languages,projects,user){
 
-		     	loadingCircleView.destroy();
-            console.log(page);
+		  loadingCircleView.destroy();
+      console.log(project);
 
-		 	//currentProposal.set({"url_id":id}); // pass url_id to view..
 			var projectShowLayout = new Show.Layout();
 			var projectShowHeader;
 			var projectShowInfo;
 			var projectShowFooterPanel;
 			// console.log(reviews);
-	
+
+        // only show packages of this project
+           console.log(projects);
+
+        var packages = [];
+       for(var i=0;i<projects.books.length;i++){
+        var book = projects.books[i];
+        if(user.admin&&(book.bookId!=book.projectId)&&(book.bookId==id)){
+           packages.push(book);
+        }
+       };
+	 console.log(packages);
 			projectShowLayout.on("attach",function(){
-			  
+      var cards = [         
+           {
+                  "color": "green",
+                  "icon": "fas fa-history",
+                  "id": "test_btn",
+                  "name": "Order Profile",
+                  "seq": 1,
+                  "text": "Start profiling the project.",
+                  "url": "profile",
+              }, 
+               {
+                  "color": "blue",
+                  "icon": "far fa-edit",
+                  "id": "doc_button",
+                  "name": "Adaptive tokens",
+                  "seq": 5,
+                  "text": "List adaptive tokens.",
+                  "url": "docs:show",
+              }, {
+                  "color": "red",
+                  "icon": "fas fa-columns",
+                  "id": "about_btn",
+                  "name": "Split",
+                  "seq": 4,
+                  "text": "Split the project.",
+                  "url": "split",
+          },
+                {
+                  "color": "green",
+                  "icon": "far fa-edit",
+                  "id": "delete_button",
+                  "name": "Edit",
+                  "seq": 5,
+                  "text": "Edit the project.",
+                  "url": "edit",
+              },
+               {
+                  "color": "blue",
+                  "icon": "fas fa-download",
+                  "id": "test_btn",
+                  "name": "Download",
+                  "seq": 1,
+                  "text": "Save project files to disk.",
+                  "url": "download",
+              }, 
 
-        // ** to do: get junks from server
-        var fetchingallcorrections = ProjectEntitites.API.getAllCorrectionSuggestions({pid:id, page:page_id});
-           $.when(fetchingallcorrections).done(function(allsuggestions){
-             projectShowPage.setErrorDropdowns(allsuggestions,id);
-           });
+               {
+                  "color": "red",
+                  "icon": "far fa-times-circle",
+                  "id": "about_btn",
+                  "name": "Delete",
+                  "seq": 4,
+                  "text": "Delete the project.",
+                  "url": "delete",
+          }
+           
+          ];
 
+var cards2 = [
+          {
+                  "color": "blue",
+                  "icon": "fas fa-cogs",
+                  "id": "test_btn",
+                  "name": "PoCoTo-A",
+                  "seq": 1,
+                  "text": "Fully automatic OCR postcorrection.",
+                  "url": "projects:list",
+              }, {
+                  "color": "green",
+                  "icon": "fas fa-file-signature",
+                  "id": "users_button",
+                  "name": "PoCoTo-A-I",
+                  "seq": 2,
+                  "text": "Manual interactive postcorrection tools.",
+                  "url": "projects:show_page",
+              }
+          ]
 
+        var projectShowHub = new Show.Hub({columns:3,cards:cards,currentRoute:"home"});
+        var projectShowHub2 = new Show.Hub({columns:2,cards:cards2,currentRoute:"home"});
 
-			  // projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
-        projectShowPage = new Show.Page({model:page});
-			  projectShowInfo = new Show.Info({});
+        projectShowHub.on('cardHub:clicked',function(data){
+          if(data.url=="delete"){
+             this.trigger("show:delete_clicked");
+          }
+          if(data.url=="edit"){
+             this.trigger("show:edit_clicked");
+          }
+          if(data.url=="profile"){
+             this.trigger("show:profile");
+          }
+            if(data.url=="split"){
+             this.trigger("show:split");
+          }
+            if(data.url=="download"){
+             this.trigger("show:download");
+          }
+        });
+
+         projectShowHub2.on('cardHub:clicked',function(data){
+          if(data.url=="projects:show_page"){
+             App.trigger("projects:show_page",id,'first');
+          }
+        });
+
+			  projectShowHeader = new Show.Header({title:project.get('title'),icon:"fas fa-book-open",color:"green"});
+        projectShowInfo = new Show.Info({model:project});
       	projectShowFooterPanel = new Show.FooterPanel();
+        var projectShowPackages= new Show.Packages({packages:packages});
 
-       projectShowPage.on("page:new",function(page_id){
-                    var fetchingnewpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
-                  $.when(fetchingnewpage).done(function(new_page){
-                      projectShowPage.model=new_page
-                        projectShowPage.render();    
-                     App.navigate("projects/"+id+"/page/"+page_id);
-         
-                  }).fail(function(response){
-                     App.mainmsg.updateContent(response.responseText,'danger');
-                    });  // $when fetchingproject
-          
-       })
+        projectShowHub.on('show:profile',function(){
+           var profilingproject = ProjectEntities.API.profileProject({pid:id});
 
-    
-       projectShowPage.on("page:correct_line",function(data,anchor){
+             $.when(profilingproject).done(function(result){
 
-                    var correctingline = ProjectEntitites.API.correctLine(data);
-                  $.when(correctingline).done(function(result){
-                    
-                    $('#line-text-'+anchor).css('background','#d4edda');
-                   /*** TO DO 
+                   App.mainmsg.updateContent(result,'success');
+                   var confirmModal = new Show.OkDialog({asModal:true,title:"Profiling started",text:"Profile for "+project.get('title')+" ordered.",id:"profileModal"})
+                   App.mainLayout.showChildView('dialogRegion',confirmModal)
 
-                                 var fully = res.isFullyCorrected;
-                  var partial = res.isPartiallyCorrected;
-                  var input = document.getElementById(anchor);
-                  if (input !== null) {
-                    input.value = res.cor;
-                    pcw.setCorrectionStatus(input, fully, partial);
-                  }
-                  var text = document.getElementById('line-text-' + anchor);
-                  if (text !== null) {
-                    pcw.setCorrectionStatus(text, fully, partial);
-                    text.replaceChild(
-                        document.createTextNode(res.cor),
-                        text.childNodes[0]);
-                    var aapi = Object.create(pcw.Api);
-                    aapi.sid = pcw.getSid();
-                    aapi.setupForGetSuspiciousWords(ids[0], ids[1], ids[2]);
-                    aapi.run(pcw.markSuspiciousWordsInLine);
-
-                   ***/
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
+            });
 
 
-                  }).fail(function(response){
-                     App.mainmsg.updateContent(response.responseText,'danger');
-                    });  // $when fetchingproject
-          
-       })
+       projectShowHub.on('show:split',function(){
 
-           projectShowPage.on("page:line_selected",function(selection){
-                    var that = this;
-                    var searchingToken = ProjectEntitites.API.searchToken({q:selection,p:page_id,pid:id});
-                    var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:selection,pid:id});
+            var fetchingusers = UserEntities.API.getUsers();
 
-                  $.when(searchingToken,gettingCorrectionSuggestions).done(function(token,suggestions){
-                   that.editor.extensions[0].button.innerHTML = 'Show concordance of <b>'+ selection+'</b> ('+token.nWords+' occurrences)';
-                    
-                    that.tokendata = token;
-
-                    $("#dropdown-content").empty();
-                     for(i=0;i<suggestions.suggestions.length;i++){
-                
-                     var s = suggestions.suggestions[i];
-                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
-                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
-                     $('#dropdown-content').append($('<a class="dropdown-item noselect">'+content+"</a>"));
-                     }
-
-                     $('.dropdown-item').on('click',function(){
-                      var split = $(this).text().split(" ");
-                      Util.replaceSelectedText(split[0]);
-                     })
+             $.when(fetchingusers).done(function(users){
 
 
-                  }).fail(function(response){
-                     App.mainmsg.updateContent(response.responseText,'danger');
-                    });  // $when fetchingproject
-          
-       })
+            var projectsShowSplitProject = new Show.Split({users:users.users,model:project, asModal:true,text:"Split Project",n:project.get('pages')});
+                App.mainLayout.showChildView('dialogRegion',projectsShowSplitProject)
+
+               projectsShowSplitProject.on("split:confirmed",function(data){
+                console.log(data);
+                data['pid'] = id;
+                var splitingproject = ProjectEntities.API.splitProject(data);
+
+                 $.when(splitingproject).done(function(result){
+                      $("#splitModal").modal('hide');
+                  //   App.mainmsg.updateContent(result,'success');
+                        var assign_data = {pairs:[]};
+                        _.each(result.books,function(book,index){
+                          assign_data['pairs'].push({uid:data.ids[index],pid:book.projectId});
+                        });
 
 
-       projectShowPage.on("page:concordance_clicked",function(selection){
+                         var assigningprojects = ProjectEntities.API.assignPackages(assign_data);
+                            $.when(assigningprojects).done(function(assign_result){
+                                 // show message and update table
+                                  App.mainmsg.updateContent(assign_result,'success');
 
-       var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:this.saved_selection,pid:id});
-       var that = this;
-         $.when(gettingCorrectionSuggestions).done(function(suggestions){
-            var tokendata = that.tokendata;
-            console.log(suggestions)
-            console.log(tokendata)
+                                  for(var i=0;i<result.length;i++){
+                                    var string = "";
+                                    string+='<tr class="clickable-row" data-href="#projects/"'+result[i]['pid']+'><td>';
+                                    string+= '<td>'+result[i]['title']+'</td>';
+                                    string+= '<td>'+result[i]['language']+'</td>';
+                                    string+= '<td>'+result[i]['pages']+'</td></tr>';
 
-           var projectConcView = new Show.Concordance({tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
-    
+                                    $('#book_table').find('tbody').append($(string));
 
-           projectConcView.on("conc:destroy:editor",function(){
-            projectShowPage.render();
-           })
+                                  }
 
-             App.mainLayout.showChildView('dialogRegion',projectConcView);
 
-            
-                   
+                            });
+
+
+                        console.log(assign_data);
+
+                     }).fail(function(response){
+                           App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                     }); 
+
+                });
+
               });
 
-        });
    
+             });
 
+       projectShowHub.on('show:download',function(){
 
-			  projectShowInfo.on("show:edit_clicked",function(methods){
+              var downloadinggproject = ProjectEntities.API.downloadProject({pid:id});
 
+               $.when(downloadinggproject).done(function(result){
+                   // App.mainmsg.updateContent(result,'success');
+
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
+
+         
+   
+             });
+
+    	  projectShowHub.on("show:edit_clicked",function(){
 
 			   var projectsShowEditProject = new Show.ProjectForm({model:project
-          , asModal:true,text:"Edit Project",edit_project:true,loading_text:"Update in progress"});
+          , asModal:true,text:"Edit Project",edit_project:true,loading_text:"Update in progress",languages:languages.languages});
 
+           projectsShowEditProject.on("project:update",function(data){
+            project.set(data);
 
-           projectsShowEditProject.on("project:update_clicked",function(data){
-            project.set(data)
+            var puttingProject = ProjectEntities.API.updateProject({pid:id,projectdata:data});
 
-            var puttingProject = ProjectEntitites.API.updateProject(id,project);
-
-
-                 $.when(postingProject).done(function(result){
+                 $.when(puttingProject).done(function(result){
                   $('.loading_background').fadeOut();
 
                    $('#projects-modal').modal('toggle');
+                     projectShowHeader.options.title = data.title;
+                     projectShowHeader.render();
+                     projectShowInfo.render();
+                     App.mainmsg.updateContent("Project "+id+" successfully updated.",'success');              
 
-                    // TO DO
-                })
+                    })
 
 
           });
@@ -183,50 +269,37 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
           });
 
 
-            projectShowInfo.on("show:delete_clicked",function(methods){
+       projectShowHub.on('show:delete_clicked',function(){
 
-			   var projectsShowDeleteProject = new Show.DeleteProjectForm({asModal:true,text:"Remove this Project?",title:"Delete Project"});
+            var confirmModal = new Show.AreYouSure({title:"Are you sure...",text:"...you want to delete project "+project.get('title')+" ?",id:"deleteModal"})
+            App.mainLayout.showChildView('dialogRegion',confirmModal)
 
-
-        	   projectsShowDeleteProject.on("project:delete_clicked",function(){
-               var deletingProject = ProjectEntitites.API.deleteProject(id);
-
+            confirmModal.on('delete:confirm',function(){
+                  var deletingProject = ProjectEntities.API.deleteProject({pid:id});
+                  $('#deleteModal').modal("hide");
 
                  $.when(deletingProject).done(function(result){
-                  $('.loading_background').fadeOut();
+                   App.mainmsg.updateContent("Project "+id+" successfully deleted.",'success');              
 
-                   $('#confirm-modal').modal('toggle');
+                     App.trigger('projects:list');
 
-
-                   	App.trigger("projects:list");   
-
-
-                   projectsShowDeleteProject.model.clear().set(projectsListDeleteProject.model.defaults);
-                   $('#selected_file').text("");
-                   // projectsListAddProject.render()
-
-                })
-
+                 }).fail(function(response){ 
+                    App.mainmsg.updateContent(response.responseText,'danger');
+                  });    
+            })
 
           });
 
-        
-
-          App.mainLayout.showChildView('dialogRegion',projectsShowDeleteProject);
 
 
-
-		  });
-
-
-         projectShowInfo.on("show:add_book_clicked",function(methods){
+         projectShowHub.on("show:add_book_clicked",function(methods){
 
 
 		   var projectsShowAddBook = new Show.ProjectForm({model: new ProjectEntitites.Project(), asModal:true,text:"Add a book to the OCR Project",add_book:true,loading_text:"Adding book"});
 
 
        projectsShowAddBook.on("project:addbook_clicked",function(data){
-		   var addingBook = ProjectEntitites.API.addBook(id,data);
+		   var addingBook = ProjectEntities.API.addBook(id,data);
 
 
 		         $.when(addingBook).done(function(result){
@@ -253,8 +326,12 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
   			// projectPanel = new Show.FooterPanel();
 
 
-	          // projectShowLayout.showChildView('headerRegion',projectShowHeader);
-	          projectShowLayout.showChildView('infoRegion',projectShowPage);
+	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
+	          projectShowLayout.showChildView('infoRegion',projectShowInfo);
+            projectShowLayout.showChildView('hubRegion',projectShowHub2);
+            projectShowLayout.showChildView('hubRegion2',projectShowHub);
+            projectShowLayout.showChildView('packagesRegion',projectShowPackages);
+
 	          projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
 
 
@@ -263,6 +340,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
           App.mainLayout.showChildView('mainRegion',projectShowLayout);
 
           }).fail(function(response){
+               loadingCircleView.destroy();
                 App.mainmsg.updateContent(response.responseText,'danger');
           });  // $when fetchingproject
 

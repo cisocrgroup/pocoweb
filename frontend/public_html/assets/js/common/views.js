@@ -304,7 +304,7 @@ onAttach: function(){
 	datatable_options:{},
 
 	events:{
-	'click .clickable-row' : 'row_clicked'
+	'click .clickable-row' : 'row_clicked',
 	},
 
 		serializeData: function(){
@@ -326,7 +326,7 @@ onAttach: function(){
 		},
 
 		row_clicked : function(e){
-
+			e.stopPropagation();
 			var url = $(e.currentTarget).attr('data-href')
 
 			if(url=="#"){ var idx = $(e.currentTarget).attr('data-idx'); this.trigger('go:list_clicked',{idx:idx}); }
@@ -335,6 +335,12 @@ onAttach: function(){
 		},
 
 	  onDomRefresh: function(){
+
+	  	$(".clickable-row").on("click",function(e){
+	  		var url = $(e.currentTarget).attr('data-href')
+			if(url=="#"){ var idx = $(e.currentTarget).attr('data-idx'); this.trigger('go:list_clicked',{idx:idx}); }
+			else window.location = url;
+	  	})
 
 	  	var old_table_height = 0;
 
@@ -616,20 +622,26 @@ Views.Layout = Marionette.View.extend({
 	 },
 	serializeData: function(){
 			return {
-		massagetitle: Marionette.getOption(this,"massagetitle"),
-		massagecontent: Marionette.getOption(this,"massagecontent")
+		title: Marionette.getOption(this,"title"),
+		text: Marionette.getOption(this,"text")
 		}
 	},
-	 onShow: function(){
+	 onAttach: function(){
 		 if(this.options.asModal){
-		  this.$el.addClass("reveal-modal");
-  		  this.$el.append('<a class="close-reveal-modal">&#215;</a>');
-		  this.$el.attr("data-reveal","");
 
-          
+          this.$el.attr("ID","ok-modal");
+          this.$el.addClass("modal fade ok-modal");
+	 	  this.$el.on('shown.bs.modal', function (e) {
+          })
 
-		}
-
+          var that = this;
+         
+           this.$el.modal();
+    }
+     else {
+       var $title = $('#formhl');
+     $title.text(this.title);
+    }
   }
 
 

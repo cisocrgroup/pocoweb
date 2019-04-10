@@ -21,9 +21,31 @@ events:{
       'click .js-firstpage' : 'firstpage_clicked',
       'click .js-lastpage' : 'lastpage_clicked',
       'click .js-correct' : 'correct_clicked',
-      'click .line-text' : 'line_clicked',
-      'mouseup .line-text' : 'line_selected',
+      'click .line-tokens' : 'line_tokens_clicked',
+      'click .line-text' : 'line_selected',
+      'click #pcw-error-tokens-link' : 'error_tokens_clicked',
+      'click #pcw-error-patterns-link' : 'error_patterns_clicked',
 
+      'mouseover .line-tokens' : 'tokens_hovered',
+      'mouseleave .line-text-parent' : 'line_left',
+      'keydown .line' : 'line_edited',
+
+      },
+
+      error_tokens_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".custom-popover").remove();
+        $(".dropdown-menu").hide();
+        $('#pcw-error-tokens-dropdown').toggle();
+      },
+
+        error_patterns_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".custom-popover").remove();
+        $(".dropdown-menu").hide();
+        $('#pcw-error-patterns-dropdown').toggle();
       },
 
       serializeData: function(){
@@ -34,6 +56,7 @@ events:{
       },
 
        backward_clicked:function(e){
+        e.stopPropagation();
         e.preventDefault();
         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         console.log(data)
@@ -41,155 +64,187 @@ events:{
       },
 
        forward_clicked:function(e){
+        e.stopPropagation();
         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
         this.trigger("page:new",data.nextPageId);
       },
 
        firstpage_clicked:function(e){
+         e.stopPropagation();
          var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
         this.trigger("page:new","first");
       },
        lastpage_clicked:function(e){
-             var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+       e.stopPropagation();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
         this.trigger("page:new","last");
       },
       correct_clicked:function(e){
-       
-        var anchor = $(e.currentTarget).attr('anchor');
-          var ids = Util.getIds(anchor);
-          var text = $('#line-text-'+anchor).text();
-          this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
+      e.stopPropagation();
 
+        var anchor = $(e.currentTarget).attr('anchor');
+        var ids = Util.getIds(anchor);
+        var text = $('#line-'+anchor).find('.line').text().replace(/\s\s+/g, ' ').trim();
+
+        console.log(text);
+
+        this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
       },
-      line_clicked:function(e){
+      tokens_hovered:function(e){
+         // $('.line-tokens').show();
+         // $('.line').hide();
+         // $(e.currentTarget).hide();
+         // $(e.currentTarget).prev().show();
+      },
+      line_left:function(e){
+        // console.log("mouseleave")
+        
+      },
+
+       line_edited:function(e){
+        e.stopPropagation();
+        $('.custom-popover').remove();
+      },
+      
+      line_tokens_clicked:function(e){
         e.preventDefault();
+         e.stopPropagation();
+       $(".custom-popover").remove();
+
+        $('.line').hide();
+        $('.line-tokens').show();
+        var line_parent = $(e.currentTarget).parent();
+
+        console.log(line_parent);
+        console.log($(e.currentTarget));
+        line_parent.find('.line').show();
+        $(e.currentTarget).hide();
+
         $('.correct-btn').hide();
         $('.line-text').css('border-bottom','1px solid transparent');
         $('.line-text').css('border-left','1px solid transparent');
         $('.line-text').css('border-top','1px solid transparent');
-        $('.line-text').css('border-top-left-radius','0rem');
-        $('.line-text').css('border-bottom-left-radius','0rem');
+        $('.line-text').css('border-top-right-radius','.25rem');
+        $('.line-text').css('border-bottom-right-radius','.25rem');
+   
 
-  
-        $(e.currentTarget).css('border-left','1px solid #ced4da');
-        $(e.currentTarget).css('border-bottom','1px solid #ced4da');
-        $(e.currentTarget).css('border-top','1px solid #ced4da');
-        $(e.currentTarget).css('border-top-left-radius','.25rem');
-        $(e.currentTarget).css('border-bottom-left-radius','.25rem');
+        line_parent.css('border-left','1px solid #ced4da');
+        line_parent.css('border-bottom','1px solid #ced4da');
+        line_parent.css('border-top','1px solid #ced4da');
+        line_parent.css('border-top-right-radius','.0rem');
+        line_parent.css('border-bottom-right-radius','.0rem');
 
-        $(e.currentTarget).next().find('.correct-btn').show();
+        line_parent.next().find('.correct-btn').show();
+      
+
+        //  $(e.currentTarget).find('.line').focusout(function() {
+
+        // $(e.currentTarget).find('.line-tokens').show();
+        // $(e.currentTarget).find('.line').hide();
+
+        // // $(e.currentTarget).next().find('.correct-btn').hide();
+        // $(e.currentTarget).css('border-bottom','1px solid transparent');
+        // $(e.currentTarget).css('border-left','1px solid transparent');
+        // $(e.currentTarget).css('border-top','1px solid transparent');
+        // $(e.currentTarget).css('border-top-left-radius','0rem');
+        // $(e.currentTarget).css('border-bottom-left-radius','0rem');
+        // $(e.currentTarget).find('.line-tokens').css('display','flex');
+
+
+        //  });
+
+
+
         
       },
       line_selected:function(e){
+        e.stopPropagation();
 
-              var selection = window.getSelection().toString();
-        if(selection==""){
-          return;
-        }
-        this.saved_selection = selection;
-        $('#selected_token').removeAttr("id");
-          Util.replaceSelectedText(selection);
+        var that = this;
 
-        this.trigger("page:line_selected",selection)
+         rangy.init();
+         var sel =  rangy.getSelection().toString();
+         if(sel==""||sel==" "){
+           return;
+          }
+
+      console.log(sel);     
+      if($(e.target).hasClass('line')){
+       $(".dropdown-menu").hide();
+       $(".custom-popover").remove();
+
+      var btn_group = $('<div class="btn-group"></div>'); 
+
+
+      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary btn-sm"><i class="fas fa-align-justify"></i> Concordance </button>'))
+      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary btn-sm"> <i class="fas fa-list-ol"></i> Suggestions <i class="fas fa-caret-down"></button>'))
+ 
+ // btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary">Show concordance of (0 occurrences)</button>'))
+ //      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary">Correction suggestions <i class="fas fa-caret-down"></button>'))
+ 
+
+      var div = $('<div class="custom-popover">')
+      .css({
+        "left": e.pageX + 'px',
+        "top": (e.pageY+35) + 'px'
+      })
+       .append($('<div><i class="fas fa-caret-up custom-popover-arrow"></i></div>'))
+       .append(btn_group)
+       .appendTo(document.body);
+
+       $('#js-concordance').on('click',function(){
+        that.trigger("page:concordance_clicked",sel,0);
+       });
+      
+         this.saved_selection = sel;
+         // Util.replaceSelectedText(selection);
+        //   console.log(selection);
+         this.trigger("page:line_selected",sel);
+      }
+      },
+
+      onAttach:function(e){
+        var that = this;
+
+        // remove when clicked somewhere else
+
+          $(document).off().click(function(e) 
+          {
+            e.stopPropagation();
+            
+            $(".dropdown-menu").hide();
+
+              var custom_popover = $(".custom-popover");
+              if (!custom_popover.is(e.target) && custom_popover.has(e.target).length === 0) 
+              {          
+                  custom_popover.remove();
+              }
+          });
+
+
+   
+
+      },
+      onDestroy:function(e){
+       $(".custom-popover").remove();
       },
      
       onDomRefresh:function(e){
 
-        var that = this;
-
-        if(this.editor!=""){
-          this.editor.destroy();
-        }
-
-
-          var ConcordanceButton = MediumEditor.Extension.extend({
-              name: 'concordance',
-
-              init: function () {
-
-                this.button = this.document.createElement('button');
-                this.button.classList.add('medium-editor-action');
-                this.button.innerHTML = 'Show concordance of (n occurrences)';
-                this.button.title = 'Show concordance';
-
-                this.on(this.button, 'click', this.handleClick.bind(this));
-              },
-
-              getButton: function () {
-                return this.button;
-              },
-
-              handleClick: function (event) {
-                that.trigger("page:concordance_clicked")
-              }
+            var that = this;
+         $('.line-img').each(function(index){
+           $(this).imagesLoaded( function() {
+              
+                var line = that.model.get('lines')[index];
+                if(line!=undefined){
+                  Util.addAlignedLine(line);
+                }
             });
 
-
-            var CorrectionButton = MediumEditor.Extension.extend({
-              name: 'corrections',
-
-              init: function () {
-
-
-
-                this.button = this.document.createElement('div');
-                this.button.classList.add('medium-editor-action');
-                this.button.classList.add('dropdown');
-                this.button.setAttribute('id','suggestions-menu');
-
-                var dropdown_button = this.document.createElement('button');
-                dropdown_button.setAttribute('data-toggle','dropdown');
-                dropdown_button.setAttribute('aria-haspopup','true');
-                dropdown_button.setAttribute('aria-expanded','false');
-                dropdown_button.setAttribute('id','dropdownMenuButton');
-                dropdown_button.setAttribute('data-flip','false');
-
-                dropdown_button.innerHTML = 'Correction suggestions <i class="fas fa-caret-down">';
-                dropdown_button.title = 'Show Correction suggestions';
-
-                this.button.appendChild(dropdown_button);
-
-                 var dropdown_content = document.createElement('div');
-                 dropdown_content.classList.add('dropdown-menu');
-                 dropdown_content.setAttribute('id','dropdown-content');
-                 dropdown_content.setAttribute('aria-labelledby','dropdownMenuButton');
-                 this.button.appendChild(dropdown_content);
-
-
-
-                this.on(this.button, 'click', this.handleClick.bind(this));
-              },
-
-              getButton: function () {
-                return this.button;
-              },
-
-              handleClick: function (event) {
-              }
-            });
-
-        this.editor = new MediumEditor('.line-text', {
-            disableReturn: true,
-            disableDoubleReturn: true,
-            toolbar: {
-              buttons: ['concordance','corrections']
-            },
-            buttonLabels: 'fontawesome', // use font-awesome icons for other buttons
-            extensions: {
-              'concordance': new ConcordanceButton(),
-              'corrections': new CorrectionButton()
-            },
-               handleClick: function (event) {
-                this.classApplier.toggleSelection();
-
-                // Ensure the editor knows about an html change so watchers are notified
-                // ie: <textarea> elements depend on the editableInput event to stay synchronized
-                this.base.checkContentChanged();
-              }
-        });
+         }); 
 
       },
 
@@ -208,6 +263,7 @@ events:{
   
 },
 setErrorPatternsDropdown : function(pid, dropdown, res) {
+  var that = this;
   var patterns = {};
   var suggs = res.suggestions || [];
   for (var i = 0; i < suggs.length; i++) {
@@ -229,10 +285,13 @@ setErrorPatternsDropdown : function(pid, dropdown, res) {
   var onclick = function(pid, c) {
     return function() {
     //  pcw.log(c.pattern + ": " + c.count);
-      var pat = encodeURI(c.pattern);
-      var href = "concordance.php?pid=" + pid + "&q=" + pat +
-          "&error-pattern";
-      window.location.href = href;
+      // var pat = encodeURI(c.pattern);
+      var pat = c.pattern;
+      // var href = "concordance.php?pid=" + pid + "&q=" + pat +
+      //     "&error-pattern";
+      // window.location.href = href;
+      that.trigger("page:error-patterns-clicked",pid,pat);
+
     };
   };
   for (var ii = 0; ii < counts.length; ii++) {
@@ -244,6 +303,7 @@ setErrorPatternsDropdown : function(pid, dropdown, res) {
 
 setErrorTokensDropdown : function(pid, dropdown, res) {
   // pcw.log("setErrorsDropdown");
+  var that = this;
   var tokens = {};
   var suggs = res.suggestions || [];
   for (var i = 0; i < suggs.length; i++) {
@@ -262,9 +322,11 @@ setErrorTokensDropdown : function(pid, dropdown, res) {
   var onclick = function(pid, c) {
     return function() {
       // pcw.log(c.token + ": " + c.count);
-      var pat = encodeURI(c.token);
-      var href = "concordance.php?pid=" + pid + "&q=" + pat;
-      window.location.href = href;
+      // var pat = encodeURI(c.token);
+      var pat = c.token;
+      // var href = "concordance.php?pid=" + pid + "&q=" + pat;
+      // window.location.href = href;
+       that.trigger("page:error-tokens-clicked",pid,pat);
     };
   };
   for (var ii = 0; ii < counts.length; ii++) {
@@ -274,12 +336,11 @@ setErrorTokensDropdown : function(pid, dropdown, res) {
   }
 },
 appendErrorCountItem : function(dropdown, item, count) {
-  var li = document.createElement("li");
   var a = document.createElement("a");
   var t = document.createTextNode(item + ": " + count);
+  a.className = "dropdown-item noselect";
   a.appendChild(t);
-  li.appendChild(a);
-  dropdown.appendChild(li);
+  dropdown.appendChild(a);
   return a;
 }
 

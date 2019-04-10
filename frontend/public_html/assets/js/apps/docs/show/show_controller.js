@@ -2,7 +2,7 @@
 // apps/docs/show/show_controller.js
 // ======================================
 
-define(["app","common/util","common/views","apps/docs/show/show_view"], function(IPS_App,Util,Views,Show){
+define(["app","common/util","common/views","apps/docs/show/show_view"], function(App,Util,Views,Show){
 
 
  Controller = {
@@ -10,22 +10,18 @@ define(["app","common/util","common/views","apps/docs/show/show_view"], function
 		showDocs: function(id){
       		$(window).scrollTop(0);
 
-	   		require(["entities/docs"], function(DocsEntitites){
+	   		require(["entities/util"], function(UtilEntitites){
 
-	   	      // var loadingCircleView = new  Views.LoadingBackdrop();
-           //    IPS_App.mainLayout.showChildView('backdropRegion',loadingCircleView);
-              // var currentUser = IPS_App.getCurrentUser();
+	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
+              App.mainLayout.showChildView('backdropRegion',loadingCircleView);
 
-
-			// loadingCircleView.destroy();
 
 		 	//currentdocs.set({"url_id":id}); // pass url_id to view..
 
-     		var fetchingDocs = DocsEntitites.API.getJson();
+     		var fetchingDocs = UtilEntitites.API.getDocumentation();
 
 	    	$.when(fetchingDocs).done(function(data){
 
-	    	console.log(data)
 
 
 			var docsShowLayout = new Show.Layout();
@@ -38,25 +34,30 @@ define(["app","common/util","common/views","apps/docs/show/show_view"], function
 			  
 
 			  docsShowHeader = new Show.Header({});
-			  docsShowInfo = new Show.Info();
+			  docsShowInfo = new Show.Info({data:data});
   			  docsPanel = new Show.FooterPanel({color:"blue"});
 
-	          docsShowLayout.showChildView('headerRegion',docsShowHeader);
-	          docsShowLayout.showChildView('infoRegion',docsShowInfo);
+  			  docsShowInfo.on("doc:append",function(){
+	         		loadingCircleView.destroy();
+	         });
 
+	          // docsShowLayout.showChildView('headerRegion',docsShowHeader);
+	          docsShowLayout.showChildView('infoRegion',docsShowInfo);
 	          docsShowLayout.showChildView('panelRegion',docsPanel);
 
-	        
 
+	  		
+				
 
 			   docsPanel.on("go:back",function(){
-			  	 IPS_App.trigger("docs:list");
+			  	 App.trigger("docs:list");
 			  });
 
 
     		}); // on.attach()
 
-          IPS_App.mainLayout.showChildView('mainRegion',docsShowLayout);
+  			
+          App.mainLayout.showChildView('mainRegion',docsShowLayout);
 
            });
 
