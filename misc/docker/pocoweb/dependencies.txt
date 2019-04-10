@@ -9,6 +9,7 @@ php-json
 clang
 mariadb-devel
 python-pyparsing
+zip
 unzip
 leptonica-devel
 mysql
