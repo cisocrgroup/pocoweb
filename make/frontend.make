@@ -15,6 +15,7 @@ FE_FILES += $(PCW_FRONTEND_DIR)/public_html/assets/js/build.js
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/concordance.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/css/pcw.css
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/doc.html
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/doc.md
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/documentation.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/button-concordance-correction.png
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/button-correct.png
@@ -65,6 +66,10 @@ $(PCW_FRONTEND_DIR)/public_html/assets/js/build.js: frontend/public_html/assets/
 
 .SECONDEXPANSION:
 %.js: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
+	$(call ECHO,$@)
+	$V install -d $(dir $@)
+	$V install -m 644 $< $@
+%.md: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
 	$(call ECHO,$@)
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
