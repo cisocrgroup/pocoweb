@@ -68,6 +68,7 @@ public:
   const std::string& id() const noexcept { return sid_; }
   int user() const noexcept { return user_; }
   void set_user(int user) noexcept;
+  // TODO: the session directory is only! used by split images
   SessionDirectory& directory() const noexcept { return *dir_; }
   void lock() noexcept { mutex_.lock(); }
   void unlock() noexcept { mutex_.unlock(); }

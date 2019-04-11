@@ -25,11 +25,9 @@ SessionStore::new_session(int user, AppCacheSptr cache, const Config& config)
   }
   while (not session) {
     session = std::make_shared<Session>(user, config, cache);
-    // Session id and directory id must be unique.
-    // You cannot use the same id for sessions and their
-    // directories, since SessionDirectories leak their id to the
-    // public api.
-    if (not id_register_.count(session->id()) and
+	// TODO: session directory must be unique but it is only used to
+	// split images.  Maybe there is a better way
+    if (//not id_register_.count(session->id()) and
         not id_register_.count(session->directory().id())) {
       id_register_.insert(session->id());
       id_register_.insert(session->directory().id());
