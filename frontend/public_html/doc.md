@@ -55,12 +55,14 @@ for suspicious words.
 	* [[GET] `rest-url`/books/`pid`/finish](#user-content-api-get-books-pid-finish)
 	* [[GET] `rest-url`/books/`pid`/search](#user-content-api-get-books-pid-search)
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`](#user-content-api-get-books-pid-pages-pageid)
+	* [[DELETE] `rest-url`/books/`pid`/pages/`pageid`](#user-content-api-delete-books-pid-pages-pageid)
 	* [[GET] `rest-url`/books/`pid`/pages/first](#user-content-api-get-books-pid-pages-first)
 	* [[GET] `rest-url`/books/`pid`/pages/last](#user-content-api-get-books-pid-pages-last)
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/next/`n`](#user-content-api-get-books-pid-pages-pageid-next-n)
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/prev/`n`](#user-content-api-get-books-pid-pages-pageid-prev-n)
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-get-books-pid-pages-pageid-lines-lid)
 	* [[POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-post-books-pid-pages-pageid-lines-lid)
+   * [[DELETE] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-delete-books-pid-pages-pageid-lines-lid)
 	* [[POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid)
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`/split-images](#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid-split-images)
 	* [[GET] `rest-url`/books/`pid`/suggestions](#user-content-api-get-books-pid-suggestions)
@@ -984,6 +986,7 @@ search should be performed. If omitted `p=0` is assumed.
     ...
 }
 ```
+
 <a id='api-get-books-pid-pages-pageid'></a>
 ### [GET] `rest-url`/books/`pid`/pages/`pageid`
 Get the content of a page with id `pageid` of a package or project with id `pid`.
@@ -1054,6 +1057,14 @@ Get the content of a page with id `pageid` of a package or project with id `pid`
   ]
 }
 ```
+
+<a id='api-delete-books-pid-pages-pageid'></a>
+### [DELETE] `rest-url`/books/`pid`/pages/`pageid`
+Delete the pages with `pageid` from the project with id `pid`.
+* [Authorization](#user-content-authorization) is required.
+* Only pages from projects can be deleted.  You cannot delete pages
+  from packages.
+* Only the owner of a project can delete it.
 
 <a id='api-get-books-pid-pages-first'></a>
 ### [GET] `rest-url`/books/`pid`/pages/first
@@ -1315,6 +1326,14 @@ Correct line `lid` in page `pageid` of project or package `pid`.
   }
 }
 ```
+
+<a id='api-delete-books-pid-pages-pageid-lines-lid'></a>
+### [DELETE] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`
+Delete line `lid` in page `pageid` of project with id `pid`.
+* [Authorization](#user-content-authorization) is required.
+* You can only delete lines from projects.  You cannot delete lines
+  from packages.
+* Only the owner of a project can delete a line.
 
 <a id='api-post-books-pid-pages-pageid-lines-lid-tokens-tid'></a>
 ### [POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`
