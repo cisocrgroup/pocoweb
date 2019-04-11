@@ -33,6 +33,13 @@ FinishRoute::impl(HttpPost, const Request& req, int bid) const
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
+FinishRoute::impl(HttpGet, const Request& req, int bid) const
+{
+  return finish(req, bid);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response
 FinishRoute::finish(const Request& req, int bid) const
 {
   CROW_LOG_DEBUG << "(FinishRoute::finish) body: " << req.body;

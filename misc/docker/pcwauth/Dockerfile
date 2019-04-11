@@ -1,6 +1,6 @@
 FROM golang:alpine
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
-ENV DATE='Do 4. Apr 14:09:00 CEST 2019'
+ENV DATE='Do 11. Apr 10:09:06 CEST 2019'
 
 ENV PCWAUTH_GIT=github.com/finkf/pcwauth
 ENV GO111MODULE=on

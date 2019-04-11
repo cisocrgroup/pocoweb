@@ -23,6 +23,7 @@ class FinishRoute : public CrtpRoute<FinishRoute> {
 
 	pcw_crtp_route_def_impl__(int);
 	Response impl(HttpPost, const Request& req, int bid) const;
+  	Response impl(HttpGet, const Request& req, int bid) const;
 
        private:
 	Response finish(const Request& req, int bid) const;
