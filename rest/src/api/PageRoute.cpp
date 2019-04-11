@@ -30,7 +30,8 @@ const char* PageRoute::name_ = "PageRoute";
 void
 PageRoute::Register(App& app)
 {
-  CROW_ROUTE(app, PAGE_ROUTE_ROUTE_1).methods("GET"_method)(*this);
+  CROW_ROUTE(app, PAGE_ROUTE_ROUTE_1)
+    .methods("GET"_method, "DELETE"_method)(*this);
   CROW_ROUTE(app, PAGE_ROUTE_ROUTE_2).methods("GET"_method)(*this);
   CROW_ROUTE(app, PAGE_ROUTE_ROUTE_3).methods("GET"_method)(*this);
   CROW_ROUTE(app, PAGE_ROUTE_ROUTE_4).methods("GET"_method)(*this);
@@ -49,6 +50,26 @@ PageRoute::impl(HttpGet, const Request& req, int bid, int pid) const
   const auto page = session->must_find(conn, bid, pid);
   Json j;
   return print(j, *page, page->book());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response
+PageRoute::impl(HttpDelete, const Request& req, int bid, int pid) const
+{
+  LockedSession session(get_session(req));
+  auto conn = must_get_connection();
+  CROW_LOG_DEBUG << "(PageRoute) searching for book id: " << bid
+                 << " page id: " << pid;
+  const auto book = session->must_find(conn, bid);
+  if (!book->is_book()) {
+    THROW(BadRequest, "(PageRoute) cannot delete page from project");
+  }
+  const auto page = session->must_find(conn, bid, pid);
+  MysqlCommiter commiter(conn);
+  book->delete_page(page->id());
+  delete_page(conn.db(), bid, pid);
+  commiter.commit();
+  return ok();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

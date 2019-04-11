@@ -72,6 +72,10 @@ delete_project(Db& db, int pid);
 
 template<class Db>
 void
+delete_page(Db& db, int bid, int pid);
+
+template<class Db>
+void
 delete_line(Db& db, int bid, int pid, int lid);
 
 template<class Db>
@@ -625,6 +629,24 @@ delete_project(Db& db, int pid)
   db(remove_from(t).where(t.bookid == pid));
   db(remove_from(a).where(a.bookid == pid));
   db(remove_from(p).where(p.origin == pid));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class Db>
+void
+delete_page(Db& db, int bid, int pid)
+{
+  using namespace sqlpp;
+  tables::ProjectPages pp;
+  tables::Pages ps;
+  tables::Suggestions s;
+  tables::Textlines tl;
+  tables::Contents c;
+  db(remove_from(s).where(s.bookid == bid and s.pageid == pid));
+  db(remove_from(c).where(c.bookid == bid and c.pageid == pid));
+  db(remove_from(tl).where(tl.bookid == bid and tl.pageid == pid));
+  db(remove_from(ps).where(ps.bookid == bid and ps.pageid == pid));
+  db(remove_from(pp).where(pp.projectid == bid and pp.pageid == pid));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

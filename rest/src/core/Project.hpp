@@ -36,6 +36,7 @@ public:
     return this == static_cast<const void*>(&origin());
   }
   value_type find(int pageid) const noexcept;
+  void delete_page(int pageid);
   value_type next(int pageid, int val) const noexcept;
   void push_back(Page& page);
   using Base::back;

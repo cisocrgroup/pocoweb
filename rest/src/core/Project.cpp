@@ -88,6 +88,18 @@ Project::find_page_id(int pageid) const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void
+Project::delete_page(int pageid)
+{
+  const auto it = pageIDs2Index_.find(pageid);
+  if (it == pageIDs2Index_.end()) {
+    return;
+  }
+  Base::erase(begin() + it->second);
+  pageIDs2Index_.erase(it);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 std::ostream&
 pcw::operator<<(std::ostream& os, const Project& proj)
 {
