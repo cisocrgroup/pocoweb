@@ -13,6 +13,7 @@ CORE_OBJS += rest/src/core/LineBuilder.o
 CORE_OBJS += rest/src/core/MetsXmlBookParser.o
 CORE_OBJS += rest/src/core/Package.o
 CORE_OBJS += rest/src/core/PackageBuilder.o
+CORE_OBJS += rest/src/core/Page.o
 CORE_OBJS += rest/src/core/PageBuilder.o
 CORE_OBJS += rest/src/core/Password.o
 CORE_OBJS += rest/src/core/Project.o

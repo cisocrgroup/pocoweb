@@ -27,7 +27,8 @@ const char* LineRoute::name_ = "LineRoute";
 void
 LineRoute::Register(App& app)
 {
-  CROW_ROUTE(app, LINE_ROUTE_ROUTE).methods("GET"_method, "POST"_method)(*this);
+  CROW_ROUTE(app, LINE_ROUTE_ROUTE)
+    .methods("GET"_method, "POST"_method, "DELETE"_method)(*this);
   CROW_ROUTE(app, WORD_ROUTE_ROUTE).methods("GET"_method, "POST"_method)(*this);
 }
 
@@ -54,6 +55,22 @@ LineRoute::impl(HttpPost, const Request& req, int pid, int p, int lid) const
   auto conn = must_get_connection();
   auto line = session->must_find(conn, pid, p, lid);
   return correct(conn, *line, *c);
+}
+////////////////////////////////////////////////////////////////////////////////
+Route::Response
+LineRoute::impl(HttpDelete, const Request& req, int pid, int p, int lid) const
+{
+  LockedSession session(get_session(req));
+  auto conn = must_get_connection();
+  auto page = session->must_find(conn, pid, p);
+  if (!page->book().is_book()) {
+    THROW(BadRequest, "(LineRoute) cannot delete line from project");
+  }
+  MysqlCommiter commiter(conn);
+  page->delete_line(lid);
+  delete_line(conn.db(), pid, p, lid);
+  commiter.commit();
+  return ok();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
