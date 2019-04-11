@@ -62,7 +62,8 @@ PageRoute::impl(HttpDelete, const Request& req, int bid, int pid) const
                  << " page id: " << pid;
   const auto book = session->must_find(conn, bid);
   if (!book->is_book()) {
-    THROW(BadRequest, "(PageRoute) cannot delete page from project");
+    THROW(BadRequest,
+          "(PageRoute) cannot delete page from project (must be a book)");
   }
   const auto page = session->must_find(conn, bid, pid);
   MysqlCommiter commiter(conn);

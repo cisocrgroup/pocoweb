@@ -64,7 +64,8 @@ LineRoute::impl(HttpDelete, const Request& req, int pid, int p, int lid) const
   auto conn = must_get_connection();
   auto page = session->must_find(conn, pid, p);
   if (!page->book().is_book()) {
-    THROW(BadRequest, "(LineRoute) cannot delete line from project");
+    THROW(BadRequest,
+          "(LineRoute) cannot delete line from project (must be a book)");
   }
   MysqlCommiter commiter(conn);
   delete_line(conn.db(), pid, p, lid);
