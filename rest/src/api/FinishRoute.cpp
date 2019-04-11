@@ -32,6 +32,12 @@ FinishRoute::impl(HttpPost, const Request& req, int bid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+Response impl(HttpGet, const Request& req, int bid) const
+{
+  return finish(req, bid);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 Route::Response
 FinishRoute::finish(const Request& req, int bid) const
 {
