@@ -66,8 +66,8 @@ PageRoute::impl(HttpDelete, const Request& req, int bid, int pid) const
   }
   const auto page = session->must_find(conn, bid, pid);
   MysqlCommiter commiter(conn);
-  book->delete_page(page->id());
   delete_page(conn.db(), bid, pid);
+  book->delete_page(page->id());
   commiter.commit();
   return ok();
 }
