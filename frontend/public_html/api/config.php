@@ -19,8 +19,8 @@ $config = array(
 		),
 	),
 	"backend" => array(
-	    "internalURL"    => "http://pcwauth:8081",
-		"externalURL"        => "http://localhost/rest",
+	    "internalURL"	 => "http://pcwauth:8081",
+		"externalURL"    => "http://pocoweb.cis.lmu.de/rest",
 		"profilerWaitMs" => 30000,
 		"routes"         => array(
 			"apiVersion"          => "/api-version",
@@ -56,7 +56,6 @@ $config = array(
 		"name"    => "pcw-user",
 		"sid"     => "pcw-sid",
 		"expires" => 8 * 60 * 60, // expires after 8 hours
-		"domain"  => "localhost",
 	),
 	"httpStatusInfo" => array(
 		100 => "Continue",

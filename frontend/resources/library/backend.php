@@ -57,8 +57,7 @@ function backend_set_session_cookie($session) {
 	$res = setcookie(
         $config["cookies"]["sid"],
         $json,
-        time() + $config["cookies"]["expires"],
-        "/", $config["cookies"]["domain"]);
+        time() + $config["cookies"]["expires"]);
 	if (!$res) {
 		error_log("(backend_set_session_cookie) " .
 			"could not set cookie: $sid");

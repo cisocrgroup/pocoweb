@@ -72,7 +72,7 @@ function get_split_images(){
         $result=array();
         $session = $api->get_response();
         header("status: ".$status);
-        echo json_encode($session); 
+        echo json_encode($session);
     break;
   case "403":
     header("status: ".$status);
@@ -98,7 +98,7 @@ function get_languages(){
         $result=array();
         $session = $api->get_response();
         header("status: ".$status);
-        echo json_encode($session); 
+        echo json_encode($session);
     break;
   case "403":
     header("status: ".$status);
@@ -126,7 +126,7 @@ function get_documentation(){
     'mode' => "markdown"
   );
 
- $data_string = json_encode($data);    
+ $data_string = json_encode($data);
 
   $url = "https://api.github.com/markdown";
   $ch = curl_init();
@@ -135,14 +135,14 @@ function get_documentation(){
   curl_setopt($ch, CURLOPT_URL,$url);
   curl_setopt($ch, CURLOPT_POST,1);
   curl_setopt($ch, CURLOPT_POSTFIELDS,$data_string);
-  curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
-      'Content-Type: application/json',                                                                                
-      'Content-Length: ' . strlen($data_string))                                                                       
-  );  
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+      'Content-Type: application/json',
+      'Content-Length: ' . strlen($data_string))
+  );
 
-  curl_setopt($ch, CURLOPT_TIMEOUT, 30); 
+  curl_setopt($ch, CURLOPT_TIMEOUT, 30);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-  $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);  
+  $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
   $htmlstring=curl_exec ($ch);
 
@@ -165,7 +165,7 @@ function get_project(){
   case "200":
         $result=array();
         $session = $api->get_response();
-        echo json_encode($session); 
+        echo json_encode($session);
     break;
   case "403":
     header("status: ".$status);
@@ -190,7 +190,7 @@ function delete_project(){
   case "200":
         $result=array();
         $session = $api->get_response();
-        echo json_encode("Successfully deleted project '"+$pid+"'"); 
+        echo json_encode("Successfully deleted project '"+$pid+"'");
     break;
   case "403":
     header("status: ".$status);
@@ -216,7 +216,7 @@ function update_project(){
   case "200":
         $result=array();
         $session = $api->get_response();
-        echo json_encode("Successfully deleted project '"+$pid+"'"); 
+        echo json_encode("Successfully deleted project '"+$pid+"'");
     break;
   case "403":
     header("status: ".$status);
@@ -254,7 +254,7 @@ function split_up_project(){
         $result=array();
         $session = $api->get_response();
         echo json_encode($session);
-        // echo ('Project '.$pid." successfully splitted"); 
+        // echo ('Project '.$pid." successfully splitted");
     break;
   case "403":
     header("status: ".$status);
@@ -287,7 +287,7 @@ function assign_packages(){
       case "200":
             $result=array();
             $session = $api->get_response();
-            // echo ('Successfully assigned project '.$pairs[$i]['pid']." to user ".$pairs[$i]['uid']); 
+            // echo ('Successfully assigned project '.$pairs[$i]['pid']." to user ".$pairs[$i]['uid']);
         break;
       case "403":
         header("status: ".$status);
@@ -318,7 +318,7 @@ function assign_package(){
   case "200":
         $result=array();
         $session = $api->get_response();
-        echo ('Successfully assigned project '.$pid." to user "+$uid); 
+        echo ('Successfully assigned project '.$pid." to user "+$uid);
     break;
   case "403":
     header("status: ".$status);
@@ -336,7 +336,7 @@ function assign_package(){
 
 
 function download_project(){
-  
+
   $pid = $_POST['pid'];
   $api = new Api(backend_get_download_project_route($pid));
   $api->set_session_id(backend_get_session_cookie());
@@ -370,14 +370,14 @@ function get_projects(){
   $api = new Api(backend_get_projects_route());
   $api->set_session_id(backend_get_session_cookie());
   $api->get_request();
- 
+
   $status = $api->get_http_status_code();
   switch ($status) {
   case "200":
         $result=array();
         $session = $api->get_response();
 
-        echo json_encode($session); 
+        echo json_encode($session);
 
     break;
   case "403":
@@ -398,7 +398,7 @@ function get_page(){
 
   $pid = $_POST['pid'];
   $p = $_POST['page'];
-  
+
   $api_result;
 
   if ($p === "first") {
@@ -462,7 +462,7 @@ function correct_line() {
   case "200":
         $result=array();
         $session = $api->get_response();
-        echo json_encode($session); 
+        echo json_encode($session);
     break;
   case "403":
     header("status: ".$status);
@@ -488,7 +488,7 @@ function get_line() {
   case "200":
         $result=array();
         $session = $api->get_response();
-        echo json_encode($session); 
+        echo json_encode($session);
     break;
   case "403":
     header("status: ".$status);
@@ -517,7 +517,7 @@ function correct_token() {
   case "200":
         $result=array();
         $session = $api->get_response();
-        echo json_encode($session); 
+        echo json_encode($session);
     break;
   case "403":
     header("status: ".$status);
@@ -544,7 +544,7 @@ function order_profile() {
   case "202":
         $result=array();
         $session = $api->get_response();
-        echo "Profile for project ".$_POST['pid']." successfully ordered."; 
+        echo "Profile for project ".$_POST['pid']." successfully ordered.";
     break;
   case "403":
     header("status: ".$status);
@@ -635,14 +635,14 @@ function get_users(){
   $api = new Api(backend_get_users_route());
   $api->set_session_id(backend_get_session_cookie());
   $api->get_request();
- 
+
   $status = $api->get_http_status_code();
   switch ($status) {
   case "200":
         $result=array();
         $session = $api->get_response();
 
-        echo json_encode($session); 
+        echo json_encode($session);
 
     break;
   case "403":
@@ -673,7 +673,7 @@ function get_user(){
     else{
       echo "to do";
     }
- 
+
 
 }
 
@@ -712,7 +712,7 @@ if (!isset($_POST["name"]) || !isset($_POST["email"]) ||
   case "200":
         $result=array();
         $session = $api->get_response();
- 
+
         /////////////////////
         $data = array("email" => $_POST['email'], "password" => $_POST['password']);
         $api = new Api(backend_get_login_route());
@@ -722,7 +722,7 @@ if (!isset($_POST["name"]) || !isset($_POST["email"]) ||
         backend_set_session_cookie($session2);
         ////////////////////////
 
-        echo json_encode($session); 
+        echo json_encode($session);
 
 
     break;
@@ -768,7 +768,7 @@ function create_user() {
         $result=array();
         $session = $api->get_response();
 
-        echo json_encode("Successfully created new user."); 
+        echo json_encode("Successfully created new user.");
 
 
     break;
@@ -785,7 +785,7 @@ function create_user() {
   }
 }
 
-  
+
 
 
 
@@ -795,14 +795,14 @@ function delete_user(){
   $api = new Api(backend_get_delete_user_route($_POST['id']));
   $api->set_session_id(backend_get_session_cookie());
   $api->delete_request();
- 
+
   $status = $api->get_http_status_code();
   switch ($status) {
   case "200":
         $result=array();
         $session = $api->get_response();
 
-        echo json_encode($session); 
+        echo json_encode($session);
 
     break;
   case "403":
@@ -830,7 +830,7 @@ function login(){
         $result=array();
         $session = $api->get_response();
 
-        $session['user']['password'] = $_POST['password']; // save pw in cookie = workaround...
+        $session['user']['password'] = $_POST['password']; // TODO: save pw in cookie = workaround...
         backend_set_session_cookie($session);
 
 
@@ -839,7 +839,7 @@ function login(){
 
         $result['user'] = $session['user'];
         $result['message'] = "You have successfully logged in";
-        echo json_encode($result); 
+        echo json_encode($result);
 
     break;
   case "403":
@@ -859,7 +859,7 @@ function logout(){
   $api = new Api(backend_get_logout_route());
   $api->set_session_id(backend_get_session_cookie());
   $api->get_request();
- 
+
   $status = $api->get_http_status_code();
   switch ($status) {
   case "200":
@@ -872,7 +872,7 @@ function logout(){
         header("status: ".$status);
 
         $result['message'] = 'You have successfully logged out! <a href="#" class="js-login">Log back in?</a>';
-        echo json_encode($result); 
+        echo json_encode($result);
 
     break;
   case "403":
@@ -904,7 +904,7 @@ function login_check(){
       else {
         echo -1;
       }
- 
+
 }
 
 
@@ -916,11 +916,11 @@ function get_api_version(){
   switch ($status) {
   case "200":
         $result = $api->get_response();
-  
+
         header_remove();
         header("status: ".$status);
 
-        echo json_encode($result); 
+        echo json_encode($result);
 
     break;
   default:
