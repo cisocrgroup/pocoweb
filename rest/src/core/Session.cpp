@@ -12,7 +12,7 @@ using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 Session::Session(int user, const Config& config, AppCacheSptr cache)
-  : sid_(gensessionid(SESSION_ID_LENGTH))
+  : sid_(std::to_string(user)) //gensessionid(SESSION_ID_LENGTH))
   , user_(user)
   , dir_(std::make_unique<SessionDirectory>(gensessionid(SESSION_ID_LENGTH),
                                             config))
