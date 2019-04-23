@@ -88,7 +88,7 @@ toggleBetweenTextAndInput : function(hide, unhide) {
   if (hide === null || unhide === null) {
     return;
   }
-  hide.setAttribute("hidden", ""); 
+  hide.setAttribute("hidden", "");
   unhide.removeAttribute("hidden");
 },
 getIds : function(anchor) {
@@ -106,7 +106,7 @@ addAlignedLine : function(line){
             var img_id = "line-img-"+anchor;
             var line_img = document.getElementById(img_id);
             var line_text =  $('#line-'+anchor);
-         
+			line_text.find('.line-tokens').css('width', (Number(line_img.width)+50).toString() +'px');
             var scalefactor = line_img.width / line.box.width;
 
               for(var i=0;i<linetokens.length;i++) {
@@ -121,12 +121,12 @@ addAlignedLine : function(line){
                 }
 
                  var div = $('<div class="tokendiv noselect"></div>').append(cordiv);
-                line_text.find('.line-tokens').css('width',line_img.width+'px').append(div);
+                line_text.find('.line-tokens').append(div);
                 var box = token['box'];
-                 
+
                     var div_length = token.box.width*scalefactor ;
                     cordiv.css('width',div_length);
-                      
+
                }
 }
 
