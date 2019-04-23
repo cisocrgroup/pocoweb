@@ -90,7 +90,7 @@ pcw::operator<<(Json& json, const Line& line)
   json["isPartiallyCorrected"] = line.is_partially_corrected();
   // do *not* show words of each line
   // /books/id/page/id/lines/id/tokens will give all tokens of a line
-  // size_t i = 0;
+  size_t i = 0;
   line.each_token([&i, &json](const auto& token) {
     json["tokens"][i] << token;
     ++i;
