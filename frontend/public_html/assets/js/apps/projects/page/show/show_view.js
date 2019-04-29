@@ -51,7 +51,7 @@ events:{
       serializeData: function(){
       var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
           data.Util = Util;
-        
+
         return data;
       },
 
@@ -101,14 +101,14 @@ events:{
       },
       line_left:function(e){
         // console.log("mouseleave")
-        
+
       },
 
        line_edited:function(e){
         e.stopPropagation();
         $('.custom-popover').remove();
       },
-      
+
       line_tokens_clicked:function(e){
         e.preventDefault();
          e.stopPropagation();
@@ -129,7 +129,7 @@ events:{
         $('.line-text').css('border-top','1px solid transparent');
         $('.line-text').css('border-top-right-radius','.25rem');
         $('.line-text').css('border-bottom-right-radius','.25rem');
-   
+
 
         line_parent.css('border-left','1px solid #ced4da');
         line_parent.css('border-bottom','1px solid #ced4da');
@@ -138,7 +138,7 @@ events:{
         line_parent.css('border-bottom-right-radius','.0rem');
 
         line_parent.next().find('.correct-btn').show();
-      
+
 
         //  $(e.currentTarget).find('.line').focusout(function() {
 
@@ -158,7 +158,7 @@ events:{
 
 
 
-        
+
       },
       line_selected:function(e){
         e.stopPropagation();
@@ -171,20 +171,20 @@ events:{
            return;
           }
 
-      console.log(sel);     
+      console.log(sel);
       if($(e.target).hasClass('line')){
        $(".dropdown-menu").hide();
        $(".custom-popover").remove();
 
-      var btn_group = $('<div class="btn-group"></div>'); 
+      var btn_group = $('<div class="btn-group"></div>');
 
 
       btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary btn-sm"><i class="fas fa-align-justify"></i> Concordance </button>'))
       .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary btn-sm"> <i class="fas fa-list-ol"></i> Suggestions <i class="fas fa-caret-down"></button>'))
- 
+
  // btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary">Show concordance of (0 occurrences)</button>'))
  //      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary">Correction suggestions <i class="fas fa-caret-down"></button>'))
- 
+
 
       var div = $('<div class="custom-popover">')
       .css({
@@ -198,7 +198,7 @@ events:{
        $('#js-concordance').on('click',function(){
         that.trigger("page:concordance_clicked",sel,0);
        });
-      
+
          this.saved_selection = sel;
          // Util.replaceSelectedText(selection);
         //   console.log(selection);
@@ -211,40 +211,40 @@ events:{
 
         // remove when clicked somewhere else
 
-          $(document).off().click(function(e) 
+          $(document).off().click(function(e)
           {
             e.stopPropagation();
-            
+
             $(".dropdown-menu").hide();
 
               var custom_popover = $(".custom-popover");
-              if (!custom_popover.is(e.target) && custom_popover.has(e.target).length === 0) 
-              {          
+              if (!custom_popover.is(e.target) && custom_popover.has(e.target).length === 0)
+              {
                   custom_popover.remove();
               }
           });
 
 
-   
+
 
       },
       onDestroy:function(e){
        $(".custom-popover").remove();
       },
-     
+
       onDomRefresh:function(e){
 
             var that = this;
          $('.line-img').each(function(index){
+		 var img = $(this);
            $(this).imagesLoaded( function() {
-              
                 var line = that.model.get('lines')[index];
                 if(line!=undefined){
                   Util.addAlignedLine(line);
                 }
             });
 
-         }); 
+         });
 
       },
 
@@ -260,7 +260,7 @@ events:{
     if (ddet !== null) {
       this.setErrorTokensDropdown(pid, ddet, res);
     }
-  
+
 },
 setErrorPatternsDropdown : function(pid, dropdown, res) {
   var that = this;
@@ -354,4 +354,3 @@ appendErrorCountItem : function(dropdown, item, count) {
 return Show;
 
 });
-
