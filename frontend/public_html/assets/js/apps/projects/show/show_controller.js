@@ -105,15 +105,15 @@ var cards2 = [
                   "color": "blue",
                   "icon": "fas fa-cogs",
                   "id": "test_btn",
-                  "name": "PoCoTo-A",
+                  "name": "A-PoCoTo",
                   "seq": 1,
                   "text": "Fully automatic OCR postcorrection.",
-                  "url": "projects:list",
+                  "url": "projects:a_pocoto",
               }, {
                   "color": "green",
                   "icon": "fas fa-file-signature",
                   "id": "users_button",
-                  "name": "PoCoTo-A-I",
+                  "name": "A-I-PoCoTo",
                   "seq": 2,
                   "text": "Manual interactive postcorrection tools.",
                   "url": "projects:show_page",
@@ -144,6 +144,9 @@ var cards2 = [
          projectShowHub2.on('cardHub:clicked',function(data){
           if(data.url=="projects:show_page"){
              App.trigger("projects:show_page",id,'first');
+          }
+          if(data.url=="projects:a_pocoto"){
+             App.trigger("projects:a_pocoto",id);
           }
         });
 

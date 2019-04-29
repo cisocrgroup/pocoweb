@@ -607,3 +607,15 @@ outline: 0;
 .close-x:hover{
   color:black;
 }
+
+.placeholder {
+  border: 2px solid red !important;
+  z-index: 1000 !important;
+  /*background:url(*/
+/*data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAHUlEQVQYlWO49+jZf2TMgAsMoELqA1xWY4gPnEIAzCCu8Zw5zwIAAAAASUVORK5CYII=)*/
+}
+
+.ui-sortable-helper{
+  background-color: #d4edda!important;
+  border-color: #c3e6cb!important; 
+}
