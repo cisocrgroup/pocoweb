@@ -1,4 +1,6 @@
 # Setup
+- edit `externalURL` variable in `frontend/public_html/api/config.php`
+- edit `externalURL` variable in `frontend/resources/config.php`
 - update settings in env.sh file.
 - `mkdir -p $PCW_BASE_DIR/tmp-data`
 - `chmod a+rwx $PCW_BASE_DIR/tmp-data`
