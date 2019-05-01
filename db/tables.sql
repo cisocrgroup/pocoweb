@@ -104,10 +104,8 @@ create table if not exists contents (
 alter table contents convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists types (
-	bookid int references books(bookid),
-	typid int,
-	string varchar(50),
-	primary key (bookid, typid)
+	typid int not null unique primary key auto_increment,
+	string varchar(50) unique
 );
 alter table types convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 alter table types change string string varchar(50) character set utf8mb4 collate utf8mb4_unicode_ci;

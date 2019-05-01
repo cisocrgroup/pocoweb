@@ -100,8 +100,8 @@ SuggestionsRoute::suggestions(const Request& req,
     auto t1 = t.as(t1_alias);
     auto t2 = t.as(t2_alias);
     // lookup typid of query token
-    const auto qidrow = conn.db()(
-      select(t.typid).from(t).where(t.bookid == bid and t.string == query));
+    const auto qidrow =
+      conn.db()(select(t.typid).from(t).where(t.string == query));
     if (qidrow.empty()) {
       return j;
     }
@@ -112,8 +112,7 @@ SuggestionsRoute::suggestions(const Request& req,
                           .on(t1.typid == s.typid)
                           .join(t2)
                           .on(t2.typid == s.suggestiontypid))
-                  .where(s.bookid == bid && t1.bookid == bid &&
-                         t2.bookid == bid && s.typid == qid));
+                  .where(s.bookid == bid && s.typid == qid));
     append_suggestions(conn, j, bid, rows);
   } else if (not pat) {
     j["query"] = "";
@@ -121,13 +120,13 @@ SuggestionsRoute::suggestions(const Request& req,
     tables::Suggestions s;
     auto t1 = t.as(t1_alias);
     auto t2 = t.as(t2_alias);
-    auto rows = conn.db()(
-      select(all_of(s), t1.string.as(tokstr), t2.string.as(suggstr))
-        .from(s.join(t1)
-                .on(t1.typid == s.typid)
-                .join(t2)
-                .on(t2.typid == s.suggestiontypid))
-        .where(s.bookid == bid && t1.bookid == bid && t2.bookid == bid));
+    auto rows =
+      conn.db()(select(all_of(s), t1.string.as(tokstr), t2.string.as(suggstr))
+                  .from(s.join(t1)
+                          .on(t1.typid == s.typid)
+                          .join(t2)
+                          .on(t2.typid == s.suggestiontypid))
+                  .where(s.bookid == bid));
     append_suggestions(conn, j, bid, rows);
   } else if (pat and q) {
     j["query"] = *q;
@@ -146,8 +145,7 @@ SuggestionsRoute::suggestions(const Request& req,
                           .on(t2.typid == s.suggestiontypid)
                           .join(e)
                           .on(s.suggestionid == e.suggestionid))
-                  .where(s.bookid == bid && t1.bookid == bid &&
-                         t2.bookid == bid && e.pattern == query));
+                  .where(s.bookid == bid && e.pattern == query));
     append_suggestions(conn, j, bid, rows);
   }
   return j;

@@ -191,7 +191,6 @@ ProfilerRoute::insert_profile(const ProfilerRoute* that, const Profile& profile)
     // remove old profiles (if possible)
     conn.db()(remove_from(p).where(p.bookid == id));
     conn.db()(remove_from(stab).where(stab.bookid == id));
-    conn.db()(remove_from(t).where(t.bookid == id));
     conn.db()(remove_from(e).where(e.bookid == id));
     conn.db()(remove_from(a).where(a.bookid == id));
     commiter.commit();
@@ -210,8 +209,7 @@ ProfilerRoute::insert_profile(const ProfilerRoute* that, const Profile& profile)
     // cased suggestion for each candidate.
     std::tie(firstid, isnew) = typeids[s.first.cor_lc()];
     if (isnew) {
-      conn.db()(insert_into(t).set(
-        t.bookid = id, t.typid = firstid, t.string = s.first.cor()));
+      conn.db()(insert_into(t).set(t.string = s.first.cor()));
     }
     for (const auto& c : s.second) {
       if (c.weight() < min_weight)
@@ -222,8 +220,7 @@ ProfilerRoute::insert_profile(const ProfilerRoute* that, const Profile& profile)
       int secondid;
       std::tie(secondid, isnew) = typeids[c.cor()];
       if (isnew) {
-        conn.db()(insert_into(t).set(
-          t.bookid = id, t.typid = secondid, t.string = c.cor()));
+        conn.db()(insert_into(t).set(t.string = c.cor()));
       }
       const auto sugid = conn.db()(insert_into(stab).set(
         stab.bookid = id,
@@ -261,8 +258,7 @@ ProfilerRoute::insert_profile(const ProfilerRoute* that, const Profile& profile)
     int typid;
     std::tie(typid, isnew) = typeids[s];
     if (isnew) {
-      conn.db()(
-        insert_into(t).set(t.bookid = id, t.typid = typid, t.string = s));
+      conn.db()(insert_into(t).set(t.string = s));
     }
     CROW_LOG_DEBUG << "(ProfilerRoute) adaptive token: " << s;
     conn.db()(insert_into(a).set(a.bookid = id, a.typid = typid));

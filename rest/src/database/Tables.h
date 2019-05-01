@@ -1012,22 +1012,6 @@ namespace tables
   };
   namespace Types_
   {
-    struct Bookid
-    {
-      struct _alias_t
-      {
-        static constexpr const char _literal[] =  "bookid";
-        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-        template<typename T>
-        struct _member_t
-          {
-            T bookid;
-            T& operator()() { return bookid; }
-            const T& operator()() const { return bookid; }
-          };
-      };
-      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
-    };
     struct Typid
     {
       struct _alias_t
@@ -1042,7 +1026,7 @@ namespace tables
             const T& operator()() const { return typid; }
           };
       };
-      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::must_not_insert, sqlpp::tag::must_not_update>;
     };
     struct String
     {
@@ -1063,7 +1047,6 @@ namespace tables
   }
 
   struct Types: sqlpp::table_t<Types,
-               Types_::Bookid,
                Types_::Typid,
                Types_::String>
   {

@@ -48,10 +48,9 @@ AdaptiveTokensRoute::impl(HttpGet, const Request& req, int bid) const
   tables::Adaptivetokens a;
   j["projectId"] = bid;
   j["adaptiveTokens"] = crow::json::rvalue(crow::json::type::List);
-  auto rows =
-    conn.db()(select(t.string)
-                .from(t.join(a).on(t.typid == a.typid and t.bookid == a.bookid))
-                .where(t.bookid == bid));
+  auto rows = conn.db()(select(t.string)
+                          .from(a.join(t).on(t.typid == a.typid))
+                          .where(a.bookid == bid));
   size_t i = 0;
   for (const auto& row : rows) {
     j["adaptiveTokens"][i++] = row.string;

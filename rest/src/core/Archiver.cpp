@@ -125,10 +125,9 @@ Archiver::write_adaptive_token_set(const Path& dir) const
   }
   tables::Types t;
   tables::Adaptivetokens a;
-  auto rows = conn_.db()(
-    select(t.string)
-      .from(t.join(a).on(t.typid == a.typid and t.bookid == a.bookid))
-      .where(t.bookid == bookid));
+  auto rows = conn_.db()(select(t.string)
+                           .from(a.join(t).on(a.typid == t.typid))
+                           .where(a.bookid == bookid));
   for (const auto& row : rows) {
     os << row.string << "\n";
   }
