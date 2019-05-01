@@ -105,7 +105,7 @@ alter table contents convert to character set utf8mb4 collate utf8mb4_unicode_ci
 
 create table if not exists types (
 	typid int not null unique primary key auto_increment,
-	string varchar(50) unique
+	string varchar(50) unique not null
 );
 alter table types convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 alter table types change string string varchar(50) character set utf8mb4 collate utf8mb4_unicode_ci;
