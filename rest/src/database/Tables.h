@@ -1012,43 +1012,43 @@ namespace tables
   };
   namespace Types_
   {
-    struct Typid
+    struct Id
     {
       struct _alias_t
       {
-        static constexpr const char _literal[] =  "typid";
+        static constexpr const char _literal[] =  "id";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
         template<typename T>
         struct _member_t
           {
-            T typid;
-            T& operator()() { return typid; }
-            const T& operator()() const { return typid; }
+            T id;
+            T& operator()() { return id; }
+            const T& operator()() const { return id; }
           };
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::must_not_insert, sqlpp::tag::must_not_update>;
     };
-    struct String
+    struct Typ
     {
       struct _alias_t
       {
-        static constexpr const char _literal[] =  "string";
+        static constexpr const char _literal[] =  "typ";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
         template<typename T>
         struct _member_t
           {
-            T string;
-            T& operator()() { return string; }
-            const T& operator()() const { return string; }
+            T typ;
+            T& operator()() { return typ; }
+            const T& operator()() const { return typ; }
           };
       };
-      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::can_be_null>;
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
   }
 
   struct Types: sqlpp::table_t<Types,
-               Types_::Typid,
-               Types_::String>
+               Types_::Id,
+               Types_::Typ>
   {
     struct _alias_t
     {
@@ -1118,18 +1118,18 @@ namespace tables
   };
   namespace Suggestions_
   {
-    struct Suggestionid
+    struct Id
     {
       struct _alias_t
       {
-        static constexpr const char _literal[] =  "suggestionid";
+        static constexpr const char _literal[] =  "id";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
         template<typename T>
         struct _member_t
           {
-            T suggestionid;
-            T& operator()() { return suggestionid; }
-            const T& operator()() const { return suggestionid; }
+            T id;
+            T& operator()() { return id; }
+            const T& operator()() const { return id; }
           };
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::must_not_insert, sqlpp::tag::must_not_update>;
@@ -1281,7 +1281,7 @@ namespace tables
   }
 
   struct Suggestions: sqlpp::table_t<Suggestions,
-               Suggestions_::Suggestionid,
+               Suggestions_::Id,
                Suggestions_::Bookid,
                Suggestions_::Pageid,
                Suggestions_::Lineid,
