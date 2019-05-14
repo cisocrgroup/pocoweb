@@ -118,7 +118,7 @@ create table if not exists profiles (
 alter table profiles convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists suggestions (
-	suggestionid int not null unique primary key auto_increment,
+	id int not null unique primary key auto_increment,
 	bookid int references books(bookid),
 	pageid int references pages(pageid),
 	lineid int references textlines(lineid),
@@ -135,7 +135,7 @@ alter table suggestions convert to character set utf8mb4 collate utf8mb4_unicode
 /* ^: max utf length of a pattern with maximal 3 characters */
 /* ^^: lenght of separator `:` */
 create table if not exists errorpatterns (
-	suggestionid int references suggestions(suggestionid),
+	suggestionid int references suggestions(id),
 	bookid int references books(bookid),
 	pattern varchar(25),
 	ocr boolean not null
