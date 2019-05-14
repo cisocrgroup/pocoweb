@@ -104,11 +104,11 @@ create table if not exists contents (
 alter table contents convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists types (
-	typid int not null unique primary key auto_increment,
-	string varchar(50) unique not null
+	id int not null unique primary key auto_increment,
+	typ varchar(50) unique not null
 );
 alter table types convert to character set utf8mb4 collate utf8mb4_unicode_ci;
-alter table types change string string varchar(50) character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table types change typ typ varchar(50) character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists profiles (
 	bookid int references books(bookid),
@@ -123,15 +123,15 @@ create table if not exists suggestions (
 	pageid int references pages(pageid),
 	lineid int references textlines(lineid),
 	tokenid int not null,
-	typid int references types(typid),
-	suggestiontypid int references types(typid),
+	typid int references types(id),
+	suggestiontypid int references types(id),
 	weight double not null,
 	distance int not null,
 	topsuggestion boolean not null
 );
 alter table suggestions convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
-/* (3 * 4)^ + 1^^ + (3 * 4)^ = 25*/
+/* (3 * 4)^ + 1^^ + (3 * 4)^ = 25 */
 /* ^: max utf length of a pattern with maximal 3 characters */
 /* ^^: lenght of separator `:` */
 create table if not exists errorpatterns (
@@ -145,7 +145,7 @@ alter table errorpatterns change pattern pattern varchar(25) character set utf8m
 
 create table if not exists adaptivetokens (
 	bookid int references books(bookid),
-	typid int references types(typid),
+	typid int references types(id),
 	primary key (bookid, typid)
 );
 alter table adaptivetokens convert to character set utf8mb4 collate utf8mb4_unicode_ci;
