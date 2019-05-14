@@ -22,25 +22,21 @@
 
 using namespace pcw;
 
-template<class M>
-static SearchRoute::Response
-make_response(const M& matches, int bookid, const std::string& q, bool ep);
+template <class M>
+static SearchRoute::Response make_response(const M &matches, int bookid,
+                                           const std::string &q, bool ep);
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* SearchRoute::route_ = SEARCH_ROUTE_ROUTE;
-const char* SearchRoute::name_ = "SearchRoute";
+const char *SearchRoute::route_ = SEARCH_ROUTE_ROUTE;
+const char *SearchRoute::name_ = "SearchRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-SearchRoute::Register(App& app)
-{
+void SearchRoute::Register(App &app) {
   CROW_ROUTE(app, SEARCH_ROUTE_ROUTE).methods("GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-SearchRoute::impl(HttpGet, const Request& req, int bid) const
-{
+Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
   const auto q = query_get<std::string>(req.url_params, "q");
   if (not q) {
     THROW(BadRequest, "(SearchRoute) invalid or missing query parameter");
@@ -54,12 +50,8 @@ SearchRoute::impl(HttpGet, const Request& req, int bid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-SearchRoute::search(const Request& req,
-                    const std::string& q,
-                    int bid,
-                    TokenQuery) const
-{
+Route::Response SearchRoute::search(const Request &req, const std::string &q,
+                                    int bid, TokenQuery) const {
   CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
                  << " query string q: " << q;
   const LockedSession session(get_session(req));
@@ -73,12 +65,8 @@ SearchRoute::search(const Request& req,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-SearchRoute::search(const Request& req,
-                    const std::string& q,
-                    int bid,
-                    ErrorPatternQuery) const
-{
+Route::Response SearchRoute::search(const Request &req, const std::string &q,
+                                    int bid, ErrorPatternQuery) const {
   CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
                  << " for error pattern q: " << q;
   const LockedSession session(get_session(req));
@@ -86,15 +74,16 @@ SearchRoute::search(const Request& req,
   const auto project = session->must_find(conn, bid);
   tables::Errorpatterns e;
   tables::Suggestions s;
-  auto rows = conn.db()(select(s.pageid, s.lineid, s.tokenid)
-                          .from(s.join(e).on(s.suggestionid == e.suggestionid))
-                          .where(e.bookid == bid and e.pattern == q));
+  auto rows =
+      conn.db()(select(s.pageid, s.lineid, s.tokenid)
+                    .from(s.join(e).on(s.suggestiontypid == e.suggestionid))
+                    .where(e.bookid == bid and e.pattern == q));
   std::set<std::tuple<int, int, int>> ids;
-  for (const auto& row : rows) {
+  for (const auto &row : rows) {
     ids.emplace(row.pageid, row.lineid, row.tokenid);
   }
   Searcher searcher(*project);
-  const auto matches = searcher.find_impl([&ids](const auto& t) {
+  const auto matches = searcher.find_impl([&ids](const auto &t) {
     auto p = std::make_tuple(t.line->page().id(), t.line->id(), t.id);
     return ids.count(p);
   });
@@ -104,10 +93,9 @@ SearchRoute::search(const Request& req,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template<class M>
-SearchRoute::Response
-make_response(const M& matches, int bookid, const std::string& q, bool ep)
-{
+template <class M>
+SearchRoute::Response make_response(const M &matches, int bookid,
+                                    const std::string &q, bool ep) {
   CROW_LOG_DEBUG << "(SearchRoute::search) building response";
   Json json;
   size_t i = 0;
@@ -117,10 +105,10 @@ make_response(const M& matches, int bookid, const std::string& q, bool ep)
   json["projectId"] = bookid;
   json["nLines"] = matches.size();
   json["nWords"] = words;
-  for (const auto& m : matches) {
+  for (const auto &m : matches) {
     json["matches"][i]["line"] << *m.first;
     size_t j = 0;
-    for (const auto& token : m.second) {
+    for (const auto &token : m.second) {
       json["matches"][i]["tokens"][j] << token;
       j++;
       words++;
