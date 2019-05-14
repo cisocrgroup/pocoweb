@@ -90,14 +90,13 @@ SuggestionsRoute::suggestions(const Request &req, int bid,
     auto t1 = t.as(t1_alias);
     auto t2 = t.as(t2_alias);
     // lookup typid of query token
-    const auto qidrow =
-        conn.db()(select(t.id).from(t).where(t.string == query));
+    const auto qidrow = conn.db()(select(t.id).from(t).where(t.typ == query));
     if (qidrow.empty()) {
       return j;
     }
     const auto qid = qidrow.front().id;
     auto rows =
-        conn.db()(select(all_of(s), t1.string.as(tokstr), t2.string.as(suggstr))
+        conn.db()(select(all_of(s), t1.typ.as(tokstr), t2.typ.as(suggstr))
                       .from(s.join(t1)
                                 .on(t1.id == s.typid)
                                 .join(t2)
@@ -111,7 +110,7 @@ SuggestionsRoute::suggestions(const Request &req, int bid,
     auto t1 = t.as(t1_alias);
     auto t2 = t.as(t2_alias);
     auto rows =
-        conn.db()(select(all_of(s), t1.string.as(tokstr), t2.string.as(suggstr))
+        conn.db()(select(all_of(s), t1.typ.as(tokstr), t2.typ.as(suggstr))
                       .from(s.join(t1)
                                 .on(t1.id == s.typid)
                                 .join(t2)
@@ -128,13 +127,13 @@ SuggestionsRoute::suggestions(const Request &req, int bid,
     auto t1 = t.as(t1_alias);
     auto t2 = t.as(t2_alias);
     auto rows =
-        conn.db()(select(all_of(s), t1.string.as(tokstr), t2.string.as(suggstr))
+        conn.db()(select(all_of(s), t1.typ.as(tokstr), t2.typ.as(suggstr))
                       .from(s.join(t1)
                                 .on(t1.id == s.typid)
                                 .join(t2)
                                 .on(t2.id == s.suggestiontypid)
                                 .join(e)
-                                .on(s.suggestionid == e.suggestionid))
+                                .on(s.suggestiontypid == e.suggestionid))
                       .where(s.bookid == bid && e.pattern == query));
     append_suggestions(conn, j, bid, rows);
   }
@@ -171,14 +170,13 @@ SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request &req,
   tables::Suggestions s;
   auto t1 = t.as(t1_alias);
   auto t2 = t.as(t2_alias);
-  auto rows =
-      conn.db()(select(all_of(s), t1.string.as(tokstr), t2.string.as(suggstr))
-                    .from(s.join(t1)
-                              .on(t1.id == s.typid)
-                              .join(t2)
-                              .on(t2.id == s.suggestiontypid))
-                    .where(s.bookid == pid and s.pageid == p and
-                           s.lineid == lid and s.tokenid == tid));
+  auto rows = conn.db()(select(all_of(s), t1.typ.as(tokstr), t2.typ.as(suggstr))
+                            .from(s.join(t1)
+                                      .on(t1.id == s.typid)
+                                      .join(t2)
+                                      .on(t2.id == s.suggestiontypid))
+                            .where(s.bookid == pid and s.pageid == p and
+                                   s.lineid == lid and s.tokenid == tid));
   append_suggestions(conn, j, pid, rows);
   return j;
 }
@@ -210,7 +208,7 @@ bool lookup_and_append_patterns(C &conn, J &j, size_t bookid, size_t i,
   tables::Errorpatterns e;
   auto rs = conn.db()(select(e.pattern, e.ocr)
                           .from(e)
-                          .where(e.suggestionid == row.suggestionid));
+                          .where(e.suggestionid == row.suggestiontypid));
   j["suggestions"][i]["ocrPatterns"] =
       crow::json::rvalue(crow::json::type::List);
   j["suggestions"][i]["histPatterns"] =
