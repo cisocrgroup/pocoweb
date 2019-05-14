@@ -20,18 +20,13 @@ using namespace pcw;
 namespace fs = boost::filesystem;
 
 ////////////////////////////////////////////////////////////////////////////////
-Archiver::Archiver(const Project& project,
-                   MysqlConnection& conn,
-                   const Config& config)
-  : project_(project.shared_from_this())
-  , conn_(conn)
-  , basedir_(config.daemon.basedir)
-{}
+Archiver::Archiver(const Project &project, MysqlConnection &conn,
+                   const Config &config)
+    : project_(project.shared_from_this()), conn_(conn),
+      basedir_(config.daemon.basedir) {}
 
 ////////////////////////////////////////////////////////////////////////////////
-Archiver::Path
-Archiver::operator()() const
-{
+Archiver::Path Archiver::operator()() const {
   assert(project_);
   const auto oldwd = fs::current_path();
   ScopeGuard restoreoldwd([&oldwd]() { fs::current_path(oldwd); });
@@ -51,17 +46,15 @@ Archiver::operator()() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Archiver::zip(const Path& dir, const Path& archive) const
-{
+void Archiver::zip(const Path &dir, const Path &archive) const {
   const auto old = fs::current_path();
   ScopeGuard restoreold([&old]() { fs::current_path(old); });
   auto new__ = dir.parent_path();
   // change into the directory to fix file paths in the resulting zip
   // archive.
   fs::current_path(new__);
-  const auto command =
-    "zip -r -qq " + archive.filename().string() + " " + dir.filename().string();
+  const auto command = "zip -r -qq " + archive.filename().string() + " " +
+                       dir.filename().string();
   CROW_LOG_DEBUG << "(Archiver) zip command: " << command;
   const auto err = system(command.data());
   if (err)
@@ -71,9 +64,7 @@ Archiver::zip(const Path& dir, const Path& archive) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Archiver::write_gt_file(const Line& line, const Path& to) const
-{
+void Archiver::write_gt_file(const Line &line, const Path &to) const {
   std::ofstream os(to.string());
   if (not os.good())
     throw std::system_error(errno, std::system_category(), to.string());
@@ -82,19 +73,17 @@ Archiver::write_gt_file(const Line& line, const Path& to) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Archiver::copy_files(const Path& dir) const
-{
+void Archiver::copy_files(const Path &dir) const {
   assert(project_);
   WagnerFischer wf;
-  for (const auto& page : *project_) {
+  for (const auto &page : *project_) {
     if (not page->has_ocr_path()) {
       CROW_LOG_WARNING << "(Archiver) page id: " << page->id()
                        << " has no associated ocr path";
       continue;
     }
     const auto pp = make_page_parser(page->file_type, page->ocr)->parse();
-    for (const auto& line : *page) {
+    for (const auto &line : *page) {
       if (line->has_img_path()) {
         wf.set_gt(line->wcor());
         // page parser starts with 0,
@@ -114,9 +103,7 @@ Archiver::copy_files(const Path& dir) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Archiver::write_adaptive_token_set(const Path& dir) const
-{
+void Archiver::write_adaptive_token_set(const Path &dir) const {
   const auto bookid = project_->id();
   const auto path = dir / "adaptive_tokens.txt";
   std::ofstream os(path.string());
@@ -125,54 +112,42 @@ Archiver::write_adaptive_token_set(const Path& dir) const
   }
   tables::Types t;
   tables::Adaptivetokens a;
-  auto rows = conn_.db()(select(t.string)
-                           .from(a.join(t).on(a.typid == t.typid))
-                           .where(a.bookid == bookid));
-  for (const auto& row : rows) {
-    os << row.string << "\n";
+  auto rows = conn_.db()(select(t.typ)
+                             .from(a.join(t).on(a.typid == t.id))
+                             .where(a.bookid == bookid));
+  for (const auto &row : rows) {
+    os << row.typ << "\n";
   }
   os.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Archiver::Path
-Archiver::get_tmp_file(const Path& source, const Path& tmpdir) const
-{
+Archiver::Path Archiver::get_tmp_file(const Path &source,
+                                      const Path &tmpdir) const {
   const auto base = remove_common_base_path(source.parent_path(), tmpdir);
   const auto target = tmpdir / base / source.filename();
   return target;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Archiver::Path
-Archiver::copy_to_tmp_dir(const Path& source, const Path& tmpdir) const
-{
+Archiver::Path Archiver::copy_to_tmp_dir(const Path &source,
+                                         const Path &tmpdir) const {
   const auto target = get_tmp_file(source, tmpdir);
   boost::system::error_code ec;
   fs::create_directories(target.parent_path(), ec);
   if (ec)
-    THROW(Error,
-          "(Archiver) cannot create directory: ",
-          target.parent_path(),
-          ": ",
-          ec.message());
+    THROW(Error, "(Archiver) cannot create directory: ", target.parent_path(),
+          ": ", ec.message());
   CROW_LOG_DEBUG << "(Archiver) copying " << source << " to " << target;
   hard_link_or_copy(source, target, ec);
   if (ec)
-    THROW(Error,
-          "(Archiver) cannot copy ",
-          source,
-          " to ",
-          target,
-          ": ",
+    THROW(Error, "(Archiver) cannot copy ", source, " to ", target, ": ",
           ec.message());
   return target;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Archiver::Path
-Archiver::archive_name() const noexcept
-{
+Archiver::Path Archiver::archive_name() const noexcept {
   static const auto delre = std::regex(R"([<>:"'/\\|?*]+)");
   static const auto replre = std::regex(R"(\s+)");
   assert(project_);
@@ -186,9 +161,7 @@ Archiver::archive_name() const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Path
-Archiver::remove_common_base_path(const Path& p, const Path& base)
-{
+Path Archiver::remove_common_base_path(const Path &p, const Path &base) {
   auto i = std::mismatch(p.begin(), p.end(), base.begin(), base.end());
   if (i.first != p.end()) {
     Path res;
