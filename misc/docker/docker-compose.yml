@@ -68,8 +68,23 @@ services:
     links:
       - db
       - pocoweb
+      - pcwprofiler
     depends_on:
       - db
     restart: always
     env_file:
       - env.sh
+
+  # profiling
+  pcwprofiler:
+    image: flobar/pcwprofiler
+    restart: always
+    links:
+      - db
+    depends_on:
+      - db
+    env_file:
+      - env.sh
+    volumes:
+      - ${PCW_BASE_DIR}/project-data:/project-data:rw
+      - ${PCW_BASE_DIR}/language-data:/language-data:ro
