@@ -63,8 +63,8 @@ services:
   # pocoweb authentification and user management
   pcwauth:
     build: pcwauth/
-    ports:
-      - "8081:8081"
+    # ports:
+    #   - "8081:8081"
     links:
       - db
       - pocoweb
