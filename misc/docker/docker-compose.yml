@@ -87,4 +87,4 @@ services:
       - env.sh
     volumes:
       - ${PCW_BASE_DIR}/project-data:/project-data:rw
-      - ${PCW_BASE_DIR}/language-data:/language-data:ro
+      #- ${PCW_BASE_DIR}/language-data:/language-data:ro
