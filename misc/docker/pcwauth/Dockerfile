@@ -10,7 +10,7 @@ RUN apk add git &&\
 
 CMD sleep 15 && pcwauth -db "${MYSQL_USER}:${MYSQL_PASSWORD}@(${PCW_DB_HOST})/${MYSQL_DATABASE}" \
 	-pocoweb http://pocoweb:8080 \
-	-profiler http://profiler \
+	-profiler http://pcwprofiler \
 	-listen ':80' \
 	-root-name ${PCW_ROOT_NAME} \
 	-root-password ${PCW_ROOT_PASSWORD} \
