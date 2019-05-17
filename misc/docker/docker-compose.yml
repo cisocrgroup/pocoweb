@@ -62,7 +62,8 @@ services:
 
   # pocoweb authentification and user management
   pcwauth:
-    build: pcwauth/
+    # build: pcwauth/
+    image: flobar/pcwauth
     # ports:
     #   - "8081:8081"
     links:
