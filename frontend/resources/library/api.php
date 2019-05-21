@@ -7,7 +7,8 @@ class Api {
 		$this->url = $_SERVER['SERVER_NAME'] . $url;
         error_log("[Api] url: $this->url");
         error_log("[Api] server-name: $_SERVER[SERVER_NAME]");
-        error_log("[Api] server-name: $_SERVER[SERVER_ADDR]");
+        error_log("[Api] server-addr: $_SERVER[SERVER_ADDR]");
+        error_log("[Api] http-host: $_SERVER[HTTP_HOST]");
 
 		$this->json = NULL;
 		$this->curl = curl_init($this->url);
