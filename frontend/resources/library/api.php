@@ -4,12 +4,7 @@ require_once(LIBRARY_PATH . "/utils.php");
 
 class Api {
 	public function __construct($url) {
-		$this->url = $_SERVER['SERVER_NAME'] . $url;
-        error_log("[Api] url: $this->url");
-        error_log("[Api] server-name: $_SERVER[SERVER_NAME]");
-        error_log("[Api] server-addr: $_SERVER[SERVER_ADDR]");
-        error_log("[Api] http-host: $_SERVER[HTTP_HOST]");
-
+		$this->url = $this->get_api_url($url);
 		$this->json = NULL;
 		$this->curl = curl_init($this->url);
 		if ($this->curl === FALSE) {
@@ -23,6 +18,30 @@ class Api {
 		}
 		curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, TRUE);
 	}
+
+    private function get_api_url($url) {
+        error_log("[Api] url: $this->url");
+        error_log("[Api] server-name: $_SERVER[SERVER_NAME]");
+        error_log("[Api] server-addr: $_SERVER[SERVER_ADDR]");
+        error_log("[Api] http-host:   $_SERVER[HTTP_HOST]");
+        if (isset($_SERVER['SERVER_NAME'])) {
+            return $this->get_proto() . $_SERVER['SERVER_NAME'] . $url;
+        }
+        if (isset($_SERVER['HTTP_HOST'])) {
+            return $this->get_proto() . $_SERVER['HTTP_HOST'] . $url;
+        }
+        if (isset($_SERVER['SERVER_ADDR'])) {
+            return $this->get_proto() . $_SERVER['SERVER_ADDR'] . $url;
+        }
+        return $url;
+    }
+
+    private function get_protcol() {
+        if (isset($_SERVER['HTTPS'])) {
+            return "https://";
+        }
+        return "http://"
+    }
 
 	public function get_request() {
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->get_default_header());
