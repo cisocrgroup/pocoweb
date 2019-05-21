@@ -40,7 +40,7 @@ class Api {
         if (isset($_SERVER['HTTPS'])) {
             return "https://";
         }
-        return "http://"
+        return "http://";
     }
 
 	public function get_request() {
