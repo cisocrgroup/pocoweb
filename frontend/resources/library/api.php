@@ -4,7 +4,7 @@ require_once(LIBRARY_PATH . "/utils.php");
 
 class Api {
 	public function __construct($url) {
-		$this->url = $url;
+		$this->url = $_SERVER['SERVER_NAME'] . $url;
 		$this->json = NULL;
 		$this->curl = curl_init($url);
 		if ($this->curl === FALSE) {
