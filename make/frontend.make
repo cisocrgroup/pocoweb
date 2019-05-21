@@ -111,6 +111,7 @@ $(PCW_FRONTEND_DIR)/public_html/api/api.php: frontend/public_html/api/api.php
 	$V php -l $< > /dev/null
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
+	$V ${RM} $<
 frontend/public_html/api/api.php: frontend/resources/library/api.php
 	$(call ECHO,$@)
 	$V cat $< | sed \
