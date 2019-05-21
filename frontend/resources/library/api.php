@@ -5,6 +5,8 @@ require_once(LIBRARY_PATH . "/utils.php");
 class Api {
 	public function __construct($url) {
 		$this->url = $_SERVER['SERVER_NAME'] . $url;
+        error_log("[Api] url: $this->url");
+        error_log("[Api] server-name: $_SERVER[SERVER_NAME]");
 		$this->json = NULL;
 		$this->curl = curl_init($this->url);
 		if ($this->curl === FALSE) {
@@ -83,7 +85,7 @@ class Api {
     }
 
     private function log($req) {
-        error_log("API: sending $req $this->url");
+        error_log("[Api] sending $req $this->url");
     }
 
 	public function set_session_id($sid) {
