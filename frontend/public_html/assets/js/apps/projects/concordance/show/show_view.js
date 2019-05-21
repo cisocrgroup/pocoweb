@@ -300,6 +300,8 @@ $('#conc-modal').imagesLoaded( function() {
   $('#conc-modal').css('opacity','1').show();
 
           var tokendata =  Marionette.getOption(that,"tokendata");
+          var suggestions =  Marionette.getOption(that,"suggestions");
+
           var query = tokendata.query;
  
           console.log(tokendata);
@@ -357,7 +359,7 @@ $('#conc-modal').imagesLoaded( function() {
                     var tokendiv;
                     var cordiv = $("<div>"+token.cor+"</div>");
 
-                    if(querytoken.toLowerCase()==token.cor.toLowerCase()){
+                    if(querytoken.toLowerCase()==token.cor.toLowerCase()&&suggestions!=""){
                        cordiv = $("<div class='cordiv' contenteditable='true'>"+token.cor.trim()+"</div>");
                         
                        //var grp = $ ("<div class='input-group-mb-3'></div>");

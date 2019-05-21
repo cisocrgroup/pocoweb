@@ -40,6 +40,19 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
         projectShowInfo = new Show.Info({model:project});
       	projectShowFooterPanel = new Show.FooterPanel();
 
+        projectShowInfo.on("show:word_clicked",function(word){
+
+            var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:true});
+
+            $.when(searchingToken).done(function(tokens){
+            var tokendata = tokens;
+
+            var projectConcView = new Show.Concordance({tokendata:tokendata,asModal:true,suggestions:""});
+            App.mainLayout.showChildView('dialogRegion',projectConcView);
+
+           });
+
+        });
 
   
 	          projectShowLayout.showChildView('headerRegion',projectShowHeader);

@@ -36,7 +36,9 @@ if(asModal) {
   <ul class="nav navbar-nav">
   <li> 
   <form class="navbar-form">-->
- 
+  
+  <% if (suggestions!=""){ %>
+
   <div class="input-group mb-3">
   <div class="input-group-prepend">
   <button class="js-toggle-selection btn btn-outline-secondary" title="Toggle selection">
@@ -53,6 +55,8 @@ if(asModal) {
   </button>
   </div>
   </div>
+
+  <% } %>
 
  <!-- </form>
    </li>

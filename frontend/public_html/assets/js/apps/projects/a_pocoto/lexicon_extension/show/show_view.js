@@ -25,7 +25,7 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
   Show.Info = Marionette.View.extend({
       template: infoTpl,
       events:{
-      'click .js-edit-project' : 'edit_clicked',
+      'click tr' : 'row_clicked',
 
       }, 
       serializeData: function(){
@@ -37,9 +37,10 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
     },
      
 
-      edit_clicked:function(e){
+      row_clicked:function(e){
         e.preventDefault();
-        this.trigger("show:edit_clicked");
+        var word = $($(e.currentTarget).find("td")[0]).text();
+        this.trigger("show:word_clicked",word);
       },
 
    
