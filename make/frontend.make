@@ -106,11 +106,6 @@ $(PCW_FRONTEND_DIR)/public_html/assets/js/build.js: frontend/public_html/assets/
 	$V php -l $< > /dev/null
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
-$(PCW_FRONTEND_DIR)/public_html/api/api.php: frontend/resources/library/api.php
-	$(call ECHO,$@)
-	$V php -l $< > /dev/null
-	$V install -d $(dir $@)
-	$V install -m 644 $< $@
 $(PCW_FRONTEND_DIR)/public_html/api/config.php: frontend/resources/config.php
 	$(call ECHO,$@)
 	$V php -l $< > /dev/null
