@@ -19,7 +19,7 @@ $config = array(
 		),
 	),
 	"backend" => array(
-	    "internalURL"    => "http://pcwauth:8081",
+	    "internalURL"    => "http://pcwauth",
 		"externalURL"    => "http://pocoweb.cis.lmu.de/rest",
 		"profilerWaitMs" => 30000,
 		"routes"         => array(
