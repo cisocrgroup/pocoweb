@@ -6,7 +6,7 @@ class Api {
 	public function __construct($url) {
 		$this->url = $_SERVER['SERVER_NAME'] . $url;
 		$this->json = NULL;
-		$this->curl = curl_init($url);
+		$this->curl = curl_init($this->url);
 		if ($this->curl === FALSE) {
 			throw new Exception("Could not initialize curl handle");
 		}
