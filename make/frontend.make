@@ -112,7 +112,8 @@ $(PCW_FRONTEND_DIR)/public_html/api/api.php: frontend/public_html/api/api.php
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
 frontend/public_html/api/api.php: frontend/resources/library/api.php
-	cat $< | sed \
+	$(call ECHO,$@)
+	$V cat $< | sed \
 		-e 's#(dirname(dirname(__FILE__)) . "/config.php")#("./config.php")#' \
 		-e 's#(LIBRARY_PATH . "/utils.php")#("./utils.php")#' \
 		> $@
