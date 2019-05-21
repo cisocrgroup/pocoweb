@@ -108,12 +108,14 @@ $(PCW_FRONTEND_DIR)/public_html/assets/js/build.js: frontend/public_html/assets/
 	$V install -m 644 $< $@
 $(PCW_FRONTEND_DIR)/public_html/api/api.php: frontend/resources/library/api.php
 	$(call ECHO,$@)
+	$V php -l $< > /dev/null
 	$V install -d $(dir $@)
-	$V cp $< $@
+	$V install -m 644 $< $@
 $(PCW_FRONTEND_DIR)/public_html/api/config.php: frontend/resources/config.php
 	$(call ECHO,$@)
+	$V php -l $< > /dev/null
 	$V install -d $(dir $@)
-	$V cp $< $@
+	$V install -m 644 $< $@
 
 frontend/public_html/js/config.js: frontend/resources/config.php frontend/resources/genconfig.js.php
 	$(call ECHO,$@)
