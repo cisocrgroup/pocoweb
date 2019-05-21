@@ -20,23 +20,19 @@ class Api {
 	}
 
     private function get_api_url($url) {
-        error_log("[Api] url: $this->url");
-        error_log("[Api] server-name: $_SERVER[SERVER_NAME]");
-        error_log("[Api] server-addr: $_SERVER[SERVER_ADDR]");
-        error_log("[Api] http-host:   $_SERVER[HTTP_HOST]");
-        if (isset($_SERVER['SERVER_NAME'])) {
-            return $this->get_proto() . $_SERVER['SERVER_NAME'] . $url;
+        if ($host = $_SERVER['SERVER_NAME']) {
+            return $this->get_proto() . $host . $url;
         }
-        if (isset($_SERVER['HTTP_HOST'])) {
-            return $this->get_proto() . $_SERVER['HTTP_HOST'] . $url;
+        if ($host = $_SERVER['SERVER_ADDR']) {
+            return $this->get_proto() . $host . $url;
         }
-        if (isset($_SERVER['SERVER_ADDR'])) {
-            return $this->get_proto() . $_SERVER['SERVER_ADDR'] . $url;
+        if ($host = $_SERVER['HTTP_HOST']) {
+            return $this->get_proto() . $host . $url;
         }
         return $url;
     }
 
-    private function get_protcol() {
+    private function get_proto() {
         if (isset($_SERVER['HTTPS'])) {
             return "https://";
         }
