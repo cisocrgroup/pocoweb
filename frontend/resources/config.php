@@ -19,8 +19,8 @@ $config = array(
 		),
 	),
 	"backend" => array(
-	    "internalURL"    => "http://pcwauth",
-		"externalURL"    => "http://pocoweb.cis.lmu.de/rest",
+	    "internalURL"    => "rest",#http://pcwauth",
+		"externalURL"    => "rest", #"http://pocoweb.cis.lmu.de/rest",
 		"profilerWaitMs" => 30000,
 		"routes"         => array(
 			"apiVersion"          => "/api-version",
