@@ -1,6 +1,6 @@
 FROM ffink/profiler:internal-backend
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
-ENV DATE='Tue 21 May 2019 04:28:44 PM CEST'
+ENV DATE='Wed 22 May 2019 04:53:13 PM CEST'
 
 VOLUME /project-data /www-data /tmp
 #/language-data
@@ -14,7 +14,7 @@ RUN git clone https://git@github.com/cisocrgroup/pocoweb.git \
 	cd /pocoweb &&\
 	git submodule update --init --recursive &&\
 	make CXX=clang++ -j $(nproc) &&\
-	make -j $(nproc) V="" PCW_FRONTEND_DIR=/apps install-frontend &&\
+	make PCW_FRONTEND_DIR=/apps install-frontend &&\
 	mkdir -p /apps &&\
 	cp /pocoweb/pcwd /apps/pocoweb &&\
 	cp /pocoweb/db/tables.sql /apps/tables.sql &&\
