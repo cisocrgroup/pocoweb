@@ -120,8 +120,10 @@ alter table profiles convert to character set utf8mb4 collate utf8mb4_unicode_ci
 create table if not exists suggestions (
 	id int not null unique primary key auto_increment,
 	bookid int references books(bookid),
-	/*TODO: token*/typid int references types(id),
+	tokentypid int references types(id),
 	suggestiontypid int references types(id),
+	moderntypid int references types(id),
+	dict varchar(50) not null,
 	weight double not null,
 	distance int not null,
 	topsuggestion boolean not null

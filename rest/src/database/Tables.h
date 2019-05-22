@@ -1150,66 +1150,18 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
     };
-    struct Pageid
+    struct Tokentypid
     {
       struct _alias_t
       {
-        static constexpr const char _literal[] =  "pageid";
+        static constexpr const char _literal[] =  "tokentypid";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
         template<typename T>
         struct _member_t
           {
-            T pageid;
-            T& operator()() { return pageid; }
-            const T& operator()() const { return pageid; }
-          };
-      };
-      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
-    };
-    struct Lineid
-    {
-      struct _alias_t
-      {
-        static constexpr const char _literal[] =  "lineid";
-        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-        template<typename T>
-        struct _member_t
-          {
-            T lineid;
-            T& operator()() { return lineid; }
-            const T& operator()() const { return lineid; }
-          };
-      };
-      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
-    };
-    struct Tokenid
-    {
-      struct _alias_t
-      {
-        static constexpr const char _literal[] =  "tokenid";
-        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-        template<typename T>
-        struct _member_t
-          {
-            T tokenid;
-            T& operator()() { return tokenid; }
-            const T& operator()() const { return tokenid; }
-          };
-      };
-      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
-    };
-    struct Typid
-    {
-      struct _alias_t
-      {
-        static constexpr const char _literal[] =  "typid";
-        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-        template<typename T>
-        struct _member_t
-          {
-            T typid;
-            T& operator()() { return typid; }
-            const T& operator()() const { return typid; }
+            T tokentypid;
+            T& operator()() { return tokentypid; }
+            const T& operator()() const { return tokentypid; }
           };
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
@@ -1229,6 +1181,38 @@ namespace tables
           };
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
+    struct Moderntypid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "moderntypid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T moderntypid;
+            T& operator()() { return moderntypid; }
+            const T& operator()() const { return moderntypid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
+    struct Dict
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "dict";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T dict;
+            T& operator()() { return dict; }
+            const T& operator()() const { return dict; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
     struct Weight
     {
@@ -1283,11 +1267,10 @@ namespace tables
   struct Suggestions: sqlpp::table_t<Suggestions,
                Suggestions_::Id,
                Suggestions_::Bookid,
-               Suggestions_::Pageid,
-               Suggestions_::Lineid,
-               Suggestions_::Tokenid,
-               Suggestions_::Typid,
+               Suggestions_::Tokentypid,
                Suggestions_::Suggestiontypid,
+               Suggestions_::Moderntypid,
+               Suggestions_::Dict,
                Suggestions_::Weight,
                Suggestions_::Distance,
                Suggestions_::Topsuggestion>

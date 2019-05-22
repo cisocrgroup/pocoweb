@@ -69,27 +69,29 @@ Route::Response SearchRoute::search(const Request &req, const std::string &q,
                                     int bid, ErrorPatternQuery) const {
   CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
                  << " for error pattern q: " << q;
-  const LockedSession session(get_session(req));
-  auto conn = must_get_connection();
-  const auto project = session->must_find(conn, bid);
-  tables::Errorpatterns e;
-  tables::Suggestions s;
-  auto rows =
-      conn.db()(select(s.pageid, s.lineid, s.tokenid)
-                    .from(s.join(e).on(s.suggestiontypid == e.suggestionid))
-                    .where(e.bookid == bid and e.pattern == q));
-  std::set<std::tuple<int, int, int>> ids;
-  for (const auto &row : rows) {
-    ids.emplace(row.pageid, row.lineid, row.tokenid);
-  }
-  Searcher searcher(*project);
-  const auto matches = searcher.find_impl([&ids](const auto &t) {
-    auto p = std::make_tuple(t.line->page().id(), t.line->id(), t.id);
-    return ids.count(p);
-  });
-  CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.size()
-                 << " matches for q='" << q << "'";
-  return make_response(matches, bid, q, true);
+  // const LockedSession session(get_session(req));
+  // auto conn = must_get_connection();
+  // const auto project = session->must_find(conn, bid);
+  // tables::Errorpatterns e;
+  // tables::Suggestions s;
+  // auto rows =
+  //     conn.db()(select(s.pageid, s.lineid, s.tokenid)
+  //                   .from(s.join(e).on(s.suggestiontypid ==
+  //                   e.suggestiontypid)) .where(e.bookid == bid and e.pattern
+  //                   == q));
+  // std::set<std::tuple<int, int, int>> ids;
+  // for (const auto &row : rows) {
+  //   ids.emplace(row.pageid, row.lineid, row.tokenid);
+  // }
+  // Searcher searcher(*project);
+  // const auto matches = searcher.find_impl([&ids](const auto &t) {
+  //   auto p = std::make_tuple(t.line->page().id(), t.line->id(), t.id);
+  //   return ids.count(p);
+  // });
+  // CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.size()
+  //                << " matches for q='" << q << "'";
+  // return make_response(matches, bid, q, true);
+  THROW(BadRequest, "(SearchRoute) pattern search currently not implemented");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

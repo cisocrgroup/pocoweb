@@ -44,8 +44,8 @@ SuspiciousWordsRoute::impl(HttpGet, const Request &req, int bid) const {
   tables::Suggestions s;
   tables::Types t;
   auto rows =
-      conn.db()(select(t.typ, s.pageid, s.lineid, s.tokenid)
-                    .from(s.join(t).on(s.typid == t.id))
+      conn.db()(select(t.typ)
+                    .from(s.join(t).on(s.id == t.id))
                     .where(s.topsuggestion == true and s.bookid == bid));
   return make_response(rows, project->id());
 }
@@ -63,10 +63,10 @@ SuspiciousWordsRoute::Response SuspiciousWordsRoute::impl(HttpGet,
   const auto project = session->must_find(conn, bid);
   tables::Suggestions s;
   tables::Types t;
-  auto rows = conn.db()(select(t.typ, s.pageid, s.lineid, s.tokenid)
-                            .from(s.join(t).on(s.typid == t.id))
-                            .where(s.topsuggestion == true and
-                                   s.bookid == bid and s.pageid == pid));
+  auto rows =
+      conn.db()(select(t.typ)
+                    .from(s.join(t).on(s.id == t.id))
+                    .where(s.topsuggestion == true and s.bookid == bid));
   return make_response(rows, project->id());
 }
 
@@ -84,10 +84,9 @@ SuspiciousWordsRoute::Response SuspiciousWordsRoute::impl(HttpGet,
   tables::Suggestions s;
   tables::Types t;
   auto rows =
-      conn.db()(select(t.typ, s.pageid, s.lineid, s.tokenid)
-                    .from(s.join(t).on(t.id == s.typid))
-                    .where(s.topsuggestion == true and s.bookid == bid and
-                           s.pageid == pid and s.lineid == lid));
+      conn.db()(select(t.typ)
+                    .from(s.join(t).on(t.id == s.id))
+                    .where(s.topsuggestion == true and s.bookid == bid));
   return make_response(rows, project->id());
 }
 
@@ -99,11 +98,7 @@ SuspiciousWordsRoute::Response make_response(R &rows, int pid) {
   json["projectId"] = pid;
   json["suspiciousWords"] = crow::json::rvalue(crow::json::type::List);
   for (const auto &row : rows) {
-    json["suspiciousWords"][i]["lineId"] = row.lineid;
-    json["suspiciousWords"][i]["pageId"] = row.pageid;
-    json["suspiciousWords"][i]["tokenId"] = row.tokenid;
-    json["suspiciousWords"][i]["token"] = row.typ;
-    ++i;
+    json["suspiciousWords"][i++]["token"] = row.typ;
   }
   return json;
 }

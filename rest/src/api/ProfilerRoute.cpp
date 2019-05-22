@@ -210,9 +210,8 @@ void ProfilerRoute::insert_profile(const ProfilerRoute *that,
         conn.db()(insert_into(t).set(t.typ = c.cor()));
       }
       const auto sugid = conn.db()(insert_into(stab).set(
-          stab.bookid = id, stab.pageid = s.first.line->page().id(),
-          stab.lineid = s.first.line->id(), stab.tokenid = s.first.id,
-          stab.typid = firstid, stab.suggestiontypid = secondid,
+          stab.dict = "", stab.moderntypid = firstid, stab.bookid = id,
+          stab.tokentypid = firstid, stab.suggestiontypid = secondid,
           stab.weight = c.weight(), stab.distance = c.lev(),
           stab.topsuggestion = c.is_top_suggestion(s.second)));
       for (const auto &p : c.explanation().ocrp.patterns) {

@@ -98,10 +98,10 @@ SuggestionsRoute::suggestions(const Request &req, int bid,
     auto rows =
         conn.db()(select(all_of(s), t1.typ.as(tokstr), t2.typ.as(suggstr))
                       .from(s.join(t1)
-                                .on(t1.id == s.typid)
+                                .on(t1.id == s.id)
                                 .join(t2)
                                 .on(t2.id == s.suggestiontypid))
-                      .where(s.bookid == bid && s.typid == qid));
+                      .where(s.bookid == bid && s.id == qid));
     append_suggestions(conn, j, bid, rows);
   } else if (not pat) {
     j["query"] = "";
@@ -112,7 +112,7 @@ SuggestionsRoute::suggestions(const Request &req, int bid,
     auto rows =
         conn.db()(select(all_of(s), t1.typ.as(tokstr), t2.typ.as(suggstr))
                       .from(s.join(t1)
-                                .on(t1.id == s.typid)
+                                .on(t1.id == s.id)
                                 .join(t2)
                                 .on(t2.id == s.suggestiontypid))
                       .where(s.bookid == bid));
@@ -129,7 +129,7 @@ SuggestionsRoute::suggestions(const Request &req, int bid,
     auto rows =
         conn.db()(select(all_of(s), t1.typ.as(tokstr), t2.typ.as(suggstr))
                       .from(s.join(t1)
-                                .on(t1.id == s.typid)
+                                .on(t1.id == s.id)
                                 .join(t2)
                                 .on(t2.id == s.suggestiontypid)
                                 .join(e)
@@ -172,11 +172,10 @@ SuggestionsRoute::Response SuggestionsRoute::impl(HttpGet, const Request &req,
   auto t2 = t.as(t2_alias);
   auto rows = conn.db()(select(all_of(s), t1.typ.as(tokstr), t2.typ.as(suggstr))
                             .from(s.join(t1)
-                                      .on(t1.id == s.typid)
+                                      .on(t1.id == s.id)
                                       .join(t2)
                                       .on(t2.id == s.suggestiontypid))
-                            .where(s.bookid == pid and s.pageid == p and
-                                   s.lineid == lid and s.tokenid == tid));
+                            .where(s.bookid == pid));
   append_suggestions(conn, j, pid, rows);
   return j;
 }
@@ -189,9 +188,6 @@ void append_suggestions(C &conn, J &j, size_t bookid, R &rs) {
     j["suggestions"][i]["projectId"] = bookid;
     j["suggestions"][i]["token"] = r.tokstr;
     j["suggestions"][i]["suggestion"] = r.suggstr;
-    j["suggestions"][i]["lineId"] = r.lineid;
-    j["suggestions"][i]["pageId"] = r.pageid;
-    j["suggestions"][i]["tokenId"] = r.tokenid;
     j["suggestions"][i]["weight"] = r.weight;
     j["suggestions"][i]["distance"] = r.distance;
     j["suggestions"][i]["isTopSuggestion"] = r.topsuggestion;
