@@ -132,7 +132,7 @@ alter table suggestions convert to character set utf8mb4 collate utf8mb4_unicode
 
 /* (3 * 4)^ + 1^^ + (3 * 4)^ = 25 */
 /* ^: max utf length of a pattern with maximal 3 characters */
-/* ^^: lenght of separator `:` */
+/* ^^: length of separator `:` */
 create table if not exists errorpatterns (
 	suggestionid int references suggestions(id),
 	bookid int references books(bookid),
