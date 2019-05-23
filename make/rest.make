@@ -85,6 +85,8 @@ db/tables.sql.tmp: db/tables.sql
 	$(call ECHO,$@)
 	@sed -e '/create/ s/if\s\s*not\s\s*exists\s*//' \
 		 -e '/character set/d' \
+		 -e '/insert/d' \
+         -e '/values/d' \
 		 -e '/--/d' $< > $@
 
 
