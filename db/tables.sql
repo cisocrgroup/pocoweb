@@ -36,7 +36,8 @@ create table if not exists books (
 	uri varchar(255),
 	profilerurl varchar(255),
 	directory varchar(255) not null,
-	lang varchar(50) not null
+	lang varchar(50) not null,
+	statusid int references status(id)
 );
 alter table books convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 alter table books change title title varchar(100) character set utf8mb4 collate utf8mb4_unicode_ci;
