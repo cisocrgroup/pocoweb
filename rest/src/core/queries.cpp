@@ -1,6 +1,6 @@
 #include "queries.hpp"
 #include <boost/lexical_cast.hpp>
-#define private public // yes we can
+#define private public // We need to acces Query's private stuff :(
 #include <crow.h>
 #undef private
 
@@ -64,23 +64,14 @@ bool pcw::query_get(const Query &q, const char *key,
   out.clear();
   int count = 0;
   while (true) {
+    // We need to access the internals of q, since q.get_list(key)
+    // does not seem to do what is should.
     const char *val = crow::qs_k2v(key, q.key_value_pairs_.data(),
                                    q.key_value_pairs_.size(), count++);
     if (not val) {
       break;
     }
-    std::cout << "PUSHING BACK: " << val << "\n";
     out.push_back(std::string(val));
   }
-  // const auto ps = q.get_list(key);
-  //
-  // for (const char *val : ps) {
-  //
-  //   out.push_back(std::string(val));
-  // }
-  std::cout << "len out: " << out.size() << "\n";
   return not out.empty();
 }
-// element = qs_k2v(plus.c_str(), key_value_pairs_.data(),
-// key_value_pairs_.size(), count++); inline char * qs_k2v(const char * key,
-// char * const * qs_kv, int qs_kv_size, int nth = 0)
