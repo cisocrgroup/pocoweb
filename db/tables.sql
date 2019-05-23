@@ -156,4 +156,4 @@ create table if not exists status (
 );
 alter table status convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 insert into status (id,text)
-values (0, "failed"),(1,"running"),(2,"done"),(3,"empty"),(4,"profiled")(5,"post-corrected");
+values (0,"failed"),(1,"running"),(2,"done"),(3,"empty"),(4,"profiled"),(5,"post-corrected");
