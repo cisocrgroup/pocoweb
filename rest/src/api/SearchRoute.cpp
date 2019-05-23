@@ -55,6 +55,8 @@ Route::Response SearchRoute::search(const Request &req,
                                     TokenQuery) const {
   const LockedSession session(get_session(req));
   Json json;
+  json["projectId"] = bid;
+  json["isErrorPattern"] = false;
   for (const auto &q : qs) {
     CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
                    << " for query string q: " << q;
@@ -107,22 +109,13 @@ void make_response(Json &json, const M &matches, int bookid,
                    const std::string &q, bool ep) {
   CROW_LOG_DEBUG << "(SearchRoute::search) building response";
   size_t i = 0;
-  size_t words = 0;
-  // json[q] = "query"] = q;
-  json[q]["isErrorPattern"] = ep;
-  json[q]["projectId"] = bookid;
-  json[q]["nLines"] = matches.size();
-  json[q]["nWords"] = words;
   for (const auto &m : matches) {
     json["matches"][i]["line"] << *m.first;
     size_t j = 0;
     for (const auto &token : m.second) {
-      json["matches"][i]["tokens"][j] << token;
-      j++;
-      words++;
+      json["matches"][i]["tokens"][j++] << token;
     }
     ++i;
   }
-  json["nWords"] = words;
   CROW_LOG_DEBUG << "(SearchRoute::search) built response";
 }

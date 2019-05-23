@@ -61,7 +61,9 @@ bool pcw::query_get(const Query &q, const char *key,
                     std::vector<std::string> &out) {
   out.clear();
   const auto ps = q.get_list(key);
+  std::cout << "len ps: " << ps.size() << "\n";
   for (const char *val : ps) {
+    std::cout << "PUSHING BACK: " << val << "\n";
     out.push_back(std::string(val));
   }
   return not out.empty();
