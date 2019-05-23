@@ -155,5 +155,5 @@ create table if not exists status (
 	text varchar(15) not null
 );
 alter table status convert to character set utf8mb4 collate utf8mb4_unicode_ci;
-insert into status (id,text)
+insert ignore into status (id,text)
 values (0,'failed'),(1,'running'),(2,'done'),(3,'empty'),(4,'profiled'),(5,'post-corrected');
