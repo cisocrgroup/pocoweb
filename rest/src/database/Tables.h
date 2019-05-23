@@ -362,6 +362,22 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
+    struct Statusid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "statusid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T statusid;
+            T& operator()() { return statusid; }
+            const T& operator()() const { return statusid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
   }
 
   struct Books: sqlpp::table_t<Books,
@@ -373,7 +389,8 @@ namespace tables
                Books_::Uri,
                Books_::Profilerurl,
                Books_::Directory,
-               Books_::Lang>
+               Books_::Lang,
+               Books_::Statusid>
   {
     struct _alias_t
     {
@@ -1425,6 +1442,59 @@ namespace tables
         T adaptivetokens;
         T& operator()() { return adaptivetokens; }
         const T& operator()() const { return adaptivetokens; }
+      };
+    };
+  };
+  namespace Status_
+  {
+    struct Id
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "id";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T id;
+            T& operator()() { return id; }
+            const T& operator()() const { return id; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
+    };
+    struct Text
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "text";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T text;
+            T& operator()() { return text; }
+            const T& operator()() const { return text; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
+    };
+  }
+
+  struct Status: sqlpp::table_t<Status,
+               Status_::Id,
+               Status_::Text>
+  {
+    struct _alias_t
+    {
+      static constexpr const char _literal[] =  "status";
+      using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+      template<typename T>
+      struct _member_t
+      {
+        T status;
+        T& operator()() { return status; }
+        const T& operator()() const { return status; }
       };
     };
   };

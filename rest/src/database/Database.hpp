@@ -153,7 +153,7 @@ template <class Db> pcw::BookSptr pcw::insert_book(Db &db, Book &book) {
   auto stmnt = insert_into(books).set(
       books.author = book.data.author, books.title = book.data.title,
       books.directory = book.data.dir.string(), books.year = book.data.year,
-      books.uri = book.data.uri, books.bookid = book.id(),
+      books.uri = book.data.uri, books.bookid = book.id(), books.statusid = 3,
       books.description = book.data.description, books.lang = book.data.lang);
   CROW_LOG_DEBUG << "(insert_book) bookid:      " << book.id();
   CROW_LOG_DEBUG << "(insert_book) author:      " << book.data.author;
@@ -162,7 +162,7 @@ template <class Db> pcw::BookSptr pcw::insert_book(Db &db, Book &book) {
   CROW_LOG_DEBUG << "(insert_book) year:        " << book.data.year;
   CROW_LOG_DEBUG << "(insert_book) uri:         " << book.data.author;
   CROW_LOG_DEBUG << "(insert_book) description: " << book.data.description;
-  CROW_LOG_DEBUG << "(insert_book) language:    " << book.data.lang;
+  CROW_LOG_DEBUG << "(insert_book) status:      " << book.data.status;
   db(stmnt);
 
   tables::Pages pages;
@@ -306,10 +306,13 @@ pcw::select_all_projects(Db &db, int userid) {
   using namespace sqlpp;
   tables::Projects projects;
   tables::Books books;
-  auto stmnt =
-      select(all_of(projects), all_of(books))
-          .from(books.join(projects).on(books.bookid == projects.origin))
-          .where(projects.owner == userid);
+  tables::Status status;
+  auto stmnt = select(all_of(projects), all_of(books), status.text)
+                   .from(books.join(projects)
+                             .on(books.bookid == projects.origin)
+                             .join(status)
+                             .on(status.id == books.statusid))
+                   .where(projects.owner == userid);
   std::vector<std::pair<BookData, ProjectEntry>> data;
   for (const auto &row : db(stmnt)) {
     const auto bookdata = detail::make_book_data(row);
@@ -350,6 +353,7 @@ pcw::BookData pcw::detail::make_book_data(const Row &row) noexcept {
   detail::set_if_not_null(row.title, [&](const auto &t) { data.title = t; });
   detail::set_if_not_null(row.lang, [&](const auto &l) { data.lang = l; });
   detail::set_if_not_null(row.directory, [&](const auto &d) { data.dir = d; });
+  detail::set_if_not_null(row.text, [&](const auto &t) { data.status = t; });
   detail::set_if_not_null(row.profilerurl,
                           [&](const auto &u) { data.profilerUrl = u; });
   return data;
@@ -360,11 +364,13 @@ template <class Db>
 boost::optional<pcw::BookData> pcw::select_book_data(Db &db, int bookid) {
   tables::Projects projects;
   tables::Books books;
-  auto stmnt =
-      select(all_of(books))
-          .from(books.join(projects).on(books.bookid == projects.origin))
-          .where(books.bookid == bookid);
-
+  tables::Status status;
+  auto stmnt = select(all_of(books), status.text)
+                   .from(books.join(projects)
+                             .on(books.bookid == projects.origin)
+                             .join(status)
+                             .on(status.id == books.statusid))
+                   .where(books.bookid == bookid);
   auto res = db(stmnt);
   if (not res.empty())
     return detail::make_book_data(res.front());
