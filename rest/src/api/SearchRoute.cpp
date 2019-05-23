@@ -105,7 +105,7 @@ Route::Response SearchRoute::search(const Request &req,
     const auto matches = searcher.find(t);
     CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.size()
                    << " matches for q='" << t << "'";
-    add_matches(json, matches, t, false);
+    add_matches(json, matches, t, true);
   }
   return json;
 }
@@ -116,10 +116,10 @@ void add_matches(Json &json, const M &matches, const std::string &q, bool ep) {
   CROW_LOG_DEBUG << "(SearchRoute::search) building response";
   size_t i = 0;
   for (const auto &m : matches) {
-    json["matches"][i]["line"] << *m.first;
+    json["matches"][q][i]["line"] << *m.first;
     size_t j = 0;
     for (const auto &token : m.second) {
-      json["matches"][i]["tokens"][j++] << token;
+      json["matches"][q][i]["tokens"][j++] << token;
     }
     ++i;
   }
