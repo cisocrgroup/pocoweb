@@ -22,6 +22,7 @@ pcw::Json &pcw::operator<<(Json &json, const BookData &data) {
   json["title"] = data.title;
   json["year"] = data.year;
   json["language"] = data.lang;
+  std::cout << "STATUS: " << data.status << "\n";
   json["staus"] = data.status;
   json["description"] = data.description;
   json["profilerUrl"] = data.profilerUrl;
