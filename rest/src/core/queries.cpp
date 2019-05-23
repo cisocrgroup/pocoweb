@@ -55,3 +55,14 @@ bool pcw::query_get(const Query &q, const char *key, std::string &out) {
   out = p;
   return true;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+bool pcw::query_get(const Query &q, const char *key,
+                    std::vector<std::string> &out) {
+  out.clear();
+  const auto ps = q.get_list(key);
+  for (const char *val : ps) {
+    out.push_back(std::string(val));
+  }
+  return not out.empty();
+}

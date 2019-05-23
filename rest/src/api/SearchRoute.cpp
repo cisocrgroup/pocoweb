@@ -23,8 +23,8 @@
 using namespace pcw;
 
 template <class M>
-static SearchRoute::Response make_response(const M &matches, int bookid,
-                                           const std::string &q, bool ep);
+static void make_response(Json &json, const M &matches, int bookid,
+                          const std::string &q, bool ep);
 
 ////////////////////////////////////////////////////////////////////////////////
 const char *SearchRoute::route_ = SEARCH_ROUTE_ROUTE;
@@ -37,38 +37,45 @@ void SearchRoute::Register(App &app) {
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
-  const auto q = query_get<std::string>(req.url_params, "q");
-  if (not q) {
-    THROW(BadRequest, "(SearchRoute) invalid or missing query parameter");
+  const auto qs = query_get<std::vector<std::string>>(req.url_params, "q");
+  if (not qs) {
+    THROW(BadRequest, "(SearchRoute) invalid or missing query parameters");
   }
   const auto p = query_get<bool>(req.url_params, "p");
   if (not p or p == false) {
-    return search(req, *q, bid, TokenQuery{});
+    return search(req, *qs, bid, TokenQuery{});
   } else {
-    return search(req, *q, bid, ErrorPatternQuery{});
+    return search(req, *qs, bid, ErrorPatternQuery{});
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response SearchRoute::search(const Request &req, const std::string &q,
-                                    int bid, TokenQuery) const {
-  CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
-                 << " query string q: " << q;
+Route::Response SearchRoute::search(const Request &req,
+                                    const std::vector<std::string> &qs, int bid,
+                                    TokenQuery) const {
   const LockedSession session(get_session(req));
-  auto conn = must_get_connection();
-  const auto project = session->must_find(conn, bid);
-  Searcher searcher(*project);
-  const auto matches = searcher.find(q);
-  CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.size()
-                 << " matches for q='" << q << "'";
-  return make_response(matches, bid, q, false);
+  Json json;
+  for (const auto &q : qs) {
+    CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
+                   << " for query string q: " << q;
+
+    auto conn = must_get_connection();
+    const auto project = session->must_find(conn, bid);
+    Searcher searcher(*project);
+    const auto matches = searcher.find(q);
+    CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.size()
+                   << " matches for q='" << q << "'";
+    make_response(json, matches, bid, q, false);
+  }
+  return json;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response SearchRoute::search(const Request &req, const std::string &q,
-                                    int bid, ErrorPatternQuery) const {
+Route::Response SearchRoute::search(const Request &req,
+                                    const std::vector<std::string> &qs, int bid,
+                                    ErrorPatternQuery) const {
   CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
-                 << " for error pattern q: " << q;
+                 << " for error pattern q: " << qs[0];
   // const LockedSession session(get_session(req));
   // auto conn = must_get_connection();
   // const auto project = session->must_find(conn, bid);
@@ -96,17 +103,16 @@ Route::Response SearchRoute::search(const Request &req, const std::string &q,
 
 ////////////////////////////////////////////////////////////////////////////////
 template <class M>
-SearchRoute::Response make_response(const M &matches, int bookid,
-                                    const std::string &q, bool ep) {
+void make_response(Json &json, const M &matches, int bookid,
+                   const std::string &q, bool ep) {
   CROW_LOG_DEBUG << "(SearchRoute::search) building response";
-  Json json;
   size_t i = 0;
   size_t words = 0;
-  json["query"] = q;
-  json["isErrorPattern"] = ep;
-  json["projectId"] = bookid;
-  json["nLines"] = matches.size();
-  json["nWords"] = words;
+  // json[q] = "query"] = q;
+  json[q]["isErrorPattern"] = ep;
+  json[q]["projectId"] = bookid;
+  json[q]["nLines"] = matches.size();
+  json[q]["nWords"] = words;
   for (const auto &m : matches) {
     json["matches"][i]["line"] << *m.first;
     size_t j = 0;
@@ -119,5 +125,4 @@ SearchRoute::Response make_response(const M &matches, int bookid,
   }
   json["nWords"] = words;
   CROW_LOG_DEBUG << "(SearchRoute::search) built response";
-  return json;
 }

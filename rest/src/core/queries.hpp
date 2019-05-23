@@ -2,6 +2,8 @@
 #define PCW_QUERIES_HPP__
 
 #include <boost/optional.hpp>
+#include <vector>
+
 namespace crow {
 class query_string;
 }
@@ -14,6 +16,7 @@ bool query_get(const Query &q, const char *key, bool &out);
 bool query_get(const Query &q, const char *key, int &out);
 bool query_get(const Query &q, const char *key, double &out);
 bool query_get(const Query &q, const char *key, std::string &out);
+bool query_get(const Query &q, const char *key, std::vector<std::string> &out);
 } // namespace pcw
 
 ////////////////////////////////////////////////////////////////////////////////

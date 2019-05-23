@@ -21,10 +21,10 @@ public:
 private:
   struct TokenQuery {};
   struct ErrorPatternQuery {};
-  Response search(const Request &req, const std::string &q, int bid,
-                  TokenQuery) const;
-  Response search(const Request &req, const std::string &q, int bid,
-                  ErrorPatternQuery) const;
+  Response search(const Request &req, const std::vector<std::string> &qs,
+                  int bid, TokenQuery) const;
+  Response search(const Request &req, const std::vector<std::string> &qs,
+                  int bid, ErrorPatternQuery) const;
   static const char *route_;
   static const char *name_;
 };
