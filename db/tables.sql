@@ -151,7 +151,7 @@ create table if not exists adaptivetokens (
 alter table adaptivetokens convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists status (
-	id not null unique primary_key,
+	id int not null unique primary key,
 	text varchar(15) not null
 );
 alter table status convert to character set utf8mb4 collate utf8mb4_unicode_ci;
