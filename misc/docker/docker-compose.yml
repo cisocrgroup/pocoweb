@@ -62,14 +62,29 @@ services:
 
   # pocoweb authentification and user management
   pcwauth:
-    build: pcwauth/
-    ports:
-      - "8081:8081"
+    # build: pcwauth/
+    image: flobar/pcwauth
+    # ports:
+    #   - "8081:8081"
     links:
       - db
       - pocoweb
+      - pcwprofiler
     depends_on:
       - db
     restart: always
     env_file:
       - env.sh
+
+  # profiling
+  pcwprofiler:
+    image: flobar/pcwprofiler
+    restart: always
+    links:
+      - db
+    depends_on:
+      - db
+    env_file:
+      - env.sh
+    volumes:
+      - ${PCW_BASE_DIR}/project-data:/project-data:rw

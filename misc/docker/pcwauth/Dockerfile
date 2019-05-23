@@ -1,6 +1,6 @@
 FROM golang:alpine
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
-ENV DATE='Do 11. Apr 10:09:06 CEST 2019'
+ENV DATE='Mi 15. Mai 22:52:45 CEST 2019'
 
 ENV PCWAUTH_GIT=github.com/finkf/pcwauth
 ENV GO111MODULE=on
@@ -9,7 +9,11 @@ RUN apk add git &&\
 	apk del git
 
 CMD sleep 15 && pcwauth -db "${MYSQL_USER}:${MYSQL_PASSWORD}@(${PCW_DB_HOST})/${MYSQL_DATABASE}" \
-	-pocoweb ${PCW_POCOWEB_HOST} -listen ${PCW_PCWAUTH_HOST} \
-	-root-name ${PCW_ROOT_NAME} -root-password ${PCW_ROOT_PASSWORD} \
-    -root-email ${PCW_ROOT_EMAIL} -root-institute ${PCW_ROOT_INSTITUTE} \
+	-pocoweb http://pocoweb:8080 \
+	-profiler http://pcwprofiler \
+	-listen ':80' \
+	-root-name ${PCW_ROOT_NAME} \
+	-root-password ${PCW_ROOT_PASSWORD} \
+	-root-email ${PCW_ROOT_EMAIL} \
+	-root-institute ${PCW_ROOT_INSTITUTE} \
 	-debug

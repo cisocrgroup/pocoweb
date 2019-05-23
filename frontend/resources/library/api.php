@@ -4,9 +4,9 @@ require_once(LIBRARY_PATH . "/utils.php");
 
 class Api {
 	public function __construct($url) {
-		$this->url = $url;
+		$this->url = $this->get_api_url($url);
 		$this->json = NULL;
-		$this->curl = curl_init($url);
+		$this->curl = curl_init($this->url);
 		if ($this->curl === FALSE) {
 			throw new Exception("Could not initialize curl handle");
 		}
@@ -18,6 +18,26 @@ class Api {
 		}
 		curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, TRUE);
 	}
+
+    private function get_api_url($url) {
+        if ($host = $_SERVER['SERVER_NAME']) {
+            return $this->get_proto() . $host . $url;
+        }
+        if ($host = $_SERVER['SERVER_ADDR']) {
+            return $this->get_proto() . $host . $url;
+        }
+        if ($host = $_SERVER['HTTP_HOST']) {
+            return $this->get_proto() . $host . $url;
+        }
+        return $url;
+    }
+
+    private function get_proto() {
+        if (isset($_SERVER['HTTPS'])) {
+            return "https://";
+        }
+        return "http://";
+    }
 
 	public function get_request() {
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->get_default_header());
@@ -83,7 +103,7 @@ class Api {
     }
 
     private function log($req) {
-        error_log("API: sending $req $this->url");
+        error_log("[Api] sending $req $this->url");
     }
 
 	public function set_session_id($sid) {
@@ -118,5 +138,4 @@ class Api {
 		}
 	}
 }
-
 ?>

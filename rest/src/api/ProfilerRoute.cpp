@@ -21,24 +21,21 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* ProfilerRoute::route_ =
-  PROFILER_ROUTE_ROUTE_1 "," PROFILER_ROUTE_ROUTE_2;
-const char* ProfilerRoute::name_ = "ProfilerRoute";
+const char *ProfilerRoute::route_ =
+    PROFILER_ROUTE_ROUTE_1 "," PROFILER_ROUTE_ROUTE_2;
+const char *ProfilerRoute::name_ = "ProfilerRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
 // cannot initialize jobs here, since get_config() is not set after all routes
 // have been registered.
 ProfilerRoute::ProfilerRoute()
-  : mutex_(std::make_shared<std::mutex>())
-  , jobs_()
-{}
+    : mutex_(std::make_shared<std::mutex>()), jobs_() {}
 
 ////////////////////////////////////////////////////////////////////////////////
-ProfilerRoute::~ProfilerRoute() noexcept
-{
+ProfilerRoute::~ProfilerRoute() noexcept {
   CROW_LOG_DEBUG << "(ProfilerRoute) waiting for unfinished jobs ... ";
   std::lock_guard<std::mutex> lock(*mutex_);
-  for (auto& job : *jobs_) {
+  for (auto &job : *jobs_) {
     if (job.t.joinable()) {
       job.t.join();
     }
@@ -47,21 +44,18 @@ ProfilerRoute::~ProfilerRoute() noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-ProfilerRoute::Register(App& app)
-{
+void ProfilerRoute::Register(App &app) {
   // setup jobs (Register() is called after each route has been set up).
   // must be called before the route is registered.
   jobs_ = std::make_shared<std::vector<Job>>(get_config().profiler.jobs);
   CROW_ROUTE(app, PROFILER_ROUTE_ROUTE_1)
-    .methods("GET"_method, "POST"_method)(*this);
+      .methods("GET"_method, "POST"_method)(*this);
   CROW_ROUTE(app, PROFILER_ROUTE_ROUTE_2).methods("GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProfilerRoute::Response
-ProfilerRoute::impl(HttpGet, const Request& req, int bid) const
-{
+ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request &req,
+                                            int bid) const {
   CROW_LOG_DEBUG << "(ProfilerRoute) lookup profile for project id: " << bid;
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
@@ -73,7 +67,7 @@ ProfilerRoute::impl(HttpGet, const Request& req, int bid) const
   using namespace sqlpp;
   tables::Profiles p;
   const auto profile =
-    conn.db()(select(p.timestamp).from(p).where(p.bookid == bid));
+      conn.db()(select(p.timestamp).from(p).where(p.bookid == bid));
   if (profile.empty()) {
     return not_found();
   }
@@ -83,16 +77,15 @@ ProfilerRoute::impl(HttpGet, const Request& req, int bid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProfilerRoute::Response
-ProfilerRoute::impl(HttpPost, const Request& req, int bid) const
-{
+ProfilerRoute::Response ProfilerRoute::impl(HttpPost, const Request &req,
+                                            int bid) const {
   // query book
   CROW_LOG_DEBUG << "(ProfilerRoute) order profile for project id: " << bid;
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
-  const auto book =
-    std::dynamic_pointer_cast<const Book>(project->origin().shared_from_this());
+  const auto book = std::dynamic_pointer_cast<const Book>(
+      project->origin().shared_from_this());
   if (not book) {
     THROW(Error,
           "(ProfilerRoute) Cannot get origin of "
@@ -124,9 +117,7 @@ ProfilerRoute::impl(HttpPost, const Request& req, int bid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProfilerUptr
-ProfilerRoute::get_profiler(ConstBookSptr book) const
-{
+ProfilerUptr ProfilerRoute::get_profiler(ConstBookSptr book) const {
   assert(book);
   if (book->data.profilerUrl == "local") {
     return std::make_unique<LocalProfiler>(book, get_config());
@@ -136,17 +127,15 @@ ProfilerRoute::get_profiler(ConstBookSptr book) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProfilerRoute::Job*
-ProfilerRoute::find_free_job(int id) const noexcept
-{
+ProfilerRoute::Job *ProfilerRoute::find_free_job(int id) const noexcept {
   // jobs must be locked!
   // search for already running job;
-  for (auto& job : *jobs_) {
+  for (auto &job : *jobs_) {
     if (job.id == id and not job.running) {
       return &job;
     }
   }
-  for (auto& job : *jobs_) {
+  for (auto &job : *jobs_) {
     if (not job.running) {
       return &job;
     }
@@ -155,16 +144,15 @@ ProfilerRoute::find_free_job(int id) const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-ProfilerRoute::profile(const ProfilerRoute* that, ConstBookSptr book) noexcept
-{
+void ProfilerRoute::profile(const ProfilerRoute *that,
+                            ConstBookSptr book) noexcept {
   try {
     CROW_LOG_DEBUG << "(ProfilerRoute) profiling ...";
     auto profiler = that->get_profiler(book);
     auto profile = profiler->profile();
     insert_profile(that, profile.get());
     CROW_LOG_DEBUG << "(ProfilerRoute) done profiling";
-  } catch (const std::exception& e) {
+  } catch (const std::exception &e) {
     CROW_LOG_ERROR << "(ProfilerRoute) Could not profile book id: "
                    << book->id() << ": " << e.what();
   } catch (...) {
@@ -173,9 +161,8 @@ ProfilerRoute::profile(const ProfilerRoute* that, ConstBookSptr book) noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-ProfilerRoute::insert_profile(const ProfilerRoute* that, const Profile& profile)
-{
+void ProfilerRoute::insert_profile(const ProfilerRoute *that,
+                                   const Profile &profile) {
   using namespace sqlpp;
   tables::Profiles p;
   tables::Errorpatterns e;
@@ -191,7 +178,6 @@ ProfilerRoute::insert_profile(const ProfilerRoute* that, const Profile& profile)
     // remove old profiles (if possible)
     conn.db()(remove_from(p).where(p.bookid == id));
     conn.db()(remove_from(stab).where(stab.bookid == id));
-    conn.db()(remove_from(t).where(t.bookid == id));
     conn.db()(remove_from(e).where(e.bookid == id));
     conn.db()(remove_from(a).where(a.bookid == id));
     commiter.commit();
@@ -202,7 +188,7 @@ ProfilerRoute::insert_profile(const ProfilerRoute* that, const Profile& profile)
   // insert new profile
   UniqueIdMap<std::string> typeids;
   // suggestions
-  for (const auto& s : profile.suggestions()) {
+  for (const auto &s : profile.suggestions()) {
     bool isnew;
     int firstid;
     // use lower case for tokens. Suggestions keep their casing.
@@ -210,10 +196,9 @@ ProfilerRoute::insert_profile(const ProfilerRoute* that, const Profile& profile)
     // cased suggestion for each candidate.
     std::tie(firstid, isnew) = typeids[s.first.cor_lc()];
     if (isnew) {
-      conn.db()(insert_into(t).set(
-        t.bookid = id, t.typid = firstid, t.string = s.first.cor()));
+      conn.db()(insert_into(t).set(t.typ = s.first.cor()));
     }
-    for (const auto& c : s.second) {
+    for (const auto &c : s.second) {
       if (c.weight() < min_weight)
         continue;
       CROW_LOG_DEBUG << "(ProfilerRoute) [" << s.first.cor() << "] " << c.cor()
@@ -222,47 +207,36 @@ ProfilerRoute::insert_profile(const ProfilerRoute* that, const Profile& profile)
       int secondid;
       std::tie(secondid, isnew) = typeids[c.cor()];
       if (isnew) {
-        conn.db()(insert_into(t).set(
-          t.bookid = id, t.typid = secondid, t.string = c.cor()));
+        conn.db()(insert_into(t).set(t.typ = c.cor()));
       }
       const auto sugid = conn.db()(insert_into(stab).set(
-        stab.bookid = id,
-        stab.pageid = s.first.line->page().id(),
-        stab.lineid = s.first.line->id(),
-        stab.tokenid = s.first.id,
-        stab.typid = firstid,
-        stab.suggestiontypid = secondid,
-        stab.weight = c.weight(),
-        stab.distance = c.lev(),
-        stab.topsuggestion = c.is_top_suggestion(s.second)));
-      for (const auto& p : c.explanation().ocrp.patterns) {
+          stab.dict = "", stab.moderntypid = firstid, stab.bookid = id,
+          stab.tokentypid = firstid, stab.suggestiontypid = secondid,
+          stab.weight = c.weight(), stab.distance = c.lev(),
+          stab.topsuggestion = c.is_top_suggestion(s.second)));
+      for (const auto &p : c.explanation().ocrp.patterns) {
         if (not p.empty()) {
           auto pattern = std::string(p.left) + ":" + std::string(p.right);
-          conn.db()(insert_into(e).set(e.ocr = true,
-                                       e.suggestionid = sugid,
-                                       e.bookid = id,
-                                       e.pattern = pattern));
+          conn.db()(insert_into(e).set(e.ocr = true, e.suggestionid = sugid,
+                                       e.bookid = id, e.pattern = pattern));
         }
       }
-      for (const auto& p : c.explanation().histp.patterns) {
+      for (const auto &p : c.explanation().histp.patterns) {
         if (not p.empty()) {
           auto pattern = std::string(p.left) + ":" + std::string(p.right);
-          conn.db()(insert_into(e).set(e.ocr = false,
-                                       e.suggestionid = sugid,
-                                       e.bookid = id,
-                                       e.pattern = pattern));
+          conn.db()(insert_into(e).set(e.ocr = false, e.suggestionid = sugid,
+                                       e.bookid = id, e.pattern = pattern));
         }
       }
     }
   }
   // adaptive tokens
-  for (const auto& s : profile.adaptive_tokens()) {
+  for (const auto &s : profile.adaptive_tokens()) {
     bool isnew;
     int typid;
     std::tie(typid, isnew) = typeids[s];
     if (isnew) {
-      conn.db()(
-        insert_into(t).set(t.bookid = id, t.typid = typid, t.string = s));
+      conn.db()(insert_into(t).set(t.typ = s));
     }
     CROW_LOG_DEBUG << "(ProfilerRoute) adaptive token: " << s;
     conn.db()(insert_into(a).set(a.bookid = id, a.typid = typid));
@@ -271,9 +245,7 @@ ProfilerRoute::insert_profile(const ProfilerRoute* that, const Profile& profile)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ProfilerRoute::Response
-ProfilerRoute::impl(HttpGet, const Request& req) const
-{
+ProfilerRoute::Response ProfilerRoute::impl(HttpGet, const Request &req) const {
   auto url = query_get<std::string>(req.url_params, "url");
   if (not url) {
     url = "local";
@@ -297,7 +269,7 @@ ProfilerRoute::impl(HttpGet, const Request& req) const
   // }
   // const auto languages = maybe_languages.get();
   size_t i = 0;
-  for (const auto& language : languages) {
+  for (const auto &language : languages) {
     j["languages"][i++] = language;
   }
   return j;

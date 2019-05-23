@@ -1,25 +1,23 @@
 FROM ffink/profiler:internal-backend
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
-ENV DATE='Do 11. Apr 10:29:57 CEST 2019'
+ENV DATE='Thu 23 May 2019 04:57:47 PM CEST'
 
 VOLUME /project-data /www-data /tmp
-#/language-data
 COPY dependencies.txt /dependencies.txt
 RUN yum update -y && yum install -y $(cat /dependencies.txt)
 # RUN apt-get update && apt-get install -y $(cat /dependencies.txt)
 
 # pocoweb
-RUN git clone https://git@github.com/cisocrgroup/pocoweb.git \
-	--single-branch -b docker &&\
-	cd /pocoweb &&\
-	git submodule update --init --recursive &&\
-	make CXX=clang++ -j $(nproc) &&\
-	make -j $(nproc) V="" PCW_FRONTEND_DIR=/apps install-frontend &&\
-	mkdir -p /apps &&\
-	cp /pocoweb/pcwd /apps/pocoweb &&\
-	cp /pocoweb/db/tables.sql /apps/tables.sql &&\
-	cd / &&\
-	rm -rf /pocoweb
+RUN git clone https://git@github.com/cisocrgroup/pocoweb.git --single-branch -b flodev \
+	&& cd /pocoweb \
+	&& git submodule update --init --recursive \
+	&& make CXX=clang++ -j $(nproc) \
+	&& make PCW_FRONTEND_DIR=/apps install-frontend \
+	&& mkdir -p /apps \
+	&& cp /pocoweb/pcwd /apps/pocoweb \
+	&& cp /pocoweb/db/tables.sql /apps/tables.sql \
+	&& cd / \
+	&& rm -rf /pocoweb
 
 COPY pocoweb.conf /apps/pocoweb.conf
 COPY startup.sh /apps/startup.sh

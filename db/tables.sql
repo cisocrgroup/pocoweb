@@ -36,7 +36,8 @@ create table if not exists books (
 	uri varchar(255),
 	profilerurl varchar(255),
 	directory varchar(255) not null,
-	lang varchar(50) not null
+	lang varchar(50) not null,
+	statusid int references status(id)
 );
 alter table books convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 alter table books change title title varchar(100) character set utf8mb4 collate utf8mb4_unicode_ci;
@@ -104,13 +105,11 @@ create table if not exists contents (
 alter table contents convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists types (
-	bookid int references books(bookid),
-	typid int,
-	string varchar(50),
-	primary key (bookid, typid)
+	id int not null unique primary key auto_increment,
+	typ varchar(50) unique not null
 );
 alter table types convert to character set utf8mb4 collate utf8mb4_unicode_ci;
-alter table types change string string varchar(50) character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table types change typ typ varchar(50) character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists profiles (
 	bookid int references books(bookid),
@@ -120,24 +119,23 @@ create table if not exists profiles (
 alter table profiles convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists suggestions (
-	suggestionid int not null unique primary key auto_increment,
+	id int not null unique primary key auto_increment,
 	bookid int references books(bookid),
-	pageid int references pages(pageid),
-	lineid int references textlines(lineid),
-	tokenid int not null,
-	typid int references types(typid),
-	suggestiontypid int references types(typid),
+	tokentypid int references types(id),
+	suggestiontypid int references types(id),
+	moderntypid int references types(id),
+	dict varchar(50) not null,
 	weight double not null,
 	distance int not null,
 	topsuggestion boolean not null
 );
 alter table suggestions convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
-/* (3 * 4)^ + 1^^ + (3 * 4)^ = 25*/
+/* (3 * 4)^ + 1^^ + (3 * 4)^ = 25 */
 /* ^: max utf length of a pattern with maximal 3 characters */
-/* ^^: lenght of separator `:` */
+/* ^^: length of separator `:` */
 create table if not exists errorpatterns (
-	suggestionid int references suggestions(suggestionid),
+	suggestionid int references suggestions(id),
 	bookid int references books(bookid),
 	pattern varchar(25),
 	ocr boolean not null
@@ -147,7 +145,15 @@ alter table errorpatterns change pattern pattern varchar(25) character set utf8m
 
 create table if not exists adaptivetokens (
 	bookid int references books(bookid),
-	typid int references types(typid),
+	typid int references types(id),
 	primary key (bookid, typid)
 );
 alter table adaptivetokens convert to character set utf8mb4 collate utf8mb4_unicode_ci;
+
+create table if not exists status (
+	id int not null unique primary key,
+	text varchar(15) not null
+);
+alter table status convert to character set utf8mb4 collate utf8mb4_unicode_ci;
+insert ignore into status (id,text)
+values (0,'failed'),(1,'running'),(2,'done'),(3,'empty'),(4,'profiled'),(5,'post-corrected');

@@ -61,8 +61,8 @@ $(PCW_FRONTEND_DIR)/public_html/doc.html: frontend/public_html/doc.md
 
 # TODO: not that nice
 $(PCW_FRONTEND_DIR)/public_html/assets/js/build.js: frontend/public_html/assets/js/r.js
-	cd frontend/public_html/assets/js && node r.js -o build.js
-	cp -r frontend/public_html/assets $(PCW_FRONTEND_DIR)/public_html
+	$V cd frontend/public_html/assets/js && node r.js -o build.js
+	$V cp -r frontend/public_html/assets $(PCW_FRONTEND_DIR)/public_html
 
 .SECONDEXPANSION:
 %.js: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
@@ -102,6 +102,23 @@ $(PCW_FRONTEND_DIR)/public_html/assets/js/build.js: frontend/public_html/assets/
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
 %.php: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
+	$(call ECHO,$@)
+	$V php -l $< > /dev/null
+	$V install -d $(dir $@)
+	$V install -m 644 $< $@
+$(PCW_FRONTEND_DIR)/public_html/api/api.php: frontend/public_html/api/api.php
+	$(call ECHO,$@)
+	$V php -l $< > /dev/null
+	$V install -d $(dir $@)
+	$V install -m 644 $< $@
+	$V ${RM} $<
+frontend/public_html/api/api.php: frontend/resources/library/api.php
+	$(call ECHO,$@)
+	$V cat $< | sed \
+		-e 's#(dirname(dirname(__FILE__)) . "/config.php")#("./config.php")#' \
+		-e 's#(LIBRARY_PATH . "/utils.php")#("./utils.php")#' \
+		> $@
+$(PCW_FRONTEND_DIR)/public_html/api/config.php: frontend/resources/config.php
 	$(call ECHO,$@)
 	$V php -l $< > /dev/null
 	$V install -d $(dir $@)
