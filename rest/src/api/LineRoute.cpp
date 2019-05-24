@@ -38,7 +38,11 @@ LineRoute::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
 {
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
+  CROW_LOG_DEBUG << "get line " << bid << " " << pid << " " << lid;
   auto line = session->must_find(conn, bid, pid, lid);
+  CROW_LOG_DEBUG << "found line: " << line->page().book().id() << " "
+                 << line->page().book().origin().id() << " "
+                 << line->page().id() << " " << line->id();
   Json j;
   return j << *line;
 }
