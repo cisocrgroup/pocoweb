@@ -36,6 +36,7 @@ LineRoute::Register(App& app)
 Route::Response
 LineRoute::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
 {
+  CROW_LOG_DEBUG << "HEREO";
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
   CROW_LOG_DEBUG << "get line " << bid << " " << pid << " " << lid;
