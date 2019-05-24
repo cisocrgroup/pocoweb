@@ -19,12 +19,16 @@ public:
   Response impl(HttpGet, const Request &req, int bid) const;
 
 private:
-  struct TokenQuery {};
-  struct ErrorPatternQuery {};
+  struct tq { // token queries
+    int skip, max;
+  };
+  struct pq { // pattern queries
+    int skip, max;
+  };
   Response search(const Request &req, const std::vector<std::string> &qs,
-                  int bid, TokenQuery) const;
+                  int bid, tq x) const;
   Response search(const Request &req, const std::vector<std::string> &qs,
-                  int bid, ErrorPatternQuery) const;
+                  int bid, pq x) const;
   static const char *route_;
   static const char *name_;
 };

@@ -41,18 +41,20 @@ Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
   if (not qs) {
     THROW(BadRequest, "(SearchRoute) invalid or missing query parameters");
   }
-  const auto p = query_get<bool>(req.url_params, "p");
-  if (not p or p == false) {
-    return search(req, *qs, bid, TokenQuery{});
+  const auto p = query_get_default<bool>(req.url_params, "p", false);
+  const auto skip = query_get_default<int>(req.url_params, "skip", 0);
+  const auto max = query_get_default<int>(req.url_params, "max", 50);
+  if (not p) {
+    return search(req, *qs, bid, tq{skip, max});
   } else {
-    return search(req, *qs, bid, ErrorPatternQuery{});
+    return search(req, *qs, bid, pq{skip, max});
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response SearchRoute::search(const Request &req,
                                     const std::vector<std::string> &qs, int bid,
-                                    TokenQuery) const {
+                                    tq x) const {
   const LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
@@ -62,8 +64,9 @@ Route::Response SearchRoute::search(const Request &req,
   json["isErrorPattern"] = false;
   for (const auto &q : qs) {
     CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
-                   << " for query string q: " << q;
-    Searcher searcher(*project);
+                   << " for query string: " << q << " (skip = " << x.skip
+                   << ", max = " << x.max;
+    Searcher searcher(*project, x.skip, x.max);
     const auto matches = searcher.find(q);
     CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.size()
                    << " matches for q='" << q << "'";
@@ -75,14 +78,15 @@ Route::Response SearchRoute::search(const Request &req,
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response SearchRoute::search(const Request &req,
                                     const std::vector<std::string> &qs, int bid,
-                                    ErrorPatternQuery) const {
+                                    pq x) const {
   const LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
   std::vector<std::string> tokens;
   for (const auto &q : qs) {
     CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
-                   << " for error pattern: " << q;
+                   << " for error pattern: " << q << " (skip = " << x.skip
+                   << ", max = " << x.max;
     tables::Errorpatterns e;
     tables::Suggestions s;
     tables::Types t;
@@ -101,7 +105,7 @@ Route::Response SearchRoute::search(const Request &req,
   json["projectId"] = bid;
   json["isErrorPattern"] = false;
   for (const auto t : tokens) {
-    Searcher searcher(*project);
+    Searcher searcher(*project, x.skip, x.max);
     const auto matches = searcher.find(t);
     CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.size()
                    << " matches for q='" << t << "'";
