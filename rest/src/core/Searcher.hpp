@@ -47,13 +47,15 @@ inline pcw::Searcher::Matches pcw::Searcher::find_impl(F f) const {
       for (const auto &line : *page) {
         if (line) {
           line->each_token([&](const auto &t) {
-            if (skip > 0) {
-              skip--;
-              return;
-            }
-            if (n > 0 and f(t)) {
-              matches[line].push_back(t);
-              n--;
+            if (f(t)) {
+              if (skip > 0) {
+                skip--;
+                return;
+              }
+              if (n > 0) {
+                matches[line].push_back(t);
+                n--;
+              }
             }
           });
         }
