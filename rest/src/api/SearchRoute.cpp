@@ -65,7 +65,7 @@ Route::Response SearchRoute::search(const Request &req,
   for (const auto &q : qs) {
     CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
                    << " for query string: " << q << " (skip = " << x.skip
-                   << ", max = " << x.max;
+                   << ", max = " << x.max << ")";
     Searcher searcher(*project, x.skip, x.max);
     const auto matches = searcher.find(q);
     CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.size()
@@ -86,7 +86,7 @@ Route::Response SearchRoute::search(const Request &req,
   for (const auto &q : qs) {
     CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
                    << " for error pattern: " << q << " (skip = " << x.skip
-                   << ", max = " << x.max;
+                   << ", max = " << x.max << ")";
     tables::Errorpatterns e;
     tables::Suggestions s;
     tables::Types t;
