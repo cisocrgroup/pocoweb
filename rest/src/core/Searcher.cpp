@@ -10,7 +10,11 @@ using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 Searcher::Searcher(const Project &project)
-    : Searcher(project.shared_from_this()) {}
+    : Searcher(project.shared_from_this(), 0, 10) {}
+
+////////////////////////////////////////////////////////////////////////////////
+Searcher::Searcher(const Project &project, int skip, int max)
+    : Searcher(project.shared_from_this(), skip, max) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 void Searcher::set_project(const Project &project) noexcept {
