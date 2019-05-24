@@ -4,19 +4,24 @@
 #include <crow/json.h>
 #include <limits>
 
-static double fix_double(double val);
+static double
+fix_double(double val);
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json &pcw::operator<<(Json &json, const std::vector<ProjectPtr> &books) {
+pcw::Json&
+pcw::operator<<(Json& json, const std::vector<ProjectPtr>& books)
+{
   int i = 0;
-  for (const auto &book : books) {
+  for (const auto& book : books) {
     json["books"][i++] << *book;
   }
   return json;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json &pcw::operator<<(Json &json, const BookData &data) {
+pcw::Json&
+pcw::operator<<(Json& json, const BookData& data)
+{
   json["uri"] = data.uri;
   json["author"] = data.author;
   json["title"] = data.title;
@@ -29,7 +34,9 @@ pcw::Json &pcw::operator<<(Json &json, const BookData &data) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json &pcw::operator<<(Json &json, const Project &view) {
+pcw::Json&
+pcw::operator<<(Json& json, const Project& view)
+{
   json["projectId"] = view.id();
   json["bookId"] = view.origin().id();
   json["isBook"] = view.is_book();
@@ -37,7 +44,7 @@ pcw::Json &pcw::operator<<(Json &json, const Project &view) {
 
   std::vector<int> ids;
   ids.resize(view.size());
-  std::transform(begin(view), end(view), begin(ids), [](const auto &page) {
+  std::transform(begin(view), end(view), begin(ids), [](const auto& page) {
     assert(page);
     return page->id();
   });
@@ -47,16 +54,19 @@ pcw::Json &pcw::operator<<(Json &json, const Project &view) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json &pcw::operator<<(Json &json, const Page &page) {
+pcw::Json&
+pcw::operator<<(Json& json, const Page& page)
+{
   json["pageId"] = page.id();
   json["projectId"] = page.book().id();
+  json["bookId"] = page.book().origin().id();
   json["box"] << page.box;
   json["ocrFile"] = page.ocr.native();
   json["imgFile"] = page.img.native();
 
   // add from left to right
   size_t i = 0;
-  for (const auto &line : page) {
+  for (const auto& line : page) {
     if (line) {
       json["lines"][i++] << *line;
     }
@@ -65,10 +75,13 @@ pcw::Json &pcw::operator<<(Json &json, const Page &page) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json &pcw::operator<<(Json &json, const Line &line) {
+pcw::Json&
+pcw::operator<<(Json& json, const Line& line)
+{
   json["lineId"] = line.id();
   json["pageId"] = line.page().id();
   json["projectId"] = line.page().book().id();
+  json["bookId"] = line.page().book().origin().id();
   json["box"] << line.box;
   json["imgFile"] = line.img.native();
   json["cor"] = line.cor();
@@ -81,7 +94,7 @@ pcw::Json &pcw::operator<<(Json &json, const Line &line) {
   // do *not* show words of each line
   // /books/id/page/id/lines/id/tokens will give all tokens of a line
   size_t i = 0;
-  line.each_token([&i, &json](const auto &token) {
+  line.each_token([&i, &json](const auto& token) {
     json["tokens"][i] << token;
     ++i;
   });
@@ -89,18 +102,23 @@ pcw::Json &pcw::operator<<(Json &json, const Line &line) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json &pcw::operator<<(Json &json, const std::vector<Token> &tokens) {
+pcw::Json&
+pcw::operator<<(Json& json, const std::vector<Token>& tokens)
+{
   size_t i = 0;
   json["tokens"] = crow::json::rvalue(crow::json::type::List);
-  for (const auto &token : tokens) {
+  for (const auto& token : tokens) {
     json["tokens"][i++] << token;
   }
   return json;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json &pcw::operator<<(Json &json, const Token &token) {
+pcw::Json&
+pcw::operator<<(Json& json, const Token& token)
+{
   json["projectId"] = token.line->page().book().id();
+  json["bookId"] = token.line->page().book().origin().id();
   json["pageId"] = token.line->page().id();
   json["lineId"] = token.line->id();
   json["offset"] = token.offset();
@@ -116,7 +134,9 @@ pcw::Json &pcw::operator<<(Json &json, const Token &token) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json &pcw::operator<<(Json &json, const Box &box) {
+pcw::Json&
+pcw::operator<<(Json& json, const Box& box)
+{
   json["left"] = box.left();
   json["right"] = box.right();
   json["top"] = box.top();
@@ -127,24 +147,28 @@ pcw::Json &pcw::operator<<(Json &json, const Box &box) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool pcw::get(const RJson &j, const char *key, bool &res) {
+bool
+pcw::get(const RJson& j, const char* key, bool& res)
+{
   if (j.t() == crow::json::type::Object and j.has(key)) {
     switch (j[key].t()) {
-    case crow::json::type::True:
-      res = true;
-      return true;
-    case crow::json::type::False:
-      res = false;
-      return true;
-    default:
-      return false;
+      case crow::json::type::True:
+        res = true;
+        return true;
+      case crow::json::type::False:
+        res = false;
+        return true;
+      default:
+        return false;
     }
   }
   return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool pcw::get(const RJson &j, const char *key, int &res) {
+bool
+pcw::get(const RJson& j, const char* key, int& res)
+{
   if (j.t() == crow::json::type::Object and j.has(key) and
       j[key].t() == crow::json::type::Number) {
     res = j[key].i();
@@ -154,7 +178,9 @@ bool pcw::get(const RJson &j, const char *key, int &res) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool pcw::get(const RJson &j, const char *key, double &res) {
+bool
+pcw::get(const RJson& j, const char* key, double& res)
+{
   if (j.t() == crow::json::type::Object and j.has(key) and
       j[key].t() == crow::json::type::Number) {
     res = j[key].d();
@@ -164,7 +190,9 @@ bool pcw::get(const RJson &j, const char *key, double &res) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool pcw::get(const RJson &j, const char *key, std::string &res) {
+bool
+pcw::get(const RJson& j, const char* key, std::string& res)
+{
   if (j.t() == crow::json::type::Object and j.has(key) and
       j[key].t() == crow::json::type::String) {
     res = j[key].s();
@@ -174,7 +202,9 @@ bool pcw::get(const RJson &j, const char *key, std::string &res) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-double fix_double(double val) {
+double
+fix_double(double val)
+{
   if (std::isnan(val)) {
     return 0;
   }
