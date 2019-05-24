@@ -8,7 +8,7 @@ RUN yum update -y && yum install -y $(cat /dependencies.txt)
 # RUN apt-get update && apt-get install -y $(cat /dependencies.txt)
 
 # pocoweb
-RUN git clone https://git@github.com/cisocrgroup/pocoweb.git --single-branch -b flodev \
+RUN git clone https://git@github.com/cisocrgroup/pocoweb.git --single-branch -b devel \
 	&& cd /pocoweb \
 	&& git submodule update --init --recursive \
 	&& make CXX=clang++ -j $(nproc) \
