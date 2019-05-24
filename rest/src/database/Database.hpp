@@ -574,8 +574,6 @@ pcw::select_project(Db& db, const Book& book, int projectid)
   builder.set_origin(book);
   builder.set_project_id(projectid);
   for (const auto& row : db(stmnt)) {
-    CROW_LOG_DEBUG << "(select_project) adding page id: " << row.pageid
-                   << " to project id: " << projectid;
     builder.add_page(row.pageid);
   }
   auto p = builder.build();
