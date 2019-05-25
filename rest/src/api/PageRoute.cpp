@@ -49,7 +49,7 @@ PageRoute::impl(HttpGet, const Request& req, int bid, int pid) const
                  << " page id: " << pid;
   const auto page = session->must_find(conn, bid, pid);
   Json j;
-  return print(j, *page, page->book());
+  return print(j, bid, *page, page->book());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -101,12 +101,12 @@ PageRoute::impl(HttpGet, const Request& req, int bid) const
     CROW_LOG_DEBUG << "(PageRoute) project id: " << book->id()
                    << " pageid: " << book->front()->id()
                    << " lines: " << book->front()->size();
-    return print(j, *book->front(), *book);
+    return print(j, bid, *book->front(), *book);
   } else {
     CROW_LOG_DEBUG << "(PageRoute) project id: " << book->id()
                    << " pageid: " << book->back()->id()
                    << " lines: " << book->back()->size();
-    return print(j, *book->back(), *book);
+    return print(j, bid, *book->back(), *book);
   }
 }
 
@@ -133,7 +133,7 @@ PageRoute::next(const Project& book, int pid, int val) const
   if (not page)
     return not_found();
   Json j;
-  return print(j, *page, book);
+  return print(j, pid, *page, book);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -144,12 +144,12 @@ PageRoute::prev(const Project& book, int pid, int val) const
   if (not page)
     return not_found();
   Json j;
-  return print(j, *page, book);
+  return print(j, pid, *page, book);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
-PageRoute::print(Json& json, const Page& page, const Project& project)
+PageRoute::print(Json& json, int pid, const Page& page, const Project& project)
 {
   json << page;
   const auto nextpage = project.next(page.id(), 1);
@@ -158,7 +158,7 @@ PageRoute::print(Json& json, const Page& page, const Project& project)
   const auto prevpageid = prevpage ? prevpage->id() : 0;
   json["nextPageId"] = nextpageid;
   json["prevPageId"] = prevpageid;
-  json["projectId"] = project.id();
+  json["projectId"] = pid;
   json["bookId"] = project.origin().id();
   return json;
 }
