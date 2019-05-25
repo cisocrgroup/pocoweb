@@ -284,20 +284,18 @@ pcw::Session::find_project_impl(Connection<Db>& c, int projectid) const
 {
   CROW_LOG_DEBUG << "find_project_impl(" << projectid << ")";
   auto entry = select_project_entry(c.db(), projectid);
+  CROW_LOG_DEBUG << "entry: origin=" << entry->origin
+                 << ",owner=" << entry->owner
+                 << ",projectid=" << entry->projectid
+                 << ",pages=" << entry->pages;
   if (entry and entry->is_book()) {
-    CROW_LOG_DEBUG << "entry: origin=" << entry->origin
-                   << ",owner=" << entry->owner
-                   << ",projectid=" << entry->projectid
-                   << ",pages=" << entry->pages;
     CROW_LOG_DEBUG << "calling cached_find_book(" << projectid << ")";
+    assert(entry->origin == entry->projectid);
     auto p = cached_find_book(c, projectid);
     CROW_LOG_DEBUG << "got project: " << p->id() << " " << p->origin().id();
     return p;
   } else if (entry) { // HERE LIES THY DOOM
-    CROW_LOG_DEBUG << "entry: origin=" << entry->origin
-                   << ",owner=" << entry->owner
-                   << ",projectid=" << entry->projectid
-                   << ",pages=" << entry->pages;
+    assert(entry->origin != entry->projectid);
     auto owner = entry->owner;
     if (not owner) {
       return nullptr;

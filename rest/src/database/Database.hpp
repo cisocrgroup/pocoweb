@@ -109,7 +109,7 @@ update_book(Db& db, Project& view);
 
 struct ProjectEntry
 {
-  bool is_book() const noexcept { return origin == projectid; }
+  bool is_book() const noexcept { return this->origin == this->projectid; }
   int origin, owner, projectid, pages;
 };
 
