@@ -151,7 +151,7 @@ PageRoute::prev(const Project& book, int pid, int val) const
 Route::Response
 PageRoute::print(Json& json, int pid, const Page& page, const Project& project)
 {
-  json << page;
+  wj(json, page, pid);
   const auto nextpage = project.next(page.id(), 1);
   const auto prevpage = project.next(page.id(), -1);
   const auto nextpageid = nextpage ? nextpage->id() : 0;
