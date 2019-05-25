@@ -301,7 +301,8 @@ pcw::Session::find_project_impl(Connection<Db>& c, int projectid) const
                    << ", book->origin().id(): " << book->origin().id();
     assert(book->is_book());
     CROW_LOG_DEBUG << "calling select_project(" << projectid << ")";
-    return pcw::select_project(c.db(), *book, projectid);
+    auto p = pcw::select_project(c.db(), *book, projectid);
+    CROW_LOG_DEBUG << "got project: " << p->id() << " " << p->origin().id();
   }
   return nullptr;
 }
