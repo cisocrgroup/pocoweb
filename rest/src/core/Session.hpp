@@ -290,7 +290,9 @@ pcw::Session::find_project_impl(Connection<Db>& c, int projectid) const
                    << ",projectid=" << entry->projectid
                    << ",pages=" << entry->pages;
     CROW_LOG_DEBUG << "calling cached_find_book(" << projectid << ")";
-    return cached_find_book(c, projectid);
+    auto p = cached_find_book(c, projectid);
+    CROW_LOG_DEBUG << "got project: " << p->id() << " " << p->origin().id();
+    return p;
   } else if (entry) { // HERE LIES THY DOOM
     CROW_LOG_DEBUG << "entry: origin=" << entry->origin
                    << ",owner=" << entry->owner
@@ -311,6 +313,7 @@ pcw::Session::find_project_impl(Connection<Db>& c, int projectid) const
     CROW_LOG_DEBUG << "calling select_project(" << projectid << ")";
     auto p = pcw::select_project(c.db(), *book, projectid);
     CROW_LOG_DEBUG << "got project: " << p->id() << " " << p->origin().id();
+    return p;
   }
   return nullptr;
 }
@@ -320,6 +323,7 @@ template<class Db>
 pcw::BookSptr
 pcw::Session::cached_find_book(Connection<Db>& c, int bookid) const
 {
+  CROW_LOG_DEBUG << "cached_find_book(" << bookid << ")";
   if (cache_) {
     return cache_->books.get(bookid, [&](int id) {
       CROW_LOG_DEBUG << "(Session) loading book id: " << bookid;
