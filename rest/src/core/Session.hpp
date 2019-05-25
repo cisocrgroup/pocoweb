@@ -282,19 +282,25 @@ template<class Db>
 inline pcw::ProjectSptr
 pcw::Session::find_project_impl(Connection<Db>& c, int projectid) const
 {
+  CROW_LOG_DEBUG << "find_project_impl(" << projectid << ")";
   auto entry = select_project_entry(c.db(), projectid);
   if (entry and entry->is_book()) {
+    CROW_LOG_DEBUG << "calling cached_find_book(" << projectid << ")";
     return cached_find_book(c, projectid);
   } else if (entry) { // HERE LIES THY DOOM
     auto owner = entry->owner;
     if (not owner) {
       return nullptr;
     }
+    CROW_LOG_DEBUG << "calling cached_find_book(" << projectid << ")";
     auto book = cached_find_book(c, entry->origin);
     if (not book) {
       return nullptr;
     }
+    CROW_LOG_DEBUG << "book->id(): " << book->id()
+                   << ", book->origin().id(): " << book->origin().id();
     assert(book->is_book());
+    CROW_LOG_DEBUG << "calling select_project(" << projectid << ")";
     return pcw::select_project(c.db(), *book, projectid);
   }
   return nullptr;
