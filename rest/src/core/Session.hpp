@@ -141,10 +141,7 @@ template<class Db>
 pcw::ProjectSptr
 pcw::Session::find(Connection<Db>& c, int bookid) const
 {
-  CROW_LOG_DEBUG << "find(" << bookid << ")";
   if (project_ and project_->id() == bookid) {
-    CROW_LOG_DEBUG << "found " << project_->id() << " "
-                   << project_->origin().id();
     return project_;
   }
 
@@ -188,11 +185,8 @@ template<class Db>
 pcw::PageSptr
 pcw::Session::find(Connection<Db>& c, int bookid, int pageid) const
 {
-  CROW_LOG_DEBUG << "find(" << bookid << "," << pageid << ")";
   if (page_ and page_->id() == pageid and project_ and
       project_->id() == bookid) {
-    CROW_LOG_DEBUG << "found " << project_->id() << " "
-                   << project_->origin().id();
     return page_;
   }
 
@@ -232,11 +226,8 @@ template<class Db>
 pcw::LineSptr
 pcw::Session::find(Connection<Db>& c, int bookid, int pageid, int lineid) const
 {
-  CROW_LOG_DEBUG << "find(" << bookid << "," << pageid << "," << lineid << ")";
   if (page_ and page_->id() == pageid and project_ and
       project_->id() == bookid) {
-    CROW_LOG_DEBUG << "found " << project_->id() << " "
-                   << project_->origin().id();
     return page_->find(lineid);
   }
   auto page = find(c, bookid, pageid);
@@ -282,36 +273,21 @@ template<class Db>
 inline pcw::ProjectSptr
 pcw::Session::find_project_impl(Connection<Db>& c, int projectid) const
 {
-  CROW_LOG_DEBUG << "find_project_impl(" << projectid << ")";
   auto entry = select_project_entry(c.db(), projectid);
-  CROW_LOG_DEBUG << "entry: origin=" << entry->origin
-                 << ",owner=" << entry->owner
-                 << ",projectid=" << entry->projectid
-                 << ",pages=" << entry->pages;
   if (entry and entry->is_book()) {
-    CROW_LOG_DEBUG << "calling cached_find_book(" << projectid << ")";
-    assert(entry->origin == entry->projectid);
-    auto p = cached_find_book(c, projectid);
-    CROW_LOG_DEBUG << "got project: " << p->id() << " " << p->origin().id();
-    return p;
+    return cached_find_book(c, projectid);
   } else if (entry) { // HERE LIES THY DOOM
     assert(entry->origin != entry->projectid);
     auto owner = entry->owner;
     if (not owner) {
       return nullptr;
     }
-    CROW_LOG_DEBUG << "calling cached_find_book(" << projectid << ")";
     auto book = cached_find_book(c, entry->origin);
     if (not book) {
       return nullptr;
     }
-    CROW_LOG_DEBUG << "book->id(): " << book->id()
-                   << ", book->origin().id(): " << book->origin().id();
     assert(book->is_book());
-    CROW_LOG_DEBUG << "calling select_project(" << projectid << ")";
-    auto p = pcw::select_project(c.db(), *book, projectid);
-    CROW_LOG_DEBUG << "got project: " << p->id() << " " << p->origin().id();
-    return p;
+    return pcw::select_project(c.db(), *book, projectid);
   }
   return nullptr;
 }
@@ -321,12 +297,9 @@ template<class Db>
 pcw::BookSptr
 pcw::Session::cached_find_book(Connection<Db>& c, int bookid) const
 {
-  CROW_LOG_DEBUG << "cached_find_book(" << bookid << ")";
   if (cache_) {
-    return cache_->books.get(bookid, [&](int id) {
-      CROW_LOG_DEBUG << "(Session) loading book id: " << bookid;
-      return pcw::select_book(c.db(), user_, bookid);
-    });
+    return cache_->books.get(
+      bookid, [&](int id) { return pcw::select_book(c.db(), user_, bookid); });
   } else {
     return pcw::select_book(c.db(), user_, bookid);
   }
@@ -337,7 +310,6 @@ template<class Db>
 pcw::ProjectSptr
 pcw::Session::cached_find_project(Connection<Db>& c, int projectid) const
 {
-  CROW_LOG_DEBUG << "cached_find_project(" << projectid << ")";
   if (cache_) {
     return cache_->projects.get(
       projectid, [&](int id) { return find_project_impl(c, projectid); });

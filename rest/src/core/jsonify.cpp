@@ -20,7 +20,33 @@ pcw::operator<<(Json& json, const std::vector<ProjectPtr>& books)
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json&
+pcw::wj(Json& json, const std::vector<ProjectPtr>& books)
+{
+  int i = 0;
+  for (const auto& book : books) {
+    wj(json["books"][i++], *book);
+  }
+  return json;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Json&
 pcw::operator<<(Json& json, const BookData& data)
+{
+  json["uri"] = data.uri;
+  json["author"] = data.author;
+  json["title"] = data.title;
+  json["year"] = data.year;
+  json["language"] = data.lang;
+  json["status"] = data.status;
+  json["description"] = data.description;
+  json["profilerUrl"] = data.profilerUrl;
+  return json;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Json&
+pcw::wj(Json& json, const BookData& data)
 {
   json["uri"] = data.uri;
   json["author"] = data.author;
@@ -41,6 +67,26 @@ pcw::operator<<(Json& json, const Project& view)
   json["bookId"] = view.origin().id();
   json["isBook"] = view.is_book();
   json << view.origin().data;
+
+  std::vector<int> ids;
+  ids.resize(view.size());
+  std::transform(begin(view), end(view), begin(ids), [](const auto& page) {
+    assert(page);
+    return page->id();
+  });
+  json["pages"] = ids.size();
+  json["pageIds"] = ids;
+  return json;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Json&
+pcw::wj(Json& json, const Project& view)
+{
+  json["projectId"] = view.id();
+  json["bookId"] = view.origin().id();
+  json["isBook"] = view.is_book();
+  wj(json, view.origin().data);
 
   std::vector<int> ids;
   ids.resize(view.size());
@@ -76,6 +122,27 @@ pcw::operator<<(Json& json, const Page& page)
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json&
+pcw::wj(Json& json, const Page& page, int projectid)
+{
+  json["pageId"] = page.id();
+  json["projectId"] = projectid;
+  json["bookId"] = page.book().origin().id();
+  json["box"] << page.box;
+  json["ocrFile"] = page.ocr.native();
+  json["imgFile"] = page.img.native();
+
+  // add from left to right
+  size_t i = 0;
+  for (const auto& line : page) {
+    if (line) {
+      wj(json["lines"][i++], *line, projectid);
+    }
+  }
+  return json;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Json&
 pcw::operator<<(Json& json, const Line& line)
 {
   json["lineId"] = line.id();
@@ -103,12 +170,50 @@ pcw::operator<<(Json& json, const Line& line)
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json&
+pcw::wj(Json& json, const Line& line, int projectid)
+{
+  json["lineId"] = line.id();
+  json["pageId"] = line.page().id();
+  json["projectId"] = projectid;
+  json["bookId"] = line.page().book().origin().id();
+  json["box"] << line.box;
+  json["imgFile"] = line.img.native();
+  json["cor"] = line.cor();
+  json["ocr"] = line.ocr();
+  json["cuts"] = line.cuts();
+  json["confidences"] = line.confidences();
+  json["averageConfidence"] = fix_double(line.average_conf());
+  json["isFullyCorrected"] = line.is_fully_corrected();
+  json["isPartiallyCorrected"] = line.is_partially_corrected();
+  // do *not* show words of each line
+  // /books/id/page/id/lines/id/tokens will give all tokens of a line
+  size_t i = 0;
+  line.each_token([&i, &json, &projectid](const auto& token) {
+    wj(json["tokens"][i++], token, projectid);
+  });
+  return json;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Json&
 pcw::operator<<(Json& json, const std::vector<Token>& tokens)
 {
   size_t i = 0;
   json["tokens"] = crow::json::rvalue(crow::json::type::List);
   for (const auto& token : tokens) {
     json["tokens"][i++] << token;
+  }
+  return json;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Json&
+pcw::wj(Json& json, const std::vector<Token>& tokens, int projectid)
+{
+  size_t i = 0;
+  json["tokens"] = crow::json::rvalue(crow::json::type::List);
+  for (const auto& token : tokens) {
+    wj(json["tokens"][i++], token, projectid);
   }
   return json;
 }
@@ -135,7 +240,40 @@ pcw::operator<<(Json& json, const Token& token)
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json&
+pcw::wj(Json& json, const Token& token, int projectid)
+{
+  json["projectId"] = projectid;
+  json["bookId"] = token.line->page().book().origin().id();
+  json["pageId"] = token.line->page().id();
+  json["lineId"] = token.line->id();
+  json["offset"] = token.offset();
+  json["tokenId"] = token.id;
+  json["isFullyCorrected"] = token.is_fully_corrected();
+  json["isPartiallyCorrected"] = token.is_partially_corrected();
+  json["ocr"] = token.ocr();
+  json["cor"] = token.cor();
+  json["averageConfidence"] = fix_double(token.average_conf());
+  json["box"] << token.box;
+  json["isNormal"] = token.is_normal();
+  return json;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Json&
 pcw::operator<<(Json& json, const Box& box)
+{
+  json["left"] = box.left();
+  json["right"] = box.right();
+  json["top"] = box.top();
+  json["bottom"] = box.bottom();
+  json["width"] = box.width();
+  json["height"] = box.height();
+  return json;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Json&
+pcw::wj(Json& json, const Box& box)
 {
   json["left"] = box.left();
   json["right"] = box.right();

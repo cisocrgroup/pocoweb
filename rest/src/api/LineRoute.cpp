@@ -36,16 +36,12 @@ LineRoute::Register(App& app)
 Route::Response
 LineRoute::impl(HttpGet, const Request& req, int bid, int pid, int lid) const
 {
-  CROW_LOG_DEBUG << "HEREO";
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
   CROW_LOG_DEBUG << "get line " << bid << " " << pid << " " << lid;
   auto line = session->must_find(conn, bid, pid, lid);
-  CROW_LOG_DEBUG << "found line: " << line->page().book().id() << " "
-                 << line->page().book().origin().id() << " "
-                 << line->page().id() << " " << line->id();
   Json j;
-  return j << *line;
+  return wj(j, *line, bid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,8 +55,9 @@ LineRoute::impl(HttpPost, const Request& req, int pid, int p, int lid) const
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
   auto line = session->must_find(conn, pid, p, lid);
-  return correct(conn, *line, *c);
+  return correct(conn, pid, *line, *c);
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
 LineRoute::impl(HttpDelete, const Request& req, int pid, int p, int lid) const
@@ -92,7 +89,7 @@ LineRoute::impl(HttpGet, const Request& req, int pid, int p, int lid, int tid)
     THROW(NotFound, "(LineRoute) cannot find token id ", tid);
   }
   Json j;
-  return j << *token;
+  return wj(j, *token, pid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -107,12 +104,13 @@ LineRoute::impl(HttpPost, const Request& req, int pid, int p, int lid, int tid)
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
   auto line = session->must_find(conn, pid, p, lid);
-  return correct(conn, *line, tid, *c);
+  return correct(conn, pid, tid, *line, *c);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
 LineRoute::correct(MysqlConnection& conn,
+                   int pid,
                    Line& line,
                    const std::string& c) const
 {
@@ -127,14 +125,15 @@ LineRoute::correct(MysqlConnection& conn,
   wf.correct(line);
   update_line(conn, line);
   Json j;
-  return j << line;
+  return wj(j, line, pid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response
 LineRoute::correct(MysqlConnection& conn,
-                   Line& line,
+                   int pid,
                    int tid,
+                   Line& line,
                    const std::string& c) const
 {
   auto token = find_token(line, tid);
@@ -178,7 +177,7 @@ LineRoute::correct(MysqlConnection& conn,
   }
   update_line(conn, line);
   Json j;
-  return j << *token;
+  return wj(j, *token, pid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
