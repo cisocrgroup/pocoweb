@@ -141,8 +141,12 @@ template<class Db>
 pcw::ProjectSptr
 pcw::Session::find(Connection<Db>& c, int bookid) const
 {
-  if (project_ and project_->id() == bookid)
+  CROW_LOG_DEBUG << "find(" << bookid << ")";
+  if (project_ and project_->id() == bookid) {
+    CROW_LOG_DEBUG << "found " << project_->id() << " "
+                   << project_->origin().id();
     return project_;
+  }
 
   auto project = cached_find_project(c, bookid);
   if (project) {
@@ -184,8 +188,13 @@ template<class Db>
 pcw::PageSptr
 pcw::Session::find(Connection<Db>& c, int bookid, int pageid) const
 {
-  if (page_ and page_->id() == pageid and project_ and project_->id() == bookid)
+  CROW_LOG_DEBUG << "find(" << bookid << "," << pageid << ")";
+  if (page_ and page_->id() == pageid and project_ and
+      project_->id() == bookid) {
+    CROW_LOG_DEBUG << "found " << project_->id() << " "
+                   << project_->origin().id();
     return page_;
+  }
 
   auto project = find(c, bookid);
   if (project) {
@@ -223,11 +232,17 @@ template<class Db>
 pcw::LineSptr
 pcw::Session::find(Connection<Db>& c, int bookid, int pageid, int lineid) const
 {
-  if (page_ and page_->id() == pageid and project_ and project_->id() == bookid)
+  CROW_LOG_DEBUG << "find(" << bookid << "," << pageid << "," << lineid << ")";
+  if (page_ and page_->id() == pageid and project_ and
+      project_->id() == bookid) {
+    CROW_LOG_DEBUG << "found " << project_->id() << " "
+                   << project_->origin().id();
     return page_->find(lineid);
+  }
   auto page = find(c, bookid, pageid);
-  if (page)
+  if (page) {
     return page->find(lineid);
+  }
   return nullptr;
 }
 
