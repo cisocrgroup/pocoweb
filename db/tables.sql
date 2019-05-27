@@ -150,6 +150,13 @@ create table if not exists adaptivetokens (
 );
 alter table adaptivetokens convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
+
+create table if not exists jobs (
+	id INTEGER NOT NULL PRIMARY KEY UNIQUE REFERENCES books(bookid),
+	statusid INTEGER NOT NULL REFERENCES status(id),
+	timestamp INT(11) NOT NULL
+);
+
 create table if not exists status (
 	id int not null unique primary key,
 	text varchar(15) not null
