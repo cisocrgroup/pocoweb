@@ -51,8 +51,8 @@ services:
   # mysql database
   db:
     image: mariadb
-    ports:
-      - "3306:3306"
+    # ports:
+    #   - "3306:3306"
     volumes:
       - ${PCW_BASE_DIR}/db-data:/var/lib/mysql
       - ./db:/etc/mysql/conf.d:ro
