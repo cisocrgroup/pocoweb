@@ -7,7 +7,7 @@ if(asModal) {
   <div class="modal-content">
 
 <div class="modal-header">
-        <h3 class="modal-title">Concordance view for "<%-tokendata.query%>"</h3>
+        <h3 class="modal-title">Concordance view for "<%-selection%>"</h3>
        
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -24,7 +24,7 @@ if(asModal) {
     <div class="col col-md-12">
 
 	<div id="concordance-heading">
-	<p><h2>Concordance view for "<%-tokendata.query%>"</h2></p>
+	<p><h2>Concordance view for "<%-selection%>"</h2></p>
 	</div>
 
 	
@@ -37,7 +37,7 @@ if(asModal) {
   <li> 
   <form class="navbar-form">-->
   
-  <% if (suggestions!=""){ %>
+  <% if (suggestions!=undefined){ %>
 
   <div class="input-group mb-3">
   <div class="input-group-prepend">
@@ -67,7 +67,7 @@ if(asModal) {
 
   <div class="all_lines_parent">
 	  <%
-      _.each(tokendata.matches, function(match) {
+      _.each(tokendata, function(match) {
       var line = match['line'];
     	  _.each(match['tokens'], function(word) {
 

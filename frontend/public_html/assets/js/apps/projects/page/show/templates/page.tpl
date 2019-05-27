@@ -64,7 +64,7 @@
        <div class="text-image-line" title="<%-text%>">
 
        	<a class="line-anchor" id="line-anchor-<%-anchor%>"></a>
-		<div class="line-img"><img id="line-img-<%-anchor%>" src='<%-line["imgFile"]%>' alt='<%-text%>' title='<%-text%>' width="auto" height="25"></div>
+		<div class="line-img"><img id="line-img-<%-anchor%>" src='<%-line["imgFile"]%>' alt='<%-text%>' title='<%-text%>' width="auto" height="30"></div>
 
 		<div class="line-text-parent">	
 		<div id="line-<%-anchor%>" class="<%-correction_class%> line-text" anchor="<%-anchor%>"
