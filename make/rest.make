@@ -29,7 +29,6 @@ CORE_OBJS += rest/src/core/jsonify.o
 CORE_OBJS += rest/src/core/queries.o
 CORE_OBJS += rest/src/core/util.o
 
-API_OBJS += rest/src/api/AdaptiveTokensRoute.o
 API_OBJS += rest/src/api/TokenRoute.o
 API_OBJS += rest/src/api/AssignRoute.o
 API_OBJS += rest/src/api/BookRoute.o
@@ -37,12 +36,9 @@ API_OBJS += rest/src/api/DownloadRoute.o
 API_OBJS += rest/src/api/FinishRoute.o
 API_OBJS += rest/src/api/LineRoute.o
 API_OBJS += rest/src/api/PageRoute.o
-API_OBJS += rest/src/api/ProfilerRoute.o
 API_OBJS += rest/src/api/SearchRoute.o
 API_OBJS += rest/src/api/SplitImagesRoute.o
 API_OBJS += rest/src/api/SplitRoute.o
-API_OBJS += rest/src/api/SuggestionsRoute.o
-API_OBJS += rest/src/api/SuspiciousWordsRoute.o
 API_OBJS += rest/src/api/VersionRoute.o
 API_OBJS += rest/src/utils/Base64.o
 
@@ -61,17 +57,10 @@ PARSER_OBJS += rest/src/parser/XmlParserPage.o
 PARSER_OBJS += rest/src/parser/hocr.o
 PARSER_OBJS += rest/src/parser/llocs.o
 
-PROFILER_OBJS += rest/src/profiler/LocalProfiler.o
-PROFILER_OBJS += rest/src/profiler/Profile.o
-PROFILER_OBJS += rest/src/profiler/Profiler.o
-PROFILER_OBJS += rest/src/profiler/RemoteProfiler.o
-PROFILER_OBJS += rest/src/profiler/RemoteProfilerTemplate.o
-PROFILER_OBJS += rest/src/profiler/docxml.o
-
 LIBS += lib/libpcw.a
 MAINS += pcwd
 
-lib/libpcw.a: $(CORE_OBJS) $(API_OBJS) $(PROFILER_OBJS) $(PARSER_OBJS) | $(MODS) mkdir-lib
+lib/libpcw.a: $(CORE_OBJS) $(API_OBJS) $(PARSER_OBJS) | $(MODS) mkdir-lib
 	$(call ECHO,$@)
 	$V $(AR) rcs $@ $^
 pcwd: rest/src/pcwd.o $(LIBS)

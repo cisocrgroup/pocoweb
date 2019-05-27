@@ -30,7 +30,10 @@ public:
 private:
   Response next(const Project& book, int pid, int val) const;
   Response prev(const Project& book, int pid, int val) const;
-  static Response print(Json& json, const Page& page, const Project& project);
+  static Response print(Json& json,
+                        int pid,
+                        const Page& page,
+                        const Project& project);
 
   static const char* route_;
   static const char* name_;

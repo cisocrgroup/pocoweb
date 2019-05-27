@@ -60,7 +60,7 @@ services:
     env_file:
       - env.sh
 
-  # pocoweb authentification and user management
+  # pocoweb authentification
   pcwauth:
     # build: pcwauth/
     image: flobar/pcwauth
@@ -70,13 +70,14 @@ services:
       - db
       - pocoweb
       - pcwprofiler
+      - pcwusers
     depends_on:
       - db
     restart: always
     env_file:
       - env.sh
 
-  # profiling
+  # pocoweb profiling
   pcwprofiler:
     image: flobar/pcwprofiler
     restart: always
@@ -88,3 +89,14 @@ services:
       - env.sh
     volumes:
       - ${PCW_BASE_DIR}/project-data:/project-data:rw
+
+  # pocoweb user management
+  pcwusers:
+    image: flobar/pcwusers
+    restart: always
+    links:
+      - db
+    depends_on:
+      - db
+    env_file:
+      - env.sh

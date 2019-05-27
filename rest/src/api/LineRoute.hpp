@@ -25,11 +25,13 @@ public:
 
 private:
   Response correct(MysqlConnection& conn,
+                   int pid,
                    Line& line,
                    const std::string& c) const;
   Response correct(MysqlConnection& conn,
-                   Line& line,
+                   int pid,
                    int tid,
+                   Line& line,
                    const std::string& c) const;
   static boost::optional<Token> find_token(const Line& line, int tid);
   static void update_line(MysqlConnection& conn, const Line& line);

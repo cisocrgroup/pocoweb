@@ -141,8 +141,9 @@ template<class Db>
 pcw::ProjectSptr
 pcw::Session::find(Connection<Db>& c, int bookid) const
 {
-  if (project_ and project_->id() == bookid)
+  if (project_ and project_->id() == bookid) {
     return project_;
+  }
 
   auto project = cached_find_project(c, bookid);
   if (project) {
@@ -184,8 +185,10 @@ template<class Db>
 pcw::PageSptr
 pcw::Session::find(Connection<Db>& c, int bookid, int pageid) const
 {
-  if (page_ and page_->id() == pageid and project_ and project_->id() == bookid)
+  if (page_ and page_->id() == pageid and project_ and
+      project_->id() == bookid) {
     return page_;
+  }
 
   auto project = find(c, bookid);
   if (project) {
@@ -223,11 +226,14 @@ template<class Db>
 pcw::LineSptr
 pcw::Session::find(Connection<Db>& c, int bookid, int pageid, int lineid) const
 {
-  if (page_ and page_->id() == pageid and project_ and project_->id() == bookid)
+  if (page_ and page_->id() == pageid and project_ and
+      project_->id() == bookid) {
     return page_->find(lineid);
+  }
   auto page = find(c, bookid, pageid);
-  if (page)
+  if (page) {
     return page->find(lineid);
+  }
   return nullptr;
 }
 
@@ -271,6 +277,7 @@ pcw::Session::find_project_impl(Connection<Db>& c, int projectid) const
   if (entry and entry->is_book()) {
     return cached_find_book(c, projectid);
   } else if (entry) { // HERE LIES THY DOOM
+    assert(entry->origin != entry->projectid);
     auto owner = entry->owner;
     if (not owner) {
       return nullptr;
@@ -291,10 +298,8 @@ pcw::BookSptr
 pcw::Session::cached_find_book(Connection<Db>& c, int bookid) const
 {
   if (cache_) {
-    return cache_->books.get(bookid, [&](int id) {
-      CROW_LOG_DEBUG << "(Session) loading book id: " << bookid;
-      return pcw::select_book(c.db(), user_, bookid);
-    });
+    return cache_->books.get(
+      bookid, [&](int id) { return pcw::select_book(c.db(), user_, bookid); });
   } else {
     return pcw::select_book(c.db(), user_, bookid);
   }
@@ -305,11 +310,12 @@ template<class Db>
 pcw::ProjectSptr
 pcw::Session::cached_find_project(Connection<Db>& c, int projectid) const
 {
-  if (cache_)
+  if (cache_) {
     return cache_->projects.get(
       projectid, [&](int id) { return find_project_impl(c, projectid); });
-  else
+  } else {
     return find_project_impl(c, projectid);
+  }
 }
 
 #endif // pcw_Session_hpp__

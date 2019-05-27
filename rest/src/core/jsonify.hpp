@@ -42,6 +42,23 @@ operator<<(Json& j, const std::vector<Token>& tokens);
 Json&
 operator<<(Json& j, const Box& box);
 
+Json&
+wj(Json& j, const std::vector<ProjectPtr>& books);
+Json&
+wj(Json& j, const BookData& data);
+Json&
+wj(Json& j, const Project& project);
+Json&
+wj(Json& j, const Page& page, int projectid);
+Json&
+wj(Json& j, const Line& line, int projectid);
+Json&
+wj(Json& j, const Token& token, int projectid);
+Json&
+wj(Json& j, const std::vector<Token>& tokens, int projectid);
+Json&
+wj(Json& j, const Box& box);
+
 template<class T>
 boost::optional<T>
 get(const RJson& j, const char* key);
