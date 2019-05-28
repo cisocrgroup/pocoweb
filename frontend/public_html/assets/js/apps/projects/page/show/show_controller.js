@@ -186,13 +186,13 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
        var searchingToken = ProjectEntitites.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern});
        var that = this;
          $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
-            var tokendata = tokens;
+            var tokendata = tokens['matches'][selection];
             console.log(suggestions)
             console.log(tokendata)
 
 
 
-           var projectConcView = new Show.Concordance({tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
+           var projectConcView = new Show.Concordance({selection:selection,tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
            $('.custom-popover').remove();
         
             projectConcView.on("concordance:correct_token",function(data,anchor){

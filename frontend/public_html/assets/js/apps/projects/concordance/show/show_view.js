@@ -33,6 +33,8 @@ define(["marionette","app","medium","imagesLoaded","backbone.syphon","common/vie
       var asModal = Marionette.getOption(this,"asModal");
           data.tokendata =  Marionette.getOption(this,"tokendata");
           data.suggestions =  Marionette.getOption(this,"suggestions");
+          data.selection =  Marionette.getOption(this,"selection");
+
           data.Util = Util;
           data.asModal = asModal;
 
@@ -301,18 +303,18 @@ $('#conc-modal').imagesLoaded( function() {
 
           var tokendata =  Marionette.getOption(that,"tokendata");
           var suggestions =  Marionette.getOption(that,"suggestions");
+          var selection =  Marionette.getOption(that,"selection");
 
-          var query = tokendata.query;
  
           console.log(tokendata);
-           _.each(tokendata.matches, function(match) {
+           _.each(tokendata, function(match) {
             var line = match['line'];
             var linetokens = line.tokens;
             var concLine = $('<div class="concLine"></div>')
             var anchor = line['projectId']+"-"+line['pageId']+"-"+line['lineId'];
             concLine.attr('anchor',anchor);
 
-            var querytoken = match['tokens'][0]['cor'];
+            var querytoken = selection;
 
             $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().append(concLine);
 
@@ -358,8 +360,8 @@ $('#conc-modal').imagesLoaded( function() {
 
                     var tokendiv;
                     var cordiv = $("<div>"+token.cor+"</div>");
-
-                    if(querytoken.toLowerCase()==token.cor.toLowerCase()&&suggestions!=""){
+                   
+                    if(querytoken.toLowerCase()==token.cor.toLowerCase()){
                        cordiv = $("<div class='cordiv' contenteditable='true'>"+token.cor.trim()+"</div>");
                         
                        //var grp = $ ("<div class='input-group-mb-3'></div>");

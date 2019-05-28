@@ -26763,7 +26763,7 @@ __p+='\n       <div class="text-image-line" title="'+
 ((__t=(text))==null?'':_.escape(__t))+
 '\' title=\''+
 ((__t=(text))==null?'':_.escape(__t))+
-'\' width="auto" height="25"></div>\n\n		<div class="line-text-parent">	\n		<div id="line-'+
+'\' width="auto" height="30"></div>\n\n		<div class="line-text-parent">	\n		<div id="line-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
 '" class="'+
 ((__t=(correction_class))==null?'':_.escape(__t))+
@@ -27157,20 +27157,20 @@ __p+='	\n';
 if(asModal) {
 
 __p+='\n\n  <div class="modal-dialog modal-xl" role="document">\n  <div class="modal-content">\n\n<div class="modal-header">\n        <h3 class="modal-title">Concordance view for "'+
-((__t=(tokendata.query))==null?'':_.escape(__t))+
+((__t=(selection))==null?'':_.escape(__t))+
 '"</h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n';
  } else { 
 __p+='\n\n\n	<div class="container">\n	<div class="row">\n    <div class="col col-md-12">\n\n	<div id="concordance-heading">\n	<p><h2>Concordance view for "'+
-((__t=(tokendata.query))==null?'':_.escape(__t))+
+((__t=(selection))==null?'':_.escape(__t))+
 '"</h2></p>\n	</div>\n\n	\n';
  } 
 __p+='\n\n <!--  <nav class="navbar navbar-static-top" id="page-header" data-spy="affix" data-offset-top="197">\n  <div class="container-fluid">\n  <div class="collapse navbar-collapse">\n  <ul class="nav navbar-nav">\n  <li> \n  <form class="navbar-form">-->\n  \n  ';
- if (suggestions!=""){ 
+ if (suggestions!=undefined){ 
 __p+='\n\n  <div class="input-group mb-3">\n  <div class="input-group-prepend">\n  <button class="js-toggle-selection btn btn-outline-secondary" title="Toggle selection">\n  Toggle selection\n  </button>\n  </div>\n  <input class="js-global-correction-suggestion form-control" title="correction" type="text" placeholder="Correction"/>\n  <div class="input-group-append">\n  <button class="js-set-correction btn btn-outline-secondary" title="Set correction">\n  Set correction\n  </button>\n  <button class="js-correct-conc selected btn btn-outline-secondary" title="Correct selected">\n  Correct selected\n  </button>\n  </div>\n  </div>\n\n  ';
  } 
 __p+='\n\n <!-- </form>\n   </li>\n  </ul>\n  </div>\n  </div>\n  </nav> -->\n\n  <div class="all_lines_parent">\n	  ';
 
-      _.each(tokendata.matches, function(match) {
+      _.each(tokendata, function(match) {
       var line = match['line'];
     	  _.each(match['tokens'], function(word) {
 
@@ -27234,6 +27234,8 @@ define('apps/projects/concordance/show/show_view',["marionette","app","medium","
       var asModal = Marionette.getOption(this,"asModal");
           data.tokendata =  Marionette.getOption(this,"tokendata");
           data.suggestions =  Marionette.getOption(this,"suggestions");
+          data.selection =  Marionette.getOption(this,"selection");
+
           data.Util = Util;
           data.asModal = asModal;
 
@@ -27502,18 +27504,18 @@ $('#conc-modal').imagesLoaded( function() {
 
           var tokendata =  Marionette.getOption(that,"tokendata");
           var suggestions =  Marionette.getOption(that,"suggestions");
+          var selection =  Marionette.getOption(that,"selection");
 
-          var query = tokendata.query;
  
           console.log(tokendata);
-           _.each(tokendata.matches, function(match) {
+           _.each(tokendata, function(match) {
             var line = match['line'];
             var linetokens = line.tokens;
             var concLine = $('<div class="concLine"></div>')
             var anchor = line['projectId']+"-"+line['pageId']+"-"+line['lineId'];
             concLine.attr('anchor',anchor);
 
-            var querytoken = match['tokens'][0]['cor'];
+            var querytoken = selection;
 
             $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().append(concLine);
 
@@ -27559,8 +27561,8 @@ $('#conc-modal').imagesLoaded( function() {
 
                     var tokendiv;
                     var cordiv = $("<div>"+token.cor+"</div>");
-
-                    if(querytoken.toLowerCase()==token.cor.toLowerCase()&&suggestions!=""){
+                   
+                    if(querytoken.toLowerCase()==token.cor.toLowerCase()&&suggestions!=undefined){
                        cordiv = $("<div class='cordiv' contenteditable='true'>"+token.cor.trim()+"</div>");
                         
                        //var grp = $ ("<div class='input-group-mb-3'></div>");
@@ -28962,13 +28964,13 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
        var searchingToken = ProjectEntitites.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern});
        var that = this;
          $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
-            var tokendata = tokens;
+            var tokendata = tokens['matches'][selection];
             console.log(suggestions)
             console.log(tokendata)
 
 
 
-           var projectConcView = new Show.Concordance({tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
+           var projectConcView = new Show.Concordance({selection:selection,tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
            $('.custom-popover').remove();
         
             projectConcView.on("concordance:correct_token",function(data,anchor){
@@ -48531,7 +48533,7 @@ var effectsEffectTransfer = effect;
 define("tpl!apps/projects/a_pocoto/lexicon_extension/show/templates/info.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n<div class="container">\n<hr>\n\n\n<div class="row">\n<div class="col-lg-5">\n<h4>Extensions</h4> \n\n<table id="extensions" class="table table-bordered sortable table-hover" style=\'margin-bottom: 30px;\'> \n<thead class="thead-light">\n      <tr>\n        <th>Word</th>\n        <th>Frequency</th>\n      </tr>\n </thead>\n <tbody>\n\n    <tr>  \n        <td>eſſe</td>\n        <td>10</td>\n    </tr>\n       <tr>  \n        <td>word2</td>\n        <td>30</td>\n    </tr>\n       <tr>  \n        <td>word3</td>\n        <td>40</td>\n    </tr>\n\n </tbody>\n\n</table> \n\n\n</div>\n\n<div class="col-lg-2">\n<div style="text-align: center;">\n<i style="margin-top: 118px;font-size: 50px;" class="fas fa-exchange-alt"></i>\n</div>\n</div>\n\n<div class="col-lg-5">\n\n<table id="unknown" class="table table-bordered sortable table-hover" style=\'margin-bottom: 30px;\'>\n<h4>Unknown</h4> \n<thead class="thead-light">\n      <tr>\n        <th>Word</th>\n        <th>Frequency</th>\n      </tr>\n </thead>\n <tbody>\n\n    <tr>  \n        <td>word1</td>\n        <td>4</td>\n    </tr>\n       <tr>  \n        <td>word2</td>\n        <td>3</td>\n    </tr>\n       <tr>  \n        <td>word3</td>\n        <td>21</td>\n    </tr>\n\n </tbody>\n\n</table> \n\n\n</div>\n\n\n\n\n\n</div>\n</div>\n\n';
+__p+='\n\n<div class="container">\n<hr>\n\n\n<div class="row">\n<div class="col-lg-5">\n<h4>Extensions</h4> \n\n<table id="extensions" class="table table-bordered sortable table-hover" style=\'margin-bottom: 30px;\'> \n<thead class="thead-light">\n      <tr>\n        <th>Word</th>\n        <th>Frequency</th>\n      </tr>\n </thead>\n <tbody>\n\n    <tr>  \n        <td>vnd</td>\n        <td>10</td>\n    </tr>\n       <tr>  \n        <td>word2</td>\n        <td>30</td>\n    </tr>\n       <tr>  \n        <td>word3</td>\n        <td>40</td>\n    </tr>\n\n </tbody>\n\n</table> \n\n\n</div>\n\n<div class="col-lg-2">\n<div style="text-align: center;">\n<i style="margin-top: 118px;font-size: 50px;" class="fas fa-exchange-alt"></i>\n</div>\n</div>\n\n<div class="col-lg-5">\n\n<table id="unknown" class="table table-bordered sortable table-hover" style=\'margin-bottom: 30px;\'>\n<h4>Unknown</h4> \n<thead class="thead-light">\n      <tr>\n        <th>Word</th>\n        <th>Frequency</th>\n      </tr>\n </thead>\n <tbody>\n\n    <tr>  \n        <td>word1</td>\n        <td>4</td>\n    </tr>\n       <tr>  \n        <td>word2</td>\n        <td>3</td>\n    </tr>\n       <tr>  \n        <td>word3</td>\n        <td>21</td>\n    </tr>\n\n </tbody>\n\n</table> \n\n\n</div>\n\n\n\n\n\n</div>\n</div>\n\n';
 }
 return __p;
 };});
@@ -48668,9 +48670,9 @@ define('apps/projects/a_pocoto/lexicon_extension/show/show_controller',["app","c
             var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:true});
 
             $.when(searchingToken).done(function(tokens){
-            var tokendata = tokens;
+            var tokendata = tokens['matches'][word]
 
-            var projectConcView = new Show.Concordance({tokendata:tokendata,asModal:true,suggestions:""});
+            var projectConcView = new Show.Concordance({selection:word,tokendata:tokendata,asModal:true,suggestions:undefined});
             App.mainLayout.showChildView('dialogRegion',projectConcView);
 
            });

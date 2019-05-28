@@ -60,7 +60,8 @@ $(PCW_FRONTEND_DIR)/public_html/doc.html: frontend/public_html/doc.md
 	$V bash misc/scripts/md2html.sh $< | sed -e 's#<br>##g' > $@
 
 # TODO: not that nice
-$(PCW_FRONTEND_DIR)/public_html/assets/js/build.js: frontend/public_html/assets/js/r.js
+.PHONY: $(PCW_FRONTEND_DIR)/public_html/assets/js/build.js
+$(PCW_FRONTEND_DIR)/public_html/assets/js/build.js:
 	$V cd frontend/public_html/assets/js && node r.js -o build.js
 	$V cp -r frontend/public_html/assets $(PCW_FRONTEND_DIR)/public_html
 
