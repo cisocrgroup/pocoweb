@@ -40,6 +40,7 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
       row_clicked:function(e){
         e.preventDefault();
         var word = $($(e.currentTarget).find("td")[0]).text();
+
         this.trigger("show:word_clicked",word);
       },
 

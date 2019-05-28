@@ -27371,6 +27371,10 @@ define('apps/projects/concordance/show/show_view',["marionette","app","medium","
 
       },
       cordiv_clicked:function(e){
+
+      var suggestions =  Marionette.getOption(this,"suggestions");
+      if(suggestions==undefined) return;
+
       $('#dropdown-content-conc').remove();
 
       $("#conc-modal").find('.cordiv_left').hide();
@@ -27442,9 +27446,7 @@ define('apps/projects/concordance/show/show_view',["marionette","app","medium","
       var prevent = false;
       var after_db_click = false;
 
-      console.log($('.cordiv').length);
 
- 
 
 
        if(this.options.asModal){
@@ -27506,7 +27508,7 @@ $('#conc-modal').imagesLoaded( function() {
           var suggestions =  Marionette.getOption(that,"suggestions");
           var selection =  Marionette.getOption(that,"selection");
 
- 
+
           console.log(tokendata);
            _.each(tokendata, function(match) {
             var line = match['line'];
@@ -27562,8 +27564,15 @@ $('#conc-modal').imagesLoaded( function() {
                     var tokendiv;
                     var cordiv = $("<div>"+token.cor+"</div>");
                    
-                    if(querytoken.toLowerCase()==token.cor.toLowerCase()&&suggestions!=undefined){
-                       cordiv = $("<div class='cordiv' contenteditable='true'>"+token.cor.trim()+"</div>");
+                    if(querytoken.toLowerCase()==token.cor.toLowerCase()){
+
+                        var contenteditable = 'true';
+                        if(suggestions==undefined){
+                          contenteditable = 'false'
+                         }
+ 
+
+                       cordiv = $("<div class='cordiv' contenteditable='"+contenteditable+"'>"+token.cor.trim()+"</div>");
                         
                        //var grp = $ ("<div class='input-group-mb-3'></div>");
                        // grp.append($("<span class='concbtn_left'><i class='far fa-square'></i></span>"));
@@ -48580,6 +48589,12 @@ define('apps/projects/a_pocoto/lexicon_extension/show/show_view',["marionette","
       row_clicked:function(e){
         e.preventDefault();
         var word = $($(e.currentTarget).find("td")[0]).text();
+
+        if ( $("#conc-modal").hasClass('show') )
+                    {
+                      console.log("KASDK")
+                    }
+        
         this.trigger("show:word_clicked",word);
       },
 
@@ -48666,6 +48681,7 @@ define('apps/projects/a_pocoto/lexicon_extension/show/show_controller',["app","c
       	projectShowFooterPanel = new Show.FooterPanel();
 
         projectShowInfo.on("show:word_clicked",function(word){
+            
 
             var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:true});
 

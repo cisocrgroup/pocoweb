@@ -170,6 +170,10 @@ define(["marionette","app","medium","imagesLoaded","backbone.syphon","common/vie
 
       },
       cordiv_clicked:function(e){
+
+      var suggestions =  Marionette.getOption(this,"suggestions");
+      if(suggestions==undefined) return;
+
       $('#dropdown-content-conc').remove();
 
       $("#conc-modal").find('.cordiv_left').hide();
@@ -241,9 +245,7 @@ define(["marionette","app","medium","imagesLoaded","backbone.syphon","common/vie
       var prevent = false;
       var after_db_click = false;
 
-      console.log($('.cordiv').length);
 
- 
 
 
        if(this.options.asModal){
@@ -305,7 +307,7 @@ $('#conc-modal').imagesLoaded( function() {
           var suggestions =  Marionette.getOption(that,"suggestions");
           var selection =  Marionette.getOption(that,"selection");
 
- 
+
           console.log(tokendata);
            _.each(tokendata, function(match) {
             var line = match['line'];
@@ -362,7 +364,14 @@ $('#conc-modal').imagesLoaded( function() {
                     var cordiv = $("<div>"+token.cor+"</div>");
                    
                     if(querytoken.toLowerCase()==token.cor.toLowerCase()){
-                       cordiv = $("<div class='cordiv' contenteditable='true'>"+token.cor.trim()+"</div>");
+
+                        var contenteditable = 'true';
+                        if(suggestions==undefined){
+                          contenteditable = 'false'
+                         }
+ 
+
+                       cordiv = $("<div class='cordiv' contenteditable='"+contenteditable+"'>"+token.cor.trim()+"</div>");
                         
                        //var grp = $ ("<div class='input-group-mb-3'></div>");
                        // grp.append($("<span class='concbtn_left'><i class='far fa-square'></i></span>"));

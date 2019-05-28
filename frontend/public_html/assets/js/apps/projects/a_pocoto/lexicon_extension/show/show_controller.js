@@ -41,6 +41,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
       	projectShowFooterPanel = new Show.FooterPanel();
 
         projectShowInfo.on("show:word_clicked",function(word){
+            
 
             var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:true});
 
