@@ -1,6 +1,6 @@
-MODS += crow.mod
-MODS += pugixml.mod
-MODS += utfcpp.mod
+# MODS += crow.mod
+# MODS += pugixml.mod
+# MODS += utfcpp.mod
 
 all: $(MODS)
 install:
@@ -13,4 +13,3 @@ clean:
 %.mod: ../.git/modules/modules/$$*/HEAD
 	git submodule update --init $*
 	touch $@
-
