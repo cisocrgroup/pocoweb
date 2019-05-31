@@ -48,9 +48,10 @@ $config = array(
 			"getAllSuggestions"   => "/profile/books/%d",
 			"getSuggestions"      => "/profile/books/%d?q=%s",
 			"getSuspiciousWords"  => "/profile/suspicious/books/%d",
+     		"getErrorPatterns"    => "/profile/patterns/books/%d?q=%s&ocr=1",
 			"languages"           => "/profile/languages?url=%s",
 			"adaptiveTokens"      => "/profile/adaptive/books/%d",
-			"updateUser"          => "/users/%d",
+			"updateUser"          => "/users/%d"
 		),
 	),
 	"cookies" => array(

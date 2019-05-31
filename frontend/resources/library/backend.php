@@ -311,6 +311,22 @@ function backend_get_search_route($pid, $q, $p) {
 		$pid, urlencode($q), (int)$p);
 }
 
+
+function backend_get_error_patterns_route($pid, $q) {
+	global $config;
+	return sprintf($config["backend"]["internalURL"] .
+		$config["backend"]["routes"]["getErrorPatterns"],
+		$pid, urlencode($q));
+}
+
+function backend_get_suspicious_words_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["internalURL"] .
+		$config["backend"]["routes"]["getSuspiciousWords"],
+		$pid);
+}
+
+
 function backend_get_concordance($pid, $q, $isErrorPattern) {
 	global $SID;
 	$api = new Api(backend_get_search_route($pid, $q, $isErrorPattern));
