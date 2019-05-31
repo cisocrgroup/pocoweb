@@ -353,11 +353,11 @@ function backend_get_all_suggestions_route($pid) {
 		$pid);
 }
 
-function backend_get_error_patterns_route($pid, $q) {
+function backend_get_error_patterns_route($pid) {
 	global $config;
 	return sprintf($config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["getErrorPatterns"],
-		$pid, urlencode($q));
+		$pid);
 }
 
 function backend_get_suspicious_words_route($pid) {
