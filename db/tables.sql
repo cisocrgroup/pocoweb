@@ -156,4 +156,17 @@ create table if not exists status (
 );
 alter table status convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 insert ignore into status (id,text)
-values (0,'failed'),(1,'running'),(2,'done'),(3,'empty'),(4,'profiled'),(5,'post-corrected');
+values
+	(0,'failed'),
+	(1,'running'),
+	(2,'done'),
+	(3,'empty'),
+	(4,'profiled'),
+	(5,'post-corrected');
+
+drop table if exists jobs;
+create table jobs (
+	   id INTEGER NOT NULL PRIMARY KEY UNIQUE REFERECES books(bookid),
+	   statusid INTEGER NOT NULL REFERENCES status(id),
+	   timestamp INT(11) NOT NULL
+);
