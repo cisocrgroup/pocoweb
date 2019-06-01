@@ -2,24 +2,87 @@
 // apps/page/show/show_view.js
 // ================================
 
-define(["marionette","app","medium","backbone.syphon","common/views","common/util",
+define(["marionette","app","medium","backbone.syphon","common/views","common/util","apps/projects/concordance/show/show_view",
+        "tpl!apps/projects/page/show/templates/header.tpl",
         "tpl!apps/projects/page/show/templates/page.tpl",
+        "tpl!apps/projects/page/show/templates/sidebar.tpl",
+        "tpl!apps/projects/page/show/templates/layout.tpl",
 
 
-  ], function(Marionette,App,MediumEditor,BackboneSyphon,Views,Util,pageTpl){
+  ], function(Marionette,App,MediumEditor,BackboneSyphon,Views,Util,Concordance,heaerTpl,pageTpl,sidebarTpl,layoutTpl){
 
 
     var Show = {};
 
-  Show.Page = Marionette.View.extend({
-  template:pageTpl,
-  saved_selection:"",
-  editor:"",
-events:{
+  Show.Layout = Marionette.View.extend({
+    template:layoutTpl,
+    regions:{
+       headerRegion: "#header-region"
+      ,sidebarRegion: "#sidebar-region"
+      ,pageRegion: "#page-region"
+      ,footerRegion: "#footer-region"
+    }
+
+  });
+ 
+   Show.Header = Marionette.View.extend({
+   
+      template:heaerTpl,
+      serializeData: function(){
+      return {
+        title: Marionette.getOption(this,"title")
+      }
+    }
+  });
+
+  Show.Sidebar = Marionette.View.extend({
+      template:sidebarTpl,
+      events:{
       'click .js-stepbackward' : 'backward_clicked',
       'click .js-stepforward' : 'forward_clicked',
       'click .js-firstpage' : 'firstpage_clicked',
       'click .js-lastpage' : 'lastpage_clicked',
+ 
+      'click #pcw-error-tokens-link' : 'error_tokens_clicked',
+      'click #pcw-error-patterns-link' : 'error_patterns_clicked'
+
+
+      },
+
+      backward_clicked:function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        console.log(data)
+        this.trigger("page:new",data.prevPageId);
+      },
+
+       forward_clicked:function(e){
+        e.stopPropagation();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        e.preventDefault();
+        this.trigger("page:new",data.nextPageId);
+      },
+
+       firstpage_clicked:function(e){
+         e.stopPropagation();
+         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        e.preventDefault();
+        this.trigger("page:new","first");
+      },
+       lastpage_clicked:function(e){
+       e.stopPropagation();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        e.preventDefault();
+        this.trigger("page:new","last");
+      },
+
+  });
+
+  Show.Page = Marionette.View.extend({
+  template:pageTpl,
+  saved_selection:"",
+  events:{
       'click .js-correct' : 'correct_clicked',
       'click .line-tokens' : 'line_tokens_clicked',
       'click .line-text' : 'line_selected',
@@ -55,33 +118,7 @@ events:{
         return data;
       },
 
-       backward_clicked:function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        console.log(data)
-        this.trigger("page:new",data.prevPageId);
-      },
-
-       forward_clicked:function(e){
-        e.stopPropagation();
-        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        e.preventDefault();
-        this.trigger("page:new",data.nextPageId);
-      },
-
-       firstpage_clicked:function(e){
-         e.stopPropagation();
-         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        e.preventDefault();
-        this.trigger("page:new","first");
-      },
-       lastpage_clicked:function(e){
-       e.stopPropagation();
-        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        e.preventDefault();
-        this.trigger("page:new","last");
-      },
+ 
       correct_clicked:function(e){
       e.stopPropagation();
 
@@ -234,9 +271,9 @@ events:{
 
       onDomRefresh:function(e){
 
-            var that = this;
-         $('.line-img').each(function(index){
-		 var img = $(this);
+           var that = this;
+           $('.line-img').each(function(index){
+	       	 var img = $(this);
            $(this).imagesLoaded( function() {
                 var line = that.model.get('lines')[index];
                 if(line!=undefined){
@@ -245,6 +282,22 @@ events:{
             });
 
          });
+
+          var navbar = $("#sidebar-region")
+          var sticky = navbar.offset().top;
+          var parent_width = navbar.innerWidth();
+
+        $(window).on('scroll', function(event) {
+    
+          console.log(sticky);
+
+           if (window.pageYOffset >= sticky) {
+              $('#sidebar-region').addClass('sticky').width(parent_width);
+
+          } else{
+              $('#sidebar-region').removeClass('sticky');
+          }
+        });
 
       },
 
@@ -349,7 +402,10 @@ appendErrorCountItem : function(dropdown, item, count) {
 
 })
 
+Show.Concordance = Concordance.Concordance.extend({});
 
+Show.FooterPanel = Views.FooterPanel.extend({
+    });
 
 return Show;
 

@@ -113,7 +113,7 @@ var cards2 = [
                   "color": "green",
                   "icon": "fas fa-file-signature",
                   "id": "users_button",
-                  "name": "A-I-PoCoTo",
+                  "name": "Manual Postcorrection",
                   "seq": 2,
                   "text": "Manual interactive postcorrection tools.",
                   "url": "projects:show_page",

@@ -125,8 +125,7 @@ define(["marionette","app","backbone.syphon","common/views","apps/projects/commo
       }
     
   });
-Show.Page = Page.Page.extend({});
-Show.Concordance = Concordance.Concordance.extend({});
+
 
 Show.FooterPanel = Views.FooterPanel.extend({
     });

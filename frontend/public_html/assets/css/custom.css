@@ -619,3 +619,47 @@ outline: 0;
   background-color: #d4edda!important;
   border-color: #c3e6cb!important; 
 }
+
+.sticky{
+  position: fixed;
+  top:0;
+  z-index: 10001;
+}
+
+.suspicious-words-container{
+    height: 300px;      
+    overflow-y: auto;    
+    overflow-x: hidden;  
+}
+
+.error-patterns-container{
+    height: 300px;      
+    overflow-y: auto;    
+    overflow-x: hidden;  
+}
+
+.loading_background2 {
+    top: 0;
+    height: 100%;
+    width: 100%;
+    left: 0px;
+    background: white;
+    z-index: 10005;
+}
+
+.loading_text2 {
+    position: relative;
+    top: 108px;
+    font-size: 20px;
+}
+  .loading_background2 i {
+    font-size: 30px;
+    height: 30px;
+    margin: auto;
+    position: absolute;
+    top: 62px;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    opacity: 0.6;
+  }

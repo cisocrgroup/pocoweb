@@ -23911,51 +23911,51 @@ define('tpl',['underscore', 'text'], function (_, text) {
 define("tpl!common/templates/listtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+=' <div class="container" style="padding-bottom:50px;">\n <div class="row">\n <div class="col col-lg-12" >\n\n\n <table class="table table-bordered table-striped ';
+__p+=' <div class="container" style="padding-bottom:50px;">\r\n <div class="row">\r\n <div class="col col-lg-12" >\r\n\r\n\r\n <table class="table table-bordered table-striped ';
  if(hover){
 __p+='table-hover';
 }
-__p+='" \n id="table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\n\n\n     <thead>\n      <tr>\n      ';
+__p+='" \r\n id="table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\r\n\r\n\r\n     <thead>\r\n      <tr>\r\n      ';
  _.each(headers, function(header) { 
-__p+='  \n        <th>'+
+__p+='  \r\n        <th>'+
 ((__t=(header.name))==null?'':_.escape(__t))+
-'</th>\n       ';
+'</th>\r\n       ';
  }); 
-__p+='         \n      </tr>\n     </thead>\n     <tbody>\n\n\n     ';
+__p+='         \r\n      </tr>\r\n     </thead>\r\n     <tbody>\r\n\r\n\r\n     ';
 
      var count = 0; 
      _.each(items, function(item) {
      
       
-__p+='\n\n      ';
+__p+='\r\n\r\n      ';
  if(columns[0]['clickrow']) { 
-__p+='\n\n       <tr class=\'clickable-row\' data-href="#'+
+__p+='\r\n\r\n       <tr class=\'clickable-row\' data-href="#'+
 ((__t=(urlroot))==null?'':_.escape(__t))+
 '/'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'">\n       \n       ';
+'">\r\n       \r\n       ';
  } else { 
-__p+='\n       <tr>\n       ';
+__p+='\r\n       <tr>\r\n       ';
  } 
-__p+='\n\n        ';
+__p+='\r\n\r\n        ';
  for(var i=0;i<columns.length;i++){ 
-__p+='  \n\n          ';
+__p+='  \r\n\r\n          ';
  column = columns[i]; 
-__p+='\n          ';
+__p+='\r\n          ';
  if (column.name == "action") {  
-__p+='\n          <td>\n              <button type="button" class="btn btn-sm btn-outline-dark js-delete-user" id="'+
+__p+='\r\n          <td>\r\n              <button type="button" class="btn btn-sm btn-outline-dark js-delete-user" id="'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'"> <i class="fas fa-times"></i></button>\n          </td>      \n          ';
+'"> <i class="fas fa-times"></i></button>\r\n          </td>      \r\n          ';
  } else { 
-__p+='\n          <td> '+
+__p+='\r\n          <td> '+
 ((__t=( item[column.name] ))==null?'':_.escape(__t))+
-' </td>      \n          ';
+' </td>      \r\n          ';
  } 
-__p+='\n        ';
+__p+='\r\n        ';
  } 
-__p+='  \n       \n     \n      </tr>\n\n    ';
+__p+='  \r\n       \r\n     \r\n      </tr>\r\n\r\n    ';
  count++;  }); 
-__p+='\n\n     </tbody>\n    </table>\n\n\n    </div>\n    </div>\n    </div>';
+__p+='\r\n\r\n     </tbody>\r\n    </table>\r\n\r\n\r\n    </div>\r\n    </div>\r\n    </div>';
 }
 return __p;
 };});
@@ -23964,9 +23964,9 @@ return __p;
 define("tpl!common/templates/loadingtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="backdrop"></div>\n  \n  <div class="spinnerparent">\n    <div id="spinner"></div>\n    <div class="spinnertitle"> '+
+__p+='<div class="backdrop"></div>\r\n  \r\n  <div class="spinnerparent">\r\n    <div id="spinner"></div>\r\n    <div class="spinnertitle"> '+
 ((__t=( title ))==null?'':_.escape(__t))+
-' </div>\n  </div>';
+' </div>\r\n  </div>';
 }
 return __p;
 };});
@@ -23975,9 +23975,9 @@ return __p;
 define("tpl!common/templates/loadingtemplateopc.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+=' <div class="backdrop-opc"></div>\n  \n  <div class="spinnerparent">\n    <div id="spinner"></div>\n    <div class="spinnertitle"> '+
+__p+=' <div class="backdrop-opc"></div>\r\n  \r\n  <div class="spinnerparent">\r\n    <div id="spinner"></div>\r\n    <div class="spinnertitle"> '+
 ((__t=( title ))==null?'':_.escape(__t))+
-' </div>\n  </div>';
+' </div>\r\n  </div>';
 }
 return __p;
 };});
@@ -23986,13 +23986,13 @@ return __p;
 define("tpl!common/templates/headertemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n<div class="container">\n<div class="row ">\n<div class="col col-md-12">\n<div class="header">\n<div class="defaulthl" > <span> <i class="'+
+__p+='\r\n\r\n<div class="container">\r\n<div class="row ">\r\n<div class="col col-md-12">\r\n<div class="header">\r\n<div class="defaulthl" > <span> <i class="'+
 ((__t=(icon))==null?'':_.escape(__t))+
 ' card_main_icon '+
 ((__t=(color))==null?'':_.escape(__t))+
 '" aria-hidden="true"></i> '+
 ((__t=(title))==null?'':_.escape(__t))+
-' </span> </div>\n</div>\n</div>\n</div>\n</div>\n';
+' </span> </div>\r\n</div>\r\n</div>\r\n</div>\r\n</div>\r\n';
 }
 return __p;
 };});
@@ -24001,15 +24001,15 @@ return __p;
 define("tpl!common/templates/cardheadertemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n<div class="topblock"> </div>   \n\n\n<div class="cardhl"> \n\n\n\n\n    <span> \n    <i class="'+
+__p+='\r\n<div class="topblock"> </div>   \r\n\r\n\r\n<div class="cardhl"> \r\n\r\n\r\n\r\n\r\n    <span> \r\n    <i class="'+
 ((__t=(icon))==null?'':_.escape(__t))+
 ' card_main_icon '+
 ((__t=(color))==null?'':_.escape(__t))+
 '" aria-hidden="true"></i> '+
 ((__t=(title))==null?'':_.escape(__t))+
-'\n     </span> \n\n\n        <div class="dlr_logo_bg">\n  		<img   class="dlr_bg_img" src="assets/images/DLR_Logo_no_text.svg">\n	 </div>\n\n	<!-- <div class="circle_cont">\n		<div class="headercircle">\n		<svg viewBox="0 0 100 100"><path d="M 50,50 m 0,-49.5 a 49.5,49.5 0 1 1 0,99 a 49.5,49.5 0 1 1 0,-99" stroke-width="1" fill-opacity="0" \n		stroke="'+
+'\r\n     </span> \r\n\r\n\r\n        <div class="dlr_logo_bg">\r\n  		<img   class="dlr_bg_img" src="assets/images/DLR_Logo_no_text.svg">\r\n	 </div>\r\n\r\n	<!-- <div class="circle_cont">\r\n		<div class="headercircle">\r\n		<svg viewBox="0 0 100 100"><path d="M 50,50 m 0,-49.5 a 49.5,49.5 0 1 1 0,99 a 49.5,49.5 0 1 1 0,-99" stroke-width="1" fill-opacity="0" \r\n		stroke="'+
 ((__t=(stroke))==null?'':_.escape(__t))+
-'"></path></svg>\n		</div>\n	</div> -->\n\n	\n\n</div>\n\n';
+'"></path></svg>\r\n		</div>\r\n	</div> -->\r\n\r\n	\r\n\r\n</div>\r\n\r\n';
 }
 return __p;
 };});
@@ -24018,51 +24018,51 @@ return __p;
 define("tpl!common/templates/cardhubtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n\n<div class="container">\n\n';
+__p+='\r\n\r\n\r\n<div class="container">\r\n\r\n';
 
  var rows = Math.ceil(cards.length/columns);
  var col_count = 0 
 
  
-__p+='\n\n';
+__p+='\r\n\r\n';
  for(var i = 0; i < rows; i++) { 
-__p+='\n <div class="row card_row">\n          ';
+__p+='\r\n <div class="row card_row">\r\n          ';
  for(var j = 0; j < columns; j++) {
           if(col_count+1>cards.length){break;}
           
-__p+='\n          ';
+__p+='\r\n          ';
  var item = cards[col_count];
-__p+='\n                <div class="col-md-'+
+__p+='\r\n                <div class="col-md-'+
 ((__t=(12/columns))==null?'':_.escape(__t))+
-' hub_col">\n              \n                 <div class="card custom_card active" url="'+
+' hub_col">\r\n              \r\n                 <div class="card custom_card active" url="'+
 ((__t=(item['url']))==null?'':_.escape(__t))+
 '" id="'+
 ((__t=(item['id']))==null?'':_.escape(__t))+
-'">\n                 <!-- <img class="card-img-top" src="assets/images/enmap_header_1.png." alt="Card image cap"> -->\n                   <div class="card-header">\n                   <h3 class="card-title"><i class="fas '+
+'">\r\n                 <!-- <img class="card-img-top" src="assets/images/enmap_header_1.png." alt="Card image cap"> -->\r\n                   <div class="card-header">\r\n                   <h3 class="card-title"><i class="fas '+
 ((__t=(item['icon']))==null?'':_.escape(__t))+
 ' card_main_icon '+
 ((__t=(item['color']))==null?'':_.escape(__t))+
 '" aria-hidden="true"></i> '+
 ((__t=(item['name']))==null?'':_.escape(__t))+
-'</h3>\n                      </div>\n                  <div class="card-block">\n\n\n                    <p class="card-text"> '+
+'</h3>\r\n                      </div>\r\n                  <div class="card-block">\r\n\r\n\r\n                    <p class="card-text"> '+
 ((__t=(item['text']))==null?'':_.escape(__t))+
-'  </p>\n                    <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->\n\n                  </div>\n\n\n                  <div class="card-footer text-muted">\n\n                   <div class="row">\n\n                     <div class="footer_item_container">\n\n                          <div style="visibility: hidden" class="dummy footer_item "><i class="fa fa-user-o" aria-hidden="true"></i> <span class="rolename">X</span> </div>\n\n                     </div>\n\n                     <div class="footer_item_enter_container">  \n                       <!-- <div class="footer_item footer_item_enter hover ';
+'  </p>\r\n                    <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->\r\n\r\n                  </div>\r\n\r\n\r\n                  <div class="card-footer text-muted">\r\n\r\n                   <div class="row">\r\n\r\n                     <div class="footer_item_container">\r\n\r\n                          <div style="visibility: hidden" class="dummy footer_item "><i class="fa fa-user-o" aria-hidden="true"></i> <span class="rolename">X</span> </div>\r\n\r\n                     </div>\r\n\r\n                     <div class="footer_item_enter_container">  \r\n                       <!-- <div class="footer_item footer_item_enter hover ';
 if(item['available']!=undefined&&item['available']==true){
 __p+=''+
 ((__t=(item.color))==null?'':_.escape(__t))+
 '-border';
 }
-__p+='">  <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Enter </div> -->\n                     </div>\n\n                   </div>\n                     \n                  </div>\n\n\n                </div>\n\n                </div>\n\n              ';
+__p+='">  <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Enter </div> -->\r\n                     </div>\r\n\r\n                   </div>\r\n                     \r\n                  </div>\r\n\r\n\r\n                </div>\r\n\r\n                </div>\r\n\r\n              ';
  col_count++;  } 
-__p+='\n    </div> \n  ';
+__p+='\r\n    </div> \r\n  ';
  } 
-__p+='\n  </div>\n\n';
+__p+='\r\n  </div>\r\n\r\n';
  if (back_btn !=undefined) { 
-__p+='\n\n<div class="container">\n   <div class="row">\n  <div class="col col-md-12">\n  <button class="btn back_btn js-back '+
+__p+='\r\n\r\n<div class="container">\r\n   <div class="row">\r\n  <div class="col col-md-12">\r\n  <button class="btn back_btn js-back '+
 ((__t=(cards[0]['color']))==null?'':_.escape(__t))+
-'-border hover" style="margin-left:0px;"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\n\n\n  </div>\n  </div>\n\n</div>\n\n\n';
+'-border hover" style="margin-left:0px;"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\r\n\r\n\r\n  </div>\r\n  </div>\r\n\r\n</div>\r\n\r\n\r\n';
  } 
-__p+='\n';
+__p+='\r\n';
 }
 return __p;
 };});
@@ -24071,7 +24071,7 @@ return __p;
 define("tpl!common/templates/layouttemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n    <div id="hl-region"></div>\n    <div id="content-region"></div>\n    <div id="panel-region"></div>\n';
+__p+='\r\n    <div id="hl-region"></div>\r\n    <div id="content-region"></div>\r\n    <div id="panel-region"></div>\r\n';
 }
 return __p;
 };});
@@ -24084,23 +24084,23 @@ __p+='';
 
 if(asModal) {
 
-__p+='\n\n  <div class="modal-dialog" role="document">\n  <div class="modal-content red-border">\n\n<div class="modal-header red-border">\n        <h3 class="modal-title red"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Error </h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n';
+__p+='\r\n\r\n  <div class="modal-dialog" role="document">\r\n  <div class="modal-content red-border">\r\n\r\n<div class="modal-header red-border">\r\n        <h3 class="modal-title red"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Error </h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n';
  } 
-__p+='\n\n\n\n<div class="alert alert-danger ';
+__p+='\r\n\r\n\r\n\r\n<div class="alert alert-danger ';
 if(asModal){
 __p+=' modal_errortext ';
 } else {
 __p+=' errortext';
 }
-__p+='" role="alert">\n  '+
+__p+='" role="alert">\r\n  '+
 ((__t=( errortext ))==null?'':_.escape(__t))+
-' \n</div>\n\n\n\n';
+' \r\n</div>\r\n\r\n\r\n\r\n';
 
 if(asModal) {
 
-__p+='\n\n  </div> \n\n  </div>\n  </div>\n\n';
+__p+='\r\n\r\n  </div> \r\n\r\n  </div>\r\n  </div>\r\n\r\n';
  } 
-__p+='\n';
+__p+='\r\n';
 }
 return __p;
 };});
@@ -24118,11 +24118,11 @@ return __p;
 define("tpl!common/templates/areyousure.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header">\n        <h5 class="modal-title">'+
+__p+='  <div class="modal-dialog" role="document">\r\n    <div class="modal-content">\r\n      <div class="modal-header">\r\n        <h5 class="modal-title">'+
 ((__t=(title))==null?'':_.escape(__t))+
-'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n      </div>\n      <div class="modal-body">\n        <p>'+
+'</h5>\r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class="modal-body">\r\n        <p>'+
 ((__t=(text))==null?'':_.escape(__t))+
-'</p>\n      </div>\n      <div class="modal-footer">\n        <button type="button" class="btn btn-primary js-yes">Yes</button>\n        <button type="button" class="btn btn-secondary js-no" data-dismiss="modal">No</button>\n      </div>\n    </div>\n  </div>\n';
+'</p>\r\n      </div>\r\n      <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-yes">Yes</button>\r\n        <button type="button" class="btn btn-secondary js-no" data-dismiss="modal">No</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n';
 }
 return __p;
 };});
@@ -24131,11 +24131,11 @@ return __p;
 define("tpl!common/templates/okdialog.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header">\n        <h5 class="modal-title">'+
+__p+='  <div class="modal-dialog" role="document">\r\n    <div class="modal-content">\r\n      <div class="modal-header">\r\n        <h5 class="modal-title">'+
 ((__t=(title))==null?'':_.escape(__t))+
-'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n      </div>\n      <div class="modal-body">\n        <p>'+
+'</h5>\r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class="modal-body">\r\n        <p>'+
 ((__t=(text))==null?'':_.escape(__t))+
-'</p>\n      </div>\n      <div class="modal-footer">\n        <button type="button" class="btn btn-primary js-ok" data-dismiss="modal">Ok</button>\n      </div>\n    </div>\n  </div>\n';
+'</p>\r\n      </div>\r\n      <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-ok" data-dismiss="modal">Ok</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n';
 }
 return __p;
 };});
@@ -24144,13 +24144,13 @@ return __p;
 define("tpl!common/templates/buttongroup.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n';
+__p+='\r\n';
  _.each(buttongroups, function(buttongroup) { 
-__p+='\n\n	<ul class=" stack-for-small button-group '+
+__p+='\r\n\r\n	<ul class=" stack-for-small button-group '+
 ((__t=(buttongroup.side))==null?'':_.escape(__t))+
-' ">\n\n	';
+' ">\r\n\r\n	';
  _.each(buttongroup.buttons, function(button) { 
-__p+='\n    <li> <a class="button small '+
+__p+='\r\n    <li> <a class="button small '+
 ((__t=( button.type ))==null?'':_.escape(__t))+
 '  '+
 ((__t=( button.selector ))==null?'':_.escape(__t))+
@@ -24160,11 +24160,11 @@ __p+='\n    <li> <a class="button small '+
 ((__t=( button.icon))==null?'':_.escape(__t))+
 '"></i> '+
 ((__t=(button.name))==null?'':__t)+
-' </a></li>\n	';
+' </a></li>\r\n	';
  }); 
-__p+='\n\n	</ul>\n\n';
+__p+='\r\n\r\n	</ul>\r\n\r\n';
  }); 
-__p+='\n';
+__p+='\r\n';
 }
 return __p;
 };});
@@ -24173,37 +24173,37 @@ return __p;
 define("tpl!common/templates/bginfo.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n<a class="close-reveal-modal">×</a> \n\n\n<h3> Image Reference: </h3>\n</br>\n\n\n<table id="table" class="table"  width="100%">\n\n<tbody>\n\n<tr><td><b>Filename:</b> '+
+__p+='\r\n\r\n<a class="close-reveal-modal">×</a> \r\n\r\n\r\n<h3> Image Reference: </h3>\r\n</br>\r\n\r\n\r\n<table id="table" class="table"  width="100%">\r\n\r\n<tbody>\r\n\r\n<tr><td><b>Filename:</b> '+
 ((__t=( original_name))==null?'':_.escape(__t))+
-'</td></tr>\n';
+'</td></tr>\r\n';
 if(collection!=""){
 __p+='  <tr> <td> <div><b>Collection:</b> '+
 ((__t=( collection))==null?'':_.escape(__t))+
 '</td></tr> ';
 }
-__p+=' \n';
+__p+=' \r\n';
 if(author!=""){
 __p+='  <tr> <td> <b>Author:</b> '+
 ((__t=(author))==null?'':_.escape(__t))+
 '</td></tr> ';
 }
-__p+=' \n';
+__p+=' \r\n';
 if(source!=""){
-__p+=' <tr> <td>\n	 ';
+__p+=' <tr> <td>\r\n	 ';
  if(source.indexOf("http")>-1) { 
-__p+='\n	 <a href="'+
+__p+='\r\n	 <a href="'+
 ((__t=(source))==null?'':_.escape(__t))+
 '" class="info_link"><b>Source:</b> '+
 ((__t=(source))==null?'':_.escape(__t))+
-'</a>\n	 ';
+'</a>\r\n	 ';
  } else { 
-__p+='\n	 <b>Source:</b> '+
+__p+='\r\n	 <b>Source:</b> '+
 ((__t=(source))==null?'':_.escape(__t))+
-'\n	 ';
+'\r\n	 ';
 }
-__p+='\n ';
+__p+='\r\n ';
  } 
-__p+='\n\n';
+__p+='\r\n\r\n';
 if(link!=""){
 __p+=' <tr> <td> <a href="'+
 ((__t=(link))==null?'':_.escape(__t))+
@@ -24211,7 +24211,7 @@ __p+=' <tr> <td> <a href="'+
 ((__t=(link))==null?'':_.escape(__t))+
 '</a></td> </tr>';
 }
-__p+=' \n\n\n</tbody>\n\n</table>\n\n <div class="line_parent">  \n        <div class="left_line_parent"><hr class="fancyline fancyline_left"/></div>  \n        <div class="center_line_parent">~</div>  \n        <div class="right_line_parent"><hr class="fancyline fancyline_right"/></div>\n </div>\n\n';
+__p+=' \r\n\r\n\r\n</tbody>\r\n\r\n</table>\r\n\r\n <div class="line_parent">  \r\n        <div class="left_line_parent"><hr class="fancyline fancyline_left"/></div>  \r\n        <div class="center_line_parent">~</div>  \r\n        <div class="right_line_parent"><hr class="fancyline fancyline_right"/></div>\r\n </div>\r\n\r\n';
 }
 return __p;
 };});
@@ -24220,7 +24220,7 @@ return __p;
 define("tpl!common/templates/footerpaneltemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="container">\n\n	 <div class="row">\n\n	<div class="col col-md-12">\n	<button class="btn back_btn js-back btn-primary hover"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\n\n\n	</div>\n	</div>\n\n</div>';
+__p+='<div class="container">\r\n\r\n	 <div class="row">\r\n\r\n	<div class="col col-md-12">\r\n	<button class="btn back_btn js-back btn-primary hover"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\r\n\r\n\r\n	</div>\r\n	</div>\r\n\r\n</div>';
 }
 return __p;
 };});
@@ -24229,29 +24229,29 @@ return __p;
 define("tpl!common/templates/confirm.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n';
+__p+='\r\n';
 
 if(asModal) {
 
-__p+='\n\n  <div class="modal-dialog" role="document">\n  <div class="modal-content">\n\n<div class="modal-header">\n        <h3 class="modal-title">'+
+__p+='\r\n\r\n  <div class="modal-dialog" role="document">\r\n  <div class="modal-content">\r\n\r\n<div class="modal-header">\r\n        <h3 class="modal-title">'+
 ((__t=(title))==null?'':_.escape(__t))+
-' </h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n';
+' </h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n';
  } 
-__p+='\n\n   <div class="small_headline_for_input"><small> <em>'+
+__p+='\r\n\r\n   <div class="small_headline_for_input"><small> <em>'+
 ((__t=(text))==null?'':__t)+
-'</em> </small></div> \n\n\n</div> \n\n';
+'</em> </small></div> \r\n\r\n\r\n</div> \r\n\r\n';
 
 if(asModal) {
 
-__p+='\n\n\n<div class="modal-footer">\n   <div class="role_item_container">\n    <button class="btn no_bg_btn  green-border hover js-confirm"> <i class="fa fa-check" aria-hidden="true"></i> Confirm</button>\n    <button class="btn no_bg_btn  red-border hover js-cancel"> <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>\n\n   </div>\n </div>\n';
+__p+='\r\n\r\n\r\n<div class="modal-footer">\r\n   <div class="role_item_container">\r\n    <button class="btn no_bg_btn  green-border hover js-confirm"> <i class="fa fa-check" aria-hidden="true"></i> Confirm</button>\r\n    <button class="btn no_bg_btn  red-border hover js-cancel"> <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>\r\n\r\n   </div>\r\n </div>\r\n';
  } 
-__p+='\n\n\n\n';
+__p+='\r\n\r\n\r\n\r\n';
 
 if(asModal) {
 
-__p+='\n\n  </div> \n\n  </div>\n  </div>\n\n';
+__p+='\r\n\r\n  </div> \r\n\r\n  </div>\r\n  </div>\r\n\r\n';
  } 
-__p+='\n';
+__p+='\r\n';
 }
 return __p;
 };});
@@ -24260,7 +24260,7 @@ return __p;
 define("tpl!common/templates/msgtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n<div class="container" style="margin-top: 35px">\n  <div id="'+
+__p+='\r\n<div class="container" style="margin-top: 35px">\r\n  <div id="'+
 ((__t=(id))==null?'':_.escape(__t))+
 '" class="alert alert-'+
 ((__t=(type))==null?'':_.escape(__t))+
@@ -24268,7 +24268,7 @@ __p+='\n<div class="container" style="margin-top: 35px">\n  <div id="'+
 ((__t=(role))==null?'':_.escape(__t))+
 '">'+
 ((__t=(message))==null?'':__t)+
-'\n  	  <button type="button" class="close js-close-msg">\n    <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\n  </button>\n  </div>\n</div>\n';
+'\r\n  	  <button type="button" class="close js-close-msg">\r\n    <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\r\n  </button>\r\n  </div>\r\n</div>\r\n';
 }
 return __p;
 };});
@@ -25000,7 +25000,7 @@ return Views;
 define("tpl!common/templates/maintemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="backdrop-region"> </div>\n<div id="header-region"> </div>\n<div id="main-region"> </div>\n\n<div id="footer-region"> </div>\n<div id="dialog-region"> </div>\n\n<div id="add-project-region"></div>\n<div id="add-book-region"></div>\n';
+__p+='<div id="backdrop-region"> </div>\r\n<div id="header-region"> </div>\r\n<div id="main-region"> </div>\r\n\r\n<div id="footer-region"> </div>\r\n<div id="dialog-region"> </div>\r\n\r\n<div id="add-project-region"></div>\r\n<div id="add-book-region"></div>\r\n';
 }
 return __p;
 };});
@@ -25009,7 +25009,7 @@ return __p;
 define("tpl!apps/header/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="navbar-region"></div>\n <div id="msg-region"></div>\n\n\n';
+__p+='<div id="navbar-region"></div>\r\n <div id="msg-region"></div>\r\n\r\n\r\n';
 }
 return __p;
 };});
@@ -25018,9 +25018,9 @@ return __p;
 define("tpl!apps/header/show/templates/navbar.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n<div class="text-center">\n<img class="rounded" src="assets/images/logo.jpg" style="margin: 15px;" />\n</div>\n\n\n<nav class="navbar navbar-expand-lg navbar-light bg-light">\n   <a class="navbar-brand" href="#home">PoCoWeb</a>\n  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">\n    <span class="navbar-toggler-icon"></span>\n  </button>\n\n\n  <div class="collapse navbar-collapse" id="navbarSupportedContent">\n     <ul class="navbar-nav mr-auto">\n      <li class="nav-item">\n        <a class="nav-link" href="#projects">Projects</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#users">Users</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#users/account">Account</a>\n      </li>\n      <li class="nav-item">\n        <a class="nav-link" href="#docs">Documentation</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#about">About</a>\n      </li>\n    </ul>\n\n     <ul class="navbar-nav my-2 my-lg-0 right-nav">\n       <li class="nav-item js-login">\n        <a class="nav-link" href="#"><i class="fas fa-sign-in-alt fa-sm"></i> Login</a>\n      </li>\n     \n    </ul>\n   <ul class="navbar-nav my-2 my-lg-0 version-nav">\n       <li class="nav-item">\n        <p class="navbar-text" style="margin:0;">Api-Version: '+
+__p+='\r\n\r\n<div class="text-center">\r\n<img class="rounded" src="assets/images/logo.jpg" style="margin: 15px;" />\r\n</div>\r\n\r\n\r\n<nav class="navbar navbar-expand-lg navbar-light bg-light">\r\n   <a class="navbar-brand" href="#home">PoCoWeb</a>\r\n  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">\r\n    <span class="navbar-toggler-icon"></span>\r\n  </button>\r\n\r\n\r\n  <div class="collapse navbar-collapse" id="navbarSupportedContent">\r\n     <ul class="navbar-nav mr-auto">\r\n      <li class="nav-item">\r\n        <a class="nav-link" href="#projects">Projects</a>\r\n      </li>\r\n       <li class="nav-item">\r\n        <a class="nav-link" href="#users">Users</a>\r\n      </li>\r\n       <li class="nav-item">\r\n        <a class="nav-link" href="#users/account">Account</a>\r\n      </li>\r\n      <li class="nav-item">\r\n        <a class="nav-link" href="#docs">Documentation</a>\r\n      </li>\r\n       <li class="nav-item">\r\n        <a class="nav-link" href="#about">About</a>\r\n      </li>\r\n    </ul>\r\n\r\n     <ul class="navbar-nav my-2 my-lg-0 right-nav">\r\n       <li class="nav-item js-login">\r\n        <a class="nav-link" href="#"><i class="fas fa-sign-in-alt fa-sm"></i> Login</a>\r\n      </li>\r\n     \r\n    </ul>\r\n   <ul class="navbar-nav my-2 my-lg-0 version-nav">\r\n       <li class="nav-item">\r\n        <p class="navbar-text" style="margin:0;">Api-Version: '+
 ((__t=(version))==null?'':_.escape(__t))+
-'</p>\n      </li>\n    </ul>\n  </div>\n</nav>\n\n\n\n\n\n\n';
+'</p>\r\n      </li>\r\n    </ul>\r\n  </div>\r\n</nav>\r\n\r\n\r\n\r\n\r\n\r\n\r\n';
 }
 return __p;
 };});
@@ -25103,7 +25103,7 @@ return Show;
 define("tpl!apps/users/login/templates/loginform.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n<div class="modal fade" id="loginModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\n <div class="modal-dialog">\n <div class="modal-content">\n      <div class="modal-header">\n            <legend>Login</legend>\n              <div class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\n        </div>\n      </div>\n       <div class="modal-body">\n<form>\n  <div class="form-group">\n    <label for="email">Email address</label>\n    <input type="email" class="form-control" id="email" name="email"aria-describedby="emailHelp" placeholder="Enter email">\n  </div>\n  <div class="form-group">\n    <label for="password">Password</label>\n    <input type="password" class="form-control" name="password" id="password" placeholder="Password">\n  </div>\n\n  <button type="submit" class="btn btn-primary js-loginsubmit">Submit</button>\n</form>\n</div>\n</div>\n\n</div>\n</div>\n\n';
+__p+='\r\n<div class="modal fade" id="loginModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\r\n <div class="modal-dialog">\r\n <div class="modal-content">\r\n      <div class="modal-header">\r\n            <legend>Login</legend>\r\n              <div class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\r\n        </div>\r\n      </div>\r\n       <div class="modal-body">\r\n<form>\r\n  <div class="form-group">\r\n    <label for="email">Email address</label>\r\n    <input type="email" class="form-control" id="email" name="email"aria-describedby="emailHelp" placeholder="Enter email">\r\n  </div>\r\n  <div class="form-group">\r\n    <label for="password">Password</label>\r\n    <input type="password" class="form-control" name="password" id="password" placeholder="Password">\r\n  </div>\r\n\r\n  <button type="submit" class="btn btn-primary js-loginsubmit">Submit</button>\r\n</form>\r\n</div>\r\n</div>\r\n\r\n</div>\r\n</div>\r\n\r\n';
 }
 return __p;
 };});
@@ -26206,7 +26206,7 @@ define('apps/header/header_app',["marionette","app"], function(Marionette,IPS_Ap
 define("tpl!apps/home/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='    \n    <div id="hl-region"></div>\n    <div id="hub-region"></div>\n';
+__p+='    \r\n    <div id="hl-region"></div>\r\n    <div id="hub-region"></div>\r\n';
 }
 return __p;
 };});
@@ -26215,7 +26215,7 @@ return __p;
 define("tpl!apps/home/show/templates/header.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n<div class="container">\n\n<div style="text-align: center;">\n\n<h1 style="padding: 15px; margin-bottom: 50px;margin-top: 30px">PoCoWeb - Post Correction Web </h1>\n\n</div>\n\n</div>';
+__p+='\r\n<div class="container">\r\n\r\n<div style="text-align: center;">\r\n\r\n<h1 style="padding: 15px; margin-bottom: 50px;margin-top: 30px">PoCoWeb - Post Correction Web </h1>\r\n\r\n</div>\r\n\r\n</div>';
 }
 return __p;
 };});
@@ -26386,7 +26386,7 @@ define('apps/home/home_app',["marionette","app"], function(Marionette,App){
 define("tpl!apps/footer/show/templates/footer.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="col-md-12">\n<hr>\n<footer class="footer">\n	<div class="text-muted footer-line text-center">\n		<a href="#">Back to top <i class="fas fa-angle-up fa-lg"></i></a>\n	</div>\n	<div class="text-muted footer-line text-center">\n		Designed and built by the\n		<a target="_blank" href="http://cis.uni-muenchen.de">\n		Centrum für Informations- und Sprachverarbeitung (CIS)</a>.\n	</div>\n	<div class="text-muted footer-line text-center">\n		Code licensed under <a href="LICENSE">Apache-2.0</a>.\n		Documentation licensed under <a href="LICENSE">Apache-2.0</a>.\n	</div>\n	<div class="text-muted footer-line text-center">\n		This website uses cookies.\n	</div>\n</footer>\n</div>';
+__p+='<div class="col-md-12">\r\n<hr>\r\n<footer class="footer">\r\n	<div class="text-muted footer-line text-center">\r\n		<a href="#">Back to top <i class="fas fa-angle-up fa-lg"></i></a>\r\n	</div>\r\n	<div class="text-muted footer-line text-center">\r\n		Designed and built by the\r\n		<a target="_blank" href="http://cis.uni-muenchen.de">\r\n		Centrum für Informations- und Sprachverarbeitung (CIS)</a>.\r\n	</div>\r\n	<div class="text-muted footer-line text-center">\r\n		Code licensed under <a href="LICENSE">Apache-2.0</a>.\r\n		Documentation licensed under <a href="LICENSE">Apache-2.0</a>.\r\n	</div>\r\n	<div class="text-muted footer-line text-center">\r\n		This website uses cookies.\r\n	</div>\r\n</footer>\r\n</div>';
 }
 return __p;
 };});
@@ -26459,50 +26459,50 @@ define('apps/footer/footer_app',["marionette","app"], function(Marionette,IPS_Ap
 define("tpl!apps/projects/common/templates/projectform.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n\n';
+__p+='\r\n\r\n\r\n';
 
 if(asModal) {
 
-__p+='\n\n  <div class="modal-dialog modal-lg" role="document">\n  <div class="modal-content">\n\n<div class="modal-header red-border-bottom">\n        <h3 class="modal-title">'+
+__p+='\r\n\r\n  <div class="modal-dialog modal-lg" role="document">\r\n  <div class="modal-content">\r\n\r\n<div class="modal-header red-border-bottom">\r\n        <h3 class="modal-title">'+
 ((__t=(text))==null?'':_.escape(__t))+
-' </h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n<div class="loading_background" style="display: none;">\n         <i class="fas fa-sync fa-spin fa-3x fa-fw"></i>\n         <div class="loading_text_parent">\n           <div class="loading_text"> '+
+' </h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n<div class="loading_background" style="display: none;">\r\n         <i class="fas fa-sync fa-spin fa-3x fa-fw"></i>\r\n         <div class="loading_text_parent">\r\n           <div class="loading_text"> '+
 ((__t=(loading_text))==null?'':_.escape(__t))+
-' </div>\n         </div>\n</div>\n\n';
+' </div>\r\n         </div>\r\n</div>\r\n\r\n';
  } 
-__p+='\n\n<form id="uploadForm">\n\n';
+__p+='\r\n\r\n<form id="uploadForm">\r\n\r\n';
  if(!add_book) { 
-__p+='\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="title">Title</label>\n    <input class="form-control" type="text" value="'+
+__p+='\r\n\r\n<div class="form-group row">\r\n  <div class="col-4">\r\n    <label for="title">Title</label>\r\n    <input class="form-control" type="text" value="'+
 ((__t=(title))==null?'':_.escape(__t))+
-'" id="title" name="title">\n  </div>\n   <div class="col-4">\n  <label for="author">Author</label>\n    <input class="form-control" type="text" value="'+
+'" id="title" name="title">\r\n  </div>\r\n   <div class="col-4">\r\n  <label for="author">Author</label>\r\n    <input class="form-control" type="text" value="'+
 ((__t=(author))==null?'':_.escape(__t))+
-'" id="author" name="author">\n  </div>\n\n</div>\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="language">Language</label>\n    <select class="form-control" type="text" value="'+
+'" id="author" name="author">\r\n  </div>\r\n\r\n</div>\r\n\r\n<div class="form-group row">\r\n  <div class="col-4">\r\n    <label for="language">Language</label>\r\n    <select class="form-control" type="text" value="'+
 ((__t=(language))==null?'':_.escape(__t))+
-'" id="language" name="language">\n     ';
+'" id="language" name="language">\r\n     ';
 
      _.each(languages, function(language) { 
-__p+='\n        <option>'+
+__p+='\r\n        <option>'+
 ((__t=(language))==null?'':_.escape(__t))+
-'</option>\n     ';
+'</option>\r\n     ';
  }); 
-__p+='\n    </select>\n  </div>\n <div class="col-4">\n    <label for="year">Year of publication</label>\n    <input class="form-control" type="text" value="'+
+__p+='\r\n    </select>\r\n  </div>\r\n <div class="col-4">\r\n    <label for="year">Year of publication</label>\r\n    <input class="form-control" type="text" value="'+
 ((__t=(year))==null?'':_.escape(__t))+
-'" id="year" name="year" placeholder="2018">\n  </div>\n <div class="col-4">\n    <label for="year">Profiler URL</label><small> (use default if in doubt)</small>\n    <input class="form-control" type="text" value="'+
+'" id="year" name="year" placeholder="2018">\r\n  </div>\r\n <div class="col-4">\r\n    <label for="year">Profiler URL</label><small> (use default if in doubt)</small>\r\n    <input class="form-control" type="text" value="'+
 ((__t=(profilerUrl))==null?'':_.escape(__t))+
-'" id="profilerUrl" name="profilerUrl" placeholder="default">\n  </div>\n  </div>\n\n';
+'" id="profilerUrl" name="profilerUrl" placeholder="default">\r\n  </div>\r\n  </div>\r\n\r\n';
  } 
-__p+='\n\n';
+__p+='\r\n\r\n';
  if(!edit_project) { 
-__p+='\n\n\n<label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">\n <i class="fas fa-file-upload"></i> Upload data (.zip)\n</label>\n<input id="file-upload" type="file" name="archive" style="display:none">\n\n<div id="selected_file"></div>\n <button class="btn btn-primary js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>\n\n\n';
+__p+='\r\n\r\n\r\n<label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">\r\n <i class="fas fa-file-upload"></i> Upload data (.zip)\r\n</label>\r\n<input id="file-upload" type="file" name="archive" style="display:none">\r\n\r\n<div id="selected_file"></div>\r\n <button class="btn btn-primary js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>\r\n\r\n\r\n';
  } else { 
-__p+='\n\n <button class="btn btn-primary js-edit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Update</button>\n\n';
+__p+='\r\n\r\n <button class="btn btn-primary js-edit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Update</button>\r\n\r\n';
  } 
-__p+='\n\n</form>\n\n\n\n';
+__p+='\r\n\r\n</form>\r\n\r\n\r\n\r\n';
 
 if(asModal) {
 
-__p+='\n\n  </div> \n\n\n\n <div class="modal-footer">\n </div>\n\n\n\n  </div>\n  </div>\n\n';
+__p+='\r\n\r\n  </div> \r\n\r\n\r\n\r\n <div class="modal-footer">\r\n </div>\r\n\r\n\r\n\r\n  </div>\r\n  </div>\r\n\r\n';
  } 
-__p+='\n';
+__p+='\r\n';
 }
 return __p;
 };});
@@ -26718,429 +26718,6 @@ return Views;
 },handleBodyMousedown:function(a){this.lastMousedownTarget=a.target},handleInput:function(a){this.updateInput(a.currentTarget,a)},handleClick:function(a){this.triggerCustomEvent("editableClick",a,a.currentTarget)},handleBlur:function(a){this.triggerCustomEvent("editableBlur",a,a.currentTarget)},handleKeypress:function(a){if(this.triggerCustomEvent("editableKeypress",a,a.currentTarget),this.keypressUpdateInput){var b={target:a.target,currentTarget:a.currentTarget};setTimeout(function(){this.updateInput(b.currentTarget,b)}.bind(this),0)}},handleKeyup:function(a){this.triggerCustomEvent("editableKeyup",a,a.currentTarget)},handleMouseover:function(a){this.triggerCustomEvent("editableMouseover",a,a.currentTarget)},handleDragging:function(a){this.triggerCustomEvent("editableDrag",a,a.currentTarget)},handleDrop:function(a){this.triggerCustomEvent("editableDrop",a,a.currentTarget)},handlePaste:function(a){this.triggerCustomEvent("editablePaste",a,a.currentTarget)},handleKeydown:function(b){return this.triggerCustomEvent("editableKeydown",b,b.currentTarget),a.util.isKey(b,a.util.keyCode.SPACE)?this.triggerCustomEvent("editableKeydownSpace",b,b.currentTarget):a.util.isKey(b,a.util.keyCode.ENTER)||b.ctrlKey&&a.util.isKey(b,a.util.keyCode.M)?this.triggerCustomEvent("editableKeydownEnter",b,b.currentTarget):a.util.isKey(b,a.util.keyCode.TAB)?this.triggerCustomEvent("editableKeydownTab",b,b.currentTarget):a.util.isKey(b,[a.util.keyCode.DELETE,a.util.keyCode.BACKSPACE])?this.triggerCustomEvent("editableKeydownDelete",b,b.currentTarget):void 0}},a.Events=c}(),function(){var b=a.Extension.extend({action:void 0,aria:void 0,tagNames:void 0,style:void 0,useQueryState:void 0,contentDefault:void 0,contentFA:void 0,classList:void 0,attrs:void 0,constructor:function(c){b.isBuiltInButton(c)?a.Extension.call(this,this.defaults[c]):a.Extension.call(this,c)},init:function(){a.Extension.prototype.init.apply(this,arguments),this.button=this.createButton(),this.on(this.button,"click",this.handleClick.bind(this))},getButton:function(){return this.button},getAction:function(){return"function"==typeof this.action?this.action(this.base.options):this.action},getAria:function(){return"function"==typeof this.aria?this.aria(this.base.options):this.aria},getTagNames:function(){return"function"==typeof this.tagNames?this.tagNames(this.base.options):this.tagNames},createButton:function(){var a=this.document.createElement("button"),b=this.contentDefault,c=this.getAria(),d=this.getEditorOption("buttonLabels");return a.classList.add("medium-editor-action"),a.classList.add("medium-editor-action-"+this.name),this.classList&&this.classList.forEach(function(b){a.classList.add(b)}),a.setAttribute("data-action",this.getAction()),c&&(a.setAttribute("title",c),a.setAttribute("aria-label",c)),this.attrs&&Object.keys(this.attrs).forEach(function(b){a.setAttribute(b,this.attrs[b])},this),"fontawesome"===d&&this.contentFA&&(b=this.contentFA),a.innerHTML=b,a},handleClick:function(a){a.preventDefault(),a.stopPropagation();var b=this.getAction();b&&this.execAction(b)},isActive:function(){return this.button.classList.contains(this.getEditorOption("activeButtonClass"))},setInactive:function(){this.button.classList.remove(this.getEditorOption("activeButtonClass")),delete this.knownState},setActive:function(){this.button.classList.add(this.getEditorOption("activeButtonClass")),delete this.knownState},queryCommandState:function(){var a=null;return this.useQueryState&&(a=this.base.queryCommandState(this.getAction())),a},isAlreadyApplied:function(a){var b,c,d=!1,e=this.getTagNames();return this.knownState===!1||this.knownState===!0?this.knownState:(e&&e.length>0&&(d=-1!==e.indexOf(a.nodeName.toLowerCase())),!d&&this.style&&(b=this.style.value.split("|"),c=this.window.getComputedStyle(a,null).getPropertyValue(this.style.prop),b.forEach(function(a){this.knownState||(d=-1!==c.indexOf(a),(d||"text-decoration"!==this.style.prop)&&(this.knownState=d))},this)),d)}});b.isBuiltInButton=function(b){return"string"==typeof b&&a.extensions.button.prototype.defaults.hasOwnProperty(b)},a.extensions.button=b}(),function(){a.extensions.button.prototype.defaults={bold:{name:"bold",action:"bold",aria:"bold",tagNames:["b","strong"],style:{prop:"font-weight",value:"700|bold"},useQueryState:!0,contentDefault:"<b>B</b>",contentFA:'<i class="fa fa-bold"></i>'},italic:{name:"italic",action:"italic",aria:"italic",tagNames:["i","em"],style:{prop:"font-style",value:"italic"},useQueryState:!0,contentDefault:"<b><i>I</i></b>",contentFA:'<i class="fa fa-italic"></i>'},underline:{name:"underline",action:"underline",aria:"underline",tagNames:["u"],style:{prop:"text-decoration",value:"underline"},useQueryState:!0,contentDefault:"<b><u>U</u></b>",contentFA:'<i class="fa fa-underline"></i>'},strikethrough:{name:"strikethrough",action:"strikethrough",aria:"strike through",tagNames:["strike"],style:{prop:"text-decoration",value:"line-through"},useQueryState:!0,contentDefault:"<s>A</s>",contentFA:'<i class="fa fa-strikethrough"></i>'},superscript:{name:"superscript",action:"superscript",aria:"superscript",tagNames:["sup"],contentDefault:"<b>x<sup>1</sup></b>",contentFA:'<i class="fa fa-superscript"></i>'},subscript:{name:"subscript",action:"subscript",aria:"subscript",tagNames:["sub"],contentDefault:"<b>x<sub>1</sub></b>",contentFA:'<i class="fa fa-subscript"></i>'},image:{name:"image",action:"image",aria:"image",tagNames:["img"],contentDefault:"<b>image</b>",contentFA:'<i class="fa fa-picture-o"></i>'},html:{name:"html",action:"html",aria:"evaluate html",tagNames:["iframe","object"],contentDefault:"<b>html</b>",contentFA:'<i class="fa fa-code"></i>'},orderedlist:{name:"orderedlist",action:"insertorderedlist",aria:"ordered list",tagNames:["ol"],useQueryState:!0,contentDefault:"<b>1.</b>",contentFA:'<i class="fa fa-list-ol"></i>'},unorderedlist:{name:"unorderedlist",action:"insertunorderedlist",aria:"unordered list",tagNames:["ul"],useQueryState:!0,contentDefault:"<b>&bull;</b>",contentFA:'<i class="fa fa-list-ul"></i>'},indent:{name:"indent",action:"indent",aria:"indent",tagNames:[],contentDefault:"<b>&rarr;</b>",contentFA:'<i class="fa fa-indent"></i>'},outdent:{name:"outdent",action:"outdent",aria:"outdent",tagNames:[],contentDefault:"<b>&larr;</b>",contentFA:'<i class="fa fa-outdent"></i>'},justifyCenter:{name:"justifyCenter",action:"justifyCenter",aria:"center justify",tagNames:[],style:{prop:"text-align",value:"center"},contentDefault:"<b>C</b>",contentFA:'<i class="fa fa-align-center"></i>'},justifyFull:{name:"justifyFull",action:"justifyFull",aria:"full justify",tagNames:[],style:{prop:"text-align",value:"justify"},contentDefault:"<b>J</b>",contentFA:'<i class="fa fa-align-justify"></i>'},justifyLeft:{name:"justifyLeft",action:"justifyLeft",aria:"left justify",tagNames:[],style:{prop:"text-align",value:"left"},contentDefault:"<b>L</b>",contentFA:'<i class="fa fa-align-left"></i>'},justifyRight:{name:"justifyRight",action:"justifyRight",aria:"right justify",tagNames:[],style:{prop:"text-align",value:"right"},contentDefault:"<b>R</b>",contentFA:'<i class="fa fa-align-right"></i>'},removeFormat:{name:"removeFormat",aria:"remove formatting",action:"removeFormat",contentDefault:"<b>X</b>",contentFA:'<i class="fa fa-eraser"></i>'},quote:{name:"quote",action:"append-blockquote",aria:"blockquote",tagNames:["blockquote"],contentDefault:"<b>&ldquo;</b>",contentFA:'<i class="fa fa-quote-right"></i>'},pre:{name:"pre",action:"append-pre",aria:"preformatted text",tagNames:["pre"],contentDefault:"<b>0101</b>",contentFA:'<i class="fa fa-code fa-lg"></i>'},h1:{name:"h1",action:"append-h1",aria:"header type one",tagNames:["h1"],contentDefault:"<b>H1</b>",contentFA:'<i class="fa fa-header"><sup>1</sup>'},h2:{name:"h2",action:"append-h2",aria:"header type two",tagNames:["h2"],contentDefault:"<b>H2</b>",contentFA:'<i class="fa fa-header"><sup>2</sup>'},h3:{name:"h3",action:"append-h3",aria:"header type three",tagNames:["h3"],contentDefault:"<b>H3</b>",contentFA:'<i class="fa fa-header"><sup>3</sup>'},h4:{name:"h4",action:"append-h4",aria:"header type four",tagNames:["h4"],contentDefault:"<b>H4</b>",contentFA:'<i class="fa fa-header"><sup>4</sup>'},h5:{name:"h5",action:"append-h5",aria:"header type five",tagNames:["h5"],contentDefault:"<b>H5</b>",contentFA:'<i class="fa fa-header"><sup>5</sup>'},h6:{name:"h6",action:"append-h6",aria:"header type six",tagNames:["h6"],contentDefault:"<b>H6</b>",contentFA:'<i class="fa fa-header"><sup>6</sup>'}}}(),function(){var b=a.extensions.button.extend({init:function(){a.extensions.button.prototype.init.apply(this,arguments)},formSaveLabel:"&#10003;",formCloseLabel:"&times;",activeClass:"medium-editor-toolbar-form-active",hasForm:!0,getForm:function(){},isDisplayed:function(){return this.hasForm?this.getForm().classList.contains(this.activeClass):!1},showForm:function(){this.hasForm&&this.getForm().classList.add(this.activeClass)},hideForm:function(){this.hasForm&&this.getForm().classList.remove(this.activeClass)},showToolbarDefaultActions:function(){var a=this.base.getExtensionByName("toolbar");a&&a.showToolbarDefaultActions()},hideToolbarDefaultActions:function(){var a=this.base.getExtensionByName("toolbar");a&&a.hideToolbarDefaultActions()},setToolbarPosition:function(){var a=this.base.getExtensionByName("toolbar");a&&a.setToolbarPosition()}});a.extensions.form=b}(),function(){var b=a.extensions.form.extend({customClassOption:null,customClassOptionText:"Button",linkValidation:!1,placeholderText:"Paste or type a link",targetCheckbox:!1,targetCheckboxText:"Open in new window",name:"anchor",action:"createLink",aria:"link",tagNames:["a"],contentDefault:"<b>#</b>",contentFA:'<i class="fa fa-link"></i>',init:function(){a.extensions.form.prototype.init.apply(this,arguments),this.subscribe("editableKeydown",this.handleKeydown.bind(this))},handleClick:function(b){b.preventDefault(),b.stopPropagation();var c=a.selection.getSelectionRange(this.document);return"a"===c.startContainer.nodeName.toLowerCase()||"a"===c.endContainer.nodeName.toLowerCase()||a.util.getClosestTag(a.selection.getSelectedParentElement(c),"a")?this.execAction("unlink"):(this.isDisplayed()||this.showForm(),!1)},handleKeydown:function(b){a.util.isKey(b,a.util.keyCode.K)&&a.util.isMetaCtrlKey(b)&&!b.shiftKey&&this.handleClick(b)},getForm:function(){return this.form||(this.form=this.createForm()),this.form},getTemplate:function(){var a=['<input type="text" class="medium-editor-toolbar-input" placeholder="',this.placeholderText,'">'];return a.push('<a href="#" class="medium-editor-toolbar-save">',"fontawesome"===this.getEditorOption("buttonLabels")?'<i class="fa fa-check"></i>':this.formSaveLabel,"</a>"),a.push('<a href="#" class="medium-editor-toolbar-close">',"fontawesome"===this.getEditorOption("buttonLabels")?'<i class="fa fa-times"></i>':this.formCloseLabel,"</a>"),this.targetCheckbox&&a.push('<div class="medium-editor-toolbar-form-row">','<input type="checkbox" class="medium-editor-toolbar-anchor-target" id="medium-editor-toolbar-anchor-target-field-'+this.getEditorId()+'">','<label for="medium-editor-toolbar-anchor-target-field-'+this.getEditorId()+'">',this.targetCheckboxText,"</label>","</div>"),this.customClassOption&&a.push('<div class="medium-editor-toolbar-form-row">','<input type="checkbox" class="medium-editor-toolbar-anchor-button">',"<label>",this.customClassOptionText,"</label>","</div>"),a.join("")},isDisplayed:function(){return a.extensions.form.prototype.isDisplayed.apply(this)},hideForm:function(){a.extensions.form.prototype.hideForm.apply(this),this.getInput().value=""},showForm:function(b){var c=this.getInput(),d=this.getAnchorTargetCheckbox(),e=this.getAnchorButtonCheckbox();if(b=b||{value:""},"string"==typeof b&&(b={value:b}),this.base.saveSelection(),this.hideToolbarDefaultActions(),a.extensions.form.prototype.showForm.apply(this),this.setToolbarPosition(),c.value=b.value,c.focus(),d&&(d.checked="_blank"===b.target),e){var f=b.buttonClass?b.buttonClass.split(" "):[];e.checked=-1!==f.indexOf(this.customClassOption)}},destroy:function(){return this.form?(this.form.parentNode&&this.form.parentNode.removeChild(this.form),void delete this.form):!1},getFormOpts:function(){var a=this.getAnchorTargetCheckbox(),b=this.getAnchorButtonCheckbox(),c={value:this.getInput().value.trim()};return this.linkValidation&&(c.value=this.checkLinkFormat(c.value)),c.target="_self",a&&a.checked&&(c.target="_blank"),b&&b.checked&&(c.buttonClass=this.customClassOption),c},doFormSave:function(){var a=this.getFormOpts();this.completeFormSave(a)},completeFormSave:function(a){this.base.restoreSelection(),this.execAction(this.action,a),this.base.checkSelection()},ensureEncodedUri:function(a){return a===decodeURI(a)?encodeURI(a):a},ensureEncodedUriComponent:function(a){return a===decodeURIComponent(a)?encodeURIComponent(a):a},ensureEncodedParam:function(a){var b=a.split("="),c=b[0],d=b[1];return c+(void 0===d?"":"="+this.ensureEncodedUriComponent(d))},ensureEncodedQuery:function(a){return a.split("&").map(this.ensureEncodedParam.bind(this)).join("&")},checkLinkFormat:function(a){var b=/^([a-z]+:)?\/\/|^(mailto|tel|maps):|^\#/i,c=b.test(a),d="",e=/^\+?\s?\(?(?:\d\s?\-?\)?){3,20}$/,f=a.match(/^(.*?)(?:\?(.*?))?(?:#(.*))?$/),g=f[1],h=f[2],i=f[3];if(e.test(a))return"tel:"+a;if(!c){var j=g.split("/")[0];(j.match(/.+(\.|:).+/)||"localhost"===j)&&(d="http://")}return d+this.ensureEncodedUri(g)+(void 0===h?"":"?"+this.ensureEncodedQuery(h))+(void 0===i?"":"#"+i)},doFormCancel:function(){this.base.restoreSelection(),this.base.checkSelection()},attachFormEvents:function(a){var b=a.querySelector(".medium-editor-toolbar-close"),c=a.querySelector(".medium-editor-toolbar-save"),d=a.querySelector(".medium-editor-toolbar-input");this.on(a,"click",this.handleFormClick.bind(this)),this.on(d,"keyup",this.handleTextboxKeyup.bind(this)),this.on(b,"click",this.handleCloseClick.bind(this)),this.on(c,"click",this.handleSaveClick.bind(this),!0)},createForm:function(){var a=this.document,b=a.createElement("div");return b.className="medium-editor-toolbar-form",b.id="medium-editor-toolbar-form-anchor-"+this.getEditorId(),b.innerHTML=this.getTemplate(),this.attachFormEvents(b),b},getInput:function(){return this.getForm().querySelector("input.medium-editor-toolbar-input")},getAnchorTargetCheckbox:function(){return this.getForm().querySelector(".medium-editor-toolbar-anchor-target")},getAnchorButtonCheckbox:function(){return this.getForm().querySelector(".medium-editor-toolbar-anchor-button")},handleTextboxKeyup:function(b){return b.keyCode===a.util.keyCode.ENTER?(b.preventDefault(),void this.doFormSave()):void(b.keyCode===a.util.keyCode.ESCAPE&&(b.preventDefault(),this.doFormCancel()))},handleFormClick:function(a){a.stopPropagation()},handleSaveClick:function(a){a.preventDefault(),this.doFormSave()},handleCloseClick:function(a){a.preventDefault(),this.doFormCancel()}});a.extensions.anchor=b}(),function(){var b=a.Extension.extend({name:"anchor-preview",hideDelay:500,previewValueSelector:"a",showWhenToolbarIsVisible:!1,showOnEmptyLinks:!0,init:function(){this.anchorPreview=this.createPreview(),this.getEditorOption("elementsContainer").appendChild(this.anchorPreview),this.attachToEditables()},getInteractionElements:function(){return this.getPreviewElement()},getPreviewElement:function(){return this.anchorPreview},createPreview:function(){var a=this.document.createElement("div");return a.id="medium-editor-anchor-preview-"+this.getEditorId(),a.className="medium-editor-anchor-preview",a.innerHTML=this.getTemplate(),this.on(a,"click",this.handleClick.bind(this)),a},getTemplate:function(){return'<div class="medium-editor-toolbar-anchor-preview" id="medium-editor-toolbar-anchor-preview">    <a class="medium-editor-toolbar-anchor-preview-inner"></a></div>'},destroy:function(){this.anchorPreview&&(this.anchorPreview.parentNode&&this.anchorPreview.parentNode.removeChild(this.anchorPreview),delete this.anchorPreview)},hidePreview:function(){this.anchorPreview&&this.anchorPreview.classList.remove("medium-editor-anchor-preview-active"),this.activeAnchor=null},showPreview:function(a){return this.anchorPreview.classList.contains("medium-editor-anchor-preview-active")||a.getAttribute("data-disable-preview")?!0:(this.previewValueSelector&&(this.anchorPreview.querySelector(this.previewValueSelector).textContent=a.attributes.href.value,this.anchorPreview.querySelector(this.previewValueSelector).href=a.attributes.href.value),this.anchorPreview.classList.add("medium-toolbar-arrow-over"),this.anchorPreview.classList.remove("medium-toolbar-arrow-under"),this.anchorPreview.classList.contains("medium-editor-anchor-preview-active")||this.anchorPreview.classList.add("medium-editor-anchor-preview-active"),this.activeAnchor=a,this.positionPreview(),this.attachPreviewHandlers(),this)},positionPreview:function(a){a=a||this.activeAnchor;var b,c,d,e,f,g=this.window.innerWidth,h=this.anchorPreview.offsetHeight,i=a.getBoundingClientRect(),j=this.diffLeft,k=this.diffTop,l=this.getEditorOption("elementsContainer"),m=["absolute","fixed"].indexOf(window.getComputedStyle(l).getPropertyValue("position"))>-1,n={};b=this.anchorPreview.offsetWidth/2;var o=this.base.getExtensionByName("toolbar");o&&(j=o.diffLeft,k=o.diffTop),c=j-b,m?(e=l.getBoundingClientRect(),["top","left"].forEach(function(a){n[a]=i[a]-e[a]}),n.width=i.width,n.height=i.height,i=n,g=e.width,f=l.scrollTop):f=this.window.pageYOffset,d=i.left+i.width/2,f+=h+i.top+i.height-k-this.anchorPreview.offsetHeight,this.anchorPreview.style.top=Math.round(f)+"px",this.anchorPreview.style.right="initial",b>d?(this.anchorPreview.style.left=c+b+"px",this.anchorPreview.style.right="initial"):b>g-d?(this.anchorPreview.style.left="auto",this.anchorPreview.style.right=0):(this.anchorPreview.style.left=c+d+"px",this.anchorPreview.style.right="initial")},attachToEditables:function(){this.subscribe("editableMouseover",this.handleEditableMouseover.bind(this)),this.subscribe("positionedToolbar",this.handlePositionedToolbar.bind(this))},handlePositionedToolbar:function(){this.showWhenToolbarIsVisible||this.hidePreview()},handleClick:function(a){var b=this.base.getExtensionByName("anchor"),c=this.activeAnchor;b&&c&&(a.preventDefault(),this.base.selectElement(this.activeAnchor),this.base.delay(function(){if(c){var a={value:c.attributes.href.value,target:c.getAttribute("target"),buttonClass:c.getAttribute("class")};b.showForm(a),c=null}}.bind(this))),this.hidePreview()},handleAnchorMouseout:function(){this.anchorToPreview=null,this.off(this.activeAnchor,"mouseout",this.instanceHandleAnchorMouseout),this.instanceHandleAnchorMouseout=null},handleEditableMouseover:function(b){var c=a.util.getClosestTag(b.target,"a");if(!1!==c){if(!this.showOnEmptyLinks&&(!/href=["']\S+["']/.test(c.outerHTML)||/href=["']#\S+["']/.test(c.outerHTML)))return!0;var d=this.base.getExtensionByName("toolbar");if(!this.showWhenToolbarIsVisible&&d&&d.isDisplayed&&d.isDisplayed())return!0;this.activeAnchor&&this.activeAnchor!==c&&this.detachPreviewHandlers(),this.anchorToPreview=c,this.instanceHandleAnchorMouseout=this.handleAnchorMouseout.bind(this),this.on(this.anchorToPreview,"mouseout",this.instanceHandleAnchorMouseout),this.base.delay(function(){this.anchorToPreview&&this.showPreview(this.anchorToPreview)}.bind(this))}},handlePreviewMouseover:function(){this.lastOver=(new Date).getTime(),this.hovering=!0},handlePreviewMouseout:function(a){a.relatedTarget&&/anchor-preview/.test(a.relatedTarget.className)||(this.hovering=!1)},updatePreview:function(){if(this.hovering)return!0;var a=(new Date).getTime()-this.lastOver;a>this.hideDelay&&this.detachPreviewHandlers()},detachPreviewHandlers:function(){clearInterval(this.intervalTimer),this.instanceHandlePreviewMouseover&&(this.off(this.anchorPreview,"mouseover",this.instanceHandlePreviewMouseover),this.off(this.anchorPreview,"mouseout",this.instanceHandlePreviewMouseout),this.activeAnchor&&(this.off(this.activeAnchor,"mouseover",this.instanceHandlePreviewMouseover),this.off(this.activeAnchor,"mouseout",this.instanceHandlePreviewMouseout))),this.hidePreview(),this.hovering=this.instanceHandlePreviewMouseover=this.instanceHandlePreviewMouseout=null},attachPreviewHandlers:function(){this.lastOver=(new Date).getTime(),this.hovering=!0,this.instanceHandlePreviewMouseover=this.handlePreviewMouseover.bind(this),this.instanceHandlePreviewMouseout=this.handlePreviewMouseout.bind(this),this.intervalTimer=setInterval(this.updatePreview.bind(this),200),this.on(this.anchorPreview,"mouseover",this.instanceHandlePreviewMouseover),this.on(this.anchorPreview,"mouseout",this.instanceHandlePreviewMouseout),this.on(this.activeAnchor,"mouseover",this.instanceHandlePreviewMouseover),this.on(this.activeAnchor,"mouseout",this.instanceHandlePreviewMouseout)}});a.extensions.anchorPreview=b}(),function(){function b(b){return!a.util.getClosestTag(b,"a")}var c,d,e,f,g;c=[" ","	","\n","\r"," "," "," "," "," ","\u2028","\u2029"],d="com|net|org|edu|gov|mil|aero|asia|biz|cat|coop|info|int|jobs|mobi|museum|name|post|pro|tel|travel|xxx|ac|ad|ae|af|ag|ai|al|am|an|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|cr|cs|cu|cv|cx|cy|cz|dd|de|dj|dk|dm|do|dz|ec|ee|eg|eh|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|mz|na|nc|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|ja|sk|sl|sm|sn|so|sr|ss|st|su|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw",e="(((?:(https?://|ftps?://|nntp://)|www\\d{0,3}[.]|[a-z0-9.\\-]+[.]("+d+")\\/)\\S+(?:[^\\s`!\\[\\]{};:'\".,?«»“”‘’])))|(([a-z0-9\\-]+\\.)?[a-z0-9\\-]+\\.("+d+"))",f=new RegExp("^("+d+")$","i"),g=new RegExp(e,"gi");var h=a.Extension.extend({init:function(){a.Extension.prototype.init.apply(this,arguments),this.disableEventHandling=!1,this.subscribe("editableKeypress",this.onKeypress.bind(this)),this.subscribe("editableBlur",this.onBlur.bind(this)),this.document.execCommand("AutoUrlDetect",!1,!1)},isLastInstance:function(){for(var a=0,b=0;b<this.window._mediumEditors.length;b++){var c=this.window._mediumEditors[b];null!==c&&void 0!==c.getExtensionByName("autoLink")&&a++}return 1===a},destroy:function(){this.document.queryCommandSupported("AutoUrlDetect")&&this.isLastInstance()&&this.document.execCommand("AutoUrlDetect",!1,!0)},onBlur:function(a,b){this.performLinking(b)},onKeypress:function(b){this.disableEventHandling||a.util.isKey(b,[a.util.keyCode.SPACE,a.util.keyCode.ENTER])&&(clearTimeout(this.performLinkingTimeout),this.performLinkingTimeout=setTimeout(function(){try{var a=this.base.exportSelection();this.performLinking(b.target)&&this.base.importSelection(a,!0)}catch(c){window.console&&window.console.error("Failed to perform linking",c),this.disableEventHandling=!0}}.bind(this),0))},performLinking:function(b){var c=a.util.splitByBlockElements(b),d=!1;0===c.length&&(c=[b]);for(var e=0;e<c.length;e++)d=this.removeObsoleteAutoLinkSpans(c[e])||d,d=this.performLinkingWithinElement(c[e])||d;return this.base.events.updateInput(b,{target:b,currentTarget:b}),d},removeObsoleteAutoLinkSpans:function(c){if(!c||3===c.nodeType)return!1;for(var d=c.querySelectorAll('span[data-auto-link="true"]'),e=!1,f=0;f<d.length;f++){var g=d[f].textContent;if(-1===g.indexOf("://")&&(g=a.util.ensureUrlHasProtocol(g)),d[f].getAttribute("data-href")!==g&&b(d[f])){e=!0;var h=g.replace(/\s+$/,"");if(d[f].getAttribute("data-href")===h){var i=g.length-h.length,j=a.util.splitOffDOMTree(d[f],this.splitTextBeforeEnd(d[f],i));d[f].parentNode.insertBefore(j,d[f].nextSibling)}else a.util.unwrap(d[f],this.document)}}return e},splitTextBeforeEnd:function(a,b){for(var c=this.document.createTreeWalker(a,NodeFilter.SHOW_TEXT,null,!1),d=!0;d;)d=null!==c.lastChild();for(var e,f,g;b>0&&null!==g;)e=c.currentNode,f=e.nodeValue,f.length>b?(g=e.splitText(f.length-b),b=0):(g=c.previousNode(),b-=f.length);return g},performLinkingWithinElement:function(b){for(var c=this.findLinkableText(b),d=!1,e=0;e<c.length;e++){var f=a.util.findOrCreateMatchingTextNodes(this.document,b,c[e]);this.shouldNotLink(f)||this.createAutoLink(f,c[e].href)}return d},shouldNotLink:function(b){for(var c=!1,d=0;d<b.length&&c===!1;d++)c=!!a.util.traverseUp(b[d],function(a){return"a"===a.nodeName.toLowerCase()||a.getAttribute&&"true"===a.getAttribute("data-auto-link")});return c},findLinkableText:function(a){for(var b=a.textContent,d=null,e=[];null!==(d=g.exec(b));){var h=!0,i=d.index+d[0].length;h=!(0!==d.index&&-1===c.indexOf(b[d.index-1])||i!==b.length&&-1===c.indexOf(b[i])),h=h&&(-1!==d[0].indexOf("/")||f.test(d[0].split(".").pop().split("?").shift())),h&&e.push({href:d[0],start:d.index,end:i})}return e},createAutoLink:function(b,c){c=a.util.ensureUrlHasProtocol(c);var d=a.util.createLink(this.document,b,c,this.getEditorOption("targetBlank")?"_blank":null),e=this.document.createElement("span");for(e.setAttribute("data-auto-link","true"),e.setAttribute("data-href",c),d.insertBefore(e,d.firstChild);d.childNodes.length>1;)e.appendChild(d.childNodes[1])}});a.extensions.autoLink=h}(),function(){function b(b){var d=a.util.getContainerEditorElement(b),e=Array.prototype.slice.call(d.parentElement.querySelectorAll("."+c));e.forEach(function(a){a.classList.remove(c)})}var c="medium-editor-dragover",d=a.Extension.extend({name:"fileDragging",allowedTypes:["image"],init:function(){a.Extension.prototype.init.apply(this,arguments),this.subscribe("editableDrag",this.handleDrag.bind(this)),this.subscribe("editableDrop",this.handleDrop.bind(this))},handleDrag:function(a){a.preventDefault(),a.dataTransfer.dropEffect="copy";var d=a.target.classList?a.target:a.target.parentElement;b(d),"dragover"===a.type&&d.classList.add(c)},handleDrop:function(a){a.preventDefault(),a.stopPropagation(),this.base.selectElement(a.target);var c=this.base.exportSelection();c.start=c.end,this.base.importSelection(c),a.dataTransfer.files&&Array.prototype.slice.call(a.dataTransfer.files).forEach(function(a){this.isAllowedFile(a)&&a.type.match("image")&&this.insertImageFile(a)},this),b(a.target)},isAllowedFile:function(a){return this.allowedTypes.some(function(b){return!!a.type.match(b)})},insertImageFile:function(b){if("function"==typeof FileReader){var c=new FileReader;c.readAsDataURL(b),c.addEventListener("load",function(b){var c=this.document.createElement("img");c.src=b.target.result,a.util.insertHTMLCommand(this.document,c.outerHTML)}.bind(this))}}});a.extensions.fileDragging=d}(),function(){var b=a.Extension.extend({name:"keyboard-commands",commands:[{command:"bold",key:"B",meta:!0,shift:!1,alt:!1},{command:"italic",key:"I",meta:!0,shift:!1,alt:!1},{command:"underline",key:"U",meta:!0,shift:!1,alt:!1}],init:function(){a.Extension.prototype.init.apply(this,arguments),this.subscribe("editableKeydown",this.handleKeydown.bind(this)),this.keys={},this.commands.forEach(function(a){var b=a.key.charCodeAt(0);this.keys[b]||(this.keys[b]=[]),this.keys[b].push(a)},this)},handleKeydown:function(b){var c=a.util.getKeyCode(b);if(this.keys[c]){var d=a.util.isMetaCtrlKey(b),e=!!b.shiftKey,f=!!b.altKey;this.keys[c].forEach(function(a){a.meta!==d||a.shift!==e||a.alt!==f&&void 0!==a.alt||(b.preventDefault(),b.stopPropagation(),"function"==typeof a.command?a.command.apply(this):!1!==a.command&&this.execAction(a.command))},this)}}});a.extensions.keyboardCommands=b}(),function(){var b=a.extensions.form.extend({name:"fontname",action:"fontName",aria:"change font name",contentDefault:"&#xB1;",contentFA:'<i class="fa fa-font"></i>',fonts:["","Arial","Verdana","Times New Roman"],init:function(){a.extensions.form.prototype.init.apply(this,arguments)},handleClick:function(a){if(a.preventDefault(),a.stopPropagation(),!this.isDisplayed()){var b=this.document.queryCommandValue("fontName")+"";this.showForm(b)}return!1},getForm:function(){return this.form||(this.form=this.createForm()),this.form},isDisplayed:function(){return"block"===this.getForm().style.display},hideForm:function(){this.getForm().style.display="none",this.getSelect().value=""},showForm:function(a){var b=this.getSelect();this.base.saveSelection(),this.hideToolbarDefaultActions(),this.getForm().style.display="block",this.setToolbarPosition(),b.value=a||"",b.focus()},destroy:function(){return this.form?(this.form.parentNode&&this.form.parentNode.removeChild(this.form),void delete this.form):!1},doFormSave:function(){this.base.restoreSelection(),this.base.checkSelection()},doFormCancel:function(){this.base.restoreSelection(),this.clearFontName(),this.base.checkSelection()},createForm:function(){var a,b=this.document,c=b.createElement("div"),d=b.createElement("select"),e=b.createElement("a"),f=b.createElement("a");c.className="medium-editor-toolbar-form",c.id="medium-editor-toolbar-form-fontname-"+this.getEditorId(),this.on(c,"click",this.handleFormClick.bind(this));for(var g=0;g<this.fonts.length;g++)a=b.createElement("option"),a.innerHTML=this.fonts[g],a.value=this.fonts[g],d.appendChild(a);return d.className="medium-editor-toolbar-select",c.appendChild(d),this.on(d,"change",this.handleFontChange.bind(this)),f.setAttribute("href","#"),f.className="medium-editor-toobar-save",f.innerHTML="fontawesome"===this.getEditorOption("buttonLabels")?'<i class="fa fa-check"></i>':"&#10003;",c.appendChild(f),this.on(f,"click",this.handleSaveClick.bind(this),!0),e.setAttribute("href","#"),e.className="medium-editor-toobar-close",e.innerHTML="fontawesome"===this.getEditorOption("buttonLabels")?'<i class="fa fa-times"></i>':"&times;",c.appendChild(e),this.on(e,"click",this.handleCloseClick.bind(this)),c},getSelect:function(){return this.getForm().querySelector("select.medium-editor-toolbar-select")},clearFontName:function(){a.selection.getSelectedElements(this.document).forEach(function(a){"font"===a.nodeName.toLowerCase()&&a.hasAttribute("face")&&a.removeAttribute("face")})},handleFontChange:function(){var a=this.getSelect().value;""===a?this.clearFontName():this.execAction("fontName",{value:a})},handleFormClick:function(a){a.stopPropagation()},handleSaveClick:function(a){a.preventDefault(),this.doFormSave()},handleCloseClick:function(a){a.preventDefault(),this.doFormCancel()}});a.extensions.fontName=b}(),function(){var b=a.extensions.form.extend({name:"fontsize",action:"fontSize",aria:"increase/decrease font size",contentDefault:"&#xB1;",contentFA:'<i class="fa fa-text-height"></i>',init:function(){a.extensions.form.prototype.init.apply(this,arguments)},handleClick:function(a){if(a.preventDefault(),a.stopPropagation(),!this.isDisplayed()){var b=this.document.queryCommandValue("fontSize")+"";this.showForm(b)}return!1},getForm:function(){return this.form||(this.form=this.createForm()),this.form},isDisplayed:function(){return"block"===this.getForm().style.display},hideForm:function(){this.getForm().style.display="none",this.getInput().value=""},showForm:function(a){var b=this.getInput();this.base.saveSelection(),this.hideToolbarDefaultActions(),this.getForm().style.display="block",this.setToolbarPosition(),b.value=a||"",b.focus()},destroy:function(){return this.form?(this.form.parentNode&&this.form.parentNode.removeChild(this.form),void delete this.form):!1},doFormSave:function(){this.base.restoreSelection(),this.base.checkSelection()},doFormCancel:function(){this.base.restoreSelection(),this.clearFontSize(),this.base.checkSelection()},createForm:function(){var a=this.document,b=a.createElement("div"),c=a.createElement("input"),d=a.createElement("a"),e=a.createElement("a");return b.className="medium-editor-toolbar-form",b.id="medium-editor-toolbar-form-fontsize-"+this.getEditorId(),this.on(b,"click",this.handleFormClick.bind(this)),c.setAttribute("type","range"),c.setAttribute("min","1"),
 c.setAttribute("max","7"),c.className="medium-editor-toolbar-input",b.appendChild(c),this.on(c,"change",this.handleSliderChange.bind(this)),e.setAttribute("href","#"),e.className="medium-editor-toobar-save",e.innerHTML="fontawesome"===this.getEditorOption("buttonLabels")?'<i class="fa fa-check"></i>':"&#10003;",b.appendChild(e),this.on(e,"click",this.handleSaveClick.bind(this),!0),d.setAttribute("href","#"),d.className="medium-editor-toobar-close",d.innerHTML="fontawesome"===this.getEditorOption("buttonLabels")?'<i class="fa fa-times"></i>':"&times;",b.appendChild(d),this.on(d,"click",this.handleCloseClick.bind(this)),b},getInput:function(){return this.getForm().querySelector("input.medium-editor-toolbar-input")},clearFontSize:function(){a.selection.getSelectedElements(this.document).forEach(function(a){"font"===a.nodeName.toLowerCase()&&a.hasAttribute("size")&&a.removeAttribute("size")})},handleSliderChange:function(){var a=this.getInput().value;"4"===a?this.clearFontSize():this.execAction("fontSize",{value:a})},handleFormClick:function(a){a.stopPropagation()},handleSaveClick:function(a){a.preventDefault(),this.doFormSave()},handleCloseClick:function(a){a.preventDefault(),this.doFormCancel()}});a.extensions.fontSize=b}(),function(){function b(){return[[new RegExp(/^[\s\S]*<body[^>]*>\s*|\s*<\/body[^>]*>[\s\S]*$/g),""],[new RegExp(/<!--StartFragment-->|<!--EndFragment-->/g),""],[new RegExp(/<br>$/i),""],[new RegExp(/<[^>]*docs-internal-guid[^>]*>/gi),""],[new RegExp(/<\/b>(<br[^>]*>)?$/gi),""],[new RegExp(/<span class="Apple-converted-space">\s+<\/span>/g)," "],[new RegExp(/<br class="Apple-interchange-newline">/g),"<br>"],[new RegExp(/<span[^>]*(font-style:italic;font-weight:(bold|700)|font-weight:(bold|700);font-style:italic)[^>]*>/gi),'<span class="replace-with italic bold">'],[new RegExp(/<span[^>]*font-style:italic[^>]*>/gi),'<span class="replace-with italic">'],[new RegExp(/<span[^>]*font-weight:(bold|700)[^>]*>/gi),'<span class="replace-with bold">'],[new RegExp(/&lt;(\/?)(i|b|a)&gt;/gi),"<$1$2>"],[new RegExp(/&lt;a(?:(?!href).)+href=(?:&quot;|&rdquo;|&ldquo;|"|“|”)(((?!&quot;|&rdquo;|&ldquo;|"|“|”).)*)(?:&quot;|&rdquo;|&ldquo;|"|“|”)(?:(?!&gt;).)*&gt;/gi),'<a href="$1">'],[new RegExp(/<\/p>\n+/gi),"</p>"],[new RegExp(/\n+<p/gi),"<p"],[new RegExp(/<\/?o:[a-z]*>/gi),""],[new RegExp(/<!\[if !supportLists\]>(((?!<!).)*)<!\[endif]\>/gi),"$1"]]}function c(a,b,c){var d=a.clipboardData||b.clipboardData||c.dataTransfer,e={};if(!d)return e;if(d.getData){var f=d.getData("Text");f&&f.length>0&&(e["text/plain"]=f)}if(d.types)for(var g=0;g<d.types.length;g++){var h=d.types[g];e[h]=d.getData(h)}return e}var d="%ME_PASTEBIN%",e=null,f=null,g=function(a){a.stopPropagation()},h=a.Extension.extend({forcePlainText:!0,cleanPastedHTML:!1,preCleanReplacements:[],cleanReplacements:[],cleanAttrs:["class","style","dir"],cleanTags:["meta"],unwrapTags:[],init:function(){a.Extension.prototype.init.apply(this,arguments),(this.forcePlainText||this.cleanPastedHTML)&&(this.subscribe("editableKeydown",this.handleKeydown.bind(this)),this.getEditorElements().forEach(function(a){this.on(a,"paste",this.handlePaste.bind(this))},this),this.subscribe("addElement",this.handleAddElement.bind(this)))},handleAddElement:function(a,b){this.on(b,"paste",this.handlePaste.bind(this))},destroy:function(){(this.forcePlainText||this.cleanPastedHTML)&&this.removePasteBin()},handlePaste:function(a,b){if(!a.defaultPrevented){var d=c(a,this.window,this.document),e=d["text/html"],f=d["text/plain"];this.window.clipboardData&&void 0===a.clipboardData&&!e&&(e=f),(e||f)&&(a.preventDefault(),this.doPaste(e,f,b))}},doPaste:function(b,c,d){var e,f,g="";if(this.cleanPastedHTML&&b)return this.cleanPaste(b);if(c){if(this.getEditorOption("disableReturn")||d&&d.getAttribute("data-disable-return"))g=a.util.htmlEntities(c);else if(e=c.split(/[\r\n]+/g),e.length>1)for(f=0;f<e.length;f+=1)""!==e[f]&&(g+="<p>"+a.util.htmlEntities(e[f])+"</p>");else g=a.util.htmlEntities(e[0]);a.util.insertHTMLCommand(this.document,g)}},handlePasteBinPaste:function(a){if(a.defaultPrevented)return void this.removePasteBin();var b=c(a,this.window,this.document),d=b["text/html"],e=b["text/plain"],g=f;return!this.cleanPastedHTML||d?(a.preventDefault(),this.removePasteBin(),this.doPaste(d,e,g),void this.trigger("editablePaste",{currentTarget:g,target:g},g)):void setTimeout(function(){this.cleanPastedHTML&&(d=this.getPasteBinHtml()),this.removePasteBin(),this.doPaste(d,e,g),this.trigger("editablePaste",{currentTarget:g,target:g},g)}.bind(this),0)},handleKeydown:function(b,c){a.util.isKey(b,a.util.keyCode.V)&&a.util.isMetaCtrlKey(b)&&(b.stopImmediatePropagation(),this.removePasteBin(),this.createPasteBin(c))},createPasteBin:function(b){var c,h=a.selection.getSelectionRange(this.document),i=this.window.pageYOffset;f=b,h&&(c=h.getClientRects(),i+=c.length?c[0].top:void 0!==h.startContainer.getBoundingClientRect?h.startContainer.getBoundingClientRect().top:h.getBoundingClientRect().top),e=h;var j=this.document.createElement("div");j.id=this.pasteBinId="medium-editor-pastebin-"+ +Date.now(),j.setAttribute("style","border: 1px red solid; position: absolute; top: "+i+"px; width: 10px; height: 10px; overflow: hidden; opacity: 0"),j.setAttribute("contentEditable",!0),j.innerHTML=d,this.document.body.appendChild(j),this.on(j,"focus",g),this.on(j,"focusin",g),this.on(j,"focusout",g),j.focus(),a.selection.selectNode(j,this.document),this.boundHandlePaste||(this.boundHandlePaste=this.handlePasteBinPaste.bind(this)),this.on(j,"paste",this.boundHandlePaste)},removePasteBin:function(){null!==e&&(a.selection.selectRange(this.document,e),e=null),null!==f&&(f=null);var b=this.getPasteBin();b&&b&&(this.off(b,"focus",g),this.off(b,"focusin",g),this.off(b,"focusout",g),this.off(b,"paste",this.boundHandlePaste),b.parentElement.removeChild(b))},getPasteBin:function(){return this.document.getElementById(this.pasteBinId)},getPasteBinHtml:function(){var a=this.getPasteBin();if(!a)return!1;if(a.firstChild&&"mcepastebin"===a.firstChild.id)return!1;var b=a.innerHTML;return b&&b!==d?b:!1},cleanPaste:function(a){var c,d,e,f,g=/<p|<br|<div/.test(a),h=[].concat(this.preCleanReplacements||[],b(),this.cleanReplacements||[]);for(c=0;c<h.length;c+=1)a=a.replace(h[c][0],h[c][1]);if(!g)return this.pasteHTML(a);for(e=this.document.createElement("div"),e.innerHTML="<p>"+a.split("<br><br>").join("</p><p>")+"</p>",d=e.querySelectorAll("a,p,div,br"),c=0;c<d.length;c+=1)switch(f=d[c],f.innerHTML=f.innerHTML.replace(/\n/gi," "),f.nodeName.toLowerCase()){case"p":case"div":this.filterCommonBlocks(f);break;case"br":this.filterLineBreak(f)}this.pasteHTML(e.innerHTML)},pasteHTML:function(b,c){c=a.util.defaults({},c,{cleanAttrs:this.cleanAttrs,cleanTags:this.cleanTags,unwrapTags:this.unwrapTags});var d,e,f,g,h=this.document.createDocumentFragment();for(h.appendChild(this.document.createElement("body")),g=h.querySelector("body"),g.innerHTML=b,this.cleanupSpans(g),d=g.querySelectorAll("*"),f=0;f<d.length;f+=1)e=d[f],"a"===e.nodeName.toLowerCase()&&this.getEditorOption("targetBlank")&&a.util.setTargetBlank(e),a.util.cleanupAttrs(e,c.cleanAttrs),a.util.cleanupTags(e,c.cleanTags),a.util.unwrapTags(e,c.unwrapTags);a.util.insertHTMLCommand(this.document,g.innerHTML.replace(/&nbsp;/g," "))},isCommonBlock:function(a){return a&&("p"===a.nodeName.toLowerCase()||"div"===a.nodeName.toLowerCase())},filterCommonBlocks:function(a){/^\s*$/.test(a.textContent)&&a.parentNode&&a.parentNode.removeChild(a)},filterLineBreak:function(a){this.isCommonBlock(a.previousElementSibling)?this.removeWithParent(a):!this.isCommonBlock(a.parentNode)||a.parentNode.firstChild!==a&&a.parentNode.lastChild!==a?a.parentNode&&1===a.parentNode.childElementCount&&""===a.parentNode.textContent&&this.removeWithParent(a):this.removeWithParent(a)},removeWithParent:function(a){a&&a.parentNode&&(a.parentNode.parentNode&&1===a.parentNode.childElementCount?a.parentNode.parentNode.removeChild(a.parentNode):a.parentNode.removeChild(a))},cleanupSpans:function(b){var c,d,e,f=b.querySelectorAll(".replace-with"),g=function(a){return a&&"#text"!==a.nodeName&&"false"===a.getAttribute("contenteditable")};for(c=0;c<f.length;c+=1)d=f[c],e=this.document.createElement(d.classList.contains("bold")?"b":"i"),d.classList.contains("bold")&&d.classList.contains("italic")?e.innerHTML="<i>"+d.innerHTML+"</i>":e.innerHTML=d.innerHTML,d.parentNode.replaceChild(e,d);for(f=b.querySelectorAll("span"),c=0;c<f.length;c+=1){if(d=f[c],a.util.traverseUp(d,g))return!1;a.util.unwrap(d,this.document)}}});a.extensions.paste=h}(),function(){var b=a.Extension.extend({name:"placeholder",text:"Type your text",hideOnClick:!0,init:function(){a.Extension.prototype.init.apply(this,arguments),this.initPlaceholders(),this.attachEventHandlers()},initPlaceholders:function(){this.getEditorElements().forEach(this.initElement,this)},handleAddElement:function(a,b){this.initElement(b)},initElement:function(a){a.getAttribute("data-placeholder")||a.setAttribute("data-placeholder",this.text),this.updatePlaceholder(a)},destroy:function(){this.getEditorElements().forEach(this.cleanupElement,this)},handleRemoveElement:function(a,b){this.cleanupElement(b)},cleanupElement:function(a){a.getAttribute("data-placeholder")===this.text&&a.removeAttribute("data-placeholder")},showPlaceholder:function(b){b&&(a.util.isFF&&0===b.childNodes.length?(b.classList.add("medium-editor-placeholder-relative"),b.classList.remove("medium-editor-placeholder")):(b.classList.add("medium-editor-placeholder"),b.classList.remove("medium-editor-placeholder-relative")))},hidePlaceholder:function(a){a&&(a.classList.remove("medium-editor-placeholder"),a.classList.remove("medium-editor-placeholder-relative"))},updatePlaceholder:function(a,b){return a.querySelector("img, blockquote, ul, ol, table")||""!==a.textContent.replace(/^\s+|\s+$/g,"")?this.hidePlaceholder(a):void(b||this.showPlaceholder(a))},attachEventHandlers:function(){this.hideOnClick&&this.subscribe("focus",this.handleFocus.bind(this)),this.subscribe("editableInput",this.handleInput.bind(this)),this.subscribe("blur",this.handleBlur.bind(this)),this.subscribe("addElement",this.handleAddElement.bind(this)),this.subscribe("removeElement",this.handleRemoveElement.bind(this))},handleInput:function(a,b){var c=this.hideOnClick&&b===this.base.getFocusedElement();this.updatePlaceholder(b,c)},handleFocus:function(a,b){this.hidePlaceholder(b)},handleBlur:function(a,b){this.updatePlaceholder(b)}});a.extensions.placeholder=b}(),function(){var b=a.Extension.extend({name:"toolbar",align:"center",allowMultiParagraphSelection:!0,buttons:["bold","italic","underline","anchor","h2","h3","quote"],diffLeft:0,diffTop:-10,firstButtonClass:"medium-editor-button-first",lastButtonClass:"medium-editor-button-last",standardizeSelectionStart:!1,"static":!1,sticky:!1,stickyTopOffset:0,updateOnEmptySelection:!1,relativeContainer:null,init:function(){a.Extension.prototype.init.apply(this,arguments),this.initThrottledMethods(),this.relativeContainer?this.relativeContainer.appendChild(this.getToolbarElement()):this.getEditorOption("elementsContainer").appendChild(this.getToolbarElement())},forEachExtension:function(a,b){return this.base.extensions.forEach(function(c){return c!==this?a.apply(b||this,arguments):void 0},this)},createToolbar:function(){var a=this.document.createElement("div");return a.id="medium-editor-toolbar-"+this.getEditorId(),a.className="medium-editor-toolbar",this["static"]?a.className+=" static-toolbar":this.relativeContainer?a.className+=" medium-editor-relative-toolbar":a.className+=" medium-editor-stalker-toolbar",a.appendChild(this.createToolbarButtons()),this.forEachExtension(function(b){b.hasForm&&a.appendChild(b.getForm())}),this.attachEventHandlers(),a},createToolbarButtons:function(){var b,c,d,e,f,g,h=this.document.createElement("ul");return h.id="medium-editor-toolbar-actions"+this.getEditorId(),h.className="medium-editor-toolbar-actions",h.style.display="block",this.buttons.forEach(function(d){"string"==typeof d?(f=d,g=null):(f=d.name,g=d),e=this.base.addBuiltInExtension(f,g),e&&"function"==typeof e.getButton&&(c=e.getButton(this.base),b=this.document.createElement("li"),a.util.isElement(c)?b.appendChild(c):b.innerHTML=c,h.appendChild(b))},this),d=h.querySelectorAll("button"),d.length>0&&(d[0].classList.add(this.firstButtonClass),d[d.length-1].classList.add(this.lastButtonClass)),h},destroy:function(){this.toolbar&&(this.toolbar.parentNode&&this.toolbar.parentNode.removeChild(this.toolbar),delete this.toolbar)},getInteractionElements:function(){return this.getToolbarElement()},getToolbarElement:function(){return this.toolbar||(this.toolbar=this.createToolbar()),this.toolbar},getToolbarActionsElement:function(){return this.getToolbarElement().querySelector(".medium-editor-toolbar-actions")},initThrottledMethods:function(){this.throttledPositionToolbar=a.util.throttle(function(){this.base.isActive&&this.positionToolbarIfShown()}.bind(this))},attachEventHandlers:function(){this.subscribe("blur",this.handleBlur.bind(this)),this.subscribe("focus",this.handleFocus.bind(this)),this.subscribe("editableClick",this.handleEditableClick.bind(this)),this.subscribe("editableKeyup",this.handleEditableKeyup.bind(this)),this.on(this.document.documentElement,"mouseup",this.handleDocumentMouseup.bind(this)),this["static"]&&this.sticky&&this.on(this.window,"scroll",this.handleWindowScroll.bind(this),!0),this.on(this.window,"resize",this.handleWindowResize.bind(this))},handleWindowScroll:function(){this.positionToolbarIfShown()},handleWindowResize:function(){this.throttledPositionToolbar()},handleDocumentMouseup:function(b){return b&&b.target&&a.util.isDescendant(this.getToolbarElement(),b.target)?!1:void this.checkState()},handleEditableClick:function(){setTimeout(function(){this.checkState()}.bind(this),0)},handleEditableKeyup:function(){this.checkState()},handleBlur:function(){clearTimeout(this.hideTimeout),clearTimeout(this.delayShowTimeout),this.hideTimeout=setTimeout(function(){this.hideToolbar()}.bind(this),1)},handleFocus:function(){this.checkState()},isDisplayed:function(){return this.getToolbarElement().classList.contains("medium-editor-toolbar-active")},showToolbar:function(){clearTimeout(this.hideTimeout),this.isDisplayed()||(this.getToolbarElement().classList.add("medium-editor-toolbar-active"),this.trigger("showToolbar",{},this.base.getFocusedElement()))},hideToolbar:function(){this.isDisplayed()&&(this.getToolbarElement().classList.remove("medium-editor-toolbar-active"),this.trigger("hideToolbar",{},this.base.getFocusedElement()))},isToolbarDefaultActionsDisplayed:function(){return"block"===this.getToolbarActionsElement().style.display},hideToolbarDefaultActions:function(){this.isToolbarDefaultActionsDisplayed()&&(this.getToolbarActionsElement().style.display="none")},showToolbarDefaultActions:function(){this.hideExtensionForms(),this.isToolbarDefaultActionsDisplayed()||(this.getToolbarActionsElement().style.display="block"),this.delayShowTimeout=this.base.delay(function(){this.showToolbar()}.bind(this))},hideExtensionForms:function(){this.forEachExtension(function(a){a.hasForm&&a.isDisplayed()&&a.hideForm()})},multipleBlockElementsSelected:function(){var b=/<[^\/>][^>]*><\/[^>]+>/gim,c=new RegExp("<("+a.util.blockContainerElementNames.join("|")+")[^>]*>","g"),d=a.selection.getSelectionHtml(this.document).replace(b,""),e=d.match(c);return!!e&&e.length>1},modifySelection:function(){var b=this.window.getSelection(),c=b.getRangeAt(0);if(this.standardizeSelectionStart&&c.startContainer.nodeValue&&c.startOffset===c.startContainer.nodeValue.length){var d=a.util.findAdjacentTextNodeWithContent(a.selection.getSelectionElement(this.window),c.startContainer,this.document);if(d){for(var e=0;0===d.nodeValue.substr(e,1).trim().length;)e+=1;c=a.selection.select(this.document,d,e,c.endContainer,c.endOffset)}}},checkState:function(){if(!this.base.preventSelectionUpdates){if(!this.base.getFocusedElement()||a.selection.selectionInContentEditableFalse(this.window))return this.hideToolbar();var b=a.selection.getSelectionElement(this.window);return!b||-1===this.getEditorElements().indexOf(b)||b.getAttribute("data-disable-toolbar")?this.hideToolbar():this.updateOnEmptySelection&&this["static"]?this.showAndUpdateToolbar():!a.selection.selectionContainsContent(this.document)||this.allowMultiParagraphSelection===!1&&this.multipleBlockElementsSelected()?this.hideToolbar():void this.showAndUpdateToolbar()}},showAndUpdateToolbar:function(){this.modifySelection(),this.setToolbarButtonStates(),this.trigger("positionToolbar",{},this.base.getFocusedElement()),this.showToolbarDefaultActions(),this.setToolbarPosition()},setToolbarButtonStates:function(){this.forEachExtension(function(a){"function"==typeof a.isActive&&"function"==typeof a.setInactive&&a.setInactive()}),this.checkActiveButtons()},checkActiveButtons:function(){var b,c=[],d=null,e=a.selection.getSelectionRange(this.document),f=function(a){"function"==typeof a.checkState?a.checkState(b):"function"==typeof a.isActive&&"function"==typeof a.isAlreadyApplied&&"function"==typeof a.setActive&&!a.isActive()&&a.isAlreadyApplied(b)&&a.setActive()};if(e&&(this.forEachExtension(function(a){return"function"==typeof a.queryCommandState&&(d=a.queryCommandState(),null!==d)?void(d&&"function"==typeof a.setActive&&a.setActive()):void c.push(a)}),b=a.selection.getSelectedParentElement(e),this.getEditorElements().some(function(c){return a.util.isDescendant(c,b,!0)})))for(;b&&(c.forEach(f),!a.util.isMediumEditorElement(b));)b=b.parentNode},positionToolbarIfShown:function(){this.isDisplayed()&&this.setToolbarPosition()},setToolbarPosition:function(){var a=this.base.getFocusedElement(),b=this.window.getSelection();return a?void(!this["static"]&&b.isCollapsed||(this.showToolbar(),this.relativeContainer||(this["static"]?this.positionStaticToolbar(a):this.positionToolbar(b)),this.trigger("positionedToolbar",{},this.base.getFocusedElement()))):this},positionStaticToolbar:function(a){this.getToolbarElement().style.left="0";var b,c=this.document.documentElement&&this.document.documentElement.scrollTop||this.document.body.scrollTop,d=this.window.innerWidth,e=this.getToolbarElement(),f=a.getBoundingClientRect(),g=f.top+c,h=f.left+f.width/2,i=e.offsetHeight,j=e.offsetWidth,k=j/2;switch(this.sticky?c>g+a.offsetHeight-i-this.stickyTopOffset?(e.style.top=g+a.offsetHeight-i+"px",e.classList.remove("medium-editor-sticky-toolbar")):c>g-i-this.stickyTopOffset?(e.classList.add("medium-editor-sticky-toolbar"),e.style.top=this.stickyTopOffset+"px"):(e.classList.remove("medium-editor-sticky-toolbar"),e.style.top=g-i+"px"):e.style.top=g-i+"px",this.align){case"left":b=f.left;break;case"right":b=f.right-j;break;case"center":b=h-k}0>b?b=0:b+j>d&&(b=d-Math.ceil(j)-1),e.style.left=b+"px"},positionToolbar:function(a){this.getToolbarElement().style.left="0",this.getToolbarElement().style.right="initial";var b=a.getRangeAt(0),c=b.getBoundingClientRect();(!c||0===c.height&&0===c.width&&b.startContainer===b.endContainer)&&(c=1===b.startContainer.nodeType&&b.startContainer.querySelector("img")?b.startContainer.querySelector("img").getBoundingClientRect():b.startContainer.getBoundingClientRect());var d,e,f=this.window.innerWidth,g=this.getToolbarElement(),h=g.offsetHeight,i=g.offsetWidth,j=i/2,k=50,l=this.diffLeft-j,m=this.getEditorOption("elementsContainer"),n=["absolute","fixed"].indexOf(window.getComputedStyle(m).getPropertyValue("position"))>-1,o={},p={};n?(e=m.getBoundingClientRect(),["top","left"].forEach(function(a){p[a]=c[a]-e[a]}),p.width=c.width,p.height=c.height,c=p,f=e.width,o.top=m.scrollTop):o.top=this.window.pageYOffset,d=c.left+c.width/2,o.top+=c.top-h,c.top<k?(g.classList.add("medium-toolbar-arrow-over"),g.classList.remove("medium-toolbar-arrow-under"),o.top+=k+c.height-this.diffTop):(g.classList.add("medium-toolbar-arrow-under"),g.classList.remove("medium-toolbar-arrow-over"),o.top+=this.diffTop),j>d?(o.left=l+j,o.right="initial"):j>f-d?(o.left="auto",o.right=0):(o.left=l+d,o.right="initial"),["top","left","right"].forEach(function(a){g.style[a]=o[a]+(isNaN(o[a])?"":"px")})}});a.extensions.toolbar=b}(),function(){var b=a.Extension.extend({init:function(){a.Extension.prototype.init.apply(this,arguments),this.subscribe("editableDrag",this.handleDrag.bind(this)),this.subscribe("editableDrop",this.handleDrop.bind(this))},handleDrag:function(a){var b="medium-editor-dragover";a.preventDefault(),a.dataTransfer.dropEffect="copy","dragover"===a.type?a.target.classList.add(b):"dragleave"===a.type&&a.target.classList.remove(b)},handleDrop:function(b){var c,d="medium-editor-dragover";b.preventDefault(),b.stopPropagation(),b.dataTransfer.files&&(c=Array.prototype.slice.call(b.dataTransfer.files,0),c.some(function(b){if(b.type.match("image")){var c,d;c=new FileReader,c.readAsDataURL(b),d="medium-img-"+ +new Date,a.util.insertHTMLCommand(this.document,'<img class="medium-editor-image-loading" id="'+d+'" />'),c.onload=function(){var a=this.document.getElementById(d);a&&(a.removeAttribute("id"),a.removeAttribute("class"),a.src=c.result)}.bind(this)}}.bind(this))),b.target.classList.remove(d)}});a.extensions.imageDragging=b}(),function(){function b(b){var c=a.selection.getSelectionStart(this.options.ownerDocument),d=c.textContent,e=a.selection.getCaretOffsets(c);(void 0===d[e.left-1]||""===d[e.left-1].trim()||void 0!==d[e.left]&&""===d[e.left].trim())&&b.preventDefault()}function c(b,c){if(this.options.disableReturn||c.getAttribute("data-disable-return"))b.preventDefault();else if(this.options.disableDoubleReturn||c.getAttribute("data-disable-double-return")){var d=a.selection.getSelectionStart(this.options.ownerDocument);(d&&""===d.textContent.trim()&&"li"!==d.nodeName.toLowerCase()||d.previousElementSibling&&"br"!==d.previousElementSibling.nodeName.toLowerCase()&&""===d.previousElementSibling.textContent.trim())&&b.preventDefault()}}function d(b){var c=a.selection.getSelectionStart(this.options.ownerDocument),d=c&&c.nodeName.toLowerCase();"pre"===d&&(b.preventDefault(),a.util.insertHTMLCommand(this.options.ownerDocument,"    ")),a.util.isListItem(c)&&(b.preventDefault(),b.shiftKey?this.options.ownerDocument.execCommand("outdent",!1,null):this.options.ownerDocument.execCommand("indent",!1,null))}function e(b){var c,d=a.selection.getSelectionStart(this.options.ownerDocument),e=d.nodeName.toLowerCase(),f=/^(\s+|<br\/?>)?$/i,g=/h\d/i;a.util.isKey(b,[a.util.keyCode.BACKSPACE,a.util.keyCode.ENTER])&&d.previousElementSibling&&g.test(e)&&0===a.selection.getCaretOffsets(d).left?a.util.isKey(b,a.util.keyCode.BACKSPACE)&&f.test(d.previousElementSibling.innerHTML)?(d.previousElementSibling.parentNode.removeChild(d.previousElementSibling),b.preventDefault()):!this.options.disableDoubleReturn&&a.util.isKey(b,a.util.keyCode.ENTER)&&(c=this.options.ownerDocument.createElement("p"),c.innerHTML="<br>",d.previousElementSibling.parentNode.insertBefore(c,d),b.preventDefault()):a.util.isKey(b,a.util.keyCode.DELETE)&&d.nextElementSibling&&d.previousElementSibling&&!g.test(e)&&f.test(d.innerHTML)&&g.test(d.nextElementSibling.nodeName.toLowerCase())?(a.selection.moveCursor(this.options.ownerDocument,d.nextElementSibling),d.previousElementSibling.parentNode.removeChild(d),b.preventDefault()):a.util.isKey(b,a.util.keyCode.BACKSPACE)&&"li"===e&&f.test(d.innerHTML)&&!d.previousElementSibling&&!d.parentElement.previousElementSibling&&d.nextElementSibling&&"li"===d.nextElementSibling.nodeName.toLowerCase()?(c=this.options.ownerDocument.createElement("p"),c.innerHTML="<br>",d.parentElement.parentElement.insertBefore(c,d.parentElement),a.selection.moveCursor(this.options.ownerDocument,c),d.parentElement.removeChild(d),b.preventDefault()):a.util.isKey(b,a.util.keyCode.BACKSPACE)&&a.util.getClosestTag(d,"blockquote")!==!1&&0===a.selection.getCaretOffsets(d).left?(b.preventDefault(),a.util.execFormatBlock(this.options.ownerDocument,"p")):a.util.isKey(b,a.util.keyCode.ENTER)&&a.util.getClosestTag(d,"blockquote")!==!1&&0===a.selection.getCaretOffsets(d).right?(c=this.options.ownerDocument.createElement("p"),c.innerHTML="<br>",d.parentElement.insertBefore(c,d.nextSibling),a.selection.moveCursor(this.options.ownerDocument,c),b.preventDefault()):a.util.isKey(b,a.util.keyCode.BACKSPACE)&&a.util.isMediumEditorElement(d.parentElement)&&!d.previousElementSibling&&d.nextElementSibling&&f.test(d.innerHTML)&&(b.preventDefault(),a.selection.moveCursor(this.options.ownerDocument,d.nextSibling),d.parentElement.removeChild(d))}function f(b){var c,d=a.selection.getSelectionStart(this.options.ownerDocument);d&&(a.util.isMediumEditorElement(d)&&0===d.children.length&&!a.util.isBlockContainer(d)&&this.options.ownerDocument.execCommand("formatBlock",!1,"p"),!a.util.isKey(b,a.util.keyCode.ENTER)||a.util.isListItem(d)||a.util.isBlockContainer(d)||(c=d.nodeName.toLowerCase(),"a"===c?this.options.ownerDocument.execCommand("unlink",!1,null):b.shiftKey||b.ctrlKey||this.options.ownerDocument.execCommand("formatBlock",!1,"p")))}function g(a,b){var c=b.parentNode.querySelector('textarea[medium-editor-textarea-id="'+b.getAttribute("medium-editor-textarea-id")+'"]');c&&(c.value=b.innerHTML.trim())}function h(a){a._mediumEditors||(a._mediumEditors=[null]),this.id||(this.id=a._mediumEditors.length),a._mediumEditors[this.id]=this}function i(a){a._mediumEditors&&a._mediumEditors[this.id]&&(a._mediumEditors[this.id]=null)}function j(b,c,d){var e=[];if(b||(b=[]),"string"==typeof b&&(b=c.querySelectorAll(b)),a.util.isElement(b)&&(b=[b]),d)for(var f=0;f<b.length;f++){var g=b[f];!a.util.isElement(g)||g.getAttribute("data-medium-editor-element")||g.getAttribute("medium-editor-textarea-id")||e.push(g)}else e=Array.prototype.slice.apply(b);return e}function k(a){var b=a.parentNode.querySelector('textarea[medium-editor-textarea-id="'+a.getAttribute("medium-editor-textarea-id")+'"]');b&&(b.classList.remove("medium-editor-hidden"),b.removeAttribute("medium-editor-textarea-id")),a.parentNode&&a.parentNode.removeChild(a)}function l(a,b){return Object.keys(b).forEach(function(c){void 0===a[c]&&(a[c]=b[c])}),a}function m(a,b,c){var d={window:c.options.contentWindow,document:c.options.ownerDocument,base:c};return a=l(a,d),"function"==typeof a.init&&a.init(),a.name||(a.name=b),a}function n(){return this.elements.every(function(a){return!!a.getAttribute("data-disable-toolbar")})?!1:this.options.toolbar!==!1}function o(){return n.call(this)?this.options.anchorPreview!==!1:!1}function p(){return this.options.placeholder!==!1}function q(){return this.options.autoLink!==!1}function r(){return this.options.imageDragging!==!1}function s(){return this.options.keyboardCommands!==!1}function t(){return!this.options.extensions.imageDragging}function u(a){for(var b=this.options.ownerDocument.createElement("div"),c=Date.now(),d="medium-editor-"+c,e=a.attributes;this.options.ownerDocument.getElementById(d);)c++,d="medium-editor-"+c;b.className=a.className,b.id=d,b.innerHTML=a.value,a.setAttribute("medium-editor-textarea-id",d);for(var f=0,g=e.length;g>f;f++)b.hasAttribute(e[f].nodeName)||b.setAttribute(e[f].nodeName,e[f].value);return a.form&&this.on(a.form,"reset",function(a){a.defaultPrevented||this.resetContent(this.options.ownerDocument.getElementById(d))}.bind(this)),a.classList.add("medium-editor-hidden"),a.parentNode.insertBefore(b,a),b}function v(b,d){if(!b.getAttribute("data-medium-editor-element")){"textarea"===b.nodeName.toLowerCase()&&(b=u.call(this,b),this.instanceHandleEditableInput||(this.instanceHandleEditableInput=g.bind(this),this.subscribe("editableInput",this.instanceHandleEditableInput))),this.options.disableEditing||b.getAttribute("data-disable-editing")||(b.setAttribute("contentEditable",!0),b.setAttribute("spellcheck",this.options.spellcheck)),this.instanceHandleEditableKeydownEnter||(b.getAttribute("data-disable-return")||b.getAttribute("data-disable-double-return"))&&(this.instanceHandleEditableKeydownEnter=c.bind(this),this.subscribe("editableKeydownEnter",this.instanceHandleEditableKeydownEnter)),this.options.disableReturn||b.getAttribute("data-disable-return")||this.on(b,"keyup",f.bind(this));var e=a.util.guid();b.setAttribute("data-medium-editor-element",!0),b.classList.add("medium-editor-element"),b.setAttribute("role","textbox"),b.setAttribute("aria-multiline",!0),b.setAttribute("data-medium-editor-editor-index",d),b.setAttribute("medium-editor-index",e),B[e]=b.innerHTML,this.events.attachAllEventsToElement(b)}return b}function w(){this.subscribe("editableKeydownTab",d.bind(this)),this.subscribe("editableKeydownDelete",e.bind(this)),this.subscribe("editableKeydownEnter",e.bind(this)),this.options.disableExtraSpaces&&this.subscribe("editableKeydownSpace",b.bind(this)),this.instanceHandleEditableKeydownEnter||(this.options.disableReturn||this.options.disableDoubleReturn)&&(this.instanceHandleEditableKeydownEnter=c.bind(this),this.subscribe("editableKeydownEnter",this.instanceHandleEditableKeydownEnter))}function x(){if(this.extensions=[],Object.keys(this.options.extensions).forEach(function(a){"toolbar"!==a&&this.options.extensions[a]&&this.extensions.push(m(this.options.extensions[a],a,this))},this),t.call(this)){var b=this.options.fileDragging;b||(b={},r.call(this)||(b.allowedTypes=[])),this.addBuiltInExtension("fileDragging",b)}var c={paste:!0,"anchor-preview":o.call(this),autoLink:q.call(this),keyboardCommands:s.call(this),placeholder:p.call(this)};Object.keys(c).forEach(function(a){c[a]&&this.addBuiltInExtension(a)},this);var d=this.options.extensions.toolbar;if(!d&&n.call(this)){var e=a.util.extend({},this.options.toolbar,{allowMultiParagraphSelection:this.options.allowMultiParagraphSelection});d=new a.extensions.toolbar(e)}d&&this.extensions.push(m(d,"toolbar",this))}function y(b,c){var d=[["allowMultiParagraphSelection","toolbar.allowMultiParagraphSelection"]];return c&&d.forEach(function(b){c.hasOwnProperty(b[0])&&void 0!==c[b[0]]&&a.util.deprecated(b[0],b[1],"v6.0.0")}),a.util.defaults({},c,b)}function z(b,c){var d,e,f=/^append-(.+)$/gi,g=/justify([A-Za-z]*)$/g;if(d=f.exec(b))return a.util.execFormatBlock(this.options.ownerDocument,d[1]);if("fontSize"===b)return c.size&&a.util.deprecated(".size option for fontSize command",".value","6.0.0"),e=c.value||c.size,this.options.ownerDocument.execCommand("fontSize",!1,e);if("fontName"===b)return c.name&&a.util.deprecated(".name option for fontName command",".value","6.0.0"),e=c.value||c.name,this.options.ownerDocument.execCommand("fontName",!1,e);if("createLink"===b)return this.createLink(c);if("image"===b){var h=this.options.contentWindow.getSelection().toString().trim();return this.options.ownerDocument.execCommand("insertImage",!1,h)}if("html"===b){var i=this.options.contentWindow.getSelection().toString().trim();return a.util.insertHTMLCommand(this.options.ownerDocument,i)}if(g.exec(b)){var j=this.options.ownerDocument.execCommand(b,!1,null),k=a.selection.getSelectedParentElement(a.selection.getSelectionRange(this.options.ownerDocument));return k&&A.call(this,a.util.getTopBlockContainer(k)),j}return e=c&&c.value,this.options.ownerDocument.execCommand(b,!1,e)}function A(b){if(b){var c,d=Array.prototype.slice.call(b.childNodes).filter(function(a){var b="div"===a.nodeName.toLowerCase();return b&&!c&&(c=a.style.textAlign),b});d.length&&(this.saveSelection(),d.forEach(function(b){if(b.style.textAlign===c){var d=b.lastChild;if(d){a.util.unwrap(b,this.options.ownerDocument);var e=this.options.ownerDocument.createElement("BR");d.parentNode.insertBefore(e,d.nextSibling)}}},this),b.style.textAlign=c,this.restoreSelection())}}var B={};a.prototype={init:function(a,b){return this.options=y.call(this,this.defaults,b),this.origElements=a,this.options.elementsContainer||(this.options.elementsContainer=this.options.ownerDocument.body),this.setup()},setup:function(){this.isActive||(h.call(this,this.options.contentWindow),this.events=new a.Events(this),this.elements=[],this.addElements(this.origElements),0!==this.elements.length&&(this.isActive=!0,x.call(this),w.call(this)));
 },destroy:function(){this.isActive&&(this.isActive=!1,this.extensions.forEach(function(a){"function"==typeof a.destroy&&a.destroy()},this),this.events.destroy(),this.elements.forEach(function(a){this.options.spellcheck&&(a.innerHTML=a.innerHTML),a.removeAttribute("contentEditable"),a.removeAttribute("spellcheck"),a.removeAttribute("data-medium-editor-element"),a.classList.remove("medium-editor-element"),a.removeAttribute("role"),a.removeAttribute("aria-multiline"),a.removeAttribute("medium-editor-index"),a.removeAttribute("data-medium-editor-editor-index"),a.getAttribute("medium-editor-textarea-id")&&k(a)},this),this.elements=[],this.instanceHandleEditableKeydownEnter=null,this.instanceHandleEditableInput=null,i.call(this,this.options.contentWindow))},on:function(a,b,c,d){return this.events.attachDOMEvent(a,b,c,d),this},off:function(a,b,c,d){return this.events.detachDOMEvent(a,b,c,d),this},subscribe:function(a,b){return this.events.attachCustomEvent(a,b),this},unsubscribe:function(a,b){return this.events.detachCustomEvent(a,b),this},trigger:function(a,b,c){return this.events.triggerCustomEvent(a,b,c),this},delay:function(a){var b=this;return setTimeout(function(){b.isActive&&a()},this.options.delay)},serialize:function(){var a,b,c={},d=this.elements.length;for(a=0;d>a;a+=1)b=""!==this.elements[a].id?this.elements[a].id:"element-"+a,c[b]={value:this.elements[a].innerHTML.trim()};return c},getExtensionByName:function(a){var b;return this.extensions&&this.extensions.length&&this.extensions.some(function(c){return c.name===a?(b=c,!0):!1}),b},addBuiltInExtension:function(b,c){var d,e=this.getExtensionByName(b);if(e)return e;switch(b){case"anchor":d=a.util.extend({},this.options.anchor,c),e=new a.extensions.anchor(d);break;case"anchor-preview":e=new a.extensions.anchorPreview(this.options.anchorPreview);break;case"autoLink":e=new a.extensions.autoLink;break;case"fileDragging":e=new a.extensions.fileDragging(c);break;case"fontname":e=new a.extensions.fontName(this.options.fontName);break;case"fontsize":e=new a.extensions.fontSize(c);break;case"keyboardCommands":e=new a.extensions.keyboardCommands(this.options.keyboardCommands);break;case"paste":e=new a.extensions.paste(this.options.paste);break;case"placeholder":e=new a.extensions.placeholder(this.options.placeholder);break;default:a.extensions.button.isBuiltInButton(b)&&(c?(d=a.util.defaults({},c,a.extensions.button.prototype.defaults[b]),e=new a.extensions.button(d)):e=new a.extensions.button(b))}return e&&this.extensions.push(m(e,b,this)),e},stopSelectionUpdates:function(){this.preventSelectionUpdates=!0},startSelectionUpdates:function(){this.preventSelectionUpdates=!1},checkSelection:function(){var a=this.getExtensionByName("toolbar");return a&&a.checkState(),this},queryCommandState:function(a){var b,c=/^full-(.+)$/gi,d=null;b=c.exec(a),b&&(a=b[1]);try{d=this.options.ownerDocument.queryCommandState(a)}catch(e){d=null}return d},execAction:function(b,c){var d,e,f=/^full-(.+)$/gi;return d=f.exec(b),d?(this.saveSelection(),this.selectAllContents(),e=z.call(this,d[1],c),this.restoreSelection()):e=z.call(this,b,c),"insertunorderedlist"!==b&&"insertorderedlist"!==b||a.util.cleanListDOM(this.options.ownerDocument,this.getSelectedParentElement()),this.checkSelection(),e},getSelectedParentElement:function(b){return void 0===b&&(b=this.options.contentWindow.getSelection().getRangeAt(0)),a.selection.getSelectedParentElement(b)},selectAllContents:function(){var b=a.selection.getSelectionElement(this.options.contentWindow);if(b){for(;1===b.children.length;)b=b.children[0];this.selectElement(b)}},selectElement:function(b){a.selection.selectNode(b,this.options.ownerDocument);var c=a.selection.getSelectionElement(this.options.contentWindow);c&&this.events.focusElement(c)},getFocusedElement:function(){var a;return this.elements.some(function(b){return!a&&b.getAttribute("data-medium-focused")&&(a=b),!!a},this),a},exportSelection:function(){var b=a.selection.getSelectionElement(this.options.contentWindow),c=this.elements.indexOf(b),d=null;return c>=0&&(d=a.selection.exportSelection(b,this.options.ownerDocument)),null!==d&&0!==c&&(d.editableElementIndex=c),d},saveSelection:function(){this.selectionState=this.exportSelection()},importSelection:function(b,c){if(b){var d=this.elements[b.editableElementIndex||0];a.selection.importSelection(b,d,this.options.ownerDocument,c)}},restoreSelection:function(){this.importSelection(this.selectionState)},createLink:function(b){var c,d=a.selection.getSelectionElement(this.options.contentWindow),e={};if(-1!==this.elements.indexOf(d)){try{if(this.events.disableCustomEvent("editableInput"),b.url&&a.util.deprecated(".url option for createLink",".value","6.0.0"),c=b.url||b.value,c&&c.trim().length>0){var f=this.options.contentWindow.getSelection();if(f){var g,h,i,j,k=f.getRangeAt(0),l=k.commonAncestorContainer;if(3===k.endContainer.nodeType&&3!==k.startContainer.nodeType&&0===k.startOffset&&k.startContainer.firstChild===k.endContainer&&(l=k.endContainer),h=a.util.getClosestBlockContainer(k.startContainer),i=a.util.getClosestBlockContainer(k.endContainer),3!==l.nodeType&&0!==l.textContent.length&&h===i){var m=h||d,n=this.options.ownerDocument.createDocumentFragment();this.execAction("unlink"),g=this.exportSelection(),n.appendChild(m.cloneNode(!0)),d===m?a.selection.select(this.options.ownerDocument,m.firstChild,0,m.lastChild,3===m.lastChild.nodeType?m.lastChild.nodeValue.length:m.lastChild.childNodes.length):a.selection.select(this.options.ownerDocument,m,0,m,m.childNodes.length);var o=this.exportSelection();j=a.util.findOrCreateMatchingTextNodes(this.options.ownerDocument,n,{start:g.start-o.start,end:g.end-o.start,editableElementIndex:g.editableElementIndex}),0===j.length&&(n=this.options.ownerDocument.createDocumentFragment(),n.appendChild(l.cloneNode(!0)),j=[n.firstChild.firstChild,n.firstChild.lastChild]),a.util.createLink(this.options.ownerDocument,j,c.trim());var p=(n.firstChild.innerHTML.match(/^\s+/)||[""])[0].length;a.util.insertHTMLCommand(this.options.ownerDocument,n.firstChild.innerHTML.replace(/^\s+/,"")),g.start-=p,g.end-=p,this.importSelection(g)}else this.options.ownerDocument.execCommand("createLink",!1,c);this.options.targetBlank||"_blank"===b.target?a.util.setTargetBlank(a.selection.getSelectionStart(this.options.ownerDocument),c):a.util.removeTargetBlank(a.selection.getSelectionStart(this.options.ownerDocument),c),b.buttonClass&&a.util.addClassToAnchors(a.selection.getSelectionStart(this.options.ownerDocument),b.buttonClass)}}if(this.options.targetBlank||"_blank"===b.target||b.buttonClass){e=this.options.ownerDocument.createEvent("HTMLEvents"),e.initEvent("input",!0,!0,this.options.contentWindow);for(var q=0,r=this.elements.length;r>q;q+=1)this.elements[q].dispatchEvent(e)}}finally{this.events.enableCustomEvent("editableInput")}this.events.triggerCustomEvent("editableInput",e,d)}},cleanPaste:function(a){this.getExtensionByName("paste").cleanPaste(a)},pasteHTML:function(a,b){this.getExtensionByName("paste").pasteHTML(a,b)},setContent:function(a,b){if(b=b||0,this.elements[b]){var c=this.elements[b];c.innerHTML=a,this.checkContentChanged(c)}},getContent:function(a){return a=a||0,this.elements[a]?this.elements[a].innerHTML.trim():null},checkContentChanged:function(b){b=b||a.selection.getSelectionElement(this.options.contentWindow),this.events.updateInput(b,{target:b,currentTarget:b})},resetContent:function(a){if(a){var b=this.elements.indexOf(a);return void(-1!==b&&this.setContent(B[a.getAttribute("medium-editor-index")],b))}this.elements.forEach(function(a,b){this.setContent(B[a.getAttribute("medium-editor-index")],b)},this)},addElements:function(a){var b=j(a,this.options.ownerDocument,!0);return 0===b.length?!1:void b.forEach(function(a){a=v.call(this,a,this.id),this.elements.push(a),this.trigger("addElement",{target:a,currentTarget:a},a)},this)},removeElements:function(a){var b=j(a,this.options.ownerDocument),c=b.map(function(a){return a.getAttribute("medium-editor-textarea-id")&&a.parentNode?a.parentNode.querySelector('div[medium-editor-textarea-id="'+a.getAttribute("medium-editor-textarea-id")+'"]'):a});this.elements=this.elements.filter(function(a){return-1!==c.indexOf(a)?(this.events.cleanupElement(a),a.getAttribute("medium-editor-textarea-id")&&k(a),this.trigger("removeElement",{target:a,currentTarget:a},a),!1):!0},this)}},a.getEditorFromElement=function(a){var b=a.getAttribute("data-medium-editor-editor-index"),c=a&&a.ownerDocument&&(a.ownerDocument.defaultView||a.ownerDocument.parentWindow);return c&&c._mediumEditors&&c._mediumEditors[b]?c._mediumEditors[b]:null}}(),function(){a.prototype.defaults={activeButtonClass:"medium-editor-button-active",buttonLabels:!1,delay:0,disableReturn:!1,disableDoubleReturn:!1,disableExtraSpaces:!1,disableEditing:!1,autoLink:!1,elementsContainer:!1,contentWindow:window,ownerDocument:document,targetBlank:!1,extensions:{},spellcheck:!0}}(),a.parseVersionString=function(a){var b=a.split("-"),c=b[0].split("."),d=b.length>1?b[1]:"";return{major:parseInt(c[0],10),minor:parseInt(c[1],10),revision:parseInt(c[2],10),preRelease:d,toString:function(){return[c[0],c[1],c[2]].join(".")+(d?"-"+d:"")}}},a.version=a.parseVersionString.call(this,{version:"5.23.3"}.version),a}());
-
-define("tpl!apps/projects/page/show/templates/page.tpl", function () { return function(obj){
-var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
-with(obj||{}){
-__p+='	<div class="container">\n	<div class="row">\n    <div class="col col-md-12">\n	<ul class="nav sticky-top navbar-light justify-content-center" style="background-color: white; margin-top: 15px;margin-bottom: 15px;">\n	<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\n		<i class="fas fa-angle-double-left"></i>\n		</a></li>\n	<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
-((__t=(prevPageId))==null?'':_.escape(__t))+
-'">\n		<i class="fas fas fa-angle-left"></i>\n		</a></li>\n\n	<!--error-patterns -->\n	<li class="nav-item dropdown">\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-patterns-dropdown">\n		Error patterns<span class="caret"></span></a>\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\n        </div>\n    </li>\n	<!-- error-tokens -->\n	<li class="nav-item dropdown"> \n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-tokens-dropdown">\n		Error tokens<span class="caret"></span></a>\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\n        </div>\n     </li>\n\n   \n\n	<!--nextpage and last page -->\n	<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
-((__t=(nextPageId))==null?'':_.escape(__t))+
-'">\n		<i class="fas fa-angle-right"></i>\n		</a></li>\n	<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\n		<i class="fas fa-angle-double-right"></i>\n		</a></li>\n	</ul>\n\n	<div class="defaulthl" style="line-height:1; margin-top:15px;">\n <!--    <i class="fas fa-book-open card_main_icon green"></i>\n	Project '+
-((__t=(projectId))==null?'':_.escape(__t))+
-' -->\n	<div style="font-size: 20px; margin-top: 10px;"> Page '+
-((__t=(pageId))==null?'':_.escape(__t))+
-'</div>\n	</div>\n\n	   ';
-
-     _.each(lines, function(line) {
-
-  
-       var split_img = line["imgFile"].split("/");
-  	   var imgbasename = split_img[4];
-  	   var text = "line " + line['lineId'] + ", " + imgbasename;
-  	   var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
-  	   var inputclass = Util.get_correction_class(line);
-  	   var correction_class="";
-  	   var setlinehightlighting=false;
-  	   if(line['isFullyCorrected']){
-  	  	 correction_class = "line_fully_corrected";
-  	   }
-  	   else if(line['isPartiallyCorrected']){
-  	  	 correction_class = "line_partially_corrected";
-  	   }
-
-
-      
-__p+='\n       <div class="text-image-line" title="'+
-((__t=(text))==null?'':_.escape(__t))+
-'">\n\n       	<a class="line-anchor" id="line-anchor-'+
-((__t=(anchor))==null?'':_.escape(__t))+
-'"></a>\n		<div class="line-img"><img id="line-img-'+
-((__t=(anchor))==null?'':_.escape(__t))+
-'" src=\''+
-((__t=(line["imgFile"]))==null?'':_.escape(__t))+
-'\' alt=\''+
-((__t=(text))==null?'':_.escape(__t))+
-'\' title=\''+
-((__t=(text))==null?'':_.escape(__t))+
-'\' width="auto" height="30"></div>\n\n		<div class="line-text-parent">	\n		<div id="line-'+
-((__t=(anchor))==null?'':_.escape(__t))+
-'" class="'+
-((__t=(correction_class))==null?'':_.escape(__t))+
-' line-text" anchor="'+
-((__t=(anchor))==null?'':_.escape(__t))+
-'"\n	    class="'+
-((__t=(inputclass))==null?'':_.escape(__t))+
-' line-text">\n       <div class="line" contenteditable="true">\n       \n        '+
-((__t=(line['cor']))==null?'':_.escape(__t))+
-'\n      	</div> \n      	<div class="line-tokens">\n      	</div>\n\n\n        </div>\n        <span>\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
-line['lineId']
-__p+='" anchor="'+
-((__t=(anchor))==null?'':_.escape(__t))+
-'"><i class="far fa-arrow-alt-circle-up"></i></div>\n        </span>\n	    </div>\n\n\n\n       </div>\n	\n     \n\n\n      ';
- }) 
-__p+='\n	</div>\n    </div>\n 	</div>\n';
-}
-return __p;
-};});
-
-// ================================
-// apps/page/show/show_view.js
-// ================================
-
-define('apps/projects/page/show/show_view',["marionette","app","medium","backbone.syphon","common/views","common/util",
-        "tpl!apps/projects/page/show/templates/page.tpl",
-
-
-  ], function(Marionette,App,MediumEditor,BackboneSyphon,Views,Util,pageTpl){
-
-
-    var Show = {};
-
-  Show.Page = Marionette.View.extend({
-  template:pageTpl,
-  saved_selection:"",
-  editor:"",
-events:{
-      'click .js-stepbackward' : 'backward_clicked',
-      'click .js-stepforward' : 'forward_clicked',
-      'click .js-firstpage' : 'firstpage_clicked',
-      'click .js-lastpage' : 'lastpage_clicked',
-      'click .js-correct' : 'correct_clicked',
-      'click .line-tokens' : 'line_tokens_clicked',
-      'click .line-text' : 'line_selected',
-      'click #pcw-error-tokens-link' : 'error_tokens_clicked',
-      'click #pcw-error-patterns-link' : 'error_patterns_clicked',
-
-      'mouseover .line-tokens' : 'tokens_hovered',
-      'mouseleave .line-text-parent' : 'line_left',
-      'keydown .line' : 'line_edited',
-
-      },
-
-      error_tokens_clicked : function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        $(".custom-popover").remove();
-        $(".dropdown-menu").hide();
-        $('#pcw-error-tokens-dropdown').toggle();
-      },
-
-        error_patterns_clicked : function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        $(".custom-popover").remove();
-        $(".dropdown-menu").hide();
-        $('#pcw-error-patterns-dropdown').toggle();
-      },
-
-      serializeData: function(){
-      var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-          data.Util = Util;
-
-        return data;
-      },
-
-       backward_clicked:function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        console.log(data)
-        this.trigger("page:new",data.prevPageId);
-      },
-
-       forward_clicked:function(e){
-        e.stopPropagation();
-        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        e.preventDefault();
-        this.trigger("page:new",data.nextPageId);
-      },
-
-       firstpage_clicked:function(e){
-         e.stopPropagation();
-         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        e.preventDefault();
-        this.trigger("page:new","first");
-      },
-       lastpage_clicked:function(e){
-       e.stopPropagation();
-        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        e.preventDefault();
-        this.trigger("page:new","last");
-      },
-      correct_clicked:function(e){
-      e.stopPropagation();
-
-        var anchor = $(e.currentTarget).attr('anchor');
-        var ids = Util.getIds(anchor);
-        var text = $('#line-'+anchor).find('.line').text().replace(/\s\s+/g, ' ').trim();
-
-        console.log(text);
-
-        this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
-      },
-      tokens_hovered:function(e){
-         // $('.line-tokens').show();
-         // $('.line').hide();
-         // $(e.currentTarget).hide();
-         // $(e.currentTarget).prev().show();
-      },
-      line_left:function(e){
-        // console.log("mouseleave")
-
-      },
-
-       line_edited:function(e){
-        e.stopPropagation();
-        $('.custom-popover').remove();
-      },
-
-      line_tokens_clicked:function(e){
-        e.preventDefault();
-         e.stopPropagation();
-       $(".custom-popover").remove();
-
-        $('.line').hide();
-        $('.line-tokens').show();
-        var line_parent = $(e.currentTarget).parent();
-
-        console.log(line_parent);
-        console.log($(e.currentTarget));
-        line_parent.find('.line').show();
-        $(e.currentTarget).hide();
-
-        $('.correct-btn').hide();
-        $('.line-text').css('border-bottom','1px solid transparent');
-        $('.line-text').css('border-left','1px solid transparent');
-        $('.line-text').css('border-top','1px solid transparent');
-        $('.line-text').css('border-top-right-radius','.25rem');
-        $('.line-text').css('border-bottom-right-radius','.25rem');
-
-
-        line_parent.css('border-left','1px solid #ced4da');
-        line_parent.css('border-bottom','1px solid #ced4da');
-        line_parent.css('border-top','1px solid #ced4da');
-        line_parent.css('border-top-right-radius','.0rem');
-        line_parent.css('border-bottom-right-radius','.0rem');
-
-        line_parent.next().find('.correct-btn').show();
-
-
-        //  $(e.currentTarget).find('.line').focusout(function() {
-
-        // $(e.currentTarget).find('.line-tokens').show();
-        // $(e.currentTarget).find('.line').hide();
-
-        // // $(e.currentTarget).next().find('.correct-btn').hide();
-        // $(e.currentTarget).css('border-bottom','1px solid transparent');
-        // $(e.currentTarget).css('border-left','1px solid transparent');
-        // $(e.currentTarget).css('border-top','1px solid transparent');
-        // $(e.currentTarget).css('border-top-left-radius','0rem');
-        // $(e.currentTarget).css('border-bottom-left-radius','0rem');
-        // $(e.currentTarget).find('.line-tokens').css('display','flex');
-
-
-        //  });
-
-
-
-
-      },
-      line_selected:function(e){
-        e.stopPropagation();
-
-        var that = this;
-
-         rangy.init();
-         var sel =  rangy.getSelection().toString();
-         if(sel==""||sel==" "){
-           return;
-          }
-
-      console.log(sel);
-      if($(e.target).hasClass('line')){
-       $(".dropdown-menu").hide();
-       $(".custom-popover").remove();
-
-      var btn_group = $('<div class="btn-group"></div>');
-
-
-      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary btn-sm"><i class="fas fa-align-justify"></i> Concordance </button>'))
-      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary btn-sm"> <i class="fas fa-list-ol"></i> Suggestions <i class="fas fa-caret-down"></button>'))
-
- // btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary">Show concordance of (0 occurrences)</button>'))
- //      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary">Correction suggestions <i class="fas fa-caret-down"></button>'))
-
-
-      var div = $('<div class="custom-popover">')
-      .css({
-        "left": e.pageX + 'px',
-        "top": (e.pageY+35) + 'px'
-      })
-       .append($('<div><i class="fas fa-caret-up custom-popover-arrow"></i></div>'))
-       .append(btn_group)
-       .appendTo(document.body);
-
-       $('#js-concordance').on('click',function(){
-        that.trigger("page:concordance_clicked",sel,0);
-       });
-
-         this.saved_selection = sel;
-         // Util.replaceSelectedText(selection);
-        //   console.log(selection);
-         this.trigger("page:line_selected",sel);
-      }
-      },
-
-      onAttach:function(e){
-        var that = this;
-
-        // remove when clicked somewhere else
-
-          $(document).off().click(function(e)
-          {
-            e.stopPropagation();
-
-            $(".dropdown-menu").hide();
-
-              var custom_popover = $(".custom-popover");
-              if (!custom_popover.is(e.target) && custom_popover.has(e.target).length === 0)
-              {
-                  custom_popover.remove();
-              }
-          });
-
-
-
-
-      },
-      onDestroy:function(e){
-       $(".custom-popover").remove();
-      },
-
-      onDomRefresh:function(e){
-
-            var that = this;
-         $('.line-img').each(function(index){
-		 var img = $(this);
-           $(this).imagesLoaded( function() {
-                var line = that.model.get('lines')[index];
-                if(line!=undefined){
-                  Util.addAlignedLine(line);
-                }
-            });
-
-         });
-
-      },
-
-  setErrorDropdowns: function(res,pid) {
-  var ddep = document.getElementById("pcw-error-patterns-dropdown");
-  var ddet = document.getElementById("pcw-error-tokens-dropdown");
-  if (ddep === null || ddet === null) {
-    return;
-  }
-    if (ddep !== null) {
-      this.setErrorPatternsDropdown(pid, ddep, res);
-    }
-    if (ddet !== null) {
-      this.setErrorTokensDropdown(pid, ddet, res);
-    }
-
-},
-setErrorPatternsDropdown : function(pid, dropdown, res) {
-  var that = this;
-  var patterns = {};
-  var suggs = res.suggestions || [];
-  for (var i = 0; i < suggs.length; i++) {
-    var id = suggs[i].pageId + '-' + suggs[i].lineId + '-' +
-        suggs[i].tokenId;
-    for (var j = 0; j < suggs[i].ocrPatterns.length; j++) {
-      var pat = suggs[i].ocrPatterns[j].toLowerCase();
-      var set = patterns[pat] || {};
-      set[i] = true;
-      patterns[pat] = set;
-    }
-  }
-  var counts = [];
-  for (var p in patterns) {
-    counts.push(
-        {pattern: p, count: Object.keys(patterns[p]).length});
-  }
-  counts.sort(function(a, b) { return b.count - a.count; });
-  var onclick = function(pid, c) {
-    return function() {
-    //  pcw.log(c.pattern + ": " + c.count);
-      // var pat = encodeURI(c.pattern);
-      var pat = c.pattern;
-      // var href = "concordance.php?pid=" + pid + "&q=" + pat +
-      //     "&error-pattern";
-      // window.location.href = href;
-      that.trigger("page:error-patterns-clicked",pid,pat);
-
-    };
-  };
-  for (var ii = 0; ii < counts.length; ii++) {
-    var c = counts[ii];
-    var a = this.appendErrorCountItem(dropdown, c.pattern, c.count);
-    a.onclick = onclick(pid, c);
-  }
-},
-
-setErrorTokensDropdown : function(pid, dropdown, res) {
-  // pcw.log("setErrorsDropdown");
-  var that = this;
-  var tokens = {};
-  var suggs = res.suggestions || [];
-  for (var i = 0; i < suggs.length; i++) {
-    var id = suggs[i].pageId + '-' + suggs[i].lineId + '-' +
-        suggs[i].tokenId;
-    var tok = suggs[i].token.toLowerCase();
-    var set = tokens[tok] || {};
-    set[id] = true;
-    tokens[tok] = set;
-  }
-  var counts = [];
-  for (var p in tokens) {
-    counts.push({token: p, count: Object.keys(tokens[p]).length});
-  }
-  counts.sort(function(a, b) { return b.count - a.count; });
-  var onclick = function(pid, c) {
-    return function() {
-      // pcw.log(c.token + ": " + c.count);
-      // var pat = encodeURI(c.token);
-      var pat = c.token;
-      // var href = "concordance.php?pid=" + pid + "&q=" + pat;
-      // window.location.href = href;
-       that.trigger("page:error-tokens-clicked",pid,pat);
-    };
-  };
-  for (var ii = 0; ii < counts.length; ii++) {
-    c = counts[ii];
-    var a = this.appendErrorCountItem(dropdown, c.token, c.count);
-    a.onclick = onclick(pid, c);
-  }
-},
-appendErrorCountItem : function(dropdown, item, count) {
-  var a = document.createElement("a");
-  var t = document.createTextNode(item + ": " + count);
-  a.className = "dropdown-item noselect";
-  a.appendChild(t);
-  dropdown.appendChild(a);
-  return a;
-}
-
-
-
-
-})
-
-
-
-return Show;
-
-});
-
 /*!
  * imagesLoaded PACKAGED v4.1.4
  * JavaScript is all like "You images are done yet or what?"
@@ -27152,23 +26729,23 @@ return Show;
 define("tpl!apps/projects/concordance/show/templates/concordance.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='	\n';
+__p+='	\r\n';
 
 if(asModal) {
 
-__p+='\n\n  <div class="modal-dialog modal-xl" role="document">\n  <div class="modal-content">\n\n<div class="modal-header">\n        <h3 class="modal-title">Concordance view for "'+
+__p+='\r\n\r\n  <div class="modal-dialog modal-xl" role="document">\r\n  <div class="modal-content">\r\n\r\n<div class="modal-header">\r\n        <h3 class="modal-title">Concordance view for "'+
 ((__t=(selection))==null?'':_.escape(__t))+
-'"</h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n';
+'"</h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n';
  } else { 
-__p+='\n\n\n	<div class="container">\n	<div class="row">\n    <div class="col col-md-12">\n\n	<div id="concordance-heading">\n	<p><h2>Concordance view for "'+
+__p+='\r\n\r\n\r\n	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n\r\n	<div id="concordance-heading">\r\n	<p><h2>Concordance view for "'+
 ((__t=(selection))==null?'':_.escape(__t))+
-'"</h2></p>\n	</div>\n\n	\n';
+'"</h2></p>\r\n	</div>\r\n\r\n	\r\n';
  } 
-__p+='\n\n <!--  <nav class="navbar navbar-static-top" id="page-header" data-spy="affix" data-offset-top="197">\n  <div class="container-fluid">\n  <div class="collapse navbar-collapse">\n  <ul class="nav navbar-nav">\n  <li> \n  <form class="navbar-form">-->\n  \n  ';
+__p+='\r\n\r\n <!--  <nav class="navbar navbar-static-top" id="page-header" data-spy="affix" data-offset-top="197">\r\n  <div class="container-fluid">\r\n  <div class="collapse navbar-collapse">\r\n  <ul class="nav navbar-nav">\r\n  <li> \r\n  <form class="navbar-form">-->\r\n  \r\n  ';
  if (suggestions!=undefined){ 
-__p+='\n\n  <div class="input-group mb-3">\n  <div class="input-group-prepend">\n  <button class="js-toggle-selection btn btn-outline-secondary" title="Toggle selection">\n  Toggle selection\n  </button>\n  </div>\n  <input class="js-global-correction-suggestion form-control" title="correction" type="text" placeholder="Correction"/>\n  <div class="input-group-append">\n  <button class="js-set-correction btn btn-outline-secondary" title="Set correction">\n  Set correction\n  </button>\n  <button class="js-correct-conc selected btn btn-outline-secondary" title="Correct selected">\n  Correct selected\n  </button>\n  </div>\n  </div>\n\n  ';
+__p+='\r\n\r\n  <div class="input-group mb-3">\r\n  <div class="input-group-prepend">\r\n  <button class="js-toggle-selection btn btn-outline-secondary" title="Toggle selection">\r\n  Toggle selection\r\n  </button>\r\n  </div>\r\n  <input class="js-global-correction-suggestion form-control" title="correction" type="text" placeholder="Correction"/>\r\n  <div class="input-group-append">\r\n  <button class="js-set-correction btn btn-outline-secondary" title="Set correction">\r\n  Set correction\r\n  </button>\r\n  <button class="js-correct-conc selected btn btn-outline-secondary" title="Correct selected">\r\n  Correct selected\r\n  </button>\r\n  </div>\r\n  </div>\r\n\r\n  ';
  } 
-__p+='\n\n <!-- </form>\n   </li>\n  </ul>\n  </div>\n  </div>\n  </nav> -->\n\n  <div class="all_lines_parent">\n	  ';
+__p+='\r\n\r\n <!-- </form>\r\n   </li>\r\n  </ul>\r\n  </div>\r\n  </div>\r\n  </nav> -->\r\n\r\n  <div class="all_lines_parent">\r\n	  ';
 
       _.each(tokendata, function(match) {
       var line = match['line'];
@@ -27177,24 +26754,24 @@ __p+='\n\n <!-- </form>\n   </li>\n  </ul>\n  </div>\n  </div>\n  </nav> -->\n\n
     var offset = word['offset'];
     var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];   
       
-__p+='\n\n\n\n<div class="text-image-line">\n\n<div class="left_div div_inline">\n	<!-- if ($images["leftImg"] != NULL) { -->\n		<div class="invisible=link" href="'+
+__p+='\r\n\r\n\r\n\r\n<div class="text-image-line">\r\n\r\n<div class="left_div div_inline">\r\n	<!-- if ($images["leftImg"] != NULL) { -->\r\n		<div class="invisible=link" href="'+
 ((__t=(link))==null?'':_.escape(__t))+
-'">\n    <div id ="img_'+
+'">\r\n    <div id ="img_'+
 ((__t=(line['pageId']))==null?'':_.escape(__t))+
 '_'+
 ((__t=(line['lineId']))==null?'':_.escape(__t))+
-'_parent" class="line-img">\n		<img src="'+
+'_parent" class="line-img">\r\n		<img src="'+
 ((__t=(line['imgFile']))==null?'':_.escape(__t))+
 '" id="img_'+
 ((__t=(line['pageId']))==null?'':_.escape(__t))+
 '_'+
 ((__t=(line['lineId']))==null?'':_.escape(__t))+
-'" width="auto" height="25"/>\n    </div>\n	\n		</div>\n	</div>\n	\n	</div>\n\n\n\n\n     ';
+'" width="auto" height="25"/>\r\n    </div>\r\n	\r\n		</div>\r\n	</div>\r\n	\r\n	</div>\r\n\r\n\r\n\r\n\r\n     ';
 
      		});
      	});
      
-__p+='\n\n</div>\n\n	</div>\n    </div>\n 	</div>\n';
+__p+='\r\n\r\n</div>\r\n\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
 }
 return __p;
 };});
@@ -27658,10 +27235,516 @@ return Show;
 
 
 
+define("tpl!apps/projects/page/show/templates/header.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='	<div class="col col-sm-12">\r\n	<div class="defaulthl">\r\n    <i class="fas fa-book-open card_main_icon green"></i>\r\n	'+
+((__t=(title))==null?'':_.escape(__t))+
+' \r\n	</div>\r\n	</div>\r\n\r\n';
+}
+return __p;
+};});
+
+
+define("tpl!apps/projects/page/show/templates/page.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='\r\n\r\n    <div class="border rounded" style="padding: 15px;">\r\n	   ';
+
+     _.each(lines, function(line) {
+
+  
+       var split_img = line["imgFile"].split("/");
+  	   var imgbasename = split_img[4];
+  	   var text = "line " + line['lineId'] + ", " + imgbasename;
+  	   var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
+  	   var inputclass = Util.get_correction_class(line);
+  	   var correction_class="";
+  	   var setlinehightlighting=false;
+  	   if(line['isFullyCorrected']){
+  	  	 correction_class = "line_fully_corrected";
+  	   }
+  	   else if(line['isPartiallyCorrected']){
+  	  	 correction_class = "line_partially_corrected";
+  	   }
+
+
+      
+__p+='\r\n       <div class="text-image-line" title="'+
+((__t=(text))==null?'':_.escape(__t))+
+'">\r\n\r\n       	<a class="line-anchor" id="line-anchor-'+
+((__t=(anchor))==null?'':_.escape(__t))+
+'"></a>\r\n		<div class="line-img"><img id="line-img-'+
+((__t=(anchor))==null?'':_.escape(__t))+
+'" src=\''+
+((__t=(line["imgFile"]))==null?'':_.escape(__t))+
+'\' alt=\''+
+((__t=(text))==null?'':_.escape(__t))+
+'\' title=\''+
+((__t=(text))==null?'':_.escape(__t))+
+'\' width="auto" height="30"></div>\r\n\r\n		<div class="line-text-parent">	\r\n		<div id="line-'+
+((__t=(anchor))==null?'':_.escape(__t))+
+'" class="'+
+((__t=(correction_class))==null?'':_.escape(__t))+
+' line-text" anchor="'+
+((__t=(anchor))==null?'':_.escape(__t))+
+'"\r\n	    class="'+
+((__t=(inputclass))==null?'':_.escape(__t))+
+' line-text">\r\n       <div class="line" contenteditable="true">\r\n       \r\n        '+
+((__t=(line['cor']))==null?'':_.escape(__t))+
+'\r\n      	</div> \r\n      	<div class="line-tokens">\r\n      	</div>\r\n\r\n\r\n        </div>\r\n        <span>\r\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
+line['lineId']
+__p+='" anchor="'+
+((__t=(anchor))==null?'':_.escape(__t))+
+'"><i class="far fa-arrow-alt-circle-up"></i></div>\r\n        </span>\r\n	    </div>\r\n\r\n\r\n\r\n       </div>\r\n	\r\n     \r\n\r\n\r\n      ';
+ }) 
+__p+='\r\n	</div>\r\n	 ';
+}
+return __p;
+};});
+
+
+define("tpl!apps/projects/page/show/templates/sidebar.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='\r\n    <div class="card">\r\n\r\n	\r\n\r\n		<ul class="nav  navbar-light justify-content-center">\r\n		<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\r\n			<i class="fas fa-angle-double-left"></i>\r\n			</a></li>\r\n		<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
+((__t=(prevPageId))==null?'':_.escape(__t))+
+'">\r\n			<i class="fas fas fa-angle-left"></i>\r\n		</a></li>\r\n\r\n		<li>\r\n		<div id="pageId" style="margin-top: 7px;"> Page '+
+((__t=(pageId))==null?'':_.escape(__t))+
+'</div>\r\n		</li>\r\n\r\n	<!--error-patterns -->\r\n	<!-- <li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-patterns-dropdown">\r\n		Error patterns<span class="caret"></span></a>\r\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\r\n        </div>\r\n    </li> -->\r\n	<!-- error-tokens -->\r\n	<!-- <li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-tokens-dropdown">\r\n		Error tokens<span class="caret"></span></a>\r\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\r\n        </div>\r\n     </li> -->\r\n\r\n   \r\n\r\n	<!--nextpage and last page -->\r\n		<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
+((__t=(nextPageId))==null?'':_.escape(__t))+
+'">\r\n			<i class="fas fa-angle-right"></i>\r\n			</a></li>\r\n		<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\r\n			<i class="fas fa-angle-double-right"></i>\r\n			</a></li>\r\n		</ul>\r\n		  <hr style="margin: 0;">\r\n		  <div class="card-header">\r\n		    Suspicious words\r\n		  </div>\r\n		   <div class="suspicious-words-container">\r\n		   	<div class="loading_background2">\r\n	         <div class="loading_text_parent">\r\n	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>\r\n        	 </div>\r\n        	 </div>\r\n		   <table class="table suspicious-words">\r\n		    <thead>\r\n		      <tr>\r\n		        <th>Word</th>\r\n		        <th>Count</th>\r\n		      </tr>\r\n		    </thead>\r\n		    <tbody>\r\n		    \r\n		    </tbody>\r\n		  </table>\r\n		</div>\r\n		 <hr style="margin: 0;">\r\n		  <div class="card-header ">\r\n		    Error patterns\r\n		  </div>\r\n		   <div class="error-patterns-container">\r\n		   	<div class="loading_background2">\r\n	         <div class="loading_text_parent">\r\n	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>\r\n        	 </div>\r\n        	 </div>\r\n		   <table class="table error-patterns">\r\n		    <thead>\r\n		      <tr>\r\n		        <th>Word</th>\r\n		        <th>Count</th>\r\n		      </tr>\r\n		    </thead>\r\n		    <tbody>\r\n		    \r\n		    </tbody>\r\n		  </table>\r\n		</div>\r\n		\r\n	</div>';
+}
+return __p;
+};});
+
+
+define("tpl!apps/projects/page/show/templates/layout.tpl", function () { return function(obj){
+var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+with(obj||{}){
+__p+='<div class="container">\r\n\r\n	<div class="row">\r\n		<div class="col col-sm-12">\r\n			<div id="header-region"></div>\r\n		</div>\r\n    </div>\r\n	<div class="row">\r\n		<div class="col col-sm-3">\r\n			<div id="sidebar-region"></div>\r\n		</div>\r\n        <div class="col col-sm-9">\r\n			<div id="page-region"></div>\r\n		</div>\r\n	</div>\r\n	<div class="row">\r\n		<div id="footer-region"></div>\r\n	</div>\r\n</div>';
+}
+return __p;
+};});
+
+// ================================
+// apps/page/show/show_view.js
+// ================================
+
+define('apps/projects/page/show/show_view',["marionette","app","medium","backbone.syphon","common/views","common/util","apps/projects/concordance/show/show_view",
+        "tpl!apps/projects/page/show/templates/header.tpl",
+        "tpl!apps/projects/page/show/templates/page.tpl",
+        "tpl!apps/projects/page/show/templates/sidebar.tpl",
+        "tpl!apps/projects/page/show/templates/layout.tpl",
+
+
+  ], function(Marionette,App,MediumEditor,BackboneSyphon,Views,Util,Concordance,heaerTpl,pageTpl,sidebarTpl,layoutTpl){
+
+
+    var Show = {};
+
+  Show.Layout = Marionette.View.extend({
+    template:layoutTpl,
+    regions:{
+       headerRegion: "#header-region"
+      ,sidebarRegion: "#sidebar-region"
+      ,pageRegion: "#page-region"
+      ,footerRegion: "#footer-region"
+    }
+
+  });
+ 
+   Show.Header = Marionette.View.extend({
+   
+      template:heaerTpl,
+      serializeData: function(){
+      return {
+        title: Marionette.getOption(this,"title")
+      }
+    }
+  });
+
+  Show.Sidebar = Marionette.View.extend({
+      template:sidebarTpl,
+      events:{
+      'click .js-stepbackward' : 'backward_clicked',
+      'click .js-stepforward' : 'forward_clicked',
+      'click .js-firstpage' : 'firstpage_clicked',
+      'click .js-lastpage' : 'lastpage_clicked',
+ 
+      'click #pcw-error-tokens-link' : 'error_tokens_clicked',
+      'click #pcw-error-patterns-link' : 'error_patterns_clicked'
+
+
+      },
+
+      backward_clicked:function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        console.log(data)
+        this.trigger("page:new",data.prevPageId);
+      },
+
+       forward_clicked:function(e){
+        e.stopPropagation();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        e.preventDefault();
+        this.trigger("page:new",data.nextPageId);
+      },
+
+       firstpage_clicked:function(e){
+         e.stopPropagation();
+         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        e.preventDefault();
+        this.trigger("page:new","first");
+      },
+       lastpage_clicked:function(e){
+       e.stopPropagation();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        e.preventDefault();
+        this.trigger("page:new","last");
+      },
+
+  });
+
+  Show.Page = Marionette.View.extend({
+  template:pageTpl,
+  saved_selection:"",
+  events:{
+      'click .js-correct' : 'correct_clicked',
+      'click .line-tokens' : 'line_tokens_clicked',
+      'click .line-text' : 'line_selected',
+      'click #pcw-error-tokens-link' : 'error_tokens_clicked',
+      'click #pcw-error-patterns-link' : 'error_patterns_clicked',
+
+      'mouseover .line-tokens' : 'tokens_hovered',
+      'mouseleave .line-text-parent' : 'line_left',
+      'keydown .line' : 'line_edited',
+
+      },
+
+      error_tokens_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".custom-popover").remove();
+        $(".dropdown-menu").hide();
+        $('#pcw-error-tokens-dropdown').toggle();
+      },
+
+        error_patterns_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".custom-popover").remove();
+        $(".dropdown-menu").hide();
+        $('#pcw-error-patterns-dropdown').toggle();
+      },
+
+      serializeData: function(){
+      var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+          data.Util = Util;
+
+        return data;
+      },
+
+ 
+      correct_clicked:function(e){
+      e.stopPropagation();
+
+        var anchor = $(e.currentTarget).attr('anchor');
+        var ids = Util.getIds(anchor);
+        var text = $('#line-'+anchor).find('.line').text().replace(/\s\s+/g, ' ').trim();
+
+        console.log(text);
+
+        this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
+      },
+      tokens_hovered:function(e){
+         // $('.line-tokens').show();
+         // $('.line').hide();
+         // $(e.currentTarget).hide();
+         // $(e.currentTarget).prev().show();
+      },
+      line_left:function(e){
+        // console.log("mouseleave")
+
+      },
+
+       line_edited:function(e){
+        e.stopPropagation();
+        $('.custom-popover').remove();
+      },
+
+      line_tokens_clicked:function(e){
+        e.preventDefault();
+         e.stopPropagation();
+       $(".custom-popover").remove();
+
+        $('.line').hide();
+        $('.line-tokens').show();
+        var line_parent = $(e.currentTarget).parent();
+
+        console.log(line_parent);
+        console.log($(e.currentTarget));
+        line_parent.find('.line').show();
+        $(e.currentTarget).hide();
+
+        $('.correct-btn').hide();
+        $('.line-text').css('border-bottom','1px solid transparent');
+        $('.line-text').css('border-left','1px solid transparent');
+        $('.line-text').css('border-top','1px solid transparent');
+        $('.line-text').css('border-top-right-radius','.25rem');
+        $('.line-text').css('border-bottom-right-radius','.25rem');
+
+
+        line_parent.css('border-left','1px solid #ced4da');
+        line_parent.css('border-bottom','1px solid #ced4da');
+        line_parent.css('border-top','1px solid #ced4da');
+        line_parent.css('border-top-right-radius','.0rem');
+        line_parent.css('border-bottom-right-radius','.0rem');
+
+        line_parent.next().find('.correct-btn').show();
+
+
+        //  $(e.currentTarget).find('.line').focusout(function() {
+
+        // $(e.currentTarget).find('.line-tokens').show();
+        // $(e.currentTarget).find('.line').hide();
+
+        // // $(e.currentTarget).next().find('.correct-btn').hide();
+        // $(e.currentTarget).css('border-bottom','1px solid transparent');
+        // $(e.currentTarget).css('border-left','1px solid transparent');
+        // $(e.currentTarget).css('border-top','1px solid transparent');
+        // $(e.currentTarget).css('border-top-left-radius','0rem');
+        // $(e.currentTarget).css('border-bottom-left-radius','0rem');
+        // $(e.currentTarget).find('.line-tokens').css('display','flex');
+
+
+        //  });
+
+
+
+
+      },
+      line_selected:function(e){
+        e.stopPropagation();
+
+        var that = this;
+
+         rangy.init();
+         var sel =  rangy.getSelection().toString();
+         if(sel==""||sel==" "){
+           return;
+          }
+
+      console.log(sel);
+      if($(e.target).hasClass('line')){
+       $(".dropdown-menu").hide();
+       $(".custom-popover").remove();
+
+      var btn_group = $('<div class="btn-group"></div>');
+
+
+      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary btn-sm"><i class="fas fa-align-justify"></i> Concordance </button>'))
+      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary btn-sm"> <i class="fas fa-list-ol"></i> Suggestions <i class="fas fa-caret-down"></button>'))
+
+ // btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary">Show concordance of (0 occurrences)</button>'))
+ //      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary">Correction suggestions <i class="fas fa-caret-down"></button>'))
+
+
+      var div = $('<div class="custom-popover">')
+      .css({
+        "left": e.pageX + 'px',
+        "top": (e.pageY+35) + 'px'
+      })
+       .append($('<div><i class="fas fa-caret-up custom-popover-arrow"></i></div>'))
+       .append(btn_group)
+       .appendTo(document.body);
+
+       $('#js-concordance').on('click',function(){
+        that.trigger("page:concordance_clicked",sel,0);
+       });
+
+         this.saved_selection = sel;
+         // Util.replaceSelectedText(selection);
+        //   console.log(selection);
+         this.trigger("page:line_selected",sel);
+      }
+      },
+
+      onAttach:function(e){
+        var that = this;
+
+        // remove when clicked somewhere else
+
+          $(document).off().click(function(e)
+          {
+            e.stopPropagation();
+
+            $(".dropdown-menu").hide();
+
+              var custom_popover = $(".custom-popover");
+              if (!custom_popover.is(e.target) && custom_popover.has(e.target).length === 0)
+              {
+                  custom_popover.remove();
+              }
+          });
+
+
+
+
+      },
+      onDestroy:function(e){
+       $(".custom-popover").remove();
+      },
+
+      onDomRefresh:function(e){
+
+           var that = this;
+           $('.line-img').each(function(index){
+	       	 var img = $(this);
+           $(this).imagesLoaded( function() {
+                var line = that.model.get('lines')[index];
+                if(line!=undefined){
+                  Util.addAlignedLine(line);
+                }
+            });
+
+         });
+
+          var navbar = $("#sidebar-region")
+          var sticky = navbar.offset().top;
+          var parent_width = navbar.innerWidth();
+
+        $(window).on('scroll', function(event) {
+    
+          console.log(sticky);
+
+           if (window.pageYOffset >= sticky) {
+              $('#sidebar-region').addClass('sticky').width(parent_width);
+
+          } else{
+              $('#sidebar-region').removeClass('sticky');
+          }
+        });
+
+      },
+
+  setErrorDropdowns: function(res,pid) {
+  var ddep = document.getElementById("pcw-error-patterns-dropdown");
+  var ddet = document.getElementById("pcw-error-tokens-dropdown");
+  if (ddep === null || ddet === null) {
+    return;
+  }
+    if (ddep !== null) {
+      this.setErrorPatternsDropdown(pid, ddep, res);
+    }
+    if (ddet !== null) {
+      this.setErrorTokensDropdown(pid, ddet, res);
+    }
+
+},
+setErrorPatternsDropdown : function(pid, dropdown, res) {
+  var that = this;
+  var patterns = {};
+  var suggs = res.suggestions || [];
+  for (var i = 0; i < suggs.length; i++) {
+    var id = suggs[i].pageId + '-' + suggs[i].lineId + '-' +
+        suggs[i].tokenId;
+    for (var j = 0; j < suggs[i].ocrPatterns.length; j++) {
+      var pat = suggs[i].ocrPatterns[j].toLowerCase();
+      var set = patterns[pat] || {};
+      set[i] = true;
+      patterns[pat] = set;
+    }
+  }
+  var counts = [];
+  for (var p in patterns) {
+    counts.push(
+        {pattern: p, count: Object.keys(patterns[p]).length});
+  }
+  counts.sort(function(a, b) { return b.count - a.count; });
+  var onclick = function(pid, c) {
+    return function() {
+    //  pcw.log(c.pattern + ": " + c.count);
+      // var pat = encodeURI(c.pattern);
+      var pat = c.pattern;
+      // var href = "concordance.php?pid=" + pid + "&q=" + pat +
+      //     "&error-pattern";
+      // window.location.href = href;
+      that.trigger("page:error-patterns-clicked",pid,pat);
+
+    };
+  };
+  for (var ii = 0; ii < counts.length; ii++) {
+    var c = counts[ii];
+    var a = this.appendErrorCountItem(dropdown, c.pattern, c.count);
+    a.onclick = onclick(pid, c);
+  }
+},
+
+setErrorTokensDropdown : function(pid, dropdown, res) {
+  // pcw.log("setErrorsDropdown");
+  var that = this;
+  var tokens = {};
+  var suggs = res.suggestions || [];
+  for (var i = 0; i < suggs.length; i++) {
+    var id = suggs[i].pageId + '-' + suggs[i].lineId + '-' +
+        suggs[i].tokenId;
+    var tok = suggs[i].token.toLowerCase();
+    var set = tokens[tok] || {};
+    set[id] = true;
+    tokens[tok] = set;
+  }
+  var counts = [];
+  for (var p in tokens) {
+    counts.push({token: p, count: Object.keys(tokens[p]).length});
+  }
+  counts.sort(function(a, b) { return b.count - a.count; });
+  var onclick = function(pid, c) {
+    return function() {
+      // pcw.log(c.token + ": " + c.count);
+      // var pat = encodeURI(c.token);
+      var pat = c.token;
+      // var href = "concordance.php?pid=" + pid + "&q=" + pat;
+      // window.location.href = href;
+       that.trigger("page:error-tokens-clicked",pid,pat);
+    };
+  };
+  for (var ii = 0; ii < counts.length; ii++) {
+    c = counts[ii];
+    var a = this.appendErrorCountItem(dropdown, c.token, c.count);
+    a.onclick = onclick(pid, c);
+  }
+},
+appendErrorCountItem : function(dropdown, item, count) {
+  var a = document.createElement("a");
+  var t = document.createTextNode(item + ": " + count);
+  a.className = "dropdown-item noselect";
+  a.appendChild(t);
+  dropdown.appendChild(a);
+  return a;
+}
+
+
+
+
+})
+
+Show.Concordance = Concordance.Concordance.extend({});
+
+Show.FooterPanel = Views.FooterPanel.extend({
+    });
+
+return Show;
+
+});
+
+
 define("tpl!apps/projects/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\n<div id="info-region" ></div>\n<div id="hub-region" ></div>\n<div id="hub2-region" ></div>\n<div id="packages-region" ></div>\n\n<div id="footer-region" ></div>\n';
+__p+='<div id="hl-region"></div>\r\n<div id="info-region" ></div>\r\n<div id="hub-region" ></div>\r\n<div id="hub2-region" ></div>\r\n<div id="packages-region" ></div>\r\n\r\n<div id="footer-region" ></div>\r\n';
 }
 return __p;
 };});
@@ -27670,15 +27753,15 @@ return __p;
 define("tpl!apps/projects/show/templates/info.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n<div class="container">\n<hr>\n\n\n<div class="row">\n<div class="col-lg-12">\n\n\n<table class="table table-bordered" style=\'margin-bottom: 30px;\'> \n\n<thead class="thead-light">\n      <tr>\n        <th>Title</th>\n        <th>Author</th>\n        <th>Language</th>\n        <th>Pages</th>\n      </tr>\n </thead>\n <tbody>\n\n  <tr>  \n        <td>'+
+__p+='\r\n\r\n<div class="container">\r\n<hr>\r\n\r\n\r\n<div class="row">\r\n<div class="col-lg-12">\r\n\r\n\r\n<table class="table table-bordered" style=\'margin-bottom: 30px;\'> \r\n\r\n<thead class="thead-light">\r\n      <tr>\r\n        <th>Title</th>\r\n        <th>Author</th>\r\n        <th>Language</th>\r\n        <th>Pages</th>\r\n      </tr>\r\n </thead>\r\n <tbody>\r\n\r\n  <tr>  \r\n        <td>'+
 ((__t=(title))==null?'':_.escape(__t))+
-'</td>\n        <td>'+
+'</td>\r\n        <td>'+
 ((__t=(author))==null?'':_.escape(__t))+
-'</td>\n        <td>'+
+'</td>\r\n        <td>'+
 ((__t=(language))==null?'':_.escape(__t))+
-'</td>\n        <td>'+
+'</td>\r\n        <td>'+
 ((__t=(pages))==null?'':_.escape(__t))+
-'</td>\n\n    </tr>\n\n </tbody>\n\n</table> \n\n</div>\n\n</div>\n\n</div>\n\n';
+'</td>\r\n\r\n    </tr>\r\n\r\n </tbody>\r\n\r\n</table> \r\n\r\n</div>\r\n\r\n</div>\r\n\r\n</div>\r\n\r\n';
 }
 return __p;
 };});
@@ -27687,13 +27770,13 @@ return __p;
 define("tpl!apps/projects/show/templates/split.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header">\n        <h5 class="modal-title">Split project ';
+__p+='  <div class="modal-dialog" role="document">\r\n    <div class="modal-content">\r\n      <div class="modal-header">\r\n        <h5 class="modal-title">Split project ';
 title
-__p+='</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n      </div>\n      <div class="modal-body">\n\n        <form class="splitform">\n          <div class="form-group row">\n          <div class="col-12">\n             <button type="button" class="btn btn-primary js-addpackage"><i class="fas fa-folder-plus"></i> Add new package</button>\n          </div>\n        </div> \n        <div class="userrows">\n        </div>\n\n       <!--  <div class="form-group row">\n          <div class="col-4">\n          <label id="splitLabel" for="splitPage">Split into '+
+__p+='</h5>\r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class="modal-body">\r\n\r\n        <form class="splitform">\r\n          <div class="form-group row">\r\n          <div class="col-12">\r\n             <button type="button" class="btn btn-primary js-addpackage"><i class="fas fa-folder-plus"></i> Add new package</button>\r\n          </div>\r\n        </div> \r\n        <div class="userrows">\r\n        </div>\r\n\r\n       <!--  <div class="form-group row">\r\n          <div class="col-4">\r\n          <label id="splitLabel" for="splitPage">Split into '+
 ((__t=(n))==null?'':_.escape(__t))+
-' pages</label>\n          <input id="split-n" name="split-n" size="3" type="number" min="1" max="100" step="1" value="'+
+' pages</label>\r\n          <input id="split-n" name="split-n" size="3" type="number" min="1" max="100" step="1" value="'+
 ((__t=(n))==null?'':_.escape(__t))+
-'" class="form-control">\n          </div>\n        </div> -->\n        <div class="form-group form-check">\n          <input type="checkbox" class="form-check-input" id="checkRnd">\n          <label class="form-check-label" for="checkRnd">Random</label>\n        </div>\n      </form>\n      </div>\n      <div class="modal-footer">\n        <button type="button" class="btn btn-primary js-confirm">Confirm</button>\n        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>\n      </div>\n    </div>\n  </div>\n';
+'" class="form-control">\r\n          </div>\r\n        </div> -->\r\n        <div class="form-group form-check">\r\n          <input type="checkbox" class="form-check-input" id="checkRnd">\r\n          <label class="form-check-label" for="checkRnd">Random</label>\r\n        </div>\r\n      </form>\r\n      </div>\r\n      <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-confirm">Confirm</button>\r\n        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n';
 }
 return __p;
 };});
@@ -27702,23 +27785,23 @@ return __p;
 define("tpl!apps/projects/show/templates/packages.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n';
+__p+='\r\n';
  if(packages.length>0){ 
-__p+='\n\n<div class="container">\n\n<hr>\n\n<div class="row">\n<div class="col-lg-12">\n\n\n<h4> <b>Packages:</b>  </h4> \n\n\n \n<table class="table table-bordered" \n id="book_table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\n\n <thead class="thead-light">\n      <tr>\n        <th>Title</th>\n        <th>Author</th>\n        <th>Language</th>\n        <th>Pages</th>\n      </tr>\n </thead>\n <tbody>\n\n 	';
+__p+='\r\n\r\n<div class="container">\r\n\r\n<hr>\r\n\r\n<div class="row">\r\n<div class="col-lg-12">\r\n\r\n\r\n<h4> <b>Packages:</b>  </h4> \r\n\r\n\r\n \r\n<table class="table table-bordered" \r\n id="book_table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\r\n\r\n <thead class="thead-light">\r\n      <tr>\r\n        <th>Title</th>\r\n        <th>Author</th>\r\n        <th>Language</th>\r\n        <th>Pages</th>\r\n      </tr>\r\n </thead>\r\n <tbody>\r\n\r\n 	';
  _.each(packages, function(package) { 
-__p+='\n 	<tr class="clickable-row" data-href="#projects/'+
+__p+='\r\n 	<tr class="clickable-row" data-href="#projects/'+
 ((__t=(package.projectId))==null?'':_.escape(__t))+
-'">  \n        <td>'+
+'">  \r\n        <td>'+
 ((__t=(package.title))==null?'':_.escape(__t))+
-'</td>\n        <td>'+
+'</td>\r\n        <td>'+
 ((__t=(package.author))==null?'':_.escape(__t))+
-'</td>\n        <td>'+
+'</td>\r\n        <td>'+
 ((__t=(package.year))==null?'':_.escape(__t))+
-'</td>\n        <td>'+
+'</td>\r\n        <td>'+
 ((__t=(package.pages))==null?'':_.escape(__t))+
-'</td>\n    </tr>\n    ';
+'</td>\r\n    </tr>\r\n    ';
  }); 
-__p+='   \n\n </tbody>\n\n</table> \n\n</div>\n</div>\n</div>\n\n';
+__p+='   \r\n\r\n </tbody>\r\n\r\n</table> \r\n\r\n</div>\r\n</div>\r\n</div>\r\n\r\n';
  } 
 __p+='';
 }
@@ -27852,8 +27935,7 @@ define('apps/projects/show/show_view',["marionette","app","backbone.syphon","com
       }
     
   });
-Show.Page = Page.Page.extend({});
-Show.Concordance = Concordance.Concordance.extend({});
+
 
 Show.FooterPanel = Views.FooterPanel.extend({
     });
@@ -28369,6 +28451,48 @@ getAllCorrectionSuggestions: function(data){
   return defer.promise();
   
 },
+getSuspiciousWords: function(data){
+    data['backend_route'] = "get_suspicious_words";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+getErrorPatterns: function(data){
+    data['backend_route'] = "get_error_patterns";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
 getSplitImages: function(data){
     data['backend_route'] = "get_split_images";
   var defer = jQuery.Deferred();
@@ -28539,7 +28663,7 @@ var cards2 = [
                   "color": "green",
                   "icon": "fas fa-file-signature",
                   "id": "users_button",
-                  "name": "A-I-PoCoTo",
+                  "name": "Manual Postcorrection",
                   "seq": 2,
                   "text": "Manual interactive postcorrection tools.",
                   "url": "projects:show_page",
@@ -28789,20 +28913,21 @@ return Controller;
 // apps/project/page/show/show_controller.js
 // ======================================
 
-define('apps/projects/page/show/show_controller',["app","common/util","common/views","apps/projects/show/show_view"], function(App,Util,Views,Show){
+define('apps/projects/page/show/show_controller',["app","common/util","common/views","apps/projects/page/show/show_view"], function(App,Util,Views,Show){
 
 
  Controller = {
 
 		showPage: function(id,page_id){
 
-     		require(["entities/project"], function(ProjectEntitites){
+     		require(["entities/project"], function(ProjectEntities){
 
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
-    			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
-            
-        	 $.when(fetchingpage).done(function(page){
+    			  var fetchingpage = ProjectEntities.API.getPage({pid:id, page:page_id});
+           var fetchingproject = ProjectEntities.API.getProject({pid:id});
+
+        	 $.when(fetchingpage,fetchingproject).done(function(page,project){
 
 		     	loadingCircleView.destroy();
             console.log(page);
@@ -28810,7 +28935,9 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
 		 	//currentProposal.set({"url_id":id}); // pass url_id to view..
 			var projectShowLayout = new Show.Layout();
 			var projectShowHeader;
-			var projectShowInfo;
+			var projectShowPage;
+      var projectShowSidebar;
+
 			var projectShowFooterPanel;
 			// console.log(reviews);
 	
@@ -28818,16 +28945,32 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
 			  
 
         // ** to do: get junks from server
-        var fetchingallcorrections = ProjectEntitites.API.getAllCorrectionSuggestions({pid:id, page:page_id});
-           $.when(fetchingallcorrections).done(function(allsuggestions){
-             projectShowPage.setErrorDropdowns(allsuggestions,id);
+        var fetchingsuspiciouswords = ProjectEntities.API.getSuspiciousWords({pid:id});
+        var fetchingerrorpatterns = ProjectEntities.API.getErrorPatterns({pid:id});
+
+           $.when(fetchingsuspiciouswords,fetchingerrorpatterns).done(function(suspicious_words,error_patterns){
+            // console.log(suspicious_words);
+            console.log(error_patterns);
+
+            for (word in suspicious_words['counts']) {
+               $('.suspicious-words tbody').append($('<tr><td>'+word+'</td><td>'+suspicious_words['counts'][word]+'</td></tr>'));
+            }
+
+            $('.suspicious-words-container > .loading_background2').fadeOut();
+
+              for (word in error_patterns['counts']) {
+               $('.error-patterns tbody').append($('<tr><td>'+word+'</td><td>'+error_patterns['counts'][word]+'</td></tr>'));
+            }
+            $('.error-patterns-container > .loading_background2').fadeOut();
+
+             // projectShowPage.setErrorDropdowns(suspicious_words,id);
            });
 
 
 
-			  // projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
+			  projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
         projectShowPage = new Show.Page({model:page});
-			  projectShowInfo = new Show.Info({});
+			  projectShowSidebar = new Show.Sidebar({model:page});
       	projectShowFooterPanel = new Show.FooterPanel();
 
        projectShowPage.on("page:error-patterns-clicked",function(pid,pat){
@@ -28837,12 +28980,20 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
        projectShowPage.on("page:error-tokens-clicked",function(pid,pat){
         this.trigger('page:concordance_clicked',pat,0);
        });
-       projectShowPage.on("page:new",function(page_id){
-                    var fetchingnewpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
+       projectShowSidebar.on("page:new",function(page_id){
+                    var fetchingnewpage = ProjectEntities.API.getPage({pid:id, page:page_id});
                   $.when(fetchingnewpage).done(function(new_page){
+                    console.log(new_page)
+                     new_page.attributes.title = project.get('title');
+
                       projectShowPage.model=new_page
-                        projectShowPage.render();    
-                     App.navigate("projects/"+id+"/page/"+page_id);
+                      projectShowPage.render();
+                      projectShowSidebar.model = new_page;
+                      $('#pageId').text('Page '+new_page.get('pageId'))
+                      $('.js-stepforward > a').attr('title','go to previous page #'+new_page.get('nextPageId'));
+                      $('.js-stepbackward > a').attr('title','go to next page #'+new_page.get('prevPageId'));
+
+                     App.navigate("projects/"+id+"/page/"+new_page.get('pageId'));
          
                   }).fail(function(response){
                      App.mainmsg.updateContent(response.responseText,'danger');
@@ -28855,7 +29006,7 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
 
           console.log(data);
 
-                    var correctingline = ProjectEntitites.API.correctLine(data);
+                    var correctingline = ProjectEntities.API.correctLine(data);
                   $.when(correctingline).done(function(result){
                     
                     console.log(result);
@@ -28905,8 +29056,8 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
 
            projectShowPage.on("page:line_selected",function(selection){
                     var that = this;
-                    var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:selection,pid:id});
-                    var searchingToken = ProjectEntitites.API.searchToken({q:selection,p:page_id,pid:id,isErrorPattern:0});
+                    var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:selection,pid:id});
+                    var searchingToken = ProjectEntities.API.searchToken({q:selection,p:page_id,pid:id,isErrorPattern:0});
 
                   $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
                     
@@ -28969,8 +29120,8 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
 
        projectShowPage.on("page:concordance_clicked",function(selection,isErrorPattern){
         console.log(selection);
-       var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:selection,pid:id});
-       var searchingToken = ProjectEntitites.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern});
+       var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:selection,pid:id});
+       var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern});
        var that = this;
          $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
             var tokendata = tokens['matches'][selection];
@@ -28987,14 +29138,14 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
                console.log(anchor);
                console.log(data);
 
-                    var correctingtoken = ProjectEntitites.API.correctToken(data);
+                    var correctingtoken = ProjectEntities.API.correctToken(data);
                   $.when(correctingtoken).done(function(result){
                     
                     console.log(result);
 
                        // update lines in background with corrections
 
-                       var gettingLine = ProjectEntitites.API.getLine(data);
+                       var gettingLine = ProjectEntities.API.getLine(data);
                       $.when(gettingLine).done(function(line_result){
                         console.log(line_result);
 
@@ -29079,109 +29230,16 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
         });
    
 
-
-			  projectShowInfo.on("show:edit_clicked",function(methods){
-
-
-			   var projectsShowEditProject = new Show.ProjectForm({model:project
-          , asModal:true,text:"Edit Project",edit_project:true,loading_text:"Update in progress"});
-
-
-           projectsShowEditProject.on("project:update_clicked",function(data){
-            project.set(data)
-
-            var puttingProject = ProjectEntitites.API.updateProject(id,project);
-
-
-                 $.when(postingProject).done(function(result){
-                  $('.loading_background').fadeOut();
-
-                   $('#projects-modal').modal('toggle');
-
-                    // TO DO
-                })
-
-
-          });
-
-
-          App.mainLayout.showChildView('dialogRegion',projectsShowEditProject);
-
-          });
-
-
-            projectShowInfo.on("show:delete_clicked",function(methods){
-
-			   var projectsShowDeleteProject = new Show.DeleteProjectForm({asModal:true,text:"Remove this Project?",title:"Delete Project"});
-
-
-        	   projectsShowDeleteProject.on("project:delete_clicked",function(){
-               var deletingProject = ProjectEntitites.API.deleteProject(id);
-
-
-                 $.when(deletingProject).done(function(result){
-                  $('.loading_background').fadeOut();
-
-                   $('#confirm-modal').modal('toggle');
-
-
-                   	App.trigger("projects:list");   
-
-
-                   projectsShowDeleteProject.model.clear().set(projectsListDeleteProject.model.defaults);
-                   $('#selected_file').text("");
-                   // projectsListAddProject.render()
-
-                })
-
-
-          });
-
-        
-
-          App.mainLayout.showChildView('dialogRegion',projectsShowDeleteProject);
-
-
-
-		  });
-
-
-         projectShowInfo.on("show:add_book_clicked",function(methods){
-
-
-		   var projectsShowAddBook = new Show.ProjectForm({model: new ProjectEntitites.Project(), asModal:true,text:"Add a book to the OCR Project",add_book:true,loading_text:"Adding book"});
-
-
-       projectsShowAddBook.on("project:addbook_clicked",function(data){
-		   var addingBook = ProjectEntitites.API.addBook(id,data);
-
-
-		         $.when(addingBook).done(function(result){
-		          $('.loading_background').fadeOut();
-
-		           $('#projects-modal').modal('toggle');
-
-
-		           projectsShowAddBook.model.clear().set(projectsListEditProject.model.defaults);
-		           $('#selected_file').text("");
-		           // projectsListAddProject.render()
-
-		        })
-
-
-      });
-
-
-          App.mainLayout.showChildView('dialogRegion',projectsShowAddBook);
-
-          });
+    
 
 
   			// projectPanel = new Show.FooterPanel();
 
 
-	          // projectShowLayout.showChildView('headerRegion',projectShowHeader);
-	          projectShowLayout.showChildView('infoRegion',projectShowPage);
+	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
+	          projectShowLayout.showChildView('pageRegion',projectShowPage);
+            projectShowLayout.showChildView('sidebarRegion',projectShowSidebar);
+
 	          projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
 
 
@@ -29209,7 +29267,7 @@ return Controller;
 define("tpl!apps/projects/list/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\n<div id="panel-region" ></div>\n<div id="info-region" ></div>\n\n<div id="footer-region" ></div>\n';
+__p+='<div id="hl-region"></div>\r\n<div id="panel-region" ></div>\r\n<div id="info-region" ></div>\r\n\r\n<div id="footer-region" ></div>\r\n';
 }
 return __p;
 };});
@@ -29218,7 +29276,7 @@ return __p;
 define("tpl!apps/projects/list/templates/listpanel.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="container">\n<div class="row">\n<div class="col-lg-12">\n\n\n<button type="submit" class="btn btn btn-primary js-create" style="margin-bottom:15px"> <i class="fa fa-plus" aria-hidden="true"></i> Create new project</button>\n\n</div>\n</div>\n</div>';
+__p+='<div class="container">\r\n<div class="row">\r\n<div class="col-lg-12">\r\n\r\n\r\n<button type="submit" class="btn btn btn-primary js-create" style="margin-bottom:15px"> <i class="fa fa-plus" aria-hidden="true"></i> Create new project</button>\r\n\r\n</div>\r\n</div>\r\n</div>';
 }
 return __p;
 };});
@@ -48542,7 +48600,7 @@ var effectsEffectTransfer = effect;
 define("tpl!apps/projects/a_pocoto/lexicon_extension/show/templates/info.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n<div class="container">\n<hr>\n\n\n<div class="row">\n<div class="col-lg-5">\n<h4>Extensions</h4> \n\n<table id="extensions" class="table table-bordered sortable table-hover" style=\'margin-bottom: 30px;\'> \n<thead class="thead-light">\n      <tr>\n        <th>Word</th>\n        <th>Frequency</th>\n      </tr>\n </thead>\n <tbody>\n\n    <tr>  \n        <td>vnd</td>\n        <td>10</td>\n    </tr>\n       <tr>  \n        <td>word2</td>\n        <td>30</td>\n    </tr>\n       <tr>  \n        <td>word3</td>\n        <td>40</td>\n    </tr>\n\n </tbody>\n\n</table> \n\n\n</div>\n\n<div class="col-lg-2">\n<div style="text-align: center;">\n<i style="margin-top: 118px;font-size: 50px;" class="fas fa-exchange-alt"></i>\n</div>\n</div>\n\n<div class="col-lg-5">\n\n<table id="unknown" class="table table-bordered sortable table-hover" style=\'margin-bottom: 30px;\'>\n<h4>Unknown</h4> \n<thead class="thead-light">\n      <tr>\n        <th>Word</th>\n        <th>Frequency</th>\n      </tr>\n </thead>\n <tbody>\n\n    <tr>  \n        <td>word1</td>\n        <td>4</td>\n    </tr>\n       <tr>  \n        <td>word2</td>\n        <td>3</td>\n    </tr>\n       <tr>  \n        <td>word3</td>\n        <td>21</td>\n    </tr>\n\n </tbody>\n\n</table> \n\n\n</div>\n\n\n\n\n\n</div>\n</div>\n\n';
+__p+='\r\n\r\n<div class="container">\r\n<hr>\r\n\r\n\r\n<div class="row">\r\n<div class="col-lg-5">\r\n<h4>Extensions</h4> \r\n\r\n<table id="extensions" class="table table-bordered sortable table-hover" style=\'margin-bottom: 30px;\'> \r\n<thead class="thead-light">\r\n      <tr>\r\n        <th>Word</th>\r\n        <th>Frequency</th>\r\n      </tr>\r\n </thead>\r\n <tbody>\r\n\r\n    <tr>  \r\n        <td>vnd</td>\r\n        <td>10</td>\r\n    </tr>\r\n       <tr>  \r\n        <td>word2</td>\r\n        <td>30</td>\r\n    </tr>\r\n       <tr>  \r\n        <td>word3</td>\r\n        <td>40</td>\r\n    </tr>\r\n\r\n </tbody>\r\n\r\n</table> \r\n\r\n\r\n</div>\r\n\r\n<div class="col-lg-2">\r\n<div style="text-align: center;">\r\n<i style="margin-top: 118px;font-size: 50px;" class="fas fa-exchange-alt"></i>\r\n</div>\r\n</div>\r\n\r\n<div class="col-lg-5">\r\n\r\n<table id="unknown" class="table table-bordered sortable table-hover" style=\'margin-bottom: 30px;\'>\r\n<h4>Unknown</h4> \r\n<thead class="thead-light">\r\n      <tr>\r\n        <th>Word</th>\r\n        <th>Frequency</th>\r\n      </tr>\r\n </thead>\r\n <tbody>\r\n\r\n    <tr>  \r\n        <td>word1</td>\r\n        <td>4</td>\r\n    </tr>\r\n       <tr>  \r\n        <td>word2</td>\r\n        <td>3</td>\r\n    </tr>\r\n       <tr>  \r\n        <td>word3</td>\r\n        <td>21</td>\r\n    </tr>\r\n\r\n </tbody>\r\n\r\n</table> \r\n\r\n\r\n</div>\r\n\r\n\r\n\r\n\r\n\r\n</div>\r\n</div>\r\n\r\n';
 }
 return __p;
 };});
@@ -48590,11 +48648,6 @@ define('apps/projects/a_pocoto/lexicon_extension/show/show_view',["marionette","
         e.preventDefault();
         var word = $($(e.currentTarget).find("td")[0]).text();
 
-        if ( $("#conc-modal").hasClass('show') )
-                    {
-                      console.log("KASDK")
-                    }
-        
         this.trigger("show:word_clicked",word);
       },
 
@@ -48814,7 +48867,7 @@ define('apps/projects/projects_app',["marionette","app"], function(Marionette,Ap
 define("tpl!apps/docs/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\n    <div id="info-region" ></div>\n    <div id="structures-region" ></div>\n    <div id="panel-region"></div>\n\n';
+__p+='<div id="hl-region"></div>\r\n    <div id="info-region" ></div>\r\n    <div id="structures-region" ></div>\r\n    <div id="panel-region"></div>\r\n\r\n';
 }
 return __p;
 };});
@@ -48823,7 +48876,7 @@ return __p;
 define("tpl!apps/docs/show/templates/info.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n\n<div class="container">\n<div class="row">\n\n   <div class="col col-12-md">\n\n   <div id="docs">\n   </div>\n\n\n\n  </div>\n\n\n</div>\n\n\n</div>\n\n';
+__p+='\r\n\r\n<div class="container">\r\n<div class="row">\r\n\r\n   <div class="col col-12-md">\r\n\r\n   <div id="docs">\r\n   </div>\r\n\r\n\r\n\r\n  </div>\r\n\r\n\r\n</div>\r\n\r\n\r\n</div>\r\n\r\n';
 }
 return __p;
 };});
@@ -49119,39 +49172,39 @@ return Controller;
 define("tpl!apps/users/common/templates/userform.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n';
+__p+='\r\n';
  if(asModal){
-__p+='\n\n  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header">\n        <h5 class="modal-title">'+
+__p+='\r\n\r\n  <div class="modal-dialog" role="document">\r\n    <div class="modal-content">\r\n      <div class="modal-header">\r\n        <h5 class="modal-title">'+
 ((__t=(modaltitle))==null?'':_.escape(__t))+
-'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">×</span>\n        </button>\n       </div>\n \n  <div class="modal-body">\n       \n';
+'</h5>\r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">×</span>\r\n        </button>\r\n       </div>\r\n \r\n  <div class="modal-body">\r\n       \r\n';
 } else {
-__p+='\n\n<div class="container">\n<div class="row">\n <div class="col col-md-12">\n\n';
+__p+='\r\n\r\n<div class="container">\r\n<div class="row">\r\n <div class="col col-md-12">\r\n\r\n';
 }
-__p+='\n\n<div class="form-group row ">\n    <label class="col-md-3 form-control-label required">Username</label>\n    <div class="col-md-6">     \n          <input class="form-control" name="name" type="text" value="'+
+__p+='\r\n\r\n<div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">Username</label>\r\n    <div class="col-md-6">     \r\n          <input class="form-control" name="name" type="text" value="'+
 ((__t=(name))==null?'':_.escape(__t))+
-'" required="">\n    </div>\n    <div class="col-md-3 form-control-comment"> \n    </div>\n  </div>\n\n  <div class="form-group row ">\n    <label class="col-md-3 form-control-label required">Email</label>\n    <div class="col-md-6">\n          <input class="form-control" name="email" type="email" value="'+
+'" required="">\r\n    </div>\r\n    <div class="col-md-3 form-control-comment"> \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">Email</label>\r\n    <div class="col-md-6">\r\n          <input class="form-control" name="email" type="email" value="'+
 ((__t=(email))==null?'':_.escape(__t))+
-'" required="">\n    </div>\n    <div class="col-md-3 form-control-comment">              \n    </div>\n  </div>\n\n   <div class="form-group row ">\n    <label class="col-md-3 form-control-label">Institute</label>\n      <div class="col-md-6">\n    <input class="form-control" name="institute" type="text" value="'+
+'" required="">\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">              \r\n    </div>\r\n  </div>\r\n\r\n   <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">Institute</label>\r\n      <div class="col-md-6">\r\n    <input class="form-control" name="institute" type="text" value="'+
 ((__t=(institute))==null?'':_.escape(__t))+
-'">\n    </div>\n\n    <div class="col-md-3 form-control-comment">\n    \n    </div>\n  </div>\n\n  <div class="form-group row ">\n    <label class="col-md-3 form-control-label required">\n              Password\n          </label>\n    <div class="col-md-6">\n\n          <div class="input-group">\n            <input class="form-control" name="password" type="password" value="'+
+'">\r\n    </div>\r\n\r\n    <div class="col-md-3 form-control-comment">\r\n    \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">\r\n              Password\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control" name="password" type="password" value="'+
 ((__t=(password))==null?'':_.escape(__t))+
-'" pattern=".{5,}" required="">\n            <!-- <span class="input-group-btn">\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\n                Show\n              </button>\n            </span> -->\n          </div>\n   \n    </div>\n    <div class="col-md-3 form-control-comment">   \n    </div>\n  </div>\n       \n  <div class="form-group row ">\n    <label class="col-md-3 form-control-label">\n               Password (retype)\n          </label>\n    <div class="col-md-6">\n\n          <div class="input-group">\n            <input class="form-control " name="new_password" type="password" value="'+
+'" pattern=".{5,}" required="">\r\n            <!-- <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span> -->\r\n          </div>\r\n   \r\n    </div>\r\n    <div class="col-md-3 form-control-comment">   \r\n    </div>\r\n  </div>\r\n       \r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">\r\n               Password (retype)\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control " name="new_password" type="password" value="'+
 ((__t=(password))==null?'':_.escape(__t))+
-'" pattern=".{5,}">\n           <!--  <span class="input-group-btn">\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\n                Show\n              </button>\n            </span> -->\n          </div>\n    </div>\n    <div class="col-md-3 form-control-comment">\n    </div>\n  </div>\n ';
+'" pattern=".{5,}">\r\n           <!--  <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span> -->\r\n          </div>\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">\r\n    </div>\r\n  </div>\r\n ';
  if(admincheck) {
-__p+='\n \n    <div class="form-group form-check">\n    <input type="checkbox" class="form-check-input" id="admin_check">\n    <label class="form-check-label" for="admin_check">Administrator</label>\n  </div>\n  ';
+__p+='\r\n \r\n    <div class="form-group form-check">\r\n    <input type="checkbox" class="form-check-input" id="admin_check">\r\n    <label class="form-check-label" for="admin_check">Administrator</label>\r\n  </div>\r\n  ';
  }
-__p+='\n\n';
+__p+='\r\n\r\n';
  if(asModal){
-__p+='\n </div>\n  <div class="modal-footer">\n        <button type="button" class="btn btn-primary js-submit">Submit</button>\n      </div>\n    </div>\n\n</div>\n</div>\n\n';
+__p+='\r\n </div>\r\n  <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-submit">Submit</button>\r\n      </div>\r\n    </div>\r\n\r\n</div>\r\n</div>\r\n\r\n';
 } else  { 
-__p+='\n';
+__p+='\r\n';
  if (create) {
-__p+='\n<div class="row">\n<div class="col-md-3"></div>\n  <div class="col-md-6">\n     <button type="button" style="float:right;" class="btn btn-primary js-submit">Submit</button>\n  </div>\n  </div>\n\n';
+__p+='\r\n<div class="row">\r\n<div class="col-md-3"></div>\r\n  <div class="col-md-6">\r\n     <button type="button" style="float:right;" class="btn btn-primary js-submit">Submit</button>\r\n  </div>\r\n  </div>\r\n\r\n';
  } 
-__p+='\n\n</div>\n</div>\n</div>\n';
+__p+='\r\n\r\n</div>\r\n</div>\r\n</div>\r\n';
 }
-__p+='\n\n';
+__p+='\r\n\r\n';
 }
 return __p;
 };});
@@ -49235,7 +49288,7 @@ return Views;
 define("tpl!apps/users/list/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\n    <div id="panel-region"></div>\n    <div id="info-region" ></div>\n    <div id="footer-region" ></div>\n';
+__p+='<div id="hl-region"></div>\r\n    <div id="panel-region"></div>\r\n    <div id="info-region" ></div>\r\n    <div id="footer-region" ></div>\r\n';
 }
 return __p;
 };});
@@ -49244,7 +49297,7 @@ return __p;
 define("tpl!apps/users/list/templates/panel.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+=' <div class="container">\n\n<div class="row">\n\n <div class="col col-md-12">\n\n  <button style="margin-bottom: 25px;margin-top: 25px;" type="button" class="btn btn-primary js-create"><i class="fas fa-user-plus"></i> Create new user</button>                     \n  \n</div>\n\n</div>\n\n</div>';
+__p+=' <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button style="margin-bottom: 25px;margin-top: 25px;" type="button" class="btn btn-primary js-create"><i class="fas fa-user-plus"></i> Create new user</button>                     \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
 }
 return __p;
 };});
@@ -49476,7 +49529,7 @@ return App.UsersApp.Login.Controller;
 define("tpl!apps/users/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\n    <div id="panel-region"></div>\n    <div id="info-region" ></div>\n    <div id="footer-region" ></div>\n';
+__p+='<div id="hl-region"></div>\r\n    <div id="panel-region"></div>\r\n    <div id="info-region" ></div>\r\n    <div id="footer-region" ></div>\r\n';
 }
 return __p;
 };});
@@ -49485,7 +49538,7 @@ return __p;
 define("tpl!apps/users/show/templates/panel.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='    <div class="container">\n\n<div class="row">\n\n <div class="col col-md-12">\n\n  <button type="button" class="btn btn-primary js-update"><i class="fas fa-user-edit"></i> Update account settings</button>\n  <button type="button" class="btn btn-primary js-delete"><i class="fas fa-user-times"></i> Delete this account</button>\n\n  <h3  style="margin-bottom: 25px;margin-top: 25px;"> Personal Information </h3>\n                                \n  \n</div>\n\n</div>\n\n</div>';
+__p+='    <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button type="button" class="btn btn-primary js-update"><i class="fas fa-user-edit"></i> Update account settings</button>\r\n  <button type="button" class="btn btn-primary js-delete"><i class="fas fa-user-times"></i> Delete this account</button>\r\n\r\n  <h3  style="margin-bottom: 25px;margin-top: 25px;"> Personal Information </h3>\r\n                                \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
 }
 return __p;
 };});
