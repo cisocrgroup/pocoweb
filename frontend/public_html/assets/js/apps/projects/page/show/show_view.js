@@ -76,6 +76,20 @@ define(["marionette","app","medium","backbone.syphon","common/views","common/uti
         e.preventDefault();
         this.trigger("page:new","last");
       },
+      onAttach:function(){
+
+      
+
+
+        $("#hl1").click(function() {
+          $("#suspicious-words-container").slideToggle("slow", function() {
+          });
+        });
+        $("#hl2").click(function() {
+          $("#error-patterns-container").slideToggle("slow", function() {
+          });
+        });
+      }
 
   });
 
@@ -270,6 +284,7 @@ define(["marionette","app","medium","backbone.syphon","common/views","common/uti
       },
 
       onDomRefresh:function(e){
+          
 
            var that = this;
            $('.line-img').each(function(index){
@@ -289,7 +304,7 @@ define(["marionette","app","medium","backbone.syphon","common/views","common/uti
 
         $(window).on('scroll', function(event) {
     
-          console.log(sticky);
+          // console.log(sticky);
 
            if (window.pageYOffset >= sticky) {
               $('#sidebar-region').addClass('sticky').width(parent_width);

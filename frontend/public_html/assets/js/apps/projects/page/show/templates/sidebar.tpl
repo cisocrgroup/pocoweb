@@ -41,15 +41,22 @@
 			</a></li>
 		</ul>
 		  <hr style="margin: 0;">
-		  <div class="card-header">
-		    Suspicious words
+		  <div id="accordion">
+		  <div class="card-header" id="hl1">
+		  	  <button class="btn btn-link">
+		  		  Suspicious words
+       		 </button>
 		  </div>
-		   <div class="suspicious-words-container">
+		   <div id="suspicious-words-container">
 		   	<div class="loading_background2">
 	         <div class="loading_text_parent">
 	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>
         	 </div>
         	 </div>
+        	   <div id="suspicious-words_filter">
+               <input type="search" class="" placeholder="Search...">
+          	   </div>
+
 		   <table class="table suspicious-words">
 		    <thead>
 		      <tr>
@@ -63,15 +70,20 @@
 		  </table>
 		</div>
 		 <hr style="margin: 0;">
-		  <div class="card-header ">
-		    Error patterns
+		  <div class="card-header" id="hl2">
+		  	 <button class="btn btn-link">
+		   			 Error patterns
+       		 </button>
 		  </div>
-		   <div class="error-patterns-container">
+		   <div id="error-patterns-container">
 		   	<div class="loading_background2">
 	         <div class="loading_text_parent">
 	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>
         	 </div>
         	 </div>
+        	 <div id="error-patterns_filter">
+               <input type="search" placeholder="Search...">
+          	 </div>
 		   <table class="table error-patterns">
 		    <thead>
 		      <tr>
@@ -84,5 +96,5 @@
 		    </tbody>
 		  </table>
 		</div>
-		
+	  </div>
 	</div>

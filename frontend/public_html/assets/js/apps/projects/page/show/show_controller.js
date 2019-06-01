@@ -38,21 +38,48 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         var fetchingerrorpatterns = ProjectEntities.API.getErrorPatterns({pid:id});
 
            $.when(fetchingsuspiciouswords,fetchingerrorpatterns).done(function(suspicious_words,error_patterns){
-            // console.log(suspicious_words);
-            console.log(error_patterns);
 
+            var suspicious_words_array = [];
             for (word in suspicious_words['counts']) {
-               $('.suspicious-words tbody').append($('<tr><td>'+word+'</td><td>'+suspicious_words['counts'][word]+'</td></tr>'));
+               suspicious_words_array.push([word,suspicious_words['counts'][word]]);
             }
 
-            $('.suspicious-words-container > .loading_background2').fadeOut();
+            var sp_table = $('.suspicious-words').DataTable({
+                  "data":suspicious_words_array,
+                  "info":false,
+                  "paging": false,
+                  "lengthChange": false,
+                });
 
+              $('#suspicious-words_filter input').on('keyup click', function () {
+                sp_table.search($(this).val()).draw();
+              });
+              var rows = $('#suspicious-words_filter').next().find('.row');
+              rows[0].remove();
+            $('#suspicious-words-container > .loading_background2').fadeOut();
+
+              var error_patterns_array = [];
               for (word in error_patterns['counts']) {
-               $('.error-patterns tbody').append($('<tr><td>'+word+'</td><td>'+error_patterns['counts'][word]+'</td></tr>'));
+               error_patterns_array.push([word,error_patterns['counts'][word]]);
             }
-            $('.error-patterns-container > .loading_background2').fadeOut();
 
-             // projectShowPage.setErrorDropdowns(suspicious_words,id);
+             var ep_table = $('.error-patterns').DataTable({
+                  "data":error_patterns_array,
+                  "info":false,
+                  "paging": false,
+                  "lengthChange": false,
+                  "order": [[ 1, "desc" ]]
+
+                });
+
+              $('#error-patterns_filter input').on('keyup click', function () {
+                ep_table.search($(this).val()).draw();
+              });
+
+              var rows = $('#error-patterns_filter').next().find('.row');
+              rows[0].remove();
+            $('#error-patterns-container > .loading_background2').fadeOut();
+
            });
 
 

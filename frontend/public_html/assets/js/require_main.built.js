@@ -27313,7 +27313,7 @@ __p+='\r\n    <div class="card">\r\n\r\n	\r\n\r\n		<ul class="nav  navbar-light 
 ((__t=(pageId))==null?'':_.escape(__t))+
 '</div>\r\n		</li>\r\n\r\n	<!--error-patterns -->\r\n	<!-- <li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-patterns-dropdown">\r\n		Error patterns<span class="caret"></span></a>\r\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\r\n        </div>\r\n    </li> -->\r\n	<!-- error-tokens -->\r\n	<!-- <li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-tokens-dropdown">\r\n		Error tokens<span class="caret"></span></a>\r\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\r\n        </div>\r\n     </li> -->\r\n\r\n   \r\n\r\n	<!--nextpage and last page -->\r\n		<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
 ((__t=(nextPageId))==null?'':_.escape(__t))+
-'">\r\n			<i class="fas fa-angle-right"></i>\r\n			</a></li>\r\n		<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\r\n			<i class="fas fa-angle-double-right"></i>\r\n			</a></li>\r\n		</ul>\r\n		  <hr style="margin: 0;">\r\n		  <div class="card-header">\r\n		    Suspicious words\r\n		  </div>\r\n		   <div class="suspicious-words-container">\r\n		   	<div class="loading_background2">\r\n	         <div class="loading_text_parent">\r\n	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>\r\n        	 </div>\r\n        	 </div>\r\n		   <table class="table suspicious-words">\r\n		    <thead>\r\n		      <tr>\r\n		        <th>Word</th>\r\n		        <th>Count</th>\r\n		      </tr>\r\n		    </thead>\r\n		    <tbody>\r\n		    \r\n		    </tbody>\r\n		  </table>\r\n		</div>\r\n		 <hr style="margin: 0;">\r\n		  <div class="card-header ">\r\n		    Error patterns\r\n		  </div>\r\n		   <div class="error-patterns-container">\r\n		   	<div class="loading_background2">\r\n	         <div class="loading_text_parent">\r\n	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>\r\n        	 </div>\r\n        	 </div>\r\n		   <table class="table error-patterns">\r\n		    <thead>\r\n		      <tr>\r\n		        <th>Word</th>\r\n		        <th>Count</th>\r\n		      </tr>\r\n		    </thead>\r\n		    <tbody>\r\n		    \r\n		    </tbody>\r\n		  </table>\r\n		</div>\r\n		\r\n	</div>';
+'">\r\n			<i class="fas fa-angle-right"></i>\r\n			</a></li>\r\n		<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\r\n			<i class="fas fa-angle-double-right"></i>\r\n			</a></li>\r\n		</ul>\r\n		  <hr style="margin: 0;">\r\n		  <div id="accordion">\r\n		  <div class="card-header" id="hl1">\r\n		  	  <button class="btn btn-link">\r\n		  		  Suspicious words\r\n       		 </button>\r\n		  </div>\r\n		   <div id="suspicious-words-container">\r\n		   	<div class="loading_background2">\r\n	         <div class="loading_text_parent">\r\n	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>\r\n        	 </div>\r\n        	 </div>\r\n        	   <div id="suspicious-words_filter">\r\n               <input type="search" class="" placeholder="Search...">\r\n          	   </div>\r\n\r\n		   <table class="table suspicious-words">\r\n		    <thead>\r\n		      <tr>\r\n		        <th>Word</th>\r\n		        <th>Count</th>\r\n		      </tr>\r\n		    </thead>\r\n		    <tbody>\r\n		    \r\n		    </tbody>\r\n		  </table>\r\n		</div>\r\n		 <hr style="margin: 0;">\r\n		  <div class="card-header" id="hl2">\r\n		  	 <button class="btn btn-link">\r\n		   			 Error patterns\r\n       		 </button>\r\n		  </div>\r\n		   <div id="error-patterns-container">\r\n		   	<div class="loading_background2">\r\n	         <div class="loading_text_parent">\r\n	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>\r\n        	 </div>\r\n        	 </div>\r\n        	 <div id="error-patterns_filter">\r\n               <input type="search" placeholder="Search...">\r\n          	 </div>\r\n		   <table class="table error-patterns">\r\n		    <thead>\r\n		      <tr>\r\n		        <th>Word</th>\r\n		        <th>Count</th>\r\n		      </tr>\r\n		    </thead>\r\n		    <tbody>\r\n		    \r\n		    </tbody>\r\n		  </table>\r\n		</div>\r\n	  </div>\r\n	</div>';
 }
 return __p;
 };});
@@ -27405,6 +27405,20 @@ define('apps/projects/page/show/show_view',["marionette","app","medium","backbon
         e.preventDefault();
         this.trigger("page:new","last");
       },
+      onAttach:function(){
+
+      
+
+
+        $("#hl1").click(function() {
+          $("#suspicious-words-container").slideToggle("slow", function() {
+          });
+        });
+        $("#hl2").click(function() {
+          $("#error-patterns-container").slideToggle("slow", function() {
+          });
+        });
+      }
 
   });
 
@@ -27599,6 +27613,7 @@ define('apps/projects/page/show/show_view',["marionette","app","medium","backbon
       },
 
       onDomRefresh:function(e){
+          
 
            var that = this;
            $('.line-img').each(function(index){
@@ -27618,7 +27633,7 @@ define('apps/projects/page/show/show_view',["marionette","app","medium","backbon
 
         $(window).on('scroll', function(event) {
     
-          console.log(sticky);
+          // console.log(sticky);
 
            if (window.pageYOffset >= sticky) {
               $('#sidebar-region').addClass('sticky').width(parent_width);
@@ -28949,21 +28964,48 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
         var fetchingerrorpatterns = ProjectEntities.API.getErrorPatterns({pid:id});
 
            $.when(fetchingsuspiciouswords,fetchingerrorpatterns).done(function(suspicious_words,error_patterns){
-            // console.log(suspicious_words);
-            console.log(error_patterns);
 
+            var suspicious_words_array = [];
             for (word in suspicious_words['counts']) {
-               $('.suspicious-words tbody').append($('<tr><td>'+word+'</td><td>'+suspicious_words['counts'][word]+'</td></tr>'));
+               suspicious_words_array.push([word,suspicious_words['counts'][word]]);
             }
 
-            $('.suspicious-words-container > .loading_background2').fadeOut();
+            var sp_table = $('.suspicious-words').DataTable({
+                  "data":suspicious_words_array,
+                  "info":false,
+                  "paging": false,
+                  "lengthChange": false,
+                });
 
+              $('#suspicious-words_filter input').on('keyup click', function () {
+                sp_table.search($(this).val()).draw();
+              });
+              var rows = $('#suspicious-words_filter').next().find('.row');
+              rows[0].remove();
+            $('#suspicious-words-container > .loading_background2').fadeOut();
+
+              var error_patterns_array = [];
               for (word in error_patterns['counts']) {
-               $('.error-patterns tbody').append($('<tr><td>'+word+'</td><td>'+error_patterns['counts'][word]+'</td></tr>'));
+               error_patterns_array.push([word,error_patterns['counts'][word]]);
             }
-            $('.error-patterns-container > .loading_background2').fadeOut();
 
-             // projectShowPage.setErrorDropdowns(suspicious_words,id);
+             var ep_table = $('.error-patterns').DataTable({
+                  "data":error_patterns_array,
+                  "info":false,
+                  "paging": false,
+                  "lengthChange": false,
+                  "order": [[ 1, "desc" ]]
+
+                });
+
+              $('#error-patterns_filter input').on('keyup click', function () {
+                ep_table.search($(this).val()).draw();
+              });
+
+              var rows = $('#error-patterns_filter').next().find('.row');
+              rows[0].remove();
+            $('#error-patterns-container > .loading_background2').fadeOut();
+
            });
 
 
