@@ -89,12 +89,13 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 			  projectShowSidebar = new Show.Sidebar({model:page});
       	projectShowFooterPanel = new Show.FooterPanel();
 
-       projectShowPage.on("page:error-patterns-clicked",function(pid,pat){
-          this.trigger('page:concordance_clicked',pat,1);
+       projectShowSidebar.on("sidebar:error-patterns-clicked",function(pid,pat){
+          // projectShowPage.trigger('page:concordance_clicked',pat,1);
        });
 
-       projectShowPage.on("page:error-tokens-clicked",function(pid,pat){
-        this.trigger('page:concordance_clicked',pat,0);
+       projectShowSidebar.on("sidebar:error-tokens-clicked",function(pid,pat){
+        console.log("clicked error")
+         projectShowPage.trigger('page:concordance_clicked',pat,0);
        });
        projectShowSidebar.on("page:new",function(page_id){
                     var fetchingnewpage = ProjectEntities.API.getPage({pid:id, page:page_id});
@@ -173,6 +174,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
            projectShowPage.on("page:line_selected",function(selection){
                     var that = this;
                     var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:selection,pid:id});
+
                     var searchingToken = ProjectEntities.API.searchToken({q:selection,p:page_id,pid:id,isErrorPattern:0});
 
                   $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
@@ -205,14 +207,17 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                  dropdown_content.attr('aria-labelledby','js-suggestions');
                  suggestions_btn.append(dropdown_content);
 
-
-                     for(i=0;i<suggestions.suggestions.length;i++){
-                
-                     var s = suggestions.suggestions[i];
+                  console.log(suggestions);
+                     for(key in suggestions.suggestions){
+                       for (var i=0;i<suggestions.suggestions[key].length;i++){
+                        // to do: datatable instead ?
+                    
+                     var s = suggestions.suggestions[key][i];
                      var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
                       s.distance + ", weight: " + s.weight.toFixed(2) + ")";
                      $('#suggestionsDropdown').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
+                   }
 
                      $('#js-suggestions').click(function(e){
                       e.stopPropagation();
@@ -235,11 +240,13 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
        projectShowPage.on("page:concordance_clicked",function(selection,isErrorPattern){
+        console.log(isErrorPattern);
         console.log(selection);
-       var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:selection,pid:id});
+        var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:selection,pid:id});
        var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern});
        var that = this;
          $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
+          console.log(tokens)
             var tokendata = tokens['matches'][selection];
             console.log(suggestions)
             console.log(tokendata)

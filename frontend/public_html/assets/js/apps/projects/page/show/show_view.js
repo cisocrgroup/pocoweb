@@ -43,8 +43,8 @@ define(["marionette","app","medium","backbone.syphon","common/views","common/uti
       'click .js-firstpage' : 'firstpage_clicked',
       'click .js-lastpage' : 'lastpage_clicked',
  
-      'click #pcw-error-tokens-link' : 'error_tokens_clicked',
-      'click #pcw-error-patterns-link' : 'error_patterns_clicked'
+      'click .suspicious-words tr' : 'error_tokens_clicked',
+      'click .error-patterns tr' : 'error_patterns_clicked'
 
 
       },
@@ -53,7 +53,7 @@ define(["marionette","app","medium","backbone.syphon","common/views","common/uti
         e.stopPropagation();
         e.preventDefault();
         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        console.log(data)
+      
         this.trigger("page:new",data.prevPageId);
       },
 
@@ -75,6 +75,31 @@ define(["marionette","app","medium","backbone.syphon","common/views","common/uti
         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
         this.trigger("page:new","last");
+      },
+        error_tokens_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".custom-popover").remove();
+        var tr = $(e.currentTarget);
+        var td = tr.find('td');
+        var pat = $(td[0]).html();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        if(pat!=undefined){
+            this.trigger("sidebar:error-tokens-clicked",data.projectId,pat);
+        }
+      },
+
+        error_patterns_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".custom-popover").remove();
+        var tr = $(e.currentTarget);
+        var td = tr.find('td');
+        var pat = $(td[0]).html();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        if(pat!=undefined){
+            this.trigger("sidebar:error-patterns-clicked",data.projectId,pat);
+        }
       },
       onAttach:function(){
 
@@ -100,30 +125,13 @@ define(["marionette","app","medium","backbone.syphon","common/views","common/uti
       'click .js-correct' : 'correct_clicked',
       'click .line-tokens' : 'line_tokens_clicked',
       'click .line-text' : 'line_selected',
-      'click #pcw-error-tokens-link' : 'error_tokens_clicked',
-      'click #pcw-error-patterns-link' : 'error_patterns_clicked',
-
       'mouseover .line-tokens' : 'tokens_hovered',
       'mouseleave .line-text-parent' : 'line_left',
       'keydown .line' : 'line_edited',
 
       },
 
-      error_tokens_clicked : function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        $(".custom-popover").remove();
-        $(".dropdown-menu").hide();
-        $('#pcw-error-tokens-dropdown').toggle();
-      },
-
-        error_patterns_clicked : function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        $(".custom-popover").remove();
-        $(".dropdown-menu").hide();
-        $('#pcw-error-patterns-dropdown').toggle();
-      },
+    
 
       serializeData: function(){
       var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
@@ -169,8 +177,7 @@ define(["marionette","app","medium","backbone.syphon","common/views","common/uti
         $('.line-tokens').show();
         var line_parent = $(e.currentTarget).parent();
 
-        console.log(line_parent);
-        console.log($(e.currentTarget));
+   
         line_parent.find('.line').show();
         $(e.currentTarget).hide();
 

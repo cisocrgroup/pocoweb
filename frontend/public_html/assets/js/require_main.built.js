@@ -23911,51 +23911,51 @@ define('tpl',['underscore', 'text'], function (_, text) {
 define("tpl!common/templates/listtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+=' <div class="container" style="padding-bottom:50px;">\r\n <div class="row">\r\n <div class="col col-lg-12" >\r\n\r\n\r\n <table class="table table-bordered table-striped ';
+__p+=' <div class="container" style="padding-bottom:50px;">\n <div class="row">\n <div class="col col-lg-12" >\n\n\n <table class="table table-bordered table-striped ';
  if(hover){
 __p+='table-hover';
 }
-__p+='" \r\n id="table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\r\n\r\n\r\n     <thead>\r\n      <tr>\r\n      ';
+__p+='" \n id="table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\n\n\n     <thead>\n      <tr>\n      ';
  _.each(headers, function(header) { 
-__p+='  \r\n        <th>'+
+__p+='  \n        <th>'+
 ((__t=(header.name))==null?'':_.escape(__t))+
-'</th>\r\n       ';
+'</th>\n       ';
  }); 
-__p+='         \r\n      </tr>\r\n     </thead>\r\n     <tbody>\r\n\r\n\r\n     ';
+__p+='         \n      </tr>\n     </thead>\n     <tbody>\n\n\n     ';
 
      var count = 0; 
      _.each(items, function(item) {
      
       
-__p+='\r\n\r\n      ';
+__p+='\n\n      ';
  if(columns[0]['clickrow']) { 
-__p+='\r\n\r\n       <tr class=\'clickable-row\' data-href="#'+
+__p+='\n\n       <tr class=\'clickable-row\' data-href="#'+
 ((__t=(urlroot))==null?'':_.escape(__t))+
 '/'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'">\r\n       \r\n       ';
+'">\n       \n       ';
  } else { 
-__p+='\r\n       <tr>\r\n       ';
+__p+='\n       <tr>\n       ';
  } 
-__p+='\r\n\r\n        ';
+__p+='\n\n        ';
  for(var i=0;i<columns.length;i++){ 
-__p+='  \r\n\r\n          ';
+__p+='  \n\n          ';
  column = columns[i]; 
-__p+='\r\n          ';
+__p+='\n          ';
  if (column.name == "action") {  
-__p+='\r\n          <td>\r\n              <button type="button" class="btn btn-sm btn-outline-dark js-delete-user" id="'+
+__p+='\n          <td>\n              <button type="button" class="btn btn-sm btn-outline-dark js-delete-user" id="'+
 ((__t=(item[columns[0]['id']]))==null?'':_.escape(__t))+
-'"> <i class="fas fa-times"></i></button>\r\n          </td>      \r\n          ';
+'"> <i class="fas fa-times"></i></button>\n          </td>      \n          ';
  } else { 
-__p+='\r\n          <td> '+
+__p+='\n          <td> '+
 ((__t=( item[column.name] ))==null?'':_.escape(__t))+
-' </td>      \r\n          ';
+' </td>      \n          ';
  } 
-__p+='\r\n        ';
+__p+='\n        ';
  } 
-__p+='  \r\n       \r\n     \r\n      </tr>\r\n\r\n    ';
+__p+='  \n       \n     \n      </tr>\n\n    ';
  count++;  }); 
-__p+='\r\n\r\n     </tbody>\r\n    </table>\r\n\r\n\r\n    </div>\r\n    </div>\r\n    </div>';
+__p+='\n\n     </tbody>\n    </table>\n\n\n    </div>\n    </div>\n    </div>';
 }
 return __p;
 };});
@@ -23964,9 +23964,9 @@ return __p;
 define("tpl!common/templates/loadingtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="backdrop"></div>\r\n  \r\n  <div class="spinnerparent">\r\n    <div id="spinner"></div>\r\n    <div class="spinnertitle"> '+
+__p+='<div class="backdrop"></div>\n  \n  <div class="spinnerparent">\n    <div id="spinner"></div>\n    <div class="spinnertitle"> '+
 ((__t=( title ))==null?'':_.escape(__t))+
-' </div>\r\n  </div>';
+' </div>\n  </div>';
 }
 return __p;
 };});
@@ -23975,9 +23975,9 @@ return __p;
 define("tpl!common/templates/loadingtemplateopc.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+=' <div class="backdrop-opc"></div>\r\n  \r\n  <div class="spinnerparent">\r\n    <div id="spinner"></div>\r\n    <div class="spinnertitle"> '+
+__p+=' <div class="backdrop-opc"></div>\n  \n  <div class="spinnerparent">\n    <div id="spinner"></div>\n    <div class="spinnertitle"> '+
 ((__t=( title ))==null?'':_.escape(__t))+
-' </div>\r\n  </div>';
+' </div>\n  </div>';
 }
 return __p;
 };});
@@ -23986,13 +23986,13 @@ return __p;
 define("tpl!common/templates/headertemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n\r\n<div class="container">\r\n<div class="row ">\r\n<div class="col col-md-12">\r\n<div class="header">\r\n<div class="defaulthl" > <span> <i class="'+
+__p+='\n\n<div class="container">\n<div class="row ">\n<div class="col col-md-12">\n<div class="header">\n<div class="defaulthl" > <span> <i class="'+
 ((__t=(icon))==null?'':_.escape(__t))+
 ' card_main_icon '+
 ((__t=(color))==null?'':_.escape(__t))+
 '" aria-hidden="true"></i> '+
 ((__t=(title))==null?'':_.escape(__t))+
-' </span> </div>\r\n</div>\r\n</div>\r\n</div>\r\n</div>\r\n';
+' </span> </div>\n</div>\n</div>\n</div>\n</div>\n';
 }
 return __p;
 };});
@@ -24001,15 +24001,15 @@ return __p;
 define("tpl!common/templates/cardheadertemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n<div class="topblock"> </div>   \r\n\r\n\r\n<div class="cardhl"> \r\n\r\n\r\n\r\n\r\n    <span> \r\n    <i class="'+
+__p+='\n<div class="topblock"> </div>   \n\n\n<div class="cardhl"> \n\n\n\n\n    <span> \n    <i class="'+
 ((__t=(icon))==null?'':_.escape(__t))+
 ' card_main_icon '+
 ((__t=(color))==null?'':_.escape(__t))+
 '" aria-hidden="true"></i> '+
 ((__t=(title))==null?'':_.escape(__t))+
-'\r\n     </span> \r\n\r\n\r\n        <div class="dlr_logo_bg">\r\n  		<img   class="dlr_bg_img" src="assets/images/DLR_Logo_no_text.svg">\r\n	 </div>\r\n\r\n	<!-- <div class="circle_cont">\r\n		<div class="headercircle">\r\n		<svg viewBox="0 0 100 100"><path d="M 50,50 m 0,-49.5 a 49.5,49.5 0 1 1 0,99 a 49.5,49.5 0 1 1 0,-99" stroke-width="1" fill-opacity="0" \r\n		stroke="'+
+'\n     </span> \n\n\n        <div class="dlr_logo_bg">\n  		<img   class="dlr_bg_img" src="assets/images/DLR_Logo_no_text.svg">\n	 </div>\n\n	<!-- <div class="circle_cont">\n		<div class="headercircle">\n		<svg viewBox="0 0 100 100"><path d="M 50,50 m 0,-49.5 a 49.5,49.5 0 1 1 0,99 a 49.5,49.5 0 1 1 0,-99" stroke-width="1" fill-opacity="0" \n		stroke="'+
 ((__t=(stroke))==null?'':_.escape(__t))+
-'"></path></svg>\r\n		</div>\r\n	</div> -->\r\n\r\n	\r\n\r\n</div>\r\n\r\n';
+'"></path></svg>\n		</div>\n	</div> -->\n\n	\n\n</div>\n\n';
 }
 return __p;
 };});
@@ -24018,51 +24018,51 @@ return __p;
 define("tpl!common/templates/cardhubtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n\r\n\r\n<div class="container">\r\n\r\n';
+__p+='\n\n\n<div class="container">\n\n';
 
  var rows = Math.ceil(cards.length/columns);
  var col_count = 0 
 
  
-__p+='\r\n\r\n';
+__p+='\n\n';
  for(var i = 0; i < rows; i++) { 
-__p+='\r\n <div class="row card_row">\r\n          ';
+__p+='\n <div class="row card_row">\n          ';
  for(var j = 0; j < columns; j++) {
           if(col_count+1>cards.length){break;}
           
-__p+='\r\n          ';
+__p+='\n          ';
  var item = cards[col_count];
-__p+='\r\n                <div class="col-md-'+
+__p+='\n                <div class="col-md-'+
 ((__t=(12/columns))==null?'':_.escape(__t))+
-' hub_col">\r\n              \r\n                 <div class="card custom_card active" url="'+
+' hub_col">\n              \n                 <div class="card custom_card active" url="'+
 ((__t=(item['url']))==null?'':_.escape(__t))+
 '" id="'+
 ((__t=(item['id']))==null?'':_.escape(__t))+
-'">\r\n                 <!-- <img class="card-img-top" src="assets/images/enmap_header_1.png." alt="Card image cap"> -->\r\n                   <div class="card-header">\r\n                   <h3 class="card-title"><i class="fas '+
+'">\n                 <!-- <img class="card-img-top" src="assets/images/enmap_header_1.png." alt="Card image cap"> -->\n                   <div class="card-header">\n                   <h3 class="card-title"><i class="fas '+
 ((__t=(item['icon']))==null?'':_.escape(__t))+
 ' card_main_icon '+
 ((__t=(item['color']))==null?'':_.escape(__t))+
 '" aria-hidden="true"></i> '+
 ((__t=(item['name']))==null?'':_.escape(__t))+
-'</h3>\r\n                      </div>\r\n                  <div class="card-block">\r\n\r\n\r\n                    <p class="card-text"> '+
+'</h3>\n                      </div>\n                  <div class="card-block">\n\n\n                    <p class="card-text"> '+
 ((__t=(item['text']))==null?'':_.escape(__t))+
-'  </p>\r\n                    <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->\r\n\r\n                  </div>\r\n\r\n\r\n                  <div class="card-footer text-muted">\r\n\r\n                   <div class="row">\r\n\r\n                     <div class="footer_item_container">\r\n\r\n                          <div style="visibility: hidden" class="dummy footer_item "><i class="fa fa-user-o" aria-hidden="true"></i> <span class="rolename">X</span> </div>\r\n\r\n                     </div>\r\n\r\n                     <div class="footer_item_enter_container">  \r\n                       <!-- <div class="footer_item footer_item_enter hover ';
+'  </p>\n                    <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->\n\n                  </div>\n\n\n                  <div class="card-footer text-muted">\n\n                   <div class="row">\n\n                     <div class="footer_item_container">\n\n                          <div style="visibility: hidden" class="dummy footer_item "><i class="fa fa-user-o" aria-hidden="true"></i> <span class="rolename">X</span> </div>\n\n                     </div>\n\n                     <div class="footer_item_enter_container">  \n                       <!-- <div class="footer_item footer_item_enter hover ';
 if(item['available']!=undefined&&item['available']==true){
 __p+=''+
 ((__t=(item.color))==null?'':_.escape(__t))+
 '-border';
 }
-__p+='">  <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Enter </div> -->\r\n                     </div>\r\n\r\n                   </div>\r\n                     \r\n                  </div>\r\n\r\n\r\n                </div>\r\n\r\n                </div>\r\n\r\n              ';
+__p+='">  <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Enter </div> -->\n                     </div>\n\n                   </div>\n                     \n                  </div>\n\n\n                </div>\n\n                </div>\n\n              ';
  col_count++;  } 
-__p+='\r\n    </div> \r\n  ';
+__p+='\n    </div> \n  ';
  } 
-__p+='\r\n  </div>\r\n\r\n';
+__p+='\n  </div>\n\n';
  if (back_btn !=undefined) { 
-__p+='\r\n\r\n<div class="container">\r\n   <div class="row">\r\n  <div class="col col-md-12">\r\n  <button class="btn back_btn js-back '+
+__p+='\n\n<div class="container">\n   <div class="row">\n  <div class="col col-md-12">\n  <button class="btn back_btn js-back '+
 ((__t=(cards[0]['color']))==null?'':_.escape(__t))+
-'-border hover" style="margin-left:0px;"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\r\n\r\n\r\n  </div>\r\n  </div>\r\n\r\n</div>\r\n\r\n\r\n';
+'-border hover" style="margin-left:0px;"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\n\n\n  </div>\n  </div>\n\n</div>\n\n\n';
  } 
-__p+='\r\n';
+__p+='\n';
 }
 return __p;
 };});
@@ -24071,7 +24071,7 @@ return __p;
 define("tpl!common/templates/layouttemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n    <div id="hl-region"></div>\r\n    <div id="content-region"></div>\r\n    <div id="panel-region"></div>\r\n';
+__p+='\n    <div id="hl-region"></div>\n    <div id="content-region"></div>\n    <div id="panel-region"></div>\n';
 }
 return __p;
 };});
@@ -24084,23 +24084,23 @@ __p+='';
 
 if(asModal) {
 
-__p+='\r\n\r\n  <div class="modal-dialog" role="document">\r\n  <div class="modal-content red-border">\r\n\r\n<div class="modal-header red-border">\r\n        <h3 class="modal-title red"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Error </h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n';
+__p+='\n\n  <div class="modal-dialog" role="document">\n  <div class="modal-content red-border">\n\n<div class="modal-header red-border">\n        <h3 class="modal-title red"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Error </h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n';
  } 
-__p+='\r\n\r\n\r\n\r\n<div class="alert alert-danger ';
+__p+='\n\n\n\n<div class="alert alert-danger ';
 if(asModal){
 __p+=' modal_errortext ';
 } else {
 __p+=' errortext';
 }
-__p+='" role="alert">\r\n  '+
+__p+='" role="alert">\n  '+
 ((__t=( errortext ))==null?'':_.escape(__t))+
-' \r\n</div>\r\n\r\n\r\n\r\n';
+' \n</div>\n\n\n\n';
 
 if(asModal) {
 
-__p+='\r\n\r\n  </div> \r\n\r\n  </div>\r\n  </div>\r\n\r\n';
+__p+='\n\n  </div> \n\n  </div>\n  </div>\n\n';
  } 
-__p+='\r\n';
+__p+='\n';
 }
 return __p;
 };});
@@ -24118,11 +24118,11 @@ return __p;
 define("tpl!common/templates/areyousure.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='  <div class="modal-dialog" role="document">\r\n    <div class="modal-content">\r\n      <div class="modal-header">\r\n        <h5 class="modal-title">'+
+__p+='  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header">\n        <h5 class="modal-title">'+
 ((__t=(title))==null?'':_.escape(__t))+
-'</h5>\r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class="modal-body">\r\n        <p>'+
+'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n      </div>\n      <div class="modal-body">\n        <p>'+
 ((__t=(text))==null?'':_.escape(__t))+
-'</p>\r\n      </div>\r\n      <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-yes">Yes</button>\r\n        <button type="button" class="btn btn-secondary js-no" data-dismiss="modal">No</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n';
+'</p>\n      </div>\n      <div class="modal-footer">\n        <button type="button" class="btn btn-primary js-yes">Yes</button>\n        <button type="button" class="btn btn-secondary js-no" data-dismiss="modal">No</button>\n      </div>\n    </div>\n  </div>\n';
 }
 return __p;
 };});
@@ -24131,11 +24131,11 @@ return __p;
 define("tpl!common/templates/okdialog.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='  <div class="modal-dialog" role="document">\r\n    <div class="modal-content">\r\n      <div class="modal-header">\r\n        <h5 class="modal-title">'+
+__p+='  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header">\n        <h5 class="modal-title">'+
 ((__t=(title))==null?'':_.escape(__t))+
-'</h5>\r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class="modal-body">\r\n        <p>'+
+'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n      </div>\n      <div class="modal-body">\n        <p>'+
 ((__t=(text))==null?'':_.escape(__t))+
-'</p>\r\n      </div>\r\n      <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-ok" data-dismiss="modal">Ok</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n';
+'</p>\n      </div>\n      <div class="modal-footer">\n        <button type="button" class="btn btn-primary js-ok" data-dismiss="modal">Ok</button>\n      </div>\n    </div>\n  </div>\n';
 }
 return __p;
 };});
@@ -24144,13 +24144,13 @@ return __p;
 define("tpl!common/templates/buttongroup.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n';
+__p+='\n';
  _.each(buttongroups, function(buttongroup) { 
-__p+='\r\n\r\n	<ul class=" stack-for-small button-group '+
+__p+='\n\n	<ul class=" stack-for-small button-group '+
 ((__t=(buttongroup.side))==null?'':_.escape(__t))+
-' ">\r\n\r\n	';
+' ">\n\n	';
  _.each(buttongroup.buttons, function(button) { 
-__p+='\r\n    <li> <a class="button small '+
+__p+='\n    <li> <a class="button small '+
 ((__t=( button.type ))==null?'':_.escape(__t))+
 '  '+
 ((__t=( button.selector ))==null?'':_.escape(__t))+
@@ -24160,11 +24160,11 @@ __p+='\r\n    <li> <a class="button small '+
 ((__t=( button.icon))==null?'':_.escape(__t))+
 '"></i> '+
 ((__t=(button.name))==null?'':__t)+
-' </a></li>\r\n	';
+' </a></li>\n	';
  }); 
-__p+='\r\n\r\n	</ul>\r\n\r\n';
+__p+='\n\n	</ul>\n\n';
  }); 
-__p+='\r\n';
+__p+='\n';
 }
 return __p;
 };});
@@ -24173,37 +24173,37 @@ return __p;
 define("tpl!common/templates/bginfo.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n\r\n<a class="close-reveal-modal">×</a> \r\n\r\n\r\n<h3> Image Reference: </h3>\r\n</br>\r\n\r\n\r\n<table id="table" class="table"  width="100%">\r\n\r\n<tbody>\r\n\r\n<tr><td><b>Filename:</b> '+
+__p+='\n\n<a class="close-reveal-modal">×</a> \n\n\n<h3> Image Reference: </h3>\n</br>\n\n\n<table id="table" class="table"  width="100%">\n\n<tbody>\n\n<tr><td><b>Filename:</b> '+
 ((__t=( original_name))==null?'':_.escape(__t))+
-'</td></tr>\r\n';
+'</td></tr>\n';
 if(collection!=""){
 __p+='  <tr> <td> <div><b>Collection:</b> '+
 ((__t=( collection))==null?'':_.escape(__t))+
 '</td></tr> ';
 }
-__p+=' \r\n';
+__p+=' \n';
 if(author!=""){
 __p+='  <tr> <td> <b>Author:</b> '+
 ((__t=(author))==null?'':_.escape(__t))+
 '</td></tr> ';
 }
-__p+=' \r\n';
+__p+=' \n';
 if(source!=""){
-__p+=' <tr> <td>\r\n	 ';
+__p+=' <tr> <td>\n	 ';
  if(source.indexOf("http")>-1) { 
-__p+='\r\n	 <a href="'+
+__p+='\n	 <a href="'+
 ((__t=(source))==null?'':_.escape(__t))+
 '" class="info_link"><b>Source:</b> '+
 ((__t=(source))==null?'':_.escape(__t))+
-'</a>\r\n	 ';
+'</a>\n	 ';
  } else { 
-__p+='\r\n	 <b>Source:</b> '+
+__p+='\n	 <b>Source:</b> '+
 ((__t=(source))==null?'':_.escape(__t))+
-'\r\n	 ';
+'\n	 ';
 }
-__p+='\r\n ';
+__p+='\n ';
  } 
-__p+='\r\n\r\n';
+__p+='\n\n';
 if(link!=""){
 __p+=' <tr> <td> <a href="'+
 ((__t=(link))==null?'':_.escape(__t))+
@@ -24211,7 +24211,7 @@ __p+=' <tr> <td> <a href="'+
 ((__t=(link))==null?'':_.escape(__t))+
 '</a></td> </tr>';
 }
-__p+=' \r\n\r\n\r\n</tbody>\r\n\r\n</table>\r\n\r\n <div class="line_parent">  \r\n        <div class="left_line_parent"><hr class="fancyline fancyline_left"/></div>  \r\n        <div class="center_line_parent">~</div>  \r\n        <div class="right_line_parent"><hr class="fancyline fancyline_right"/></div>\r\n </div>\r\n\r\n';
+__p+=' \n\n\n</tbody>\n\n</table>\n\n <div class="line_parent">  \n        <div class="left_line_parent"><hr class="fancyline fancyline_left"/></div>  \n        <div class="center_line_parent">~</div>  \n        <div class="right_line_parent"><hr class="fancyline fancyline_right"/></div>\n </div>\n\n';
 }
 return __p;
 };});
@@ -24220,7 +24220,7 @@ return __p;
 define("tpl!common/templates/footerpaneltemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="container">\r\n\r\n	 <div class="row">\r\n\r\n	<div class="col col-md-12">\r\n	<button class="btn back_btn js-back btn-primary hover"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\r\n\r\n\r\n	</div>\r\n	</div>\r\n\r\n</div>';
+__p+='<div class="container">\n\n	 <div class="row">\n\n	<div class="col col-md-12">\n	<button class="btn back_btn js-back btn-primary hover"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\n\n\n	</div>\n	</div>\n\n</div>';
 }
 return __p;
 };});
@@ -24229,29 +24229,29 @@ return __p;
 define("tpl!common/templates/confirm.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n';
+__p+='\n';
 
 if(asModal) {
 
-__p+='\r\n\r\n  <div class="modal-dialog" role="document">\r\n  <div class="modal-content">\r\n\r\n<div class="modal-header">\r\n        <h3 class="modal-title">'+
+__p+='\n\n  <div class="modal-dialog" role="document">\n  <div class="modal-content">\n\n<div class="modal-header">\n        <h3 class="modal-title">'+
 ((__t=(title))==null?'':_.escape(__t))+
-' </h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n';
+' </h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n';
  } 
-__p+='\r\n\r\n   <div class="small_headline_for_input"><small> <em>'+
+__p+='\n\n   <div class="small_headline_for_input"><small> <em>'+
 ((__t=(text))==null?'':__t)+
-'</em> </small></div> \r\n\r\n\r\n</div> \r\n\r\n';
+'</em> </small></div> \n\n\n</div> \n\n';
 
 if(asModal) {
 
-__p+='\r\n\r\n\r\n<div class="modal-footer">\r\n   <div class="role_item_container">\r\n    <button class="btn no_bg_btn  green-border hover js-confirm"> <i class="fa fa-check" aria-hidden="true"></i> Confirm</button>\r\n    <button class="btn no_bg_btn  red-border hover js-cancel"> <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>\r\n\r\n   </div>\r\n </div>\r\n';
+__p+='\n\n\n<div class="modal-footer">\n   <div class="role_item_container">\n    <button class="btn no_bg_btn  green-border hover js-confirm"> <i class="fa fa-check" aria-hidden="true"></i> Confirm</button>\n    <button class="btn no_bg_btn  red-border hover js-cancel"> <i class="fa fa-times" aria-hidden="true"></i> Cancel</button>\n\n   </div>\n </div>\n';
  } 
-__p+='\r\n\r\n\r\n\r\n';
+__p+='\n\n\n\n';
 
 if(asModal) {
 
-__p+='\r\n\r\n  </div> \r\n\r\n  </div>\r\n  </div>\r\n\r\n';
+__p+='\n\n  </div> \n\n  </div>\n  </div>\n\n';
  } 
-__p+='\r\n';
+__p+='\n';
 }
 return __p;
 };});
@@ -24260,7 +24260,7 @@ return __p;
 define("tpl!common/templates/msgtemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n<div class="container" style="margin-top: 35px">\r\n  <div id="'+
+__p+='\n<div class="container" style="margin-top: 35px">\n  <div id="'+
 ((__t=(id))==null?'':_.escape(__t))+
 '" class="alert alert-'+
 ((__t=(type))==null?'':_.escape(__t))+
@@ -24268,7 +24268,7 @@ __p+='\r\n<div class="container" style="margin-top: 35px">\r\n  <div id="'+
 ((__t=(role))==null?'':_.escape(__t))+
 '">'+
 ((__t=(message))==null?'':__t)+
-'\r\n  	  <button type="button" class="close js-close-msg">\r\n    <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\r\n  </button>\r\n  </div>\r\n</div>\r\n';
+'\n  	  <button type="button" class="close js-close-msg">\n    <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\n  </button>\n  </div>\n</div>\n';
 }
 return __p;
 };});
@@ -25000,7 +25000,7 @@ return Views;
 define("tpl!common/templates/maintemplate.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="backdrop-region"> </div>\r\n<div id="header-region"> </div>\r\n<div id="main-region"> </div>\r\n\r\n<div id="footer-region"> </div>\r\n<div id="dialog-region"> </div>\r\n\r\n<div id="add-project-region"></div>\r\n<div id="add-book-region"></div>\r\n';
+__p+='<div id="backdrop-region"> </div>\n<div id="header-region"> </div>\n<div id="main-region"> </div>\n\n<div id="footer-region"> </div>\n<div id="dialog-region"> </div>\n\n<div id="add-project-region"></div>\n<div id="add-book-region"></div>\n';
 }
 return __p;
 };});
@@ -25009,7 +25009,7 @@ return __p;
 define("tpl!apps/header/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="navbar-region"></div>\r\n <div id="msg-region"></div>\r\n\r\n\r\n';
+__p+='<div id="navbar-region"></div>\n <div id="msg-region"></div>\n\n\n';
 }
 return __p;
 };});
@@ -25018,9 +25018,9 @@ return __p;
 define("tpl!apps/header/show/templates/navbar.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n\r\n<div class="text-center">\r\n<img class="rounded" src="assets/images/logo.jpg" style="margin: 15px;" />\r\n</div>\r\n\r\n\r\n<nav class="navbar navbar-expand-lg navbar-light bg-light">\r\n   <a class="navbar-brand" href="#home">PoCoWeb</a>\r\n  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">\r\n    <span class="navbar-toggler-icon"></span>\r\n  </button>\r\n\r\n\r\n  <div class="collapse navbar-collapse" id="navbarSupportedContent">\r\n     <ul class="navbar-nav mr-auto">\r\n      <li class="nav-item">\r\n        <a class="nav-link" href="#projects">Projects</a>\r\n      </li>\r\n       <li class="nav-item">\r\n        <a class="nav-link" href="#users">Users</a>\r\n      </li>\r\n       <li class="nav-item">\r\n        <a class="nav-link" href="#users/account">Account</a>\r\n      </li>\r\n      <li class="nav-item">\r\n        <a class="nav-link" href="#docs">Documentation</a>\r\n      </li>\r\n       <li class="nav-item">\r\n        <a class="nav-link" href="#about">About</a>\r\n      </li>\r\n    </ul>\r\n\r\n     <ul class="navbar-nav my-2 my-lg-0 right-nav">\r\n       <li class="nav-item js-login">\r\n        <a class="nav-link" href="#"><i class="fas fa-sign-in-alt fa-sm"></i> Login</a>\r\n      </li>\r\n     \r\n    </ul>\r\n   <ul class="navbar-nav my-2 my-lg-0 version-nav">\r\n       <li class="nav-item">\r\n        <p class="navbar-text" style="margin:0;">Api-Version: '+
+__p+='\n\n<div class="text-center">\n<img class="rounded" src="assets/images/logo.jpg" style="margin: 15px;" />\n</div>\n\n\n<nav class="navbar navbar-expand-lg navbar-light bg-light">\n   <a class="navbar-brand" href="#home">PoCoWeb</a>\n  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">\n    <span class="navbar-toggler-icon"></span>\n  </button>\n\n\n  <div class="collapse navbar-collapse" id="navbarSupportedContent">\n     <ul class="navbar-nav mr-auto">\n      <li class="nav-item">\n        <a class="nav-link" href="#projects">Projects</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#users">Users</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#users/account">Account</a>\n      </li>\n      <li class="nav-item">\n        <a class="nav-link" href="#docs">Documentation</a>\n      </li>\n       <li class="nav-item">\n        <a class="nav-link" href="#about">About</a>\n      </li>\n    </ul>\n\n     <ul class="navbar-nav my-2 my-lg-0 right-nav">\n       <li class="nav-item js-login">\n        <a class="nav-link" href="#"><i class="fas fa-sign-in-alt fa-sm"></i> Login</a>\n      </li>\n     \n    </ul>\n   <ul class="navbar-nav my-2 my-lg-0 version-nav">\n       <li class="nav-item">\n        <p class="navbar-text" style="margin:0;">Api-Version: '+
 ((__t=(version))==null?'':_.escape(__t))+
-'</p>\r\n      </li>\r\n    </ul>\r\n  </div>\r\n</nav>\r\n\r\n\r\n\r\n\r\n\r\n\r\n';
+'</p>\n      </li>\n    </ul>\n  </div>\n</nav>\n\n\n\n\n\n\n';
 }
 return __p;
 };});
@@ -25103,7 +25103,7 @@ return Show;
 define("tpl!apps/users/login/templates/loginform.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n<div class="modal fade" id="loginModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\r\n <div class="modal-dialog">\r\n <div class="modal-content">\r\n      <div class="modal-header">\r\n            <legend>Login</legend>\r\n              <div class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\r\n        </div>\r\n      </div>\r\n       <div class="modal-body">\r\n<form>\r\n  <div class="form-group">\r\n    <label for="email">Email address</label>\r\n    <input type="email" class="form-control" id="email" name="email"aria-describedby="emailHelp" placeholder="Enter email">\r\n  </div>\r\n  <div class="form-group">\r\n    <label for="password">Password</label>\r\n    <input type="password" class="form-control" name="password" id="password" placeholder="Password">\r\n  </div>\r\n\r\n  <button type="submit" class="btn btn-primary js-loginsubmit">Submit</button>\r\n</form>\r\n</div>\r\n</div>\r\n\r\n</div>\r\n</div>\r\n\r\n';
+__p+='\n<div class="modal fade" id="loginModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\n <div class="modal-dialog">\n <div class="modal-content">\n      <div class="modal-header">\n            <legend>Login</legend>\n              <div class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\n        </div>\n      </div>\n       <div class="modal-body">\n<form>\n  <div class="form-group">\n    <label for="email">Email address</label>\n    <input type="email" class="form-control" id="email" name="email"aria-describedby="emailHelp" placeholder="Enter email">\n  </div>\n  <div class="form-group">\n    <label for="password">Password</label>\n    <input type="password" class="form-control" name="password" id="password" placeholder="Password">\n  </div>\n\n  <button type="submit" class="btn btn-primary js-loginsubmit">Submit</button>\n</form>\n</div>\n</div>\n\n</div>\n</div>\n\n';
 }
 return __p;
 };});
@@ -26206,7 +26206,7 @@ define('apps/header/header_app',["marionette","app"], function(Marionette,IPS_Ap
 define("tpl!apps/home/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='    \r\n    <div id="hl-region"></div>\r\n    <div id="hub-region"></div>\r\n';
+__p+='    \n    <div id="hl-region"></div>\n    <div id="hub-region"></div>\n';
 }
 return __p;
 };});
@@ -26215,7 +26215,7 @@ return __p;
 define("tpl!apps/home/show/templates/header.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n<div class="container">\r\n\r\n<div style="text-align: center;">\r\n\r\n<h1 style="padding: 15px; margin-bottom: 50px;margin-top: 30px">PoCoWeb - Post Correction Web </h1>\r\n\r\n</div>\r\n\r\n</div>';
+__p+='\n<div class="container">\n\n<div style="text-align: center;">\n\n<h1 style="padding: 15px; margin-bottom: 50px;margin-top: 30px">PoCoWeb - Post Correction Web </h1>\n\n</div>\n\n</div>';
 }
 return __p;
 };});
@@ -26386,7 +26386,7 @@ define('apps/home/home_app',["marionette","app"], function(Marionette,App){
 define("tpl!apps/footer/show/templates/footer.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="col-md-12">\r\n<hr>\r\n<footer class="footer">\r\n	<div class="text-muted footer-line text-center">\r\n		<a href="#">Back to top <i class="fas fa-angle-up fa-lg"></i></a>\r\n	</div>\r\n	<div class="text-muted footer-line text-center">\r\n		Designed and built by the\r\n		<a target="_blank" href="http://cis.uni-muenchen.de">\r\n		Centrum für Informations- und Sprachverarbeitung (CIS)</a>.\r\n	</div>\r\n	<div class="text-muted footer-line text-center">\r\n		Code licensed under <a href="LICENSE">Apache-2.0</a>.\r\n		Documentation licensed under <a href="LICENSE">Apache-2.0</a>.\r\n	</div>\r\n	<div class="text-muted footer-line text-center">\r\n		This website uses cookies.\r\n	</div>\r\n</footer>\r\n</div>';
+__p+='<div class="col-md-12">\n<hr>\n<footer class="footer">\n	<div class="text-muted footer-line text-center">\n		<a href="#">Back to top <i class="fas fa-angle-up fa-lg"></i></a>\n	</div>\n	<div class="text-muted footer-line text-center">\n		Designed and built by the\n		<a target="_blank" href="http://cis.uni-muenchen.de">\n		Centrum für Informations- und Sprachverarbeitung (CIS)</a>.\n	</div>\n	<div class="text-muted footer-line text-center">\n		Code licensed under <a href="LICENSE">Apache-2.0</a>.\n		Documentation licensed under <a href="LICENSE">Apache-2.0</a>.\n	</div>\n	<div class="text-muted footer-line text-center">\n		This website uses cookies.\n	</div>\n</footer>\n</div>';
 }
 return __p;
 };});
@@ -26459,50 +26459,50 @@ define('apps/footer/footer_app',["marionette","app"], function(Marionette,IPS_Ap
 define("tpl!apps/projects/common/templates/projectform.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n\r\n\r\n';
+__p+='\n\n\n';
 
 if(asModal) {
 
-__p+='\r\n\r\n  <div class="modal-dialog modal-lg" role="document">\r\n  <div class="modal-content">\r\n\r\n<div class="modal-header red-border-bottom">\r\n        <h3 class="modal-title">'+
+__p+='\n\n  <div class="modal-dialog modal-lg" role="document">\n  <div class="modal-content">\n\n<div class="modal-header red-border-bottom">\n        <h3 class="modal-title">'+
 ((__t=(text))==null?'':_.escape(__t))+
-' </h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n<div class="loading_background" style="display: none;">\r\n         <i class="fas fa-sync fa-spin fa-3x fa-fw"></i>\r\n         <div class="loading_text_parent">\r\n           <div class="loading_text"> '+
+' </h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n<div class="loading_background" style="display: none;">\n         <i class="fas fa-sync fa-spin fa-3x fa-fw"></i>\n         <div class="loading_text_parent">\n           <div class="loading_text"> '+
 ((__t=(loading_text))==null?'':_.escape(__t))+
-' </div>\r\n         </div>\r\n</div>\r\n\r\n';
+' </div>\n         </div>\n</div>\n\n';
  } 
-__p+='\r\n\r\n<form id="uploadForm">\r\n\r\n';
+__p+='\n\n<form id="uploadForm">\n\n';
  if(!add_book) { 
-__p+='\r\n\r\n<div class="form-group row">\r\n  <div class="col-4">\r\n    <label for="title">Title</label>\r\n    <input class="form-control" type="text" value="'+
+__p+='\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="title">Title</label>\n    <input class="form-control" type="text" value="'+
 ((__t=(title))==null?'':_.escape(__t))+
-'" id="title" name="title">\r\n  </div>\r\n   <div class="col-4">\r\n  <label for="author">Author</label>\r\n    <input class="form-control" type="text" value="'+
+'" id="title" name="title">\n  </div>\n   <div class="col-4">\n  <label for="author">Author</label>\n    <input class="form-control" type="text" value="'+
 ((__t=(author))==null?'':_.escape(__t))+
-'" id="author" name="author">\r\n  </div>\r\n\r\n</div>\r\n\r\n<div class="form-group row">\r\n  <div class="col-4">\r\n    <label for="language">Language</label>\r\n    <select class="form-control" type="text" value="'+
+'" id="author" name="author">\n  </div>\n\n</div>\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="language">Language</label>\n    <select class="form-control" type="text" value="'+
 ((__t=(language))==null?'':_.escape(__t))+
-'" id="language" name="language">\r\n     ';
+'" id="language" name="language">\n     ';
 
      _.each(languages, function(language) { 
-__p+='\r\n        <option>'+
+__p+='\n        <option>'+
 ((__t=(language))==null?'':_.escape(__t))+
-'</option>\r\n     ';
+'</option>\n     ';
  }); 
-__p+='\r\n    </select>\r\n  </div>\r\n <div class="col-4">\r\n    <label for="year">Year of publication</label>\r\n    <input class="form-control" type="text" value="'+
+__p+='\n    </select>\n  </div>\n <div class="col-4">\n    <label for="year">Year of publication</label>\n    <input class="form-control" type="text" value="'+
 ((__t=(year))==null?'':_.escape(__t))+
-'" id="year" name="year" placeholder="2018">\r\n  </div>\r\n <div class="col-4">\r\n    <label for="year">Profiler URL</label><small> (use default if in doubt)</small>\r\n    <input class="form-control" type="text" value="'+
+'" id="year" name="year" placeholder="2018">\n  </div>\n <div class="col-4">\n    <label for="year">Profiler URL</label><small> (use default if in doubt)</small>\n    <input class="form-control" type="text" value="'+
 ((__t=(profilerUrl))==null?'':_.escape(__t))+
-'" id="profilerUrl" name="profilerUrl" placeholder="default">\r\n  </div>\r\n  </div>\r\n\r\n';
+'" id="profilerUrl" name="profilerUrl" placeholder="default">\n  </div>\n  </div>\n\n';
  } 
-__p+='\r\n\r\n';
+__p+='\n\n';
  if(!edit_project) { 
-__p+='\r\n\r\n\r\n<label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">\r\n <i class="fas fa-file-upload"></i> Upload data (.zip)\r\n</label>\r\n<input id="file-upload" type="file" name="archive" style="display:none">\r\n\r\n<div id="selected_file"></div>\r\n <button class="btn btn-primary js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>\r\n\r\n\r\n';
+__p+='\n\n\n<label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">\n <i class="fas fa-file-upload"></i> Upload data (.zip)\n</label>\n<input id="file-upload" type="file" name="archive" style="display:none">\n\n<div id="selected_file"></div>\n <button class="btn btn-primary js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>\n\n\n';
  } else { 
-__p+='\r\n\r\n <button class="btn btn-primary js-edit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Update</button>\r\n\r\n';
+__p+='\n\n <button class="btn btn-primary js-edit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Update</button>\n\n';
  } 
-__p+='\r\n\r\n</form>\r\n\r\n\r\n\r\n';
+__p+='\n\n</form>\n\n\n\n';
 
 if(asModal) {
 
-__p+='\r\n\r\n  </div> \r\n\r\n\r\n\r\n <div class="modal-footer">\r\n </div>\r\n\r\n\r\n\r\n  </div>\r\n  </div>\r\n\r\n';
+__p+='\n\n  </div> \n\n\n\n <div class="modal-footer">\n </div>\n\n\n\n  </div>\n  </div>\n\n';
  } 
-__p+='\r\n';
+__p+='\n';
 }
 return __p;
 };});
@@ -26729,23 +26729,23 @@ c.setAttribute("max","7"),c.className="medium-editor-toolbar-input",b.appendChil
 define("tpl!apps/projects/concordance/show/templates/concordance.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='	\r\n';
+__p+='	\n';
 
 if(asModal) {
 
-__p+='\r\n\r\n  <div class="modal-dialog modal-xl" role="document">\r\n  <div class="modal-content">\r\n\r\n<div class="modal-header">\r\n        <h3 class="modal-title">Concordance view for "'+
+__p+='\n\n  <div class="modal-dialog modal-xl" role="document">\n  <div class="modal-content">\n\n<div class="modal-header">\n        <h3 class="modal-title">Concordance view for "'+
 ((__t=(selection))==null?'':_.escape(__t))+
-'"</h3>\r\n       \r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n\r\n      </div>\r\n<div class="modal-body">\r\n\r\n';
+'"</h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n';
  } else { 
-__p+='\r\n\r\n\r\n	<div class="container">\r\n	<div class="row">\r\n    <div class="col col-md-12">\r\n\r\n	<div id="concordance-heading">\r\n	<p><h2>Concordance view for "'+
+__p+='\n\n\n	<div class="container">\n	<div class="row">\n    <div class="col col-md-12">\n\n	<div id="concordance-heading">\n	<p><h2>Concordance view for "'+
 ((__t=(selection))==null?'':_.escape(__t))+
-'"</h2></p>\r\n	</div>\r\n\r\n	\r\n';
+'"</h2></p>\n	</div>\n\n	\n';
  } 
-__p+='\r\n\r\n <!--  <nav class="navbar navbar-static-top" id="page-header" data-spy="affix" data-offset-top="197">\r\n  <div class="container-fluid">\r\n  <div class="collapse navbar-collapse">\r\n  <ul class="nav navbar-nav">\r\n  <li> \r\n  <form class="navbar-form">-->\r\n  \r\n  ';
+__p+='\n\n <!--  <nav class="navbar navbar-static-top" id="page-header" data-spy="affix" data-offset-top="197">\n  <div class="container-fluid">\n  <div class="collapse navbar-collapse">\n  <ul class="nav navbar-nav">\n  <li> \n  <form class="navbar-form">-->\n  \n  ';
  if (suggestions!=undefined){ 
-__p+='\r\n\r\n  <div class="input-group mb-3">\r\n  <div class="input-group-prepend">\r\n  <button class="js-toggle-selection btn btn-outline-secondary" title="Toggle selection">\r\n  Toggle selection\r\n  </button>\r\n  </div>\r\n  <input class="js-global-correction-suggestion form-control" title="correction" type="text" placeholder="Correction"/>\r\n  <div class="input-group-append">\r\n  <button class="js-set-correction btn btn-outline-secondary" title="Set correction">\r\n  Set correction\r\n  </button>\r\n  <button class="js-correct-conc selected btn btn-outline-secondary" title="Correct selected">\r\n  Correct selected\r\n  </button>\r\n  </div>\r\n  </div>\r\n\r\n  ';
+__p+='\n\n  <div class="input-group mb-3">\n  <div class="input-group-prepend">\n  <button class="js-toggle-selection btn btn-outline-secondary" title="Toggle selection">\n  Toggle selection\n  </button>\n  </div>\n  <input class="js-global-correction-suggestion form-control" title="correction" type="text" placeholder="Correction"/>\n  <div class="input-group-append">\n  <button class="js-set-correction btn btn-outline-secondary" title="Set correction">\n  Set correction\n  </button>\n  <button class="js-correct-conc selected btn btn-outline-secondary" title="Correct selected">\n  Correct selected\n  </button>\n  </div>\n  </div>\n\n  ';
  } 
-__p+='\r\n\r\n <!-- </form>\r\n   </li>\r\n  </ul>\r\n  </div>\r\n  </div>\r\n  </nav> -->\r\n\r\n  <div class="all_lines_parent">\r\n	  ';
+__p+='\n\n <!-- </form>\n   </li>\n  </ul>\n  </div>\n  </div>\n  </nav> -->\n\n  <div class="all_lines_parent">\n	  ';
 
       _.each(tokendata, function(match) {
       var line = match['line'];
@@ -26754,24 +26754,24 @@ __p+='\r\n\r\n <!-- </form>\r\n   </li>\r\n  </ul>\r\n  </div>\r\n  </div>\r\n  
     var offset = word['offset'];
     var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];   
       
-__p+='\r\n\r\n\r\n\r\n<div class="text-image-line">\r\n\r\n<div class="left_div div_inline">\r\n	<!-- if ($images["leftImg"] != NULL) { -->\r\n		<div class="invisible=link" href="'+
+__p+='\n\n\n\n<div class="text-image-line">\n\n<div class="left_div div_inline">\n	<!-- if ($images["leftImg"] != NULL) { -->\n		<div class="invisible=link" href="'+
 ((__t=(link))==null?'':_.escape(__t))+
-'">\r\n    <div id ="img_'+
+'">\n    <div id ="img_'+
 ((__t=(line['pageId']))==null?'':_.escape(__t))+
 '_'+
 ((__t=(line['lineId']))==null?'':_.escape(__t))+
-'_parent" class="line-img">\r\n		<img src="'+
+'_parent" class="line-img">\n		<img src="'+
 ((__t=(line['imgFile']))==null?'':_.escape(__t))+
 '" id="img_'+
 ((__t=(line['pageId']))==null?'':_.escape(__t))+
 '_'+
 ((__t=(line['lineId']))==null?'':_.escape(__t))+
-'" width="auto" height="25"/>\r\n    </div>\r\n	\r\n		</div>\r\n	</div>\r\n	\r\n	</div>\r\n\r\n\r\n\r\n\r\n     ';
+'" width="auto" height="25"/>\n    </div>\n	\n		</div>\n	</div>\n	\n	</div>\n\n\n\n\n     ';
 
      		});
      	});
      
-__p+='\r\n\r\n</div>\r\n\r\n	</div>\r\n    </div>\r\n 	</div>\r\n';
+__p+='\n\n</div>\n\n	</div>\n    </div>\n 	</div>\n';
 }
 return __p;
 };});
@@ -27238,9 +27238,9 @@ return Show;
 define("tpl!apps/projects/page/show/templates/header.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='	<div class="col col-sm-12">\r\n	<div class="defaulthl">\r\n    <i class="fas fa-book-open card_main_icon green"></i>\r\n	'+
+__p+='	<div class="col col-sm-12">\n	<div class="defaulthl">\n    <i class="fas fa-book-open card_main_icon green"></i>\n	'+
 ((__t=(title))==null?'':_.escape(__t))+
-' \r\n	</div>\r\n	</div>\r\n\r\n';
+' \n	</div>\n	</div>\n\n';
 }
 return __p;
 };});
@@ -27249,7 +27249,7 @@ return __p;
 define("tpl!apps/projects/page/show/templates/page.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n\r\n    <div class="border rounded" style="padding: 15px;">\r\n	   ';
+__p+='\n\n    <div class="border rounded" style="padding: 15px;">\n	   ';
 
      _.each(lines, function(line) {
 
@@ -27270,11 +27270,11 @@ __p+='\r\n\r\n    <div class="border rounded" style="padding: 15px;">\r\n	   ';
 
 
       
-__p+='\r\n       <div class="text-image-line" title="'+
+__p+='\n       <div class="text-image-line" title="'+
 ((__t=(text))==null?'':_.escape(__t))+
-'">\r\n\r\n       	<a class="line-anchor" id="line-anchor-'+
+'">\n\n       	<a class="line-anchor" id="line-anchor-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"></a>\r\n		<div class="line-img"><img id="line-img-'+
+'"></a>\n		<div class="line-img"><img id="line-img-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
 '" src=\''+
 ((__t=(line["imgFile"]))==null?'':_.escape(__t))+
@@ -27282,23 +27282,23 @@ __p+='\r\n       <div class="text-image-line" title="'+
 ((__t=(text))==null?'':_.escape(__t))+
 '\' title=\''+
 ((__t=(text))==null?'':_.escape(__t))+
-'\' width="auto" height="30"></div>\r\n\r\n		<div class="line-text-parent">	\r\n		<div id="line-'+
+'\' width="auto" height="30"></div>\n\n		<div class="line-text-parent">	\n		<div id="line-'+
 ((__t=(anchor))==null?'':_.escape(__t))+
 '" class="'+
 ((__t=(correction_class))==null?'':_.escape(__t))+
 ' line-text" anchor="'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"\r\n	    class="'+
+'"\n	    class="'+
 ((__t=(inputclass))==null?'':_.escape(__t))+
-' line-text">\r\n       <div class="line" contenteditable="true">\r\n       \r\n        '+
+' line-text">\n       <div class="line" contenteditable="true">\n       \n        '+
 ((__t=(line['cor']))==null?'':_.escape(__t))+
-'\r\n      	</div> \r\n      	<div class="line-tokens">\r\n      	</div>\r\n\r\n\r\n        </div>\r\n        <span>\r\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
+'\n      	</div> \n      	<div class="line-tokens">\n      	</div>\n\n\n        </div>\n        <span>\n		      <div class="rounded-right btn btn-outline-dark correct-btn js-correct" title="correct line #';
 line['lineId']
 __p+='" anchor="'+
 ((__t=(anchor))==null?'':_.escape(__t))+
-'"><i class="far fa-arrow-alt-circle-up"></i></div>\r\n        </span>\r\n	    </div>\r\n\r\n\r\n\r\n       </div>\r\n	\r\n     \r\n\r\n\r\n      ';
+'"><i class="far fa-arrow-alt-circle-up"></i></div>\n        </span>\n	    </div>\n\n\n\n       </div>\n	\n     \n\n\n      ';
  }) 
-__p+='\r\n	</div>\r\n	 ';
+__p+='\n	</div>\n	 ';
 }
 return __p;
 };});
@@ -27307,13 +27307,13 @@ return __p;
 define("tpl!apps/projects/page/show/templates/sidebar.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n    <div class="card">\r\n\r\n	\r\n\r\n		<ul class="nav  navbar-light justify-content-center">\r\n		<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\r\n			<i class="fas fa-angle-double-left"></i>\r\n			</a></li>\r\n		<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
+__p+='\n    <div class="card">\n\n	\n\n		<ul class="nav  navbar-light justify-content-center">\n		<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\n			<i class="fas fa-angle-double-left"></i>\n			</a></li>\n		<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
 ((__t=(prevPageId))==null?'':_.escape(__t))+
-'">\r\n			<i class="fas fas fa-angle-left"></i>\r\n		</a></li>\r\n\r\n		<li>\r\n		<div id="pageId" style="margin-top: 7px;"> Page '+
+'">\n			<i class="fas fas fa-angle-left"></i>\n		</a></li>\n\n		<li>\n		<div id="pageId" style="margin-top: 7px;"> Page '+
 ((__t=(pageId))==null?'':_.escape(__t))+
-'</div>\r\n		</li>\r\n\r\n	<!--error-patterns -->\r\n	<!-- <li class="nav-item dropdown">\r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-patterns-dropdown">\r\n		Error patterns<span class="caret"></span></a>\r\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\r\n        </div>\r\n    </li> -->\r\n	<!-- error-tokens -->\r\n	<!-- <li class="nav-item dropdown"> \r\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-tokens-dropdown">\r\n		Error tokens<span class="caret"></span></a>\r\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\r\n        </div>\r\n     </li> -->\r\n\r\n   \r\n\r\n	<!--nextpage and last page -->\r\n		<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
+'</div>\n		</li>\n\n	<!--error-patterns -->\n	<!-- <li class="nav-item dropdown">\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-patterns-dropdown">\n		Error patterns<span class="caret"></span></a>\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\n        </div>\n    </li> -->\n	<!-- error-tokens -->\n	<!-- <li class="nav-item dropdown"> \n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-tokens-dropdown">\n		Error tokens<span class="caret"></span></a>\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\n        </div>\n     </li> -->\n\n   \n\n	<!--nextpage and last page -->\n		<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
 ((__t=(nextPageId))==null?'':_.escape(__t))+
-'">\r\n			<i class="fas fa-angle-right"></i>\r\n			</a></li>\r\n		<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\r\n			<i class="fas fa-angle-double-right"></i>\r\n			</a></li>\r\n		</ul>\r\n		  <hr style="margin: 0;">\r\n		  <div id="accordion">\r\n		  <div class="card-header" id="hl1">\r\n		  	  <button class="btn btn-link">\r\n		  		  Suspicious words\r\n       		 </button>\r\n		  </div>\r\n		   <div id="suspicious-words-container">\r\n		   	<div class="loading_background2">\r\n	         <div class="loading_text_parent">\r\n	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>\r\n        	 </div>\r\n        	 </div>\r\n        	   <div id="suspicious-words_filter">\r\n               <input type="search" class="" placeholder="Search...">\r\n          	   </div>\r\n\r\n		   <table class="table suspicious-words">\r\n		    <thead>\r\n		      <tr>\r\n		        <th>Word</th>\r\n		        <th>Count</th>\r\n		      </tr>\r\n		    </thead>\r\n		    <tbody>\r\n		    \r\n		    </tbody>\r\n		  </table>\r\n		</div>\r\n		 <hr style="margin: 0;">\r\n		  <div class="card-header" id="hl2">\r\n		  	 <button class="btn btn-link">\r\n		   			 Error patterns\r\n       		 </button>\r\n		  </div>\r\n		   <div id="error-patterns-container">\r\n		   	<div class="loading_background2">\r\n	         <div class="loading_text_parent">\r\n	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>\r\n        	 </div>\r\n        	 </div>\r\n        	 <div id="error-patterns_filter">\r\n               <input type="search" placeholder="Search...">\r\n          	 </div>\r\n		   <table class="table error-patterns">\r\n		    <thead>\r\n		      <tr>\r\n		        <th>Word</th>\r\n		        <th>Count</th>\r\n		      </tr>\r\n		    </thead>\r\n		    <tbody>\r\n		    \r\n		    </tbody>\r\n		  </table>\r\n		</div>\r\n	  </div>\r\n	</div>';
+'">\n			<i class="fas fa-angle-right"></i>\n			</a></li>\n		<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\n			<i class="fas fa-angle-double-right"></i>\n			</a></li>\n		</ul>\n		  <hr style="margin: 0;">\n		  <div id="accordion">\n		  <div class="card-header" id="hl1">\n		  	  <button class="btn btn-link">\n		  		  Suspicious words\n       		 </button>\n		  </div>\n		   <div id="suspicious-words-container">\n		   	<div class="loading_background2">\n	         <div class="loading_text_parent">\n	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>\n        	 </div>\n        	 </div>\n        	   <div id="suspicious-words_filter">\n               <input type="search" class="" placeholder="Search...">\n          	   </div>\n\n		   <table class="table suspicious-words">\n		    <thead>\n		      <tr>\n		        <th>Word</th>\n		        <th>Count</th>\n		      </tr>\n		    </thead>\n		    <tbody>\n		    \n		    </tbody>\n		  </table>\n		</div>\n		 <hr style="margin: 0;">\n		  <div class="card-header" id="hl2">\n		  	 <button class="btn btn-link">\n		   			 Error patterns\n       		 </button>\n		  </div>\n		   <div id="error-patterns-container">\n		   	<div class="loading_background2">\n	         <div class="loading_text_parent">\n	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>\n        	 </div>\n        	 </div>\n        	 <div id="error-patterns_filter">\n               <input type="search" placeholder="Search...">\n          	 </div>\n		   <table class="table error-patterns">\n		    <thead>\n		      <tr>\n		        <th>Word</th>\n		        <th>Count</th>\n		      </tr>\n		    </thead>\n		    <tbody>\n		    \n		    </tbody>\n		  </table>\n		</div>\n	  </div>\n	</div>';
 }
 return __p;
 };});
@@ -27322,7 +27322,7 @@ return __p;
 define("tpl!apps/projects/page/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="container">\r\n\r\n	<div class="row">\r\n		<div class="col col-sm-12">\r\n			<div id="header-region"></div>\r\n		</div>\r\n    </div>\r\n	<div class="row">\r\n		<div class="col col-sm-3">\r\n			<div id="sidebar-region"></div>\r\n		</div>\r\n        <div class="col col-sm-9">\r\n			<div id="page-region"></div>\r\n		</div>\r\n	</div>\r\n	<div class="row">\r\n		<div id="footer-region"></div>\r\n	</div>\r\n</div>';
+__p+='<div class="container">\n\n	<div class="row">\n		<div class="col col-sm-12">\n			<div id="header-region"></div>\n		</div>\n    </div>\n	<div class="row">\n		<div class="col col-sm-3">\n			<div id="sidebar-region"></div>\n		</div>\n        <div class="col col-sm-9">\n			<div id="page-region"></div>\n		</div>\n	</div>\n	<div class="row">\n		<div id="footer-region"></div>\n	</div>\n</div>';
 }
 return __p;
 };});
@@ -27372,8 +27372,8 @@ define('apps/projects/page/show/show_view',["marionette","app","medium","backbon
       'click .js-firstpage' : 'firstpage_clicked',
       'click .js-lastpage' : 'lastpage_clicked',
  
-      'click #pcw-error-tokens-link' : 'error_tokens_clicked',
-      'click #pcw-error-patterns-link' : 'error_patterns_clicked'
+      'click .suspicious-words tr' : 'error_tokens_clicked',
+      'click .error-patterns tr' : 'error_patterns_clicked'
 
 
       },
@@ -27382,7 +27382,7 @@ define('apps/projects/page/show/show_view',["marionette","app","medium","backbon
         e.stopPropagation();
         e.preventDefault();
         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        console.log(data)
+      
         this.trigger("page:new",data.prevPageId);
       },
 
@@ -27404,6 +27404,31 @@ define('apps/projects/page/show/show_view',["marionette","app","medium","backbon
         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
         e.preventDefault();
         this.trigger("page:new","last");
+      },
+        error_tokens_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".custom-popover").remove();
+        var tr = $(e.currentTarget);
+        var td = tr.find('td');
+        var pat = $(td[0]).html();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        if(pat!=undefined){
+            this.trigger("sidebar:error-tokens-clicked",data.projectId,pat);
+        }
+      },
+
+        error_patterns_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".custom-popover").remove();
+        var tr = $(e.currentTarget);
+        var td = tr.find('td');
+        var pat = $(td[0]).html();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        if(pat!=undefined){
+            this.trigger("sidebar:error-patterns-clicked",data.projectId,pat);
+        }
       },
       onAttach:function(){
 
@@ -27429,30 +27454,13 @@ define('apps/projects/page/show/show_view',["marionette","app","medium","backbon
       'click .js-correct' : 'correct_clicked',
       'click .line-tokens' : 'line_tokens_clicked',
       'click .line-text' : 'line_selected',
-      'click #pcw-error-tokens-link' : 'error_tokens_clicked',
-      'click #pcw-error-patterns-link' : 'error_patterns_clicked',
-
       'mouseover .line-tokens' : 'tokens_hovered',
       'mouseleave .line-text-parent' : 'line_left',
       'keydown .line' : 'line_edited',
 
       },
 
-      error_tokens_clicked : function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        $(".custom-popover").remove();
-        $(".dropdown-menu").hide();
-        $('#pcw-error-tokens-dropdown').toggle();
-      },
-
-        error_patterns_clicked : function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        $(".custom-popover").remove();
-        $(".dropdown-menu").hide();
-        $('#pcw-error-patterns-dropdown').toggle();
-      },
+    
 
       serializeData: function(){
       var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
@@ -27498,8 +27506,7 @@ define('apps/projects/page/show/show_view',["marionette","app","medium","backbon
         $('.line-tokens').show();
         var line_parent = $(e.currentTarget).parent();
 
-        console.log(line_parent);
-        console.log($(e.currentTarget));
+   
         line_parent.find('.line').show();
         $(e.currentTarget).hide();
 
@@ -27759,7 +27766,7 @@ return Show;
 define("tpl!apps/projects/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\r\n<div id="info-region" ></div>\r\n<div id="hub-region" ></div>\r\n<div id="hub2-region" ></div>\r\n<div id="packages-region" ></div>\r\n\r\n<div id="footer-region" ></div>\r\n';
+__p+='<div id="hl-region"></div>\n<div id="info-region" ></div>\n<div id="hub-region" ></div>\n<div id="hub2-region" ></div>\n<div id="packages-region" ></div>\n\n<div id="footer-region" ></div>\n';
 }
 return __p;
 };});
@@ -27768,15 +27775,15 @@ return __p;
 define("tpl!apps/projects/show/templates/info.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n\r\n<div class="container">\r\n<hr>\r\n\r\n\r\n<div class="row">\r\n<div class="col-lg-12">\r\n\r\n\r\n<table class="table table-bordered" style=\'margin-bottom: 30px;\'> \r\n\r\n<thead class="thead-light">\r\n      <tr>\r\n        <th>Title</th>\r\n        <th>Author</th>\r\n        <th>Language</th>\r\n        <th>Pages</th>\r\n      </tr>\r\n </thead>\r\n <tbody>\r\n\r\n  <tr>  \r\n        <td>'+
+__p+='\n\n<div class="container">\n<hr>\n\n\n<div class="row">\n<div class="col-lg-12">\n\n\n<table class="table table-bordered" style=\'margin-bottom: 30px;\'> \n\n<thead class="thead-light">\n      <tr>\n        <th>Title</th>\n        <th>Author</th>\n        <th>Language</th>\n        <th>Pages</th>\n      </tr>\n </thead>\n <tbody>\n\n  <tr>  \n        <td>'+
 ((__t=(title))==null?'':_.escape(__t))+
-'</td>\r\n        <td>'+
+'</td>\n        <td>'+
 ((__t=(author))==null?'':_.escape(__t))+
-'</td>\r\n        <td>'+
+'</td>\n        <td>'+
 ((__t=(language))==null?'':_.escape(__t))+
-'</td>\r\n        <td>'+
+'</td>\n        <td>'+
 ((__t=(pages))==null?'':_.escape(__t))+
-'</td>\r\n\r\n    </tr>\r\n\r\n </tbody>\r\n\r\n</table> \r\n\r\n</div>\r\n\r\n</div>\r\n\r\n</div>\r\n\r\n';
+'</td>\n\n    </tr>\n\n </tbody>\n\n</table> \n\n</div>\n\n</div>\n\n</div>\n\n';
 }
 return __p;
 };});
@@ -27785,13 +27792,13 @@ return __p;
 define("tpl!apps/projects/show/templates/split.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='  <div class="modal-dialog" role="document">\r\n    <div class="modal-content">\r\n      <div class="modal-header">\r\n        <h5 class="modal-title">Split project ';
+__p+='  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header">\n        <h5 class="modal-title">Split project ';
 title
-__p+='</h5>\r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">&times;</span>\r\n        </button>\r\n      </div>\r\n      <div class="modal-body">\r\n\r\n        <form class="splitform">\r\n          <div class="form-group row">\r\n          <div class="col-12">\r\n             <button type="button" class="btn btn-primary js-addpackage"><i class="fas fa-folder-plus"></i> Add new package</button>\r\n          </div>\r\n        </div> \r\n        <div class="userrows">\r\n        </div>\r\n\r\n       <!--  <div class="form-group row">\r\n          <div class="col-4">\r\n          <label id="splitLabel" for="splitPage">Split into '+
+__p+='</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n      </div>\n      <div class="modal-body">\n\n        <form class="splitform">\n          <div class="form-group row">\n          <div class="col-12">\n             <button type="button" class="btn btn-primary js-addpackage"><i class="fas fa-folder-plus"></i> Add new package</button>\n          </div>\n        </div> \n        <div class="userrows">\n        </div>\n\n       <!--  <div class="form-group row">\n          <div class="col-4">\n          <label id="splitLabel" for="splitPage">Split into '+
 ((__t=(n))==null?'':_.escape(__t))+
-' pages</label>\r\n          <input id="split-n" name="split-n" size="3" type="number" min="1" max="100" step="1" value="'+
+' pages</label>\n          <input id="split-n" name="split-n" size="3" type="number" min="1" max="100" step="1" value="'+
 ((__t=(n))==null?'':_.escape(__t))+
-'" class="form-control">\r\n          </div>\r\n        </div> -->\r\n        <div class="form-group form-check">\r\n          <input type="checkbox" class="form-check-input" id="checkRnd">\r\n          <label class="form-check-label" for="checkRnd">Random</label>\r\n        </div>\r\n      </form>\r\n      </div>\r\n      <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-confirm">Confirm</button>\r\n        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n';
+'" class="form-control">\n          </div>\n        </div> -->\n        <div class="form-group form-check">\n          <input type="checkbox" class="form-check-input" id="checkRnd">\n          <label class="form-check-label" for="checkRnd">Random</label>\n        </div>\n      </form>\n      </div>\n      <div class="modal-footer">\n        <button type="button" class="btn btn-primary js-confirm">Confirm</button>\n        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>\n      </div>\n    </div>\n  </div>\n';
 }
 return __p;
 };});
@@ -27800,23 +27807,23 @@ return __p;
 define("tpl!apps/projects/show/templates/packages.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n';
+__p+='\n';
  if(packages.length>0){ 
-__p+='\r\n\r\n<div class="container">\r\n\r\n<hr>\r\n\r\n<div class="row">\r\n<div class="col-lg-12">\r\n\r\n\r\n<h4> <b>Packages:</b>  </h4> \r\n\r\n\r\n \r\n<table class="table table-bordered" \r\n id="book_table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\r\n\r\n <thead class="thead-light">\r\n      <tr>\r\n        <th>Title</th>\r\n        <th>Author</th>\r\n        <th>Language</th>\r\n        <th>Pages</th>\r\n      </tr>\r\n </thead>\r\n <tbody>\r\n\r\n 	';
+__p+='\n\n<div class="container">\n\n<hr>\n\n<div class="row">\n<div class="col-lg-12">\n\n\n<h4> <b>Packages:</b>  </h4> \n\n\n \n<table class="table table-bordered" \n id="book_table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >\n\n <thead class="thead-light">\n      <tr>\n        <th>Title</th>\n        <th>Author</th>\n        <th>Language</th>\n        <th>Pages</th>\n      </tr>\n </thead>\n <tbody>\n\n 	';
  _.each(packages, function(package) { 
-__p+='\r\n 	<tr class="clickable-row" data-href="#projects/'+
+__p+='\n 	<tr class="clickable-row" data-href="#projects/'+
 ((__t=(package.projectId))==null?'':_.escape(__t))+
-'">  \r\n        <td>'+
+'">  \n        <td>'+
 ((__t=(package.title))==null?'':_.escape(__t))+
-'</td>\r\n        <td>'+
+'</td>\n        <td>'+
 ((__t=(package.author))==null?'':_.escape(__t))+
-'</td>\r\n        <td>'+
+'</td>\n        <td>'+
 ((__t=(package.year))==null?'':_.escape(__t))+
-'</td>\r\n        <td>'+
+'</td>\n        <td>'+
 ((__t=(package.pages))==null?'':_.escape(__t))+
-'</td>\r\n    </tr>\r\n    ';
+'</td>\n    </tr>\n    ';
  }); 
-__p+='   \r\n\r\n </tbody>\r\n\r\n</table> \r\n\r\n</div>\r\n</div>\r\n</div>\r\n\r\n';
+__p+='   \n\n </tbody>\n\n</table> \n\n</div>\n</div>\n</div>\n\n';
  } 
 __p+='';
 }
@@ -29015,12 +29022,13 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
 			  projectShowSidebar = new Show.Sidebar({model:page});
       	projectShowFooterPanel = new Show.FooterPanel();
 
-       projectShowPage.on("page:error-patterns-clicked",function(pid,pat){
-          this.trigger('page:concordance_clicked',pat,1);
+       projectShowSidebar.on("sidebar:error-patterns-clicked",function(pid,pat){
+          // projectShowPage.trigger('page:concordance_clicked',pat,1);
        });
 
-       projectShowPage.on("page:error-tokens-clicked",function(pid,pat){
-        this.trigger('page:concordance_clicked',pat,0);
+       projectShowSidebar.on("sidebar:error-tokens-clicked",function(pid,pat){
+        console.log("clicked error")
+         projectShowPage.trigger('page:concordance_clicked',pat,0);
        });
        projectShowSidebar.on("page:new",function(page_id){
                     var fetchingnewpage = ProjectEntities.API.getPage({pid:id, page:page_id});
@@ -29099,6 +29107,7 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
            projectShowPage.on("page:line_selected",function(selection){
                     var that = this;
                     var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:selection,pid:id});
+
                     var searchingToken = ProjectEntities.API.searchToken({q:selection,p:page_id,pid:id,isErrorPattern:0});
 
                   $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
@@ -29131,14 +29140,17 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
                  dropdown_content.attr('aria-labelledby','js-suggestions');
                  suggestions_btn.append(dropdown_content);
 
-
-                     for(i=0;i<suggestions.suggestions.length;i++){
-                
-                     var s = suggestions.suggestions[i];
+                  console.log(suggestions);
+                     for(key in suggestions.suggestions){
+                       for (var i=0;i<suggestions.suggestions[key].length;i++){
+                        // to do: datatable instead ?
+                    
+                     var s = suggestions.suggestions[key][i];
                      var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
                       s.distance + ", weight: " + s.weight.toFixed(2) + ")";
                      $('#suggestionsDropdown').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
+                   }
 
                      $('#js-suggestions').click(function(e){
                       e.stopPropagation();
@@ -29161,11 +29173,13 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
 
 
        projectShowPage.on("page:concordance_clicked",function(selection,isErrorPattern){
+        console.log(isErrorPattern);
         console.log(selection);
-       var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:selection,pid:id});
+        var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:selection,pid:id});
        var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern});
        var that = this;
          $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
+          console.log(tokens)
             var tokendata = tokens['matches'][selection];
             console.log(suggestions)
             console.log(tokendata)
@@ -29309,7 +29323,7 @@ return Controller;
 define("tpl!apps/projects/list/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\r\n<div id="panel-region" ></div>\r\n<div id="info-region" ></div>\r\n\r\n<div id="footer-region" ></div>\r\n';
+__p+='<div id="hl-region"></div>\n<div id="panel-region" ></div>\n<div id="info-region" ></div>\n\n<div id="footer-region" ></div>\n';
 }
 return __p;
 };});
@@ -29318,7 +29332,7 @@ return __p;
 define("tpl!apps/projects/list/templates/listpanel.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="container">\r\n<div class="row">\r\n<div class="col-lg-12">\r\n\r\n\r\n<button type="submit" class="btn btn btn-primary js-create" style="margin-bottom:15px"> <i class="fa fa-plus" aria-hidden="true"></i> Create new project</button>\r\n\r\n</div>\r\n</div>\r\n</div>';
+__p+='<div class="container">\n<div class="row">\n<div class="col-lg-12">\n\n\n<button type="submit" class="btn btn btn-primary js-create" style="margin-bottom:15px"> <i class="fa fa-plus" aria-hidden="true"></i> Create new project</button>\n\n</div>\n</div>\n</div>';
 }
 return __p;
 };});
@@ -48642,7 +48656,7 @@ var effectsEffectTransfer = effect;
 define("tpl!apps/projects/a_pocoto/lexicon_extension/show/templates/info.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n\r\n<div class="container">\r\n<hr>\r\n\r\n\r\n<div class="row">\r\n<div class="col-lg-5">\r\n<h4>Extensions</h4> \r\n\r\n<table id="extensions" class="table table-bordered sortable table-hover" style=\'margin-bottom: 30px;\'> \r\n<thead class="thead-light">\r\n      <tr>\r\n        <th>Word</th>\r\n        <th>Frequency</th>\r\n      </tr>\r\n </thead>\r\n <tbody>\r\n\r\n    <tr>  \r\n        <td>vnd</td>\r\n        <td>10</td>\r\n    </tr>\r\n       <tr>  \r\n        <td>word2</td>\r\n        <td>30</td>\r\n    </tr>\r\n       <tr>  \r\n        <td>word3</td>\r\n        <td>40</td>\r\n    </tr>\r\n\r\n </tbody>\r\n\r\n</table> \r\n\r\n\r\n</div>\r\n\r\n<div class="col-lg-2">\r\n<div style="text-align: center;">\r\n<i style="margin-top: 118px;font-size: 50px;" class="fas fa-exchange-alt"></i>\r\n</div>\r\n</div>\r\n\r\n<div class="col-lg-5">\r\n\r\n<table id="unknown" class="table table-bordered sortable table-hover" style=\'margin-bottom: 30px;\'>\r\n<h4>Unknown</h4> \r\n<thead class="thead-light">\r\n      <tr>\r\n        <th>Word</th>\r\n        <th>Frequency</th>\r\n      </tr>\r\n </thead>\r\n <tbody>\r\n\r\n    <tr>  \r\n        <td>word1</td>\r\n        <td>4</td>\r\n    </tr>\r\n       <tr>  \r\n        <td>word2</td>\r\n        <td>3</td>\r\n    </tr>\r\n       <tr>  \r\n        <td>word3</td>\r\n        <td>21</td>\r\n    </tr>\r\n\r\n </tbody>\r\n\r\n</table> \r\n\r\n\r\n</div>\r\n\r\n\r\n\r\n\r\n\r\n</div>\r\n</div>\r\n\r\n';
+__p+='\n\n<div class="container">\n<hr>\n\n\n<div class="row">\n<div class="col-lg-5">\n<h4>Extensions</h4> \n\n<table id="extensions" class="table table-bordered sortable table-hover" style=\'margin-bottom: 30px;\'> \n<thead class="thead-light">\n      <tr>\n        <th>Word</th>\n        <th>Frequency</th>\n      </tr>\n </thead>\n <tbody>\n\n    <tr>  \n        <td>vnd</td>\n        <td>10</td>\n    </tr>\n       <tr>  \n        <td>word2</td>\n        <td>30</td>\n    </tr>\n       <tr>  \n        <td>word3</td>\n        <td>40</td>\n    </tr>\n\n </tbody>\n\n</table> \n\n\n</div>\n\n<div class="col-lg-2">\n<div style="text-align: center;">\n<i style="margin-top: 118px;font-size: 50px;" class="fas fa-exchange-alt"></i>\n</div>\n</div>\n\n<div class="col-lg-5">\n\n<table id="unknown" class="table table-bordered sortable table-hover" style=\'margin-bottom: 30px;\'>\n<h4>Unknown</h4> \n<thead class="thead-light">\n      <tr>\n        <th>Word</th>\n        <th>Frequency</th>\n      </tr>\n </thead>\n <tbody>\n\n    <tr>  \n        <td>word1</td>\n        <td>4</td>\n    </tr>\n       <tr>  \n        <td>word2</td>\n        <td>3</td>\n    </tr>\n       <tr>  \n        <td>word3</td>\n        <td>21</td>\n    </tr>\n\n </tbody>\n\n</table> \n\n\n</div>\n\n\n\n\n\n</div>\n</div>\n\n';
 }
 return __p;
 };});
@@ -48909,7 +48923,7 @@ define('apps/projects/projects_app',["marionette","app"], function(Marionette,Ap
 define("tpl!apps/docs/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\r\n    <div id="info-region" ></div>\r\n    <div id="structures-region" ></div>\r\n    <div id="panel-region"></div>\r\n\r\n';
+__p+='<div id="hl-region"></div>\n    <div id="info-region" ></div>\n    <div id="structures-region" ></div>\n    <div id="panel-region"></div>\n\n';
 }
 return __p;
 };});
@@ -48918,7 +48932,7 @@ return __p;
 define("tpl!apps/docs/show/templates/info.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n\r\n<div class="container">\r\n<div class="row">\r\n\r\n   <div class="col col-12-md">\r\n\r\n   <div id="docs">\r\n   </div>\r\n\r\n\r\n\r\n  </div>\r\n\r\n\r\n</div>\r\n\r\n\r\n</div>\r\n\r\n';
+__p+='\n\n<div class="container">\n<div class="row">\n\n   <div class="col col-12-md">\n\n   <div id="docs">\n   </div>\n\n\n\n  </div>\n\n\n</div>\n\n\n</div>\n\n';
 }
 return __p;
 };});
@@ -49214,39 +49228,39 @@ return Controller;
 define("tpl!apps/users/common/templates/userform.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\r\n';
+__p+='\n';
  if(asModal){
-__p+='\r\n\r\n  <div class="modal-dialog" role="document">\r\n    <div class="modal-content">\r\n      <div class="modal-header">\r\n        <h5 class="modal-title">'+
+__p+='\n\n  <div class="modal-dialog" role="document">\n    <div class="modal-content">\n      <div class="modal-header">\n        <h5 class="modal-title">'+
 ((__t=(modaltitle))==null?'':_.escape(__t))+
-'</h5>\r\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\r\n          <span aria-hidden="true">×</span>\r\n        </button>\r\n       </div>\r\n \r\n  <div class="modal-body">\r\n       \r\n';
+'</h5>\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">×</span>\n        </button>\n       </div>\n \n  <div class="modal-body">\n       \n';
 } else {
-__p+='\r\n\r\n<div class="container">\r\n<div class="row">\r\n <div class="col col-md-12">\r\n\r\n';
+__p+='\n\n<div class="container">\n<div class="row">\n <div class="col col-md-12">\n\n';
 }
-__p+='\r\n\r\n<div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">Username</label>\r\n    <div class="col-md-6">     \r\n          <input class="form-control" name="name" type="text" value="'+
+__p+='\n\n<div class="form-group row ">\n    <label class="col-md-3 form-control-label required">Username</label>\n    <div class="col-md-6">     \n          <input class="form-control" name="name" type="text" value="'+
 ((__t=(name))==null?'':_.escape(__t))+
-'" required="">\r\n    </div>\r\n    <div class="col-md-3 form-control-comment"> \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">Email</label>\r\n    <div class="col-md-6">\r\n          <input class="form-control" name="email" type="email" value="'+
+'" required="">\n    </div>\n    <div class="col-md-3 form-control-comment"> \n    </div>\n  </div>\n\n  <div class="form-group row ">\n    <label class="col-md-3 form-control-label required">Email</label>\n    <div class="col-md-6">\n          <input class="form-control" name="email" type="email" value="'+
 ((__t=(email))==null?'':_.escape(__t))+
-'" required="">\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">              \r\n    </div>\r\n  </div>\r\n\r\n   <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">Institute</label>\r\n      <div class="col-md-6">\r\n    <input class="form-control" name="institute" type="text" value="'+
+'" required="">\n    </div>\n    <div class="col-md-3 form-control-comment">              \n    </div>\n  </div>\n\n   <div class="form-group row ">\n    <label class="col-md-3 form-control-label">Institute</label>\n      <div class="col-md-6">\n    <input class="form-control" name="institute" type="text" value="'+
 ((__t=(institute))==null?'':_.escape(__t))+
-'">\r\n    </div>\r\n\r\n    <div class="col-md-3 form-control-comment">\r\n    \r\n    </div>\r\n  </div>\r\n\r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label required">\r\n              Password\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control" name="password" type="password" value="'+
+'">\n    </div>\n\n    <div class="col-md-3 form-control-comment">\n    \n    </div>\n  </div>\n\n  <div class="form-group row ">\n    <label class="col-md-3 form-control-label required">\n              Password\n          </label>\n    <div class="col-md-6">\n\n          <div class="input-group">\n            <input class="form-control" name="password" type="password" value="'+
 ((__t=(password))==null?'':_.escape(__t))+
-'" pattern=".{5,}" required="">\r\n            <!-- <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span> -->\r\n          </div>\r\n   \r\n    </div>\r\n    <div class="col-md-3 form-control-comment">   \r\n    </div>\r\n  </div>\r\n       \r\n  <div class="form-group row ">\r\n    <label class="col-md-3 form-control-label">\r\n               Password (retype)\r\n          </label>\r\n    <div class="col-md-6">\r\n\r\n          <div class="input-group">\r\n            <input class="form-control " name="new_password" type="password" value="'+
+'" pattern=".{5,}" required="">\n            <!-- <span class="input-group-btn">\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\n                Show\n              </button>\n            </span> -->\n          </div>\n   \n    </div>\n    <div class="col-md-3 form-control-comment">   \n    </div>\n  </div>\n       \n  <div class="form-group row ">\n    <label class="col-md-3 form-control-label">\n               Password (retype)\n          </label>\n    <div class="col-md-6">\n\n          <div class="input-group">\n            <input class="form-control " name="new_password" type="password" value="'+
 ((__t=(password))==null?'':_.escape(__t))+
-'" pattern=".{5,}">\r\n           <!--  <span class="input-group-btn">\r\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\r\n                Show\r\n              </button>\r\n            </span> -->\r\n          </div>\r\n    </div>\r\n    <div class="col-md-3 form-control-comment">\r\n    </div>\r\n  </div>\r\n ';
+'" pattern=".{5,}">\n           <!--  <span class="input-group-btn">\n              <button class="btn" type="button" data-action="show-password" data-text-show="Show" data-text-hide="Hide">\n                Show\n              </button>\n            </span> -->\n          </div>\n    </div>\n    <div class="col-md-3 form-control-comment">\n    </div>\n  </div>\n ';
  if(admincheck) {
-__p+='\r\n \r\n    <div class="form-group form-check">\r\n    <input type="checkbox" class="form-check-input" id="admin_check">\r\n    <label class="form-check-label" for="admin_check">Administrator</label>\r\n  </div>\r\n  ';
+__p+='\n \n    <div class="form-group form-check">\n    <input type="checkbox" class="form-check-input" id="admin_check">\n    <label class="form-check-label" for="admin_check">Administrator</label>\n  </div>\n  ';
  }
-__p+='\r\n\r\n';
+__p+='\n\n';
  if(asModal){
-__p+='\r\n </div>\r\n  <div class="modal-footer">\r\n        <button type="button" class="btn btn-primary js-submit">Submit</button>\r\n      </div>\r\n    </div>\r\n\r\n</div>\r\n</div>\r\n\r\n';
+__p+='\n </div>\n  <div class="modal-footer">\n        <button type="button" class="btn btn-primary js-submit">Submit</button>\n      </div>\n    </div>\n\n</div>\n</div>\n\n';
 } else  { 
-__p+='\r\n';
+__p+='\n';
  if (create) {
-__p+='\r\n<div class="row">\r\n<div class="col-md-3"></div>\r\n  <div class="col-md-6">\r\n     <button type="button" style="float:right;" class="btn btn-primary js-submit">Submit</button>\r\n  </div>\r\n  </div>\r\n\r\n';
+__p+='\n<div class="row">\n<div class="col-md-3"></div>\n  <div class="col-md-6">\n     <button type="button" style="float:right;" class="btn btn-primary js-submit">Submit</button>\n  </div>\n  </div>\n\n';
  } 
-__p+='\r\n\r\n</div>\r\n</div>\r\n</div>\r\n';
+__p+='\n\n</div>\n</div>\n</div>\n';
 }
-__p+='\r\n\r\n';
+__p+='\n\n';
 }
 return __p;
 };});
@@ -49330,7 +49344,7 @@ return Views;
 define("tpl!apps/users/list/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\r\n    <div id="panel-region"></div>\r\n    <div id="info-region" ></div>\r\n    <div id="footer-region" ></div>\r\n';
+__p+='<div id="hl-region"></div>\n    <div id="panel-region"></div>\n    <div id="info-region" ></div>\n    <div id="footer-region" ></div>\n';
 }
 return __p;
 };});
@@ -49339,7 +49353,7 @@ return __p;
 define("tpl!apps/users/list/templates/panel.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+=' <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button style="margin-bottom: 25px;margin-top: 25px;" type="button" class="btn btn-primary js-create"><i class="fas fa-user-plus"></i> Create new user</button>                     \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
+__p+=' <div class="container">\n\n<div class="row">\n\n <div class="col col-md-12">\n\n  <button style="margin-bottom: 25px;margin-top: 25px;" type="button" class="btn btn-primary js-create"><i class="fas fa-user-plus"></i> Create new user</button>                     \n  \n</div>\n\n</div>\n\n</div>';
 }
 return __p;
 };});
@@ -49571,7 +49585,7 @@ return App.UsersApp.Login.Controller;
 define("tpl!apps/users/show/templates/layout.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div id="hl-region"></div>\r\n    <div id="panel-region"></div>\r\n    <div id="info-region" ></div>\r\n    <div id="footer-region" ></div>\r\n';
+__p+='<div id="hl-region"></div>\n    <div id="panel-region"></div>\n    <div id="info-region" ></div>\n    <div id="footer-region" ></div>\n';
 }
 return __p;
 };});
@@ -49580,7 +49594,7 @@ return __p;
 define("tpl!apps/users/show/templates/panel.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='    <div class="container">\r\n\r\n<div class="row">\r\n\r\n <div class="col col-md-12">\r\n\r\n  <button type="button" class="btn btn-primary js-update"><i class="fas fa-user-edit"></i> Update account settings</button>\r\n  <button type="button" class="btn btn-primary js-delete"><i class="fas fa-user-times"></i> Delete this account</button>\r\n\r\n  <h3  style="margin-bottom: 25px;margin-top: 25px;"> Personal Information </h3>\r\n                                \r\n  \r\n</div>\r\n\r\n</div>\r\n\r\n</div>';
+__p+='    <div class="container">\n\n<div class="row">\n\n <div class="col col-md-12">\n\n  <button type="button" class="btn btn-primary js-update"><i class="fas fa-user-edit"></i> Update account settings</button>\n  <button type="button" class="btn btn-primary js-delete"><i class="fas fa-user-times"></i> Delete this account</button>\n\n  <h3  style="margin-bottom: 25px;margin-top: 25px;"> Personal Information </h3>\n                                \n  \n</div>\n\n</div>\n\n</div>';
 }
 return __p;
 };});
