@@ -51,6 +51,14 @@ $config = array(
 			"languages"           => "/profile/languages?url=%s",
 			"adaptiveTokens"      => "/profile/adaptive/books/%d",
 			"updateUser"          => "/users/%d",
+			"getGlobalOCRModels"  => "/ocr", #get
+			"getOCRModels"        => "/ocr/books/%d", #get
+			"runOCR"              => "/ocr/books/%d?train=%d", #post
+			"startEL"             => "/postcorrection/el/books/%d", #post
+			"getEL"               => "/postcorrection/el/books/%d", #get
+			"startRRDM"           => "/postcorrection/rrdm/books/%d", #post
+			"getRRDM"             => "/postcorrection/rrdm/books/%d", #get
+			"getJob"              => "/jobs/%d", #get
 		),
 	),
 	"cookies" => array(
