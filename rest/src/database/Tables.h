@@ -1231,6 +1231,38 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
+    struct Histpatterns
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "histpatterns";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T histpatterns;
+            T& operator()() { return histpatterns; }
+            const T& operator()() const { return histpatterns; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
+    };
+    struct Ocrpatterns
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "ocrpatterns";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T ocrpatterns;
+            T& operator()() { return ocrpatterns; }
+            const T& operator()() const { return ocrpatterns; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
+    };
     struct Weight
     {
       struct _alias_t
@@ -1288,6 +1320,8 @@ namespace tables
                Suggestions_::Suggestiontypid,
                Suggestions_::Moderntypid,
                Suggestions_::Dict,
+               Suggestions_::Histpatterns,
+               Suggestions_::Ocrpatterns,
                Suggestions_::Weight,
                Suggestions_::Distance,
                Suggestions_::Topsuggestion>
@@ -1495,6 +1529,76 @@ namespace tables
         T status;
         T& operator()() { return status; }
         const T& operator()() const { return status; }
+      };
+    };
+  };
+  namespace Jobs_
+  {
+    struct Id
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "id";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T id;
+            T& operator()() { return id; }
+            const T& operator()() const { return id; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
+    };
+    struct Statusid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "statusid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T statusid;
+            T& operator()() { return statusid; }
+            const T& operator()() const { return statusid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
+    };
+    struct Timestamp
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "timestamp";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T timestamp;
+            T& operator()() { return timestamp; }
+            const T& operator()() const { return timestamp; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
+    };
+  }
+
+  struct Jobs: sqlpp::table_t<Jobs,
+               Jobs_::Id,
+               Jobs_::Statusid,
+               Jobs_::Timestamp>
+  {
+    struct _alias_t
+    {
+      static constexpr const char _literal[] =  "jobs";
+      using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+      template<typename T>
+      struct _member_t
+      {
+        T jobs;
+        T& operator()() { return jobs; }
+        const T& operator()() const { return jobs; }
       };
     };
   };

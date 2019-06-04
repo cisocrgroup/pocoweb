@@ -22,25 +22,21 @@
 
 using namespace pcw;
 
-template<class M>
-static void
-add_matches(Json& json, const M& matches, const std::string& q, bool ep);
+template <class M>
+static void add_matches(Json &json, const M &matches, const std::string &q,
+                        bool ep);
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* SearchRoute::route_ = SEARCH_ROUTE_ROUTE;
-const char* SearchRoute::name_ = "SearchRoute";
+const char *SearchRoute::route_ = SEARCH_ROUTE_ROUTE;
+const char *SearchRoute::name_ = "SearchRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-SearchRoute::Register(App& app)
-{
+void SearchRoute::Register(App &app) {
   CROW_ROUTE(app, SEARCH_ROUTE_ROUTE).methods("GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-SearchRoute::impl(HttpGet, const Request& req, int bid) const
-{
+Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
   const auto qs = query_get<std::vector<std::string>>(req.url_params, "q");
   if (not qs) {
     THROW(BadRequest, "(SearchRoute) invalid or missing query parameters");
@@ -49,19 +45,16 @@ SearchRoute::impl(HttpGet, const Request& req, int bid) const
   const auto skip = query_get_default<int>(req.url_params, "skip", 0);
   const auto max = query_get_default<int>(req.url_params, "max", 50);
   if (not p) {
-    return search(req, *qs, bid, tq{ skip, max });
+    return search(req, *qs, bid, tq{skip, max});
   } else {
-    return search(req, *qs, bid, pq{ skip, max });
+    return search(req, *qs, bid, pq{skip, max});
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-SearchRoute::search(const Request& req,
-                    const std::vector<std::string>& qs,
-                    int bid,
-                    tq x) const
-{
+Route::Response SearchRoute::search(const Request &req,
+                                    const std::vector<std::string> &qs, int bid,
+                                    tq x) const {
   const LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
@@ -70,7 +63,7 @@ SearchRoute::search(const Request& req,
   json["projectId"] = bid;
   json["bookId"] = project->origin().id();
   json["isErrorPattern"] = false;
-  for (const auto& q : qs) {
+  for (const auto &q : qs) {
     CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
                    << " for query string: " << q << " (skip = " << x.skip
                    << ", max = " << x.max << ")";
@@ -84,29 +77,27 @@ SearchRoute::search(const Request& req,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-SearchRoute::search(const Request& req,
-                    const std::vector<std::string>& qs,
-                    int bid,
-                    pq x) const
-{
+Route::Response SearchRoute::search(const Request &req,
+                                    const std::vector<std::string> &qs, int bid,
+                                    pq x) const {
   const LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
   std::vector<std::string> tokens;
-  for (const auto& q : qs) {
+  for (const auto &q : qs) {
     CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
                    << " for error pattern: " << q << " (skip = " << x.skip
                    << ", max = " << x.max << ")";
     tables::Errorpatterns e;
     tables::Suggestions s;
     tables::Types t;
-    auto rows = conn.db()(
-      select(t.typ)
-        .from(
-          e.join(s).on(e.suggestionid == s.id).join(t).on(t.id == s.tokentypid))
-        .where(e.pattern == q));
-    for (const auto& row : rows) {
+    auto rows = conn.db()(select(t.typ)
+                              .from(e.join(s)
+                                        .on(e.suggestionid == s.id)
+                                        .join(t)
+                                        .on(t.id == s.tokentypid))
+                              .where(e.pattern == q));
+    for (const auto &row : rows) {
       tokens.push_back(row.typ);
     }
   }
@@ -115,27 +106,26 @@ SearchRoute::search(const Request& req,
   json["projectId"] = bid;
   json["bookId"] = project->origin().id();
   json["isErrorPattern"] = false;
-  for (const auto t : tokens) {
-    Searcher searcher(*project, x.skip, x.max);
-    const auto matches = searcher.find(t);
+  Searcher searcher(*project, x.skip, x.max);
+  for (size_t i = 0; i < tokens.size() and searcher.max() > 0; i++) {
+    const auto matches = searcher.find(tokens[i]);
     CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.size()
-                   << " matches for q='" << t << "'";
-    add_matches(json, matches, t, true);
+                   << " matches for q='" << tokens[i] << "' (skip = " << x.skip
+                   << ", max = " << x.max << ")";
+    add_matches(json, matches, tokens[i], true);
   }
   return json;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template<class M>
-void
-add_matches(Json& json, const M& matches, const std::string& q, bool ep)
-{
+template <class M>
+void add_matches(Json &json, const M &matches, const std::string &q, bool ep) {
   CROW_LOG_DEBUG << "(SearchRoute::search) building response";
   size_t i = 0;
-  for (const auto& m : matches) {
+  for (const auto &m : matches) {
     json["matches"][q][i]["line"] << *m.first;
     size_t j = 0;
-    for (const auto& token : m.second) {
+    for (const auto &token : m.second) {
       json["matches"][q][i]["tokens"][j++] << token;
     }
     ++i;

@@ -70,9 +70,17 @@ for suspicious words.
     * [[GET] `rest-url`/books/`pid`/suspicious-words](#user-content-api-get-books-pid-suspicious-words)
     * [[GET] `rest-url`/books/`pid`/pages/`pageid`/suspicious-words](#user-content-api-get-books-pid-pages-pageid-suspicious-words)
     * [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/suspicious-words](#user-content-api-get-books-pid-pages-pageid-lines-lid-suspicious-words)
-	* [[GET] `rest-url`/books/`pid`/profile](#user-content-api-get-books-pid-profile)
-	* [[POST] `rest-url`/books/`pid`/profile](#user-content-api-post-books-pid-profile)
-	* [[GET] `rest-url`/profiler-languages](#user-content-api-get-profiler-languages)
+	* [[GET] `rest-url`/profile/books/`pid`](#user-content-api-get-books-pid-profile)
+	* [[POST] `rest-url`/profile/books/`pid`](#user-content-api-post-books-pid-profile)
+	* [[GET] `rest-url`/profile/languages](#user-content-api-get-profiler-languages)
+	* [[GET] `rest-url`/ocr](#user-content-api-get-global-ocr-models)
+	* [[GET] `rest-url`/ocr/books/`pid`](#user-content-api-get-ocr-models)
+	* [[POST] `rest-url`/ocr/books/`pid`](#user-content-api-post-ocr)
+	* [[GET] `rest-url`/postcorrect/el/books/`pid`](#user-content-api-get-el)
+	* [[POST] `rest-url`/postcorrect/el/books/`pid`](#user-content-api-post-el)
+	* [[GET] `rest-url`/postcorrect/rrdm/books/`pid`](#user-content-api-get-rrdm)
+	* [[POST] `rest-url`/postcorrect/rrdm/books/`pid`](#user-content-api-post-rrdm)
+	* [[GET] `rest-url`/jobs/`jobid`](#user-content-api-get-jobs)
 
 - - -
 <a id='users'></a>
@@ -1529,28 +1537,57 @@ an id `pid`.
 ```
 
 <a id='api-get-books-pid-profile'></a>
-### [GET] `rest-url`/books/`pid`/profile
-Get information about the profiler status of a project or package with an id `pid`.
+### [GET] `rest-url`/profile/books/`pid`
+Get profiler suggestions after the according profiling
+[job](#user-content-api-get-jobs) has finished.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can access the profiler information.
+
+#### Query parameters
+Optionally you can add `q=q1&q=q2&...` parameters to limit the
+suggestions to the given queries.  If no query parameters are set, the
+whole profile for each type in the document is returned.
 
 #### Response data
 ```json
 {
   "projectId": 27,
-  "profiled": true|false,
-  "timestamp": 1508317390
+  "bookId": 27,
+  "suggestions": {
+	"type1": [
+		{
+			"token": "token",
+			"suggestion": "correction suggestion",
+			"modern": "modern lexicon entry",
+			"dict": "dictionary name",
+			"distance": 2,
+			"id": 13446,
+			"weight": 0.3,
+			"top": false,
+			"ocrPatterns": ["pat1:pat2:pos2", pat3:pat4:pos2],
+			"histPatterns": ["pat5:pat6:pos3"]
+		}
+	]
+  }
 }
 ```
 
 <a id='api-post-books-pid-profile'></a>
-### [POST] `rest-url`/books/`pid`/profile
+### [POST] `rest-url`/profile/books/`pid`
 Request to profile the project with an id `pid` or request to profile
-the original project of a package with an id `pid`.
-The profiling is done with the profiler that is set in the project.
+the original project of a package with an id `pid`.  The request
+starts the profiling as background [job](#user-content-api-get-jobs)
+and returns the according job information.
+
+#### Response data
+```json
+{
+	"id": 13
+}
+```
 
 <a id='api-get-profiler-languages'></a>
-### [GET] `rest-url`/profiler-languages
+### [GET] `rest-url`/profile/languages
 Get the available languages of a language profiler.
 * No [Authorization](#user-content-authorization) is required.
 
@@ -1563,5 +1600,163 @@ Use `local` to use the local profiler. If omitted, `url=local` is assumed.
 {
   "url": "profiler-url|local",
   "languages": ["language1", "language2", ...]
+}
+```
+
+<a id='api-get-global-ocr-models'></a>
+### [GET] `rest-url`/ocr
+Get the list of available global ocr models.
+* [Authorization](#user-content-authorization) is required.
+
+#### Response data
+```json
+{
+	"models": [
+		{
+			"name": "name of model",
+			"description": "description for model"
+		},
+		...
+	]
+}
+
+```
+<a id='api-get-ocr-models'></a>
+### [GET] `rest-url`/ocr/books/`pid`
+Get the list of available global ocr models and specific trained
+models for the project.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access the project's models.
+
+#### Response data
+```json
+{
+	"models": [
+		{
+			"name": "name of model",
+			"description": "description for model"
+		},
+		...
+	]
+}
+
+```
+<a id='api-post-ocr'></a>
+### [POST] `rest-url`/ocr/books/`pid`
+Starts an OCR [job](#user-content-api-get-jobs) on the given project
+(or on the given package's project).  Additionaly a specific OCR-model
+for the project can be trained using the corrected lines of the
+project.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can start an OCR-job.
+
+#### Query parameters
+* The parameter `train=1|0` specifies if a custom OCR-model shuld be
+  trained for the project.  The given model (see below) is then used
+  as base for the model training.
+
+#### Post data
+```json
+{
+	"name": "name of the model",
+}
+```
+
+#### Response data
+```json
+{
+	"id": 13
+}
+```
+
+<a id='api-get-el'></a>
+### [GET] `rest-url`/postcorrect/el/books/`pid`
+Get the extended lexicon for the project.  The extendend lexicon is
+available after the [job](#user-content-api-get-jobs) for the
+according [post request](#user-content-api-post-el) has finished.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access the extended lexicon.
+
+#### Response data
+```json
+{
+	"bookId": 13,
+	"projectId": 42,
+	"yes": {
+		"foo": 3,
+		"bar": 8
+	},
+	"no": {
+		"baz": 8
+	}
+}
+```
+<a id='api-post-el'></a>
+### [POST] `rest-url`/postcorrect/el/books/`pid`
+Start the [job](#user-content-api-get-jobs) to generate the extended
+lexicon.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can start the job.
+
+#### Response data
+```json
+{
+	"id": 31
+}
+```
+
+<a id='api-get-rrdm'></a>
+### [GET] `rest-url`/postcorrect/rrdm/books/`pid`
+Get the post-correction information.  The post-correction information
+available after the [job](#user-content-api-get-jobs) for the
+according [post request](#user-content-api-post-rrdm) has finished.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access the post-correction information.
+
+#### Response data
+```json
+{
+	"bookId": 13,
+	"projectId": 42,
+	"always": {
+		"foo": 3,
+		"bar": 8
+	},
+	"sometimes": {
+		"baz": 8
+	},
+	"never": {
+		"abc": 7
+	}
+}
+```
+<a id='api-post-rrdm'></a>
+### [POST] `rest-url`/postcorrect/el/books/`pid`
+Start the [job](#user-content-api-get-jobs) to generate the post
+correction.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can start the job.
+
+#### Response data
+```json
+{
+	"id": 31
+}
+```
+
+<a id='api-get-jobs'></a>
+### [GET] `rest-url`/jobs/`jobid`
+Get the status of a job for the given job-id.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can see the job.
+
+#### Response data
+```json
+{
+	jobId: 8,
+	bookId: 13,
+	statusId: 1,
+	statusName: "failed|running|done",
+	Timestamp: 0
 }
 ```

@@ -125,6 +125,8 @@ create table if not exists suggestions (
 	suggestiontypid int references types(id),
 	moderntypid int references types(id),
 	dict varchar(50) not null,
+	histpatterns varchar(50) not null,
+	ocrpatterns varchar(50) not null,
 	weight double not null,
 	distance int not null,
 	topsuggestion boolean not null
@@ -156,4 +158,17 @@ create table if not exists status (
 );
 alter table status convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 insert ignore into status (id,text)
-values (0,'failed'),(1,'running'),(2,'done'),(3,'empty'),(4,'profiled'),(5,'post-corrected');
+values
+	(0,'failed'),
+	(1,'running'),
+	(2,'done'),
+	(3,'empty'),
+	(4,'profiled'),
+	(5,'post-corrected');
+
+drop table if exists jobs;
+create table if not exists jobs (
+	   id INT NOT NULL UNIQUE PRIMARY KEY REFERENCES books(bookid),
+	   statusid INT NOT NULL REFERENCES status(id),
+	   timestamp INT(11) NOT NULL
+);

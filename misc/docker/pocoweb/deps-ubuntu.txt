@@ -1,0 +1,40 @@
+# fedora
+# cmake
+# make
+# gcc-c++
+# git
+# libicu-devel
+# boost-devel
+# php
+# php-json
+# clang
+# mariadb-devel
+# python-pyparsing
+# zip
+# unzip
+# leptonica-devel
+# mysql
+# mysql-connector-net-devel
+# openssl-devel
+# libcurl-devel
+# nodejs
+# ubuntu
+cmake
+make
+g++
+git
+libicu-dev
+libboost-dev
+php
+php-json
+clang
+libmariadb-dev
+python-pyparsing
+zip
+unzip
+libleptonica-dev
+mysql-server
+libmysqlcppconn-dev
+libssl-dev
+libcurl4-openssl-dev
+nodejs

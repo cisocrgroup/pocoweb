@@ -71,33 +71,33 @@ ECHO = @echo "[$1]";
 mkdir-%:; @mkdir -p $(subst -,/,$*)
 dbg-%:; @echo $*: ${$*}
 
--include make/cache.make
+# -include make/cache.make
 
-make/cache.make: Makefile
-	$(call ECHO,$@)
-	@echo "#" > $@
-	@echo "# cache.make" >> $@
-	@echo "# created: `date`" >> $@
-	@echo "#" >> $@
-	@echo "PCW_API_VERSION_MAJOR := $(PCW_API_VERSION_MAJOR)" >> $@
-	@echo "PCW_API_VERSION_MINOR := $(PCW_API_VERSION_MINOR)" >> $@
-	@echo "PCW_API_VERSION_PATCH := $(PCW_API_VERSION_PATCH)" >> $@
-	@echo "CXX := $(CXX)" >> $@
-	@echo "CXXFLAGS := $(CXXFLAGS)" >> $@
-	@echo "LDFLAGS := $(LDFLAGS)" >> $@
-	@echo "FPIC := $(FPIC)" >> $@
-	@echo "PREFIX := $(PREFIX)" >> $@
-	@echo "BINDIR := $(BINDIR)" >> $@
-	@echo "LIBDIR := $(LIBDIR)" >> $@
-	@echo "DESTDIR := $(DESTDIR)" >> $@
-	@echo "PCW_DB_HOST := $(PCW_DB_HOST)" >> $@
-	@echo "PCW_DB_USER := $(PCW_DB_USER)" >> $@
-	@echo "PCW_DB_PASS := $(PCW_DB_PASS)" >> $@
-	@echo "PCW_DB := $(PCW_DB)" >> $@
-	@echo "PCW_DB_CONNECTIONS := $(PCW_DB_CONNECTIONS)" >> $@
-	@echo "PCW_DB_DEBUG := $(PCW_DB_DEBUG)" >> $@
-	@echo "PCW_API_USER:= $(PCW_API_USER)" >> $@
-	@echo "PCW_API_PASS:= $(PCW_API_PASS)" >> $@
-	@echo "PCW_API_EMAIL:= $(PCW_API_EMAIL)" >> $@
-	@echo "PCW_API_INSTITUTE := $(PCW_API_INSTITUTE)" >> $@
-	@echo "PCW_LOG_PIDFILE := $(PCW_LOG_PIDFILE)" >> $@
+# make/cache.make: Makefile
+# 	$(call ECHO,$@)
+# 	@echo "#" > $@
+# 	@echo "# cache.make" >> $@
+# 	@echo "# created: `date`" >> $@
+# 	@echo "#" >> $@
+# 	@echo "PCW_API_VERSION_MAJOR := $(PCW_API_VERSION_MAJOR)" >> $@
+# 	@echo "PCW_API_VERSION_MINOR := $(PCW_API_VERSION_MINOR)" >> $@
+# 	@echo "PCW_API_VERSION_PATCH := $(PCW_API_VERSION_PATCH)" >> $@
+# 	@echo "CXX := $(CXX)" >> $@
+# 	@echo "CXXFLAGS := $(CXXFLAGS)" >> $@
+# 	@echo "LDFLAGS := $(LDFLAGS)" >> $@
+# 	@echo "FPIC := $(FPIC)" >> $@
+# 	@echo "PREFIX := $(PREFIX)" >> $@
+# 	@echo "BINDIR := $(BINDIR)" >> $@
+# 	@echo "LIBDIR := $(LIBDIR)" >> $@
+# 	@echo "DESTDIR := $(DESTDIR)" >> $@
+# 	@echo "PCW_DB_HOST := $(PCW_DB_HOST)" >> $@
+# 	@echo "PCW_DB_USER := $(PCW_DB_USER)" >> $@
+# 	@echo "PCW_DB_PASS := $(PCW_DB_PASS)" >> $@
+# 	@echo "PCW_DB := $(PCW_DB)" >> $@
+# 	@echo "PCW_DB_CONNECTIONS := $(PCW_DB_CONNECTIONS)" >> $@
+# 	@echo "PCW_DB_DEBUG := $(PCW_DB_DEBUG)" >> $@
+# 	@echo "PCW_API_USER:= $(PCW_API_USER)" >> $@
+# 	@echo "PCW_API_PASS:= $(PCW_API_PASS)" >> $@
+# 	@echo "PCW_API_EMAIL:= $(PCW_API_EMAIL)" >> $@
+# 	@echo "PCW_API_INSTITUTE := $(PCW_API_INSTITUTE)" >> $@
+# 	@echo "PCW_LOG_PIDFILE := $(PCW_LOG_PIDFILE)" >> $@

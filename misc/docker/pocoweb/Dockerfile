@@ -1,13 +1,12 @@
 FROM ffink/profiler:internal-backend
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
-ENV DATE='Fri 24 May 2019 03:36:48 PM CEST'
+ENV DATE='Tue 04 Jun 2019 01:20:31 PM CEST'
 ENV GITURL='https://github.com/cisocrgroup/pocoweb.git'
 ENV BRANCH='flodev'
 
 VOLUME /project-data /www-data /tmp
-COPY dependencies.txt /dependencies.txt
-RUN yum update -y && yum install -y $(cat /dependencies.txt)
-# RUN apt-get update && apt-get install -y $(cat /dependencies.txt)
+COPY deps-fedora.txt /deps.txt
+RUN yum update -y && yum install -y $(cat /deps.txt | grep -v '^#')
 
 # pocoweb
 RUN git clone ${GITURL} --single-branch -b ${BRANCH} \

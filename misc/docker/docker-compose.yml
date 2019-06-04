@@ -71,6 +71,8 @@ services:
       - pocoweb
       - pcwprofiler
       - pcwusers
+      - pcwpostcorrection
+      - pcwocr
     depends_on:
       - db
     restart: always
@@ -100,3 +102,30 @@ services:
       - db
     env_file:
       - env.sh
+
+  # pocoweb post-correction
+  pcwpostcorrection:
+    image: flobar/pcwpostcorrection
+    restart: always
+    links:
+      - db
+    depends_on:
+      - db
+    env_file:
+      - env.sh
+    volumes:
+      - ${PCW_BASE_DIR}/project-data:/project-data:rw
+
+  # pocoweb ocr
+  pcwocr:
+    image: flobar/pcwocr
+    restart: always
+    links:
+      - db
+    depends_on:
+      - db
+    env_file:
+      - env.sh
+    volumes:
+      - ${PCW_BASE_DIR}/project-data:/project-data:rw
+      - ${PCW_BASE_DIR}/ocr-data:/data/models:rw

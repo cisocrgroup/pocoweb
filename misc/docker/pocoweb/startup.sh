@@ -16,5 +16,8 @@ while [[ $ok == false ]] && (($n > 0)); do
 	sleep $sleeps
 	mysql -h$PCW_DB_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE < $sql && ok=true;
 done
-
+if [[ $ok == false ]]; then
+   echo "cannot setup databse tables";
+   exit 1;
+fi
 /apps/pocoweb $config || exit 1
