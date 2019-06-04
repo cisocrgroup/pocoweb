@@ -7,40 +7,33 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-template<class It>
-static PagePtr
-find_next(It i, It e, size_t n) noexcept
-{
+template <class It> static PagePtr find_next(It i, It e, size_t n) noexcept {
   if (static_cast<typename It::difference_type>(n) < std::distance(i, e)) {
     return *(i + n);
   }
-  return nullptr;
+  if (i < e) {
+    return *std::prev(e);
+  }
+  return *i;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template<class It>
-static PagePtr
-find_prev(It b, It i, size_t n) noexcept
-{
+template <class It> static PagePtr find_prev(It b, It i, size_t n) noexcept {
   if (static_cast<typename It::difference_type>(n) <= std::distance(b, i)) {
     return *(i - n);
   }
-  return nullptr;
+  return *b;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Project::set_id(int id)
-{
+void Project::set_id(int id) {
   if (id_ > 0)
     THROW(Error, "(Project) Cannot reset id ", id_, " to id ", id);
   id_ = id;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Project::value_type
-Project::find(int pageid) const noexcept
-{
+Project::value_type Project::find(int pageid) const noexcept {
   const auto it = find_page_id(pageid);
   if (it == end()) {
     return nullptr;
@@ -49,9 +42,7 @@ Project::find(int pageid) const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Project::value_type
-Project::next(int pageid, int val) const noexcept
-{
+Project::value_type Project::next(int pageid, int val) const noexcept {
   const auto it = find_page_id(pageid);
   const auto e = end();
   if (it == e) {
@@ -61,25 +52,21 @@ Project::next(int pageid, int val) const noexcept
     return find_next(it, e, std::abs(val));
   }
   if (val < 0) {
-    return find_prev(it, e, std::abs(val));
+    return find_prev(begin(), it, std::abs(val));
   }
   return *it;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Project::push_back(Page& page)
-{
+void Project::push_back(Page &page) {
   Base::push_back(page.shared_from_this());
   Base::back()->book_ =
-    std::static_pointer_cast<const Book>(origin().shared_from_this());
+      std::static_pointer_cast<const Book>(origin().shared_from_this());
   pageIDs2Index_[Base::back()->id()] = size() - 1;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Project::const_iterator
-Project::find_page_id(int pageid) const noexcept
-{
+Project::const_iterator Project::find_page_id(int pageid) const noexcept {
   const auto offs = pageIDs2Index_.find(pageid);
   if (offs == pageIDs2Index_.end()) {
     return end();
@@ -88,9 +75,7 @@ Project::find_page_id(int pageid) const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Project::delete_page(int pageid)
-{
+void Project::delete_page(int pageid) {
   const auto it = pageIDs2Index_.find(pageid);
   if (it == pageIDs2Index_.end()) {
     return;
@@ -100,9 +85,7 @@ Project::delete_page(int pageid)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::ostream&
-pcw::operator<<(std::ostream& os, const Project& proj)
-{
+std::ostream &pcw::operator<<(std::ostream &os, const Project &proj) {
   if (proj.is_book()) {
     return os << proj.origin().data.author << " <" << proj.origin().data.title
               << "> [" << proj.origin().id() << "]";
