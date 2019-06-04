@@ -54,10 +54,10 @@ $config = array(
 			"getGlobalOCRModels"  => "/ocr", #get
 			"getOCRModels"        => "/ocr/books/%d", #get
 			"runOCR"              => "/ocr/books/%d?train=%d", #post
-			"startEL"             => "/postcorrection/el/books/%d", #post
-			"getEL"               => "/postcorrection/el/books/%d", #get
-			"startRRDM"           => "/postcorrection/rrdm/books/%d", #post
-			"getRRDM"             => "/postcorrection/rrdm/books/%d", #get
+			"startEL"             => "/postcorrect/el/books/%d", #post
+			"getEL"               => "/postcorrect/el/books/%d", #get
+			"startRRDM"           => "/postcorrect/rrdm/books/%d", #post
+			"getRRDM"             => "/postcorrect/rrdm/books/%d", #get
 			"getJob"              => "/jobs/%d", #get
 		),
 	),
