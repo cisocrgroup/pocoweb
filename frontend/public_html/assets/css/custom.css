@@ -619,3 +619,73 @@ outline: 0;
   background-color: #d4edda!important;
   border-color: #c3e6cb!important; 
 }
+
+.sticky{
+  position: fixed;
+  top:0;
+  z-index: 1020;
+}
+
+#suspicious-words-container{
+    height: 300px;      
+    overflow-y: auto;    
+    overflow-x: hidden;  
+}
+
+#error-patterns-container{
+    height: 300px;      
+    overflow-y: auto;    
+    overflow-x: hidden;  
+}
+
+.loading_background2 {
+    top: 0;
+    height: 100%;
+    width: 100%;
+    left: 0px;
+    background: white;
+    z-index: 10005;
+}
+
+.loading_text2 {
+    position: relative;
+    top: 108px;
+    font-size: 20px;
+}
+  .loading_background2 i {
+    font-size: 30px;
+    height: 30px;
+    margin: auto;
+    position: absolute;
+    top: 62px;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    opacity: 0.6;
+  }
+
+  #suspicious-words_filter, #error-patterns_filter{
+    padding-top: 15px;
+    padding-right: 9px;
+    padding-left: 2px;
+  }
+
+
+  #suspicious-words_filter input,#error-patterns_filter input {
+      padding: 0.428571429rem;
+    min-width: 100%;
+    outline: none;
+    border: none;
+    display: block;
+    font-size: 16px;
+    /* background-image: url(../images/feather_1-1-0_search_256_0_cdcdcd_none.png); */
+    background-position: 10px 50%;
+    background-repeat: no-repeat;
+    background-size: 15px 15px;
+    background-color: white;
+    color: black;
+    /* padding-left: 35px; */
+    margin-top: -10px;
+    margin-left: 0px !important;
+    /* border-bottom: 1px solid rgba(128, 128, 128, 0.55); */
+    border-radius: 0 !important

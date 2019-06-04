@@ -32,18 +32,17 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'delete_project' : delete_project();break;
         case 'assign_package' : assign_package();break;
         case 'assign_packages' : assign_packages();break;
-
         case 'get_line' : get_line();break;
         case 'correct_line' : correct_line();break;
         case 'correct_token' : correct_token();break;
         case 'search_token' : search_token();break;
+        case 'get_error_patterns' : get_error_patterns();break;
         case 'get_correction_suggestions' : get_correction_suggestions();break;
         case 'get_all_correction_suggestions' : get_all_correction_suggestions();break;
+        case 'get_suspicious_words' : get_suspicious_words();break;
         case 'get_split_images' : get_split_images();break;
-
         case 'order_profile' : order_profile();break;
         case 'documentation' : get_documentation();break;
-
         case 'get_page' : get_page();break;
         case 'create_project' : create_project();break;
         case 'get_users' : get_users();break;
@@ -582,6 +581,31 @@ function search_token() {
 
 }
 
+function get_error_patterns() {
+
+  $api = new Api(backend_get_error_patterns_route($_POST['pid']));
+  
+  $api->set_session_id(backend_get_session_cookie());
+  $api->get_request();
+  $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        print_r(json_encode($session));
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Please login.</a>';
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+}
+
 function get_correction_suggestions() {
 
   $api = new Api(backend_get_suggestions_route($_POST['pid'],$_POST['q']));
@@ -609,6 +633,31 @@ function get_all_correction_suggestions() {
 
 
   $api = new Api(backend_get_all_suggestions_route($_POST['pid']));
+  $api->set_session_id(backend_get_session_cookie());
+  $api->get_request();
+  $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        print_r(json_encode($session));
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Please login.</a>';
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+}
+
+function get_suspicious_words() {
+
+
+  $api = new Api(backend_get_suspicious_words_route($_POST['pid']));
   $api->set_session_id(backend_get_session_cookie());
   $api->get_request();
   $status = $api->get_http_status_code();

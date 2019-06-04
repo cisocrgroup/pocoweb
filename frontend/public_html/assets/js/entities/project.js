@@ -395,6 +395,48 @@ getAllCorrectionSuggestions: function(data){
   return defer.promise();
   
 },
+getSuspiciousWords: function(data){
+    data['backend_route'] = "get_suspicious_words";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+getErrorPatterns: function(data){
+    data['backend_route'] = "get_error_patterns";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
 getSplitImages: function(data){
     data['backend_route'] = "get_split_images";
   var defer = jQuery.Deferred();

@@ -2,64 +2,58 @@
 // apps/page/show/show_view.js
 // ================================
 
-define(["marionette","app","medium","backbone.syphon","common/views","common/util",
+define(["marionette","app","medium","backbone.syphon","common/views","common/util","apps/projects/concordance/show/show_view",
+        "tpl!apps/projects/page/show/templates/header.tpl",
         "tpl!apps/projects/page/show/templates/page.tpl",
+        "tpl!apps/projects/page/show/templates/sidebar.tpl",
+        "tpl!apps/projects/page/show/templates/layout.tpl",
 
 
-  ], function(Marionette,App,MediumEditor,BackboneSyphon,Views,Util,pageTpl){
+  ], function(Marionette,App,MediumEditor,BackboneSyphon,Views,Util,Concordance,heaerTpl,pageTpl,sidebarTpl,layoutTpl){
 
 
     var Show = {};
 
-  Show.Page = Marionette.View.extend({
-  template:pageTpl,
-  saved_selection:"",
-  editor:"",
-events:{
+  Show.Layout = Marionette.View.extend({
+    template:layoutTpl,
+    regions:{
+       headerRegion: "#header-region"
+      ,sidebarRegion: "#sidebar-region"
+      ,pageRegion: "#page-region"
+      ,footerRegion: "#footer-region"
+    }
+
+  });
+ 
+   Show.Header = Marionette.View.extend({
+   
+      template:heaerTpl,
+      serializeData: function(){
+      return {
+        title: Marionette.getOption(this,"title")
+      }
+    }
+  });
+
+  Show.Sidebar = Marionette.View.extend({
+      template:sidebarTpl,
+      events:{
       'click .js-stepbackward' : 'backward_clicked',
       'click .js-stepforward' : 'forward_clicked',
       'click .js-firstpage' : 'firstpage_clicked',
       'click .js-lastpage' : 'lastpage_clicked',
-      'click .js-correct' : 'correct_clicked',
-      'click .line-tokens' : 'line_tokens_clicked',
-      'click .line-text' : 'line_selected',
-      'click #pcw-error-tokens-link' : 'error_tokens_clicked',
-      'click #pcw-error-patterns-link' : 'error_patterns_clicked',
+ 
+      'click .suspicious-words tr' : 'error_tokens_clicked',
+      'click .error-patterns tr' : 'error_patterns_clicked'
 
-      'mouseover .line-tokens' : 'tokens_hovered',
-      'mouseleave .line-text-parent' : 'line_left',
-      'keydown .line' : 'line_edited',
 
       },
 
-      error_tokens_clicked : function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        $(".custom-popover").remove();
-        $(".dropdown-menu").hide();
-        $('#pcw-error-tokens-dropdown').toggle();
-      },
-
-        error_patterns_clicked : function(e){
-        e.stopPropagation();
-        e.preventDefault();
-        $(".custom-popover").remove();
-        $(".dropdown-menu").hide();
-        $('#pcw-error-patterns-dropdown').toggle();
-      },
-
-      serializeData: function(){
-      var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-          data.Util = Util;
-
-        return data;
-      },
-
-       backward_clicked:function(e){
+      backward_clicked:function(e){
         e.stopPropagation();
         e.preventDefault();
         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-        console.log(data)
+      
         this.trigger("page:new",data.prevPageId);
       },
 
@@ -82,6 +76,71 @@ events:{
         e.preventDefault();
         this.trigger("page:new","last");
       },
+        error_tokens_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".custom-popover").remove();
+        var tr = $(e.currentTarget);
+        var td = tr.find('td');
+        var pat = $(td[0]).html();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        if(pat!=undefined){
+            this.trigger("sidebar:error-tokens-clicked",data.projectId,pat);
+        }
+      },
+
+        error_patterns_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".custom-popover").remove();
+        var tr = $(e.currentTarget);
+        var td = tr.find('td');
+        var pat = $(td[0]).html();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        if(pat!=undefined){
+            this.trigger("sidebar:error-patterns-clicked",data.projectId,pat);
+        }
+      },
+      onAttach:function(){
+
+      
+
+
+        $("#hl1").click(function() {
+          $("#suspicious-words-container").slideToggle("slow", function() {
+          });
+        });
+        $("#hl2").click(function() {
+          $("#error-patterns-container").slideToggle("slow", function() {
+          });
+        });
+      }
+
+  });
+
+  Show.Page = Marionette.View.extend({
+  template:pageTpl,
+  saved_selection:"",
+  events:{
+      'click .js-correct' : 'correct_clicked',
+      'click .line-tokens' : 'line_tokens_clicked',
+      'click .line-text' : 'line_selected',
+      'mouseover .line-tokens' : 'tokens_hovered',
+      'mouseleave .line-text-parent' : 'line_left',
+      'keydown .line' : 'line_edited',
+
+      },
+
+    
+
+      serializeData: function(){
+      var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+          data.Util = Util;
+
+        return data;
+      },
+
+ 
       correct_clicked:function(e){
       e.stopPropagation();
 
@@ -118,8 +177,7 @@ events:{
         $('.line-tokens').show();
         var line_parent = $(e.currentTarget).parent();
 
-        console.log(line_parent);
-        console.log($(e.currentTarget));
+   
         line_parent.find('.line').show();
         $(e.currentTarget).hide();
 
@@ -233,10 +291,11 @@ events:{
       },
 
       onDomRefresh:function(e){
+          
 
-            var that = this;
-         $('.line-img').each(function(index){
-		 var img = $(this);
+           var that = this;
+           $('.line-img').each(function(index){
+	       	 var img = $(this);
            $(this).imagesLoaded( function() {
                 var line = that.model.get('lines')[index];
                 if(line!=undefined){
@@ -245,6 +304,22 @@ events:{
             });
 
          });
+
+          var navbar = $("#sidebar-region")
+          var sticky = navbar.offset().top;
+          var parent_width = navbar.innerWidth();
+
+        $(window).on('scroll', function(event) {
+    
+          // console.log(sticky);
+
+           if (window.pageYOffset >= sticky) {
+              $('#sidebar-region').addClass('sticky').width(parent_width);
+
+          } else{
+              $('#sidebar-region').removeClass('sticky');
+          }
+        });
 
       },
 
@@ -349,7 +424,10 @@ appendErrorCountItem : function(dropdown, item, count) {
 
 })
 
+Show.Concordance = Concordance.Concordance.extend({});
 
+Show.FooterPanel = Views.FooterPanel.extend({
+    });
 
 return Show;
 

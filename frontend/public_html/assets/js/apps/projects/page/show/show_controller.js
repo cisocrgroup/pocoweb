@@ -2,20 +2,21 @@
 // apps/project/page/show/show_controller.js
 // ======================================
 
-define(["app","common/util","common/views","apps/projects/show/show_view"], function(App,Util,Views,Show){
+define(["app","common/util","common/views","apps/projects/page/show/show_view"], function(App,Util,Views,Show){
 
 
  Controller = {
 
 		showPage: function(id,page_id){
 
-     		require(["entities/project"], function(ProjectEntitites){
+     		require(["entities/project"], function(ProjectEntities){
 
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
-    			  var fetchingpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
-            
-        	 $.when(fetchingpage).done(function(page){
+    			  var fetchingpage = ProjectEntities.API.getPage({pid:id, page:page_id});
+           var fetchingproject = ProjectEntities.API.getProject({pid:id});
+
+        	 $.when(fetchingpage,fetchingproject).done(function(page,project){
 
 		     	loadingCircleView.destroy();
             console.log(page);
@@ -23,7 +24,9 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 		 	//currentProposal.set({"url_id":id}); // pass url_id to view..
 			var projectShowLayout = new Show.Layout();
 			var projectShowHeader;
-			var projectShowInfo;
+			var projectShowPage;
+      var projectShowSidebar;
+
 			var projectShowFooterPanel;
 			// console.log(reviews);
 	
@@ -31,31 +34,83 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 			  
 
         // ** to do: get junks from server
-        var fetchingallcorrections = ProjectEntitites.API.getAllCorrectionSuggestions({pid:id, page:page_id});
-           $.when(fetchingallcorrections).done(function(allsuggestions){
-             projectShowPage.setErrorDropdowns(allsuggestions,id);
+        var fetchingsuspiciouswords = ProjectEntities.API.getSuspiciousWords({pid:id});
+        var fetchingerrorpatterns = ProjectEntities.API.getErrorPatterns({pid:id});
+
+           $.when(fetchingsuspiciouswords,fetchingerrorpatterns).done(function(suspicious_words,error_patterns){
+
+            var suspicious_words_array = [];
+            for (word in suspicious_words['counts']) {
+               suspicious_words_array.push([word,suspicious_words['counts'][word]]);
+            }
+
+            var sp_table = $('.suspicious-words').DataTable({
+                  "data":suspicious_words_array,
+                  "info":false,
+                  "paging": false,
+                  "lengthChange": false,
+                });
+
+              $('#suspicious-words_filter input').on('keyup click', function () {
+                sp_table.search($(this).val()).draw();
+              });
+              var rows = $('#suspicious-words_filter').next().find('.row');
+              rows[0].remove();
+            $('#suspicious-words-container > .loading_background2').fadeOut();
+
+              var error_patterns_array = [];
+              for (word in error_patterns['counts']) {
+               error_patterns_array.push([word,error_patterns['counts'][word]]);
+            }
+
+             var ep_table = $('.error-patterns').DataTable({
+                  "data":error_patterns_array,
+                  "info":false,
+                  "paging": false,
+                  "lengthChange": false,
+                  "order": [[ 1, "desc" ]]
+
+                });
+
+              $('#error-patterns_filter input').on('keyup click', function () {
+                ep_table.search($(this).val()).draw();
+              });
+
+              var rows = $('#error-patterns_filter').next().find('.row');
+              rows[0].remove();
+            $('#error-patterns-container > .loading_background2').fadeOut();
+
            });
 
 
 
-			  // projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
+			  projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
         projectShowPage = new Show.Page({model:page});
-			  projectShowInfo = new Show.Info({});
+			  projectShowSidebar = new Show.Sidebar({model:page});
       	projectShowFooterPanel = new Show.FooterPanel();
 
-       projectShowPage.on("page:error-patterns-clicked",function(pid,pat){
-          this.trigger('page:concordance_clicked',pat,1);
+       projectShowSidebar.on("sidebar:error-patterns-clicked",function(pid,pat){
+          // projectShowPage.trigger('page:concordance_clicked',pat,1);
        });
 
-       projectShowPage.on("page:error-tokens-clicked",function(pid,pat){
-        this.trigger('page:concordance_clicked',pat,0);
+       projectShowSidebar.on("sidebar:error-tokens-clicked",function(pid,pat){
+        console.log("clicked error")
+         projectShowPage.trigger('page:concordance_clicked',pat,0);
        });
-       projectShowPage.on("page:new",function(page_id){
-                    var fetchingnewpage = ProjectEntitites.API.getPage({pid:id, page:page_id});
+       projectShowSidebar.on("page:new",function(page_id){
+                    var fetchingnewpage = ProjectEntities.API.getPage({pid:id, page:page_id});
                   $.when(fetchingnewpage).done(function(new_page){
+                    console.log(new_page)
+                     new_page.attributes.title = project.get('title');
+
                       projectShowPage.model=new_page
-                        projectShowPage.render();    
-                     App.navigate("projects/"+id+"/page/"+page_id);
+                      projectShowPage.render();
+                      projectShowSidebar.model = new_page;
+                      $('#pageId').text('Page '+new_page.get('pageId'))
+                      $('.js-stepforward > a').attr('title','go to previous page #'+new_page.get('nextPageId'));
+                      $('.js-stepbackward > a').attr('title','go to next page #'+new_page.get('prevPageId'));
+
+                     App.navigate("projects/"+id+"/page/"+new_page.get('pageId'));
          
                   }).fail(function(response){
                      App.mainmsg.updateContent(response.responseText,'danger');
@@ -68,7 +123,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
           console.log(data);
 
-                    var correctingline = ProjectEntitites.API.correctLine(data);
+                    var correctingline = ProjectEntities.API.correctLine(data);
                   $.when(correctingline).done(function(result){
                     
                     console.log(result);
@@ -118,8 +173,9 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
            projectShowPage.on("page:line_selected",function(selection){
                     var that = this;
-                    var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:selection,pid:id});
-                    var searchingToken = ProjectEntitites.API.searchToken({q:selection,p:page_id,pid:id,isErrorPattern:0});
+                    var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:selection,pid:id});
+
+                    var searchingToken = ProjectEntities.API.searchToken({q:selection,p:page_id,pid:id,isErrorPattern:0});
 
                   $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
                     
@@ -151,14 +207,17 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                  dropdown_content.attr('aria-labelledby','js-suggestions');
                  suggestions_btn.append(dropdown_content);
 
-
-                     for(i=0;i<suggestions.suggestions.length;i++){
-                
-                     var s = suggestions.suggestions[i];
+                  console.log(suggestions);
+                     for(key in suggestions.suggestions){
+                       for (var i=0;i<suggestions.suggestions[key].length;i++){
+                        // to do: datatable instead ?
+                    
+                     var s = suggestions.suggestions[key][i];
                      var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
                       s.distance + ", weight: " + s.weight.toFixed(2) + ")";
                      $('#suggestionsDropdown').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
+                   }
 
                      $('#js-suggestions').click(function(e){
                       e.stopPropagation();
@@ -181,18 +240,20 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
 
        projectShowPage.on("page:concordance_clicked",function(selection,isErrorPattern){
+        console.log(isErrorPattern);
         console.log(selection);
-       var gettingCorrectionSuggestions = ProjectEntitites.API.getCorrectionSuggestions({q:selection,pid:id});
-       var searchingToken = ProjectEntitites.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern});
+        var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:selection,pid:id});
+       var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern});
        var that = this;
          $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
-            var tokendata = tokens;
+          console.log(tokens)
+            var tokendata = tokens['matches'][selection];
             console.log(suggestions)
             console.log(tokendata)
 
 
 
-           var projectConcView = new Show.Concordance({tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
+           var projectConcView = new Show.Concordance({selection:selection,tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
            $('.custom-popover').remove();
         
             projectConcView.on("concordance:correct_token",function(data,anchor){
@@ -200,14 +261,14 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                console.log(anchor);
                console.log(data);
 
-                    var correctingtoken = ProjectEntitites.API.correctToken(data);
+                    var correctingtoken = ProjectEntities.API.correctToken(data);
                   $.when(correctingtoken).done(function(result){
                     
                     console.log(result);
 
                        // update lines in background with corrections
 
-                       var gettingLine = ProjectEntitites.API.getLine(data);
+                       var gettingLine = ProjectEntities.API.getLine(data);
                       $.when(gettingLine).done(function(line_result){
                         console.log(line_result);
 
@@ -292,109 +353,16 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
         });
    
 
-
-			  projectShowInfo.on("show:edit_clicked",function(methods){
-
-
-			   var projectsShowEditProject = new Show.ProjectForm({model:project
-          , asModal:true,text:"Edit Project",edit_project:true,loading_text:"Update in progress"});
-
-
-           projectsShowEditProject.on("project:update_clicked",function(data){
-            project.set(data)
-
-            var puttingProject = ProjectEntitites.API.updateProject(id,project);
-
-
-                 $.when(postingProject).done(function(result){
-                  $('.loading_background').fadeOut();
-
-                   $('#projects-modal').modal('toggle');
-
-                    // TO DO
-                })
-
-
-          });
-
-
-          App.mainLayout.showChildView('dialogRegion',projectsShowEditProject);
-
-          });
-
-
-            projectShowInfo.on("show:delete_clicked",function(methods){
-
-			   var projectsShowDeleteProject = new Show.DeleteProjectForm({asModal:true,text:"Remove this Project?",title:"Delete Project"});
-
-
-        	   projectsShowDeleteProject.on("project:delete_clicked",function(){
-               var deletingProject = ProjectEntitites.API.deleteProject(id);
-
-
-                 $.when(deletingProject).done(function(result){
-                  $('.loading_background').fadeOut();
-
-                   $('#confirm-modal').modal('toggle');
-
-
-                   	App.trigger("projects:list");   
-
-
-                   projectsShowDeleteProject.model.clear().set(projectsListDeleteProject.model.defaults);
-                   $('#selected_file').text("");
-                   // projectsListAddProject.render()
-
-                })
-
-
-          });
-
-        
-
-          App.mainLayout.showChildView('dialogRegion',projectsShowDeleteProject);
-
-
-
-		  });
-
-
-         projectShowInfo.on("show:add_book_clicked",function(methods){
-
-
-		   var projectsShowAddBook = new Show.ProjectForm({model: new ProjectEntitites.Project(), asModal:true,text:"Add a book to the OCR Project",add_book:true,loading_text:"Adding book"});
-
-
-       projectsShowAddBook.on("project:addbook_clicked",function(data){
-		   var addingBook = ProjectEntitites.API.addBook(id,data);
-
-
-		         $.when(addingBook).done(function(result){
-		          $('.loading_background').fadeOut();
-
-		           $('#projects-modal').modal('toggle');
-
-
-		           projectsShowAddBook.model.clear().set(projectsListEditProject.model.defaults);
-		           $('#selected_file').text("");
-		           // projectsListAddProject.render()
-
-		        })
-
-
-      });
-
-
-          App.mainLayout.showChildView('dialogRegion',projectsShowAddBook);
-
-          });
+    
 
 
   			// projectPanel = new Show.FooterPanel();
 
 
-	          // projectShowLayout.showChildView('headerRegion',projectShowHeader);
-	          projectShowLayout.showChildView('infoRegion',projectShowPage);
+	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
+	          projectShowLayout.showChildView('pageRegion',projectShowPage);
+            projectShowLayout.showChildView('sidebarRegion',projectShowSidebar);
+
 	          projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
 
 

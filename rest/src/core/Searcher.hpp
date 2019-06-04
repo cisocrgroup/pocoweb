@@ -19,42 +19,43 @@ public:
 
   void set_ignore_case(bool ic = true) { ignore_case_ = ic; }
   bool ignore_case() const noexcept { return ignore_case_; }
+  int max() const noexcept { return max_; }
   void set_project(const Project &project) noexcept;
-  Matches find(const std::wstring &str) const;
-  Matches find(const std::string &str) const;
+  Matches find(const std::wstring &str);
+  Matches find(const std::string &str);
 
-  template <class F> Matches find_impl(F f) const;
+  template <class F> Matches find_impl(F f);
 
 private:
   Searcher(std::shared_ptr<const Project> p, int skip, int max)
       : project_(std::move(p)), skip_(skip), max_(max), ignore_case_(true) {}
   std::shared_ptr<const Project> project_;
-  const int skip_, max_;
+  int skip_, max_;
   bool ignore_case_;
 };
 } // namespace pcw
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class F>
-inline pcw::Searcher::Matches pcw::Searcher::find_impl(F f) const {
+template <class F> inline pcw::Searcher::Matches pcw::Searcher::find_impl(F f) {
   if (not project_)
     return {};
   Matches matches;
-  auto skip = skip_;
-  auto n = max_;
   for (const auto &page : *project_) {
     if (page) {
       for (const auto &line : *page) {
         if (line) {
           line->each_token([&](const auto &t) {
+            if (max_ <= 0) {
+              return;
+            }
             if (f(t)) {
-              if (skip > 0) {
-                skip--;
+              if (skip_ > 0) {
+                skip_--;
                 return;
               }
-              if (n > 0) {
+              if (max_ > 0) {
                 matches[line].push_back(t);
-                n--;
+                max_--;
               }
             }
           });
