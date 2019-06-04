@@ -167,7 +167,7 @@ values
 	(5,'post-corrected');
 
 drop table if exists jobs;
-create table jobs (
+create table if not exists jobs (
 	   id INTEGER NOT NULL PRIMARY KEY UNIQUE REFERECES books(bookid),
 	   statusid INTEGER NOT NULL REFERENCES status(id),
 	   timestamp INT(11) NOT NULL
