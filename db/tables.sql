@@ -168,7 +168,7 @@ values
 
 drop table if exists jobs;
 create table if not exists jobs (
-	   id INT NOT NULL UNIQUE PRIMARY KEY REFERECES books(bookid),
+	   id INT NOT NULL UNIQUE PRIMARY KEY REFERENCES books(bookid),
 	   statusid INT NOT NULL REFERENCES status(id),
 	   timestamp INT(11) NOT NULL
 );
