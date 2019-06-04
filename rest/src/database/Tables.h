@@ -1231,6 +1231,38 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
+    struct Histpatterns
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "histpatterns";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T histpatterns;
+            T& operator()() { return histpatterns; }
+            const T& operator()() const { return histpatterns; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
+    };
+    struct Ocrpatterns
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "ocrpatterns";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T ocrpatterns;
+            T& operator()() { return ocrpatterns; }
+            const T& operator()() const { return ocrpatterns; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
+    };
     struct Weight
     {
       struct _alias_t
@@ -1288,6 +1320,8 @@ namespace tables
                Suggestions_::Suggestiontypid,
                Suggestions_::Moderntypid,
                Suggestions_::Dict,
+               Suggestions_::Histpatterns,
+               Suggestions_::Ocrpatterns,
                Suggestions_::Weight,
                Suggestions_::Distance,
                Suggestions_::Topsuggestion>
