@@ -584,7 +584,7 @@ function search_token() {
 function get_error_patterns() {
 
   $api = new Api(backend_get_error_patterns_route($_POST['pid']));
-  
+
   $api->set_session_id(backend_get_session_cookie());
   $api->get_request();
   $status = $api->get_http_status_code();
@@ -793,7 +793,7 @@ function create_user() {
        echo "Error: could not create user '". $_POST['name']."' passwords do not match";
     } else {
 
-     $admin = isset($_POST['admin']) && $_POST['admin'] == "on";
+        $admin = isset($_POST['admin']) && ($_POST['admin'] == "on" || $_POST['admin'] == "true");
 
    $data = array(
         'user' => array (
