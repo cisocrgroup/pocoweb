@@ -75,7 +75,9 @@ for suspicious words.
 	* [[GET] `rest-url`/profile/languages](#user-content-api-get-profiler-languages)
 	* [[GET] `rest-url`/ocr](#user-content-api-get-global-ocr-models)
 	* [[GET] `rest-url`/ocr/books/`pid`](#user-content-api-get-ocr-models)
-	* [[POST] `rest-url`/ocr/books/`pid`](#user-content-api-post-ocr)
+	* [[POST] `rest-url`/ocr/books/`pid`](#user-content-api-post-ocr-book)
+	* [[POST] `rest-url`/ocr/books/`pid`/pages/`pageid`](#user-content-api-post-ocr-book-page)
+	* [[POST] `rest-url`/ocr/books/`pid`/pages/`pageid`/lines/`lineid`](#user-content-api-post-ocr-book-page-line)
 	* [[GET] `rest-url`/postcorrect/el/books/`pid`](#user-content-api-get-el)
 	* [[POST] `rest-url`/postcorrect/el/books/`pid`](#user-content-api-post-el)
 	* [[GET] `rest-url`/postcorrect/rrdm/books/`pid`](#user-content-api-get-rrdm)
@@ -1641,24 +1643,82 @@ models for the project.
 }
 
 ```
-<a id='api-post-ocr'></a>
+<a id='api-post-ocr-book'></a>
 ### [POST] `rest-url`/ocr/books/`pid`
 Starts an OCR [job](#user-content-api-get-jobs) on the given project
-(or on the given package's project).  Additionaly a specific OCR-model
-for the project can be trained using the corrected lines of the
-project.
+(or on the given package's project).
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can start an OCR-job.
-
-#### Query parameters
-* The parameter `train=1|0` specifies if a custom OCR-model shuld be
-  trained for the project.  The given model (see below) is then used
-  as base for the model training.
+* Only lines that are neither fully nor partially corrected are predicted.
 
 #### Post data
 ```json
 {
-	"name": "name of the model",
+	"name": "name of the  model"
+}
+```
+
+#### Response data
+```json
+{
+	"id": 13
+}
+```
+
+<a id='api-post-ocr-book-page'></a>
+### [POST] `rest-url`/ocr/books/`pid`/pages/`pageid`
+Starts an OCR [job](#user-content-api-get-jobs) on the given page.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can start an OCR-job.
+* Only lines that are neither fully nor partially corrected are predicted.
+
+#### Post data
+```json
+{
+	"name": "name of the  model"
+}
+```
+
+#### Response data
+```json
+{
+	"id": 13
+}
+```
+
+<a id='api-post-ocr-book-page-line'></a>
+### [POST] `rest-url`/ocr/books/`pid`/pages/`pageid`/lines/`lid`
+Starts an OCR [job](#user-content-api-get-jobs) on the given line.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can start an OCR-job.
+* Only lines that are neither fully nor partially corrected are predicted.
+
+#### Post data
+```json
+{
+	"name": "name of the  model"
+}
+```
+
+#### Response data
+```json
+{
+	"id": 13
+}
+```
+
+<a id='api-post-train-book'></a>
+### [POST] `rest-url`/ocr/train/books/`pid`
+Starts the training [job](#user-content-api-get-jobs) of an individual
+OCR-model for the given book (or package).
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can start an OCR-job.
+* Only fully corrected lines are used for the training.
+
+#### Post data
+```json
+{
+	"name": "name for the base model"
 }
 ```
 
