@@ -9,24 +9,19 @@ using namespace pcw;
 ////////////////////////////////////////////////////////////////////////////////
 template <class It> static PagePtr find_next(It i, It e, size_t n) noexcept {
   if (static_cast<typename It::difference_type>(n) < std::distance(i, e)) {
-    CROW_LOG_DEBUG << "returning page id = " << (*(i + n))->id();
     return *(i + n);
   }
   if (i < e) {
-    CROW_LOG_DEBUG << "returning page id = " << (*(std::prev(e)))->id();
     return *std::prev(e);
   }
-  CROW_LOG_DEBUG << "returning page id = " << (*i)->id();
   return *i;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 template <class It> static PagePtr find_prev(It b, It i, size_t n) noexcept {
   if (static_cast<typename It::difference_type>(n) <= std::distance(b, i)) {
-    CROW_LOG_DEBUG << "returning page id = " << (*(i - n))->id();
     return *(i - n);
   }
-  CROW_LOG_DEBUG << "returning page id = " << (*b)->id();
   return *b;
 }
 
