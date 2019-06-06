@@ -8,6 +8,14 @@
 - PCW_BASE_DIR=/base/dir docker-compose up (starts in forground) or
 - PCW_BASE_DIR=/base/dir docker-compose run (starts in background)
 
+## Database
+- connect to the database requires the following steps:
+  - find the container's ID of the mariadb container using `docker ps`
+    or use the container's default name `docker_db_1`
+  - find the container's IP address using `docker inspect --format
+    '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}`
+  - from the server connect to the database container `mysql -h
+    ip-address -u pocoweb -p pocoweb`
 # Frontend development
 - Update frontend data:
 `make -j V="" PCW_FRONTEND_DIR=$PCW_BASE_DIR/www-data install-frontend`
