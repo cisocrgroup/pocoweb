@@ -1809,11 +1809,20 @@ according [post request](#user-content-api-post-rrdm) has finished.
 }
 ```
 <a id='api-post-rrdm'></a>
-### [POST] `rest-url`/postcorrect/el/books/`pid`
+### [POST] `rest-url`/postcorrect/rrdm/books/`pid`
 Start the [job](#user-content-api-get-jobs) to generate the post
 correction.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can start the job.
+
+### Post data
+```json
+{
+	"bookId": 3,
+	"projectId": 8,
+	"tokens": ["first", "second"]
+}
+```
 
 #### Response data
 ```json
