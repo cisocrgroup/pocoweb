@@ -492,6 +492,8 @@ Pocoweb is composed with a number of interdependend services:
 * pocoweb manages project, packages and the up- and download
 * www-data is a directory (volume) that holds the frontend
 * project-data is a directory (volume) that holds the project files
+* db-data is a directory (volume) that holds the database files
+* ocr-data is a direcotry (volume) that holds the global ocr models
 * pcwuser handles user management
 * pcwprofiler handles profiling of projects
 * pcwpostcorrection handles the automatic postcorrection

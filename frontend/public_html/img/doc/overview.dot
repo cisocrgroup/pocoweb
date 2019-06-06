@@ -1,6 +1,6 @@
 digraph ov {
  rankdir=LR;
- www
+ www [shape=tripleoctagon]
  nginx
  pocoweb
  mysql
@@ -9,8 +9,10 @@ digraph ov {
  pcwprofiler
  pcwpostcorrection
  pcwocr
- wwwd [label="www-data" shape=record]
- projectd [label="project-data" shape=record]
+ wwwd [label="www-data" shape=folder fillcolor=gray style=filled]
+ projectd [label="project-data" shape=folder fillcolor=gray style=filled]
+ ocrd [label="ocr-data" shape=folder fillcolor=gray style=filled]
+ dbd [label="db-data" shape=folder fillcolor=gray style=filled]
 
  www -> nginx [label="http://pocoweb...."]
  nginx -> pcwauth [label="/rest"]
@@ -30,5 +32,7 @@ digraph ov {
  pcwpostcorrection -> mysql [style=dotted]
  pcwocr -> projectd
  pcwocr -> mysql [style=dotted]
+ pcwocr -> ocrd
  pcwusers -> mysql [style=dotted]
+ mysql -> dbd
 }
