@@ -34,6 +34,7 @@ for suspicious words.
     * [Navigation bar](#user-content-navigation-bar)
     * [Concordance view](#user-content-concordance-view)
 * [Installation](#user-content-installation)
+* [Services](#user-content-overview-services)
 * [REST API](#user-content-rest-api)
     * [[GET] `rest-url`/api-version](#user-content-api-get-version)
     * [[POST] `rest-url`/login](#user-content-api-post-login)
@@ -480,6 +481,23 @@ You can download the source code from its
 Installation instructions can be found in the project's
 [README](https://github.com/cisocrgroup/pocoweb/blob/master/README.md)
 file.
+
+- - -
+<a id='overview-services'></a>
+## Services
+Pocoweb is composed with a number of interdependend services:
+* nginx serves images, web-content and redirectes API calls
+* pcwauth authentificates API requests and forwards them to the various other services
+* mysql holds all database tables
+* pocoweb manages project, packages and the up- and download
+* www-data is a directory (volume) that holds the frontend
+* project-data is a directory (volume) that holds the project files
+* pcwuser handles user management
+* pcwprofiler handles profiling of projects
+* pcwpostcorrection handles the automatic postcorrection
+* pcwocr handles ocr prediction and training
+
+![Service Overview](img/doc/overview.png "Pocoweb service overview")
 
 - - -
 <a id='rest-api'></a>

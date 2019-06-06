@@ -1,0 +1,34 @@
+digraph ov {
+ rankdir=LR;
+ www
+ nginx
+ pocoweb
+ mysql
+ pcwauth
+ pcwusers
+ pcwprofiler
+ pcwpostcorrection
+ pcwocr
+ wwwd [label="www-data" shape=record]
+ projectd [label="project-data" shape=record]
+
+ www -> nginx [label="http://pocoweb...."]
+ nginx -> pcwauth [label="/rest"]
+ nginx -> projectd [label="/project-data"]
+ nginx -> wwwd [label="*.css,*.js,*.html,*.php"]
+ pocoweb -> mysql [style=dotted]
+ pocoweb -> projectd
+ pcwauth -> pocoweb [label="/books/*"]
+ pcwauth -> pcwusers [label="/users/*"]
+ pcwauth -> pcwocr [label="/ocr/*"]
+ pcwauth -> pcwprofiler [label="/profile/*"]
+ pcwauth -> pcwprofiler [label="/postcorrect/*"]
+ pcwauth -> mysql [style=dotted]
+ pcwprofiler -> projectd
+ pcwprofiler -> mysql [style=dotted]
+ pcwpostcorrection -> projectd
+ pcwpostcorrection -> mysql [style=dotted]
+ pcwocr -> projectd
+ pcwocr -> mysql [style=dotted]
+ pcwusers -> mysql [style=dotted]
+}

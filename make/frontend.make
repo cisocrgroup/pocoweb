@@ -34,6 +34,7 @@ FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-order-profile.png
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-remove-project.png
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-remove.png
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-split-project.png
+FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/overview.png
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/favicon.ico
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/logo.jpg
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/index.html
@@ -119,6 +120,10 @@ frontend/public_html/api/api.php: frontend/resources/library/api.php
 		-e 's#(dirname(dirname(__FILE__)) . "/config.php")#("./config.php")#' \
 		-e 's#(LIBRARY_PATH . "/utils.php")#("./utils.php")#' \
 		> $@
+$(PCW_FRONTEND_DIR)/public_html/img/doc/overview.png: frontend/public_html/img/doc/overview.dot
+	$(call ECHO,$@)
+	cat $< | dot -T png > $@
+
 $(PCW_FRONTEND_DIR)/public_html/api/config.php: frontend/resources/config.php
 	$(call ECHO,$@)
 	$V php -l $< > /dev/null
