@@ -237,9 +237,9 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       var btn_group = $('<div class="btn-group"></div>');
 
 
-      var suggestions_btn  = $('<div class="dropdown"><button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary btn-sm btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fas fa-list-ol"></i> Suggestions <i class="fas fa-caret-down"></button></div>')
+      var suggestions_btn  = $('<div class="dropdown"><button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary btn-sm btn dropdown-toggle noselect" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fas fa-list-ol"></i> Suggestions <i class="fas fa-caret-down"></button></div>')
 
-      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary btn-sm"><i class="fas fa-align-justify"></i> Concordance </button>'))
+      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary btn-sm noselect"><i class="fas fa-align-justify"></i> Concordance </button>'))
       .append(suggestions_btn);
 
        var dropdown_content = $('<div></div>');
@@ -250,26 +250,26 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
  // btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary">Show concordance of (0 occurrences)</button>'))
  //      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary">Correction suggestions <i class="fas fa-caret-down"></button>'))
 
-
       var div = $('<div class="custom-popover">')
-      .css({
-        "left": e.pageX + 'px',
-        "top": (e.pageY+35) + 'px'
-      })
+      // .css({
+      //   "left": e.pageX + 'px',
+      //   // "top": (e.pageY+35) + 'px'
+      // })
        .append($('<div><i class="fas fa-caret-up custom-popover-arrow"></i></div>'))
        .append(btn_group)
-       .appendTo(document.body);
+       .appendTo($(e.target).parent()); // append to lineparent
 
-      console.log($(".custom-popover").length)
-       $(".custom-popover").on("remove", function () {
-      console.log("KLADKSLlkö")
-      })
+      var offset = $('.custom-popover').offset().left;
+      var left = e.pageX -offset - ($('.custom-popover').width()/2);
+      if(left < 0) left = 0;
 
-      $('.custom-popover').bind('DOMNodeRemoved', function(e) {
-        console.log("ASJKLD")
-              $('#page-container').css('overflow-y','auto');              
+      $('.custom-popover').css('left',left+"px");
 
-      });
+      var offset_arrow = $('.custom-popover-arrow').offset().left;
+      var left_arrow = ($('.custom-popover').width()/2) - (offset_arrow -e.pageX);
+      if(left_arrow!=0){
+        $('.custom-popover-arrow').css('left',left_arrow+"px");
+      }
 
        $('#js-concordance').on('click',function(){
         that.trigger("page:concordance_clicked",sel,0);

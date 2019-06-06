@@ -180,19 +180,17 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                      }
                    }
 
-                      document.getElementById("suggestionsDropdown").focus();
 
                       $('.dropdown-item').on('click',function(e){
-                      // e.stopPropagation();
+                       e.stopPropagation();
                       var split = $(this).text().split(" ");
                       Util.replaceSelectedText(split[0]);
                      })
 
-                     $('#js-suggestions').click(function(e){
-                       e.stopPropagation();
+                     // $('#js-suggestions').click(function(e){
+                     //   e.stopPropagation();
 
-                      $('#page-container').css('overflow-y','hidden');
-                     });
+                     // });
 
                      
 
