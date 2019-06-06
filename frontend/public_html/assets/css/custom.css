@@ -599,6 +599,10 @@ outline: 0;
     cursor: pointer;
   }
 
+  .table-hover{
+    cursor: pointer;
+  }
+
 .close-x{
   float: right;
   color:rgb(108,117,125);
@@ -636,6 +640,13 @@ outline: 0;
     height: 300px;      
     overflow-y: auto;    
     overflow-x: hidden;  
+}
+
+#page-container{
+    height: 770px;      
+    overflow-y: auto;    
+    overflow-x: hidden;  
+    padding: 15px;
 }
 
 .loading_background2 {
@@ -689,3 +700,8 @@ outline: 0;
     margin-left: 0px !important;
     /* border-bottom: 1px solid rgba(128, 128, 128, 0.55); */
     border-radius: 0 !important
+  }
+  
+   .dropdown-toggle::after {
+    display:none;
+}

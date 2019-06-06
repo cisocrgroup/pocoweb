@@ -26,7 +26,6 @@ requirejs.config({
     tpl: "vendor/underscore-tpl",
     underscore: "vendor/underscore",
 
-
     bootstrap:"vendor/bootstrap.min",
     "datepicker":"vendor/datepicker",
 
@@ -35,7 +34,6 @@ requirejs.config({
      "datatables.net-responsive": "vendor/dataTables.responsive.min",
      "datatables.net-bs4": "vendor/responsive.bootstrap4.min",
      "datatables_scroller" : "vendor/dataTables.scroller.min",
-     "medium": "vendor/medium-editor.min"     
     },
 
   shim: {
@@ -43,6 +41,7 @@ requirejs.config({
       exports: "_"
     },
 
+   
       "bootstrap":{
       deps: ["jquery"],
     },

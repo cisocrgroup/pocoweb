@@ -1,6 +1,6 @@
 
 
-    <div class="border rounded" style="padding: 15px;">
+    <div id="page-container" class="border rounded">
 	   <%
      _.each(lines, function(line) {
 

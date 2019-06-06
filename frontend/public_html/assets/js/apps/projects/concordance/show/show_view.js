@@ -2,11 +2,11 @@
 // apps/concordance/show/show_view.js
 // ================================
 
-define(["marionette","app","medium","imagesLoaded","backbone.syphon","common/views","common/util",
+define(["marionette","app","imagesLoaded","backbone.syphon","common/views","common/util",
         "tpl!apps/projects/concordance/show/templates/concordance.tpl",
 
 
-  ], function(Marionette,App,MediumEditor,ImagesLoaded,BackboneSyphon,Views,Util,concordanceTpl){
+  ], function(Marionette,App,ImagesLoaded,BackboneSyphon,Views,Util,concordanceTpl){
 
 
     var Show = {};

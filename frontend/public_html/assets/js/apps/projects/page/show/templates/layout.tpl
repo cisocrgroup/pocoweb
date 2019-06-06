@@ -5,7 +5,7 @@
 			<div id="header-region"></div>
 		</div>
     </div>
-	<div class="row">
+	<div class="row" style="padding-bottom: 25px;">
 		<div class="col col-sm-3">
 			<div id="sidebar-region"></div>
 		</div>
