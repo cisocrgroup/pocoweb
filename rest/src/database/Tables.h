@@ -1426,6 +1426,76 @@ namespace tables
       };
     };
   };
+  namespace Typcounts_
+  {
+    struct Bookid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "bookid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T bookid;
+            T& operator()() { return bookid; }
+            const T& operator()() const { return bookid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
+    struct Typid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "typid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T typid;
+            T& operator()() { return typid; }
+            const T& operator()() const { return typid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
+    struct Counts
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "counts";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T counts;
+            T& operator()() { return counts; }
+            const T& operator()() const { return counts; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
+    };
+  }
+
+  struct Typcounts: sqlpp::table_t<Typcounts,
+               Typcounts_::Bookid,
+               Typcounts_::Typid,
+               Typcounts_::Counts>
+  {
+    struct _alias_t
+    {
+      static constexpr const char _literal[] =  "typcounts";
+      using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+      template<typename T>
+      struct _member_t
+      {
+        T typcounts;
+        T& operator()() { return typcounts; }
+        const T& operator()() const { return typcounts; }
+      };
+    };
+  };
   namespace Adaptivetokens_
   {
     struct Bookid
