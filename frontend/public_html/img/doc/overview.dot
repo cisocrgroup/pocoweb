@@ -24,7 +24,7 @@ digraph ov {
  pcwauth -> pcwusers [label="/users/*"]
  pcwauth -> pcwocr [label="/ocr/*"]
  pcwauth -> pcwprofiler [label="/profile/*"]
- pcwauth -> pcwprofiler [label="/postcorrect/*"]
+ pcwauth -> pcwpostcorrection [label="/postcorrect/*"]
  pcwauth -> mysql [style=dotted]
  pcwprofiler -> projectd
  pcwprofiler -> mysql [style=dotted]
