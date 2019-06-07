@@ -1841,8 +1841,8 @@ Get the status of a job for the given job-id.
 
 #### Query parameters
 You can specify an optional `q=job-name` parameter to check the status
-of a specific running job (such as ocr, profiler, postcorrection) with
-the according id.
+of a specific running job (such as predict, train, profiler,
+postcorrection) with the according id.
 
 #### Response data
 ```json
