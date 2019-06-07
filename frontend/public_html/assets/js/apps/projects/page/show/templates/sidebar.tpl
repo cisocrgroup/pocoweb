@@ -57,7 +57,7 @@
                <input type="search" class="" placeholder="Search...">
           	   </div>
 
-		   <table class="table suspicious-words">
+		   <table class="table suspicious-words table-hover table-sm">
 		    <thead>
 		      <tr>
 		        <th>Word</th>
@@ -84,7 +84,7 @@
         	 <div id="error-patterns_filter">
                <input type="search" placeholder="Search...">
           	 </div>
-		   <table class="table error-patterns">
+		   <table class="table error-patterns table-hover table-sm">
 		    <thead>
 		      <tr>
 		        <th>Word</th>

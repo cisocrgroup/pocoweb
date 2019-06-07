@@ -2,14 +2,14 @@
 // apps/page/show/show_view.js
 // ================================
 
-define(["marionette","app","medium","backbone.syphon","common/views","common/util","apps/projects/concordance/show/show_view",
+define(["marionette","app","backbone.syphon","common/views","common/util","apps/projects/concordance/show/show_view",
         "tpl!apps/projects/page/show/templates/header.tpl",
         "tpl!apps/projects/page/show/templates/page.tpl",
         "tpl!apps/projects/page/show/templates/sidebar.tpl",
         "tpl!apps/projects/page/show/templates/layout.tpl",
 
 
-  ], function(Marionette,App,MediumEditor,BackboneSyphon,Views,Util,Concordance,heaerTpl,pageTpl,sidebarTpl,layoutTpl){
+  ], function(Marionette,App,BackboneSyphon,Views,Util,Concordance,heaerTpl,pageTpl,sidebarTpl,layoutTpl){
 
 
     var Show = {};
@@ -231,27 +231,45 @@ define(["marionette","app","medium","backbone.syphon","common/views","common/uti
 
       console.log(sel);
       if($(e.target).hasClass('line')){
-       $(".dropdown-menu").hide();
+      
        $(".custom-popover").remove();
 
       var btn_group = $('<div class="btn-group"></div>');
 
 
-      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary btn-sm"><i class="fas fa-align-justify"></i> Concordance </button>'))
-      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary btn-sm"> <i class="fas fa-list-ol"></i> Suggestions <i class="fas fa-caret-down"></button>'))
+      var suggestions_btn  = $('<div class="dropdown"><button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary btn-sm btn dropdown-toggle noselect" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fas fa-list-ol"></i> Suggestions <i class="fas fa-caret-down"></button></div>')
 
+      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary btn-sm noselect"><i class="fas fa-align-justify"></i> Concordance </button>'))
+      .append(suggestions_btn);
+
+       var dropdown_content = $('<div></div>');
+       dropdown_content.addClass('dropdown-menu');
+       dropdown_content.attr('id','suggestionsDropdown');
+       dropdown_content.attr('aria-labelledby','js-suggestions');
+       suggestions_btn.append(dropdown_content);
  // btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary">Show concordance of (0 occurrences)</button>'))
  //      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary">Correction suggestions <i class="fas fa-caret-down"></button>'))
 
-
       var div = $('<div class="custom-popover">')
-      .css({
-        "left": e.pageX + 'px',
-        "top": (e.pageY+35) + 'px'
-      })
+      // .css({
+      //   "left": e.pageX + 'px',
+      //   // "top": (e.pageY+35) + 'px'
+      // })
        .append($('<div><i class="fas fa-caret-up custom-popover-arrow"></i></div>'))
        .append(btn_group)
-       .appendTo(document.body);
+       .appendTo($(e.target).parent()); // append to lineparent
+
+      var offset = $('.custom-popover').offset().left;
+      var left = e.pageX -offset - ($('.custom-popover').width()/2);
+      if(left < 0) left = 0;
+
+      $('.custom-popover').css('left',left+"px");
+
+      var offset_arrow = $('.custom-popover-arrow').offset().left;
+      var left_arrow = ($('.custom-popover').width()/2) - (offset_arrow -e.pageX);
+      if(left_arrow!=0){
+        $('.custom-popover-arrow').css('left',left_arrow+"px");
+      }
 
        $('#js-concordance').on('click',function(){
         that.trigger("page:concordance_clicked",sel,0);
@@ -267,13 +285,14 @@ define(["marionette","app","medium","backbone.syphon","common/views","common/uti
       onAttach:function(e){
         var that = this;
 
+        
+
         // remove when clicked somewhere else
 
           $(document).off().click(function(e)
           {
-            e.stopPropagation();
 
-            $(".dropdown-menu").hide();
+            e.stopPropagation();
 
               var custom_popover = $(".custom-popover");
               if (!custom_popover.is(e.target) && custom_popover.has(e.target).length === 0)
@@ -305,119 +324,27 @@ define(["marionette","app","medium","backbone.syphon","common/views","common/uti
 
          });
 
+          /*  sticky sidebar 
+
           var navbar = $("#sidebar-region")
           var sticky = navbar.offset().top;
           var parent_width = navbar.innerWidth();
 
-        $(window).on('scroll', function(event) {
+        // $(window).on('scroll', function(event) {
     
-          // console.log(sticky);
+        //   // console.log(sticky);
 
-           if (window.pageYOffset >= sticky) {
-              $('#sidebar-region').addClass('sticky').width(parent_width);
+        //    if (window.pageYOffset >= sticky) {
+        //       $('#sidebar-region').addClass('sticky').width(parent_width);
 
-          } else{
-              $('#sidebar-region').removeClass('sticky');
-          }
-        });
+        //   } else{
+        //       $('#sidebar-region').removeClass('sticky');
+        //   }
+        // });
+
+        */
 
       },
-
-  setErrorDropdowns: function(res,pid) {
-  var ddep = document.getElementById("pcw-error-patterns-dropdown");
-  var ddet = document.getElementById("pcw-error-tokens-dropdown");
-  if (ddep === null || ddet === null) {
-    return;
-  }
-    if (ddep !== null) {
-      this.setErrorPatternsDropdown(pid, ddep, res);
-    }
-    if (ddet !== null) {
-      this.setErrorTokensDropdown(pid, ddet, res);
-    }
-
-},
-setErrorPatternsDropdown : function(pid, dropdown, res) {
-  var that = this;
-  var patterns = {};
-  var suggs = res.suggestions || [];
-  for (var i = 0; i < suggs.length; i++) {
-    var id = suggs[i].pageId + '-' + suggs[i].lineId + '-' +
-        suggs[i].tokenId;
-    for (var j = 0; j < suggs[i].ocrPatterns.length; j++) {
-      var pat = suggs[i].ocrPatterns[j].toLowerCase();
-      var set = patterns[pat] || {};
-      set[i] = true;
-      patterns[pat] = set;
-    }
-  }
-  var counts = [];
-  for (var p in patterns) {
-    counts.push(
-        {pattern: p, count: Object.keys(patterns[p]).length});
-  }
-  counts.sort(function(a, b) { return b.count - a.count; });
-  var onclick = function(pid, c) {
-    return function() {
-    //  pcw.log(c.pattern + ": " + c.count);
-      // var pat = encodeURI(c.pattern);
-      var pat = c.pattern;
-      // var href = "concordance.php?pid=" + pid + "&q=" + pat +
-      //     "&error-pattern";
-      // window.location.href = href;
-      that.trigger("page:error-patterns-clicked",pid,pat);
-
-    };
-  };
-  for (var ii = 0; ii < counts.length; ii++) {
-    var c = counts[ii];
-    var a = this.appendErrorCountItem(dropdown, c.pattern, c.count);
-    a.onclick = onclick(pid, c);
-  }
-},
-
-setErrorTokensDropdown : function(pid, dropdown, res) {
-  // pcw.log("setErrorsDropdown");
-  var that = this;
-  var tokens = {};
-  var suggs = res.suggestions || [];
-  for (var i = 0; i < suggs.length; i++) {
-    var id = suggs[i].pageId + '-' + suggs[i].lineId + '-' +
-        suggs[i].tokenId;
-    var tok = suggs[i].token.toLowerCase();
-    var set = tokens[tok] || {};
-    set[id] = true;
-    tokens[tok] = set;
-  }
-  var counts = [];
-  for (var p in tokens) {
-    counts.push({token: p, count: Object.keys(tokens[p]).length});
-  }
-  counts.sort(function(a, b) { return b.count - a.count; });
-  var onclick = function(pid, c) {
-    return function() {
-      // pcw.log(c.token + ": " + c.count);
-      // var pat = encodeURI(c.token);
-      var pat = c.token;
-      // var href = "concordance.php?pid=" + pid + "&q=" + pat;
-      // window.location.href = href;
-       that.trigger("page:error-tokens-clicked",pid,pat);
-    };
-  };
-  for (var ii = 0; ii < counts.length; ii++) {
-    c = counts[ii];
-    var a = this.appendErrorCountItem(dropdown, c.token, c.count);
-    a.onclick = onclick(pid, c);
-  }
-},
-appendErrorCountItem : function(dropdown, item, count) {
-  var a = document.createElement("a");
-  var t = document.createTextNode(item + ": " + count);
-  a.className = "dropdown-item noselect";
-  a.appendChild(t);
-  dropdown.appendChild(a);
-  return a;
-}
 
 
 

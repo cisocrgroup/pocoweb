@@ -9,6 +9,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 		showPage: function(id,page_id){
 
+
      		require(["entities/project"], function(ProjectEntities){
 
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
@@ -90,11 +91,10 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
       	projectShowFooterPanel = new Show.FooterPanel();
 
        projectShowSidebar.on("sidebar:error-patterns-clicked",function(pid,pat){
-          // projectShowPage.trigger('page:concordance_clicked',pat,1);
+          projectShowPage.trigger('page:concordance_clicked',pat,1);
        });
 
        projectShowSidebar.on("sidebar:error-tokens-clicked",function(pid,pat){
-        console.log("clicked error")
          projectShowPage.trigger('page:concordance_clicked',pat,0);
        });
        projectShowSidebar.on("page:new",function(page_id){
@@ -142,28 +142,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     });
                    
 
-                   /*** TO DO 
-
-                                 var fully = res.isFullyCorrected;
-                  var partial = res.isPartiallyCorrected;
-                  var input = document.getElementById(anchor);
-                  if (input !== null) {
-                    input.value = res.cor;
-                    pcw.setCorrectionStatus(input, fully, partial);
-                  }
-                  var text = document.getElementById('line-text-' + anchor);
-                  if (text !== null) {
-                    pcw.setCorrectionStatus(text, fully, partial);
-                    text.replaceChild(
-                        document.createTextNode(res.cor),
-                        text.childNodes[0]);
-                    var aapi = Object.create(pcw.Api);
-                    aapi.sid = pcw.getSid();
-                    aapi.setupForGetSuspiciousWords(ids[0], ids[1], ids[2]);
-                    aapi.run(pcw.markSuspiciousWordsInLine);
-
-                   ***/
-
 
                   }).fail(function(response){
                      App.mainmsg.updateContent(response.responseText,'danger');
@@ -174,14 +152,11 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
            projectShowPage.on("page:line_selected",function(selection){
                     var that = this;
                     var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:selection,pid:id});
-
                     var searchingToken = ProjectEntities.API.searchToken({q:selection,p:page_id,pid:id,isErrorPattern:0});
 
                   $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
                     
-                    // $('#current_selection').popover({
-                    //     container: 'body'
-                    //   });
+                 
                     that.tokendata = tokens;
                     // $('#js-concordance').html('Show concordance of <b>'+ selection+'</b> ('+tokens.nWords+' occurrences)');
 
@@ -189,25 +164,11 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                     $("#suggestionsDropdown").empty();
 
+                     var suggestions_btn = $('#js-suggestions'); 
+                    
+                     $(suggestions_btn).dropdown();
 
-                var suggestions_btn = $('#js-suggestions'); 
-                  
-                suggestions_btn.addClass('dropdown');
-
-                suggestions_btn.attr('data-toggle','dropdown');
-                suggestions_btn.attr('aria-haspopup','true');
-                suggestions_btn.attr('aria-expanded','false');
-                suggestions_btn.attr('data-flip','false');
-                suggestions_btn.attr('data-target','#suggestionsDropdown');
-
-
-                 var dropdown_content = $('<div></div>');
-                 dropdown_content.addClass('dropdown-menu');
-                 dropdown_content.attr('id','suggestionsDropdown');
-                 dropdown_content.attr('aria-labelledby','js-suggestions');
-                 suggestions_btn.append(dropdown_content);
-
-                  console.log(suggestions);
+                     console.log(suggestions);
                      for(key in suggestions.suggestions){
                        for (var i=0;i<suggestions.suggestions[key].length;i++){
                         // to do: datatable instead ?
@@ -219,17 +180,19 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                      }
                    }
 
-                     $('#js-suggestions').click(function(e){
-                      e.stopPropagation();
-                      $(".dropdown-menu").hide();
-                      $('#suggestionsDropdown').toggle();
-                     });
 
-                     $('.dropdown-item').on('click',function(e){
-                      e.stopPropagation();
+                      $('.dropdown-item').on('click',function(e){
+                       e.stopPropagation();
                       var split = $(this).text().split(" ");
                       Util.replaceSelectedText(split[0]);
                      })
+
+                     // $('#js-suggestions').click(function(e){
+                     //   e.stopPropagation();
+
+                     // });
+
+                     
 
 
                   }).fail(function(response){
@@ -329,6 +292,19 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                       s.distance + ", weight: " + s.weight.toFixed(2) + ")";
                      $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
+
+
+                    for(key in suggestions.suggestions){
+                       for (var i=0;i<suggestions.suggestions[key].length;i++){
+                        // to do: datatable instead ?
+                    
+                     var s = suggestions.suggestions[key][i];
+                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
+                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+                     $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
+                     }
+                   }
+
                     dropdown_content.toggle();
 
                      $('#dropdown-content-conc .dropdown-item').on('click',function(e){

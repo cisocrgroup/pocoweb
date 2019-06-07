@@ -457,6 +457,7 @@ border-bottom-right-radius: .25rem;
 .line{
   display: none;
   margin-right: 10px;
+  position: relative;
 }
 
 .line-tokens{
@@ -479,7 +480,7 @@ outline: 0;
 
 .line-text-parent{
   display: inline-flex;
-
+  position: relative;
 }
 
 .line-text-parent p {
@@ -499,13 +500,14 @@ outline: 0;
 }
 
 .noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
+  -webkit-touch-callout: none !important; /* iOS Safari */
+    -webkit-user-select: none !important; /* Safari */
+     -khtml-user-select: none !important; /* Konqueror HTML */
+       -moz-user-select: none !important; /* Firefox */
+        -ms-user-select: none !important; /* Internet Explorer/Edge */
+            user-select: none !important; /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
+    outline: none;
 }
 
 
@@ -527,11 +529,15 @@ outline: 0;
 }
 
 .custom-popover {
-  position: absolute;
-  transform: translate(-50%, -50%);
+     position: absolute;
+    /* transform: translate(-50%, -50%); */
     opacity: 1;
     text-align: center;
     z-index: 10001;
+    bottom: -33px;
+    width: 240px;
+    display: block;
+    height: 31px;
 }
 
 .custom-popover-arrow{
@@ -599,6 +605,10 @@ outline: 0;
     cursor: pointer;
   }
 
+  .table-hover{
+    cursor: pointer;
+  }
+
 .close-x{
   float: right;
   color:rgb(108,117,125);
@@ -636,6 +646,13 @@ outline: 0;
     height: 300px;      
     overflow-y: auto;    
     overflow-x: hidden;  
+}
+
+#page-container{
+    height: 770px;      
+    overflow-y: auto;    
+    padding: 15px;
+    z-index: 1020;
 }
 
 .loading_background2 {
@@ -689,3 +706,13 @@ outline: 0;
     margin-left: 0px !important;
     /* border-bottom: 1px solid rgba(128, 128, 128, 0.55); */
     border-radius: 0 !important
+  }
+  
+   .dropdown-toggle::after {
+    display:none;
+}
+
+#conc-modal .modal-body{
+    max-height: calc(100vh - 130px);
+    overflow-y: auto;
+}
