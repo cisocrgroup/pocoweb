@@ -145,6 +145,13 @@ create table if not exists errorpatterns (
 alter table errorpatterns convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 alter table errorpatterns change pattern pattern varchar(25) character set utf8mb4 collate utf8mb4_unicode_ci;
 
+create table if not exists typcounts (
+	   bookid int references books(bookid),
+	   typid int references types(id),
+	   counts int not null,
+	   primary key (bookid, typid)
+);
+
 create table if not exists adaptivetokens (
 	bookid int references books(bookid),
 	typid int references types(id),
