@@ -22,27 +22,22 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-static void
-update_book_data(pcw::Book& book, const crow::json::rvalue& data);
+static void update_book_data(pcw::Book &book, const crow::json::rvalue &data);
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* BookRoute::route_ = BOOK_ROUTE_ROUTE_1 "," BOOK_ROUTE_ROUTE_2;
-const char* BookRoute::name_ = "BookRoute";
+const char *BookRoute::route_ = BOOK_ROUTE_ROUTE_1 "," BOOK_ROUTE_ROUTE_2;
+const char *BookRoute::name_ = "BookRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-BookRoute::Register(App& app)
-{
+void BookRoute::Register(App &app) {
   CROW_ROUTE(app, BOOK_ROUTE_ROUTE_1)
-    .methods("GET"_method, "POST"_method)(*this);
+      .methods("GET"_method, "POST"_method)(*this);
   CROW_ROUTE(app, BOOK_ROUTE_ROUTE_2)
-    .methods("GET"_method, "POST"_method, "DELETE"_method)(*this);
+      .methods("GET"_method, "POST"_method, "DELETE"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-BookRoute::impl(HttpGet, const Request& req) const
-{
+Route::Response BookRoute::impl(HttpGet, const Request &req) const {
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
   // no permissions check since all loaded projectes are owned by the user
@@ -51,7 +46,7 @@ BookRoute::impl(HttpGet, const Request& req) const
   Json j;
   j["books"] = crow::json::rvalue(crow::json::type::List);
   size_t i = 0;
-  for (const auto& p : projects) {
+  for (const auto &p : projects) {
     j["books"][i] << p.first;
     j["books"][i]["bookId"] = p.second.origin;
     j["books"][i]["projectId"] = p.second.projectid;
@@ -63,9 +58,7 @@ BookRoute::impl(HttpGet, const Request& req) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-BookRoute::impl(HttpPost, const Request& req) const
-{
+Route::Response BookRoute::impl(HttpPost, const Request &req) const {
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
   // create new bookdir
@@ -111,9 +104,7 @@ BookRoute::impl(HttpPost, const Request& req) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-update_book_data(pcw::Book& book, const crow::json::rvalue& data)
-{
+void update_book_data(pcw::Book &book, const crow::json::rvalue &data) {
   if (get<std::string>(data, "author"))
     book.data.author = *get<std::string>(data, "author");
   if (get<std::string>(data, "title"))
@@ -133,9 +124,7 @@ update_book_data(pcw::Book& book, const crow::json::rvalue& data)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-BookRoute::impl(HttpGet, const Request& req, int bid) const
-{
+Route::Response BookRoute::impl(HttpGet, const Request &req, int bid) const {
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
   auto book = session->must_find(conn, bid);
@@ -146,16 +135,15 @@ BookRoute::impl(HttpGet, const Request& req, int bid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-BookRoute::impl(HttpPost, const Request& req, int bid) const
-{
-  // CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
+Route::Response BookRoute::impl(HttpPost, const Request &req, int bid) const {
+  CROW_LOG_DEBUG << "(BookRoute) post book: " << bid;
   auto data = crow::json::load(req.body);
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto view = session->must_find(conn, bid);
-  if (not view->is_book())
+  if (not view->is_book()) {
     THROW(BadRequest, "cannot set parameters of project id: ", bid);
+  }
   const auto book = std::dynamic_pointer_cast<Book>(view);
   update_book_data(*book, data);
   MysqlCommiter commiter(conn);
@@ -166,9 +154,7 @@ BookRoute::impl(HttpPost, const Request& req, int bid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-BookRoute::impl(HttpDelete, const Request& req, int bid) const
-{
+Route::Response BookRoute::impl(HttpDelete, const Request &req, int bid) const {
   const LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
@@ -190,11 +176,8 @@ BookRoute::impl(HttpDelete, const Request& req, int bid) const
 
 #ifdef foo
 ////////////////////////////////////////////////////////////////////////////////
-void
-BookRoute::remove_project(MysqlConnection& conn,
-                          const Session& session,
-                          const Project& project) const
-{
+void BookRoute::remove_project(MysqlConnection &conn, const Session &session,
+                               const Project &project) const {
   assert(not project.is_book());
   CROW_LOG_DEBUG << "(BookRoute) removing project id: " << project.id();
   MysqlCommiter commiter(conn);
@@ -204,9 +187,7 @@ BookRoute::remove_project(MysqlConnection& conn,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-BookRoute::remove_project_impl(MysqlConnection& conn, int pid) const
-{
+void BookRoute::remove_project_impl(MysqlConnection &conn, int pid) const {
   using namespace sqlpp;
   tables::Projects p;
   tables::ProjectPages pp;
@@ -225,11 +206,8 @@ BookRoute::remove_project_impl(MysqlConnection& conn, int pid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-BookRoute::remove_book(MysqlConnection& conn,
-                       const Session& session,
-                       const Book& book) const
-{
+void BookRoute::remove_book(MysqlConnection &conn, const Session &session,
+                            const Book &book) const {
   assert(book.is_book());
   CROW_LOG_DEBUG << "(BookRoute) removing book id: " << book.id();
   using namespace sqlpp;
@@ -244,12 +222,10 @@ BookRoute::remove_book(MysqlConnection& conn,
   tables::Books b;
   MysqlCommiter commiter(conn);
   auto pids = conn.db()(
-    select(p.projectid, p.owner).from(p).where(p.origin == book.id()));
-  for (const auto& pid : pids) {
+      select(p.projectid, p.owner).from(p).where(p.origin == book.id()));
+  for (const auto &pid : pids) {
     if (static_cast<int>(pid.owner) != session.user().id()) {
-      THROW(Forbidden,
-            "cannot delete book: project id: ",
-            pid.projectid,
+      THROW(Forbidden, "cannot delete book: project id: ", pid.projectid,
             " is not finished");
     }
     remove_project_impl(conn, pid.projectid);
