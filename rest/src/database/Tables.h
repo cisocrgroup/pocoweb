@@ -1636,6 +1636,22 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
     };
+    struct Text
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "text";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T text;
+            T& operator()() { return text; }
+            const T& operator()() const { return text; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
+    };
     struct Timestamp
     {
       struct _alias_t
@@ -1657,6 +1673,7 @@ namespace tables
   struct Jobs: sqlpp::table_t<Jobs,
                Jobs_::Id,
                Jobs_::Statusid,
+               Jobs_::Text,
                Jobs_::Timestamp>
   {
     struct _alias_t
