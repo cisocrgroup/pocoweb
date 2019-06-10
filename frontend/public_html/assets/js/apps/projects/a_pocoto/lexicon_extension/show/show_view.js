@@ -28,12 +28,17 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
       'click tr' : 'row_clicked',
 
       }, 
-      serializeData: function(){
+    //   serializeData: function(){
 
-         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-
-        return data;
+    //      var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+    //      console.log(data)
+    //     return data;
     
+    // },
+    serializeData: function(){
+      return {
+        le: Marionette.getOption(this,"le")
+      }
     },
      
 
@@ -46,6 +51,7 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
 
    
      onAttach: function(){
+       console.log(this.model)
        // var table = $('#book_table').DataTable();
         $(".sortable").sortable({
             items: 'tbody > tr',

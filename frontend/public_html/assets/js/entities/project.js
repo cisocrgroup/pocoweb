@@ -458,7 +458,27 @@ getSplitImages: function(data){
   return defer.promise();
   
 },
+getLexiconExtension: function(data){
+  data['backend_route'] = "inspect_extended_lexicon";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
 
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
 // addBook: function(id,data){
 //     var defer = jQuery.Deferred();
 //        $.ajax({

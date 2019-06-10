@@ -452,4 +452,25 @@ function backend_update_user($uid, $name, $email, $institute, $pass) {
     $api->put_request($data);
     return $api;
 }
+
+function backend_get_start_el_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["internalURL"] .
+		$config["backend"]["routes"]["startEL"],$pid);
+}
+function backend_get_inspect_el_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["internalURL"] .
+		$config["backend"]["routes"]["getEL"],$pid);
+}
+function backend_get_start_rrdm_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["internalURL"] .
+		$config["backend"]["routes"]["startRRDM"],$pid);
+}
+function backend_get_inspect_rrdm_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["internalURL"] .
+		$config["backend"]["routes"]["getRRDM"],$pid);	
+}
 ?>

@@ -18,6 +18,9 @@ rem pscp -r -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/ tobias@pocoweb.cis
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/js/require_main.built.js tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/assets/js/
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/css/custom.css tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/assets/css/
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/api/api_controller.php tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/api/
+pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/api/backend.php tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/api/
+
+
 
 rem scp -r . tobiasenglmeier@t-macbook-pro.fritz.box:/Users/tobiasenglmeier/pocoweb_data/www-data/public_html
 

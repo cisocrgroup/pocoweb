@@ -339,10 +339,12 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         });
    
 
+          projectShowFooterPanel.on("go:back",function(){
+            App.trigger("projects:show",id);
+          });
+
     
-
-
-  			// projectPanel = new Show.FooterPanel();
+  			    
 
 
 	          projectShowLayout.showChildView('headerRegion',projectShowHeader);

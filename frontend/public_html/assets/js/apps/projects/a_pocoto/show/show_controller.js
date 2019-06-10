@@ -34,80 +34,53 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
       var cards = [         
            {
                   "color": "blue",
-                  "icon": "fas fa-clipboard-list",
-                  "id": "test_btn",
-                  "name": "Lexicon Extension",
+                  "icon": "fas fa-history",
+                  "id": "le_start",
+                  "name": "1. Lexicon Extension",
                   "seq": 1,
-                  "text": "Edit and revise the lexicon.",
-                  "url": "lexicon_extension",
+                  "text": "Start generating the extended lexicon.",
+                  "url": "lexicon_extension_start",
               }, 
                {
                   "color": "blue",
                   "icon": "far fa-edit",
-                  "id": "doc_button",
-                  "name": "Adaptive tokens",
-                  "seq": 5,
-                  "text": "List adaptive tokens.",
-                  "url": "docs:show",
-              }, {
+                  "id": "le_inspect",
+                  "name": "2. Lexicon Extension",
+                  "seq": 2,
+                  "text": "Edit and revise the extended lexicon.",
+                  "url": "lexicon_extension_inspect",
+              },  {
                   "color": "red",
-                  "icon": "fas fa-columns",
-                  "id": "about_btn",
-                  "name": "Split",
-                  "seq": 4,
-                  "text": "Split the project.",
-                  "url": "split",
+                  "icon": "fas fa-history",
+                  "id": "cor_start",
+                  "name": "3. Automatic Postcorrection",
+                  "seq": 3,
+                  "text": "Start the automatic postcorrection process.",
+                  "url": "postcorrection_start",
           },
                 {
-                  "color": "green",
-                  "icon": "far fa-edit",
-                  "id": "delete_button",
-                  "name": "Edit",
-                  "seq": 5,
-                  "text": "Edit the project.",
-                  "url": "edit",
-              },
-               {
-                  "color": "blue",
-                  "icon": "fas fa-download",
-                  "id": "test_btn",
-                  "name": "Download",
-                  "seq": 1,
-                  "text": "Save project files to disk.",
-                  "url": "download",
-              }, 
-
-               {
                   "color": "red",
-                  "icon": "far fa-times-circle",
-                  "id": "about_btn",
-                  "name": "Delete",
+                  "icon": "fas fa-clipboard-list",
+                  "id": "cor_inspect",
+                  "name": "4. Correction Protocoll",
                   "seq": 4,
-                  "text": "Delete the project.",
-                  "url": "delete",
-          }
+                  "text": "Inspect the post correction results.",
+                  "url": "edit",
+              }
            
           ];
 
 
-        var projectShowHub = new Show.Hub({columns:3,cards:cards,currentRoute:"home"});
+        var projectShowHub = new Show.Hub({columns:2,cards:cards,currentRoute:"home"});
 
         projectShowHub.on('cardHub:clicked',function(data){
-          if(data.url=="lexicon_extension"){
+          if(data.url=="lexicon_extension_inspect"){
              App.trigger("projects:lexicon_extension",id);
           }
-          // if(data.url=="edit"){
-          //    this.trigger("show:edit_clicked");
-          // }
-          // if(data.url=="profile"){
-          //    this.trigger("show:profile");
-          // }
-          //   if(data.url=="split"){
-          //    this.trigger("show:split");
-          // }
-          //   if(data.url=="download"){
-          //    this.trigger("show:download");
-          // }
+          if(data.url=="postcorrection_inspect"){
+             App.trigger("projects:postcorrection",id);
+          }
+        
         });
 
      

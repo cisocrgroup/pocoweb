@@ -699,14 +699,29 @@ Views.Layout = Marionette.View.extend({
 });
 
 Views.FooterPanel = Marionette.View.extend({
+	 manual:false,
      events:{
         "click button.js-back":   "backClicked",
       },
       backClicked: function(e){
+
       e.preventDefault();
-       window.history.back();
-      // this.trigger("go:back");
+	   this.manual = Marionette.getOption(this,"manual");
+	   if(this.manual){
+	   	  this.trigger("go:back");
+	   }
+	   else
+	   {
+	    window.history.back();
+	   }
+
      }, 
+     serializeData: function(){
+      return {
+	    manual: Marionette.getOption(this,"manual"),
+     }
+
+  },
       template: footerPanelTpl,
   });
 
