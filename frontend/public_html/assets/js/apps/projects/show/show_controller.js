@@ -295,36 +295,6 @@ var cards2 = [
 
 
 
-         projectShowHub.on("show:add_book_clicked",function(methods){
-
-
-		   var projectsShowAddBook = new Show.ProjectForm({model: new ProjectEntitites.Project(), asModal:true,text:"Add a book to the OCR Project",add_book:true,loading_text:"Adding book"});
-
-
-       projectsShowAddBook.on("project:addbook_clicked",function(data){
-		   var addingBook = ProjectEntities.API.addBook(id,data);
-
-
-		         $.when(addingBook).done(function(result){
-		          $('.loading_background').fadeOut();
-
-		           $('#projects-modal').modal('toggle');
-
-
-		           projectsShowAddBook.model.clear().set(projectsListEditProject.model.defaults);
-		           $('#selected_file').text("");
-		           // projectsListAddProject.render()
-
-		        })
-
-
-      });
-
-
-          App.mainLayout.showChildView('dialogRegion',projectsShowAddBook);
-
-          });
-
 
   			// projectPanel = new Show.FooterPanel();
 

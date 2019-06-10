@@ -139,7 +139,7 @@ Show.ProjectForm = CommonViews.ProjectForm.extend({
 
 Show.AreYouSure = Views.AreYouSure.extend({
       triggers:{
-     "click .js-yes":"delete:confirm"
+     "click .js-yes":"option:confirm"
     }
   })
 

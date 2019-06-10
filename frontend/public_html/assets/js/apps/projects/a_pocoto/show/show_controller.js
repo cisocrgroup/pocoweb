@@ -56,16 +56,16 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
                   "name": "3. Automatic Postcorrection",
                   "seq": 3,
                   "text": "Start the automatic postcorrection process.",
-                  "url": "postcorrection_start",
+                  "url": "cor_start",
           },
                 {
                   "color": "red",
                   "icon": "fas fa-clipboard-list",
                   "id": "cor_inspect",
-                  "name": "4. Correction Protocoll",
+                  "name": "4. Correction Protocol",
                   "seq": 4,
                   "text": "Inspect the post correction results.",
-                  "url": "edit",
+                  "url": "cor_inspect",
               }
            
           ];
@@ -77,10 +77,52 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
           if(data.url=="lexicon_extension_inspect"){
              App.trigger("projects:lexicon_extension",id);
           }
-          if(data.url=="postcorrection_inspect"){
-             App.trigger("projects:postcorrection",id);
+          if(data.url=="lexicon_extension_start"){
+             this.trigger("show:start_lexicon_extension",id);
           }
-        
+          if(data.url=="cor_inspect"){
+             App.trigger("projects:protocol",id);
+          }
+           if(data.url=="cor_start"){
+             this.trigger("show:start_postcorrection",id);
+          }
+         
+        });
+
+         projectShowHub.on("show:start_lexicon_extension",function(){
+          var confirm_lex_ext = new Show.AreYouSure({title:"Start Lexicon Extension",text:"Begin Lexicon Extension Step?",id:"lexModal"})
+          App.mainLayout.showChildView('dialogRegion',confirm_lex_ext);
+
+          confirm_lex_ext.on("option:confirm",function(){
+             var startinglexextension = ProjectEntities.API.startLexiconExtension({pid:id});
+             $('#lexModal').modal('hide');
+
+               $.when(startinglexextension).done(function(result){
+                    App.mainmsg.updateContent(result,'Lexicon Extension started');
+
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
+           });
+
+        });
+
+        projectShowHub.on("show:start_postcorrection",function(){
+          var confirm_cor_ext = new Show.AreYouSure({title:"Start Automatic Postcorrection",text:"Begin Automatic Postcorrection Step?",id:"corModal"})
+          App.mainLayout.showChildView('dialogRegion',confirm_cor_ext);
+
+            confirm_cor_ext.on("option:confirm",function(){
+             var startingpostcorrection = ProjectEntities.API.startPostcorrection({pid:id});
+             $('#corModal').modal('hide');
+
+               $.when(startingpostcorrection).done(function(result){
+                    App.mainmsg.updateContent(result,'Postcorrection started');
+
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
+           });
+
         });
 
      
@@ -89,7 +131,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
       	projectShowFooterPanel = new Show.FooterPanel();
 
       
-      
+
   
   			// projectPanel = new Show.FooterPanel();
 

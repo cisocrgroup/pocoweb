@@ -229,7 +229,9 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
            return;
           }
 
+      sel = sel.trim();
       console.log(sel);
+
       if($(e.target).hasClass('line')){
       
        $(".custom-popover").remove();

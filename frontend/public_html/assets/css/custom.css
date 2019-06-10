@@ -535,7 +535,7 @@ outline: 0;
     text-align: center;
     z-index: 10001;
     bottom: -33px;
-    width: 240px;
+    width: 250px;
     display: block;
     height: 31px;
 }
@@ -713,6 +713,8 @@ outline: 0;
 }
 
 #conc-modal .modal-body{
-    max-height: calc(100vh - 130px);
+    /*max-height: calc(100vh - 130px);*/
+    min-height: 700px;
+    max-height: 700px;
     overflow-y: auto;
 }

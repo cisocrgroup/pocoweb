@@ -1,13 +1,13 @@
 // ======================================
-// apps/project/a_pocoto/lexicon_extension/show/show_controller.js
+// apps/project/a_pocoto/protocol/show/show_controller.js
 // ======================================
 
-define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_extension/show/show_view"], function(App,Util,Views,Show){
+define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show/show_view"], function(App,Util,Views,Show){
 
 
  Controller = {
 
-		showLexiconExtension: function(id){
+		showProtocol: function(id){
 
      		require(["entities/project","entities/util","entities/users"], function(ProjectEntities,UtilEntities,UserEntities){
 
@@ -15,15 +15,15 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
      			  var fetchingproject = ProjectEntities.API.getProject({pid:id});
             var fetchinglanguages = UtilEntities.API.getLanguages();
-            var fetchingle = ProjectEntities.API.getLexiconExtension({pid:id});
+            var fetchingprotocol = ProjectEntities.API.getProtocol({pid:id});
             var fetchinguser = UserEntities.API.loginCheck();
                             
    
-      $.when(fetchingproject,fetchinglanguages,fetchingle,fetchinguser).done(function(project,languages,le,user){
+      $.when(fetchingproject,fetchinglanguages,fetchingprotocol,fetchinguser).done(function(project,languages,pr,user){
 
 		  loadingCircleView.destroy();
       console.log(project);
-      console.log(le);
+      console.log(pr);
 
 			var projectShowLayout = new Show.Layout();
 			var projectShowHeader;
@@ -33,23 +33,44 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
 			projectShowLayout.on("attach",function(){
     
-
-
-
      
-			  projectShowHeader = new Show.Header({title:"Lexicon Extension",icon:"far fa-edit",color:"blue"});
-        projectShowInfo = new Show.Info({le:le});
+			  projectShowHeader = new Show.Header({title:"Correction Protocol",icon:"fas fa-clipboard-list",color:"red"});
+        projectShowInfo = new Show.Info({pr:pr});
       	projectShowFooterPanel = new Show.FooterPanel();
         console.log(projectShowInfo)
+
+
         projectShowInfo.on("show:word_clicked",function(word){
             
-
             var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:true});
+            var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:word,pid:id});
 
-            $.when(searchingToken).done(function(tokens){
-            var tokendata = tokens['matches'][word]
+            $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
+            var tokendata = tokens['matches'][word];
+            console.log(suggestions);
 
-            var projectConcView = new Show.Concordance({selection:word,tokendata:tokendata,asModal:true,suggestions:undefined});
+            var projectConcView = new Show.Concordance({selection:word,tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
+
+            projectConcView.on("concordance:correct_token",function(data,anchor){
+
+               console.log(anchor);
+               console.log(data);
+
+                 var correctingtoken = ProjectEntities.API.correctToken(data);
+                  $.when(correctingtoken).done(function(result){
+                    
+                    console.log(result);
+
+
+                  }).fail(function(response){
+                     App.mainmsg.updateContent(response.responseText,'danger');
+                    });  // $when fetchingproject
+          
+           }) // correct token
+
+
+
+
             App.mainLayout.showChildView('dialogRegion',projectConcView);
 
            });

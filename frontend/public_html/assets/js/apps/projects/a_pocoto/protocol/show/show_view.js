@@ -1,9 +1,9 @@
 // ================================
-// apps/projects/a_pocoto/lexicon_extension/show/show_view.js
+// apps/projects/a_pocoto/protocol/show/show_view.js
 // ================================
 
 define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/projects/page/show/show_view","apps/projects/concordance/show/show_view",
-        "tpl!apps/projects/a_pocoto/lexicon_extension/show/templates/info.tpl",
+        "tpl!apps/projects/a_pocoto/protocol/show/templates/info.tpl",
 
 
   ], function(Marionette,App,jquery_ui,BackboneSyphon,Views,Page,Concordance,infoTpl){
@@ -37,7 +37,7 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
     // },
     serializeData: function(){
       return {
-        le: Marionette.getOption(this,"le")
+        pr: Marionette.getOption(this,"pr")
       }
     },
      

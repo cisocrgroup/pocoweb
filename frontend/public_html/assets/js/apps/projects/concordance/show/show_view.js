@@ -72,7 +72,6 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       toggle_selection:function(e){
 
         $('.cordiv_container').each(function(){
-          console.log($(this));
           var cordiv_left = $(this).find('.cordiv_left');
 
         if(cordiv_left.find('i').hasClass('fa-square')){
@@ -150,12 +149,11 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       cor_suggestions:function(e){
          e.stopPropagation();
 
-         if($('#dropdown-content-conc').length>0){
-          if($('#dropdown-content-conc:visible')){
-           $('#dropdown-content-conc').toggle();
-           return;
-          }
+         var suggestions =  Marionette.getOption(this,"suggestions");
+         if(suggestions.length==0){
+          return;
          }
+        
 
         var concLine = $(e.currentTarget).parent().parent();
         var tokendiv = $(e.currentTarget).parent();
@@ -166,7 +164,57 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
             var tokenid =  tokendiv.attr('tokenId');
             var token  = tokendiv.text();
             var anchor = concLine.attr('anchor');
-            this.trigger("concordance:show_suggestions",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token},$(e.currentTarget),anchor)
+            // this.trigger("concordance:show_suggestions",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token},$(e.currentTarget),anchor);
+
+                $('#dropdown-content-conc').remove();
+
+                var suggestions_btn = $(e.currentTarget);
+                  
+                suggestions_btn.addClass('dropdown');
+
+                suggestions_btn.attr('data-toggle','dropdown');
+                suggestions_btn.attr('aria-haspopup','true');
+                suggestions_btn.attr('aria-expanded','false');
+                suggestions_btn.attr('id','dropdownMenuConc');
+                suggestions_btn.attr('data-flip','false');
+                suggestions_btn.attr('data-target','dropdown-content-conc');
+
+                 var dropdown_content = $('<div></div>');
+                 dropdown_content.addClass('dropdown-menu');
+                 dropdown_content.attr('id','dropdown-content-conc');
+                 dropdown_content.attr('aria-labelledby','dropdownMenuConc');
+                 suggestions_btn.append(dropdown_content);
+
+
+                     for(i=0;i<suggestions.length;i++){
+                    
+                     var s = suggestions[i];
+                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
+                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+                     $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
+                     }
+
+
+                    for(key in suggestions){
+                       for (var i=0;i<suggestions[key].length;i++){
+                        // to do: datatable instead ?
+                    
+                     var s = suggestions[key][i];
+                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
+                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+                     $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
+                     }
+                   }
+
+                    dropdown_content.toggle();
+
+                     $('#dropdown-content-conc .dropdown-item').on('click',function(e){
+                      e.stopPropagation();
+                      var split = $(this).text().split(" ");
+                      $(this).parent().parent().prev().text(split[0]);
+                      $(this).parent().hide();
+                     })
+
 
       },
       cordiv_clicked:function(e){
