@@ -34,80 +34,95 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
       var cards = [         
            {
                   "color": "blue",
-                  "icon": "fas fa-clipboard-list",
-                  "id": "test_btn",
-                  "name": "Lexicon Extension",
+                  "icon": "fas fa-history",
+                  "id": "le_start",
+                  "name": "1. Lexicon Extension",
                   "seq": 1,
-                  "text": "Edit and revise the lexicon.",
-                  "url": "lexicon_extension",
+                  "text": "Start generating the extended lexicon.",
+                  "url": "lexicon_extension_start",
               }, 
                {
                   "color": "blue",
                   "icon": "far fa-edit",
-                  "id": "doc_button",
-                  "name": "Adaptive tokens",
-                  "seq": 5,
-                  "text": "List adaptive tokens.",
-                  "url": "docs:show",
-              }, {
+                  "id": "le_inspect",
+                  "name": "2. Lexicon Extension",
+                  "seq": 2,
+                  "text": "Edit and revise the extended lexicon.",
+                  "url": "lexicon_extension_inspect",
+              },  {
                   "color": "red",
-                  "icon": "fas fa-columns",
-                  "id": "about_btn",
-                  "name": "Split",
-                  "seq": 4,
-                  "text": "Split the project.",
-                  "url": "split",
+                  "icon": "fas fa-history",
+                  "id": "cor_start",
+                  "name": "3. Automatic Postcorrection",
+                  "seq": 3,
+                  "text": "Start the automatic postcorrection process.",
+                  "url": "cor_start",
           },
                 {
-                  "color": "green",
-                  "icon": "far fa-edit",
-                  "id": "delete_button",
-                  "name": "Edit",
-                  "seq": 5,
-                  "text": "Edit the project.",
-                  "url": "edit",
-              },
-               {
-                  "color": "blue",
-                  "icon": "fas fa-download",
-                  "id": "test_btn",
-                  "name": "Download",
-                  "seq": 1,
-                  "text": "Save project files to disk.",
-                  "url": "download",
-              }, 
-
-               {
                   "color": "red",
-                  "icon": "far fa-times-circle",
-                  "id": "about_btn",
-                  "name": "Delete",
+                  "icon": "fas fa-clipboard-list",
+                  "id": "cor_inspect",
+                  "name": "4. Correction Protocol",
                   "seq": 4,
-                  "text": "Delete the project.",
-                  "url": "delete",
-          }
+                  "text": "Inspect the post correction results.",
+                  "url": "cor_inspect",
+              }
            
           ];
 
 
-        var projectShowHub = new Show.Hub({columns:3,cards:cards,currentRoute:"home"});
+        var projectShowHub = new Show.Hub({columns:2,cards:cards,currentRoute:"home"});
 
         projectShowHub.on('cardHub:clicked',function(data){
-          if(data.url=="lexicon_extension"){
+          if(data.url=="lexicon_extension_inspect"){
              App.trigger("projects:lexicon_extension",id);
           }
-          // if(data.url=="edit"){
-          //    this.trigger("show:edit_clicked");
-          // }
-          // if(data.url=="profile"){
-          //    this.trigger("show:profile");
-          // }
-          //   if(data.url=="split"){
-          //    this.trigger("show:split");
-          // }
-          //   if(data.url=="download"){
-          //    this.trigger("show:download");
-          // }
+          if(data.url=="lexicon_extension_start"){
+             this.trigger("show:start_lexicon_extension",id);
+          }
+          if(data.url=="cor_inspect"){
+             App.trigger("projects:protocol",id);
+          }
+           if(data.url=="cor_start"){
+             this.trigger("show:start_postcorrection",id);
+          }
+         
+        });
+
+         projectShowHub.on("show:start_lexicon_extension",function(){
+          var confirm_lex_ext = new Show.AreYouSure({title:"Start Lexicon Extension",text:"Begin Lexicon Extension Step?",id:"lexModal"})
+          App.mainLayout.showChildView('dialogRegion',confirm_lex_ext);
+
+          confirm_lex_ext.on("option:confirm",function(){
+             var startinglexextension = ProjectEntities.API.startLexiconExtension({pid:id});
+             $('#lexModal').modal('hide');
+
+               $.when(startinglexextension).done(function(result){
+                    App.mainmsg.updateContent(result,'Lexicon Extension started');
+
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
+           });
+
+        });
+
+        projectShowHub.on("show:start_postcorrection",function(){
+          var confirm_cor_ext = new Show.AreYouSure({title:"Start Automatic Postcorrection",text:"Begin Automatic Postcorrection Step?",id:"corModal"})
+          App.mainLayout.showChildView('dialogRegion',confirm_cor_ext);
+
+            confirm_cor_ext.on("option:confirm",function(){
+             var startingpostcorrection = ProjectEntities.API.startPostcorrection({pid:id});
+             $('#corModal').modal('hide');
+
+               $.when(startingpostcorrection).done(function(result){
+                    App.mainmsg.updateContent(result,'Postcorrection started');
+
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
+           });
+
         });
 
      
@@ -116,7 +131,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
       	projectShowFooterPanel = new Show.FooterPanel();
 
       
-      
+
   
   			// projectPanel = new Show.FooterPanel();
 

@@ -7,7 +7,6 @@
 <div class="row">
 <div class="col-lg-5">
 <h4>Extensions</h4> 
-
 <table id="extensions" class="table table-bordered sortable table-hover" style='margin-bottom: 30px;'> 
 <thead class="thead-light">
       <tr>
@@ -16,19 +15,13 @@
       </tr>
  </thead>
  <tbody>
+       <% for (key in le.yes) { %>
+       <tr>  
+        <td><%-key%></td>
+        <td><%-le.yes[key]%></td>
 
-    <tr>  
-        <td>vnd</td>
-        <td>10</td>
-    </tr>
-       <tr>  
-        <td>word2</td>
-        <td>30</td>
-    </tr>
-       <tr>  
-        <td>word3</td>
-        <td>40</td>
-    </tr>
+        </tr>
+       <% } %> 
 
  </tbody>
 
@@ -54,19 +47,13 @@
       </tr>
  </thead>
  <tbody>
+   <% for (key in le.no) { %>
+       <tr>  
+        <td><%-key%></td>
+        <td><%-le.no[key]%></td>
 
-    <tr>  
-        <td>word1</td>
-        <td>4</td>
-    </tr>
-       <tr>  
-        <td>word2</td>
-        <td>3</td>
-    </tr>
-       <tr>  
-        <td>word3</td>
-        <td>21</td>
-    </tr>
+        </tr>
+       <% } %> 
 
  </tbody>
 

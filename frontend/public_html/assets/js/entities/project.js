@@ -458,31 +458,90 @@ getSplitImages: function(data){
   return defer.promise();
   
 },
+getLexiconExtension: function(data){
+  data['backend_route'] = "inspect_extended_lexicon";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
 
-// addBook: function(id,data){
-//     var defer = jQuery.Deferred();
-//        $.ajax({
-//         headers: {
-//         'Accept': 'application/json',
-//         'Content-Type': 'application/json'
-//          },
-//         url: "api/projects/"+id+"/add-book",
-//         type: "POST",
-//         data:JSON.stringify(data),
-//         dataType: "json",
-//         success: function(data) {
-
-//               defer.resolve(data);
-//             },
-//             error: function(data){
-//               defer.resolve(undefined);
-//             }
-//     });
-
-//     return defer.promise();
-//   },
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
 
 
+  return defer.promise();
+  
+},
+
+startLexiconExtension: function(data){
+  data['backend_route'] = "start_lexicon_extension";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+getProtocol: function(data){
+  data['backend_route'] = "inspect_extended_lexicon";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+startPostcorrection: function(data){
+  console.log("AKLÖSD")
+  data['backend_route'] = "start_postcorrection";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
 
 };
 

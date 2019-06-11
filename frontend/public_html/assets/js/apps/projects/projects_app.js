@@ -12,7 +12,8 @@ define(["marionette","app"], function(Marionette,App){
   		   "projects/:id"    :"showProject",
   		   "projects/:id/page/:page_id"    :"showPage",
   		   "projects/:id/a_pocoto"    :"showAPoCoTo",
-  		   "projects/:id/a_pocoto/lexicon_extension"    :"showLexiconExtension"
+  		   "projects/:id/a_pocoto/lexicon_extension"    :"showLexiconExtension",
+  		   "projects/:id/a_pocoto/protocol"    :"showProtocol"
 
 		}
 	});
@@ -44,6 +45,11 @@ define(["marionette","app"], function(Marionette,App){
 			require(["apps/projects/a_pocoto/lexicon_extension/show/show_controller"], function(ShowController){
        				ShowController.showLexiconExtension(id);
 				});
+		},
+		showProtocol: function(id){
+		require(["apps/projects/a_pocoto/protocol/show/show_controller"], function(ShowController){
+   				ShowController.showProtocol(id);
+			});
 		}
 	
 	};
@@ -62,6 +68,11 @@ define(["marionette","app"], function(Marionette,App){
 	App.on("projects:lexicon_extension",function(id){
 		App.navigate("projects/"+id+"/a_pocoto/lexicon_extension");
 		API.showLexiconExtension(id);
+	});
+
+	App.on("projects:protocol",function(id){
+		App.navigate("projects/"+id+"/a_pocoto/protocol");
+		API.showProtocol(id);
 	});
 
 	App.on("projects:show_page",function(id,page_id){

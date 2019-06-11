@@ -206,11 +206,21 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         console.log(isErrorPattern);
         console.log(selection);
         var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:selection,pid:id});
-       var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern});
-       var that = this;
+        var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern});
+        var that = this;
          $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
           console.log(tokens)
-            var tokendata = tokens['matches'][selection];
+            var tokendata=[];
+            if(isErrorPattern){
+               for (key in tokens['matches']){
+                   var match = tokens['matches'][key][0];
+                   tokendata.push(match);
+               }
+            }
+            else{
+              tokendata = tokens['matches'][selection];
+            }
+
             console.log(suggestions)
             console.log(tokendata)
 
@@ -329,10 +339,12 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         });
    
 
+          projectShowFooterPanel.on("go:back",function(){
+            App.trigger("projects:show",id);
+          });
+
     
-
-
-  			// projectPanel = new Show.FooterPanel();
+  			    
 
 
 	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
