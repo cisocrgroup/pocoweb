@@ -210,6 +210,11 @@ function update_project(){
   $api->set_session_id(backend_get_session_cookie());
   $api->post_request($_POST['projectdata']);
 
+  # force numeric year
+  $year = intval($_POST['projectdata']['year']);
+  $_POST['projectdata']['year'] = $year;
+  $api->post_request($_POST['projectdata']);
+
  $status = $api->get_http_status_code();
   switch ($status) {
   case "200":
