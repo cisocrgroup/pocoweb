@@ -1817,7 +1817,7 @@ correction.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can start the job.
 
-### Post data
+#### Post data
 ```json
 {
 	"bookId": 3,
@@ -1839,6 +1839,11 @@ Get the status of a job for the given job-id.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can see the job.
 
+#### Query parameters
+You can specify an optional `q=job-name` parameter to check the status
+of a specific running job (such as predict, train, profiler,
+postcorrection) with the according id.
+
 #### Response data
 ```json
 {
@@ -1846,6 +1851,7 @@ Get the status of a job for the given job-id.
 	bookId: 13,
 	statusId: 1,
 	statusName: "failed|running|done",
+	jobName: "name of job",
 	Timestamp: 0
 }
 ```
