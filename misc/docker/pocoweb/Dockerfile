@@ -1,8 +1,8 @@
 FROM ffink/profiler:internal-backend
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
-ENV DATE='Tue 04 Jun 2019 02:06:33 PM CEST'
+ENV DATE='Tue 04 Jun 2019 02:06:34 PM CEST'
 ENV GITURL='https://github.com/cisocrgroup/pocoweb.git'
-ENV BRANCH='devel'
+ENV BRANCH='port'
 
 VOLUME /project-data /www-data /tmp
 COPY deps-fedora.txt /deps.txt
