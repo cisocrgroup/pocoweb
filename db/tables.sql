@@ -177,6 +177,6 @@ drop table if exists jobs;
 create table if not exists jobs (
 	   id INT NOT NULL UNIQUE PRIMARY KEY REFERENCES books(bookid),
 	   statusid INT NOT NULL REFERENCES status(id),
-	   text varchar(15) NOT NULL,
+	   text varchar(50) NOT NULL,
 	   timestamp INT(11) NOT NULL
 );
