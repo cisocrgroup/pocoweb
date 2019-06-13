@@ -159,6 +159,7 @@ create table if not exists adaptivetokens (
 );
 alter table adaptivetokens convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
+drop table if exists status;
 create table if not exists status (
 	id int not null unique primary key,
 	text varchar(15) not null
@@ -171,7 +172,8 @@ values
 	(2,'done'),
 	(3,'empty'),
 	(4,'profiled'),
-	(5,'post-corrected');
+	(5,'post-corrected')
+	(6,'extended-lexicon');
 
 drop table if exists jobs;
 create table if not exists jobs (
