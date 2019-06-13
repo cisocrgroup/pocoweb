@@ -1,12 +1,19 @@
-FROM ffink/profiler:internal-backend
+FROM ubuntu:latest
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
-ENV DATE='Tue 04 Jun 2019 02:06:34 PM CEST'
+ENV DATE='Tue 04 Jun 2019 02:06:35 PM CEST'
 ENV GITURL='https://github.com/cisocrgroup/pocoweb.git'
-ENV BRANCH='port'
+ENV BRANCH='flodev'
+ENV DEBIAN_FRONTEND noninteractive
+
+COPY deps-ubuntu.txt /deps.txt
+RUN apt-get update \
+	&& apt-get -y install $(cat /deps.txt | grep -v '^#')
+# locales
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    dpkg-reconfigure --frontend=noninteractive locales && \
+    update-locale LANG=en_US.UTF-8
 
 VOLUME /project-data /www-data /tmp
-COPY deps-fedora.txt /deps.txt
-RUN yum update -y && yum install -y $(cat /deps.txt | grep -v '^#')
 
 # pocoweb
 RUN git clone ${GITURL} --single-branch -b ${BRANCH} \
@@ -23,5 +30,4 @@ RUN git clone ${GITURL} --single-branch -b ${BRANCH} \
 COPY pocoweb.conf /apps/pocoweb.conf
 COPY startup.sh /apps/startup.sh
 
-EXPOSE 8080
 CMD sh /apps/startup.sh
