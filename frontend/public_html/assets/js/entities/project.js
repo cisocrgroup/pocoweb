@@ -522,7 +522,6 @@ getProtocol: function(data){
   
 },
 startPostcorrection: function(data){
-  console.log("AKLÖSD")
   data['backend_route'] = "start_postcorrection";
   var defer = jQuery.Deferred();
       $.ajax({
@@ -530,6 +529,28 @@ startPostcorrection: function(data){
       type: "POST",
        data:data,
       success: function(data) {
+        defer.resolve(JSON.parse(data));
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+
+getJobs: function(data){
+  data['backend_route'] = "get_jobs";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        console.log(data);
         defer.resolve(JSON.parse(data));
 
           },

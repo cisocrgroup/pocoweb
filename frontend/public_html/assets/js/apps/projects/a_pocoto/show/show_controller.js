@@ -31,65 +31,86 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
 			// console.log(reviews);
 
 			projectShowLayout.on("attach",function(){
-      var cards = [         
-           {
-                  "color": "blue",
-                  "icon": "fas fa-history",
-                  "id": "le_start",
-                  "name": "1. Lexicon Extension",
-                  "seq": 1,
-                  "text": "Start generating the extended lexicon.",
-                  "url": "lexicon_extension_start",
-              }, 
-               {
-                  "color": "blue",
-                  "icon": "far fa-edit",
-                  "id": "le_inspect",
-                  "name": "2. Lexicon Extension",
-                  "seq": 2,
-                  "text": "Edit and revise the extended lexicon.",
-                  "url": "lexicon_extension_inspect",
-              },  {
-                  "color": "red",
-                  "icon": "fas fa-history",
-                  "id": "cor_start",
-                  "name": "3. Automatic Postcorrection",
-                  "seq": 3,
-                  "text": "Start the automatic postcorrection process.",
-                  "url": "cor_start",
-          },
-                {
-                  "color": "red",
-                  "icon": "fas fa-clipboard-list",
-                  "id": "cor_inspect",
-                  "name": "4. Correction Protocol",
-                  "seq": 4,
-                  "text": "Inspect the post correction results.",
-                  "url": "cor_inspect",
-              }
+      var steps = {  
+
+           "empty": {color:"green",step:" Step 1: Profiling",icon:"fas fa-history",id:"js-profile",text:"Start profiling the document."},
+           "profiled": {color:"blue",step:" Step 2: Lexicon Extension",icon:"fas fa-history",id:"js-le",text:"Generate the extended lexicon."},
+
+          //  {
+          //         "color": "blue",
+          //         "icon": "fas fa-history",
+          //         "id": "le_start",
+          //         "name": "1. Lexicon Extension",
+          //         "seq": 1,
+          //         "text": "Start generating the extended lexicon.",
+          //         "url": "lexicon_extension_start",
+          //     }, 
+          //      {
+          //         "color": "blue",
+          //         "icon": "far fa-edit",
+          //         "id": "le_inspect",
+          //         "name": "2. Lexicon Extension",
+          //         "seq": 2,
+          //         "text": "Edit and revise the extended lexicon.",
+          //         "url": "lexicon_extension_inspect",
+          //     },  {
+          //         "color": "red",
+          //         "icon": "fas fa-history",
+          //         "id": "cor_start",
+          //         "name": "3. Automatic Postcorrection",
+          //         "seq": 3,
+          //         "text": "Start the automatic postcorrection process.",
+          //         "url": "cor_start",
+          // },
+          //       {
+          //         "color": "red",
+          //         "icon": "fas fa-clipboard-list",
+          //         "id": "cor_inspect",
+          //         "name": "4. Correction Protocol",
+          //         "seq": 4,
+          //         "text": "Inspect the post correction results.",
+          //         "url": "cor_inspect",
+          //     }
            
-          ];
+          };
+
+          console.log(steps)
+          console.log(project.get('status'));
+        // var projectShowInfo = new Show.Info(steps[project.get('status')]);
+        var projectShowInfo = new Show.Info(steps['empty']);
+
+        projectShowInfo.on('show:profile_clicked',function(data){
+           var profilingproject = ProjectEntities.API.profileProject({pid:id});
+
+             $.when(profilingproject).done(function(result){
+                  
+
+                      var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+
+                       $.when(fetchingjobs).done(function(result){
+                              console.log(result);
+                             }).fail(function(response){
+                                   App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                             }); 
 
 
-        var projectShowHub = new Show.Hub({columns:2,cards:cards,currentRoute:"home"});
-
-        projectShowHub.on('cardHub:clicked',function(data){
-          if(data.url=="lexicon_extension_inspect"){
-             App.trigger("projects:lexicon_extension",id);
-          }
-          if(data.url=="lexicon_extension_start"){
-             this.trigger("show:start_lexicon_extension",id);
-          }
-          if(data.url=="cor_inspect"){
-             App.trigger("projects:protocol",id);
-          }
-           if(data.url=="cor_start"){
-             this.trigger("show:start_postcorrection",id);
-          }
-         
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
         });
+          // if(data.url=="lexicon_extension_start"){
+          //    this.trigger("show:start_lexicon_extension",id);
+          // }
+          // if(data.url=="cor_inspect"){
+          //    App.trigger("projects:protocol",id);
+          // }
+          //  if(data.url=="cor_start"){
+          //    this.trigger("show:start_postcorrection",id);
+          // }
+         
+      
 
-         projectShowHub.on("show:start_lexicon_extension",function(){
+         projectShowInfo.on("show:start_lexicon_extension",function(){
           var confirm_lex_ext = new Show.AreYouSure({title:"Start Lexicon Extension",text:"Begin Lexicon Extension Step?",id:"lexModal"})
           App.mainLayout.showChildView('dialogRegion',confirm_lex_ext);
 
@@ -107,7 +128,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
 
         });
 
-        projectShowHub.on("show:start_postcorrection",function(){
+        projectShowInfo.on("show:start_postcorrection",function(){
           var confirm_cor_ext = new Show.AreYouSure({title:"Start Automatic Postcorrection",text:"Begin Automatic Postcorrection Step?",id:"corModal"})
           App.mainLayout.showChildView('dialogRegion',confirm_cor_ext);
 
@@ -137,7 +158,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
 
 
 	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
-            projectShowLayout.showChildView('hubRegion',projectShowHub);
+            projectShowLayout.showChildView('hubRegion',projectShowInfo);
 	          projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
 
 

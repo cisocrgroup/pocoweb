@@ -473,4 +473,9 @@ function backend_get_inspect_rrdm_route($pid) {
 	return sprintf($config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["getRRDM"],$pid);	
 }
+function backend_get_jobs_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["internalURL"] .
+		$config["backend"]["routes"]["getJob"],$pid);	
+}
 ?>
