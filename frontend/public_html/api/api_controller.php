@@ -54,6 +54,7 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'inspect_extended_lexicon' : inspect_extended_lexicon();break;
         case 'start_postcorrection' : start_postcorrection();break;
         case 'inspect_postcorrection' : inspect_postcorrection();break;
+        case 'jobs' : get_jobs();break;
 
     }
 }
@@ -773,6 +774,32 @@ function inspect_postcorrection() {
         $result=array();
         $session = $api->get_response();
         print_r(json_encode($session));
+    break;
+  case "403":
+    header("status: ".$status);
+    echo  backend_get_http_status_info($status).'. <a href="#" class="js-login">Please login.</a>';
+    break;
+  default:
+        header("status: ".$status);
+        echo backend_get_http_status_info($status);
+    break;
+  }
+
+}
+
+function get_jobs(){
+
+  $api = new Api(backend_get_jobs_route($_POST['pid']));
+  $api->set_session_id(backend_get_session_cookie());
+  $api->get_request();
+
+  $status = $api->get_http_status_code();
+  switch ($status) {
+  case "200":
+        $result=array();
+        $session = $api->get_response();
+        echo json_encode($session);
+
     break;
   case "403":
     header("status: ".$status);
