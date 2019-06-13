@@ -122,7 +122,9 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
                                      $.when(fetchingjobs).done(function(job){
 
                                             if(job.statusName=="running"){
-                                                projectShowInfo = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+                                                var profileloading = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+                                                projectShowLayout.showChildView('hubRegion',profileloading);
+
                                               }
                                       }).fail(function(response){
                                          App.mainmsg.updateContent(response.responseText,'danger');                                                 

@@ -683,33 +683,37 @@ outline: 0;
 
 
 .loading_background3 {
-   /* top: 0; */
     height: 100%;
     width: 100%;
     left: 0px;
-    /* position: absolute; */
     height: 200px;
     background: white;
     z-index: 10005;
+    display: flex;
+    align-items: center;
+    position: relative;
 }
    
 
   .loading_background3 i {
-    font-size: 30px;
-    height: 30px;
     margin: auto;
     position: absolute;
-    /* top: 0; */
     left: 0;
-    bottom: 175px;
+    bottom: 15px;
     right: 0;
     opacity: 0.6;
+  font-size: 40px;
 }
 
 .loading_text3 {
     position: relative;
     /* top: 210px; */
     font-size: 20px;
+}
+
+.loading_text_parent3 {
+       align-self: center;
+    margin: auto;
 }
 
   #suspicious-words_filter, #error-patterns_filter{
