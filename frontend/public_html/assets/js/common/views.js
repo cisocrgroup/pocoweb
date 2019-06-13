@@ -6,6 +6,8 @@ define(["marionette","app","spin","spin.jquery","common/util","datatables",
 "tpl!common/templates/listtemplate.tpl",
 "tpl!common/templates/loadingtemplate.tpl",
 "tpl!common/templates/loadingtemplateopc.tpl",
+"tpl!common/templates/loadingtemplate2.tpl",
+
 "tpl!common/templates/headertemplate.tpl",
 "tpl!common/templates/cardheadertemplate.tpl",
 
@@ -22,7 +24,7 @@ define(["marionette","app","spin","spin.jquery","common/util","datatables",
 "tpl!common/templates/confirm.tpl",
 "tpl!common/templates/msgtemplate.tpl",
 
-	], function(Marionette,IPS_App,Spinner,SpinnerJQuery,Util,dtb,listTpl,loadingTpl,loadingOpcTpl,headerTpl,cardHeadTpl,cardhubTpl,layoutTpl,errorTpl,emptyTpl,areYouTpl,okTpl,infoPanelTpl,bgInfoTpl,footerPanelTpl,confirmTpl,msgTpl){
+	], function(Marionette,IPS_App,Spinner,SpinnerJQuery,Util,dtb,listTpl,loadingTpl,loadingOpcTpl,loadingTpl2,headerTpl,cardHeadTpl,cardhubTpl,layoutTpl,errorTpl,emptyTpl,areYouTpl,okTpl,infoPanelTpl,bgInfoTpl,footerPanelTpl,confirmTpl,msgTpl){
 
     var Views={};
 
@@ -110,6 +112,24 @@ onAttach: function(){
 		} // onAttach()
 
 	});
+Views.LoadingView = Marionette.View.extend({
+	template:loadingTpl2,
+	title: "Loading Data",
+	message: "Please wait, data is loading...",
+
+	serializeData: function(){
+		return {
+			title: Marionette.getOption(this,"title"),
+			message: Marionette.getOption(this,"message")
+		}
+	},
+onAttach: function(){
+
+	
+		} // onAttach()
+
+	});
+
 
 
 

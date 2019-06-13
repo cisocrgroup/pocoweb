@@ -550,7 +550,6 @@ getJobs: function(data){
       type: "POST",
        data:data,
       success: function(data) {
-        console.log(data);
         defer.resolve(JSON.parse(data));
 
           },

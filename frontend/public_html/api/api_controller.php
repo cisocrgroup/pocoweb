@@ -54,7 +54,7 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'inspect_extended_lexicon' : inspect_extended_lexicon();break;
         case 'start_postcorrection' : start_postcorrection();break;
         case 'inspect_postcorrection' : inspect_postcorrection();break;
-        case 'jobs' : get_jobs();break;
+        case 'get_jobs' : get_jobs();break;
 
     }
 }
@@ -788,7 +788,6 @@ function inspect_postcorrection() {
 }
 
 function get_jobs(){
-
   $api = new Api(backend_get_jobs_route($_POST['pid']));
   $api->set_session_id(backend_get_session_cookie());
   $api->get_request();

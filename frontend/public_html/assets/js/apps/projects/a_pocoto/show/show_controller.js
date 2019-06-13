@@ -17,9 +17,10 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
             var fetchinglanguages = UtilEntities.API.getLanguages();
             var fetchingprojects = ProjectEntities.API.getProjects();
             var fetchinguser = UserEntities.API.loginCheck();
+            var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
 
    
-      $.when(fetchingproject,fetchinglanguages,fetchingprojects,fetchinguser).done(function(project,languages,projects,user){
+      $.when(fetchingproject,fetchinglanguages,fetchingprojects,fetchinguser,fetchingjobs).done(function(project,languages,projects,user,job){
 
 		  loadingCircleView.destroy();
       console.log(project);
@@ -74,29 +75,66 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
            
           };
 
-          console.log(steps)
-          console.log(project.get('status'));
-        // var projectShowInfo = new Show.Info(steps[project.get('status')]);
-        var projectShowInfo = new Show.Info(steps['empty']);
+        var status = project.get('status');
+        status="empty";
+        var projectShowInfo;
+
+        console.log(job);
+
+        if(job.statusName=="running"){
+          projectShowInfo = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+        }
+
+        else {
+
+          if (status=="empty"||status=="profiled"){
+          projectShowInfo = new Show.Info(steps[status]);
+          }
+          else if (status=="ela"){
+              var fetchingle = ProjectEntities.API.getLexiconExtension({pid:id});
+               $.when(fetchingle).done(function(le){
+                    var projectShowLex = new Show.LexiconExtension({le});
+                    projectShowLayout.showChildView('hubRegion',projectShowLex);
+              });
+          }
+          else if (status=="postcorrected"){
+             var fetchingprotocol = ProjectEntities.API.getProtocol({pid:id});
+                         $.when(fetchingprotocol).done(function(pr){
+                              var projectShowProtocol = new Show.Protocol({pr});
+                              projectShowLayout.showChildView('hubRegion',projectShowProtocol);
+                        });
+          }
+
+        }
+
 
         projectShowInfo.on('show:profile_clicked',function(data){
-           var profilingproject = ProjectEntities.API.profileProject({pid:id});
-
-             $.when(profilingproject).done(function(result){
-                  
-
+         
                       var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
 
-                       $.when(fetchingjobs).done(function(result){
-                              console.log(result);
-                             }).fail(function(response){
-                                   App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                             }); 
+                       
+                            var profilingproject = ProjectEntities.API.profileProject({pid:id});
+
+                              $.when(profilingproject).done(function(result){
+
+                                    var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+
+                                     $.when(fetchingjobs).done(function(job){
+
+                                            if(job.statusName=="running"){
+                                                projectShowInfo = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+                                              }
+                                      }).fail(function(response){
+                                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                                      }); 
+                               }).fail(function(response){
+                                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                                }); 
+
+                         
 
 
-                   }).fail(function(response){
-                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                   }); 
+                  
         });
           // if(data.url=="lexicon_extension_start"){
           //    this.trigger("show:start_lexicon_extension",id);
@@ -158,7 +196,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
 
 
 	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
-            projectShowLayout.showChildView('hubRegion',projectShowInfo);
+        if(status=="empty"||status=="profiled"||jobrunning) projectShowLayout.showChildView('hubRegion',projectShowInfo);
 	          projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
 
 

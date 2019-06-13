@@ -2,11 +2,13 @@
 // apps/projects/a_pocoto/show/show_view.js
 // ================================
 
-define(["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/projects/page/show/show_view","apps/projects/concordance/show/show_view",
+
+define(["marionette","app","backbone.syphon","common/views","apps/projects/common/views","apps/projects/page/show/show_view","apps/projects/concordance/show/show_view","apps/projects/a_pocoto/lexicon_extension/show/show_view",
+  "apps/projects/a_pocoto/protocol/show/show_view",
         "tpl!apps/projects/show/templates/layout.tpl",
         "tpl!apps/projects/a_pocoto/show/templates/info.tpl"
 
-  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,layoutTpl,infoTpl){
+  ], function(Marionette,App,BackboneSyphon,Views,CommonViews,Page,Concordance,Le,Protocol,layoutTpl,infoTpl){
 
 
     var Show = {};
@@ -86,7 +88,13 @@ Show.FooterPanel = Views.FooterPanel.extend({
     });
 
  
+Show.LexiconExtension = Le.Info.extend({
 
+});
+
+Show.Protocol = Protocol.Info.extend({
+
+});
 
 Show.AreYouSure = Views.AreYouSure.extend({
       triggers:{
