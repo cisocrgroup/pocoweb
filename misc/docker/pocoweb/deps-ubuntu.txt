@@ -19,6 +19,7 @@
 # libcurl-devel
 # nodejs
 # ubuntu
+locales
 cmake
 make
 g++
