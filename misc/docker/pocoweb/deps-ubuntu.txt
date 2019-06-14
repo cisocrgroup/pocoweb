@@ -19,23 +19,25 @@
 # libcurl-devel
 # nodejs
 # ubuntu
-locales
+clang
 cmake
-make
 g++
 git
+graphviz
+libboost-all-dev
+libcurl4-openssl-dev
 libicu-dev
-libboost-dev
-php
-php-json
-clang
-libmariadb-dev
-python-pyparsing
-zip
-unzip
 libleptonica-dev
-mysql-server
+libmariadb-dev
+libmysqlclient-dev
 libmysqlcppconn-dev
 libssl-dev
-libcurl4-openssl-dev
+locales
+make
+mysql-server
 nodejs
+php
+php-json
+python-pyparsing
+unzip
+zip
