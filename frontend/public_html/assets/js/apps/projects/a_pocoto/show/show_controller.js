@@ -76,7 +76,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
           };
 
         var status = project.get('status');
-        status="empty";
+        // status="extended-lexicon";
         var projectShowInfo;
 
         console.log(job);
@@ -90,14 +90,14 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
           if (status=="empty"||status=="profiled"){
           projectShowInfo = new Show.Info(steps[status]);
           }
-          else if (status=="ela"){
+          else if (status=="extended-lexicon"){
               var fetchingle = ProjectEntities.API.getLexiconExtension({pid:id});
                $.when(fetchingle).done(function(le){
                     var projectShowLex = new Show.LexiconExtension({le});
                     projectShowLayout.showChildView('hubRegion',projectShowLex);
               });
           }
-          else if (status=="postcorrected"){
+          else if (status=="post-corrected"){
              var fetchingprotocol = ProjectEntities.API.getProtocol({pid:id});
                          $.when(fetchingprotocol).done(function(pr){
                               var projectShowProtocol = new Show.Protocol({pr});
@@ -131,11 +131,37 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
                                       }); 
                                }).fail(function(response){
                                          App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                                }); 
+                                });           
+                  
+        });
 
-                         
 
+        projectShowInfo.on('show:le_start_clicked',function(data){
 
+                      console.log(data)
+         
+                      // var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+
+                       
+                      //       var profilingproject = ProjectEntities.API.profileProject({pid:id});
+
+                      //         $.when(profilingproject).done(function(result){
+
+                      //               var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+
+                      //                $.when(fetchingjobs).done(function(job){
+
+                      //                       if(job.statusName=="running"){
+                      //                           var profileloading = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+                      //                           projectShowLayout.showChildView('hubRegion',profileloading);
+
+                      //                         }
+                      //                 }).fail(function(response){
+                      //                    App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                      //                 }); 
+                      //          }).fail(function(response){
+                      //                    App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                      //           });           
                   
         });
           // if(data.url=="lexicon_extension_start"){
