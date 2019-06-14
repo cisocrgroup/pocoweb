@@ -172,7 +172,7 @@ values
 	(2,'done'),
 	(3,'empty'),
 	(4,'profiled'),
-	(5,'post-corrected')
+	(5,'post-corrected'),
 	(6,'extended-lexicon');
 
 drop table if exists jobs;
