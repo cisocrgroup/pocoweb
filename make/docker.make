@@ -1,6 +1,6 @@
 SUDO ?= sudo
 TAG ?= flobar/pocoweb
-PORTS ?= 8080:80
+PORTS ?= 80:80
 
 .PHONY: docker-build
 docker-build: Dockerfile
