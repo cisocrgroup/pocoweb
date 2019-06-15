@@ -1,18 +1,10 @@
-FROM ubuntu:latest
+FROM alpine:latest
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
 ENV DATE='Tue 04 Jun 2019 02:06:35 PM CEST'
-ENV GITURL='https://github.com/cisocrgroup/pocoweb.git'
-ENV BRANCH='flodev'
-ENV DEBIAN_FRONTEND noninteractive
+#curl-dev
+ENV DEPS='boost-dev mariadb-dev leptonica-dev icu-dev mariadb-client bash'
+ENV BUILD_DEPS='clang nodejs make build-base cmake php7 graphviz'
 VOLUME /project-data /www-data /tmp
-
-COPY misc/docker/pocoweb/deps-ubuntu.txt /build/deps.txt
-RUN apt-get update \
-	&& apt-get -y install $(cat /build/deps.txt | grep -v '^#')
-# locales
-RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
-    dpkg-reconfigure --frontend=noninteractive locales && \
-    update-locale LANG=en_US.UTF-8
 
 COPY rest /build/rest
 COPY make /build/make
@@ -21,12 +13,14 @@ COPY frontend /build/frontend
 COPY LICENSE Makefile /build/
 COPY misc/scripts/md2html.sh /build/misc/scripts/
 
-RUN cd /build \
+RUN apk add ${DEPS} ${BUILD_DEPS} \
+	&& cd /build \
 	&& make CXX=clang++ -j $(nproc) \
 	&& make PCW_FRONTEND_DIR=/apps install-frontend \
 	&& cp pcwd /apps/pocoweb \
 	&& cd / \
-	&& rm -rf /build
+	&& rm -rf /build \
+    && apk del 	${BUILD_DEPS}
 
 COPY db/tables.sql \
 	misc/docker/pocoweb/pocoweb.conf \
