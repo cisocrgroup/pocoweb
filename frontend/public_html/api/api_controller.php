@@ -691,9 +691,12 @@ function get_suspicious_words() {
 
 function start_lexicon_extension() {
 
-  $api = new Api(backend_get_inspect_el_route($_POST['pid']));
-  $api->set_session_id(backend_get_start_el_route());
-  $api->post_request();
+  $data = array("1" => true);
+
+  $api = new Api(backend_get_start_el_route($_POST['pid']));
+  $api->set_session_id(backend_get_session_cookie());
+  $api->post_request($data);
+  
   $status = $api->get_http_status_code();
   switch ($status) {
   case "200":
@@ -740,9 +743,11 @@ function inspect_extended_lexicon() {
 
 function start_postcorrection() {
 
+  $data = array("projectId" => $_POST['pid'],"tokens" => $_POST['extensions'], "bookId" => $_POST['bid']);
+
   $api = new Api(backend_get_start_rrdm_route($_POST['pid']));
   $api->set_session_id(backend_get_session_cookie());
-  $api->post_request();
+  $api->post_request($data);
   $status = $api->get_http_status_code();
   switch ($status) {
   case "200":

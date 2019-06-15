@@ -13,6 +13,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
   Show.Concordance = Marionette.View.extend({
   template:concordanceTpl,
+  le : false,
   events:{
       'click .js-correct-conc' : 'correct_clicked',
       'click .line-text' : 'line_clicked',
@@ -29,11 +30,11 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
       serializeData: function(){
       var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-      console.log(data);
       var asModal = Marionette.getOption(this,"asModal");
           data.tokendata =  Marionette.getOption(this,"tokendata");
           data.suggestions =  Marionette.getOption(this,"suggestions");
           data.selection =  Marionette.getOption(this,"selection");
+          data.le =  Marionette.getOption(this,"le");
 
           data.Util = Util;
           data.asModal = asModal;
@@ -149,80 +150,32 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       cor_suggestions:function(e){
          e.stopPropagation();
 
-         var suggestions =  Marionette.getOption(this,"suggestions");
-         if(suggestions.length==0){
-          return;
-         }
-        
+          if($(e.currentTarget).find('#dropdown-content-conc').length>0){
+            $('#dropdown-content-conc').toggle();
+          }
+          else{
 
-        var concLine = $(e.currentTarget).parent().parent();
-        var tokendiv = $(e.currentTarget).parent();
-
+          $('.dropdown').remove();
+            var concLine = $(e.currentTarget).parent().parent();
+            var tokendiv = $(e.currentTarget).parent();
             var pid = tokendiv.attr('projectId');
             var lineid =  tokendiv.attr('lineId');
             var pageid =  tokendiv.attr('pageId');
             var tokenid =  tokendiv.attr('tokenId');
             var token  = tokendiv.text();
             var anchor = concLine.attr('anchor');
-            // this.trigger("concordance:show_suggestions",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token},$(e.currentTarget),anchor);
-
-                $('#dropdown-content-conc').remove();
-
-                var suggestions_btn = $(e.currentTarget);
-                  
-                suggestions_btn.addClass('dropdown');
-
-                suggestions_btn.attr('data-toggle','dropdown');
-                suggestions_btn.attr('aria-haspopup','true');
-                suggestions_btn.attr('aria-expanded','false');
-                suggestions_btn.attr('id','dropdownMenuConc');
-                suggestions_btn.attr('data-flip','false');
-                suggestions_btn.attr('data-target','dropdown-content-conc');
-
-                 var dropdown_content = $('<div></div>');
-                 dropdown_content.addClass('dropdown-menu');
-                 dropdown_content.attr('id','dropdown-content-conc');
-                 dropdown_content.attr('aria-labelledby','dropdownMenuConc');
-                 suggestions_btn.append(dropdown_content);
-
-
-                     for(i=0;i<suggestions.length;i++){
-                    
-                     var s = suggestions[i];
-                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
-                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
-                     $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
-                     }
-
-
-                    for(key in suggestions){
-                       for (var i=0;i<suggestions[key].length;i++){
-                        // to do: datatable instead ?
-                    
-                     var s = suggestions[key][i];
-                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
-                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
-                     $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
-                     }
-                   }
-
-                    dropdown_content.toggle();
-
-                     $('#dropdown-content-conc .dropdown-item').on('click',function(e){
-                      e.stopPropagation();
-                      var split = $(this).text().split(" ");
-                      $(this).parent().parent().prev().text(split[0]);
-                      $(this).parent().hide();
-                     })
-
+            this.trigger("concordance:show_suggestions",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token,dropdowndiv:$(e.currentTarget)});
+          }
 
       },
       cordiv_clicked:function(e){
+        var le =  Marionette.getOption(this,"le");
 
-      var suggestions =  Marionette.getOption(this,"suggestions");
-      if(suggestions==undefined) return;
+        if(le){
+          return;
+        }
 
-      $('#dropdown-content-conc').remove();
+      // $('#dropdown-content-conc').remove();
 
       $("#conc-modal").find('.cordiv_left').hide();
       $("#conc-modal").find('.cordiv_right').hide();
@@ -283,6 +236,55 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         this.trigger("concordance:line_selected",selection)
       },
      
+     setSuggestionsDropdown : function(div,suggestions){
+
+                var dropdown = $('<span class="dropdown"></span>');
+                 div.append(dropdown);
+
+                var suggestions_btn = $('<span class="dropdown-toggle" id="dropdownMenuConc" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>');
+                dropdown.append(suggestions_btn);
+                suggestions_btn.attr('aria-haspopup','true');
+                suggestions_btn.attr('aria-expanded','false');
+                suggestions_btn.attr('id','dropdownMenuConc');
+                suggestions_btn.attr('data-flip','false');
+                suggestions_btn.attr('data-target','dropdown-content-conc');
+
+                 var dropdown_content = $('<div></div>');
+                 dropdown_content.addClass('dropdown-menu');
+                 dropdown_content.attr('id','dropdown-content-conc');
+                 dropdown_content.attr('aria-labelledby','dropdownMenuConc');
+                 suggestions_btn.parent().append(dropdown_content);
+                
+
+                     for(i=0;i<suggestions.length;i++){
+                    
+                     var s = suggestions[i];
+                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
+                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+                     $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
+                     }
+
+
+                    for(key in suggestions){
+                       for (var i=0;i<suggestions[key].length;i++){
+                        // to do: datatable instead ?
+                    
+                     var s = suggestions[key][i];
+                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
+                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+                     $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
+                     }
+                   }
+
+                   dropdown_content.show();
+
+                     $('#dropdown-content-conc .dropdown-item').on('click',function(e){
+                      // e.stopPropagation();
+                      var split = $(this).text().split(" ");
+                      $(this).parent().parent().parent().prev().text(split[0]);
+                      $(this).parent().hide();
+                     })
+     },
 
     onAttach : function(){
 
@@ -356,15 +358,18 @@ $('#conc-modal').imagesLoaded( function() {
           var selection =  Marionette.getOption(that,"selection");
 
 
-          console.log(tokendata);
-           _.each(tokendata, function(match) {
+           for (key in tokendata['matches']) {
+
+            for (var i=0;i<tokendata['matches'][key].length;i++){
+
+            var match = tokendata['matches'][key][i];
             var line = match['line'];
-            var linetokens = line.tokens;
+            var linetokens = line['tokens'];
             var concLine = $('<div class="concLine"></div>')
             var anchor = line['projectId']+"-"+line['pageId']+"-"+line['lineId'];
             concLine.attr('anchor',anchor);
 
-            var querytoken = selection;
+            var querytoken = key;
 
             $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().append(concLine);
 
@@ -376,10 +381,9 @@ $('#conc-modal').imagesLoaded( function() {
             var prevdiv;
              // linecor = Util.replace_all(linecor,word['cor'],'<span class="badge badge-pill badge-primary">'+word['cor']+'</span>');
 
-              for(var i=0;i<linetokens.length;i++) {
+              for(var j=0;j<linetokens.length;j++) {
 
-                var token = linetokens[i];
-
+                var token = linetokens[j];
               
                 var whitespace_width=0; 
                 if (token.ocr.includes(" ")){
@@ -432,7 +436,7 @@ $('#conc-modal').imagesLoaded( function() {
 
                     tokendiv = $('<div class="tokendiv cordiv_container"></div>')
                     tokendiv.append($("<span class='cordiv_left js-select-cor'><i class='cor_item far fa-square'></i></span>")).append(cordiv);;
-                    tokendiv.append($("<span class='cordiv_right js-suggestions-cor'><i class='far fa-caret-square-down cor_item '></i></span><span class='cordiv_right js-correct-cor'><i class='cor_item far fa-arrow-alt-circle-up'></i></span>"));
+                    tokendiv.append($("<span class='cordiv_right js-suggestions-cor'><i class='far fa-caret-square-down cor_item'></i></span><span class='cordiv_right js-correct-cor'><i class='cor_item far fa-arrow-alt-circle-up'></i></span>"));
 
                     }
 
@@ -463,11 +467,9 @@ $('#conc-modal').imagesLoaded( function() {
 
                }
            // $("#"+img_id).remove();
+      }
 
-
-
-
-     });
+     }
 
           // remove when clicked somewhere else
          $(that.el).click(function(e) 

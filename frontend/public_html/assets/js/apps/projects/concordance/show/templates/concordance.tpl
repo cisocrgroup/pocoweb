@@ -37,7 +37,7 @@ if(asModal) {
   <li> 
   <form class="navbar-form">-->
   
-  <% if (suggestions!=undefined){ %>
+  <% if (!le){ %>
 
   <div class="input-group mb-3">
   <div class="input-group-prepend">
@@ -67,13 +67,17 @@ if(asModal) {
 
   <div class="all_lines_parent">
 	  <%
-      _.each(tokendata, function(match) {
-      var line = match['line'];
+   for (key in tokendata['matches']) {
+           for (var i=0;i<tokendata['matches'][key].length;i++){
+
+            var match = tokendata['matches'][key][i];
+            var line = match['line'];
+
     	  _.each(match['tokens'], function(word) {
 
-    var offset = word['offset'];
-    var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];   
-      %>
+        var offset = word['offset'];
+        var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];   
+   %>
 
 
 
@@ -95,8 +99,9 @@ if(asModal) {
 
 
      <%
-     		});
-     	});
+     	  	});
+        }
+     	};
      %>
 
 </div>

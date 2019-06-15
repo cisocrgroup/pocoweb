@@ -26,6 +26,7 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
       template: infoTpl,
       events:{
       'click tr' : 'row_clicked',
+      'click .js-postcorrect' : 'start_postcorrect_clicked',
 
       }, 
     //   serializeData: function(){
@@ -49,7 +50,17 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
         this.trigger("show:word_clicked",word);
       },
 
-   
+         start_postcorrect_clicked:function(e){
+        e.preventDefault();
+        var extensions = [];
+        $('#extensions tbody tr').each(function(index) {
+          var word = $($(this).find('td')[0])
+          extensions.push(word.text());
+        });
+
+        this.trigger("show:postcorrect_clicked",extensions);
+      },
+
      onAttach: function(){
        // var table = $('#book_table').DataTable();
         $(".sortable").sortable({

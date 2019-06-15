@@ -168,7 +168,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     
                      $(suggestions_btn).dropdown();
 
-                     console.log(suggestions);
                      for(key in suggestions.suggestions){
                        for (var i=0;i<suggestions.suggestions[key].length;i++){
                         // to do: datatable instead ?
@@ -187,11 +186,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                       Util.replaceSelectedText(split[0]);
                      })
 
-                     // $('#js-suggestions').click(function(e){
-                     //   e.stopPropagation();
-
-                     // });
-
                      
 
 
@@ -205,28 +199,13 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
        projectShowPage.on("page:concordance_clicked",function(selection,isErrorPattern){
         console.log(isErrorPattern);
         console.log(selection);
-        var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:selection,pid:id});
         var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern});
         var that = this;
-         $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
+         $.when(searchingToken).done(function(tokens){
           console.log(tokens)
-            var tokendata=[];
-            if(isErrorPattern){
-               for (key in tokens['matches']){
-                   var match = tokens['matches'][key][0];
-                   tokendata.push(match);
-               }
-            }
-            else{
-              tokendata = tokens['matches'][selection];
-            }
-
-            console.log(suggestions)
-            console.log(tokendata)
 
 
-
-           var projectConcView = new Show.Concordance({selection:selection,tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
+           var projectConcView = new Show.Concordance({isErrorPattern:isErrorPattern,selection:selection,tokendata:tokens,asModal:true});
            $('.custom-popover').remove();
         
             projectConcView.on("concordance:correct_token",function(data,anchor){
@@ -269,64 +248,16 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
           
            }) // correct token
 
+             // build suggestions drop down
+             projectConcView.on("concordance:show_suggestions",function(data){
 
-             projectConcView.on("concordance:show_suggestions",function(data,div,anchor){
+              var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:data.token,pid:id});
+               $.when(gettingCorrectionSuggestions).done(function(suggestions){
+                  projectConcView.setSuggestionsDropdown(data.dropdowndiv,suggestions.suggestions);
 
-                    var that = this;
-                  
-                  $('#dropdown-content-conc').remove();
+               });
 
-
-                var suggestions_btn = div;
-                  
-                suggestions_btn.addClass('dropdown');
-
-                suggestions_btn.attr('data-toggle','dropdown');
-                suggestions_btn.attr('aria-haspopup','true');
-                suggestions_btn.attr('aria-expanded','false');
-                suggestions_btn.attr('id','dropdownMenuConc');
-                suggestions_btn.attr('data-flip','false');
-                suggestions_btn.attr('data-target','dropdown-content-conc');
-
-                 var dropdown_content = $('<div></div>');
-                 dropdown_content.addClass('dropdown-menu');
-                 dropdown_content.attr('id','dropdown-content-conc');
-                 dropdown_content.attr('aria-labelledby','dropdownMenuConc');
-                 suggestions_btn.append(dropdown_content);
-
-
-                     for(i=0;i<suggestions.suggestions.length;i++){
-                    
-                     var s = suggestions.suggestions[i];
-                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
-                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
-                     $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
-                     }
-
-
-                    for(key in suggestions.suggestions){
-                       for (var i=0;i<suggestions.suggestions[key].length;i++){
-                        // to do: datatable instead ?
-                    
-                     var s = suggestions.suggestions[key][i];
-                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
-                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
-                     $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
-                     }
-                   }
-
-                    dropdown_content.toggle();
-
-                     $('#dropdown-content-conc .dropdown-item').on('click',function(e){
-                      e.stopPropagation();
-                      var split = $(this).text().split(" ");
-                      $(this).parent().parent().prev().text(split[0]);
-                      $(this).parent().hide();
-                     })
-
-
-          
-       }) // conc
+            }) // conc
 
 
 

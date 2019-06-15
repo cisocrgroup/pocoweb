@@ -753,3 +753,7 @@ outline: 0;
     max-height: 700px;
     overflow-y: auto;
 }
+
+#sg-dropdown{
+  display: inline-block;
+}

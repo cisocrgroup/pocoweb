@@ -41,8 +41,7 @@ define(["marionette","app","backbone.syphon","common/views","apps/projects/commo
       template: infoTpl,
       events:{
       'click #js-profile' : 'profile_clicked',
-      'click .js-delete-project' : 'delete_clicked',
-      'click .js-add-book' : 'add_book_clicked'
+      'click #js-start-le' : 'start_le_clicked'
 
       }, 
        serializeData: function(){
@@ -68,9 +67,9 @@ define(["marionette","app","backbone.syphon","common/views","apps/projects/commo
 
       },
 
-       add_book_clicked:function(e){
+       start_le_clicked:function(e){
         e.preventDefault();
-        this.trigger("show:add_book_clicked");
+        this.trigger("show:start_le_clicked");
 
 
       },
@@ -93,6 +92,10 @@ Show.LexiconExtension = Le.Info.extend({
 });
 
 Show.Protocol = Protocol.Info.extend({
+
+});
+
+Show.Concordance = Concordance.Concordance.extend({
 
 });
 

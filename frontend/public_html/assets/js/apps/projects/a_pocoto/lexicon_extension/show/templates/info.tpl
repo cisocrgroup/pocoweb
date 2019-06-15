@@ -68,7 +68,7 @@
 
 <div class="col col-sm-12">
 
-<button class="btn btn-primary"><i class="fas fa-play"></i> Start Postcorrection </button>
+<button class="btn btn-primary js-postcorrect" style="float:right;margin-bottom: 15px;"><i class="fas fa-play"></i> Start Postcorrection </button>
 
 </div>
 </div>
