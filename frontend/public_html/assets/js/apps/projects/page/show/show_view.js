@@ -169,16 +169,52 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       },
 
       line_tokens_clicked:function(e){
-        e.preventDefault();
+
+         e.preventDefault();
          e.stopPropagation();
-       $(".custom-popover").remove();
+         console.log($(e.target));
+
+         var clicked_token = "";
+
+         if(!$(e.target).hasClass("line-tokens")){
+         clicked_token = $(e.target).text();
+         }
+
+        $(".custom-popover").remove();
 
         $('.line').hide();
         $('.line-tokens').show();
         var line_parent = $(e.currentTarget).parent();
 
    
-        line_parent.find('.line').show();
+        var displayed_line = line_parent.find('.line')
+        displayed_line.show();
+
+        console.log(displayed_line.text().trim());
+        console.log(clicked_token);
+
+
+        var obj = displayed_line.get(0);
+        console.log(obj);
+
+        if(clicked_token!= " "||clicked_token!=""){
+            var start = displayed_line.text().trim().indexOf(clicked_token);
+            var end = start + clicked_token.length-1;
+
+            console.log("start "+start+" end "+end);
+              var endNode, startNode = endNode = obj.firstChild
+
+            startNode.nodeValue = startNode.nodeValue.trim();
+            
+            var range = document.createRange();
+            range.setStart(startNode, start);
+            range.setEnd(endNode, end + 1);
+            
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+
         $(e.currentTarget).hide();
 
         $('.correct-btn').hide();
