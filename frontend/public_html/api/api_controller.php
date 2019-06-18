@@ -541,11 +541,9 @@ function correct_token() {
 
 
 function order_profile() {
-
-
   $api = new Api(backend_get_order_profile_route($_POST['pid']));
   $api->set_session_id(backend_get_session_cookie());
-  $data = array("pid" => $_POST['pid']);
+  $data = array("tokens" => array());
   $api->post_request($data);
   $status = $api->get_http_status_code();
   switch ($status) {
