@@ -1573,10 +1573,7 @@ whole profile for each type in the document is returned.
 #### Response data
 ```json
 {
-  "projectId": 27,
-  "bookId": 27,
-  "suggestions": {
-	"type1": [
+	"wocr1": [
 		{
 			"token": "token",
 			"suggestion": "correction suggestion",
@@ -1586,11 +1583,10 @@ whole profile for each type in the document is returned.
 			"id": 13446,
 			"weight": 0.3,
 			"top": false,
-			"ocrPatterns": ["pat1:pat2:pos2", pat3:pat4:pos2],
+			"ocrPatterns": ["pat1:pat2:pos2", "pat3:pat4:pos2"],
 			"histPatterns": ["pat5:pat6:pos3"]
 		}
 	]
-  }
 }
 ```
 
@@ -1600,6 +1596,13 @@ Request to profile the project with an id `pid` or request to profile
 the original project of a package with an id `pid`.  The request
 starts the profiling as background [job](#user-content-api-get-jobs)
 and returns the according job information.
+
+#### Post data
+```json
+{
+	"tokens": ["additional lexicon token 1", "additional lexicon token 2"]
+}
+```
 
 #### Response data
 ```json
