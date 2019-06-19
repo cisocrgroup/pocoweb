@@ -812,6 +812,7 @@ Get the content of a project or package.
   "projectId": 42,
   "pages": 100,
   "pageIds": [15,18,20,27,...],
+  "status": "empty|profiled|...",
   "isBook": true|false
 }
 ```
@@ -821,6 +822,7 @@ Get the content of a project or package.
 Update the meta data of a project.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can update the project's data.
+* Fields can be ommitted.
 
 #### POST data
 ```json
@@ -829,6 +831,7 @@ Update the meta data of a project.
   "title": "book-title",
   "year": 1234,
   "language": "language",
+  "status": "empty|profiled|...",
   "profilerUrl": "profiler-url|local"
 }
 ```
@@ -1573,10 +1576,7 @@ whole profile for each type in the document is returned.
 #### Response data
 ```json
 {
-  "projectId": 27,
-  "bookId": 27,
-  "suggestions": {
-	"type1": [
+	"wocr1": [
 		{
 			"token": "token",
 			"suggestion": "correction suggestion",
@@ -1586,11 +1586,10 @@ whole profile for each type in the document is returned.
 			"id": 13446,
 			"weight": 0.3,
 			"top": false,
-			"ocrPatterns": ["pat1:pat2:pos2", pat3:pat4:pos2],
+			"ocrPatterns": ["pat1:pat2:pos2", "pat3:pat4:pos2"],
 			"histPatterns": ["pat5:pat6:pos3"]
 		}
 	]
-  }
 }
 ```
 
@@ -1600,6 +1599,20 @@ Request to profile the project with an id `pid` or request to profile
 the original project of a package with an id `pid`.  The request
 starts the profiling as background [job](#user-content-api-get-jobs)
 and returns the according job information.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access the profiler information.
+
+#### Post data
+The profiling endpoint expects a list of tokens that are used as
+additional lexicon entries for the profiling.  It is possible to just
+send an empty tokens list if no additional lexicon entries should be
+used for the profiling.
+
+```json
+{
+	"tokens": ["additional lexicon token 1", "additional lexicon token 2"]
+}
+```
 
 #### Response data
 ```json
@@ -1816,15 +1829,6 @@ Start the [job](#user-content-api-get-jobs) to generate the post
 correction.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can start the job.
-
-#### Post data
-```json
-{
-	"bookId": 3,
-	"projectId": 8,
-	"tokens": ["first", "second"]
-}
-```
 
 #### Response data
 ```json

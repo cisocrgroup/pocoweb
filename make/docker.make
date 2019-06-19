@@ -1,10 +1,13 @@
 SUDO ?= sudo
 TAG ?= flobar/pocoweb
-PORTS ?= 8080:80
 
 .PHONY: docker-build
 docker-build: Dockerfile
 	${SUDO} docker build -t ${TAG} .
+
+.PHONY: docker-run
+docker-run: docker-build
+	${SUDO} docker run -p 0:80 ${TAG}
 
 .PHONY: docker-push
 docker-push: docker-build

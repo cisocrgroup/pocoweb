@@ -173,7 +173,8 @@ values
 	(3,'empty'),
 	(4,'profiled'),
 	(5,'post-corrected'),
-	(6,'extended-lexicon');
+	(6,'extended-lexicon'),
+	(7,'profiled-with-el');
 
 drop table if exists jobs;
 create table if not exists jobs (

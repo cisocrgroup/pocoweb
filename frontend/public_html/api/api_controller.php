@@ -55,7 +55,6 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'start_postcorrection' : start_postcorrection();break;
         case 'inspect_postcorrection' : inspect_postcorrection();break;
         case 'get_jobs' : get_jobs();break;
-
     }
 }
 
@@ -542,11 +541,9 @@ function correct_token() {
 
 
 function order_profile() {
-
-
   $api = new Api(backend_get_order_profile_route($_POST['pid']));
   $api->set_session_id(backend_get_session_cookie());
-  $data = array("pid" => $_POST['pid']);
+  $data = array("tokens" => array());
   $api->post_request($data);
   $status = $api->get_http_status_code();
   switch ($status) {
@@ -696,7 +693,7 @@ function start_lexicon_extension() {
   $api = new Api(backend_get_start_el_route($_POST['pid']));
   $api->set_session_id(backend_get_session_cookie());
   $api->post_request($data);
-  
+
   $status = $api->get_http_status_code();
   switch ($status) {
   case "200":

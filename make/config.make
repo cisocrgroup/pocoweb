@@ -47,7 +47,6 @@ LDFLAGS += -lcrypto
 LDFLAGS += -lcrypt
 LDFLAGS += -lsqlpp-mysql
 LDFLAGS += -lmysqlclient
-LDFLAGS += -lcurl
 
 PCW_DB_HOST ?= localhost
 PCW_DB_USER ?= pocoweb

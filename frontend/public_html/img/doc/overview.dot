@@ -28,6 +28,7 @@ digraph ov {
  pcwauth -> mysql [style=dotted]
  pcwprofiler -> projectd
  pcwprofiler -> mysql [style=dotted]
+ pcwpostcorrection -> pcwprofiler
  pcwpostcorrection -> projectd
  pcwpostcorrection -> mysql [style=dotted]
  pcwocr -> projectd
