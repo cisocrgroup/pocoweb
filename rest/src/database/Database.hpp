@@ -69,6 +69,9 @@ template <class Db> ProjectSptr insert_project(Db &db, Project &book);
 
 template <class Db> BookSptr insert_book(Db &db, Book &book);
 
+template <class Db>
+int get_status_id_from_string(Db &db, const std::string &status);
+
 template <class Db> void update_book(Db &db, Project &view);
 
 struct ProjectEntry {
@@ -269,18 +272,31 @@ void pcw::detail::insert_content(Db &db, R &r, const Line &line) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+template <class Db>
+int pcw::get_status_id_from_string(Db &db, const std::string &status) {
+  tables::Status s;
+  auto rows = db(select(s.id).from(s).where(s.text == status));
+  if (rows.empty()) {
+    return 3; // status empty
+  }
+  return rows.front().id;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 template <class Db> void pcw::update_book(Db &db, Project &view) {
   using namespace sqlpp;
   tables::Books books;
-  auto stmnt = update(books)
-                   .set(books.author = view.origin().data.author,
-                        books.title = view.origin().data.title,
-                        books.directory = view.origin().data.dir.string(),
-                        books.year = view.origin().data.year,
-                        books.uri = view.origin().data.uri,
-                        books.description = view.origin().data.description,
-                        books.lang = view.origin().data.lang)
-                   .where(books.bookid == view.origin().id());
+  auto statusid = get_status_id_from_string(db, view.origin().data.status);
+  auto stmnt =
+      update(books)
+          .set(books.author = view.origin().data.author,
+               books.title = view.origin().data.title,
+               books.directory = view.origin().data.dir.string(),
+               books.year = view.origin().data.year,
+               books.uri = view.origin().data.uri,
+               books.description = view.origin().data.description,
+               books.lang = view.origin().data.lang, books.statusid = statusid)
+          .where(books.bookid == view.origin().id());
   db(stmnt);
 }
 
