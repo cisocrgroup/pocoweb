@@ -812,6 +812,7 @@ Get the content of a project or package.
   "projectId": 42,
   "pages": 100,
   "pageIds": [15,18,20,27,...],
+  "status": "empty|profiled|...",
   "isBook": true|false
 }
 ```
@@ -821,6 +822,7 @@ Get the content of a project or package.
 Update the meta data of a project.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can update the project's data.
+* Fields can be ommitted.
 
 #### POST data
 ```json
@@ -829,6 +831,7 @@ Update the meta data of a project.
   "title": "book-title",
   "year": 1234,
   "language": "language",
+  "status": "empty|profiled|...",
   "profilerUrl": "profiler-url|local"
 }
 ```
