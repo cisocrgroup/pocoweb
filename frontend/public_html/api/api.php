@@ -1,6 +1,6 @@
 <?php
-require_once(dirname(dirname(__FILE__)) . "/config.php");
-require_once(LIBRARY_PATH . "/utils.php");
+require_once("./config.php");
+require_once("./utils.php");
 
 class Api {
 	public function __construct($url) {
