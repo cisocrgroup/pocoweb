@@ -213,6 +213,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
             var sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(range);
+
+             this.openCustomPopover(e,clicked_token,line_parent);
         }
 
         $(e.currentTarget).hide();
@@ -270,53 +272,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
       if($(e.target).hasClass('line')){
       
-       $(".custom-popover").remove();
+      that.openCustomPopover(e,sel,$(e.target).parent());
 
-      var btn_group = $('<div class="btn-group"></div>');
-
-
-      var suggestions_btn  = $('<div class="dropdown"><button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary btn-sm btn dropdown-toggle noselect" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fas fa-list-ol"></i> Suggestions <i class="fas fa-caret-down"></button></div>')
-
-      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary btn-sm noselect"><i class="fas fa-align-justify"></i> Concordance </button>'))
-      .append(suggestions_btn);
-
-       var dropdown_content = $('<div></div>');
-       dropdown_content.addClass('dropdown-menu');
-       dropdown_content.attr('id','suggestionsDropdown');
-       dropdown_content.attr('aria-labelledby','js-suggestions');
-       suggestions_btn.append(dropdown_content);
- // btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary">Show concordance of (0 occurrences)</button>'))
- //      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary">Correction suggestions <i class="fas fa-caret-down"></button>'))
-
-      var div = $('<div class="custom-popover">')
-      // .css({
-      //   "left": e.pageX + 'px',
-      //   // "top": (e.pageY+35) + 'px'
-      // })
-       .append($('<div><i class="fas fa-caret-up custom-popover-arrow"></i></div>'))
-       .append(btn_group)
-       .appendTo($(e.target).parent()); // append to lineparent
-
-      var offset = $('.custom-popover').offset().left;
-      var left = e.pageX -offset - ($('.custom-popover').width()/2);
-      if(left < 0) left = 0;
-
-      $('.custom-popover').css('left',left+"px");
-
-      var offset_arrow = $('.custom-popover-arrow').offset().left;
-      var left_arrow = ($('.custom-popover').width()/2) - (offset_arrow -e.pageX);
-      if(left_arrow!=0){
-        $('.custom-popover-arrow').css('left',left_arrow+"px");
-      }
-
-       $('#js-concordance').on('click',function(){
-        that.trigger("page:concordance_clicked",sel,0);
-       });
-
-         this.saved_selection = sel;
-         // Util.replaceSelectedText(selection);
-        //   console.log(selection);
-         this.trigger("page:line_selected",sel);
       }
       },
 
@@ -383,6 +340,57 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         */
 
       },
+      openCustomPopover:function(e,sel,parent_div){
+        console.log(e)
+        var that = this;
+         $(".custom-popover").remove();
+
+      var btn_group = $('<div class="btn-group"></div>');
+
+
+      var suggestions_btn  = $('<div class="dropdown"><button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary btn-sm btn dropdown-toggle noselect" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fas fa-list-ol"></i> Suggestions <i class="fas fa-caret-down"></button></div>')
+
+      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary btn-sm noselect"><i class="fas fa-align-justify"></i> Concordance </button>'))
+      .append(suggestions_btn);
+
+       var dropdown_content = $('<div></div>');
+       dropdown_content.addClass('dropdown-menu');
+       dropdown_content.attr('id','suggestionsDropdown');
+       dropdown_content.attr('aria-labelledby','js-suggestions');
+       suggestions_btn.append(dropdown_content);
+ // btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary">Show concordance of (0 occurrences)</button>'))
+ //      .append($('<button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary">Correction suggestions <i class="fas fa-caret-down"></button>'))
+
+      var div = $('<div class="custom-popover">')
+      // .css({
+      //   "left": e.pageX + 'px',
+      //   // "top": (e.pageY+35) + 'px'
+      // })
+       .append($('<div><i class="fas fa-caret-up custom-popover-arrow"></i></div>'))
+       .append(btn_group)
+       .appendTo(parent_div); // append to lineparent
+
+      var offset = $('.custom-popover').offset().left;
+      var left = e.pageX -offset - ($('.custom-popover').width()/2);
+      if(left < 0) left = 0;
+
+      $('.custom-popover').css('left',left+"px");
+
+      var offset_arrow = $('.custom-popover-arrow').offset().left;
+      var left_arrow = ($('.custom-popover').width()/2) - (offset_arrow -e.pageX);
+      if(left_arrow!=0){
+        $('.custom-popover-arrow').css('left',left_arrow+"px");
+      }
+
+       $('#js-concordance').on('click',function(){
+        that.trigger("page:concordance_clicked",sel,0);
+       });
+
+         this.saved_selection = sel;
+         // Util.replaceSelectedText(selection);
+        //   console.log(selection);
+         this.trigger("page:line_selected",sel);
+      }
 
 
 
