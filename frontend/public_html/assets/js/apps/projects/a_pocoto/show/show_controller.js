@@ -19,6 +19,8 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
             var fetchinguser = UserEntities.API.loginCheck();
             var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
 
+
+
    
       $.when(fetchingproject,fetchinglanguages,fetchingprojects,fetchinguser,fetchingjobs).done(function(project,languages,projects,user,job){
 
@@ -36,53 +38,18 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
 
            "empty": {color:"green",step:" Step 1: Profiling",icon:"fas fa-history",id:"js-profile",text:"Start profiling the document."},
            "profiled": {color:"blue",step:" Step 2: Lexicon Extension",icon:"fas fa-history",id:"js-start-le",text:"Generate the extended lexicon."},
-
-          //  {
-          //         "color": "blue",
-          //         "icon": "fas fa-history",
-          //         "id": "le_start",
-          //         "name": "1. Lexicon Extension",
-          //         "seq": 1,
-          //         "text": "Start generating the extended lexicon.",
-          //         "url": "lexicon_extension_start",
-          //     }, 
-          //      {
-          //         "color": "blue",
-          //         "icon": "far fa-edit",
-          //         "id": "le_inspect",
-          //         "name": "2. Lexicon Extension",
-          //         "seq": 2,
-          //         "text": "Edit and revise the extended lexicon.",
-          //         "url": "lexicon_extension_inspect",
-          //     },  {
-          //         "color": "red",
-          //         "icon": "fas fa-history",
-          //         "id": "cor_start",
-          //         "name": "3. Automatic Postcorrection",
-          //         "seq": 3,
-          //         "text": "Start the automatic postcorrection process.",
-          //         "url": "cor_start",
-          // },
-          //       {
-          //         "color": "red",
-          //         "icon": "fas fa-clipboard-list",
-          //         "id": "cor_inspect",
-          //         "name": "4. Correction Protocol",
-          //         "seq": 4,
-          //         "text": "Inspect the post correction results.",
-          //         "url": "cor_inspect",
-          //     }
            
           };
 
         var status = project.get('status');
-         status="extended-lexicon";
+         // status="empty";
         var projectShowInfo = new Show.Info(steps["empty"]);
 
         console.log(job);
 
         if(job.statusName=="running"){
           projectShowInfo = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+          projectShowLayout.trackJobStatus();
         }
 
         else {
@@ -122,8 +89,9 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
                                             if(job.statusName=="running"){
                                                 var profileloading = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
                                                 projectShowLayout.showChildView('hubRegion',profileloading);
-
+                                                projectShowLayout.trackJobStatus();
                                               }
+
                                       }).fail(function(response){
                                          App.mainmsg.updateContent(response.responseText,'danger');                                                 
                                       }); 
@@ -161,6 +129,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
                                             if(job.statusName=="running"){
                                                 var profileloading = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
                                                 projectShowLayout.showChildView('hubRegion',profileloading);
+                                                projectShowLayout.trackJobStatus();
 
                                               }
                                       }).fail(function(response){
@@ -186,8 +155,8 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
                                   if(job.statusName=="running"){
                                       var profileloading = new Views.LoadingView({title:"Job running",message:job.jobName+ " is generating, please wait."});
                                       projectShowLayout.showChildView('hubRegion',profileloading);
-
-                                    }
+                                      projectShowLayout.trackJobStatus();
+                                     }
                             }).fail(function(response){
                                App.mainmsg.updateContent(response.responseText,'danger');                                                 
                             }); 
@@ -196,16 +165,6 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
                      });  
                   
         });
-          // if(data.url=="lexicon_extension_start"){
-          //    this.trigger("show:start_lexicon_extension",id);
-          // }
-          // if(data.url=="cor_inspect"){
-          //    App.trigger("projects:protocol",id);
-          // }
-          //  if(data.url=="cor_start"){
-          //    this.trigger("show:start_postcorrection",id);
-          // }
-         
       
 
          projectShowInfo.on("show:start_lexicon_extension",function(){
@@ -222,9 +181,26 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
                    }).fail(function(response){
                          App.mainmsg.updateContent(response.responseText,'danger');                                                 
                    }); 
-           });
+             });
 
         });
+
+         projectShowLayout.on("show:checkJobStatus",function(){
+              var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+               $.when(fetchingjobs).done(function(result){
+                                  
+                   if(result.statusName=="done"){
+                    $('.loading_background3').fadeOut(function(){
+                     App.trigger("projects:a_pocoto",id); //reload a_pocoto
+                     clearInterval(projectShowLayout.interval); // clear interval when job done
+                    })
+                  
+                   }
+
+               }).fail(function(response){
+                     App.mainmsg.updateContent(response.responseText,'danger');                                                 
+               }); 
+         });
 
         // projectShowInfo.on("show:start_postcorrection",function(){
         //   var confirm_cor_ext = new Show.AreYouSure({title:"Start Automatic Postcorrection",text:"Begin Automatic Postcorrection Step?",id:"corModal"})
