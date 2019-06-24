@@ -501,7 +501,7 @@ startLexiconExtension: function(data){
   
 },
 getProtocol: function(data){
-  data['backend_route'] = "inspect_extended_lexicon";
+  data['backend_route'] = "inspect_postcorrection";
   var defer = jQuery.Deferred();
       $.ajax({
       
