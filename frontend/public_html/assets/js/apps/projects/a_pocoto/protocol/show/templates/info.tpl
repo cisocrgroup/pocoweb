@@ -89,3 +89,15 @@
 </div>
 </div>
 
+<div class="container">
+<div class="row"> 
+
+
+<div class="col col-sm-12">
+<div class="btn-group" role="group" style="float:right;margin-bottom: 15px;">
+<button class="btn btn-secondary js-pr-redo"> <i class="fas fa-redo"></i> Recalculate </button>
+</div>
+
+</div>
+</div>
+</div>

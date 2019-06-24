@@ -33,29 +33,32 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 			projectShowLayout.on("attach",function(){
     
      
-			  projectShowHeader = new Show.Header({title:"Correction Protocol",icon:"fas fa-clipboard-list",color:"red"});
+			  projectShowHeader = new Show.Header({title:"Postcorrection",icon:"fas fa-play",color:"red"});
       	projectShowFooterPanel = new Show.FooterPanel();
 
 
             var status = project.get('status');
-    status="post-corrected";
+            status="post-corrected";
       if(job.statusName=="running"){
-          projectShowProtocol = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+          projectShowLoading = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+          projectShowLayout.showChildView('contentRegion',projectShowLoading);
           projectShowLayout.trackJobStatus();
         }
 
         else {
 
           if (status=="empty"||status=="profiled"){
-          projectShowProtocol = new Show.SingleStep({url:"le",color:"blue",step:"Postcorrection",icon:"fas fa-history",id:"js-start-pc",text:"Start automated postcorrection"});
+          projectShowProtocol = new Show.SingleStep({url:"pr",color:"blue",step:"Postcorrection",icon:"fas fa-play",id:"js-start-pc",text:"Start automated postcorrection"});
+          projectShowLayout.showChildView('contentRegion',projectShowProtocol);
+          
           }
           else if (status=="post-corrected"){
 
                var fetchingprotocol = ProjectEntities.API.getProtocol({pid:id});
+
                          $.when(fetchingprotocol).done(function(pr){
                               projectShowProtocol = new Show.Protocol({pr});
                               projectShowLayout.showChildView('contentRegion',projectShowProtocol);
-
 
         
                       projectShowProtocol.on("show:word_clicked",function(word){
@@ -84,6 +87,15 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                     
                      }) // correct token
 
+                    projectConcView.on("concordance:show_suggestions",function(data){
+
+                              var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:data.token,pid:id});
+                               $.when(gettingCorrectionSuggestions).done(function(suggestions){
+                                  projectConcView.setSuggestionsDropdown(data.dropdowndiv,suggestions.suggestions);
+
+                               });
+
+                            });
 
                       App.mainLayout.showChildView('dialogRegion',projectConcView);
 
@@ -92,12 +104,66 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                   });
 
 
+
+                  //re-run pr process
+                  projectShowProtocol.on("show:pr_redo_clicked",function(){
+
+                     var runningPostcorrection = ProjectEntities.API.startPostcorrection({bid:project.get('bookId'),pid:id,extensions:["a"]});
+
+                    $.when(runningPostcorrection).done(function(result){
+                        console.log(result);
+                          var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+
+                           $.when(fetchingjobs).done(function(job){
+
+                                  if(job.statusName=="running"){
+                                      var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+                                      projectShowLayout.showChildView('contentRegion',loadingView);
+                                      projectShowLayout.trackJobStatus();
+                                     }
+
+                            }).fail(function(response){
+                               App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                            }); 
+                     }).fail(function(response){
+                               App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                     });  
+
+                  });
+
               });
            }
           }
 
+        projectShowProtocol.on('singleStep:clicked',function(data){
+            if(data.url=="pr"){
+              this.trigger("show:start_pr_clicked")
+            }
+        });
 
-    
+        projectShowProtocol.on('show:start_pr_clicked',function(){
+         var runningPostcorrection = ProjectEntities.API.startPostcorrection({bid:project.get('bookId'),pid:id,extensions:["a"]});
+
+            $.when(runningPostcorrection).done(function(result){
+                console.log(result);
+                  var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+
+                   $.when(fetchingjobs).done(function(job){
+
+                          if(job.statusName=="running"){
+                              var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+                              projectShowLayout.showChildView('contentRegion',loadingView);
+                              projectShowLayout.trackJobStatus();
+                             }
+
+                    }).fail(function(response){
+                       App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                    }); 
+             }).fail(function(response){
+                       App.mainmsg.updateContent(response.responseText,'danger');                                                 
+             });  
+                  
+        });
 
        projectShowLayout.on("show:checkJobStatus",function(){
                   var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
@@ -117,7 +183,6 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
              });
                  
 	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
-	          projectShowLayout.showChildView('contentRegion',projectShowProtocol);
 	          projectShowLayout.showChildView('panelRegion',projectShowFooterPanel);
 
 

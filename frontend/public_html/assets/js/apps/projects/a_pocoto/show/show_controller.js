@@ -49,7 +49,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
                 "url": "lexicon_extension",
             }, {
                 "color": "red",
-                "icon": "fa-cogs",
+                "icon": "fa-play",
                 "id": "post_cor_btn",
                 "name": "Postcorrection",
                 "seq": 2,

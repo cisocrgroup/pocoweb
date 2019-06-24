@@ -36,6 +36,7 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
       template: infoTpl,
       events:{
       'click tr' : 'row_clicked',
+      'click .js-pr-redo' : 'pr_redo_clicked',
 
       }, 
     //   serializeData: function(){
@@ -51,7 +52,11 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
       }
     },
      
-
+    pr_redo_clicked:function(e){
+        e.preventDefault();
+   
+        this.trigger("show:pr_redo_clicked");
+      },
       row_clicked:function(e){
         e.preventDefault();
         var word = $($(e.currentTarget).find("td")[0]).text();
@@ -62,14 +67,14 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
    
      onAttach: function(){
        // var table = $('#book_table').DataTable();
-        $(".sortable").sortable({
-            items: 'tbody > tr',
-            connectWith: ".sortable",
+        // $(".sortable").sortable({
+        //     items: 'tbody > tr',
+        //     connectWith: ".sortable",
 
-            placeholder: "placeholder",
-            delay: 150
-          })
-          .disableSelection()
+        //     placeholder: "placeholder",
+        //     delay: 150
+        //   })
+        //   .disableSelection()
           // .dblclick( function(e){
           //   var item = e.target;
           //   if (e.currentTarget.id === 'extensions') {

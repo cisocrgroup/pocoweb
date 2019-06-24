@@ -35,14 +35,18 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
     var status = project.get('status');
     status="extended-lexicon";
  if(job.statusName=="running"){
-          projectShowLex = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+          projectShowLoading = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+          projectShowLayout.showChildView('contentRegion',projectShowLoading);
           projectShowLayout.trackJobStatus();
+
         }
 
         else {
 
           if (status=="empty"||status=="profiled"){
           projectShowLex = new Show.SingleStep({url:"le",color:"blue",step:"Lexicon Extension",icon:"fas fa-history",id:"js-start-le",text:"Generate the extended lexicon."});
+          projectShowLayout.showChildView('contentRegion',projectShowLex);
+
           }
           else if (status=="extended-lexicon"){
 
@@ -124,7 +128,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
               this.trigger("show:start_le_clicked")
             }
          
-        });
+           });
 
 
                   projectShowLex.on('show:start_le_clicked',function(){
@@ -171,14 +175,9 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                  
 			  projectShowHeader = new Show.Header({title:"Lexicon Extension",icon:"far fa-edit",color:"blue"});
       	projectShowFooterPanel = new Show.FooterPanel();
-        console.log(projectShowLex)
     
-
-  
-	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
-	          projectShowLayout.showChildView('contentRegion',projectShowLex);
+	           projectShowLayout.showChildView('headerRegion',projectShowHeader);
 	          projectShowLayout.showChildView('panelRegion',projectShowFooterPanel);
-
 
     		}); // on.attach()
 

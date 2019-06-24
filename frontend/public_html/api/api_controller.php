@@ -767,7 +767,7 @@ function profile_le() {
 
 function start_postcorrection() {
 
-  $data = array("projectId" => $_POST['pid'],"tokens" => $_POST['extensions'], "bookId" => $_POST['bid']);
+  $data = array("tokens" => []);
 
   $api = new Api(backend_get_start_rrdm_route($_POST['pid']));
   $api->set_session_id(backend_get_session_cookie());
