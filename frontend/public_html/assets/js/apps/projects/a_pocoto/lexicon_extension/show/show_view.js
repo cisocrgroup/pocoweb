@@ -12,6 +12,17 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
     var Show = {};
 
   Show.Layout = Views.Layout.extend({
+
+        trackJobStatus : function(){ // regulary check if job is finished
+        var that = this;
+        this.interval = setInterval(function(){ 
+           that.trigger("show:checkJobStatus");
+          },
+          5000);
+      },
+      onDestroy : function(){
+         clearInterval(this.interval);
+      }
   });
 
 
@@ -22,11 +33,12 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
 
 
 
-  Show.Info = Marionette.View.extend({
+  Show.LexiconExtension = Marionette.View.extend({
       template: infoTpl,
       events:{
       'click tr' : 'row_clicked',
-      'click .js-postcorrect' : 'start_postcorrect_clicked',
+      'click .js-le-profile' : 'start_le_profile_clicked',
+      'click .js-le-redo' : 'le_redo_clicked',
 
       }, 
     //   serializeData: function(){
@@ -50,7 +62,7 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
         this.trigger("show:word_clicked",word);
       },
 
-         start_postcorrect_clicked:function(e){
+         start_le_profile_clicked:function(e){
         e.preventDefault();
         var extensions = [];
         $('#extensions tbody tr').each(function(index) {
@@ -58,7 +70,12 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
           extensions.push(word.text());
         });
 
-        this.trigger("show:postcorrect_clicked",extensions);
+        this.trigger("show:start_le_profile_clicked",extensions);
+      },
+       le_redo_clicked:function(e){
+        e.preventDefault();
+   
+        this.trigger("show:le_redo_clicked");
       },
 
      onAttach: function(){
@@ -94,6 +111,8 @@ Show.Concordance = Concordance.Concordance.extend({});
 
 Show.FooterPanel = Views.FooterPanel.extend({
     });
+
+Show.SingleStep = Views.SingleStep.extend({});
 
 return Show;
 

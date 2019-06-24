@@ -12,6 +12,16 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
     var Show = {};
 
   Show.Layout = Views.Layout.extend({
+       trackJobStatus : function(){ // regulary check if job is finished
+        var that = this;
+        this.interval = setInterval(function(){ 
+           that.trigger("show:checkJobStatus");
+          },
+          5000);
+      },
+      onDestroy : function(){
+         clearInterval(this.interval);
+      }
   });
 
 
@@ -22,7 +32,7 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
 
 
 
-  Show.Info = Marionette.View.extend({
+  Show.Protocol = Marionette.View.extend({
       template: infoTpl,
       events:{
       'click tr' : 'row_clicked',
@@ -83,6 +93,7 @@ Show.Concordance = Concordance.Concordance.extend({});
 
 Show.FooterPanel = Views.FooterPanel.extend({
     });
+Show.SingleStep = Views.SingleStep.extend({});
 
 return Show;
 

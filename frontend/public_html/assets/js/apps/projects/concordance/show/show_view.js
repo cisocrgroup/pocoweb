@@ -356,6 +356,7 @@ $('#conc-modal').imagesLoaded( function() {
           var tokendata =  Marionette.getOption(that,"tokendata");
           var suggestions =  Marionette.getOption(that,"suggestions");
           var selection =  Marionette.getOption(that,"selection");
+          var le =  Marionette.getOption(that,"le");
 
 
            for (key in tokendata['matches']) {
@@ -418,7 +419,7 @@ $('#conc-modal').imagesLoaded( function() {
                     if(querytoken.toLowerCase()==token.cor.toLowerCase()){
 
                         var contenteditable = 'true';
-                        if(suggestions==undefined){
+                        if(le){
                           contenteditable = 'false'
                          }
  

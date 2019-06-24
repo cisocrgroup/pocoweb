@@ -98,11 +98,11 @@ Show.FooterPanel = Views.FooterPanel.extend({
     });
 
  
-Show.LexiconExtension = Le.Info.extend({
+Show.LexiconExtension = Le.LexiconExtension.extend({
 
 });
 
-Show.Protocol = Protocol.Info.extend({
+Show.Protocol = Protocol.Protocol.extend({
 
 });
 

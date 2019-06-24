@@ -542,6 +542,27 @@ startPostcorrection: function(data){
   
 },
 
+profileWithExtensions: function(data){
+  data['backend_route'] = "profile_le";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+},
+
 getJobs: function(data){
   data['backend_route'] = "get_jobs";
   var defer = jQuery.Deferred();

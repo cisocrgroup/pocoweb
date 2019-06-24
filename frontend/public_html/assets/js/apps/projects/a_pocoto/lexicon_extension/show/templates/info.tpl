@@ -67,8 +67,10 @@
 
 
 <div class="col col-sm-12">
-
-<button class="btn btn-primary js-postcorrect" style="float:right;margin-bottom: 15px;"><i class="fas fa-play"></i> Start Postcorrection </button>
+<div class="btn-group" role="group" style="float:right;margin-bottom: 15px;">
+<button class="btn btn-primary js-le-redo"> <i class="fas fa-redo"></i> Recalculate </button>
+<button class="btn btn-primary js-le-profile"><i class="fas fa-play"></i> Profile with extended lexicon </button>
+</div>
 
 </div>
 </div>

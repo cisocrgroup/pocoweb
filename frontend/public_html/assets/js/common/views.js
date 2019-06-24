@@ -23,8 +23,9 @@ define(["marionette","app","spin","spin.jquery","common/util","datatables",
 "tpl!common/templates/footerpaneltemplate.tpl",
 "tpl!common/templates/confirm.tpl",
 "tpl!common/templates/msgtemplate.tpl",
+"tpl!common/templates/singlestep.tpl",
 
-	], function(Marionette,IPS_App,Spinner,SpinnerJQuery,Util,dtb,listTpl,loadingTpl,loadingOpcTpl,loadingTpl2,headerTpl,cardHeadTpl,cardhubTpl,layoutTpl,errorTpl,emptyTpl,areYouTpl,okTpl,infoPanelTpl,bgInfoTpl,footerPanelTpl,confirmTpl,msgTpl){
+	], function(Marionette,IPS_App,Spinner,SpinnerJQuery,Util,dtb,listTpl,loadingTpl,loadingOpcTpl,loadingTpl2,headerTpl,cardHeadTpl,cardhubTpl,layoutTpl,errorTpl,emptyTpl,areYouTpl,okTpl,infoPanelTpl,bgInfoTpl,footerPanelTpl,confirmTpl,msgTpl,singleTpl){
 
     var Views={};
 
@@ -745,6 +746,34 @@ Views.FooterPanel = Marionette.View.extend({
       template: footerPanelTpl,
   });
 
+Views.SingleStep = Marionette.View.extend({
+      template: singleTpl,
+      events:{
+    	'click .custom_card.active' : 'step_clicked',
+        'click button.js-back':   'backClicked',
+
+   	   },
+       serializeData: function(){
+       return {
+        step: Marionette.getOption(this,"step"),
+        text: Marionette.getOption(this,"text"),
+        color: Marionette.getOption(this,"color"),
+        icon: Marionette.getOption(this,"icon"),
+        id: Marionette.getOption(this,"id"),
+        url: Marionette.getOption(this,"url")
+
+        }
+      },
+     
+
+    
+    step_clicked: function(e){
+    	var url = $(e.currentTarget).attr('url');
+	 	this.trigger('singleStep:clicked',{url:url});
+
+    },
+    
+  });
 
 return Views;
 
