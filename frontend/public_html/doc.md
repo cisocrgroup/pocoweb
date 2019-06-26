@@ -812,7 +812,11 @@ Get the content of a project or package.
   "projectId": 42,
   "pages": 100,
   "pageIds": [15,18,20,27,...],
-  "status": "empty|profiled|...",
+  "status": {
+	"profile": true,
+	"extended-lexicon": false,
+	"post-corrected": false
+  },
   "isBook": true|false
 }
 ```
@@ -831,7 +835,6 @@ Update the meta data of a project.
   "title": "book-title",
   "year": 1234,
   "language": "language",
-  "status": "empty|profiled|...",
   "profilerUrl": "profiler-url|local"
 }
 ```
