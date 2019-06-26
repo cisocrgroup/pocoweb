@@ -15,10 +15,12 @@ using Path = boost::filesystem::path;
 struct BookData {
   BookData()
       : author(), title(), description(), uri(), profilerUrl("local"), lang(),
-        status("empty"), dir(), year() {}
-  std::string author, title, description, uri, profilerUrl, lang, status;
+        dir(), year(), profiled(false), extendedLexicon(false),
+        postCorrected(false) {}
+  std::string author, title, description, uri, profilerUrl, lang;
   Path dir;
   int year;
+  bool profiled, extendedLexicon, postCorrected;
 };
 
 class Book : public Project {

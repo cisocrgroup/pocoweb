@@ -69,9 +69,6 @@ template <class Db> ProjectSptr insert_project(Db &db, Project &book);
 
 template <class Db> BookSptr insert_book(Db &db, Book &book);
 
-template <class Db>
-int get_status_id_from_string(Db &db, const std::string &status);
-
 template <class Db> void update_book(Db &db, Project &view);
 
 struct ProjectEntry {
@@ -155,7 +152,7 @@ template <class Db> pcw::BookSptr pcw::insert_book(Db &db, Book &book) {
   auto stmnt = insert_into(books).set(
       books.author = book.data.author, books.title = book.data.title,
       books.directory = book.data.dir.string(), books.year = book.data.year,
-      books.uri = book.data.uri, books.bookid = book.id(), books.statusid = 3,
+      books.uri = book.data.uri, books.bookid = book.id(),
       books.description = book.data.description, books.lang = book.data.lang);
   CROW_LOG_DEBUG << "(insert_book) bookid:      " << book.id();
   CROW_LOG_DEBUG << "(insert_book) author:      " << book.data.author;
@@ -164,7 +161,6 @@ template <class Db> pcw::BookSptr pcw::insert_book(Db &db, Book &book) {
   CROW_LOG_DEBUG << "(insert_book) year:        " << book.data.year;
   CROW_LOG_DEBUG << "(insert_book) uri:         " << book.data.author;
   CROW_LOG_DEBUG << "(insert_book) description: " << book.data.description;
-  CROW_LOG_DEBUG << "(insert_book) status:      " << book.data.status;
   db(stmnt);
 
   tables::Pages pages;
@@ -272,21 +268,9 @@ void pcw::detail::insert_content(Db &db, R &r, const Line &line) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class Db>
-int pcw::get_status_id_from_string(Db &db, const std::string &status) {
-  tables::Status s;
-  auto rows = db(select(s.id).from(s).where(s.text == status));
-  if (rows.empty()) {
-    return 3; // status empty
-  }
-  return rows.front().id;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 template <class Db> void pcw::update_book(Db &db, Project &view) {
   using namespace sqlpp;
   tables::Books books;
-  auto statusid = get_status_id_from_string(db, view.origin().data.status);
   auto stmnt =
       update(books)
           .set(books.author = view.origin().data.author,
@@ -295,7 +279,10 @@ template <class Db> void pcw::update_book(Db &db, Project &view) {
                books.year = view.origin().data.year,
                books.uri = view.origin().data.uri,
                books.description = view.origin().data.description,
-               books.lang = view.origin().data.lang, books.statusid = statusid)
+               books.profiled = view.origin().data.profiled,
+               books.extendedlexicon = view.origin().data.extendedLexicon,
+               books.postcorrected = view.origin().data.postCorrected,
+               books.lang = view.origin().data.lang)
           .where(books.bookid == view.origin().id());
   db(stmnt);
 }
@@ -321,13 +308,10 @@ pcw::select_all_projects(Db &db, int userid) {
   using namespace sqlpp;
   tables::Projects projects;
   tables::Books books;
-  tables::Status status;
-  auto stmnt = select(all_of(projects), all_of(books), status.text)
-                   .from(books.join(projects)
-                             .on(books.bookid == projects.origin)
-                             .join(status)
-                             .on(status.id == books.statusid))
-                   .where(projects.owner == userid);
+  auto stmnt =
+      select(all_of(projects), all_of(books))
+          .from(books.join(projects).on(books.bookid == projects.origin))
+          .where(projects.owner == userid);
   std::vector<std::pair<BookData, ProjectEntry>> data;
   for (const auto &row : db(stmnt)) {
     const auto bookdata = detail::make_book_data(row);
@@ -368,7 +352,12 @@ pcw::BookData pcw::detail::make_book_data(const Row &row) noexcept {
   detail::set_if_not_null(row.title, [&](const auto &t) { data.title = t; });
   detail::set_if_not_null(row.lang, [&](const auto &l) { data.lang = l; });
   detail::set_if_not_null(row.directory, [&](const auto &d) { data.dir = d; });
-  detail::set_if_not_null(row.text, [&](const auto &t) { data.status = t; });
+  detail::set_if_not_null(row.profiled,
+                          [&](const auto &t) { data.profiled = t; });
+  detail::set_if_not_null(row.extendedlexicon,
+                          [&](const auto &t) { data.extendedLexicon = t; });
+  detail::set_if_not_null(row.postcorrected,
+                          [&](const auto &t) { data.postCorrected = t; });
   detail::set_if_not_null(row.profilerurl,
                           [&](const auto &u) { data.profilerUrl = u; });
   return data;
@@ -379,12 +368,9 @@ template <class Db>
 boost::optional<pcw::BookData> pcw::select_book_data(Db &db, int bookid) {
   tables::Projects p;
   tables::Books b;
-  tables::Status s;
-  auto stmnt =
-      select(all_of(b), s.text)
-          .from(
-              b.join(p).on(b.bookid == p.origin).join(s).on(s.id == b.statusid))
-          .where(b.bookid == bookid);
+  auto stmnt = select(all_of(b))
+                   .from(b.join(p).on(b.bookid == p.origin))
+                   .where(b.bookid == bookid);
   auto res = db(stmnt);
   if (not res.empty())
     return detail::make_book_data(res.front());

@@ -362,21 +362,53 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
-    struct Statusid
+    struct Profiled
     {
       struct _alias_t
       {
-        static constexpr const char _literal[] =  "statusid";
+        static constexpr const char _literal[] =  "profiled";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
         template<typename T>
         struct _member_t
           {
-            T statusid;
-            T& operator()() { return statusid; }
-            const T& operator()() const { return statusid; }
+            T profiled;
+            T& operator()() { return profiled; }
+            const T& operator()() const { return profiled; }
           };
       };
-      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+      using _traits = sqlpp::make_traits<sqlpp::boolean>;
+    };
+    struct Extendedlexicon
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "extendedlexicon";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T extendedlexicon;
+            T& operator()() { return extendedlexicon; }
+            const T& operator()() const { return extendedlexicon; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::boolean>;
+    };
+    struct Postcorrected
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "postcorrected";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T postcorrected;
+            T& operator()() { return postcorrected; }
+            const T& operator()() const { return postcorrected; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::boolean>;
     };
   }
 
@@ -390,7 +422,9 @@ namespace tables
                Books_::Profilerurl,
                Books_::Directory,
                Books_::Lang,
-               Books_::Statusid>
+               Books_::Profiled,
+               Books_::Extendedlexicon,
+               Books_::Postcorrected>
   {
     struct _alias_t
     {

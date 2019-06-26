@@ -121,8 +121,6 @@ void update_book_data(pcw::Book &book, const crow::json::rvalue &data) {
     book.data.profilerUrl = "local";
   if (get<int>(data, "year"))
     book.data.year = *get<int>(data, "year");
-  if (get<std::string>(data, "status"))
-    book.data.status = *get<std::string>(data, "status");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

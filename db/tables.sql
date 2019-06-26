@@ -37,7 +37,9 @@ create table if not exists books (
 	profilerurl varchar(255),
 	directory varchar(255) not null,
 	lang varchar(50) not null,
-	statusid int references status(id)
+	profiled boolean default(false) not null,
+	extendedlexicon boolean default(false) not null,
+	postcorrected boolean default(false) not null
 );
 alter table books convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 alter table books change title title varchar(100) character set utf8mb4 collate utf8mb4_unicode_ci;
