@@ -456,9 +456,9 @@ function get_page(){
 
 
 function correct_line() {
-
+    // Treat post data as json string to automatically convert \u017f etc
   $data = array(
-    'correction' => $_POST['text'],
+      'correction' => json_decode("\"$_POST[text]\""),
   );
 
 
@@ -511,11 +511,10 @@ function get_line() {
 }
 
 function correct_token() {
-
-  $data = array(
-    'correction' => $_POST['token'],
-  );
-
+    // Treat post data as json string to automatically convert \u017f etc
+    $data = array(
+        'correction' => json_decode("\"$_POST[text]\""),
+    );
 
   $api = new Api(backend_get_correct_word_route($_POST['pid'],$_POST['page_id'],$_POST['line_id'],$_POST['token_id']));
   $api->set_session_id(backend_get_session_cookie());
