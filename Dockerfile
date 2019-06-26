@@ -3,7 +3,7 @@ MAINTAINER Florian Fink <finkf@cis.lmu.de>
 ENV DATE='Tue 04 Jun 2019 02:06:35 PM CEST'
 #curl-dev
 ENV DEPS='boost-dev mariadb-dev leptonica-dev icu-dev mariadb-client bash'
-ENV BUILD_DEPS='clang nodejs make build-base cmake php7 graphviz'
+ENV BUILD_DEPS='clang nodejs make build-base cmake php7 graphviz curl'
 VOLUME /project-data /www-data /tmp
 
 COPY rest /build/rest
