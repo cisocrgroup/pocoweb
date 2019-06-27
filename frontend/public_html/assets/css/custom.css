@@ -634,14 +634,10 @@ outline: 0;
   z-index: 1020;
 }
 
-#suspicious-words-container{
+.sidebar-table-container{
     height: 644px;      
 }
 
-#error-patterns-container{
-    height: 644px;      
-   
-}
 
 #sidebar-container{
     height: 770px;      
@@ -716,14 +712,14 @@ outline: 0;
     margin: auto;
 }
 
-  #suspicious-words_filter, #error-patterns_filter{
+  .sidebar-filter-container{
     padding-top: 15px;
     padding-right: 9px;
     padding-left: 2px;
   }
 
 
-  #suspicious-words_filter input,#error-patterns_filter input {
+  .sidebar-filter-container input {
       padding: 0.428571429rem;
     min-width: 100%;
     outline: none;

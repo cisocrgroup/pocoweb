@@ -46,13 +46,16 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             }
 
             var sp_table = $('.suspicious-words').DataTable({
-                 "scrollY": "200px",
+                 "scrollY": "560px",
                   "data":suspicious_words_array,
                   "info":false,
                   "paging": false,
                   "lengthChange": false,
                   "order": [[ 1, "desc" ]]
                 });
+
+            projectShowSidebar.sp_table = sp_table;
+
 
               $('#suspicious-words_filter input').on('keyup click', function () {
                 sp_table.search($(this).val()).draw();
@@ -69,6 +72,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             }
 
              var ep_table = $('.error-patterns').DataTable({
+                  "scrollY": "560px",
                   "data":error_patterns_array,
                   "info":false,
                   "paging": false,
@@ -77,13 +81,39 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                 });
 
+            projectShowSidebar.ep_table = ep_table;
+
+
               $('#error-patterns_filter input').on('keyup click', function () {
                 ep_table.search($(this).val()).draw();
               });
 
               var rows = $('#error-patterns_filter').next().find('.row');
               rows[0].remove();
-            $('#error-patterns-container > .loading_background2').fadeOut();
+             $('#error-patterns-container > .loading_background2').fadeOut();
+
+
+             var char_table = $('.special-characters').DataTable({
+                  "scrollY": "560px",
+                  "data":[["a",10],["b",10],["c",10]],
+                  "info":false,
+                  "paging": false,
+                  "lengthChange": false,
+                  "order": [[ 1, "desc" ]]
+
+                });
+
+            projectShowSidebar.char_table = char_table;
+
+
+              $('#special-characters_filter input').on('keyup click', function () {
+                char_table.search($(this).val()).draw();
+              });
+
+              var rows = $('#special-characters_filter').next().find('.row');
+              rows[0].remove();
+             $('#special-characters-container > .loading_background2').fadeOut();
+
 
            });
 
@@ -101,9 +131,18 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
        projectShowSidebar.on("sidebar:error-tokens-clicked",function(pid,pat){
          projectShowPage.trigger('page:concordance_clicked',pat,0);
        });
+
+       projectShowSidebar.on("sidebar:special-characters-clicked",function(pid,pat){
+         console.log(pat)
+          Util.copyStringToClipboard(pat);
+
+ 
+       });
        projectShowSidebar.on("page:new",function(page_id){
+        console.log(id)
                     var fetchingnewpage = ProjectEntities.API.getPage({pid:id, page:page_id});
                   $.when(fetchingnewpage).done(function(new_page){
+                    console.log("NEW page")
                     console.log(new_page)
                      new_page.attributes.title = project.get('title');
 
