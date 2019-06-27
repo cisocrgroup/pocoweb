@@ -7,10 +7,9 @@
 #include <vector>
 
 namespace pcw {
-class PageXmlParserLine : public ParserLine
-{
+class PageXmlParserLine : public ParserLine {
 public:
-  PageXmlParserLine(const Xml::Node& line);
+  PageXmlParserLine(const Xml::Node &line);
   virtual void end_wagner_fischer() override;
   virtual void insert(size_t i, wchar_t c) override;
   virtual void erase(size_t i) override;
@@ -20,34 +19,19 @@ public:
   virtual LinePtr line(int id) const override;
 
 private:
-  struct glyph
-  {
-    Xml::Node node;
-    size_t pos;
-  };
-
-  struct word
-  {
-    word()
-      : node()
-      , begin()
-      , end()
-      , isspace()
-    {
-    }
-    void parse();
-    Xml::Node node;
-    size_t begin, end;
-    bool isspace;
-    std::vector<glyph> glyphs;
-  };
-
   void parse();
 
+  struct glyph {
+    Xml::Node glyph;
+  };
+  struct word {
+    Xml::Node word;
+    std::vector<glyph> glyphs;
+  };
   Xml::Node node_;
   std::wstring string_;
   std::vector<word> words_;
 };
-}
+} // namespace pcw
 
 #endif // pcw_PageXmlParserLine_hpp__
