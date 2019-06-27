@@ -24,9 +24,9 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
     }
 
   });
- 
+
    Show.Header = Marionette.View.extend({
-   
+
       template:heaerTpl,
       serializeData: function(){
       return {
@@ -42,7 +42,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       'click .js-stepforward' : 'forward_clicked',
       'click .js-firstpage' : 'firstpage_clicked',
       'click .js-lastpage' : 'lastpage_clicked',
- 
+
       'click .suspicious-words tr' : 'error_tokens_clicked',
       'click .error-patterns tr' : 'error_patterns_clicked'
 
@@ -53,7 +53,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         e.stopPropagation();
         e.preventDefault();
         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-      
+
         this.trigger("page:new",data.prevPageId);
       },
 
@@ -102,10 +102,6 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         }
       },
       onAttach:function(){
-
-      
-
-
         $("#hl1").click(function() {
           $("#suspicious-words-container").slideToggle("slow", function() {
           });
@@ -131,7 +127,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
       },
 
-    
+
 
       serializeData: function(){
       var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
@@ -140,7 +136,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         return data;
       },
 
- 
+
       correct_clicked:function(e){
       e.stopPropagation();
 
@@ -186,7 +182,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         $('.line-tokens').show();
         var line_parent = $(e.currentTarget).parent();
 
-   
+
         var displayed_line = line_parent.find('.line')
         displayed_line.show();
 
@@ -205,11 +201,11 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
               var endNode, startNode = endNode = obj.firstChild
 
             startNode.nodeValue = startNode.nodeValue.trim();
-            
+
             var range = document.createRange();
             range.setStart(startNode, start);
             range.setEnd(endNode, end + 1);
-            
+
             var sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(range);
@@ -271,7 +267,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       console.log(sel);
 
       if($(e.target).hasClass('line')){
-      
+
       that.openCustomPopover(e,sel,$(e.target).parent());
 
       }
@@ -280,7 +276,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       onAttach:function(e){
         var that = this;
 
-        
+
 
         // remove when clicked somewhere else
 
@@ -305,7 +301,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       },
 
       onDomRefresh:function(e){
-          
+
 
            var that = this;
            $('.line-img').each(function(index){
@@ -319,14 +315,14 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
          });
 
-          /*  sticky sidebar 
+          /*  sticky sidebar
 
           var navbar = $("#sidebar-region")
           var sticky = navbar.offset().top;
           var parent_width = navbar.innerWidth();
 
         // $(window).on('scroll', function(event) {
-    
+
         //   // console.log(sticky);
 
         //    if (window.pageYOffset >= sticky) {
