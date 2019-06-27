@@ -30,9 +30,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 			var projectShowFooterPanel;
 			// console.log(reviews);
-	
+
 			projectShowLayout.on("attach",function(){
-			  
+
 
         // ** to do: get junks from server
         var fetchingsuspiciouswords = ProjectEntities.API.getSuspiciousWords({pid:id});
@@ -50,6 +50,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                   "info":false,
                   "paging": false,
                   "lengthChange": false,
+                  "order": [[ 1, "desc" ]]
                 });
 
               $('#suspicious-words_filter input').on('keyup click', function () {
@@ -111,26 +112,26 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                       $('.js-stepbackward > a').attr('title','go to next page #'+new_page.get('prevPageId'));
 
                      App.navigate("projects/"+id+"/page/"+new_page.get('pageId'));
-         
+
                   }).fail(function(response){
                      App.mainmsg.updateContent(response.responseText,'danger');
                     });  // $when fetchingproject
-          
+
        })
 
-    
+
        projectShowPage.on("page:correct_line",function(data,anchor){
 
           console.log(data);
 
                     var correctingline = ProjectEntities.API.correctLine(data);
                   $.when(correctingline).done(function(result){
-                    
+
                     console.log(result);
                     var lineanchor = $('#line-'+anchor);
                     lineanchor.addClass('line_fully_corrected');
 
-                 
+
 
                     lineanchor.fadeOut(200,function(){
                       lineanchor.fadeIn(200,function(){
@@ -140,13 +141,13 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                           lineanchor.find('.line-tokens').show();
                       });
                     });
-                   
+
 
 
                   }).fail(function(response){
                      App.mainmsg.updateContent(response.responseText,'danger');
                     });  // $when fetchingproject
-          
+
        })
 
            projectShowPage.on("page:line_selected",function(selection){
@@ -155,8 +156,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     var searchingToken = ProjectEntities.API.searchToken({q:selection,p:page_id,pid:id,isErrorPattern:0});
 
                   $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
-                    
-                 
+
+
                     that.tokendata = tokens;
                     // $('#js-concordance').html('Show concordance of <b>'+ selection+'</b> ('+tokens.nWords+' occurrences)');
 
@@ -164,14 +165,14 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                     $("#suggestionsDropdown").empty();
 
-                     var suggestions_btn = $('#js-suggestions'); 
-                    
+                     var suggestions_btn = $('#js-suggestions');
+
                      $(suggestions_btn).dropdown();
 
                      for(key in suggestions.suggestions){
                        for (var i=0;i<suggestions.suggestions[key].length;i++){
                         // to do: datatable instead ?
-                    
+
                      var s = suggestions.suggestions[key][i];
                      var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
                       s.distance + ", weight: " + s.weight.toFixed(2) + ")";
@@ -186,13 +187,13 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                       Util.replaceSelectedText(split[0]);
                      })
 
-                     
+
 
 
                   }).fail(function(response){
                      App.mainmsg.updateContent(response.responseText,'danger');
                     });  // $when gettingCorrectionSuggestions
-          
+
        })
 
 
@@ -207,7 +208,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
            var projectConcView = new Show.Concordance({isErrorPattern:isErrorPattern,selection:selection,tokendata:tokens,asModal:true});
            $('.custom-popover').remove();
-        
+
             projectConcView.on("concordance:correct_token",function(data,anchor){
 
                console.log(anchor);
@@ -215,7 +216,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                     var correctingtoken = ProjectEntities.API.correctToken(data);
                   $.when(correctingtoken).done(function(result){
-                    
+
                     console.log(result);
 
                        // update lines in background with corrections
@@ -225,7 +226,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                         console.log(line_result);
 
                         var lineanchor = $('#line-'+anchor);
-                            
+
                             if(lineanchor.length>0) {
                             lineanchor.removeClass('line_fully_corrected');
                             lineanchor.addClass('line_partially_corrected');
@@ -237,15 +238,15 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                             lineanchor.find('.line').hide();
                             lineanchor.find('.line-tokens').show();
-                         
+
                             }
-            
+
                         });
 
                   }).fail(function(response){
                      App.mainmsg.updateContent(response.responseText,'danger');
                     });  // $when fetchingproject
-          
+
            }) // correct token
 
              // build suggestions drop down
@@ -263,19 +264,19 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
              App.mainLayout.showChildView('dialogRegion',projectConcView);
 
-            
-                   
+
+
               });
 
         });
-   
+
 
           projectShowFooterPanel.on("go:back",function(){
             App.trigger("projects:show",id);
           });
 
-    
-  			    
+
+
 
 
 	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
@@ -295,7 +296,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
     	}) // require
-    	
+
 		}
 
 	}
