@@ -41,7 +41,6 @@ FE_FILES += $(PCW_FRONTEND_DIR)/public_html/index.html
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/index.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/info.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/js/api.js
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/js/config.js
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/js/pcw.js
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/login.php
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/logout.php
@@ -130,9 +129,6 @@ $(PCW_FRONTEND_DIR)/public_html/api/config.php: frontend/resources/config.php
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
 
-frontend/public_html/js/config.js: frontend/resources/config.php frontend/resources/genconfig.js.php
-	$(call ECHO,$@)
-	$V php frontend/resources/genconfig.js.php > $@
 install-frontend: $(FE_FILES)
 
 .PHONY: install-frontend
