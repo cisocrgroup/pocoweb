@@ -9,27 +9,22 @@ $post = $_POST;
     error_log("uploading file size=$file[size] type=$file[type] tmp_name=$file[tmp_name]");
 	if ($file["error"] != UPLOAD_ERR_OK) {
         $info = backend_get_upload_error_info($file["error"]);
-        header("status: ".$status);
 		echo("Could not upload archive: error: ".$info);
 		return;
 	}
 	if ($file["size"] > $config["frontend"]["upload"]["max_size"]) {
-        header("status: 413");
 		echo ("Could not upload archive: file too big");
 		return;
 	}
 	if ($file["type"] != "application/zip") {
-        header("status: 422");
 		echo ("Could not upload archive: not a zip file");
 		return;
 	}
 	if (!file_exists($file["tmp_name"])) {
-        header("status: 404");
 		echo ("Could not upload archive: upload file does not exist");
         return;
 	}
 	if (!chmod($file["tmp_name"], 0755)) {
-        header("status: 500");
 		echo ("Could not upload archive: could publish upload file");
         return;
 	}
@@ -47,4 +42,4 @@ $post["file"] = $file["tmp_name"];
 
 	}
 
-?>     
+?>
