@@ -514,7 +514,7 @@ function get_line() {
 function correct_token() {
     // Treat post data as json string to automatically convert \u017f etc
     $data = array(
-        'correction' => json_decode("\"$_POST[text]\""),
+        'correction' => json_decode("\"$_POST[token]\""),
     );
 
   $api = new Api(backend_get_correct_word_route($_POST['pid'],$_POST['page_id'],$_POST['line_id'],$_POST['token_id']));
