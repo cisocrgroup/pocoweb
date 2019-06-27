@@ -14,12 +14,11 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
      			  var fetchingproject = ProjectEntities.API.getProject({pid:id});
-            var fetchinglanguages = UtilEntities.API.getLanguages();
             var fetchingprotocol = ProjectEntities.API.getProtocol({pid:id});
-            var fetchinguser = UserEntities.API.loginCheck();
+            var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
                             
    
-      $.when(fetchingproject,fetchinglanguages,fetchingprotocol,fetchinguser).done(function(project,languages,pr,user){
+      $.when(fetchingproject,fetchingprotocol,fetchingjobs).done(function(project,pr,job){
 
 		  loadingCircleView.destroy();
       console.log(project);
@@ -27,59 +26,163 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
 			var projectShowLayout = new Show.Layout();
 			var projectShowHeader;
-			var projectShowInfo;
+			var projectShowProtocol = new Show.Layout() // dummy view;
 			var projectShowFooterPanel;
 			// console.log(reviews);
 
 			projectShowLayout.on("attach",function(){
     
      
-			  projectShowHeader = new Show.Header({title:"Correction Protocol",icon:"fas fa-clipboard-list",color:"red"});
-        projectShowInfo = new Show.Info({pr:pr});
+			  projectShowHeader = new Show.Header({title:"Postcorrection",icon:"fas fa-play",color:"red"});
       	projectShowFooterPanel = new Show.FooterPanel();
-        console.log(projectShowInfo)
 
 
-        projectShowInfo.on("show:word_clicked",function(word){
-            
-            var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:true});
-            var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:word,pid:id});
+            var status = project.get('status');
+            status="post-corrected";
+      if(job.statusName=="running"){
+          projectShowLoading = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+          projectShowLayout.showChildView('contentRegion',projectShowLoading);
+          projectShowLayout.trackJobStatus();
+        }
 
-            $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
-            var tokendata = tokens['matches'][word];
-            console.log(suggestions);
+        else {
 
-            var projectConcView = new Show.Concordance({selection:word,tokendata:tokendata,asModal:true,suggestions:suggestions.suggestions});
-
-            projectConcView.on("concordance:correct_token",function(data,anchor){
-
-               console.log(anchor);
-               console.log(data);
-
-                 var correctingtoken = ProjectEntities.API.correctToken(data);
-                  $.when(correctingtoken).done(function(result){
-                    
-                    console.log(result);
-
-
-                  }).fail(function(response){
-                     App.mainmsg.updateContent(response.responseText,'danger');
-                    });  // $when fetchingproject
+          if (status=="empty"||status=="profiled"){
+          projectShowProtocol = new Show.SingleStep({url:"pr",color:"blue",step:"Postcorrection",icon:"fas fa-play",id:"js-start-pc",text:"Start automated postcorrection"});
+          projectShowLayout.showChildView('contentRegion',projectShowProtocol);
           
-           }) // correct token
+          }
+          else if (status=="post-corrected"){
+
+               var fetchingprotocol = ProjectEntities.API.getProtocol({pid:id});
+
+                         $.when(fetchingprotocol).done(function(pr){
+                              projectShowProtocol = new Show.Protocol({pr});
+                              projectShowLayout.showChildView('contentRegion',projectShowProtocol);
+
+        
+                      projectShowProtocol.on("show:word_clicked",function(word){
+                      
+                      var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:true});
+
+                      $.when(searchingToken).done(function(tokens,suggestions){
+     
+
+                      var projectConcView = new Show.Concordance({selection:word,tokendata:tokens,asModal:true});
+
+                      projectConcView.on("concordance:correct_token",function(data,anchor){
+
+                         console.log(anchor);
+                         console.log(data);
+
+                           var correctingtoken = ProjectEntities.API.correctToken(data);
+                            $.when(correctingtoken).done(function(result){
+                              
+                              console.log(result);
+
+
+                            }).fail(function(response){
+                               App.mainmsg.updateContent(response.responseText,'danger');
+                              });  // $when fetchingproject
+                    
+                     }) // correct token
+
+                    projectConcView.on("concordance:show_suggestions",function(data){
+
+                              var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:data.token,pid:id});
+                               $.when(gettingCorrectionSuggestions).done(function(suggestions){
+                                  projectConcView.setSuggestionsDropdown(data.dropdowndiv,suggestions.suggestions);
+
+                               });
+
+                            });
+
+                      App.mainLayout.showChildView('dialogRegion',projectConcView);
+
+                     });
+
+                  });
 
 
 
+                  //re-run pr process
+                  projectShowProtocol.on("show:pr_redo_clicked",function(){
 
-            App.mainLayout.showChildView('dialogRegion',projectConcView);
+                     var runningPostcorrection = ProjectEntities.API.startPostcorrection({bid:project.get('bookId'),pid:id,extensions:["a"]});
 
-           });
+                    $.when(runningPostcorrection).done(function(result){
+                        console.log(result);
+                          var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
 
+                           $.when(fetchingjobs).done(function(job){
+
+                                  if(job.statusName=="running"){
+                                      var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+                                      projectShowLayout.showChildView('contentRegion',loadingView);
+                                      projectShowLayout.trackJobStatus();
+                                     }
+
+                            }).fail(function(response){
+                               App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                            }); 
+                     }).fail(function(response){
+                               App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                     });  
+
+                  });
+
+              });
+           }
+          }
+
+        projectShowProtocol.on('singleStep:clicked',function(data){
+            if(data.url=="pr"){
+              this.trigger("show:start_pr_clicked")
+            }
         });
 
-  
+        projectShowProtocol.on('show:start_pr_clicked',function(){
+         var runningPostcorrection = ProjectEntities.API.startPostcorrection({bid:project.get('bookId'),pid:id,extensions:["a"]});
+
+            $.when(runningPostcorrection).done(function(result){
+                console.log(result);
+                  var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+
+                   $.when(fetchingjobs).done(function(job){
+
+                          if(job.statusName=="running"){
+                              var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+                              projectShowLayout.showChildView('contentRegion',loadingView);
+                              projectShowLayout.trackJobStatus();
+                             }
+
+                    }).fail(function(response){
+                       App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                    }); 
+             }).fail(function(response){
+                       App.mainmsg.updateContent(response.responseText,'danger');                                                 
+             });  
+                  
+        });
+
+       projectShowLayout.on("show:checkJobStatus",function(){
+                  var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+                   $.when(fetchingjobs).done(function(result){
+                                      
+                       if(result.statusName=="done"){
+                        $('.loading_background3').fadeOut(function(){
+                         App.trigger("projects:postcorrection",id); //reload a_pocoto
+                         clearInterval(projectShowLayout.interval); // clear interval when job done
+                        })
+                      
+                       }
+
+                   }).fail(function(response){
+                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                   }); 
+             });
+                 
 	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
-	          projectShowLayout.showChildView('contentRegion',projectShowInfo);
 	          projectShowLayout.showChildView('panelRegion',projectShowFooterPanel);
 
 

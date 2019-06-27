@@ -12,6 +12,16 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
     var Show = {};
 
   Show.Layout = Views.Layout.extend({
+       trackJobStatus : function(){ // regulary check if job is finished
+        var that = this;
+        this.interval = setInterval(function(){ 
+           that.trigger("show:checkJobStatus");
+          },
+          5000);
+      },
+      onDestroy : function(){
+         clearInterval(this.interval);
+      }
   });
 
 
@@ -22,10 +32,11 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
 
 
 
-  Show.Info = Marionette.View.extend({
+  Show.Protocol = Marionette.View.extend({
       template: infoTpl,
       events:{
       'click tr' : 'row_clicked',
+      'click .js-pr-redo' : 'pr_redo_clicked',
 
       }, 
     //   serializeData: function(){
@@ -41,7 +52,11 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
       }
     },
      
-
+    pr_redo_clicked:function(e){
+        e.preventDefault();
+   
+        this.trigger("show:pr_redo_clicked");
+      },
       row_clicked:function(e){
         e.preventDefault();
         var word = $($(e.currentTarget).find("td")[0]).text();
@@ -52,14 +67,14 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
    
      onAttach: function(){
        // var table = $('#book_table').DataTable();
-        $(".sortable").sortable({
-            items: 'tbody > tr',
-            connectWith: ".sortable",
+        // $(".sortable").sortable({
+        //     items: 'tbody > tr',
+        //     connectWith: ".sortable",
 
-            placeholder: "placeholder",
-            delay: 150
-          })
-          .disableSelection()
+        //     placeholder: "placeholder",
+        //     delay: 150
+        //   })
+        //   .disableSelection()
           // .dblclick( function(e){
           //   var item = e.target;
           //   if (e.currentTarget.id === 'extensions') {
@@ -83,6 +98,7 @@ Show.Concordance = Concordance.Concordance.extend({});
 
 Show.FooterPanel = Views.FooterPanel.extend({
     });
+Show.SingleStep = Views.SingleStep.extend({});
 
 return Show;
 

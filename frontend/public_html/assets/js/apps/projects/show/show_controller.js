@@ -105,7 +105,7 @@ var cards2 = [
                   "color": "blue",
                   "icon": "fas fa-cogs",
                   "id": "test_btn",
-                  "name": "A-PoCoTo",
+                  "name": "Automatic Postcorrection",
                   "seq": 1,
                   "text": "Fully automatic OCR postcorrection.",
                   "url": "projects:a_pocoto",
