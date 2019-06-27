@@ -1,5 +1,5 @@
 
-    <div class="card">
+    <div class="card" id="sidebar-container">
 
 	
 
@@ -40,15 +40,26 @@
 			<i class="fas fa-angle-double-right"></i>
 			</a></li>
 		</ul>
-		  <hr style="margin: 0;">
-		  <div id="accordion">
-		  <div class="card-header" id="hl1">
-		  	  <button class="btn btn-link">
-		  		  Suspicious words
-       		 </button>
-		  </div>
-		   <div id="suspicious-words-container">
-		   	<div class="loading_background2">
+ 
+
+ <ul class="nav nav-tabs" id="sidebar_tabs" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="sp-tab" data-toggle="tab" href="#sp" role="tab" aria-controls="sp" aria-selected="true">Suspicious words</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="ep-tab" data-toggle="tab" href="#ep" role="tab" aria-controls="ep" aria-selected="true">Error patterns</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#">Special characters</a>
+  </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+
+  <div class="tab-pane fade show active" id="sp" role="tabpanel" aria-labelledby="sp-tab">
+  		 <div id="suspicious-words-container">
+
+  	   	<div class="loading_background2">
 	         <div class="loading_text_parent">
 	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>
         	 </div>
@@ -69,13 +80,12 @@
 		    </tbody>
 		  </table>
 		</div>
-		 <hr style="margin: 0;">
-		  <div class="card-header" id="hl2">
-		  	 <button class="btn btn-link">
-		   			 Error patterns
-       		 </button>
-		  </div>
-		   <div id="error-patterns-container">
+	  </div>
+
+  </div>
+  <div class="tab-pane fade" id="ep" role="tabpanel" aria-labelledby="ep-tab">
+
+<div id="error-patterns-container">
 		   	<div class="loading_background2">
 	         <div class="loading_text_parent">
 	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>
@@ -96,5 +106,10 @@
 		    </tbody>
 		  </table>
 		</div>
-	  </div>
-	</div>
+
+
+ </div>
+  <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+
+	
+</div>

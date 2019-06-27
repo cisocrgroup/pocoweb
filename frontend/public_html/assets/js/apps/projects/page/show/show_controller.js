@@ -46,6 +46,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             }
 
             var sp_table = $('.suspicious-words').DataTable({
+                 "scrollY": "200px",
                   "data":suspicious_words_array,
                   "info":false,
                   "paging": false,
@@ -59,6 +60,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
               var rows = $('#suspicious-words_filter').next().find('.row');
               rows[0].remove();
             $('#suspicious-words-container > .loading_background2').fadeOut();
+
+            $('#suspicious-words-container').find('.dataTables_wrapper').removeClass('.container-fluid');
 
               var error_patterns_array = [];
               for (word in error_patterns['counts']) {
