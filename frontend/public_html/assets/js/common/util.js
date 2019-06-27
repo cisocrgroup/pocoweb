@@ -119,14 +119,15 @@ addAlignedLine : function(line){
                 else {
                    cordiv = $('<div>'+token.cor.trim()+"</div>");
                 }
-
-                 var div = $('<div class="tokendiv noselect"></div>').append(cordiv);
+                var div = $('<div class="tokendiv noselect"></div>').append(cordiv);
                 line_text.find('.line-tokens').append(div);
                 var box = token['box'];
 
                     var div_length = token.box.width*scalefactor ;
                     cordiv.css('width',div_length);
-
+					var boxstr = "(" + box.left + "," + box.top + "," +
+						box.right + "," + box.bottom + ")";
+					cordiv.attr('boundingBox', boxstr);
                }
 }
 
