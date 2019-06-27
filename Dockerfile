@@ -4,6 +4,9 @@ ENV DATE='Tue 04 Jun 2019 02:06:35 PM CEST'
 #curl-dev
 ENV DEPS='boost-dev mariadb-dev leptonica-dev icu-dev mariadb-client bash'
 ENV BUILD_DEPS='clang nodejs make build-base cmake php7 graphviz curl'
+ENV LANG="C.UTF-8"
+ENV LANGUAGE="${LANG}"
+ENV LC_ALL="${LANG}"
 VOLUME /project-data /www-data /tmp
 
 COPY rest /build/rest
