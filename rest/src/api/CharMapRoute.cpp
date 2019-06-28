@@ -58,7 +58,12 @@ Route::Response CharMapRoute::impl(HttpGet, const Request &req, int bid) const {
   CharFreqTransducer t;
   for (const auto &c : conn.db()(stmnt)) {
     const auto ocr = static_cast<wchar_t>(c.ocr);
-    t.delta(ocr);
+    const auto cor = static_cast<wchar_t>(c.cor);
+    if (cor != 0 and cor != -1) {
+      t.delta(cor);
+    } else if (ocr != 0 and ocr != -1) {
+      t.delta(ocr);
+    }
   }
   const auto freqs = t.freq_map(wfilter);
   Json j;
