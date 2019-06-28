@@ -16,9 +16,7 @@ h4{
   margin-bottom: 15px !important;
 }
 
-.container-fluid {
-   padding: 0px;
-}
+
 
 #main-region{
   min-height: 75vh;
@@ -636,16 +634,14 @@ outline: 0;
   z-index: 1020;
 }
 
-#suspicious-words-container{
-    height: 300px;      
-    overflow-y: auto;    
-    overflow-x: hidden;  
+.sidebar-table-container{
+    height: 644px;      
 }
 
-#error-patterns-container{
-    height: 300px;      
-    overflow-y: auto;    
-    overflow-x: hidden;  
+
+#sidebar-container{
+    height: 770px;      
+  
 }
 
 #page-container{
@@ -716,14 +712,14 @@ outline: 0;
     margin: auto;
 }
 
-  #suspicious-words_filter, #error-patterns_filter{
+  .sidebar-filter-container{
     padding-top: 15px;
     padding-right: 9px;
     padding-left: 2px;
   }
 
 
-  #suspicious-words_filter input,#error-patterns_filter input {
+  .sidebar-filter-container input {
       padding: 0.428571429rem;
     min-width: 100%;
     outline: none;

@@ -44,7 +44,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       'click .js-lastpage' : 'lastpage_clicked',
 
       'click .suspicious-words tr' : 'error_tokens_clicked',
-      'click .error-patterns tr' : 'error_patterns_clicked'
+      'click .error-patterns tr' : 'error_patterns_clicked',
+      'click .special-characters tr' : 'special_characters_clicked'
 
 
       },
@@ -101,15 +102,38 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
             this.trigger("sidebar:error-patterns-clicked",data.projectId,pat);
         }
       },
+
+       special_characters_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".custom-popover").remove();
+        var tr = $(e.currentTarget);
+        var td = tr.find('td');
+        var pat = $(td[0]).html();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        if(pat!=undefined){
+             tr.fadeOut(200,function(){
+                      tr.fadeIn(200,function(){
+                      });
+                    });
+            this.trigger("sidebar:special-characters-clicked",data.projectId,pat);
+        }
+      },
       onAttach:function(){
-        $("#hl1").click(function() {
-          $("#suspicious-words-container").slideToggle("slow", function() {
-          });
-        });
-        $("#hl2").click(function() {
-          $("#error-patterns-container").slideToggle("slow", function() {
-          });
-        });
+        var that = this;
+        $('#sidebar_tabs a').on('click', function (e) {
+          e.preventDefault()
+            $(this).tab('show',function(){
+            });
+
+            $(this).on('shown.bs.tab', function (e) {
+                 that.ep_table.draw();
+                 that.sp_table.draw();
+                 that.char_table.draw();
+
+            })
+                        
+          })
       }
 
   });

@@ -19,6 +19,7 @@ pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/js/require_main.bui
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/css/custom.css tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/assets/css/
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/api/api_controller.php tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/api/
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/api/backend.php tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/api/
+pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/index.html tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/
 
 
 
