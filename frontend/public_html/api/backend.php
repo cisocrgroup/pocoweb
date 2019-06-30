@@ -478,4 +478,10 @@ function backend_get_jobs_route($pid) {
 	return sprintf($config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["getJob"],$pid);	
 }
+
+function backend_get_charmap_route($pid) {
+	global $config;
+	return sprintf($config["backend"]["internalURL"] .
+		$config["backend"]["routes"]["getCharmap"],$pid);	
+}
 ?>

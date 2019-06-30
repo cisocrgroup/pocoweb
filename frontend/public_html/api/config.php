@@ -40,6 +40,7 @@ $config = array(
 			"getNthPage"          => "/books/%d/pages/%d",
 			"correctLine"         => "/books/%d/pages/%d/lines/%d",
 			"correctWord"         => "/books/%d/pages/%d/lines/%d/tokens/%d",
+			"getCharmap"          => "/books/%d/charmap",
 			"uploadProject"       => "/books",
 			"search"              => "/books/%d/search?q=%s&p=%d",
 			"splitImages"         => "/books/%d/pages/%d/lines/%d/tokens/%d/split-images",

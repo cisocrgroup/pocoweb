@@ -37,8 +37,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         // ** to do: get junks from server
         var fetchingsuspiciouswords = ProjectEntities.API.getSuspiciousWords({pid:id});
         var fetchingerrorpatterns = ProjectEntities.API.getErrorPatterns({pid:id});
+        var fetchingcharmap = ProjectEntities.API.getCharmap({pid:id});
 
-           $.when(fetchingsuspiciouswords,fetchingerrorpatterns).done(function(suspicious_words,error_patterns){
+           $.when(fetchingsuspiciouswords,fetchingerrorpatterns,fetchingcharmap).done(function(suspicious_words,error_patterns,charmap){
 
             var suspicious_words_array = [];
             for (word in suspicious_words['counts']) {
@@ -92,7 +93,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
               rows[0].remove();
              $('#error-patterns-container > .loading_background2').fadeOut();
 
-
+             console.log(charmap);
              var char_table = $('.special-characters').DataTable({
                   "scrollY": "560px",
                   "data":[["a",10],["b",10],["c",10]],
