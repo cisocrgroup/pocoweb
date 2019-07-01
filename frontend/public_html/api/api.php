@@ -106,14 +106,19 @@ class Api {
         error_log("[Api] sending $req $this->url");
     }
 
-	public function set_session_id($sid) {
+    public function add_parameter($key, $value) {
         $pos = strrpos($this->url, "?");
         if ($pos === FALSE) {
-            $this->url = $this->url . "?auth=" . $sid["auth"];
+            $this->url = $this->url . "?";
         } else {
-            $this->url = $this->url . "&auth=" . $sid["auth"];
+            $this->url = $this->url . "&";
         }
+        $this->url = $this->url . $key . "=" . urlencode($value);
         curl_setopt($this->curl, CURLOPT_URL, $this->url);
+    }
+
+	public function set_session_id($sid) {
+        $this->add_parameter("auth", $sid["auth"]);
 	}
 
 	public function get_http_status_code() {
