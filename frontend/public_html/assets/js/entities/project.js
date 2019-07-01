@@ -581,10 +581,14 @@ getJobs: function(data){
 
 
   return defer.promise();
-  
+
 },
 getCharmap: function(data){
-  data['backend_route'] = "get_charmap";
+	data['backend_route'] = "get_charmap";
+	data['filter'] = "abcdefghijklmnopqrstuvwxyz" +
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+		"0123456789" +
+		":,-+/@#$.;<>(){}[]\\&?!";
   var defer = jQuery.Deferred();
       $.ajax({
       url: "api/api_controller.php",
