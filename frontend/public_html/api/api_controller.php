@@ -57,9 +57,14 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'inspect_postcorrection' : inspect_postcorrection();break;
         case 'get_jobs' : get_jobs();break;
         case 'get_charmap': get_charmap(); break;
+        default: internal_server_error(); break;
     }
 }
 
+function internal_server_error() {
+    header("status: 500");
+    echo backend_get_http_status_info("500");
+}
 
 function get_split_images(){
 
