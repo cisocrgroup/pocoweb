@@ -588,7 +588,7 @@ getCharmap: function(data){
 	data['filter'] = "abcdefghijklmnopqrstuvwxyz" +
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 		"0123456789" +
-		":,-+/@#$.;<>(){}[]\\&?!";
+		":,-+/@#$.;<>(){}[]\\&?!=*^~_";
   var defer = jQuery.Deferred();
       $.ajax({
       url: "api/api_controller.php",
