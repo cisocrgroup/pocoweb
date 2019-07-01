@@ -62,12 +62,12 @@ getPage: function(data){
     data['backend_route'] = "get_page";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
       success: function(data) {
-        var result = JSON.parse(data)
+          var result = JSON.parse(data);
         defer.resolve( new Entities.Page(result));
 
           },
