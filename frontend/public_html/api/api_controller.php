@@ -846,8 +846,10 @@ function get_jobs(){
 }
 
 function get_charmap(){
+  $filter = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:,-+/@#$.;<>(){}[]\\&?!";
   $api = new Api(backend_get_charmap_route($_POST['pid']));
   $api->set_session_id(backend_get_session_cookie());
+  $api->add_parameter("filter", $filter);
   $api->get_request();
 
   $status = $api->get_http_status_code();
