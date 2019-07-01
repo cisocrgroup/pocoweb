@@ -104,7 +104,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                   "info":false,
                   "paging": false,
                   "lengthChange": false,
-                  "order": [[ 1, "desc" ]]
+                  "order": [[ 0, "asc" ]]
 
              });
 
