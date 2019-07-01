@@ -45,8 +45,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
       'click .suspicious-words tr' : 'error_tokens_clicked',
       'click .error-patterns tr' : 'error_patterns_clicked',
-      'click .special-characters tr' : 'special_characters_clicked'
-
+	  'click .special-characters tr' : 'special_characters_clicked',
+      'mouseover .special-characters tr' : 'special_characters_hover'
 
       },
 
@@ -102,7 +102,13 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
             this.trigger("sidebar:error-patterns-clicked",data.projectId,pat);
         }
       },
-
+      special_characters_hover : function(e){
+          e.stopPropagation();
+          e.preventDefault();
+		  var tr = $(e.currentTarget);
+		  var c = $(tr.find('td')[0]).html();
+		  $(tr).attr("title", "click to add `" + c + "` to the clipboard");
+	  },
        special_characters_clicked : function(e){
         e.stopPropagation();
         e.preventDefault();
@@ -132,7 +138,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
                  that.char_table.draw();
 
             })
-                        
+
           })
       }
 
