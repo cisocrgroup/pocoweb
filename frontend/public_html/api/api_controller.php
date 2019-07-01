@@ -56,6 +56,7 @@ if(isset($_POST['backend_route']) && !empty($_POST['backend_route'])) {
         case 'start_postcorrection' : start_postcorrection();break;
         case 'inspect_postcorrection' : inspect_postcorrection();break;
         case 'get_jobs' : get_jobs();break;
+        case 'get_charmap': get_charmap(); break;
     }
 }
 
