@@ -93,16 +93,20 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
               rows[0].remove();
              $('#error-patterns-container > .loading_background2').fadeOut();
 
-             console.log(charmap);
+               console.log(charmap);
+			   var data = [];
+			   for (var key in charmap.charMap) {
+				   data.push([key, charmap.charMap[key]]);
+			   }
              var char_table = $('.special-characters').DataTable({
                   "scrollY": "560px",
-                  "data":[["a",10],["b",10],["c",10]],
+                  "data": data,//[],//[["a",10],["b",10],["c",10]],
                   "info":false,
                   "paging": false,
                   "lengthChange": false,
                   "order": [[ 1, "desc" ]]
 
-                });
+             });
 
             projectShowSidebar.char_table = char_table;
 
@@ -137,7 +141,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
          console.log(pat)
           Util.copyStringToClipboard(pat);
 
- 
+
        });
        projectShowSidebar.on("page:new",function(page_id){
         console.log(id)
