@@ -4,11 +4,13 @@
 #include <iostream>
 #include <utf8.h>
 
+#define TEXT_REGION "TextRegion"
 #define UNICODE "Unicode"
 #define TEXT_EQUIV "TextEquiv"
 #define INDEX "index"
 #define CONF "conf"
 #define POINTS "points"
+#define WORD "Word"
 
 using namespace pcw;
 
@@ -18,22 +20,86 @@ static std::vector<Xml::Node> get_glyph_nodes(const Xml::Node &node);
 static std::vector<Xml::Node> get_word_nodes(const Xml::Node &node);
 static Box get_coords_points(const Xml::Node &node);
 static double get_text_equiv_conf(const Xml::Node &node);
+static std::vector<std::string> fields(const std::string &str);
 
 ////////////////////////////////////////////////////////////////////////////////
-PageXmlParserLine::PageXmlParserLine(const Xml::Node &line_node)
+PageXmlParserLine::PageXmlParserLine(const Xml::Node &line_node, bool first)
     : node_(line_node),
       string_(child_wstring(get_last_text_equiv(line_node).child(UNICODE))),
-      words_() {
+      words_(), first_(first) {
   parse();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void PageXmlParserLine::end_wagner_fischer() {
+  const auto line = string();
+  add_corrections_to_line(line);
+  add_corrections_to_words(line);
+  add_corrections_to_regions(line);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PageXmlParserLine::add_corrections_to_line(const std::string &cor) {
   node_.append_child(TEXT_EQUIV)
       .append_child(UNICODE)
-      .append_child(pugi::node_cdata)
-      .set_value(string_);
-  // update lines before regions
+      .append_child(pugi::node_pcdata)
+      .set_value(cor.data());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PageXmlParserLine::add_corrections_to_words(const std::string &cor) {
+  const auto words = fields(cor);
+  size_t i = 0;
+  for (auto &word : node_.children(WORD)) {
+    if (i >= words.size()) {
+      word.append_child(TEXT_EQUIV)
+          .append_child(UNICODE)
+          .append_child(pugi::node_pcdata)
+          .set_value("");
+      continue;
+    }
+    word.append_child(TEXT_EQUIV)
+        .append_child(UNICODE)
+        .append_child(pugi::node_pcdata)
+        .set_value(words[i].data());
+    i++;
+  }
+  for (; i < words.size(); i++) { // add additional words
+    auto w = node_.append_child(WORD);
+    w.append_child(TEXT_EQUIV)
+        .append_child(UNICODE)
+        .append_child(pugi::node_pcdata)
+        .set_value("");
+    w.append_child(TEXT_EQUIV)
+        .append_child(UNICODE)
+        .append_child(pugi::node_pcdata)
+        .set_value(words[i].data());
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PageXmlParserLine::add_corrections_to_regions(const std::string &cor) {
+  if (first_) {
+    for (auto p = node_.parent(); p and strcmp(p.name(), TEXT_REGION) == 0;
+         p = p.parent()) {
+      p.append_child(TEXT_EQUIV)
+          .append_child(UNICODE)
+          .append_child(pugi::node_pcdata)
+          .set_value(cor.data());
+    }
+    return;
+  }
+  for (auto p = node_.parent(); p and strcmp(p.name(), TEXT_REGION) == 0;
+       p = p.parent()) {
+    for (auto child : p.children(TEXT_EQUIV)) {
+      if (child.next_sibling(TEXT_EQUIV)) { // not the last text equiv
+        continue;
+      }
+      std::string region = child.child(UNICODE).text().get();
+      region = region + "\n" + cor;
+      child.child(UNICODE).text().set(region.data());
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -184,4 +250,14 @@ Box get_coords_points(const Xml::Node &node) {
     }
   }
   return box;
+}
+////////////////////////////////////////////////////////////////////////////////
+std::vector<std::string> fields(const std::string &str) {
+  std::stringstream ss(str);
+  std::string field;
+  std::vector<std::string> fields;
+  while (ss >> field) {
+    fields.push_back(field);
+  }
+  return fields;
 }

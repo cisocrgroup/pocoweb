@@ -14,11 +14,8 @@
 
 using namespace pcw;
 
-struct Fixture
-{
-  Fixture()
-    : page()
-  {
+struct Fixture {
+  Fixture() : page() {
     PageXmlPageParser parser("misc/data/test/page-test.xml");
     BOOST_REQUIRE(parser.has_next());
     page = parser.parse();
@@ -32,46 +29,73 @@ struct Fixture
 BOOST_FIXTURE_TEST_SUITE(PageXmlTest, Fixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(PageXmlParserParsesPageBox)
-{
-  Box box{ 0, 0, 1756, 2440 };
+BOOST_AUTO_TEST_CASE(PageXmlParserParsesPageBox) {
+  Box box{0, 0, 1756, 2440};
   BOOST_CHECK_EQUAL(box, page->box);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(PageXmlParserParsesImageFileName)
-{
+BOOST_AUTO_TEST_CASE(PageXmlParserParsesImageFileName) {
   BOOST_CHECK_EQUAL("path/to/img.png", page->img);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(PageXmlParserParsesTwoLines)
-{
+BOOST_AUTO_TEST_CASE(PageXmlParserParsesTwoLines) {
   BOOST_CHECK_EQUAL(2, page->size());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(PageXmlParserCheckFirstLine)
-{
+BOOST_AUTO_TEST_CASE(PageXmlParserCheckFirstLine) {
   BOOST_CHECK_EQUAL(std::string("x y"), page->get(0).string());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(PageXmlParserCheckSecondLine)
-{
+BOOST_AUTO_TEST_CASE(PageXmlParserCheckSecondLine) {
   BOOST_CHECK_EQUAL(std::string("ab cd"), page->get(1).string());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(PageXmlParserCheckFirstLineBox)
-{
+BOOST_AUTO_TEST_CASE(PageXmlParserCheckFirstLineBox) {
   BOOST_CHECK_EQUAL(Box(1, 2, 11, 12), page->get(0).line(1)->box);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(PageXmlParserCheckFirstLineParsedString)
-{
+BOOST_AUTO_TEST_CASE(PageXmlParserCheckFirstLineParsedString) {
   BOOST_CHECK_EQUAL("x y", page->get(0).line(1)->ocr());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_SUITE_END()
+
+struct WFFixture : Fixture {
+  WFFixture() : Fixture(), wf() {}
+  WagnerFischer wf;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_FIXTURE_TEST_SUITE(PageXmlCorrectionTest, WFFixture)
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(PageXmlParserCheckCorrectLine) {
+  wf.set_gt("a b");
+  page->get(0).correct(wf);
+  BOOST_CHECK_EQUAL(std::string("a b"), page->get(0).string());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(PageXmlParserCheckCorrectLineSmaller) {
+  wf.set_gt("ab");
+  page->get(1).correct(wf);
+  BOOST_CHECK_EQUAL(std::string("ab"), page->get(1).string());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(PageXmlParserCheckCorrectLineLarger) {
+  wf.set_gt("ab c ef");
+  page->get(1).correct(wf);
+  BOOST_CHECK_EQUAL(std::string("ab c ef"), page->get(1).string());
+  Path p("/tmp/out.xml");
+  page->write(p);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

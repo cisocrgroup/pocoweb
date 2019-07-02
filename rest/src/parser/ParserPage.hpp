@@ -60,6 +60,6 @@ public:
   FileType file_type;
   int id;
 };
-}
+} // namespace pcw
 
 #endif // pcw_ParserPage_hpp__
