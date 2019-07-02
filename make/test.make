@@ -49,7 +49,7 @@ RUN_TESTS = $(patsubst %.test,%.run,$(TESTS))
 %.run: %.test
 	$V $(call ECHO,$@)
 #@echo "# $@" >> tests.log
-	$V $<
+	$V $< --color_output=false
 #test: tests.log $(RUN_TESTS)
 test: $(RUN_TESTS)
 tests.log:
