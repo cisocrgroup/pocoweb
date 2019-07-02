@@ -118,7 +118,7 @@ class Api {
     }
 
 	public function set_session_id($sid) {
-        $this->add_parameter("auth", $sid["auth"]);
+        $this->add_parameter("auth", $sid);
 	}
 
 	public function get_http_status_code() {

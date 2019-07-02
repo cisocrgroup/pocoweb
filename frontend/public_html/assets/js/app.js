@@ -62,6 +62,61 @@ App.on("start", function(){
 
     var app_region = App.getRegion();
 
+      App.on("nav:login",function(asModal){
+
+      require(["apps/users/login/login_view","entities/users","common/util"], function(Login,UserEntities,Util){
+
+
+        console.log(asModal);
+     headerLogin = new Login.Form();
+     App.mainLayout.showChildView('dialogRegion',headerLogin);
+     $('#loginModal').modal();
+
+
+     headerLogin.on("login:submit",function(data){
+     $('#loginModal').modal('hide');
+
+    var loggingInUser = UserEntities.API.login(data);
+
+
+                 $.when(loggingInUser).done(function(result){
+                                            
+                        App.mainmsg.updateContent(result.message,'success');
+                         Util.setLoggedIn(result.user.name);
+                          
+                          var currentRoute =  App.getCurrentRoute();
+                          var page_re = /projects\/\d+\/page\/.*/;
+                          var page_route_found = App.getCurrentRoute().match(page_re);
+
+                          if(page_route_found!=null){
+                             var split = currentRoute.split("/")
+                             App.trigger("projects:show",split[1],split[3])
+                          }
+
+                          switch(currentRoute) {
+                            case "projects":
+                              App.trigger("projects:list")
+                              break;
+                            case "users/list":
+                              App.trigger("users:list")
+                              break;
+                            case "users/account":
+                              App.trigger("users:show","account")
+                              break;
+                            default:
+                          } 
+
+                                            
+                }).fail(function(response){ 
+                  App.mainmsg.updateContent(response.responseText,'danger');                       
+                                      
+          }); //  $.when(loggingInUser).done
+
+       });
+      });
+    });
+
+
     App.mainLayout = new MainView();
     App.mainmsg  = new Views.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
 

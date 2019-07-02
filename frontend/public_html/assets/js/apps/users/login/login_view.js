@@ -11,9 +11,15 @@ function(App,Marionette,loginformTpl,syphon,Util){
 
  Login.Form = Marionette.View.extend({
    template: loginformTpl,
+   asModal:true,
    events: {
    "click .js-loginsubmit": "submitClicked"
 
+   },
+   serializeData: function(){
+      return {
+        asModal: Marionette.getOption(this,"asModal")
+      }
    },
 
    submitClicked: function(e){

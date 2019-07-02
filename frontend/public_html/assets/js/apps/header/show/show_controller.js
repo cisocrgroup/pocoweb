@@ -16,7 +16,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
     var fetchingVersion = UtilEntities.API.getApiVersion();
     var fetchingLoginCheck = UserEntities.API.loginCheck();
       $.when(fetchingVersion,fetchingLoginCheck).done(function(api_version,logged_in_user){
-
+        console.log(logged_in_user)
         var headerShowLayout = new Show.Layout();
          var headerLogin ;
  
@@ -52,55 +52,6 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
         
     });
 
-  headerShowTopbar.on("nav:login",function(){
-     headerLogin = new Login.Form();
-     App.mainLayout.showChildView('dialogRegion',headerLogin);
-     $('#loginModal').modal();
-
-
-     headerLogin.on("login:submit",function(data){
-     $('#loginModal').modal('hide');
-
-    var loggingInUser = UserEntities.API.login(data);
-
-
-                 $.when(loggingInUser).done(function(result){
-                                            
-                        App.mainmsg.updateContent(result.message,'success');
-                         headerShowTopbar.setLoggedIn(result.user.name);
-                          
-                          var currentRoute =  App.getCurrentRoute();
-                          var page_re = /projects\/\d+\/page\/.*/;
-                          var page_route_found = App.getCurrentRoute().match(page_re);
-
-                          if(page_route_found!=null){
-                             var split = currentRoute.split("/")
-                             App.trigger("projects:show",split[1],split[3])
-                          }
-
-                          switch(currentRoute) {
-                            case "projects":
-                              App.trigger("projects:list")
-                              break;
-                            case "users/list":
-                              App.trigger("users:list")
-                              break;
-                            case "users/account":
-                              App.trigger("users:show","account")
-                              break;
-                            default:
-                          } 
-
-                                            
-                }).fail(function(response){ 
-                  App.mainmsg.updateContent(response.responseText,'danger');                       
-                                      
-          }); //  $.when(loggingInUser).done
-
-
-    });
-
-    });
 
   
 

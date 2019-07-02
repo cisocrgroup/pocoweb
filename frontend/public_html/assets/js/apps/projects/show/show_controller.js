@@ -315,6 +315,7 @@ var cards2 = [
           }).fail(function(response){
                loadingCircleView.destroy();
                 App.mainmsg.updateContent(response.responseText,'danger');
+                Util.defaultErrorHandling(response.status);
           });  // $when fetchingproject
 
 

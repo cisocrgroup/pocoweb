@@ -1,4 +1,6 @@
-
+<%
+if(asModal) {
+%>
 <div class="modal fade" id="loginModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
  <div class="modal-dialog">
  <div class="modal-content">
@@ -8,7 +10,9 @@
           <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>
         </div>
       </div>
-       <div class="modal-body">
+      <div class="modal-body">
+ <% } %>
+
 <form>
   <div class="form-group">
     <label for="email">Email address</label>
@@ -21,9 +25,14 @@
 
   <button type="submit" class="btn btn-primary js-loginsubmit">Submit</button>
 </form>
+
+<%
+if(asModal) {
+%>
 </div>
 </div>
 
 </div>
 </div>
 
+ <% } %>

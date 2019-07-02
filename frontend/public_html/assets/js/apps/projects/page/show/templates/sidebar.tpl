@@ -41,15 +41,15 @@
 			</a></li>
 		</ul>
 
- <ul class="nav nav-pills" id="sidebar_tabs" role="tablist">
+ <ul class="nav nav-tabs" id="sidebar_tabs" role="tablist">
   <li class="nav-item">
-    <a class="nav-link active" id="sp-tab" data-toggle="tab" href="#sp" role="tab" aria-controls="sp" aria-selected="true">Suspicious words</a>
+    <a class="nav-link active" id="sp-tab" data-toggle="tab" href="#sp" role="tab" aria-controls="sp" aria-selected="true">Suspicious </br> words</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" id="ep-tab" data-toggle="tab" href="#ep" role="tab" aria-controls="ep" aria-selected="true">Error patterns</a>
+    <a class="nav-link" id="ep-tab" data-toggle="tab" href="#ep" role="tab" aria-controls="ep" aria-selected="true">Error </br>  patterns</a>
   </li>
   <li class="nav-item">
-        <a class="nav-link" id="chars-tab" data-toggle="tab" href="#chars" role="tab" aria-controls="chars" aria-selected="true">Special characters</a>
+        <a class="nav-link" id="chars-tab" data-toggle="tab" href="#chars" role="tab" aria-controls="chars" aria-selected="true">Special </br>  characters</a>
   </li>
 </ul>
 
