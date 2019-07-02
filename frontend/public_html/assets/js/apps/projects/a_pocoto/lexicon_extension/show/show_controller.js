@@ -33,8 +33,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 			projectShowLayout.on("attach",function(){
     
     var status = project.get('status');
-    status="extended-lexicon";
- if(job.statusName=="running"){
+    if(job.statusName=="running"){
           projectShowLoading = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
           projectShowLayout.showChildView('contentRegion',projectShowLoading);
           projectShowLayout.trackJobStatus();
@@ -43,12 +42,12 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
         else {
 
-          if (status=="empty"||status=="profiled"){
+          if (!status['extended-lexicon']){
           projectShowLex = new Show.SingleStep({url:"le",color:"blue",step:"Lexicon Extension",icon:"fas fa-history",id:"js-start-le",text:"Generate the extended lexicon."});
           projectShowLayout.showChildView('contentRegion',projectShowLex);
 
           }
-          else if (status=="extended-lexicon"){
+          else {
 
               var fetchingle = ProjectEntities.API.getLexiconExtension({pid:id});
                $.when(fetchingle).done(function(le){
