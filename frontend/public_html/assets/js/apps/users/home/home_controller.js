@@ -45,6 +45,7 @@ define(["app","common/util","apps/users/home/home_view","apps/header/show/show_v
 
 
 		var usersHomeHub = new Home.Hub({cards:cards,currentRoute:"users"});
+        var usersFooterPanel = new Home.FooterPanel();
 
         usersHomeHub.on("cardHub:clicked",function(data){
             App.trigger(data.url);
@@ -53,7 +54,8 @@ define(["app","common/util","apps/users/home/home_view","apps/header/show/show_v
 		usersHomeLayout.on("attach",function(){
                 usersHomeLayout.showChildView('headerRegion',usersHomeHeader);
                 usersHomeLayout.showChildView('contentRegion',usersHomeHub);
-	
+	            usersHomeLayout.showChildView('panelRegion',usersFooterPanel);
+
       
  		}); // on:show
 

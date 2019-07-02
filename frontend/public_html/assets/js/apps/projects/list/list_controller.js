@@ -137,10 +137,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
 		}).fail(function(response){
       
-       var mainRegion = App.mainLayout.getRegion('mainRegion');
-       mainRegion.empty();
-
-         App.mainmsg.updateContent(response.responseText,'danger');                       
+          Util.defaultErrorHandling(response,'danger');
                                     
           }); // $when fetchingprojects
 

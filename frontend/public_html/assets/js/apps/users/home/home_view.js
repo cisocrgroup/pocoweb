@@ -25,6 +25,8 @@ define(["marionette","app","common/views","common/util",
   
  })
 
+  Home.FooterPanel = Views.FooterPanel.extend({
+    });
 
 return Home;
 

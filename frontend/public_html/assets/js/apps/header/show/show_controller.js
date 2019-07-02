@@ -15,8 +15,9 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
     var fetchingVersion = UtilEntities.API.getApiVersion();
     var fetchingLoginCheck = UserEntities.API.loginCheck();
-      $.when(fetchingVersion,fetchingLoginCheck).done(function(api_version,logged_in_user){
-        console.log(logged_in_user)
+
+      $.when(fetchingVersion,fetchingLoginCheck).done(function(api_version,login_check){
+        console.log(login_check)
         var headerShowLayout = new Show.Layout();
          var headerLogin ;
  
@@ -85,9 +86,11 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
      
 
   headerShowTopbar.on("attach",function(){
-       if(logged_in_user!=-1){
-      App.mainmsg.updateContent("Welcome back to PoCoWeb: "+logged_in_user.name+"!",'success');
-      headerShowTopbar.setLoggedIn(logged_in_user.name);
+       if(login_check!=-1){
+             var user = login_check['user'];
+
+      App.mainmsg.updateContent("Welcome back to PoCoWeb: "+user.name+"!",'success');
+      headerShowTopbar.setLoggedIn(user.name);
         headerShowLayout.showChildView('msgRegion',App.mainmsg)
 
       }
@@ -100,14 +103,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
     });
 
 
-          App.mainmsg.on("msg:login",function(data){
-        headerShowTopbar.trigger("nav:login");
-        });
-
-      App.mainmsg.on("msg:logout",function(data){
-       headerShowTopbar.trigger("nav:logout");
-        });
-
+    
 
 
       App.mainLayout.showChildView('headerRegion',headerShowLayout);

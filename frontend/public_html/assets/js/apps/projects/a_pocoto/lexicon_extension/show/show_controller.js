@@ -184,7 +184,8 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
           }).fail(function(response){
                loadingCircleView.destroy();
-                App.mainmsg.updateContent(response.responseText,'danger');
+               Util.defaultErrorHandling(response,'danger');
+
           });  // $when fetchingproject
 
 

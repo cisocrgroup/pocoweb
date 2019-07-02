@@ -11,7 +11,17 @@ if(asModal) {
         </div>
       </div>
       <div class="modal-body">
- <% } %>
+ <% } else {%>
+ <div class="container">
+  <div class="row" style="padding-bottom:50px;">
+        <div class="col col-sm-12"><div class="defaulthl"> <span> <i class="fas fa-sign-in-alt card_main_icon red" aria-hidden="true"></i>
+         Login </span>
+         </div>
+         </div>
+       <div class="col col-sm-4"></div>
+      <div class="col col-sm-4">
+
+  <% } %>
 
 <form>
   <div class="form-group">
@@ -35,4 +45,23 @@ if(asModal) {
 </div>
 </div>
 
- <% } %>
+ <% } else { %>
+
+</div>
+<div class="col col-sm-4"></div>
+
+</div>
+
+
+   <div class="row">
+
+  <div class="col col-md-12">
+  <button class="btn back_btn js-back btn-primary hover"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>
+
+
+  </div>
+  </div>
+
+</div>
+
+<% } %>

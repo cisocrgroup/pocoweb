@@ -158,12 +158,18 @@ addAlignedLine : function(line){
       $('.right-nav').append('<li class="nav-item js-login"><a class="nav-link" href="#"><i class="fas fa-sign-in-alt fa-sm"></i> Login</a></li>');
     },
 
-    defaultErrorHandling: function(status) {
-      
-      require(["app","apps/users/login/login_view"], function(App,Login){
+    defaultErrorHandling: function(response,mode) {
+      require(["app"],function(App){
+            var mainRegion = App.mainLayout.getRegion('mainRegion');
+            mainRegion.empty();
+         if(response.status==401){
+          App.trigger("nav:login",false);
+         }
+         App.mainmsg.updateContent(response.responseText,mode);                       
 
       });
-
+     
+      
     }
 
 });

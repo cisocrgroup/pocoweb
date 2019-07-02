@@ -339,7 +339,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
           }).fail(function(response){
                 loadingCircleView.destroy();
-                App.mainmsg.updateContent(response.responseText,'danger');
+                 Util.defaultErrorHandling(response,'danger');
+
           });  // $when fetchingproject
 
 

@@ -89,11 +89,7 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 
 		}).fail(function(response){ 
 
-		      var mainRegion = App.mainLayout.getRegion('mainRegion');
-		       mainRegion.empty();
-
-		         App.mainmsg.updateContent(response.responseText,'danger');              
-		                          
+		      Util.defaultErrorHandling(response,'danger');                        
                          
                                         
           }); //  $.when(fetchingAuth).done // $when fetchingUsers
