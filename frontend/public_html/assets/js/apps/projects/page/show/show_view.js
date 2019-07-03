@@ -103,11 +103,18 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         }
       },
       special_characters_hover : function(e){
+		  var f = function(str) {
+			  return '\\u' + str.split('').map(function(t) {
+				  return ('000' + t.charCodeAt(0).toString(16)).substr(-4)
+			  }).join('\\u');
+		  };
           e.stopPropagation();
           e.preventDefault();
 		  var tr = $(e.currentTarget);
 		  var c = $(tr.find('td')[0]).html();
-		  $(tr).attr("title", "click to add `" + c + "` to the clipboard");
+		  $(tr).attr("title",
+					 "click to add '" + c + "' to the clipboard or type: '" + f(c) + "'");
+
 	  },
        special_characters_clicked : function(e){
         e.stopPropagation();
