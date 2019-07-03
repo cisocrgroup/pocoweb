@@ -43,12 +43,13 @@ BOOST_AUTO_TEST_CASE(UpdateProjectOwner) {
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(SelectBook) {
-  db.expect("SELECT books.bookid,books.year,books.title,books.author,"
-            "books.description,books.uri,books.profilerurl,books.directory,"
-            "books.lang "
-            "FROM books "
-            "INNER JOIN projects ON (books.bookid=projects.origin) "
-            "WHERE (books.bookid=13)");
+  db.expect(
+      "SELECT books.bookid,books.year,books.title,books.author,"
+      "books.description,books.uri,books.profilerurl,books.directory,"
+      "books.lang,books.profiled,books.extendedlexicon,books.postcorrected "
+      "FROM books "
+      "INNER JOIN projects ON (books.bookid=projects.origin) "
+      "WHERE (books.bookid=13)");
   select_book(db, user, 13);
   db.validate();
 }
@@ -140,7 +141,8 @@ BOOST_AUTO_TEST_CASE(UpdateBook) {
   book->data.lang = "new-language";
   db.expect("UPDATE books SET author='new-author',title='new-title',"
             "directory='new-directory',year=1917,uri='new-uri',"
-            "description='new-description',lang='new-language' "
+            "description='new-description',"
+            "profiled=0,extendedlexicon=0,postcorrected=0,lang='new-language' "
             "WHERE (books.bookid=0)");
   update_book(db, *book);
   db.validate();
@@ -160,7 +162,8 @@ BOOST_AUTO_TEST_CASE(SelectProjectIds) {
             "projects.id,projects.origin,projects.owner,projects.pages,"
             "books.bookid,books.year,books.title,books.author,books."
             "description,books.uri,books.profilerurl,books.directory,books."
-            "lang FROM books INNER "
+            "lang,books.profiled,books.extendedlexicon,books.postcorrected "
+            "FROM books INNER "
             "JOIN projects ON (books.bookid=projects.origin) WHERE "
             "(projects.owner=42)");
   // db.expect("SELECT projects.id FROM projects "
