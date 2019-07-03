@@ -3,7 +3,6 @@
 #include "core/Book.hpp"
 #include "core/Package.hpp"
 #include "core/Page.hpp"
-#include "core/Searcher.hpp"
 #include "core/Session.hpp"
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
@@ -19,27 +18,21 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* SplitRoute::route_ = SPLIT_ROUTE_ROUTE;
-const char* SplitRoute::name_ = "SplitRoute";
+const char *SplitRoute::route_ = SPLIT_ROUTE_ROUTE;
+const char *SplitRoute::name_ = "SplitRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-SplitRoute::Register(App& app)
-{
+void SplitRoute::Register(App &app) {
   CROW_ROUTE(app, SPLIT_ROUTE_ROUTE).methods("POST"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-SplitRoute::impl(HttpPost, const Request& req, int bid) const
-{
+Route::Response SplitRoute::impl(HttpPost, const Request &req, int bid) const {
   return split(req, bid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-SplitRoute::split(const Request& req, int bid) const
-{
+Route::Response SplitRoute::split(const Request &req, int bid) const {
   CROW_LOG_DEBUG << "(SplitRoute::split) body: " << req.body;
   auto data = crow::json::load(req.body);
   auto conn = must_get_connection();
@@ -62,7 +55,7 @@ SplitRoute::split(const Request& req, int bid) const
   else
     split_sequencial(proj->origin(), projs);
   MysqlCommiter commiter(conn);
-  for (const auto& p : projs) {
+  for (const auto &p : projs) {
     assert(p);
     insert_project(conn.db(), *p);
   }
@@ -72,9 +65,8 @@ SplitRoute::split(const Request& req, int bid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-SplitRoute::split_random(const Book& book, std::vector<ProjectPtr>& projs) const
-{
+void SplitRoute::split_random(const Book &book,
+                              std::vector<ProjectPtr> &projs) const {
   assert(projs.size() <= book.size());
   std::vector<PagePtr> tmp_pages(book.size());
   std::copy(begin(book), end(book), begin(tmp_pages));
@@ -86,9 +78,9 @@ SplitRoute::split_random(const Book& book, std::vector<ProjectPtr>& projs) const
     assert(projs[i % n]);
     projs[i % n]->push_back(*tmp_pages[i]);
   }
-  for (auto& p : projs) {
+  for (auto &p : projs) {
     assert(p);
-    std::sort(begin(*p), end(*p), [](const auto& a, const auto& b) {
+    std::sort(begin(*p), end(*p), [](const auto &a, const auto &b) {
       assert(a);
       assert(b);
       return a->id() < b->id();
@@ -97,10 +89,8 @@ SplitRoute::split_random(const Book& book, std::vector<ProjectPtr>& projs) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-SplitRoute::split_sequencial(const Book& book,
-                             std::vector<ProjectPtr>& projs) const
-{
+void SplitRoute::split_sequencial(const Book &book,
+                                  std::vector<ProjectPtr> &projs) const {
   assert(projs.size() <= book.size());
   const auto n = projs.size();
   const auto d = book.size() / n;

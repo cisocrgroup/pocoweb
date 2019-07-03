@@ -4,7 +4,6 @@
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/Package.hpp"
 #include "core/Page.hpp"
-#include "core/Searcher.hpp"
 #include "core/Session.hpp"
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
