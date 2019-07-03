@@ -22,7 +22,7 @@ void Searcher::set_project(const Project &project) noexcept {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Searcher::Matches Searcher::find(const std::wstring &str) {
+Searcher::Matches Searcher::find(const std::wstring &str) const {
   return find_impl([&](const auto &token) {
     return ignore_case_ ? boost::iequals(token.wcor(), str)
                         : token.wcor() == str;
@@ -30,7 +30,7 @@ Searcher::Matches Searcher::find(const std::wstring &str) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Searcher::Matches Searcher::find(const std::string &str) {
+Searcher::Matches Searcher::find(const std::string &str) const {
   std::wstring wstr;
   wstr.reserve(str.size());
   utf8::utf8to32(begin(str), end(str), std::back_inserter(wstr));
