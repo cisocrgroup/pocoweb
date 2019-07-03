@@ -1845,6 +1845,7 @@ correction.
 Get the status of a job for the given job-id.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can see the job.
+* If the job failed `500 Internal Server Error` is returned.
 
 #### Query parameters
 You can specify an optional `q=job-name` parameter to check the status
