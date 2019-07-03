@@ -34,11 +34,6 @@ PARSER_TESTS += rest/src/parser/tests/TestHocrParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestOcropusLlocsParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestPageXmlParsing.test
 
-PROFILER_TESTS += rest/src/profiler/tests/TestDocXml.test
-PROFILER_TESTS += rest/src/profiler/tests/TestProfile.test
-PROFILER_TESTS += rest/src/profiler/tests/TestRemoteProfiler.test
-PROFILER_TESTS += rest/src/profiler/tests/TestRemoteProfilerTemplate.test
-
 TESTS = $(UTILS_TESTS) $(CORE_TESTS) $(DATABASE_TESTS) $(PARSER_TESTS) $(PROFILER_TESTS)
 RUN_TESTS = $(patsubst %.test,%.run,$(TESTS))
 %.test: %.o $(LIBS)
