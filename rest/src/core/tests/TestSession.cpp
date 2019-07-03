@@ -14,8 +14,7 @@
 
 using namespace pcw;
 
-struct SessionFixture
-{
+struct SessionFixture {
   ConnectionPoolConnection<MockDb> mock;
   Connection<MockDb> connection;
   BookSptr book;
@@ -24,13 +23,7 @@ struct SessionFixture
   SessionSptr session;
 
   SessionFixture()
-    : mock()
-    , connection(&mock)
-    , book()
-    , project()
-    , user()
-    , session()
-  {
+      : mock(), connection(&mock), book(), project(), user(), session() {
     mock.in_use = true;
     user = 42;
     BookBuilder bbuilder;
@@ -39,8 +32,8 @@ struct SessionFixture
     ProjectBuilder pbuilder;
     pbuilder.set_origin(*book);
     project = pbuilder.build();
-    session = std::make_shared<Session>(
-      user, Config::empty(), std::make_shared<AppCache>(2, 2));
+    session = std::make_shared<Session>(user, Config::empty(),
+                                        std::make_shared<AppCache>(2, 2));
   }
 };
 
@@ -48,14 +41,10 @@ struct SessionFixture
 BOOST_FIXTURE_TEST_SUITE(SessionTest, SessionFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(HasUser)
-{
-  BOOST_CHECK_EQUAL(session->user(), user);
-}
+BOOST_AUTO_TEST_CASE(HasUser) { BOOST_CHECK_EQUAL(session->user(), user); }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(WorksWithNullCache)
-{
+BOOST_AUTO_TEST_CASE(WorksWithNullCache) {
   // just check for segfaults
   session = std::make_shared<Session>(user, Config::empty(), nullptr);
   session->insert_project(connection, *book);
@@ -65,30 +54,26 @@ BOOST_AUTO_TEST_CASE(WorksWithNullCache)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(HasRandomSessionId)
-{
+BOOST_AUTO_TEST_CASE(HasUserSessionId) {
   session = std::make_shared<Session>(user, Config::empty(), nullptr);
   BOOST_CHECK(not session->id().empty());
-  BOOST_CHECK_EQUAL(session->id().size(), 16);
+  BOOST_CHECK_EQUAL(session->id(), std::to_string(user));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(InsertBooks)
-{
+BOOST_AUTO_TEST_CASE(InsertBooks) {
   session->insert_project(connection, *book);
   session->insert_project(connection, *book);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(InsertProjects)
-{
+BOOST_AUTO_TEST_CASE(InsertProjects) {
   session->insert_project(connection, *project);
   session->insert_project(connection, *project);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(InsertBooksAndProjects)
-{
+BOOST_AUTO_TEST_CASE(InsertBooksAndProjects) {
   session->insert_project(connection, *book);
   session->insert_project(connection, *project);
   session->insert_project(connection, *book);
@@ -96,15 +81,13 @@ BOOST_AUTO_TEST_CASE(InsertBooksAndProjects)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(FindBooks)
-{
+BOOST_AUTO_TEST_CASE(FindBooks) {
   session->insert_project(connection, *book);
   auto tmp = session->find_project(connection, book->id());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(FindProjects)
-{
+BOOST_AUTO_TEST_CASE(FindProjects) {
   session->insert_project(connection, *project);
   auto tmp = session->find_project(connection, project->id());
 }
