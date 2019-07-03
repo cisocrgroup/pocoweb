@@ -12,4 +12,4 @@ docker-run: docker-build
 
 .PHONY: docker-push
 docker-push: docker-build
-	${SUDO} docker push ${TAGS}
+	${SUDO} docker push ${TAG}
