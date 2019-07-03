@@ -62,8 +62,88 @@ App.on("start", function(){
 
     var app_region = App.getRegion();
 
+      App.on("nav:login",function(asModal){
+
+      require(["apps/users/login/login_view","entities/users","common/util"], function(Login,UserEntities,Util){
+
+
+     var loginView = new Login.Form({asModal:asModal});
+
+     if(asModal){
+
+      App.mainLayout.showChildView('dialogRegion',loginView);
+      $('#loginModal').modal();
+
+     }
+     else {
+     
+      App.mainLayout.showChildView('mainRegion',loginView);
+     }
+
+
+     loginView.on("login:submit",function(data){
+      if(asModal) $('#loginModal').modal('hide');
+
+    var loggingInUser = UserEntities.API.login(data);
+
+
+                 $.when(loggingInUser).done(function(result){
+                                            
+                        App.mainmsg.updateContent(result.message,'success');
+                         Util.setLoggedIn(result.user.name);
+                          
+                          var currentRoute =  App.getCurrentRoute();
+                          var page_re = /projects\/\d+.*/;
+                          var page_route_found = App.getCurrentRoute().match(page_re);
+
+                          if(page_route_found!=null){
+                             var split = currentRoute.split("/")
+                             App.trigger("projects:show",split[1],split[3])
+                          }
+
+                          switch(currentRoute) {
+                            case "projects":
+                              App.trigger("projects:list")
+                              break;
+                            case "users/list":
+                              App.trigger("users:list")
+                              break;
+                            case "users/account":
+                              App.trigger("users:show","account")
+                              break;
+                              case "users/new":
+                              App.trigger("users:new")
+                              break;
+                            default:
+                              App.trigger("home:portal")
+                          } 
+
+                                            
+                }).fail(function(response){ 
+                  App.mainmsg.updateContent(response.responseText,'danger');                       
+                                      
+          }); //  $.when(loggingInUser).done
+
+       });
+
+     loginView.on("go:back",function(){
+        App.trigger("home:portal");
+     });
+
+      });
+    });
+
+
     App.mainLayout = new MainView();
     App.mainmsg  = new Views.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
+
+     App.mainmsg.on("msg:login",function(data){
+     App.trigger("nav:login",true);
+     });
+
+     App.mainmsg.on("msg:logout",function(data){
+     App.trigger("nav:logout");
+     });
 
      App.showView(App.mainLayout);
 

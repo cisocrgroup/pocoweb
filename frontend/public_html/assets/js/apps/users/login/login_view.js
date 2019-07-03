@@ -7,13 +7,19 @@ define(["app","marionette",
 function(App,Marionette,loginformTpl,syphon,Util){
 
   var Login = {};
-
-
+     
  Login.Form = Marionette.View.extend({
    template: loginformTpl,
+   asModal:true,
    events: {
-   "click .js-loginsubmit": "submitClicked"
+   "click .js-loginsubmit": "submitClicked",
+   "click button.js-back":   "backClicked",
 
+   },
+   serializeData: function(){
+      return {
+        asModal: Marionette.getOption(this,"asModal")
+      }
    },
 
    submitClicked: function(e){
@@ -26,6 +32,12 @@ function(App,Marionette,loginformTpl,syphon,Util){
     this.trigger("login:submit", data);
    },
 
+    backClicked: function(e){
+
+      e.preventDefault();
+      this.trigger("go:back");
+       
+     },
   customValidate: function(data){
 
         if(!this.model.isValid('username')) { var error = this.model.preValidate('username', data['username']); Util.showFormErrors("username",error); }

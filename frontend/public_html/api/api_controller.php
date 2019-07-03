@@ -1080,7 +1080,7 @@ function login(){
         header("status: ".$status);
 
         $result['user'] = $session['user'];
-        $result['message'] = "You have successfully logged in";
+        $result['message'] = "You have successfully logged in!";
         echo json_encode($result);
 
     break;
@@ -1103,45 +1103,32 @@ function logout(){
   $api->get_request();
 
   $status = $api->get_http_status_code();
-  switch ($status) {
-  case "200":
         $result=array();
-        $session = $api->get_response();
-       // backend_set_session_cookie("");
-        unset($_COOKIE['pcw-sid']);
-        setcookie('pcw-sid', '', time() - 3600, '/');
+        // unset($_COOKIE['pocoweb-auth']);
+        setcookie('pocoweb-auth', '', time() + 20);
 
         header("status: ".$status);
 
         $result['message'] = 'You have successfully logged out! <a href="#" class="js-login">Log back in?</a>';
-        echo json_encode($result);
-
-    break;
-  case "403":
-         //   backend_set_session_cookie("");
-            unset($_COOKIE['pcw-sid']);
-            setcookie('pcw-sid', '', time() - 3600, '/');
-
-
-    header("status: ".$status);
-    echo  backend_get_http_status_info($status);
-    break;
-  default:
-        header("status: ".$status);
-        echo backend_get_http_status_info($status);
-    break;
-  }
-
-  return $api;
+        echo json_encode($result);  
 }
 
 function login_check(){
 
-      if(isset(backend_get_session_cookie()['user'])){
-        $session = backend_get_session_cookie();
-        unset($session['user']['password']);
-        echo json_encode($session['user']);
+      if(backend_get_session_cookie()!=""){
+        
+        $api = new Api(backend_get_login_route());
+        $api->set_session_id(backend_get_session_cookie());
+        $api->get_request();
 
+        $status = $api->get_http_status_code();
+              $result=array();
+
+              header("status: ".$status);
+
+              $session = $api->get_response();
+
+              echo json_encode($session);  
       }
       else {
         echo -1;
@@ -1172,8 +1159,6 @@ function get_api_version(){
     break;
   }
 
-
-  return $api;
 }
 
 ?>

@@ -52,12 +52,9 @@ define(["app","common/util","apps/users/new/new_view"], function(App,Util,New){
 
 		}).fail(function(response){ 
 
-		      var mainRegion = App.mainLayout.getRegion('mainRegion');
-		       mainRegion.empty();
+      			 Util.defaultErrorHandling(response,'danger');                        
 
-		         App.mainmsg.updateContent(response.responseText,'danger');              
-		                          
-                         
+		                                                  
                                         
           }); //  $.when(fetchingAuth).done // $when fetchingUsers
 

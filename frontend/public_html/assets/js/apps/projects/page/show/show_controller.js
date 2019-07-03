@@ -338,7 +338,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
           App.mainLayout.showChildView('mainRegion',projectShowLayout);
 
           }).fail(function(response){
-                App.mainmsg.updateContent(response.responseText,'danger');
+                loadingCircleView.destroy();
+                 Util.defaultErrorHandling(response,'danger');
+
           });  // $when fetchingproject
 
 

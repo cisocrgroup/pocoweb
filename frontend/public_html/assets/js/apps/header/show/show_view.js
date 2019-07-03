@@ -27,17 +27,20 @@ define(["marionette","app","common/views","common/util",
    template: navbarTpl,
    triggers:{
       "click .js-logout":"nav:logout",
-      "click .js-login":"nav:login",
       "click .js-exit":"nav:exit",
       "click #help_button":"nav:help"
      },
    
     events:{
+      "click .js-login":"login_clicked",
       'click .nav_item.active' : 'nav_item_clicked',
       'click .logo_area_left' : 'nav_item_clicked'
 
     },
 
+    login_clicked:function(){
+      App.trigger("nav:login",true);
+    },
 
     
       serializeData: function(){

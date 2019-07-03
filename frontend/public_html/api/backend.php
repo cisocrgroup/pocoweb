@@ -62,8 +62,8 @@ function backend_set_session_cookie($session) {
 	global $config;
     $json = json_encode($session);
 	$res = setcookie(
-        $config["cookies"]["sid"],
-        $json,
+		"pocoweb-auth",
+		$session['auth'],
         time() + $config["cookies"]["expires"]);
 	if (!$res) {
 		error_log("(backend_set_session_cookie) " .
@@ -75,11 +75,11 @@ function backend_get_session_cookie() {
 		//print_r($_COOKIE);
 	global $config;
 	$res = "";
-	if (!isset($_COOKIE[$config["cookies"]["sid"]])) {
-        return NULL;
+	if (!isset($_COOKIE["pocoweb-auth"])) {
+        return "";
     }
-    $res = $_COOKIE[$config["cookies"]["sid"]];
-    return json_decode($res, TRUE);
+    $res = $_COOKIE["pocoweb-auth"];
+    return $res;
 }
 
 function backend_get_logout_route() {

@@ -37,8 +37,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
       	projectShowFooterPanel = new Show.FooterPanel();
 
 
-            var status = project.get('status');
-            status="post-corrected";
+      var status = project.get('status');
       if(job.statusName=="running"){
           projectShowLoading = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
           projectShowLayout.showChildView('contentRegion',projectShowLoading);
@@ -47,12 +46,12 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
         else {
 
-          if (status=="empty"||status=="profiled"){
-          projectShowProtocol = new Show.SingleStep({url:"pr",color:"blue",step:"Postcorrection",icon:"fas fa-play",id:"js-start-pc",text:"Start automated postcorrection"});
+          if (!status['post-corrected']){
+          projectShowProtocol = new Show.SingleStep({url:"pr",color:"red",step:"Postcorrection",icon:"fas fa-play",id:"js-start-pc",text:"Start automated postcorrection"});
           projectShowLayout.showChildView('contentRegion',projectShowProtocol);
           
           }
-          else if (status=="post-corrected"){
+          else {
 
                var fetchingprotocol = ProjectEntities.API.getProtocol({pid:id});
 
@@ -192,7 +191,8 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
           }).fail(function(response){
                loadingCircleView.destroy();
-                App.mainmsg.updateContent(response.responseText,'danger');
+                Util.defaultErrorHandling(response,'danger');
+
           });  // $when fetchingproject
 
 
