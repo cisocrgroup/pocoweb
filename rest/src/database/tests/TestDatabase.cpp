@@ -4,7 +4,6 @@
 #include "core/Book.hpp"
 #include "core/Line.hpp"
 #include "core/Page.hpp"
-#include "core/Password.hpp"
 #include "database/Database.hpp"
 #include "database/Tables.h"
 #include "utils/MockDb.h"
@@ -15,22 +14,17 @@
 using namespace sqlpp;
 using namespace pcw;
 
-struct UsersFixture
-{
+struct UsersFixture {
   int user;
   MockDb db;
-  UsersFixture()
-    : user(42)
-    , db()
-  {}
+  UsersFixture() : user(42), db() {}
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_FIXTURE_TEST_SUITE(Users, UsersFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(SelectProjectEntry)
-{
+BOOST_AUTO_TEST_CASE(SelectProjectEntry) {
   db.expect("SELECT "
             "projects.id,projects.origin,projects.owner,projects.pages "
             "FROM projects WHERE (projects.id=42)");
@@ -41,16 +35,14 @@ BOOST_AUTO_TEST_CASE(SelectProjectEntry)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(UpdateProjectOwner)
-{
+BOOST_AUTO_TEST_CASE(UpdateProjectOwner) {
   db.expect("UPDATE projects SET owner=42 WHERE (projects.id=13)");
   update_project_owner(db, 13, 42);
   db.validate();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(SelectBook)
-{
+BOOST_AUTO_TEST_CASE(SelectBook) {
   db.expect("SELECT books.bookid,books.year,books.title,books.author,"
             "books.description,books.uri,books.profilerurl,books.directory,"
             "books.lang "
@@ -64,16 +56,14 @@ BOOST_AUTO_TEST_CASE(SelectBook)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
 
-struct BooksFixture : public UsersFixture
-{
+struct BooksFixture : public UsersFixture {
   BookSptr book;
   PageSptr page;
   LineSptr line;
 
-  BooksFixture()
-  {
+  BooksFixture() {
     LineBuilder lbuilder;
-    lbuilder.set_box({ 2, 3, 4, 5 });
+    lbuilder.set_box({2, 3, 4, 5});
     lbuilder.set_image_path("image");
     lbuilder.append("text", 4, 1.0);
     line = lbuilder.build();
@@ -81,7 +71,7 @@ struct BooksFixture : public UsersFixture
     PageBuilder pbuilder;
     pbuilder.set_image_path("image");
     pbuilder.set_ocr_path("ocr");
-    pbuilder.set_box({ 1, 2, 3, 4 });
+    pbuilder.set_box({1, 2, 3, 4});
     pbuilder.append(*line);
     page = pbuilder.build();
 
@@ -103,8 +93,7 @@ struct BooksFixture : public UsersFixture
 BOOST_FIXTURE_TEST_SUITE(Books, BooksFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(InsertProject)
-{
+BOOST_AUTO_TEST_CASE(InsertProject) {
   db.expect("INSERT INTO projects (origin,pages,owner) VALUES(0,1,42)");
   db.expect("INSERT INTO project_pages (projectid,pageid) VALUES(0,1)");
   auto view = insert_project(db, *book);
@@ -113,8 +102,7 @@ BOOST_AUTO_TEST_CASE(InsertProject)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(InsertBook)
-{
+BOOST_AUTO_TEST_CASE(InsertBook) {
   db.expect("INSERT INTO projects (origin,owner,pages) VALUES(0,42,1)");
   db.expect("UPDATE projects SET origin=0 WHERE (projects.id=0)");
   db.expect("INSERT INTO books (author,title,directory,year,uri,bookid,"
@@ -142,8 +130,7 @@ BOOST_AUTO_TEST_CASE(InsertBook)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(UpdateBook)
-{
+BOOST_AUTO_TEST_CASE(UpdateBook) {
   book->data.author = "new-author";
   book->data.title = "new-title";
   book->data.dir = "new-directory";
@@ -160,8 +147,7 @@ BOOST_AUTO_TEST_CASE(UpdateBook)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(SelectProject)
-{
+BOOST_AUTO_TEST_CASE(SelectProject) {
   db.expect("SELECT project_pages.pageid FROM project_pages "
             "WHERE (project_pages.projectid=42)");
   select_project(db, *book, 42);
@@ -169,8 +155,7 @@ BOOST_AUTO_TEST_CASE(SelectProject)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(SelectProjectIds)
-{
+BOOST_AUTO_TEST_CASE(SelectProjectIds) {
   db.expect("SELECT "
             "projects.id,projects.origin,projects.owner,projects.pages,"
             "books.bookid,books.year,books.title,books.author,books."
