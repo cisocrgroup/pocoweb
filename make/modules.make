@@ -12,4 +12,4 @@ MODS += modules/date.gitmodule
 	$V touch $@
 	$V $(RM) -f mod.lock
 
-ALL += $(MODS)
+#ALL += $(MODS)
