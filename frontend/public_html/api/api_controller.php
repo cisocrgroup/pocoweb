@@ -900,23 +900,17 @@ function get_users(){
 }
 
 function get_user(){
-
-      if(!isset($_POST['id'])){
-      if(isset(backend_get_session_cookie()['user'])){
-        $session = backend_get_session_cookie();
-        echo json_encode($session['user']);
-      }
-      else {
-       header("status: 403");
-        echo  backend_get_http_status_info("403").'. <a href="#" class="js-login">Please login.</a>';
-      }
-
+    $auth = backend_get_session_cookie();
+	$api = new Api(backend_get_login_route());
+	$api->set_session_id($auth);
+	$api->get_request();
+    $status = $api->get_http_status_code();
+    if ($status != "200") {
+        header("status: " . $status);
+        echo backend_get_http_status_info($status);
+        return;
     }
-    else{
-      echo "to do";
-    }
-
-
+    echo json_encode($api->get_response()['user']);
 }
 
 function update_user() {
@@ -1110,13 +1104,13 @@ function logout(){
         header("status: ".$status);
 
         $result['message'] = 'You have successfully logged out! <a href="#" class="js-login">Log back in?</a>';
-        echo json_encode($result);  
+        echo json_encode($result);
 }
 
 function login_check(){
 
       if(backend_get_session_cookie()!=""){
-        
+
         $api = new Api(backend_get_login_route());
         $api->set_session_id(backend_get_session_cookie());
         $api->get_request();
@@ -1128,7 +1122,7 @@ function login_check(){
 
               $session = $api->get_response();
 
-              echo json_encode($session);  
+              echo json_encode($session);
       }
       else {
         echo -1;
