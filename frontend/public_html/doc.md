@@ -551,6 +551,7 @@ from this Pocoweb back-end using curl you would have to run:
 <code>curl <?php global $config; echo
 $config['backend']['externalURL'];?>/books/27/pages/38/lines/13?auth=my-session-id</code>
 
+---
 <a id='api-get-version'></a>
 ### [GET] `rest-url`/api-version
 
@@ -564,6 +565,7 @@ Get the semantic version of the back-end instance.
 }
 ```
 
+---
 <a id='api-post-login'></a>
 ### [POST] `rest-url`/login
 You have to log in with a valid user account to use most of the API calls
@@ -595,6 +597,7 @@ After a successfully login you can use the returned session id in the
 }
 ```
 
+---
 <a id='api-get-login'></a>
 ### [GET] `rest-url`/login
 Check if logged in and get the settings of the logged in user account.
@@ -611,6 +614,7 @@ Check if logged in and get the settings of the logged in user account.
 }
 ```
 
+---
 <a id='api-post-users'></a>
 ### [POST] `rest-url`/users
 Create a new user account.
@@ -642,6 +646,7 @@ Create a new user account.
 }
 ```
 
+---
 <a id='api-get-users'></a>
 ### [GET] `rest-url`/users
 Get a list of all users in the system.
@@ -672,6 +677,7 @@ Get a list of all users in the system.
 ```
 
 
+---
 <a id='api-post-users-uid'></a>
 ### [PUT] `rest-url`/users/`uid`
 Update the account settings of an user with an id of `uid`.
@@ -708,6 +714,7 @@ not possible to change a user's id.
 }
 ```
 
+---
 <a id='api-get-users-uid'></a>
 ### [GET] `rest-url`/users/`uid`
 
@@ -727,6 +734,7 @@ Get the settings of an user account with an id of `uid`.
 }
 ```
 
+---
 <a id='api-delete-users-uid'></a>
 ### [DELETE] `rest-url`/users/`uid`
 Delete the user account of the user with an id of `uid`.
@@ -741,6 +749,7 @@ deletes the package information, but not the project information.
 It is save to delete a user that still owns a package.
 Note that if a project is deleted, all associated packages are deleted as well.
 
+---
 <a id='api-get-books'></a>
 ### [GET] `rest-url`/books
 Get all books of an user account.
@@ -767,6 +776,7 @@ Get all books of an user account.
 }
 ```
 
+---
 <a id='api-post-books'></a>
 ### [POST] `rest-url`/books
 Create a new project.
@@ -794,6 +804,7 @@ Use `Content-Type: application/json` as request header.
 }
 ```
 
+---
 <a id='api-get-books-pid'></a>
 ### [GET] `rest-url`/books/`pid`
 Get the content of a project or package.
@@ -821,6 +832,7 @@ Get the content of a project or package.
 }
 ```
 
+---
 <a id='api-post-books-pid'></a>
 ### [POST] `rest-url`/books/`pid`
 Update the meta data of a project.
@@ -839,6 +851,7 @@ Update the meta data of a project.
 }
 ```
 
+---
 <a id='api-delete-books-pid'></a>
 ### [DELETE] `rest-url`/books/`pid`
 Delete a project.
@@ -852,6 +865,7 @@ associated packages.
 In addition to this the page and line images and all remaining project
 archives are removed from the server.
 
+---
 <a id='api-post-books-pid-split'></a>
 ### [POST] `rest-url`/books/`pid`/split
 Split a [project into packages](#user-content-projects).
@@ -890,6 +904,7 @@ should be generated at random or sequential. If omitted `random=false` is assume
 }
 ```
 
+---
 <a id='api-post-books-pid-adaptive-tokens'></a>
 ### [GET] `rest-url`/books/`pid`/adaptive-tokens
 Get a list of the adaptive tokens of the last profiler run.
@@ -904,6 +919,7 @@ Get a list of the adaptive tokens of the last profiler run.
 }
 ```
 
+---
 <a id='api-get-books-pid-download'></a>
 ### [GET] `rest-url`/books/`pid`/download
 Download a project.
@@ -935,6 +951,7 @@ only the according ground truth files are updated.
 }
 ```
 
+---
 <a id='api-get-books-pid-assign'></a>
 ### [GET] `rest-url`/books/`pid`/assign
 Assign a packages to another user.
@@ -945,6 +962,7 @@ Assign a packages to another user.
 * The id of the user to which the package should be assigned,
 must be given with the `uid=user-id` parameter.
 
+---
 <a id='api-get-books-pid-finish'></a>
 ### [GET] `rest-url`/books/`pid`/finish
 Reassign a package to its original owner.
@@ -952,6 +970,7 @@ Reassign a package to its original owner.
 * Only the owner of a package can reassign a it.
 
 
+---
 <a id='api-get-books-pid-search'></a>
 ### [GET] `rest-url`/books/`pid`/search
 Search for a token or error pattern in a project or package with id `pid`.
@@ -1023,6 +1042,7 @@ search should be performed. If omitted `p=0` is assumed.
 }
 ```
 
+---
 <a id='api-get-books-pid-pages-pageid'></a>
 ### [GET] `rest-url`/books/`pid`/pages/`pageid`
 Get the content of a page with id `pageid` of a package or project with id `pid`.
@@ -1094,6 +1114,7 @@ Get the content of a page with id `pageid` of a package or project with id `pid`
 }
 ```
 
+---
 <a id='api-delete-books-pid-pages-pageid'></a>
 ### [DELETE] `rest-url`/books/`pid`/pages/`pageid`
 Delete the pages with `pageid` from the project with id `pid`.
@@ -1102,6 +1123,7 @@ Delete the pages with `pageid` from the project with id `pid`.
   from packages.
 * Only the owner of a project can delete it.
 
+---
 <a id='api-get-books-pid-pages-first'></a>
 ### [GET] `rest-url`/books/`pid`/pages/first
 Get the first page of a project or package with id `pid`.
@@ -1149,6 +1171,7 @@ Get the first page of a project or package with id `pid`.
   ]
 }
 ```
+---
 <a id='api-get-books-pid-pages-last'></a>
 ### [GET] `rest-url`/books/`pid`/pages/last
 Get the last page of a project or package with id `pid`.
@@ -1197,6 +1220,7 @@ Get the last page of a project or package with id `pid`.
 }
 ```
 
+---
 <a id='api-get-books-pid-pages-pageid-next-n'></a>
 ### [GET] `rest-url`/books/`pid`/pages/`pageid`/next/`n`
 Get the `n`-th next page of a page with id `pageid` of a project or package with id `pid`.
@@ -1245,6 +1269,7 @@ Get the `n`-th next page of a page with id `pageid` of a project or package with
 }
 ```
 
+---
 <a id='api-get-books-pid-pages-pageid-prev-n'></a>
 ### [GET] `rest-url`/books/`pid`/pages/`pageid`/prev/`n`
 Get the `n`-th previous page of a page with id `pageid` of a project or package with id `pid`.
@@ -1293,6 +1318,7 @@ Get the `n`-th previous page of a page with id `pageid` of a project or package 
 }
 ```
 
+---
 <a id='api-get-books-pid-pages-pageid-lines-lid'></a>
 ### [GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`
 Get the line with id `lid` of a page with id `pageid` from a project
@@ -1325,6 +1351,7 @@ or package with id `pid`.
 }
 ```
 
+---
 <a id='api-post-books-pid-pages-pageid-lines-lid'></a>
 ### [POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`
 Correct line `lid` in page `pageid` of project or package `pid`.
@@ -1363,6 +1390,7 @@ Correct line `lid` in page `pageid` of project or package `pid`.
 }
 ```
 
+---
 <a id='api-delete-books-pid-pages-pageid-lines-lid'></a>
 ### [DELETE] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`
 Delete line `lid` in page `pageid` of project with id `pid`.
@@ -1371,6 +1399,7 @@ Delete line `lid` in page `pageid` of project with id `pid`.
   from packages.
 * Only the owner of a project can delete a line.
 
+---
 <a id='api-post-books-pid-pages-pageid-lines-lid-tokens-tid'></a>
 ### [POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`
 Correct word `tid` in line `lid` in page `pageid` of project or package `pid`.
@@ -1411,6 +1440,7 @@ Correct word `tid` in line `lid` in page `pageid` of project or package `pid`.
 }
 ```
 
+---
 <a id='api-post-books-pid-pages-pageid-lines-lid-tokens-tid-split-images'></a>
 ### [GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`/split-images
 Get the left, middle and right split image of a given token with id `tid`
@@ -1429,6 +1459,7 @@ in line `lid` in page `pageid` of a project or package with an id of `pid`.
 If there are no left and/or right images in the split,
 `leftImg` and/or `rightImg` can equal `null`.
 
+---
 <a id='api-get-books-pid-suggestions'></a>
 ### [GET] `rest-url`/books/`pid`/suggestions
 Get correction suggestions for a query in a project or package with an id `pid`.
@@ -1467,6 +1498,7 @@ search should be performed. If omitted `p=0` is assumed.
 }
 ```
 
+---
 <a id='api-get-books-pid-pages-pageid-lines-lid-tokens-tid-suggestions'></a>
 ### [GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`/suggestions
 Get correction suggestions for a token `tid` in a line `lid` in a page `pid` of
@@ -1496,6 +1528,7 @@ a project with an id `pid`.
 }
 ```
 
+---
 <a id='api-get-books-pid-suspicious-words'></a>
 ### [GET] `rest-url`/books/`pid`/suspicious-words
 Get the suspicious words in the project or package with an id `pid`.
@@ -1518,6 +1551,7 @@ Get the suspicious words in the project or package with an id `pid`.
 }
 ```
 
+---
 <a id='api-get-books-pid-pages-pageid-suspicious-words'></a>
 ### [GET] `rest-url`/books/`pid`/pages/`pageid`/suspicious-words
 Get the suspicious words in page `pageid` of project or package with
@@ -1541,6 +1575,7 @@ an id `pid`.
 }
 ```
 
+---
 <a id='api-get-books-pid-pages-pageid-lines-lid-suspicious-words'></a>
 ### [GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/suspicious-words
 Get the suspicious words in line `lid` in page `pageid` of project or package with
@@ -1564,6 +1599,7 @@ an id `pid`.
 }
 ```
 
+---
 <a id='api-get-books-pid-profile'></a>
 ### [GET] `rest-url`/profile/books/`pid`
 Get profiler suggestions after the according profiling
@@ -1596,6 +1632,7 @@ whole profile for each type in the document is returned.
 }
 ```
 
+---
 <a id='api-post-books-pid-profile'></a>
 ### [POST] `rest-url`/profile/books/`pid`
 Request to profile the project with an id `pid` or request to profile
@@ -1624,6 +1661,7 @@ used for the profiling.
 }
 ```
 
+---
 <a id='api-get-profiler-languages'></a>
 ### [GET] `rest-url`/profile/languages
 Get the available languages of a language profiler.
@@ -1641,6 +1679,7 @@ Use `local` to use the local profiler. If omitted, `url=local` is assumed.
 }
 ```
 
+---
 <a id='api-get-global-ocr-models'></a>
 ### [GET] `rest-url`/ocr
 Get the list of available global ocr models.
@@ -1659,6 +1698,7 @@ Get the list of available global ocr models.
 }
 
 ```
+---
 <a id='api-get-ocr-models'></a>
 ### [GET] `rest-url`/ocr/books/`pid`
 Get the list of available global ocr models and specific trained
@@ -1679,6 +1719,7 @@ models for the project.
 }
 
 ```
+---
 <a id='api-post-ocr-book'></a>
 ### [POST] `rest-url`/ocr/books/`pid`
 Starts an OCR [job](#user-content-api-get-jobs) on the given project
@@ -1701,6 +1742,7 @@ Starts an OCR [job](#user-content-api-get-jobs) on the given project
 }
 ```
 
+---
 <a id='api-post-ocr-book-page'></a>
 ### [POST] `rest-url`/ocr/books/`pid`/pages/`pageid`
 Starts an OCR [job](#user-content-api-get-jobs) on the given page.
@@ -1722,6 +1764,7 @@ Starts an OCR [job](#user-content-api-get-jobs) on the given page.
 }
 ```
 
+---
 <a id='api-post-ocr-book-page-line'></a>
 ### [POST] `rest-url`/ocr/books/`pid`/pages/`pageid`/lines/`lid`
 Starts an OCR [job](#user-content-api-get-jobs) on the given line.
@@ -1743,6 +1786,7 @@ Starts an OCR [job](#user-content-api-get-jobs) on the given line.
 }
 ```
 
+---
 <a id='api-post-train-book'></a>
 ### [POST] `rest-url`/ocr/train/books/`pid`
 Starts the training [job](#user-content-api-get-jobs) of an individual
@@ -1765,6 +1809,7 @@ OCR-model for the given book (or package).
 }
 ```
 
+---
 <a id='api-get-el'></a>
 ### [GET] `rest-url`/postcorrect/el/books/`pid`
 Get the extended lexicon for the project.  The extendend lexicon is
@@ -1787,6 +1832,8 @@ according [post request](#user-content-api-post-el) has finished.
 	}
 }
 ```
+
+
 <a id='api-post-el'></a>
 ### [POST] `rest-url`/postcorrect/el/books/`pid`
 Start the [job](#user-content-api-get-jobs) to generate the extended
@@ -1801,6 +1848,7 @@ lexicon.
 }
 ```
 
+---
 <a id='api-get-rrdm'></a>
 ### [GET] `rest-url`/postcorrect/rrdm/books/`pid`
 Get the post-correction information.  The post-correction information
@@ -1826,6 +1874,8 @@ according [post request](#user-content-api-post-rrdm) has finished.
 	}
 }
 ```
+
+---
 <a id='api-post-rrdm'></a>
 ### [POST] `rest-url`/postcorrect/rrdm/books/`pid`
 Start the [job](#user-content-api-get-jobs) to generate the post
@@ -1840,6 +1890,7 @@ correction.
 }
 ```
 
+---
 <a id='api-get-jobs'></a>
 ### [GET] `rest-url`/jobs/`jobid`
 Get the status of a job for the given job-id.
