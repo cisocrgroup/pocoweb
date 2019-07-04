@@ -12,7 +12,17 @@
 		</a></li>
 
 		<li>
-		<div id="pageId" style="margin-top: 7px;"> Page <%-pageId%></div>
+    	<div class="dropdown js-page-dropdown">
+		<button id="pageId" style="margin-top: 7px;" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Page <%-pageId%></button>
+		<div class="dropdown-menu js-page-dropdown-content" aria-labelledby="pageId">
+			<% console.log(project);%>
+   			 <% _.each(project.get('pageIds'), function(pageId) { %>  
+   			   <a class="dropdown-item" href="#/projects/<%-project.get('projectId')%>/page/<%-pageId%>"><%-pageId%></a>
+
+   			<% }); %>
+ 
+	    </div>
+		</div>
 		</li>
 
 	<!--error-patterns -->

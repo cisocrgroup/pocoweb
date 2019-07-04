@@ -49,6 +49,12 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       'mouseover .special-characters tr' : 'special_characters_hover'
 
       },
+         serializeData: function(){
+          var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+          data.project = Marionette.getOption(this,"project");
+
+        return data;
+      },
 
       backward_clicked:function(e){
         e.stopPropagation();
@@ -140,6 +146,15 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       },
       onAttach:function(){
         var that = this;
+
+
+          $('#pageId').dropdown();
+
+        // $('#pageId').click(function(){
+        // });
+
+
+
         $('#sidebar_tabs a').on('click', function (e) {
           e.preventDefault()
             $(this).tab('show',function(){
