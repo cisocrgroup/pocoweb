@@ -34,7 +34,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
     
     var status = project.get('status');
     if(job.statusName=="running"){
-          projectShowLoading = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+          projectShowLoading = new Views.LoadingView({title:"Job running",message:job.jobName+ " , please wait."});
           projectShowLayout.showChildView('contentRegion',projectShowLoading);
           projectShowLayout.trackJobStatus();
 
@@ -79,7 +79,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                                      $.when(fetchingjobs).done(function(job){
 
                                             if(job.statusName=="running"){
-                                                var profileloading = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+                                                var profileloading = new Views.LoadingView({title:"Job running",message:job.jobName+ " , please wait."});
                                                 projectShowLayout.showChildView('contentRegion',profileloading);
                                                 projectShowLayout.trackJobStatus();
                                               }
@@ -103,7 +103,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                            $.when(fetchingjobs).done(function(job){
 
                                   if(job.statusName=="running"){
-                                      var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " is generating, please wait."});
+                                      var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " , please wait."});
                                       projectShowLayout.showChildView('contentRegion',loadingView);
                                       projectShowLayout.trackJobStatus();
                                      }
@@ -141,7 +141,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                            $.when(fetchingjobs).done(function(job){
 
                                   if(job.statusName=="running"){
-                                      var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " is generating, please wait."});
+                                      var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " , please wait."});
                                       projectShowLayout.showChildView('contentRegion',loadingView);
                                       projectShowLayout.trackJobStatus();
                                      }
