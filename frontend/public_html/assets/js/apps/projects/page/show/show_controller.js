@@ -126,7 +126,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 			  projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
         projectShowPage = new Show.Page({model:page});
-			  projectShowSidebar = new Show.Sidebar({model:page});
+			  projectShowSidebar = new Show.Sidebar({model:page,project:project});
       	projectShowFooterPanel = new Show.FooterPanel();
 
        projectShowSidebar.on("sidebar:error-patterns-clicked",function(pid,pat){
