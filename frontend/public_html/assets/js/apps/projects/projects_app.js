@@ -18,6 +18,7 @@ define(["marionette","app"], function(Marionette,App){
 		}
 	});
 
+
 	var API = {
 		showProject: function(id){
 			require(["apps/projects/show/show_controller"], function(ShowController){
@@ -83,6 +84,7 @@ define(["marionette","app"], function(Marionette,App){
 	App.on("projects:list",function(){
 		App.navigate("projects");
 		API.listProjects();
+
 	});
 
 
@@ -91,6 +93,10 @@ define(["marionette","app"], function(Marionette,App){
 			controller: API
 	});
 	
+
+	// router.on("route", function(route, params) {
+ //    	App.trigger('page_changed');
+	// });
 
 
  return projectsdApp; 	
