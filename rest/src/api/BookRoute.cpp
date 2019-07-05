@@ -24,6 +24,9 @@ using namespace pcw;
 static void update_book_data(pcw::Book &book, const crow::json::rvalue &data);
 
 ////////////////////////////////////////////////////////////////////////////////
+template <class R> size_t append_page_ids(R &rows, Json &json);
+
+////////////////////////////////////////////////////////////////////////////////
 const char *BookRoute::route_ = BOOK_ROUTE_ROUTE_1 "," BOOK_ROUTE_ROUTE_2;
 const char *BookRoute::name_ = "BookRoute";
 
@@ -126,11 +129,59 @@ void update_book_data(pcw::Book &book, const crow::json::rvalue &data) {
 Route::Response BookRoute::impl(HttpGet, const Request &req, int bid) const {
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
-  auto book = session->must_find(conn, bid);
-  CROW_LOG_DEBUG << "(BookRoute) get book: " << book->id() << " "
-                 << book->origin().id();
+  using namespace sqlpp;
+  tables::Projects projects;
+  tables::Books books;
+  auto rows1 = conn.db()(
+      select(all_of(books), projects.id)
+          .from(books.join(projects).on(projects.origin == books.bookid))
+          .where(projects.id == bid));
+  if (rows1.empty()) {
+    THROW(NotFound, "cannot find project or package id: ", bid);
+  }
   Json j;
-  return j << *book;
+  const auto isBook = rows1.front().bookid == rows1.front().id;
+  j["bookId"] = rows1.front().bookid;
+  j["projectId"] = rows1.front().id;
+  j["isBook"] = isBook;
+  j["year"] = rows1.front().year;
+  j["author"] = rows1.front().author;
+  j["title"] = rows1.front().title;
+  j["language"] = rows1.front().lang;
+  j["description"] = rows1.front().description;
+  j["profilerUrl"] = rows1.front().profilerurl;
+  j["status"]["profiled"] = rows1.front().profiled;
+  j["status"]["extended-lexicon"] = rows1.front().extendedlexicon;
+  j["status"]["post-corrected"] = rows1.front().postcorrected;
+
+  tables::ProjectPages ppages;
+  auto rows2 = conn.db()(select(ppages.pageid)
+                             .from(ppages)
+                             .where(ppages.projectid == bid)
+                             .order_by(ppages.pageid.asc()));
+  const auto n = append_page_ids(rows2, j);
+  j["pages"] = n;
+  if (n == 0 and isBook) { // no pages, but is a book - maybe pages where (not
+                           // yet) inserted into project pages
+    tables::Pages pages;
+    auto rows3 = conn.db()(select(pages.pageid)
+                               .from(pages)
+                               .where(pages.bookid == bid)
+                               .order_by(pages.pageid.asc()));
+    j["pages"] = append_page_ids(rows3, j);
+  }
+  return j;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template <class R> size_t append_page_ids(R &rows, Json &json) {
+  json["pageIds"] = std::vector<int>();
+  size_t i = 0;
+  for (const auto &row : rows) {
+    json["pageIds"][i] = row.pageid;
+    i++;
+  }
+  return i;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

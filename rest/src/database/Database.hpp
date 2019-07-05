@@ -194,9 +194,16 @@ template <class Db> pcw::BookSptr pcw::insert_book(Db &db, Book &book) {
                                 contents.cor = parameter(contents.cor),
                                 contents.cut = parameter(contents.cut),
                                 contents.conf = parameter(contents.conf)));
+  tables::ProjectPages pp;
+  auto pps =
+      db.prepare(insert_into(pp).set(pp.projectid = parameter(pp.projectid),
+                                     pp.pageid = parameter(pp.pageid)));
   for (const auto &page : book) {
     assert(page);
     detail::insert_page(db, p, q, r, *page);
+    pps.params.pageid = page->id();
+    pps.params.projectid = book.id();
+    db(pps);
   }
   return std::static_pointer_cast<Book>(book.shared_from_this());
 }
