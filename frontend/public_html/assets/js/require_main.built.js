@@ -23367,7 +23367,48 @@ addAlignedLine : function(line){
 						box.right + "," + box.bottom + ")";
 					cordiv.attr('boundingBox', boxstr);
                }
-}
+},
+  copyStringToClipboard :function(str) {
+       // Create new element
+       var el = document.createElement('textarea');
+       // Set value (string to be copied)
+       el.value = str;
+       // Set non-editable to avoid focus and move outside of view
+       el.setAttribute('readonly', '');
+       el.style = {position: 'absolute', left: '-9999px'};
+       document.body.appendChild(el);
+       // Select text inside element
+       el.select();
+       // Copy text to clipboard
+       document.execCommand('copy');
+       // Remove temporary element
+       document.body.removeChild(el);
+    },
+
+     setLoggedIn: function(name){
+    
+          $('.right-nav').empty();
+          $('.right-nav').prepend('<li class="nav-item js-logout"><a href="#" class="nav-link">Logout</a></li>');
+          $('.right-nav').prepend('<li><p class="navbar-text" style="margin:0;">Logged in as user: <span class="loginname">'+name+"</span></p></li>");
+     },
+     setLoggedOut: function(name){
+      $('.right-nav').empty();
+      $('.right-nav').append('<li class="nav-item js-login"><a class="nav-link" href="#"><i class="fas fa-sign-in-alt fa-sm"></i> Login</a></li>');
+    },
+
+    defaultErrorHandling: function(response,mode) {
+      require(["app"],function(App){
+            var mainRegion = App.mainLayout.getRegion('mainRegion');
+            mainRegion.empty();
+         if(response.status==401){
+          App.trigger("nav:login",false);
+         }
+         App.mainmsg.updateContent(response.responseText,mode);                       
+
+      });
+     
+      
+    }
 
 });
 
@@ -23455,13 +23496,14 @@ $('#el').spin('flower', 'red');
 }));
 
 /*!
- DataTables Bootstrap 3 integration
- ©2011-2015 SpryMedia Ltd - datatables.net/license
+ DataTables Bootstrap 4 integration
+ ©2011-2017 SpryMedia Ltd - datatables.net/license
 */
 (function(b){"function"===typeof define&&define.amd?define('datatables',["jquery","datatables.net"],function(a){return b(a,window,document)}):"object"===typeof exports?module.exports=function(a,d){a||(a=window);if(!d||!d.fn.dataTable)d=require("datatables.net")(a,d).$;return b(d,a,a.document)}:b(jQuery,window,document)})(function(b,a,d,m){var f=b.fn.dataTable;b.extend(!0,f.defaults,{dom:"<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-renderer:"bootstrap"});b.extend(f.ext.classes,{sWrapper:"dataTables_wrapper container-fluid dt-bootstrap4",sFilterInput:"form-control form-control-sm",sLengthSelect:"form-control form-control-sm",sProcessing:"dataTables_processing card",sPageButton:"paginate_button page-item"});f.ext.renderer.pageButton.bootstrap=function(a,h,r,s,j,n){var o=new f.Api(a),t=a.oClasses,k=a.oLanguage.oPaginate,u=a.oLanguage.oAria.paginate||{},e,g,p=0,q=function(d,f){var l,h,i,c,m=function(a){a.preventDefault();!b(a.currentTarget).hasClass("disabled")&&
-o.page()!=a.data.action&&o.page(a.data.action).draw("page")};l=0;for(h=f.length;l<h;l++)if(c=f[l],b.isArray(c))q(d,c);else{g=e="";switch(c){case "ellipsis":e="&#x2026;";g="disabled";break;case "first":e=k.sFirst;g=c+(0<j?"":" disabled");break;case "previous":e=k.sPrevious;g=c+(0<j?"":" disabled");break;case "next":e=k.sNext;g=c+(j<n-1?"":" disabled");break;case "last":e=k.sLast;g=c+(j<n-1?"":" disabled");break;default:e=c+1,g=j===c?"active":""}e&&(i=b("<li>",{"class":t.sPageButton+" "+g,id:0===r&&
-"string"===typeof c?a.sTableId+"_"+c:null}).append(b("<a>",{href:"#","aria-controls":a.sTableId,"aria-label":u[c],"data-dt-idx":p,tabindex:a.iTabIndex,"class":"page-link"}).html(e)).appendTo(d),a.oApi._fnBindAction(i,{action:c},m),p++)}},i;try{i=b(h).find(d.activeElement).data("dt-idx")}catch(v){}q(b(h).empty().html('<ul class="pagination"/>').children("ul"),s);i!==m&&b(h).find("[data-dt-idx="+i+"]").focus()};return f});
+renderer:"bootstrap"});b.extend(f.ext.classes,{sWrapper:"dataTables_wrapper dt-bootstrap4",sFilterInput:"form-control form-control-sm",sLengthSelect:"custom-select custom-select-sm form-control form-control-sm",sProcessing:"dataTables_processing card",sPageButton:"paginate_button page-item"});f.ext.renderer.pageButton.bootstrap=function(a,h,r,s,j,n){var o=new f.Api(a),t=a.oClasses,k=a.oLanguage.oPaginate,u=a.oLanguage.oAria.paginate||{},e,g,p=0,q=function(d,f){var l,h,i,c,m=function(a){a.preventDefault();
+!b(a.currentTarget).hasClass("disabled")&&o.page()!=a.data.action&&o.page(a.data.action).draw("page")};l=0;for(h=f.length;l<h;l++)if(c=f[l],b.isArray(c))q(d,c);else{g=e="";switch(c){case "ellipsis":e="&#x2026;";g="disabled";break;case "first":e=k.sFirst;g=c+(0<j?"":" disabled");break;case "previous":e=k.sPrevious;g=c+(0<j?"":" disabled");break;case "next":e=k.sNext;g=c+(j<n-1?"":" disabled");break;case "last":e=k.sLast;g=c+(j<n-1?"":" disabled");break;default:e=c+1,g=j===c?"active":""}e&&(i=b("<li>",
+{"class":t.sPageButton+" "+g,id:0===r&&"string"===typeof c?a.sTableId+"_"+c:null}).append(b("<a>",{href:"#","aria-controls":a.sTableId,"aria-label":u[c],"data-dt-idx":p,tabindex:a.iTabIndex,"class":"page-link"}).html(e)).appendTo(d),a.oApi._fnBindAction(i,{action:c},m),p++)}},i;try{i=b(h).find(d.activeElement).data("dt-idx")}catch(v){}q(b(h).empty().html('<ul class="pagination"/>').children("ul"),s);i!==m&&b(h).find("[data-dt-idx="+i+"]").focus()};return f});
+
 /**
  * @license RequireJS text 2.0.10 Copyright (c) 2010-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
@@ -24559,8 +24601,8 @@ onAttach: function(){
 
            this.$el.modal();
    		 }
+   			
    		
-
    		 },
    		  updateContent: function(message,type){
    	
@@ -24568,6 +24610,12 @@ onAttach: function(){
    			this.options.type = type
    			this.render();
         	$("#"+this.id).css('display','block');
+
+        	if(type=="danger"||type=="success"){
+        	  setTimeout(function() {
+   		  		 $('#mainmsg').fadeOut();
+   			  }, 10000);
+        	}
 
    		  },
    		  hide: function(){
@@ -25152,17 +25200,20 @@ define('apps/header/show/show_view',["marionette","app","common/views","common/u
    template: navbarTpl,
    triggers:{
       "click .js-logout":"nav:logout",
-      "click .js-login":"nav:login",
       "click .js-exit":"nav:exit",
       "click #help_button":"nav:help"
      },
    
     events:{
+      "click .js-login":"login_clicked",
       'click .nav_item.active' : 'nav_item_clicked',
       'click .logo_area_left' : 'nav_item_clicked'
 
     },
 
+    login_clicked:function(){
+      App.trigger("nav:login",true);
+    },
 
     
       serializeData: function(){
@@ -25201,7 +25252,23 @@ return Show;
 define("tpl!apps/users/login/templates/loginform.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n<div class="modal fade" id="loginModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\n <div class="modal-dialog">\n <div class="modal-content">\n      <div class="modal-header">\n            <legend>Login</legend>\n              <div class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\n        </div>\n      </div>\n       <div class="modal-body">\n<form>\n  <div class="form-group">\n    <label for="email">Email address</label>\n    <input type="email" class="form-control" id="email" name="email"aria-describedby="emailHelp" placeholder="Enter email">\n  </div>\n  <div class="form-group">\n    <label for="password">Password</label>\n    <input type="password" class="form-control" name="password" id="password" placeholder="Password">\n  </div>\n\n  <button type="submit" class="btn btn-primary js-loginsubmit">Submit</button>\n</form>\n</div>\n</div>\n\n</div>\n</div>\n\n';
+__p+='';
+
+if(asModal) {
+
+__p+='\n<div class="modal fade" id="loginModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\n <div class="modal-dialog">\n <div class="modal-content">\n      <div class="modal-header">\n            <legend>Login</legend>\n              <div class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true"><i class="fas fa-times fa-xs"></i></span>\n        </div>\n      </div>\n      <div class="modal-body">\n ';
+ } else {
+__p+='\n <div class="container">\n  <div class="row" style="padding-bottom:50px;">\n        <div class="col col-sm-12"><div class="defaulthl"> <span> <i class="fas fa-sign-in-alt card_main_icon red" aria-hidden="true"></i>\n         Login </span>\n         </div>\n         </div>\n       <div class="col col-sm-4"></div>\n      <div class="col col-sm-4">\n\n  ';
+ } 
+__p+='\n\n<form>\n  <div class="form-group">\n    <label for="email">Email address</label>\n    <input type="email" class="form-control" id="email" name="email"aria-describedby="emailHelp" placeholder="Enter email">\n  </div>\n  <div class="form-group">\n    <label for="password">Password</label>\n    <input type="password" class="form-control" name="password" id="password" placeholder="Password">\n  </div>\n\n  <button type="submit" class="btn btn-primary js-loginsubmit">Submit</button>\n</form>\n\n';
+
+if(asModal) {
+
+__p+='\n</div>\n</div>\n\n</div>\n</div>\n\n ';
+ } else { 
+__p+='\n\n</div>\n<div class="col col-sm-4"></div>\n\n</div>\n\n\n   <div class="row">\n\n  <div class="col col-md-12">\n  <button class="btn back_btn js-back btn-primary hover"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>\n\n\n  </div>\n  </div>\n\n</div>\n\n';
+ } 
+__p+='';
 }
 return __p;
 };});
@@ -25693,13 +25760,19 @@ define('apps/users/login/login_view',["app","marionette",
 function(App,Marionette,loginformTpl,syphon,Util){
 
   var Login = {};
-
-
+     
  Login.Form = Marionette.View.extend({
    template: loginformTpl,
+   asModal:true,
    events: {
-   "click .js-loginsubmit": "submitClicked"
+   "click .js-loginsubmit": "submitClicked",
+   "click button.js-back":   "backClicked",
 
+   },
+   serializeData: function(){
+      return {
+        asModal: Marionette.getOption(this,"asModal")
+      }
    },
 
    submitClicked: function(e){
@@ -25712,6 +25785,12 @@ function(App,Marionette,loginformTpl,syphon,Util){
     this.trigger("login:submit", data);
    },
 
+    backClicked: function(e){
+
+      e.preventDefault();
+      this.trigger("go:back");
+       
+     },
   customValidate: function(data){
 
         if(!this.model.isValid('username')) { var error = this.model.preValidate('username', data['username']); Util.showFormErrors("username",error); }
@@ -26116,8 +26195,9 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
     var fetchingVersion = UtilEntities.API.getApiVersion();
     var fetchingLoginCheck = UserEntities.API.loginCheck();
-      $.when(fetchingVersion,fetchingLoginCheck).done(function(api_version,logged_in_user){
 
+      $.when(fetchingVersion,fetchingLoginCheck).done(function(api_version,login_check){
+        console.log(login_check)
         var headerShowLayout = new Show.Layout();
          var headerLogin ;
  
@@ -26153,55 +26233,6 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
         
     });
 
-  headerShowTopbar.on("nav:login",function(){
-     headerLogin = new Login.Form();
-     App.mainLayout.showChildView('dialogRegion',headerLogin);
-     $('#loginModal').modal();
-
-
-     headerLogin.on("login:submit",function(data){
-     $('#loginModal').modal('hide');
-
-    var loggingInUser = UserEntities.API.login(data);
-
-
-                 $.when(loggingInUser).done(function(result){
-                                            
-                        App.mainmsg.updateContent(result.message,'success');
-                         headerShowTopbar.setLoggedIn(result.user.name);
-                          
-                          var currentRoute =  App.getCurrentRoute();
-                          var page_re = /projects\/\d+\/page\/.*/;
-                          var page_route_found = App.getCurrentRoute().match(page_re);
-
-                          if(page_route_found!=null){
-                             var split = currentRoute.split("/")
-                             App.trigger("projects:show",split[1],split[3])
-                          }
-
-                          switch(currentRoute) {
-                            case "projects":
-                              App.trigger("projects:list")
-                              break;
-                            case "users/list":
-                              App.trigger("users:list")
-                              break;
-                            case "users/account":
-                              App.trigger("users:show","account")
-                              break;
-                            default:
-                          } 
-
-                                            
-                }).fail(function(response){ 
-                  App.mainmsg.updateContent(response.responseText,'danger');                       
-                                      
-          }); //  $.when(loggingInUser).done
-
-
-    });
-
-    });
 
   
 
@@ -26235,9 +26266,11 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
      
 
   headerShowTopbar.on("attach",function(){
-       if(logged_in_user!=-1){
-      App.mainmsg.updateContent("Welcome back to PoCoWeb: "+logged_in_user.name+"!",'success');
-      headerShowTopbar.setLoggedIn(logged_in_user.name);
+       if(login_check!=-1){
+             var user = login_check['user'];
+
+      App.mainmsg.updateContent("Welcome back to PoCoWeb: "+user.name+"!",'success');
+      headerShowTopbar.setLoggedIn(user.name);
         headerShowLayout.showChildView('msgRegion',App.mainmsg)
 
       }
@@ -26250,14 +26283,7 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
     });
 
 
-          App.mainmsg.on("msg:login",function(data){
-        headerShowTopbar.trigger("nav:login");
-        });
-
-      App.mainmsg.on("msg:logout",function(data){
-       headerShowTopbar.trigger("nav:logout");
-        });
-
+    
 
 
       App.mainLayout.showChildView('headerRegion',headerShowLayout);
@@ -27457,13 +27483,25 @@ return __p;
 define("tpl!apps/projects/page/show/templates/sidebar.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='\n    <div class="card">\n\n	\n\n		<ul class="nav  navbar-light justify-content-center">\n		<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\n			<i class="fas fa-angle-double-left"></i>\n			</a></li>\n		<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
+__p+='\n    <div class="card" id="sidebar-container">\n\n	\n\n		<ul class="nav  navbar-light justify-content-center">\n		<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">\n			<i class="fas fa-angle-double-left"></i>\n			</a></li>\n		<li class="nav-item js-stepbackward"><a class="nav-link" href="#" title="go to previous page #'+
 ((__t=(prevPageId))==null?'':_.escape(__t))+
-'">\n			<i class="fas fas fa-angle-left"></i>\n		</a></li>\n\n		<li>\n		<div id="pageId" style="margin-top: 7px;"> Page '+
+'">\n			<i class="fas fas fa-angle-left"></i>\n		</a></li>\n\n		<li>\n    	<div class="dropdown js-page-dropdown">\n		<button id="pageId" style="margin-top: 7px;" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Page '+
 ((__t=(pageId))==null?'':_.escape(__t))+
-'</div>\n		</li>\n\n	<!--error-patterns -->\n	<!-- <li class="nav-item dropdown">\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-patterns-dropdown">\n		Error patterns<span class="caret"></span></a>\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\n        </div>\n    </li> -->\n	<!-- error-tokens -->\n	<!-- <li class="nav-item dropdown"> \n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-tokens-dropdown">\n		Error tokens<span class="caret"></span></a>\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\n        </div>\n     </li> -->\n\n   \n\n	<!--nextpage and last page -->\n		<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
+'</button>\n		<div class="dropdown-menu js-page-dropdown-content" aria-labelledby="pageId">\n			';
+ console.log(project);
+__p+='\n   			 ';
+ _.each(project.get('pageIds'), function(pageId) { 
+__p+='  \n   			   <a class="dropdown-item" href="#/projects/'+
+((__t=(project.get('projectId')))==null?'':_.escape(__t))+
+'/page/'+
+((__t=(pageId))==null?'':_.escape(__t))+
+'">'+
+((__t=(pageId))==null?'':_.escape(__t))+
+'</a>\n\n   			';
+ }); 
+__p+='\n \n	    </div>\n		</div>\n		</li>\n\n	<!--error-patterns -->\n	<!-- <li class="nav-item dropdown">\n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-patterns-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-patterns-dropdown">\n		Error patterns<span class="caret"></span></a>\n        <div id="pcw-error-patterns-dropdown" class="dropdown-menu scrollable-menu" aria-labelledby="pcw-error-patterns-link">\n        </div>\n    </li> -->\n	<!-- error-tokens -->\n	<!-- <li class="nav-item dropdown"> \n	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-tokens-dropdown">\n		Error tokens<span class="caret"></span></a>\n		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">\n        </div>\n     </li> -->\n\n   \n\n	<!--nextpage and last page -->\n		<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #'+
 ((__t=(nextPageId))==null?'':_.escape(__t))+
-'">\n			<i class="fas fa-angle-right"></i>\n			</a></li>\n		<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\n			<i class="fas fa-angle-double-right"></i>\n			</a></li>\n		</ul>\n		  <hr style="margin: 0;">\n		  <div id="accordion">\n		  <div class="card-header" id="hl1">\n		  	  <button class="btn btn-link">\n		  		  Suspicious words\n       		 </button>\n		  </div>\n		   <div id="suspicious-words-container">\n		   	<div class="loading_background2">\n	         <div class="loading_text_parent">\n	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>\n        	 </div>\n        	 </div>\n        	   <div id="suspicious-words_filter">\n               <input type="search" class="" placeholder="Search...">\n          	   </div>\n\n		   <table class="table suspicious-words table-hover table-sm">\n		    <thead>\n		      <tr>\n		        <th>Word</th>\n		        <th>Count</th>\n		      </tr>\n		    </thead>\n		    <tbody>\n		    \n		    </tbody>\n		  </table>\n		</div>\n		 <hr style="margin: 0;">\n		  <div class="card-header" id="hl2">\n		  	 <button class="btn btn-link">\n		   			 Error patterns\n       		 </button>\n		  </div>\n		   <div id="error-patterns-container">\n		   	<div class="loading_background2">\n	         <div class="loading_text_parent">\n	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>\n        	 </div>\n        	 </div>\n        	 <div id="error-patterns_filter">\n               <input type="search" placeholder="Search...">\n          	 </div>\n		   <table class="table error-patterns table-hover table-sm">\n		    <thead>\n		      <tr>\n		        <th>Word</th>\n		        <th>Count</th>\n		      </tr>\n		    </thead>\n		    <tbody>\n		    \n		    </tbody>\n		  </table>\n		</div>\n	  </div>\n	</div>';
+'">\n			<i class="fas fa-angle-right"></i>\n			</a></li>\n		<li class="nav-item js-lastpage"><a class="nav-link" href="#" title="go to last page">\n			<i class="fas fa-angle-double-right"></i>\n			</a></li>\n		</ul>\n\n <ul class="nav nav-tabs" id="sidebar_tabs" role="tablist">\n  <li class="nav-item">\n    <a class="nav-link active" id="sp-tab" data-toggle="tab" href="#sp" role="tab" aria-controls="sp" aria-selected="true">Suspicious </br> words</a>\n  </li>\n  <li class="nav-item">\n    <a class="nav-link" id="ep-tab" data-toggle="tab" href="#ep" role="tab" aria-controls="ep" aria-selected="true">Error </br>  patterns</a>\n  </li>\n  <li class="nav-item">\n        <a class="nav-link" id="chars-tab" data-toggle="tab" href="#chars" role="tab" aria-controls="chars" aria-selected="true">Special </br>  characters</a>\n  </li>\n</ul>\n\n<div class="tab-content">\n\n  <div class="tab-pane fade show active" id="sp" role="tabpanel" aria-labelledby="sp-tab">\n  		 <div id="suspicious-words-container" class="sidebar-table-container">\n\n  	   	<div class="loading_background2">\n	         <div class="loading_text_parent">\n	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>\n        	 </div>\n        	 </div>\n        	   <div id="suspicious-words_filter" class="sidebar-filter-container">\n               <input type="search" class="" placeholder="Search...">\n          	   </div>\n\n		   <table class="table suspicious-words table-hover table-sm">\n		    <thead>\n		      <tr>\n		        <th>Word</th>\n		        <th>Count</th>\n		      </tr>\n		    </thead>\n		    <tbody>\n		    \n		    </tbody>\n		  </table>\n		</div>\n	  </div>\n\n  <div class="tab-pane fade" id="ep" role="tabpanel" aria-labelledby="ep-tab">\n\n<div id="error-patterns-container" class="sidebar-table-container">\n		   	<div class="loading_background2">\n	         <div class="loading_text_parent">\n	           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>\n        	 </div>\n        	 </div>\n        	 <div id="error-patterns_filter" class="sidebar-filter-container">\n               <input type="search" placeholder="Search...">\n          	 </div>\n		   <table class="table error-patterns table-hover table-sm">\n		    <thead>\n		      <tr>\n		        <th>Word</th>\n		        <th>Count</th>\n		      </tr>\n		    </thead>\n		    <tbody>\n		    \n		    </tbody>\n		  </table>\n	</div>\n\n\n </div>\n  <div class="tab-pane fade" id="chars" role="tabpanel" aria-labelledby="chars-tab">\n	  	\n	<div id="special-characters-container" class="sidebar-table-container">\n			   	<div class="loading_background2">\n		         <div class="loading_text_parent">\n		           <div class="loading_text2"> Loading <i class="fas fa-sync fa-spin fa-3x fa-fw"></i> </div>\n	        	 </div>\n	        	 </div>\n	        	 <div id="special-characters_filter" class="sidebar-filter-container">\n	               <input type="search" placeholder="Search...">\n	          	 </div>\n			   <table class="table special-characters table-hover table-sm">\n			    <thead>\n			      <tr>\n			        <th>Word</th>\n			        <th>Count</th>\n			      </tr>\n			    </thead>\n			    <tbody>\n			    \n			    </tbody>\n			  </table>\n		</div>\n\n  </div>\n  \n</div>\n	\n</div>';
 }
 return __p;
 };});
@@ -27523,9 +27561,16 @@ define('apps/projects/page/show/show_view',["marionette","app","backbone.syphon"
       'click .js-lastpage' : 'lastpage_clicked',
 
       'click .suspicious-words tr' : 'error_tokens_clicked',
-      'click .error-patterns tr' : 'error_patterns_clicked'
+      'click .error-patterns tr' : 'error_patterns_clicked',
+	  'click .special-characters tr' : 'special_characters_clicked',
+      'mouseover .special-characters tr' : 'special_characters_hover'
 
+      },
+         serializeData: function(){
+          var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+          data.project = Marionette.getOption(this,"project");
 
+        return data;
       },
 
       backward_clicked:function(e){
@@ -27580,15 +27625,66 @@ define('apps/projects/page/show/show_view',["marionette","app","backbone.syphon"
             this.trigger("sidebar:error-patterns-clicked",data.projectId,pat);
         }
       },
+      special_characters_hover : function(e){
+		  var f = function(str) {
+			  if (!str || str === "") {
+				  return "";
+			  }
+			  return '\\u' + str.split('').map(function(t) {
+				  return ('000' + t.charCodeAt(0).toString(16)).substr(-4)
+			  }).join('\\u');
+		  };
+          e.stopPropagation();
+          e.preventDefault();
+		  var tr = $(e.currentTarget);
+		  var c = $(tr.find('td')[0]).html();
+		  if (!c || c === "") {
+			  return;
+		  }
+		  $(tr).attr("title",
+					 "click to add '" + c + "' to the clipboard or type: '" + f(c) + "'");
+
+	  },
+       special_characters_clicked : function(e){
+        e.stopPropagation();
+        e.preventDefault();
+        $(".custom-popover").remove();
+        var tr = $(e.currentTarget);
+        var td = tr.find('td');
+        var pat = $(td[0]).html();
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        if(pat!=undefined){
+             tr.fadeOut(200,function(){
+                      tr.fadeIn(200,function(){
+                      });
+                    });
+            this.trigger("sidebar:special-characters-clicked",data.projectId,pat);
+        }
+      },
       onAttach:function(){
-        $("#hl1").click(function() {
-          $("#suspicious-words-container").slideToggle("slow", function() {
-          });
-        });
-        $("#hl2").click(function() {
-          $("#error-patterns-container").slideToggle("slow", function() {
-          });
-        });
+        var that = this;
+
+
+          $('#pageId').dropdown();
+
+        // $('#pageId').click(function(){
+        // });
+
+
+
+        $('#sidebar_tabs a').on('click', function (e) {
+          e.preventDefault()
+            $(this).tab('show',function(){
+            });
+
+            $(this).on('shown.bs.tab', function (e) {
+                 that.ep_table.draw();
+                 that.sp_table.draw();
+                 that.char_table.draw();
+
+            })
+
+          })
       }
 
   });
@@ -28260,12 +28356,12 @@ getPage: function(data){
     data['backend_route'] = "get_page";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
       success: function(data) {
-        var result = JSON.parse(data)
+          var result = JSON.parse(data);
         defer.resolve( new Entities.Page(result));
 
           },
@@ -28779,9 +28875,32 @@ getJobs: function(data){
 
 
   return defer.promise();
-  
-},
 
+},
+getCharmap: function(data){
+	data['backend_route'] = "get_charmap";
+	data['filter'] = "abcdefghijklmnopqrstuvwxyz" +
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+		"0123456789" +
+		"'\":,-+/@#$.;<>(){}[]\\&?!=*^~_";
+  var defer = jQuery.Deferred();
+      $.ajax({
+      url: "api/api_controller.php",
+      type: "POST",
+       data:data,
+      success: function(data) {
+        defer.resolve(JSON.parse(data));
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+  
+}
 };
 
 
@@ -29106,7 +29225,8 @@ var cards2 = [
 
           }).fail(function(response){
                loadingCircleView.destroy();
-                App.mainmsg.updateContent(response.responseText,'danger');
+                Util.defaultErrorHandling(response,'danger');
+
           });  // $when fetchingproject
 
 
@@ -29160,8 +29280,9 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
         // ** to do: get junks from server
         var fetchingsuspiciouswords = ProjectEntities.API.getSuspiciousWords({pid:id});
         var fetchingerrorpatterns = ProjectEntities.API.getErrorPatterns({pid:id});
+        var fetchingcharmap = ProjectEntities.API.getCharmap({pid:id});
 
-           $.when(fetchingsuspiciouswords,fetchingerrorpatterns).done(function(suspicious_words,error_patterns){
+           $.when(fetchingsuspiciouswords,fetchingerrorpatterns,fetchingcharmap).done(function(suspicious_words,error_patterns,charmap){
 
             var suspicious_words_array = [];
             for (word in suspicious_words['counts']) {
@@ -29169,12 +29290,16 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
             }
 
             var sp_table = $('.suspicious-words').DataTable({
+                 "scrollY": "560px",
                   "data":suspicious_words_array,
                   "info":false,
                   "paging": false,
                   "lengthChange": false,
                   "order": [[ 1, "desc" ]]
                 });
+
+            projectShowSidebar.sp_table = sp_table;
+
 
               $('#suspicious-words_filter input').on('keyup click', function () {
                 sp_table.search($(this).val()).draw();
@@ -29183,12 +29308,15 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
               rows[0].remove();
             $('#suspicious-words-container > .loading_background2').fadeOut();
 
+            $('#suspicious-words-container').find('.dataTables_wrapper').removeClass('.container-fluid');
+
               var error_patterns_array = [];
               for (word in error_patterns['counts']) {
                error_patterns_array.push([word,error_patterns['counts'][word]]);
             }
 
              var ep_table = $('.error-patterns').DataTable({
+                  "scrollY": "560px",
                   "data":error_patterns_array,
                   "info":false,
                   "paging": false,
@@ -29197,13 +29325,43 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
 
                 });
 
+            projectShowSidebar.ep_table = ep_table;
+
+
               $('#error-patterns_filter input').on('keyup click', function () {
                 ep_table.search($(this).val()).draw();
               });
 
               var rows = $('#error-patterns_filter').next().find('.row');
               rows[0].remove();
-            $('#error-patterns-container > .loading_background2').fadeOut();
+             $('#error-patterns-container > .loading_background2').fadeOut();
+
+               console.log(charmap);
+			   var data = [];
+			   for (var key in charmap.charMap) {
+				   data.push([key, charmap.charMap[key]]);
+			   }
+             var char_table = $('.special-characters').DataTable({
+                  "scrollY": "560px",
+                  "data": data,//[],//[["a",10],["b",10],["c",10]],
+                  "info":false,
+                  "paging": false,
+                  "lengthChange": false,
+                  "order": [[ 0, "asc" ]]
+
+             });
+
+            projectShowSidebar.char_table = char_table;
+
+
+              $('#special-characters_filter input').on('keyup click', function () {
+                char_table.search($(this).val()).draw();
+              });
+
+              var rows = $('#special-characters_filter').next().find('.row');
+              rows[0].remove();
+             $('#special-characters-container > .loading_background2').fadeOut();
+
 
            });
 
@@ -29211,7 +29369,7 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
 
 			  projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
         projectShowPage = new Show.Page({model:page});
-			  projectShowSidebar = new Show.Sidebar({model:page});
+			  projectShowSidebar = new Show.Sidebar({model:page,project:project});
       	projectShowFooterPanel = new Show.FooterPanel();
 
        projectShowSidebar.on("sidebar:error-patterns-clicked",function(pid,pat){
@@ -29221,9 +29379,18 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
        projectShowSidebar.on("sidebar:error-tokens-clicked",function(pid,pat){
          projectShowPage.trigger('page:concordance_clicked',pat,0);
        });
+
+       projectShowSidebar.on("sidebar:special-characters-clicked",function(pid,pat){
+         console.log(pat)
+          Util.copyStringToClipboard(pat);
+
+
+       });
        projectShowSidebar.on("page:new",function(page_id){
+        console.log(id)
                     var fetchingnewpage = ProjectEntities.API.getPage({pid:id, page:page_id});
                   $.when(fetchingnewpage).done(function(new_page){
+                    console.log("NEW page")
                     console.log(new_page)
                      new_page.attributes.title = project.get('title');
 
@@ -29414,7 +29581,9 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
           App.mainLayout.showChildView('mainRegion',projectShowLayout);
 
           }).fail(function(response){
-                App.mainmsg.updateContent(response.responseText,'danger');
+                loadingCircleView.destroy();
+                 Util.defaultErrorHandling(response,'danger');
+
           });  // $when fetchingproject
 
 
@@ -29645,10 +29814,7 @@ define('apps/projects/list/list_controller',["app","common/util","common/views",
 
 		}).fail(function(response){
       
-       var mainRegion = App.mainLayout.getRegion('mainRegion');
-       mainRegion.empty();
-
-         App.mainmsg.updateContent(response.responseText,'danger');                       
+          Util.defaultErrorHandling(response,'danger');
                                     
           }); // $when fetchingprojects
 
@@ -49077,7 +49243,8 @@ define('apps/projects/a_pocoto/show/show_controller',["app","common/util","commo
 
           }).fail(function(response){
                loadingCircleView.destroy();
-                App.mainmsg.updateContent(response.responseText,'danger');
+                Util.defaultErrorHandling(response,'danger');
+
           });  // $when fetchingproject
 
 
@@ -49127,9 +49294,8 @@ define('apps/projects/a_pocoto/lexicon_extension/show/show_controller',["app","c
 			projectShowLayout.on("attach",function(){
     
     var status = project.get('status');
-    status="extended-lexicon";
- if(job.statusName=="running"){
-          projectShowLoading = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+    if(job.statusName=="running"){
+          projectShowLoading = new Views.LoadingView({title:"Job running",message:job.jobName+ " , please wait."});
           projectShowLayout.showChildView('contentRegion',projectShowLoading);
           projectShowLayout.trackJobStatus();
 
@@ -49137,12 +49303,12 @@ define('apps/projects/a_pocoto/lexicon_extension/show/show_controller',["app","c
 
         else {
 
-          if (status=="empty"||status=="profiled"){
+          if (!status['extended-lexicon']){
           projectShowLex = new Show.SingleStep({url:"le",color:"blue",step:"Lexicon Extension",icon:"fas fa-history",id:"js-start-le",text:"Generate the extended lexicon."});
           projectShowLayout.showChildView('contentRegion',projectShowLex);
 
           }
-          else if (status=="extended-lexicon"){
+          else {
 
               var fetchingle = ProjectEntities.API.getLexiconExtension({pid:id});
                $.when(fetchingle).done(function(le){
@@ -49174,7 +49340,7 @@ define('apps/projects/a_pocoto/lexicon_extension/show/show_controller',["app","c
                                      $.when(fetchingjobs).done(function(job){
 
                                             if(job.statusName=="running"){
-                                                var profileloading = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+                                                var profileloading = new Views.LoadingView({title:"Job running",message:job.jobName+ " , please wait."});
                                                 projectShowLayout.showChildView('contentRegion',profileloading);
                                                 projectShowLayout.trackJobStatus();
                                               }
@@ -49198,7 +49364,7 @@ define('apps/projects/a_pocoto/lexicon_extension/show/show_controller',["app","c
                            $.when(fetchingjobs).done(function(job){
 
                                   if(job.statusName=="running"){
-                                      var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " is generating, please wait."});
+                                      var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " , please wait."});
                                       projectShowLayout.showChildView('contentRegion',loadingView);
                                       projectShowLayout.trackJobStatus();
                                      }
@@ -49236,7 +49402,7 @@ define('apps/projects/a_pocoto/lexicon_extension/show/show_controller',["app","c
                            $.when(fetchingjobs).done(function(job){
 
                                   if(job.statusName=="running"){
-                                      var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " is generating, please wait."});
+                                      var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " , please wait."});
                                       projectShowLayout.showChildView('contentRegion',loadingView);
                                       projectShowLayout.trackJobStatus();
                                      }
@@ -49279,7 +49445,8 @@ define('apps/projects/a_pocoto/lexicon_extension/show/show_controller',["app","c
 
           }).fail(function(response){
                loadingCircleView.destroy();
-                App.mainmsg.updateContent(response.responseText,'danger');
+               Util.defaultErrorHandling(response,'danger');
+
           });  // $when fetchingproject
 
 
@@ -49333,22 +49500,21 @@ define('apps/projects/a_pocoto/protocol/show/show_controller',["app","common/uti
       	projectShowFooterPanel = new Show.FooterPanel();
 
 
-            var status = project.get('status');
-            status="post-corrected";
+      var status = project.get('status');
       if(job.statusName=="running"){
-          projectShowLoading = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+          projectShowLoading = new Views.LoadingView({title:"Job running",message:job.jobName+ " , please wait."});
           projectShowLayout.showChildView('contentRegion',projectShowLoading);
           projectShowLayout.trackJobStatus();
         }
 
         else {
 
-          if (status=="empty"||status=="profiled"){
-          projectShowProtocol = new Show.SingleStep({url:"pr",color:"blue",step:"Postcorrection",icon:"fas fa-play",id:"js-start-pc",text:"Start automated postcorrection"});
+          if (!status['post-corrected']){
+          projectShowProtocol = new Show.SingleStep({url:"pr",color:"red",step:"Postcorrection",icon:"fas fa-play",id:"js-start-pc",text:"Start automated postcorrection"});
           projectShowLayout.showChildView('contentRegion',projectShowProtocol);
           
           }
-          else if (status=="post-corrected"){
+          else {
 
                var fetchingprotocol = ProjectEntities.API.getProtocol({pid:id});
 
@@ -49413,7 +49579,7 @@ define('apps/projects/a_pocoto/protocol/show/show_controller',["app","common/uti
                            $.when(fetchingjobs).done(function(job){
 
                                   if(job.statusName=="running"){
-                                      var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+                                      var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " , please wait."});
                                       projectShowLayout.showChildView('contentRegion',loadingView);
                                       projectShowLayout.trackJobStatus();
                                      }
@@ -49447,7 +49613,7 @@ define('apps/projects/a_pocoto/protocol/show/show_controller',["app","common/uti
                    $.when(fetchingjobs).done(function(job){
 
                           if(job.statusName=="running"){
-                              var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " is running, please wait."});
+                              var loadingView = new Views.LoadingView({title:"Job running",message:job.jobName+ " , please wait."});
                               projectShowLayout.showChildView('contentRegion',loadingView);
                               projectShowLayout.trackJobStatus();
                              }
@@ -49488,7 +49654,8 @@ define('apps/projects/a_pocoto/protocol/show/show_controller',["app","common/uti
 
           }).fail(function(response){
                loadingCircleView.destroy();
-                App.mainmsg.updateContent(response.responseText,'danger');
+                Util.defaultErrorHandling(response,'danger');
+
           });  // $when fetchingproject
 
 
@@ -49522,6 +49689,7 @@ define('apps/projects/projects_app',["marionette","app"], function(Marionette,Ap
 
 		}
 	});
+
 
 	var API = {
 		showProject: function(id){
@@ -49588,6 +49756,7 @@ define('apps/projects/projects_app',["marionette","app"], function(Marionette,Ap
 	App.on("projects:list",function(){
 		App.navigate("projects");
 		API.listProjects();
+
 	});
 
 
@@ -49596,6 +49765,10 @@ define('apps/projects/projects_app',["marionette","app"], function(Marionette,Ap
 			controller: API
 	});
 	
+
+	// router.on("route", function(route, params) {
+ //    	App.trigger('page_changed');
+	// });
 
 
  return projectsdApp; 	
@@ -49826,6 +49999,8 @@ define('apps/users/home/home_view',["marionette","app","common/views","common/ut
   
  })
 
+  Home.FooterPanel = Views.FooterPanel.extend({
+    });
 
 return Home;
 
@@ -49879,6 +50054,7 @@ define('apps/users/home/home_controller',["app","common/util","apps/users/home/h
 
 
 		var usersHomeHub = new Home.Hub({cards:cards,currentRoute:"users"});
+        var usersFooterPanel = new Home.FooterPanel();
 
         usersHomeHub.on("cardHub:clicked",function(data){
             App.trigger(data.url);
@@ -49887,7 +50063,8 @@ define('apps/users/home/home_controller',["app","common/util","apps/users/home/h
 		usersHomeLayout.on("attach",function(){
                 usersHomeLayout.showChildView('headerRegion',usersHomeHeader);
                 usersHomeLayout.showChildView('contentRegion',usersHomeHub);
-	
+	            usersHomeLayout.showChildView('panelRegion',usersFooterPanel);
+
       
  		}); // on:show
 
@@ -50226,11 +50403,7 @@ define('apps/users/list/list_controller',["app","common/util","apps/users/list/l
 
 		}).fail(function(response){ 
 
-		      var mainRegion = App.mainLayout.getRegion('mainRegion');
-		       mainRegion.empty();
-
-		         App.mainmsg.updateContent(response.responseText,'danger');              
-		                          
+		      Util.defaultErrorHandling(response,'danger');                        
                          
                                         
           }); //  $.when(fetchingAuth).done // $when fetchingUsers
@@ -50440,10 +50613,8 @@ define('apps/users/show/show_controller',["app","common/util","apps/users/show/s
 
     		}).fail(function(response){ 
 
-		       var mainRegion = App.mainLayout.getRegion('mainRegion');
-		       mainRegion.empty();
-
-            App.mainmsg.updateContent(response.responseText,'danger');             
+			 Util.defaultErrorHandling(response,'danger');                        
+          
 
           }); //  $.when(fetchingAuth).done // $when fetchingUser;
 
@@ -50660,12 +50831,9 @@ define('apps/users/new/new_controller',["app","common/util","apps/users/new/new_
 
 		}).fail(function(response){ 
 
-		      var mainRegion = App.mainLayout.getRegion('mainRegion');
-		       mainRegion.empty();
+      			 Util.defaultErrorHandling(response,'danger');                        
 
-		         App.mainmsg.updateContent(response.responseText,'danger');              
-		                          
-                         
+		                                                  
                                         
           }); //  $.when(fetchingAuth).done // $when fetchingUsers
 
@@ -50763,6 +50931,12 @@ define('apps/users/users_app',["marionette","app"], function(Marionette,App){
 	var router = new UsersApp.Router({
 		controller: API,
 	});
+
+	// router.on("route", function(route, params) {
+ //    	App.trigger('router:page_changed');
+	// });
+
+
  return UsersApp; 	
 
 });
@@ -50827,11 +51001,92 @@ App.on("start", function(){
 
         ], function (HeaderApp,HomeApp,FooterApp,ProjectsApp,DocsApp,UsersApp) {
 
+          console.log(App)
 
     var app_region = App.getRegion();
 
+      App.on("nav:login",function(asModal){
+
+      require(["apps/users/login/login_view","entities/users","common/util"], function(Login,UserEntities,Util){
+
+
+     var loginView = new Login.Form({asModal:asModal});
+
+     if(asModal){
+
+      App.mainLayout.showChildView('dialogRegion',loginView);
+      $('#loginModal').modal();
+
+     }
+     else {
+     
+      App.mainLayout.showChildView('mainRegion',loginView);
+     }
+
+
+     loginView.on("login:submit",function(data){
+      if(asModal) $('#loginModal').modal('hide');
+
+    var loggingInUser = UserEntities.API.login(data);
+
+
+                 $.when(loggingInUser).done(function(result){
+                                            
+                        App.mainmsg.updateContent(result.message,'success');
+                         Util.setLoggedIn(result.user.name);
+                          
+                          var currentRoute =  App.getCurrentRoute();
+                          var page_re = /projects\/\d+.*/;
+                          var page_route_found = App.getCurrentRoute().match(page_re);
+
+                          if(page_route_found!=null){
+                             var split = currentRoute.split("/")
+                             App.trigger("projects:show",split[1],split[3])
+                          }
+
+                          switch(currentRoute) {
+                            case "projects":
+                              App.trigger("projects:list")
+                              break;
+                            case "users/list":
+                              App.trigger("users:list")
+                              break;
+                            case "users/account":
+                              App.trigger("users:show","account")
+                              break;
+                              case "users/new":
+                              App.trigger("users:new")
+                              break;
+                            default:
+                              App.trigger("home:portal")
+                          } 
+
+                                            
+                }).fail(function(response){ 
+                  App.mainmsg.updateContent(response.responseText,'danger');                       
+                                      
+          }); //  $.when(loggingInUser).done
+
+       });
+
+     loginView.on("go:back",function(){
+        App.trigger("home:portal");
+     });
+
+      });
+    }); // login
+
+
     App.mainLayout = new MainView();
     App.mainmsg  = new Views.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
+
+     App.mainmsg.on("msg:login",function(data){
+     App.trigger("nav:login",true);
+     });
+
+     App.mainmsg.on("msg:logout",function(data){
+     App.trigger("nav:logout");
+     });
 
      App.showView(App.mainLayout);
 
@@ -50847,6 +51102,11 @@ App.on("start", function(){
      });
 
 
+     // App.on('page_changed',function(){
+     //  console.log(App.getCurrentRoute())
+     //  console.log("Page page_changed")
+     //  $('#mainmsg').empty();
+     // });
 
 
        });

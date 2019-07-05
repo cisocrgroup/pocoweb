@@ -84,6 +84,12 @@ define(["marionette","app"], function(Marionette,App){
 	var router = new UsersApp.Router({
 		controller: API,
 	});
+
+	// router.on("route", function(route, params) {
+ //    	App.trigger('router:page_changed');
+	// });
+
+
  return UsersApp; 	
 
 });

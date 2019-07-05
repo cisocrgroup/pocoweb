@@ -59,6 +59,7 @@ App.on("start", function(){
 
         ], function (HeaderApp,HomeApp,FooterApp,ProjectsApp,DocsApp,UsersApp) {
 
+          console.log(App)
 
     var app_region = App.getRegion();
 
@@ -131,7 +132,7 @@ App.on("start", function(){
      });
 
       });
-    });
+    }); // login
 
 
     App.mainLayout = new MainView();
@@ -159,6 +160,11 @@ App.on("start", function(){
      });
 
 
+     // App.on('page_changed',function(){
+     //  console.log(App.getCurrentRoute())
+     //  console.log("Page page_changed")
+     //  $('#mainmsg').empty();
+     // });
 
 
        });

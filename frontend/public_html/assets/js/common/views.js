@@ -250,8 +250,8 @@ onAttach: function(){
 
            this.$el.modal();
    		 }
+   			
    		
-
    		 },
    		  updateContent: function(message,type){
    	
@@ -259,6 +259,12 @@ onAttach: function(){
    			this.options.type = type
    			this.render();
         	$("#"+this.id).css('display','block');
+
+        	if(type=="danger"||type=="success"){
+        	  setTimeout(function() {
+   		  		 $('#mainmsg').fadeOut();
+   			  }, 5000);
+        	}
 
    		  },
    		  hide: function(){
