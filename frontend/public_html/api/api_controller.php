@@ -1108,26 +1108,23 @@ function logout(){
 }
 
 function login_check(){
-
       if(backend_get_session_cookie()!=""){
-
         $api = new Api(backend_get_login_route());
         $api->set_session_id(backend_get_session_cookie());
         $api->get_request();
-
         $status = $api->get_http_status_code();
-              $result=array();
-
-              header("status: ".$status);
-
-              $session = $api->get_response();
-
-              echo json_encode($session);
+        if ($status != "200") {
+            echo -1;
+            return;
+        }
+        $result=array();
+        header("status: ".$status);
+        $session = $api->get_response();
+        echo json_encode($session);
       }
       else {
         echo -1;
       }
-
 }
 
 
