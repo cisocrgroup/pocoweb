@@ -112,7 +112,6 @@ frontend/public_html/img/doc/overview.png: frontend/public_html/img/doc/overview
 	cat $< | dot -T png > $@
 $(PCW_FRONTEND_DIR)/public_html/img/doc/overview.png: frontend/public_html/img/doc/overview.png
 	$(call ECHO,$@)
-	cat $< | dot -T png > $@
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
 
