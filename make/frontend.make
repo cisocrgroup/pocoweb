@@ -107,9 +107,14 @@ $(PCW_FRONTEND_DIR)/public_html/assets/js/build.js:
 	$V php -l $< > /dev/null
 	$V install -d $(dir $@)
 	$V install -m 644 $< $@
-$(PCW_FRONTEND_DIR)/public_html/img/doc/overview.png: frontend/public_html/img/doc/overview.dot
+frontend/public_html/img/doc/overview.png: frontend/public_html/img/doc/overview.dot
 	$(call ECHO,$@)
 	cat $< | dot -T png > $@
+$(PCW_FRONTEND_DIR)/public_html/img/doc/overview.png: frontend/public_html/img/doc/overview.png
+	$(call ECHO,$@)
+	cat $< | dot -T png > $@
+	$V install -d $(dir $@)
+	$V install -m 644 $< $@
 
 install-frontend: $(FE_FILES)
 
