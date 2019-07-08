@@ -2,6 +2,7 @@
 #include "core/LineBuilder.hpp"
 #include <boost/algorithm/string.hpp>
 #include <iostream>
+#include <sstream>
 #include <utf8.h>
 
 #define TEXT_REGION "TextRegion"
