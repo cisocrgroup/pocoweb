@@ -980,7 +980,11 @@ Search for a token or error pattern in a project or package with id `pid`.
 #### Query parameters
 * The query is given with the `q=query` parameter. This parameter is mandatory.
 * The optional parameter `p=1|0` specifies if a token search or a error pattern
-search should be performed. If omitted `p=0` is assumed.
+search should be performed (default: `p=0`).
+* The optional parameter `max=n` sets the maximal number of returned
+  hits (default: `max=50`).
+* The optional parameter `skip=n` sets the number of hits to skip
+  (default: `skip=0`).
 
 #### Response data
 ```json
