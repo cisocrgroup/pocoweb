@@ -12,7 +12,11 @@ namespace pcw {
 class Searcher {
 public:
   using ConstLineSptr = std::shared_ptr<const Line>;
-  using Matches = std::map<ConstLineSptr, std::vector<Token>>;
+  struct Matches {
+    Matches() : matches(), totalCount() {}
+    std::map<ConstLineSptr, std::vector<Token>> matches;
+    size_t totalCount;
+  };
   Searcher() : Searcher(nullptr, 0, 10) {}
   Searcher(const Project &project);
   Searcher(const Project &project, int skip, int max);
@@ -33,7 +37,7 @@ private:
   Searcher(std::shared_ptr<const Project> p, int skip, int max)
       : project_(std::move(p)), skip_(skip), max_(max), ignore_case_(true) {}
   std::shared_ptr<const Project> project_;
-  int skip_, max_;
+  mutable int skip_, max_;
   bool ignore_case_;
 };
 } // namespace pcw
@@ -55,6 +59,7 @@ inline pcw::Searcher::Matches pcw::Searcher::find_impl(F f) const {
               return;
             }
             if (max <= 0) {
+              matches.totalCount++;
               return;
             }
             if (f(t)) {
@@ -63,7 +68,8 @@ inline pcw::Searcher::Matches pcw::Searcher::find_impl(F f) const {
                 return;
               }
               if (max > 0) {
-                matches[line].push_back(t);
+                matches.totalCount++;
+                matches.matches[line].push_back(t);
                 max--;
               }
             }
@@ -72,6 +78,8 @@ inline pcw::Searcher::Matches pcw::Searcher::find_impl(F f) const {
       }
     }
   }
+  skip_ = skip;
+  max_ = max;
   return matches;
 }
 

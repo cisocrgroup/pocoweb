@@ -63,16 +63,21 @@ Route::Response SearchRoute::search(const Request &req,
   json["projectId"] = bid;
   json["bookId"] = project->origin().id();
   json["isErrorPattern"] = false;
-  for (const auto &q : qs) {
+  json["skip"] = x.skip;
+  json["max"] = x.max;
+  size_t totalCount = 0;
+  Searcher searcher(*project, x.skip, x.max);
+  for (size_t i = 0; i < qs.size() and searcher.max() > 0; i++) {
     CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
-                   << " for query string: " << q << " (skip = " << x.skip
+                   << " for query string: " << qs[i] << " (skip = " << x.skip
                    << ", max = " << x.max << ")";
-    Searcher searcher(*project, x.skip, x.max);
-    const auto matches = searcher.find(q);
-    CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.size()
-                   << " matches for q='" << q << "'";
-    add_matches(json, matches, q, false);
+    const auto matches = searcher.find(qs[i]);
+    CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.matches.size()
+                   << " matches for q='" << qs[i] << "'";
+    add_matches(json, matches, qs[i], false);
+    totalCount += matches.totalCount;
   }
+  json["totalCount"] = totalCount;
   return json;
 }
 
@@ -103,17 +108,23 @@ Route::Response SearchRoute::search(const Request &req,
   }
   Json json;
   json["matches"] = crow::json::rvalue(crow::json::type::Object);
+  json["matches"]["totalCount"] = 0;
   json["projectId"] = bid;
   json["bookId"] = project->origin().id();
   json["isErrorPattern"] = false;
+  json["skip"] = x.skip;
+  json["max"] = x.max;
+  size_t totalCount = 0;
   Searcher searcher(*project, x.skip, x.max);
   for (size_t i = 0; i < tokens.size() and searcher.max() > 0; i++) {
     const auto matches = searcher.find(tokens[i]);
-    CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.size()
+    CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.matches.size()
                    << " matches for q='" << tokens[i] << "' (skip = " << x.skip
                    << ", max = " << x.max << ")";
     add_matches(json, matches, tokens[i], true);
+    totalCount += matches.totalCount;
   }
+  json["totalCount"] = totalCount;
   return json;
 }
 
@@ -122,7 +133,8 @@ template <class M>
 void add_matches(Json &json, const M &matches, const std::string &q, bool ep) {
   CROW_LOG_DEBUG << "(SearchRoute::search) building response";
   size_t i = 0;
-  for (const auto &m : matches) {
+  json["matches"][q]["totalCount"] = matches.totalCount;
+  for (const auto &m : matches.matches) {
     json["matches"][q][i]["line"] << *m.first;
     size_t j = 0;
     for (const auto &token : m.second) {
