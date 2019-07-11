@@ -989,36 +989,38 @@ search should be performed (default: `p=0`).
 #### Response data
 ```json
 {
-  "query": "query-parameter",
-  "isErrorPattern": true|false,
   "projectId": 27,
-  "nLines": 10,
-  "nWords": 15,
-  "matches": [
-    {
-      "line": {
-        "lineId": 13,
-        "pageId": 38,
-        "projectId": 27,
-        "imgFile": "path/to/line/image/file",
-        "cor": "corrected content",
-        "ocr": "ocr content",
-        "cuts": [1, 3, 5, 7, 9, 11, ...],
-        "confidences": [0.1, 0.1, 0.9, 1.0, ...],
-        "averageConfidence": 0.5,
-        "isFullyCorrected": true|false,
-        "isPartiallyCorrected": true|false,
-        "box": {
-          "left": 1,
-          "right": 2,
-          "top": 3,
-          "bottom": 4,
-          "width": 1,
-          "height": 1
+  "bookId": 17,
+  "isErrorPattern": true|false,
+  "skip": 8,
+  "max": 14,
+  "totalCount": 1000,
+  "matches": {
+	"query1": [{
+	   "totalCount": 30,
+	   "line": {
+          "lineId": 13,
+          "pageId": 38,
+          "projectId": 27,
+          "imgFile": "path/to/line/image/file",
+          "cor": "corrected content",
+          "ocr": "ocr content",
+          "cuts": [1, 3, 5, 7, 9, 11, ...],
+          "confidences": [0.1, 0.1, 0.9, 1.0, ...],
+          "averageConfidence": 0.5,
+          "isFullyCorrected": true|false,
+          "isPartiallyCorrected": true|false,
+          "box": {
+            "left": 1,
+            "right": 2,
+            "top": 3,
+            "bottom": 4,
+            "width": 1,
+            "height": 1
+          }
         }
-      },
-      "tokens": [
-        {
+		},...],
+		"matches": [{
           "projectId": 27,
           "pageId": 38,
           "lineId": 13,
@@ -1037,12 +1039,9 @@ search should be performed (default: `p=0`).
             "bottom": 4,
             "width": 1,
             "height": 1
-          },
-        },
-        ...
-      ]
-    },
-    ...
+          }},...
+		]
+	}
 }
 ```
 
