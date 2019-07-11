@@ -23,8 +23,8 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       'click .js-correct-cor' : 'cor_correct',
       'click .cordiv_container' :'cordiv_clicked',
       'click .js-toggle-selection' :'toggle_selection',
-      'click .js-set-correction' :'set_correction'
-
+      'click .js-set-correction' :'set_correction',
+      'click .js-paginate li' : 'paginate_clicked'
       },
 
 
@@ -234,6 +234,38 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       line_selected:function(e){
         var selection = window.getSelection().toString();
         this.trigger("concordance:line_selected",selection)
+      },
+      paginate_clicked: function(e){
+        e.preventDefault();
+ 
+
+        var text = $(e.currentTarget).text().trim();
+        console.log(text)
+
+        if(text=="Next"){
+          var next = $(e.currentTarget).parent().find('.active').next();          
+          if(next.text().trim()=="Next"){
+           return;
+           }else {
+          $(e.currentTarget).parent().find('.active').removeClass("active");
+          next.addClass('active');
+          }
+        }
+        else if(text=="Previous"){
+           var prev = $(e.currentTarget).parent().find('.active').prev();          
+          if(prev.text().trim()=="Previous"){
+           return;
+           }else {
+          $(e.currentTarget).parent().find('.active').removeClass("active");
+          prev.addClass('active');
+          }
+        }
+        else{
+        $(e.currentTarget).parent().find('.active').removeClass("active");
+        $(e.currentTarget).addClass('active');
+        }
+
+    
       },
      
      setSuggestionsDropdown : function(div,suggestions){
