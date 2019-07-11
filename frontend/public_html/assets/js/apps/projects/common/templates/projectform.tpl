@@ -10,7 +10,7 @@ if(asModal) {
 
 <div class="modal-header red-border-bottom">
         <h3 class="modal-title"><%-text%> </h3>
-       
+
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -40,13 +40,21 @@ if(asModal) {
   <label for="author">Author</label>
     <input class="form-control" type="text" value="<%-author%>" id="author" name="author">
   </div>
+   <div class="col-4">
+  <label for="histPatterns">Additional historical patterns</label>
+    <input class="form-control" type="text" value="<%-histPatterns%>"
+	       id="histPatterns" name="histPatterns"
+		   pattern="([^:,]*:[^:,]*(,[^:,]*:[^:,]*)*)?"
+		   placeholder="[m1:h1[,m2:h2]...]">
+  </div>
 
 </div>
 
 <div class="form-group row">
   <div class="col-4">
     <label for="language">Language</label>
-    <select class="form-control" type="text" value="<%-language%>" id="language" name="language">
+    <select class="form-control" type="text" value="<%-language%>"
+	        id="language" name="language">
      <%
      _.each(languages, function(language) { %>
         <option><%-language%></option>
@@ -55,7 +63,8 @@ if(asModal) {
   </div>
  <div class="col-4">
     <label for="year">Year of publication</label>
-    <input class="form-control" type="text" value="<%-year%>" id="year" name="year" placeholder="2018">
+    <input class="form-control" type="text" pattern="[0-9]{1,4}"
+	       value="<%-year%>" id="year" name="year" placeholder="year">
   </div>
  <div class="col-4">
     <label for="year">Profiler URL</label><small> (use default if in doubt)</small>
@@ -91,7 +100,7 @@ if(asModal) {
 if(asModal) {
 %>
 
-  </div> 
+  </div>
 
 
 

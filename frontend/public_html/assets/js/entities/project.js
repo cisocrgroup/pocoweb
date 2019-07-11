@@ -16,7 +16,7 @@ Entities.Page = Backbone.Model.extend({
   ocrFile:"",
   prevPageId:0,
   projectId:""
-  
+
      }
   });
 
@@ -30,20 +30,20 @@ Entities.Project = Backbone.Model.extend({
   projectId:null,
   title:"",
   user:"",
+  histPatterns:"",
   year:"2018"
-  
      }
   });
 
 Entities.API = {
 
- 
+
   getProjects: function(){
     var data = {};
     data['backend_route'] = "get_projects";
     var defer = jQuery.Deferred();
        $.ajax({
-     
+
         url: "api/api_controller.php",
         type: "POST",
         data:data,
@@ -78,13 +78,13 @@ getPage: function(data){
 
 
   return defer.promise();
-  
+
 },
 getProject: function(data){
     data['backend_route'] = "get_project";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -100,7 +100,7 @@ getProject: function(data){
 
 
   return defer.promise();
-  
+
 },
 
 uploadProjectData: function(data){
@@ -126,9 +126,9 @@ uploadProjectData: function(data){
 
 downloadProject: function(data){
     data['backend_route'] = "download_project";
-    var defer = jQuery.Deferred();  
+    var defer = jQuery.Deferred();
      $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -144,7 +144,7 @@ downloadProject: function(data){
 
 
   return defer.promise();
-  
+
 },
 
   createProject: function(data){
@@ -152,7 +152,7 @@ downloadProject: function(data){
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-     
+
         url: "api/api_controller.php",
         type: "POST",
         data:data,
@@ -173,7 +173,7 @@ deleteProject: function(data){
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-       
+
         url: "api/api_controller.php",
         type: "POST",
         data: data,
@@ -193,7 +193,7 @@ deleteProject: function(data){
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-       
+
         url: "api/api_controller.php",
         type: "POST",
         data: data,
@@ -213,7 +213,7 @@ deleteProject: function(data){
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-       
+
         url: "api/api_controller.php",
         type: "POST",
         data: data,
@@ -232,7 +232,7 @@ deleteProject: function(data){
 assignPackages: function(data){
   console.log(data);
     data['backend_route'] = "assign_packages";
-    var defer = jQuery.Deferred();  
+    var defer = jQuery.Deferred();
      $.ajax({
       url: "api/api_controller.php",
       type: "POST",
@@ -248,7 +248,7 @@ assignPackages: function(data){
 
 
   return defer.promise();
-  
+
 },
 
     getLine: function(data){
@@ -274,7 +274,7 @@ assignPackages: function(data){
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-     
+
         url: "api/api_controller.php",
         type: "POST",
         data:data,
@@ -293,7 +293,7 @@ assignPackages: function(data){
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-     
+
         url: "api/api_controller.php",
         type: "POST",
         data:data,
@@ -311,7 +311,7 @@ profileProject: function(data){
     data['backend_route'] = "order_profile";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -326,14 +326,14 @@ profileProject: function(data){
 
 
   return defer.promise();
-  
+
 },
 
 searchToken: function(data){
     data['backend_route'] = "search_token";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -348,7 +348,7 @@ searchToken: function(data){
 
 
   return defer.promise();
-  
+
 },
 
 getCorrectionSuggestions: function(data){
@@ -356,7 +356,7 @@ getCorrectionSuggestions: function(data){
     console.log(data);
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -371,14 +371,14 @@ getCorrectionSuggestions: function(data){
 
 
   return defer.promise();
-  
+
 },
 
 getAllCorrectionSuggestions: function(data){
     data['backend_route'] = "get_all_correction_suggestions";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -393,13 +393,13 @@ getAllCorrectionSuggestions: function(data){
 
 
   return defer.promise();
-  
+
 },
 getSuspiciousWords: function(data){
     data['backend_route'] = "get_suspicious_words";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -414,13 +414,13 @@ getSuspiciousWords: function(data){
 
 
   return defer.promise();
-  
+
 },
 getErrorPatterns: function(data){
     data['backend_route'] = "get_error_patterns";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -435,13 +435,13 @@ getErrorPatterns: function(data){
 
 
   return defer.promise();
-  
+
 },
 getSplitImages: function(data){
     data['backend_route'] = "get_split_images";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -456,13 +456,13 @@ getSplitImages: function(data){
 
 
   return defer.promise();
-  
+
 },
 getLexiconExtension: function(data){
   data['backend_route'] = "inspect_extended_lexicon";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -477,7 +477,7 @@ getLexiconExtension: function(data){
 
 
   return defer.promise();
-  
+
 },
 
 startLexiconExtension: function(data){
@@ -498,13 +498,13 @@ startLexiconExtension: function(data){
 
 
   return defer.promise();
-  
+
 },
 getProtocol: function(data){
   data['backend_route'] = "inspect_postcorrection";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -519,7 +519,7 @@ getProtocol: function(data){
 
 
   return defer.promise();
-  
+
 },
 startPostcorrection: function(data){
   data['backend_route'] = "start_postcorrection";
@@ -539,7 +539,7 @@ startPostcorrection: function(data){
 
 
   return defer.promise();
-  
+
 },
 
 profileWithExtensions: function(data){
@@ -560,7 +560,7 @@ profileWithExtensions: function(data){
 
 
   return defer.promise();
-  
+
 },
 
 getJobs: function(data){
@@ -605,7 +605,7 @@ getCharmap: function(data){
 
 
   return defer.promise();
-  
+
 }
 };
 
