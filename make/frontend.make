@@ -1,4 +1,4 @@
-PCW_FRONTEND_DIR ?= /usr/share/nginx/html
+PCW_FRONTEND_DIR ?= /srv/pocoweb/www-data
 
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/LICENSE
 FE_FILES += $(PCW_FRONTEND_DIR)/public_html/about.php
