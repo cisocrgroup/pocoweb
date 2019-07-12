@@ -113,9 +113,9 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 			  if (!str || str === "") {
 				  return "";
 			  }
-			  return '\\u' + str.split('').map(function(t) {
-				  return ('000' + t.charCodeAt(0).toString(16)).substr(-4)
-			  }).join('\\u');
+			  return str.split('').map(function(t) {
+				  return '\\u' + ('000' + t.charCodeAt(0).toString(16)).substr(-4)
+			  }).join('');
 		  };
           e.stopPropagation();
           e.preventDefault();
