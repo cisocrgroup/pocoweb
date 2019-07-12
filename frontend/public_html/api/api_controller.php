@@ -224,6 +224,10 @@ function update_project(){
   # force numeric year
   $year = intval($_POST['projectdata']['year']);
   $_POST['projectdata']['year'] = $year;
+  # handle `\uxxxx` in hist pattern input
+  $histPatterns = json_decode("\"$_POST[projectdata][histPatterns]\"");
+  $_POST['projectdata']['histPatterns'] = $histPatterns;
+
   $api->post_request($_POST['projectdata']);
 
  $status = $api->get_http_status_code();
