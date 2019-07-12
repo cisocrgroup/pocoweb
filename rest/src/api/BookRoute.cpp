@@ -106,23 +106,21 @@ Route::Response BookRoute::impl(HttpPost, const Request &req) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+template <class T>
+void set_if_set(T &t, const crow::json::rvalue &data, const char *key) {
+  t = get<T>(data, key).value_or(t);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void update_book_data(pcw::Book &book, const crow::json::rvalue &data) {
-  if (get<std::string>(data, "author"))
-    book.data.author = *get<std::string>(data, "author");
-  if (get<std::string>(data, "title"))
-    book.data.title = *get<std::string>(data, "title");
-  if (get<std::string>(data, "language"))
-    book.data.lang = *get<std::string>(data, "language");
-  if (get<std::string>(data, "uri"))
-    book.data.uri = *get<std::string>(data, "uri");
-  if (get<std::string>(data, "description"))
-    book.data.description = *get<std::string>(data, "description");
-  if (get<std::string>(data, "profilerUrl"))
-    book.data.profilerUrl = *get<std::string>(data, "profilerUrl");
-  else
-    book.data.profilerUrl = "local";
-  if (get<int>(data, "year"))
-    book.data.year = *get<int>(data, "year");
+  set_if_set(book.data.author, data, "author");
+  set_if_set(book.data.title, data, "title");
+  set_if_set(book.data.lang, data, "language");
+  set_if_set(book.data.uri, data, "uri");
+  set_if_set(book.data.description, data, "description");
+  set_if_set(book.data.histPatterns, data, "histPatterns");
+  set_if_set(book.data.profilerUrl, data, "profilerUrl");
+  set_if_set(book.data.year, data, "year");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

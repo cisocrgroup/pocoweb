@@ -296,7 +296,7 @@ namespace tables
             const T& operator()() const { return description; }
           };
       };
-      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::can_be_null>;
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
     struct Uri
     {
@@ -312,7 +312,7 @@ namespace tables
             const T& operator()() const { return uri; }
           };
       };
-      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::can_be_null>;
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
     struct Profilerurl
     {
@@ -328,7 +328,23 @@ namespace tables
             const T& operator()() const { return profilerurl; }
           };
       };
-      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::can_be_null>;
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
+    };
+    struct Histpatterns
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "histpatterns";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T histpatterns;
+            T& operator()() { return histpatterns; }
+            const T& operator()() const { return histpatterns; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
     struct Directory
     {
@@ -420,6 +436,7 @@ namespace tables
                Books_::Description,
                Books_::Uri,
                Books_::Profilerurl,
+               Books_::Histpatterns,
                Books_::Directory,
                Books_::Lang,
                Books_::Profiled,

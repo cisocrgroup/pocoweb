@@ -153,7 +153,9 @@ template <class Db> pcw::BookSptr pcw::insert_book(Db &db, Book &book) {
       books.author = book.data.author, books.title = book.data.title,
       books.directory = book.data.dir.string(), books.year = book.data.year,
       books.uri = book.data.uri, books.bookid = book.id(),
-      books.description = book.data.description, books.lang = book.data.lang);
+      books.description = book.data.description,
+      books.profilerurl = book.data.profilerUrl,
+      books.histpatterns = book.data.histPatterns, books.lang = book.data.lang);
   CROW_LOG_DEBUG << "(insert_book) bookid:      " << book.id();
   CROW_LOG_DEBUG << "(insert_book) author:      " << book.data.author;
   CROW_LOG_DEBUG << "(insert_book) title:       " << book.data.title;
@@ -286,6 +288,8 @@ template <class Db> void pcw::update_book(Db &db, Project &view) {
                books.year = view.origin().data.year,
                books.uri = view.origin().data.uri,
                books.description = view.origin().data.description,
+               books.profilerurl = view.origin().data.profilerUrl,
+               books.histpatterns = view.origin().data.histPatterns,
                books.profiled = view.origin().data.profiled,
                books.extendedlexicon = view.origin().data.extendedLexicon,
                books.postcorrected = view.origin().data.postCorrected,
@@ -353,6 +357,8 @@ pcw::BookData pcw::detail::make_book_data(const Row &row) noexcept {
   BookData data;
   detail::set_if_not_null(row.description,
                           [&](const auto &d) { data.description = d; });
+  detail::set_if_not_null(row.histpatterns,
+                          [&](const auto &ps) { data.histPatterns = ps; });
   detail::set_if_not_null(row.uri, [&](const auto &u) { data.uri = u; });
   detail::set_if_not_null(row.year, [&](const auto &y) { data.year = y; });
   detail::set_if_not_null(row.author, [&](const auto &a) { data.author = a; });
