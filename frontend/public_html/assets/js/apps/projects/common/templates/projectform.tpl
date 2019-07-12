@@ -67,8 +67,8 @@ if(asModal) {
 	       value="<%-year%>" id="year" name="year" placeholder="year">
   </div>
  <div class="col-4">
-    <label for="year">Profiler URL</label><small> (use default if in doubt)</small>
-    <input class="form-control" type="text" value="<%-profilerUrl%>" id="profilerUrl" name="profilerUrl" placeholder="default">
+    <label for="year">Profiler URL</label><small> (leave empty if in doubt)</small>
+    <input class="form-control" type="text" value="<%-profilerUrl%>" id="profilerUrl" name="profilerUrl" placeholder="external profiler URL">
   </div>
   </div>
 
