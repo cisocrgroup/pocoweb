@@ -80,7 +80,6 @@ Route::Response BookRoute::impl(HttpPost, const Request &req) const {
     if (not book)
       THROW(BadRequest, "(BookRoute) could not build book");
     book->set_owner(session->user());
-    // book->data.profilerUrl = "local";
     // update book data
     update_book_data(*book, json);
   } else {
@@ -88,7 +87,6 @@ Route::Response BookRoute::impl(HttpPost, const Request &req) const {
     book = dir.build();
     if (not book)
       THROW(BadRequest, "(BookRoute) could not build book");
-    // book->data.profilerUrl = "local";
     book->set_owner(session->user());
   }
   // insert book into database
@@ -124,6 +122,15 @@ void update_book_data(pcw::Book &book, const crow::json::rvalue &data) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+template <class T> typename T::_cpp_value_type empty_if_null(const T &t) {
+  if (not t.is_null()) {
+    return t;
+  } else {
+    return typename T::_cpp_value_type();
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpGet, const Request &req, int bid) const {
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
@@ -139,33 +146,39 @@ Route::Response BookRoute::impl(HttpGet, const Request &req, int bid) const {
   }
   Json j;
   const auto isBook = rows1.front().bookid == rows1.front().id;
-  j["bookId"] = rows1.front().bookid;
-  j["projectId"] = rows1.front().id;
+  j["bookId"] = empty_if_null(rows1.front().bookid);
+  j["projectId"] = empty_if_null(rows1.front().id);
   j["isBook"] = isBook;
-  j["year"] = rows1.front().year;
-  j["author"] = rows1.front().author;
-  j["title"] = rows1.front().title;
-  j["language"] = rows1.front().lang;
-  j["description"] = rows1.front().description;
-  j["profilerUrl"] = rows1.front().profilerurl;
-  j["status"]["profiled"] = rows1.front().profiled;
-  j["status"]["extended-lexicon"] = rows1.front().extendedlexicon;
-  j["status"]["post-corrected"] = rows1.front().postcorrected;
+  j["year"] = empty_if_null(rows1.front().year);
+  j["author"] = empty_if_null(rows1.front().author);
+  j["title"] = empty_if_null(rows1.front().title);
+  j["language"] = empty_if_null(rows1.front().lang);
+  j["description"] = empty_if_null(rows1.front().description);
+  j["histPatterns"] = empty_if_null(rows1.front().histpatterns);
+  j["profilerUrl"] = empty_if_null(rows1.front().profilerurl);
+  j["status"]["profiled"] = empty_if_null(rows1.front().profiled);
+  j["status"]["extended-lexicon"] =
+      empty_if_null(rows1.front().extendedlexicon);
+  j["status"]["post-corrected"] = empty_if_null(rows1.front().postcorrected);
 
   tables::ProjectPages ppages;
   auto rows2 = conn.db()(select(ppages.pageid)
                              .from(ppages)
                              .where(ppages.projectid == bid)
                              .order_by(ppages.pageid.asc()));
+
   const auto n = append_page_ids(rows2, j);
+
   j["pages"] = n;
-  if (n == 0 and isBook) { // no pages, but is a book - maybe pages where (not
-                           // yet) inserted into project pages
+  if (n == 0 and isBook) { // no pages, but we have a book
+                           // id - maybe pages where (not yet)
+                           // inserted into project pages
     tables::Pages pages;
     auto rows3 = conn.db()(select(pages.pageid)
                                .from(pages)
                                .where(pages.bookid == bid)
                                .order_by(pages.pageid.asc()));
+
     j["pages"] = append_page_ids(rows3, j);
   }
   return j;
