@@ -3,7 +3,18 @@
 // ==============
 
 define({
-
+	formatSuggestion: function(s) {
+		var info = [];
+		if (s.ocrPatterns.length > 0) {
+			info.push('ocr: ' + s.ocrPatterns.join(',') + s.ocrPatterns.length);
+		}
+		if (s.histPatterns.length > 0) {
+			info.push('hist: ' + s.histPatterns.join(',') + s.histPatterns.length);
+		}
+		info.push('dist: ' + s.distance);
+		info.push('weight: ' + s.weight.toFixed(2));
+		return s.suggestion + ' (' + info.join(',') + ')';
+	},
 
 replace_all : function(string,search, replacement) {
     return string.replace(new RegExp(search, 'g'), replacement);
@@ -148,7 +159,7 @@ addAlignedLine : function(line){
     },
 
      setLoggedIn: function(name){
-    
+
           $('.right-nav').empty();
           $('.right-nav').prepend('<li class="nav-item js-logout"><a href="#" class="nav-link">Logout</a></li>');
           $('.right-nav').prepend('<li><p class="navbar-text" style="margin:0;">Logged in as user: <span class="loginname">'+name+"</span></p></li>");
@@ -165,11 +176,11 @@ addAlignedLine : function(line){
          if(response.status==401){
           App.trigger("nav:login",false);
          }
-         App.mainmsg.updateContent(response.responseText,mode);                       
+         App.mainmsg.updateContent(response.responseText,mode);
 
       });
-     
-      
+
+
     }
 
 });

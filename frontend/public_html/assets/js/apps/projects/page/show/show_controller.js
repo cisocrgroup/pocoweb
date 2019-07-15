@@ -219,10 +219,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                      for(key in suggestions.suggestions){
                        for (var i=0;i<suggestions.suggestions[key].length;i++){
                         // to do: datatable instead ?
-
-                     var s = suggestions.suggestions[key][i];
-                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
-                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+						   var s = suggestions.suggestions[key][i];
+						   var content = Util.formatSuggestion(s);
                      $('#suggestionsDropdown').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
                    }

@@ -47,7 +47,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       correct_clicked:function(e){
 
         var that = this;
-       
+
           $('.concLine').each(function(){
 
              var cordiv_left = $(this).find('.cordiv_left');
@@ -64,7 +64,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
               var anchor = $(this).attr('anchor');
               // console.log({pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token});
               that.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token},anchor);
-            
+
             }
           });
 
@@ -104,7 +104,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         if(cordiv_left.find('i').hasClass('fa-check-square')){
           cordiv.text($(".js-global-correction-suggestion").val());
          }
-      
+
 
         })
 
@@ -187,7 +187,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       if($(e.currentTarget).hasClass('cordiv')){
        // $(".custom-popover").remove();
 
-      var checkbox = $('<span class="correction_box"><i class="far fa-square"></i></span>'); 
+      var checkbox = $('<span class="correction_box"><i class="far fa-square"></i></span>');
     //  $(e.currentTarget).find('span').append(checkbox);
 
       // btn_group.append($('<div class="input-group-prepend"><div class="input-group-text"><input type="checkbox" id="js-select"></div></div>'))
@@ -207,7 +207,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       //   that.trigger("page:concordance_clicked",sel);
       //  });
 
-      
+
       }
       },
 
@@ -221,7 +221,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         $('.line-text').css('border-top-left-radius','0rem');
         $('.line-text').css('border-bottom-left-radius','0rem');
 
-  
+
         $(e.currentTarget).css('border-left','1px solid #ced4da');
         $(e.currentTarget).css('border-bottom','1px solid #ced4da');
         $(e.currentTarget).css('border-top','1px solid #ced4da');
@@ -229,7 +229,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         $(e.currentTarget).css('border-bottom-left-radius','.25rem');
 
         $(e.currentTarget).next().find('.correct-btn').show();
-        
+
       },
       line_selected:function(e){
         var selection = window.getSelection().toString();
@@ -237,13 +237,13 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       },
       paginate_clicked: function(e){
         e.preventDefault();
- 
+
 
         var text = $(e.currentTarget).text().trim();
         console.log(text)
 
         if(text=="Next"){
-          var next = $(e.currentTarget).parent().find('.active').next();          
+          var next = $(e.currentTarget).parent().find('.active').next();
           if(next.text().trim()=="Next"){
            return;
            }else {
@@ -252,7 +252,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           }
         }
         else if(text=="Previous"){
-           var prev = $(e.currentTarget).parent().find('.active').prev();          
+           var prev = $(e.currentTarget).parent().find('.active').prev();
           if(prev.text().trim()=="Previous"){
            return;
            }else {
@@ -265,9 +265,9 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         $(e.currentTarget).addClass('active');
         }
 
-    
+
       },
-     
+
      setSuggestionsDropdown : function(div,suggestions){
 
                 var dropdown = $('<span class="dropdown"></span>');
@@ -286,13 +286,11 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                  dropdown_content.attr('id','dropdown-content-conc');
                  dropdown_content.attr('aria-labelledby','dropdownMenuConc');
                  suggestions_btn.parent().append(dropdown_content);
-                
+
 
                      for(i=0;i<suggestions.length;i++){
-                    
-                     var s = suggestions[i];
-                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
-                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+						 var s = suggestions[i];
+						 var content = Util.formatSuggestion(s);
                      $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
 
@@ -300,10 +298,9 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                     for(key in suggestions){
                        for (var i=0;i<suggestions[key].length;i++){
                         // to do: datatable instead ?
-                    
+
                      var s = suggestions[key][i];
-                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
-                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+						   var content = Util.formatSuggestion(s);
                      $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
                    }
@@ -334,7 +331,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
           this.$el.attr("id","conc-modal");
           this.$el.addClass("modal fade conc-modal");
-        
+
           $('#conc-modal').on('show.bs.modal', function () {
             })
             $('#conc-modal').on('hidden.bs.modal', function () {
@@ -377,8 +374,8 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
 
             })
-           
-        
+
+
        }
 
 $('#conc-modal').imagesLoaded( function() {
@@ -417,8 +414,8 @@ $('#conc-modal').imagesLoaded( function() {
               for(var j=0;j<linetokens.length;j++) {
 
                 var token = linetokens[j];
-              
-                var whitespace_width=0; 
+
+                var whitespace_width=0;
                 if (token.ocr.includes(" ")){
                   whitespace_width = token.box.width;
                 }
@@ -447,24 +444,24 @@ $('#conc-modal').imagesLoaded( function() {
 
                     var tokendiv;
                     var cordiv = $("<div>"+token.cor+"</div>");
-                   
+
                     if(querytoken.toLowerCase()==token.cor.toLowerCase()){
 
                         var contenteditable = 'true';
                         if(le){
                           contenteditable = 'false'
                          }
- 
+
 
                        cordiv = $("<div class='cordiv' contenteditable='"+contenteditable+"'>"+token.cor.trim()+"</div>");
-                        
+
                        //var grp = $ ("<div class='input-group-mb-3'></div>");
                        // grp.append($("<span class='concbtn_left'><i class='far fa-square'></i></span>"));
                        // grp.append($("<span class='cortoken' contenteditable='true'>"+token.cor.trim()+"</span>"));
                        // grp.append($("<span class='concbtn_right'><i class='fas fa-caret-down'></i></span>"));
 
                        // cordiv.find('span').append(grp);
-                      //    
+                      //
                    //  cordiv = $("<div style='color:green;'>"+token.cor.trim()+"</div>");
 
                     tokendiv = $('<div class="tokendiv cordiv_container"></div>')
@@ -476,7 +473,7 @@ $('#conc-modal').imagesLoaded( function() {
                     else{
                       tokendiv = $('<div class="tokendiv"></div>').append(cordiv);
                     }
-                  
+
                         tokendiv.attr('pageId',token['pageId']).attr('lineId',token['lineId']).attr('projectId',token['projectId']).
                        attr('tokenId',token['tokenId']);
                     // var div = $("<div style='display:inline-block;'></div>").append(img).append(cordiv);
@@ -491,7 +488,7 @@ $('#conc-modal').imagesLoaded( function() {
 
                         var whitespace_div_length = token.box.width*scalefactor ;
                          cordiv.css('width',whitespace_div_length);
-                       
+
 
                         prevdiv = cordiv;
                        //  current_position+=(prev_div_width + whitespace_div_length);
@@ -505,15 +502,15 @@ $('#conc-modal').imagesLoaded( function() {
      }
 
           // remove when clicked somewhere else
-         $(that.el).click(function(e) 
+         $(that.el).click(function(e)
           {
               var container = $(".cordiv");
-                if (!container.is(e.target) && container.has(e.target).length === 0) 
-                {          
+                if (!container.is(e.target) && container.has(e.target).length === 0)
+                {
                     container.parent().find('.cordiv_left').hide();
                     container.parent().find('.cordiv_right').hide();
                 }
-          });   
+          });
 
     that.$el.modal('show');
 
@@ -523,7 +520,7 @@ $('#conc-modal').imagesLoaded( function() {
 });
 
 
-     
+
 
 
 
@@ -537,4 +534,3 @@ $('#conc-modal').imagesLoaded( function() {
 return Show;
 
 });
-
