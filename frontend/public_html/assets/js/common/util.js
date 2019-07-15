@@ -5,15 +5,21 @@
 define({
 	formatSuggestion: function(s) {
 		var info = [];
-		if (s.ocrPatterns.length > 0) {
-			info.push('ocr: ' + s.ocrPatterns.join(',') + s.ocrPatterns.length);
+        var pats = s.ocrPatterns.filter(function(pattern){
+                     return pattern != "";
+        });
+		if (pats.length > 0) {
+			info.push('ocr: ' + pats.join(','));
 		}
-		if (s.histPatterns.length > 0) {
-			info.push('hist: ' + s.histPatterns.join(',') + s.histPatterns.length);
+        pats = s.histPatterns.filter(function(pattern){
+                     return pattern != "";
+        });
+		if (pats.length > 0) {
+			info.push('hist: ' + pats.join(','));
 		}
 		info.push('dist: ' + s.distance);
 		info.push('weight: ' + s.weight.toFixed(2));
-		return s.suggestion + ' (' + info.join(',') + ')';
+		return s.suggestion + ' (' + info.join(', ') + ')';
 	},
 
 replace_all : function(string,search, replacement) {
