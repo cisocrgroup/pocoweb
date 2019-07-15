@@ -23241,7 +23241,24 @@ return hooks;
 // ==============
 
 define('common/util',{
-
+	formatSuggestion: function(s) {
+		var info = [];
+        var pats = s.ocrPatterns.filter(function(pattern){
+                     return pattern != "";
+        });
+		if (pats.length > 0) {
+			info.push('ocr: ' + pats.join(','));
+		}
+        pats = s.histPatterns.filter(function(pattern){
+                     return pattern != "";
+        });
+		if (pats.length > 0) {
+			info.push('hist: ' + pats.join(','));
+		}
+		info.push('dist: ' + s.distance);
+		info.push('weight: ' + s.weight.toFixed(2));
+		return s.suggestion + ' (' + info.join(', ') + ')';
+	},
 
 replace_all : function(string,search, replacement) {
     return string.replace(new RegExp(search, 'g'), replacement);
@@ -23386,7 +23403,7 @@ addAlignedLine : function(line){
     },
 
      setLoggedIn: function(name){
-    
+
           $('.right-nav').empty();
           $('.right-nav').prepend('<li class="nav-item js-logout"><a href="#" class="nav-link">Logout</a></li>');
           $('.right-nav').prepend('<li><p class="navbar-text" style="margin:0;">Logged in as user: <span class="loginname">'+name+"</span></p></li>");
@@ -23403,11 +23420,11 @@ addAlignedLine : function(line){
          if(response.status==401){
           App.trigger("nav:login",false);
          }
-         App.mainmsg.updateContent(response.responseText,mode);                       
+         App.mainmsg.updateContent(response.responseText,mode);
 
       });
-     
-      
+
+
     }
 
 });
@@ -24614,7 +24631,7 @@ onAttach: function(){
         	if(type=="danger"||type=="success"){
         	  setTimeout(function() {
    		  		 $('#mainmsg').fadeOut();
-   			  }, 10000);
+   			  }, 5000);
         	}
 
    		  },
@@ -25862,7 +25879,7 @@ Entities.User = Backbone.Model.extend({
   admin:"",
   password:"",
   new_password:""
-  
+
      }
   });
 
@@ -25872,9 +25889,9 @@ Entities.API = {
   getJson: function(data){
     var defer = jQuery.Deferred();
         $.ajax({
-        headers: { 
+        headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json' 
+        'Content-Type': 'application/json'
          },
         url: "assets/js/api.json",
         type: "GET",
@@ -25891,141 +25908,117 @@ Entities.API = {
 
 
     return defer.promise();
-    
+
 },
 
-  
   login: function(data){
-
-    data['backend_route'] = "login";
     var defer = jQuery.Deferred();
        $.ajax({
-     
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
-              defer.resolve(JSON.parse(data));
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+         },
+         url: "rest/login",
+         type: "POST",
+         data: JSON.stringify(data),
+         success: function(data) {
+           defer.resolve(data);
+         },
+         error: function(data){
+           defer.reject(data);
+         }
     });
-
     return defer.promise();
   },
 
-  
+
   loginCheck: function(){
-    var data= {};
-    data['backend_route'] = "login_check";
-    var defer = jQuery.Deferred();
-       $.ajax({
-     
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
-              defer.resolve(JSON.parse(data));
-            },
-            error: function(data){
-              defer.reject(data);
-            }
-    });
-
-    return defer.promise();
+    if (sessionStorage.getItem('pcw')) {
+      return App.getCurrentUser();
+    } else {
+      return -1;
+    }
   },
     logout: function(data){
-    var data= {};
-    data['backend_route'] = "logout";
-    var defer = jQuery.Deferred();
+      var defer = jQuery.Deferred();
        $.ajax({
-     
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
-              defer.resolve(JSON.parse(data));
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+         headers: {
+           'Accept': 'application/json'
+         },
+         url: "rest/logout?auth=" + App.getAuthToken(),
+         type: "GET",
+         success: function(data) {
+           sessionStorage.removeItem('pcw');
+           defer.resolve(data);
+         },
+         error: function(data){
+           sessionStorage.removeItem('pcw');
+           defer.reject(data);
+         }
     });
-
     return defer.promise();
   },
 
     getUsers: function(){
-    data = {}
-    data['backend_route'] = "get_users";
     var defer = jQuery.Deferred();
        $.ajax({
-     
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
-              defer.resolve(JSON.parse(data));
+         headers: {
+           'Accept': 'application/json'
+         },
+         url: "rest/users?auth=" + App.getAuthToken(),
+         type: "GET",
+         success: function(data) {
+              defer.resolve(data);
             },
             error: function(data){
               defer.reject(data);
             }
     });
-
     return defer.promise();
   },
-    getUser: function(id){
-      data = {}
-    if(id!="account") {
-      data['id'] = id;
-    }
-
-    data['backend_route'] = "get_user";
+    getUser: function(){
     var defer = jQuery.Deferred();
        $.ajax({
-     
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
-              defer.resolve(JSON.parse(data));
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+         headers: {
+           'Accept': 'application/json'
+         },
+         url: "rest/users/" + App.getCurrentUser().id + "?auth=" + App.getAuthToken(),
+         type: "GET",
+         success: function(data) {
+           defer.resolve(data);
+         },
+         error: function(data){
+           defer.reject(data);
+         }
     });
 
     return defer.promise();
   },
-     updateUser: function(data){
+  updateUser: function(data){
     data['backend_route'] = "update_user";
     var defer = jQuery.Deferred();
        $.ajax({
-     
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
-              defer.resolve(JSON.parse(data));
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+         },
+         url: "rest/users/" + App.getCurrentUser().id + "?auth=" + App.getAuthToken(),
+         type: "PUT",
+         data: JSON.stringify(data),
+         success: function(data) {
+           defer.resolve(data);
+         },
+         error: function(data){
+           defer.reject(data);
+         }
     });
-
     return defer.promise();
   },
       deleteUser: function(data){
     data['backend_route'] = "delete_user";
     var defer = jQuery.Deferred();
        $.ajax({
-     
+
         url: "api/api_controller.php",
         type: "POST",
         data:data,
@@ -26045,7 +26038,7 @@ Entities.API = {
     data['backend_route'] = "create_user";
     var defer = jQuery.Deferred();
        $.ajax({
-     
+
         url: "api/api_controller.php",
         type: "POST",
         data:data,
@@ -26076,17 +26069,16 @@ define('entities/util',["app"], function(App){
 
   var Entities={};
 
- 
+
 
 Entities.API = {
-
 
   startTraining: function(data){
     var defer = jQuery.Deferred();
     $.ajax({
-         headers: { 
+         headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json' 
+        'Content-Type': 'application/json'
         },
         url: "/api/trainclassifier",
         type: "POST",
@@ -26102,46 +26094,41 @@ Entities.API = {
     });
 
     return defer.promise();
-    
+
 },
   getApiVersion: function(){
-    var data = {};
-    data['backend_route'] = "api_version";
     var defer = jQuery.Deferred();
        $.ajax({
-     
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
-              defer.resolve(JSON.parse(data));
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+         headers: {
+           'Accept': 'application/json'
+         },
+         url: "rest/api-version",
+         type: "GET",
+         success: function(data) {
+           defer.resolve(data);
+         },
+         error: function(data){
+           defer.reject(data);
+         }
     });
 
     return defer.promise();
   },
     getLanguages: function(){
-    var data = {};
-    data['backend_route'] = "languages";
     var defer = jQuery.Deferred();
        $.ajax({
-     
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
-              defer.resolve(JSON.parse(data));
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+         headers: {
+           'Accept': 'application/json'
+         },
+         url: "rest/profile/languages",
+         type: "GET",
+         success: function(data) {
+          defer.resolve(data);
+         },
+         error: function(data){
+           defer.reject(data);
+         }
     });
-
     return defer.promise();
   },
   getDocumentation: function(){
@@ -26149,7 +26136,7 @@ Entities.API = {
     data['backend_route'] = "documentation";
     var defer = jQuery.Deferred();
        $.ajax({
-     
+
         url: "api/api_controller.php",
         type: "POST",
         data:data,
@@ -26200,12 +26187,12 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
         console.log(login_check)
         var headerShowLayout = new Show.Layout();
          var headerLogin ;
- 
+
 
       var headerShowTopbar = new Show.Topbar({version:api_version.version});
       App.Navbar = headerShowTopbar;
 
-      
+
       // var headerShowMsg = new Show.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
       // App.mainmsg = headerShowMsg; // save view to be changed form other views..
 
@@ -26224,17 +26211,17 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
                        App.mainmsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedOut();
                          App.trigger('home:portal');
-                  
-                }).fail(function(response){ 
-                  App.mainmsg.updateContent(response.responseText,'danger');                       
-                                      
+
+                }).fail(function(response){
+                  App.mainmsg.updateContent(response.responseText,'danger');
+
           }); //  $.when(loggingOutUser).done
 
-        
+
     });
 
 
-  
+
 
 
 
@@ -26246,28 +26233,24 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
 
 
         //           $.when(fetchingHelpTexts).done(function(helptexts){
-       
+
 
         //           var helpModal = new Show.Help({
         //             helpitems:helptexts.helpItems,
         //             asModal:true
-        //           }); 
+        //           });
 
         //        App.mainLayout.showChildView('dialogRegion',helpModal);
 
         //     }); // when fetchingHelp
 
         // }); // require
-           
+
        });
-
-
-
-     
 
   headerShowTopbar.on("attach",function(){
        if(login_check!=-1){
-             var user = login_check['user'];
+             var user = login_check;
 
       App.mainmsg.updateContent("Welcome back to PoCoWeb: "+user.name+"!",'success');
       headerShowTopbar.setLoggedIn(user.name);
@@ -26283,7 +26266,7 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
     });
 
 
-    
+
 
 
       App.mainLayout.showChildView('headerRegion',headerShowLayout);
@@ -26291,7 +26274,7 @@ define('apps/header/show/show_controller',["app","common/util","apps/header/show
     }); //fetching user,util
 
     });
-  
+
     } // showHeader
 
   }
@@ -26589,7 +26572,7 @@ if(asModal) {
 
 __p+='\n\n  <div class="modal-dialog modal-lg" role="document">\n  <div class="modal-content">\n\n<div class="modal-header red-border-bottom">\n        <h3 class="modal-title">'+
 ((__t=(text))==null?'':_.escape(__t))+
-' </h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n<div class="loading_background" style="display: none;">\n         <i class="fas fa-sync fa-spin fa-3x fa-fw"></i>\n         <div class="loading_text_parent">\n           <div class="loading_text"> '+
+' </h3>\n\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n<div class="loading_background" style="display: none;">\n         <i class="fas fa-sync fa-spin fa-3x fa-fw"></i>\n         <div class="loading_text_parent">\n           <div class="loading_text"> '+
 ((__t=(loading_text))==null?'':_.escape(__t))+
 ' </div>\n         </div>\n</div>\n\n';
  } 
@@ -26599,20 +26582,22 @@ __p+='\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="t
 ((__t=(title))==null?'':_.escape(__t))+
 '" id="title" name="title">\n  </div>\n   <div class="col-4">\n  <label for="author">Author</label>\n    <input class="form-control" type="text" value="'+
 ((__t=(author))==null?'':_.escape(__t))+
-'" id="author" name="author">\n  </div>\n\n</div>\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="language">Language</label>\n    <select class="form-control" type="text" value="'+
+'" id="author" name="author">\n  </div>\n   <div class="col-4">\n  <label for="histPatterns">Additional historical patterns</label>\n    <input class="form-control" type="text" value="'+
+((__t=(histPatterns))==null?'':_.escape(__t))+
+'"\n	       id="histPatterns" name="histPatterns"\n		   pattern="([^:,]*:[^:,]*(,[^:,]*:[^:,]*)*)?"\n		   placeholder="[m1:h1[,m2:h2]...]">\n  </div>\n\n</div>\n\n<div class="form-group row">\n  <div class="col-4">\n    <label for="language">Language</label>\n    <select class="form-control" type="text" value="'+
 ((__t=(language))==null?'':_.escape(__t))+
-'" id="language" name="language">\n     ';
+'"\n	        id="language" name="language">\n     ';
 
      _.each(languages, function(language) { 
 __p+='\n        <option>'+
 ((__t=(language))==null?'':_.escape(__t))+
 '</option>\n     ';
  }); 
-__p+='\n    </select>\n  </div>\n <div class="col-4">\n    <label for="year">Year of publication</label>\n    <input class="form-control" type="text" value="'+
+__p+='\n    </select>\n  </div>\n <div class="col-4">\n    <label for="year">Year of publication</label>\n    <input class="form-control" type="text" pattern="[0-9]{1,4}"\n	       value="'+
 ((__t=(year))==null?'':_.escape(__t))+
-'" id="year" name="year" placeholder="2018">\n  </div>\n <div class="col-4">\n    <label for="year">Profiler URL</label><small> (use default if in doubt)</small>\n    <input class="form-control" type="text" value="'+
+'" id="year" name="year" placeholder="year">\n  </div>\n <div class="col-4">\n    <label for="year">Profiler URL</label><small> (leave empty if in doubt)</small>\n    <input class="form-control" type="text" value="'+
 ((__t=(profilerUrl))==null?'':_.escape(__t))+
-'" id="profilerUrl" name="profilerUrl" placeholder="default">\n  </div>\n  </div>\n\n';
+'" id="profilerUrl" name="profilerUrl" placeholder="external profiler URL">\n  </div>\n  </div>\n\n';
  } 
 __p+='\n\n';
  if(!edit_project) { 
@@ -26624,7 +26609,7 @@ __p+='\n\n</form>\n\n\n\n';
 
 if(asModal) {
 
-__p+='\n\n  </div> \n\n\n\n <div class="modal-footer">\n </div>\n\n\n\n  </div>\n  </div>\n\n';
+__p+='\n\n  </div>\n\n\n\n <div class="modal-footer">\n </div>\n\n\n\n  </div>\n  </div>\n\n';
  } 
 __p+='\n';
 }
@@ -26849,19 +26834,19 @@ return Views;
 define("tpl!apps/projects/concordance/show/templates/concordance.tpl", function () { return function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='	\n';
+__p+='\n';
 
 if(asModal) {
 
 __p+='\n\n  <div class="modal-dialog modal-xl" role="document">\n  <div class="modal-content">\n\n<div class="modal-header">\n        <h3 class="modal-title">Concordance view for "'+
 ((__t=(selection))==null?'':_.escape(__t))+
-'"</h3>\n       \n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n';
+'"</h3>\n\n        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\n          <span aria-hidden="true">&times;</span>\n        </button>\n\n      </div>\n<div class="modal-body">\n\n';
  } else { 
 __p+='\n\n\n	<div class="container">\n	<div class="row">\n    <div class="col col-md-12">\n\n	<div id="concordance-heading">\n	<p><h2>Concordance view for "'+
 ((__t=(selection))==null?'':_.escape(__t))+
-'"</h2></p>\n	</div>\n\n	\n';
+'"</h2></p>\n	</div>\n\n\n';
  } 
-__p+='\n\n <!--  <nav class="navbar navbar-static-top" id="page-header" data-spy="affix" data-offset-top="197">\n  <div class="container-fluid">\n  <div class="collapse navbar-collapse">\n  <ul class="nav navbar-nav">\n  <li> \n  <form class="navbar-form">-->\n  \n  ';
+__p+='\n\n <!--  <nav class="navbar navbar-static-top" id="page-header" data-spy="affix" data-offset-top="197">\n  <div class="container-fluid">\n  <div class="collapse navbar-collapse">\n  <ul class="nav navbar-nav">\n  <li>\n  <form class="navbar-form">-->\n\n  ';
  if (!le){ 
 __p+='\n\n  <div class="input-group mb-3">\n  <div class="input-group-prepend">\n  <button class="js-toggle-selection btn btn-outline-secondary" title="Toggle selection">\n  Toggle selection\n  </button>\n  </div>\n  <input class="js-global-correction-suggestion form-control" title="correction" type="text" placeholder="Correction"/>\n  <div class="input-group-append">\n  <button class="js-set-correction btn btn-outline-secondary" title="Set correction">\n  Set correction\n  </button>\n  <button class="js-correct-conc selected btn btn-outline-secondary" title="Correct selected">\n  Correct selected\n  </button>\n  </div>\n  </div>\n\n  ';
  } 
@@ -26876,9 +26861,13 @@ __p+='\n\n <!-- </form>\n   </li>\n  </ul>\n  </div>\n  </div>\n  </nav> -->\n\n
     	  _.each(match['tokens'], function(word) {
 
         var offset = word['offset'];
-        var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];   
+        var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];
    
-__p+='\n\n\n\n<div class="text-image-line">\n\n<div class="left_div div_inline">\n	<!-- if ($images["leftImg"] != NULL) { -->\n		<div class="invisible=link" href="'+
+__p+='\n\n\n\n<div class="text-image-line" title="page '+
+((__t=(line.pageId))==null?'':_.escape(__t))+
+' line '+
+((__t=(line.lineId))==null?'':_.escape(__t))+
+'">\n\n<div class="left_div div_inline">\n	<!-- if ($images["leftImg"] != NULL) { -->\n		<div class="invisible=link" href="'+
 ((__t=(link))==null?'':_.escape(__t))+
 '">\n    <div id ="img_'+
 ((__t=(line['pageId']))==null?'':_.escape(__t))+
@@ -26890,13 +26879,19 @@ __p+='\n\n\n\n<div class="text-image-line">\n\n<div class="left_div div_inline">
 ((__t=(line['pageId']))==null?'':_.escape(__t))+
 '_'+
 ((__t=(line['lineId']))==null?'':_.escape(__t))+
-'" width="auto" height="25"/>\n    </div>\n	\n		</div>\n	</div>\n	\n	</div>\n\n\n\n\n     ';
+'" width="auto" height="25"/>\n    </div>\n\n		</div>\n	</div>\n\n	</div>\n\n\n\n\n     ';
 
      	  	});
         }
      	};
      
-__p+='\n\n</div>\n\n	</div>\n    </div>\n 	</div>\n';
+__p+='\n\n</div>\n\n';
+
+if(asModal) {
+
+__p+='\n\n  <div class="modal-footer">\n      <nav aria-label="Page navigation">\n        <ul class="pagination justify-content-center js-paginate">\n          <li class="page-item">\n            <a class="page-link" href="#" tabindex="-1">Previous</a>\n          </li>\n          <li class="page-item active"><a class="page-link" href="#">1</a></li>\n          <li class="page-item"><a class="page-link" href="#">2</a></li>\n          <li class="page-item"><a class="page-link" href="#">3</a></li>\n          <li class="page-item">\n            <a class="page-link" href="#">Next</a>\n          </li>\n        </ul>\n      </nav>\n  </div>\n\n';
+ } 
+__p+='\n\n\n	</div>\n    </div>\n 	</div>\n';
 }
 return __p;
 };});
@@ -26926,8 +26921,8 @@ define('apps/projects/concordance/show/show_view',["marionette","app","imagesLoa
       'click .js-correct-cor' : 'cor_correct',
       'click .cordiv_container' :'cordiv_clicked',
       'click .js-toggle-selection' :'toggle_selection',
-      'click .js-set-correction' :'set_correction'
-
+      'click .js-set-correction' :'set_correction',
+      'click .js-paginate li' : 'paginate_clicked'
       },
 
 
@@ -26950,7 +26945,7 @@ define('apps/projects/concordance/show/show_view',["marionette","app","imagesLoa
       correct_clicked:function(e){
 
         var that = this;
-       
+
           $('.concLine').each(function(){
 
              var cordiv_left = $(this).find('.cordiv_left');
@@ -26967,7 +26962,7 @@ define('apps/projects/concordance/show/show_view',["marionette","app","imagesLoa
               var anchor = $(this).attr('anchor');
               // console.log({pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token});
               that.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token},anchor);
-            
+
             }
           });
 
@@ -27007,7 +27002,7 @@ define('apps/projects/concordance/show/show_view',["marionette","app","imagesLoa
         if(cordiv_left.find('i').hasClass('fa-check-square')){
           cordiv.text($(".js-global-correction-suggestion").val());
          }
-      
+
 
         })
 
@@ -27090,7 +27085,7 @@ define('apps/projects/concordance/show/show_view',["marionette","app","imagesLoa
       if($(e.currentTarget).hasClass('cordiv')){
        // $(".custom-popover").remove();
 
-      var checkbox = $('<span class="correction_box"><i class="far fa-square"></i></span>'); 
+      var checkbox = $('<span class="correction_box"><i class="far fa-square"></i></span>');
     //  $(e.currentTarget).find('span').append(checkbox);
 
       // btn_group.append($('<div class="input-group-prepend"><div class="input-group-text"><input type="checkbox" id="js-select"></div></div>'))
@@ -27110,7 +27105,7 @@ define('apps/projects/concordance/show/show_view',["marionette","app","imagesLoa
       //   that.trigger("page:concordance_clicked",sel);
       //  });
 
-      
+
       }
       },
 
@@ -27124,7 +27119,7 @@ define('apps/projects/concordance/show/show_view',["marionette","app","imagesLoa
         $('.line-text').css('border-top-left-radius','0rem');
         $('.line-text').css('border-bottom-left-radius','0rem');
 
-  
+
         $(e.currentTarget).css('border-left','1px solid #ced4da');
         $(e.currentTarget).css('border-bottom','1px solid #ced4da');
         $(e.currentTarget).css('border-top','1px solid #ced4da');
@@ -27132,13 +27127,45 @@ define('apps/projects/concordance/show/show_view',["marionette","app","imagesLoa
         $(e.currentTarget).css('border-bottom-left-radius','.25rem');
 
         $(e.currentTarget).next().find('.correct-btn').show();
-        
+
       },
       line_selected:function(e){
         var selection = window.getSelection().toString();
         this.trigger("concordance:line_selected",selection)
       },
-     
+      paginate_clicked: function(e){
+        e.preventDefault();
+
+
+        var text = $(e.currentTarget).text().trim();
+        console.log(text)
+
+        if(text=="Next"){
+          var next = $(e.currentTarget).parent().find('.active').next();
+          if(next.text().trim()=="Next"){
+           return;
+           }else {
+          $(e.currentTarget).parent().find('.active').removeClass("active");
+          next.addClass('active');
+          }
+        }
+        else if(text=="Previous"){
+           var prev = $(e.currentTarget).parent().find('.active').prev();
+          if(prev.text().trim()=="Previous"){
+           return;
+           }else {
+          $(e.currentTarget).parent().find('.active').removeClass("active");
+          prev.addClass('active');
+          }
+        }
+        else{
+        $(e.currentTarget).parent().find('.active').removeClass("active");
+        $(e.currentTarget).addClass('active');
+        }
+
+
+      },
+
      setSuggestionsDropdown : function(div,suggestions){
 
                 var dropdown = $('<span class="dropdown"></span>');
@@ -27157,13 +27184,11 @@ define('apps/projects/concordance/show/show_view',["marionette","app","imagesLoa
                  dropdown_content.attr('id','dropdown-content-conc');
                  dropdown_content.attr('aria-labelledby','dropdownMenuConc');
                  suggestions_btn.parent().append(dropdown_content);
-                
+
 
                      for(i=0;i<suggestions.length;i++){
-                    
-                     var s = suggestions[i];
-                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
-                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+						 var s = suggestions[i];
+						 var content = Util.formatSuggestion(s);
                      $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
 
@@ -27171,10 +27196,9 @@ define('apps/projects/concordance/show/show_view',["marionette","app","imagesLoa
                     for(key in suggestions){
                        for (var i=0;i<suggestions[key].length;i++){
                         // to do: datatable instead ?
-                    
+
                      var s = suggestions[key][i];
-                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
-                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+						   var content = Util.formatSuggestion(s);
                      $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
                    }
@@ -27205,7 +27229,7 @@ define('apps/projects/concordance/show/show_view',["marionette","app","imagesLoa
 
           this.$el.attr("id","conc-modal");
           this.$el.addClass("modal fade conc-modal");
-        
+
           $('#conc-modal').on('show.bs.modal', function () {
             })
             $('#conc-modal').on('hidden.bs.modal', function () {
@@ -27248,8 +27272,8 @@ define('apps/projects/concordance/show/show_view',["marionette","app","imagesLoa
 
 
             })
-           
-        
+
+
        }
 
 $('#conc-modal').imagesLoaded( function() {
@@ -27288,8 +27312,8 @@ $('#conc-modal').imagesLoaded( function() {
               for(var j=0;j<linetokens.length;j++) {
 
                 var token = linetokens[j];
-              
-                var whitespace_width=0; 
+
+                var whitespace_width=0;
                 if (token.ocr.includes(" ")){
                   whitespace_width = token.box.width;
                 }
@@ -27318,24 +27342,24 @@ $('#conc-modal').imagesLoaded( function() {
 
                     var tokendiv;
                     var cordiv = $("<div>"+token.cor+"</div>");
-                   
+
                     if(querytoken.toLowerCase()==token.cor.toLowerCase()){
 
                         var contenteditable = 'true';
                         if(le){
                           contenteditable = 'false'
                          }
- 
+
 
                        cordiv = $("<div class='cordiv' contenteditable='"+contenteditable+"'>"+token.cor.trim()+"</div>");
-                        
+
                        //var grp = $ ("<div class='input-group-mb-3'></div>");
                        // grp.append($("<span class='concbtn_left'><i class='far fa-square'></i></span>"));
                        // grp.append($("<span class='cortoken' contenteditable='true'>"+token.cor.trim()+"</span>"));
                        // grp.append($("<span class='concbtn_right'><i class='fas fa-caret-down'></i></span>"));
 
                        // cordiv.find('span').append(grp);
-                      //    
+                      //
                    //  cordiv = $("<div style='color:green;'>"+token.cor.trim()+"</div>");
 
                     tokendiv = $('<div class="tokendiv cordiv_container"></div>')
@@ -27347,7 +27371,7 @@ $('#conc-modal').imagesLoaded( function() {
                     else{
                       tokendiv = $('<div class="tokendiv"></div>').append(cordiv);
                     }
-                  
+
                         tokendiv.attr('pageId',token['pageId']).attr('lineId',token['lineId']).attr('projectId',token['projectId']).
                        attr('tokenId',token['tokenId']);
                     // var div = $("<div style='display:inline-block;'></div>").append(img).append(cordiv);
@@ -27362,7 +27386,7 @@ $('#conc-modal').imagesLoaded( function() {
 
                         var whitespace_div_length = token.box.width*scalefactor ;
                          cordiv.css('width',whitespace_div_length);
-                       
+
 
                         prevdiv = cordiv;
                        //  current_position+=(prev_div_width + whitespace_div_length);
@@ -27376,15 +27400,15 @@ $('#conc-modal').imagesLoaded( function() {
      }
 
           // remove when clicked somewhere else
-         $(that.el).click(function(e) 
+         $(that.el).click(function(e)
           {
               var container = $(".cordiv");
-                if (!container.is(e.target) && container.has(e.target).length === 0) 
-                {          
+                if (!container.is(e.target) && container.has(e.target).length === 0)
+                {
                     container.parent().find('.cordiv_left').hide();
                     container.parent().find('.cordiv_right').hide();
                 }
-          });   
+          });
 
     that.$el.modal('show');
 
@@ -27394,7 +27418,7 @@ $('#conc-modal').imagesLoaded( function() {
 });
 
 
-     
+
 
 
 
@@ -27408,7 +27432,6 @@ $('#conc-modal').imagesLoaded( function() {
 return Show;
 
 });
-
 
 
 define("tpl!apps/projects/page/show/templates/header.tpl", function () { return function(obj){
@@ -27630,9 +27653,9 @@ define('apps/projects/page/show/show_view',["marionette","app","backbone.syphon"
 			  if (!str || str === "") {
 				  return "";
 			  }
-			  return '\\u' + str.split('').map(function(t) {
-				  return ('000' + t.charCodeAt(0).toString(16)).substr(-4)
-			  }).join('\\u');
+			  return str.split('').map(function(t) {
+				  return '\\u' + ('000' + t.charCodeAt(0).toString(16)).substr(-4)
+			  }).join('');
 		  };
           e.stopPropagation();
           e.preventDefault();
@@ -28296,8 +28319,7 @@ return Show;
 // entities/projects.js
 // ================
 
-define('entities/project',["app"], function(IPS_App){
-
+define('entities/project',["app"], function(App){
   var Entities={};
 
 Entities.Page = Backbone.Model.extend({
@@ -28310,7 +28332,7 @@ Entities.Page = Backbone.Model.extend({
   ocrFile:"",
   prevPageId:0,
   projectId:""
-  
+
      }
   });
 
@@ -28324,81 +28346,69 @@ Entities.Project = Backbone.Model.extend({
   projectId:null,
   title:"",
   user:"",
+  histPatterns:"",
   year:"2018"
-  
      }
   });
 
 Entities.API = {
-
- 
   getProjects: function(){
-    var data = {};
-    data['backend_route'] = "get_projects";
     var defer = jQuery.Deferred();
        $.ajax({
-     
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-              defer.resolve(JSON.parse(data));
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+         headers: {
+           'Accept': 'application/json'
+         },
+         url: "rest/books?auth=" + App.getAuthToken(),
+         type: "GET",
+         success: function(data) {
+           defer.resolve(data);
+         },
+         error: function(data){
+           defer.reject(data);
+         }
     });
-
     return defer.promise();
   },
 
-getPage: function(data){
-    data['backend_route'] = "get_page";
-  var defer = jQuery.Deferred();
-      $.ajax({
-
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
+  getPage: function(data){
+    var defer = jQuery.Deferred();
+    $.ajax({
+      headers: {
+        'Accept': 'application/json'
+      },
+      url: "rest/books/" + data.pid + "/pages/" + data.page + "?auth=" + App.getAuthToken(),
+      type: "GET",
       success: function(data) {
-          var result = JSON.parse(data);
-        defer.resolve( new Entities.Page(result));
-
-          },
-          error: function(data){
-            defer.reject(data);
-          }
-  });
-
-
-  return defer.promise();
-  
+        defer.resolve(new Entities.Page(data));
+      },
+      error: function(data){
+        defer.reject(data);
+      }
+    });
+    return defer.promise();
 },
+
 getProject: function(data){
-    data['backend_route'] = "get_project";
   var defer = jQuery.Deferred();
       $.ajax({
-      
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
-      success: function(data) {
-        var result = new Entities.Project(JSON.parse(data));
-        defer.resolve(result);
-
-          },
-          error: function(data){
-            defer.reject(data);
-          }
+        headers: {
+          'Accept': 'application/json'
+        },
+        url: "rest/books/" + data.pid + "?auth=" + App.getAuthToken(),
+        type: "GET",
+        success: function(data) {
+          defer.resolve(new Entities.Project(data));
+        },
+        error: function(data){
+          defer.reject(data);
+        }
   });
-
-
   return defer.promise();
-  
 },
 
 uploadProjectData: function(data){
     var defer = jQuery.Deferred();
+  data.auth = App.getAuthToken();
       $.ajax({
         url: "api/upload.php",
         type: "POST",
@@ -28420,9 +28430,9 @@ uploadProjectData: function(data){
 
 downloadProject: function(data){
     data['backend_route'] = "download_project";
-    var defer = jQuery.Deferred();  
+    var defer = jQuery.Deferred();
      $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -28438,7 +28448,7 @@ downloadProject: function(data){
 
 
   return defer.promise();
-  
+
 },
 
   createProject: function(data){
@@ -28446,7 +28456,13 @@ downloadProject: function(data){
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-     
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+         url: "rest/books/" + data.pid + "?auth=" + App.getAuthToken(),
+        type: "GET",
+
         url: "api/api_controller.php",
         type: "POST",
         data:data,
@@ -28467,7 +28483,7 @@ deleteProject: function(data){
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-       
+
         url: "api/api_controller.php",
         type: "POST",
         data: data,
@@ -28487,7 +28503,7 @@ deleteProject: function(data){
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-       
+
         url: "api/api_controller.php",
         type: "POST",
         data: data,
@@ -28507,7 +28523,7 @@ deleteProject: function(data){
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-       
+
         url: "api/api_controller.php",
         type: "POST",
         data: data,
@@ -28526,7 +28542,7 @@ deleteProject: function(data){
 assignPackages: function(data){
   console.log(data);
     data['backend_route'] = "assign_packages";
-    var defer = jQuery.Deferred();  
+    var defer = jQuery.Deferred();
      $.ajax({
       url: "api/api_controller.php",
       type: "POST",
@@ -28542,7 +28558,7 @@ assignPackages: function(data){
 
 
   return defer.promise();
-  
+
 },
 
     getLine: function(data){
@@ -28568,7 +28584,7 @@ assignPackages: function(data){
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-     
+
         url: "api/api_controller.php",
         type: "POST",
         data:data,
@@ -28587,7 +28603,7 @@ assignPackages: function(data){
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-     
+
         url: "api/api_controller.php",
         type: "POST",
         data:data,
@@ -28605,7 +28621,7 @@ profileProject: function(data){
     data['backend_route'] = "order_profile";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -28620,14 +28636,14 @@ profileProject: function(data){
 
 
   return defer.promise();
-  
+
 },
 
 searchToken: function(data){
     data['backend_route'] = "search_token";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -28642,7 +28658,7 @@ searchToken: function(data){
 
 
   return defer.promise();
-  
+
 },
 
 getCorrectionSuggestions: function(data){
@@ -28650,7 +28666,7 @@ getCorrectionSuggestions: function(data){
     console.log(data);
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -28665,14 +28681,14 @@ getCorrectionSuggestions: function(data){
 
 
   return defer.promise();
-  
+
 },
 
 getAllCorrectionSuggestions: function(data){
     data['backend_route'] = "get_all_correction_suggestions";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -28687,13 +28703,13 @@ getAllCorrectionSuggestions: function(data){
 
 
   return defer.promise();
-  
+
 },
 getSuspiciousWords: function(data){
     data['backend_route'] = "get_suspicious_words";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -28708,13 +28724,13 @@ getSuspiciousWords: function(data){
 
 
   return defer.promise();
-  
+
 },
 getErrorPatterns: function(data){
     data['backend_route'] = "get_error_patterns";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -28729,13 +28745,13 @@ getErrorPatterns: function(data){
 
 
   return defer.promise();
-  
+
 },
 getSplitImages: function(data){
     data['backend_route'] = "get_split_images";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -28750,13 +28766,13 @@ getSplitImages: function(data){
 
 
   return defer.promise();
-  
+
 },
 getLexiconExtension: function(data){
   data['backend_route'] = "inspect_extended_lexicon";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -28771,7 +28787,7 @@ getLexiconExtension: function(data){
 
 
   return defer.promise();
-  
+
 },
 
 startLexiconExtension: function(data){
@@ -28792,13 +28808,13 @@ startLexiconExtension: function(data){
 
 
   return defer.promise();
-  
+
 },
 getProtocol: function(data){
   data['backend_route'] = "inspect_postcorrection";
   var defer = jQuery.Deferred();
       $.ajax({
-      
+
       url: "api/api_controller.php",
       type: "POST",
        data:data,
@@ -28813,7 +28829,7 @@ getProtocol: function(data){
 
 
   return defer.promise();
-  
+
 },
 startPostcorrection: function(data){
   data['backend_route'] = "start_postcorrection";
@@ -28833,7 +28849,7 @@ startPostcorrection: function(data){
 
 
   return defer.promise();
-  
+
 },
 
 profileWithExtensions: function(data){
@@ -28854,7 +28870,7 @@ profileWithExtensions: function(data){
 
 
   return defer.promise();
-  
+
 },
 
 getJobs: function(data){
@@ -28899,7 +28915,7 @@ getCharmap: function(data){
 
 
   return defer.promise();
-  
+
 }
 };
 
@@ -29443,15 +29459,12 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
            projectShowPage.on("page:line_selected",function(selection){
                     var that = this;
                     var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:selection,pid:id});
-                    var searchingToken = ProjectEntities.API.searchToken({q:selection,p:page_id,pid:id,isErrorPattern:0});
+                    // var searchingToken = ProjectEntities.API.searchToken({q:selection,p:page_id,pid:id,isErrorPattern:0});
 
-                  $.when(searchingToken,gettingCorrectionSuggestions).done(function(tokens,suggestions){
+                  $.when(gettingCorrectionSuggestions).done(function(suggestions){
 
 
-                    that.tokendata = tokens;
-                    // $('#js-concordance').html('Show concordance of <b>'+ selection+'</b> ('+tokens.nWords+' occurrences)');
-
-                   $('#js-concordance').attr('title','Show concordance of <b>'+ selection+'</b> ('+tokens.nWords+' occurrences)');
+                    // $('#js-concordance').attr('title','Show concordance of <b>'+ selection+'</b> ('+tokens.nWords+' occurrences)');
 
                     $("#suggestionsDropdown").empty();
 
@@ -29462,10 +29475,8 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
                      for(key in suggestions.suggestions){
                        for (var i=0;i<suggestions.suggestions[key].length;i++){
                         // to do: datatable instead ?
-
-                     var s = suggestions.suggestions[key][i];
-                     var content = s.suggestion + " (patts: " + s.ocrPatterns.join(',') + ", dist: " +
-                      s.distance + ", weight: " + s.weight.toFixed(2) + ")";
+						   var s = suggestions.suggestions[key][i];
+						   var content = Util.formatSuggestion(s);
                      $('#suggestionsDropdown').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
                    }
@@ -29490,11 +29501,10 @@ define('apps/projects/page/show/show_controller',["app","common/util","common/vi
        projectShowPage.on("page:concordance_clicked",function(selection,isErrorPattern){
         console.log(isErrorPattern);
         console.log(selection);
-        var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern});
+        var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern,skip:0,max:10});
         var that = this;
          $.when(searchingToken).done(function(tokens){
           console.log(tokens)
-
 
            var projectConcView = new Show.Concordance({isErrorPattern:isErrorPattern,selection:selection,tokendata:tokens,asModal:true});
            $('.custom-popover').remove();
@@ -50985,7 +50995,13 @@ App.getCurrentRoute = function(){
  return Backbone.history.fragment
 };
 
+App.getCurrentUser = function() {
+  return JSON.parse(sessionStorage.getItem('pcw')).user;
+};
 
+App.getAuthToken = function() {
+  return JSON.parse(sessionStorage.getItem('pcw')).auth;
+};
 
 App.on("start", function(){
 
@@ -51019,7 +51035,7 @@ App.on("start", function(){
 
      }
      else {
-     
+
       App.mainLayout.showChildView('mainRegion',loginView);
      }
 
@@ -51028,13 +51044,12 @@ App.on("start", function(){
       if(asModal) $('#loginModal').modal('hide');
 
     var loggingInUser = UserEntities.API.login(data);
-
-
                  $.when(loggingInUser).done(function(result){
-                                            
+                   sessionStorage.setItem('pcw', JSON.stringify(result));
+
                         App.mainmsg.updateContent(result.message,'success');
                          Util.setLoggedIn(result.user.name);
-                          
+
                           var currentRoute =  App.getCurrentRoute();
                           var page_re = /projects\/\d+.*/;
                           var page_route_found = App.getCurrentRoute().match(page_re);
@@ -51059,12 +51074,12 @@ App.on("start", function(){
                               break;
                             default:
                               App.trigger("home:portal")
-                          } 
+                          }
 
-                                            
-                }).fail(function(response){ 
-                  App.mainmsg.updateContent(response.responseText,'danger');                       
-                                      
+
+                }).fail(function(response){
+                  App.mainmsg.updateContent(response.responseText,'danger');
+
           }); //  $.when(loggingInUser).done
 
        });

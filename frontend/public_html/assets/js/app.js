@@ -43,7 +43,13 @@ App.getCurrentRoute = function(){
  return Backbone.history.fragment
 };
 
+App.getCurrentUser = function() {
+  return JSON.parse(sessionStorage.getItem('pcw')).user;
+};
 
+App.getAuthToken = function() {
+  return JSON.parse(sessionStorage.getItem('pcw')).auth;
+};
 
 App.on("start", function(){
 
@@ -77,7 +83,7 @@ App.on("start", function(){
 
      }
      else {
-     
+
       App.mainLayout.showChildView('mainRegion',loginView);
      }
 
@@ -86,13 +92,12 @@ App.on("start", function(){
       if(asModal) $('#loginModal').modal('hide');
 
     var loggingInUser = UserEntities.API.login(data);
-
-
                  $.when(loggingInUser).done(function(result){
-                                            
+                   sessionStorage.setItem('pcw', JSON.stringify(result));
+
                         App.mainmsg.updateContent(result.message,'success');
                          Util.setLoggedIn(result.user.name);
-                          
+
                           var currentRoute =  App.getCurrentRoute();
                           var page_re = /projects\/\d+.*/;
                           var page_route_found = App.getCurrentRoute().match(page_re);
@@ -117,12 +122,12 @@ App.on("start", function(){
                               break;
                             default:
                               App.trigger("home:portal")
-                          } 
+                          }
 
-                                            
-                }).fail(function(response){ 
-                  App.mainmsg.updateContent(response.responseText,'danger');                       
-                                      
+
+                }).fail(function(response){
+                  App.mainmsg.updateContent(response.responseText,'danger');
+
           }); //  $.when(loggingInUser).done
 
        });

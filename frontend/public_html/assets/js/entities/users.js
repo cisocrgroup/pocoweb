@@ -15,7 +15,7 @@ Entities.User = Backbone.Model.extend({
   admin:"",
   password:"",
   new_password:""
-  
+
      }
   });
 
@@ -25,9 +25,9 @@ Entities.API = {
   getJson: function(data){
     var defer = jQuery.Deferred();
         $.ajax({
-        headers: { 
+        headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json' 
+        'Content-Type': 'application/json'
          },
         url: "assets/js/api.json",
         type: "GET",
@@ -44,141 +44,117 @@ Entities.API = {
 
 
     return defer.promise();
-    
+
 },
 
-  
   login: function(data){
-
-    data['backend_route'] = "login";
     var defer = jQuery.Deferred();
        $.ajax({
-     
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
-              defer.resolve(JSON.parse(data));
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+         },
+         url: "rest/login",
+         type: "POST",
+         data: JSON.stringify(data),
+         success: function(data) {
+           defer.resolve(data);
+         },
+         error: function(data){
+           defer.reject(data);
+         }
     });
-
     return defer.promise();
   },
 
-  
+
   loginCheck: function(){
-    var data= {};
-    data['backend_route'] = "login_check";
-    var defer = jQuery.Deferred();
-       $.ajax({
-     
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
-              defer.resolve(JSON.parse(data));
-            },
-            error: function(data){
-              defer.reject(data);
-            }
-    });
-
-    return defer.promise();
+    if (sessionStorage.getItem('pcw')) {
+      return App.getCurrentUser();
+    } else {
+      return -1;
+    }
   },
     logout: function(data){
-    var data= {};
-    data['backend_route'] = "logout";
-    var defer = jQuery.Deferred();
+      var defer = jQuery.Deferred();
        $.ajax({
-     
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
-              defer.resolve(JSON.parse(data));
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+         headers: {
+           'Accept': 'application/json'
+         },
+         url: "rest/logout?auth=" + App.getAuthToken(),
+         type: "GET",
+         success: function(data) {
+           sessionStorage.removeItem('pcw');
+           defer.resolve(data);
+         },
+         error: function(data){
+           sessionStorage.removeItem('pcw');
+           defer.reject(data);
+         }
     });
-
     return defer.promise();
   },
 
     getUsers: function(){
-    data = {}
-    data['backend_route'] = "get_users";
     var defer = jQuery.Deferred();
        $.ajax({
-     
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
-              defer.resolve(JSON.parse(data));
+         headers: {
+           'Accept': 'application/json'
+         },
+         url: "rest/users?auth=" + App.getAuthToken(),
+         type: "GET",
+         success: function(data) {
+              defer.resolve(data);
             },
             error: function(data){
               defer.reject(data);
             }
     });
-
     return defer.promise();
   },
-    getUser: function(id){
-      data = {}
-    if(id!="account") {
-      data['id'] = id;
-    }
-
-    data['backend_route'] = "get_user";
+    getUser: function(){
     var defer = jQuery.Deferred();
        $.ajax({
-     
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
-              defer.resolve(JSON.parse(data));
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+         headers: {
+           'Accept': 'application/json'
+         },
+         url: "rest/users/" + App.getCurrentUser().id + "?auth=" + App.getAuthToken(),
+         type: "GET",
+         success: function(data) {
+           defer.resolve(data);
+         },
+         error: function(data){
+           defer.reject(data);
+         }
     });
 
     return defer.promise();
   },
-     updateUser: function(data){
+  updateUser: function(data){
     data['backend_route'] = "update_user";
     var defer = jQuery.Deferred();
        $.ajax({
-     
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
-              defer.resolve(JSON.parse(data));
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+         },
+         url: "rest/users/" + App.getCurrentUser().id + "?auth=" + App.getAuthToken(),
+         type: "PUT",
+         data: JSON.stringify(data),
+         success: function(data) {
+           defer.resolve(data);
+         },
+         error: function(data){
+           defer.reject(data);
+         }
     });
-
     return defer.promise();
   },
       deleteUser: function(data){
     data['backend_route'] = "delete_user";
     var defer = jQuery.Deferred();
        $.ajax({
-     
+
         url: "api/api_controller.php",
         type: "POST",
         data:data,
@@ -198,7 +174,7 @@ Entities.API = {
     data['backend_route'] = "create_user";
     var defer = jQuery.Deferred();
        $.ajax({
-     
+
         url: "api/api_controller.php",
         type: "POST",
         data:data,

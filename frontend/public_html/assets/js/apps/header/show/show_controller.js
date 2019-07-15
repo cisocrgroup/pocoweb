@@ -20,12 +20,12 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
         console.log(login_check)
         var headerShowLayout = new Show.Layout();
          var headerLogin ;
- 
+
 
       var headerShowTopbar = new Show.Topbar({version:api_version.version});
       App.Navbar = headerShowTopbar;
 
-      
+
       // var headerShowMsg = new Show.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
       // App.mainmsg = headerShowMsg; // save view to be changed form other views..
 
@@ -44,17 +44,17 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
                        App.mainmsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedOut();
                          App.trigger('home:portal');
-                  
-                }).fail(function(response){ 
-                  App.mainmsg.updateContent(response.responseText,'danger');                       
-                                      
+
+                }).fail(function(response){
+                  App.mainmsg.updateContent(response.responseText,'danger');
+
           }); //  $.when(loggingOutUser).done
 
-        
+
     });
 
 
-  
+
 
 
 
@@ -66,28 +66,24 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
 
         //           $.when(fetchingHelpTexts).done(function(helptexts){
-       
+
 
         //           var helpModal = new Show.Help({
         //             helpitems:helptexts.helpItems,
         //             asModal:true
-        //           }); 
+        //           });
 
         //        App.mainLayout.showChildView('dialogRegion',helpModal);
 
         //     }); // when fetchingHelp
 
         // }); // require
-           
+
        });
-
-
-
-     
 
   headerShowTopbar.on("attach",function(){
        if(login_check!=-1){
-             var user = login_check['user'];
+             var user = login_check;
 
       App.mainmsg.updateContent("Welcome back to PoCoWeb: "+user.name+"!",'success');
       headerShowTopbar.setLoggedIn(user.name);
@@ -103,7 +99,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
     });
 
 
-    
+
 
 
       App.mainLayout.showChildView('headerRegion',headerShowLayout);
@@ -111,7 +107,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
     }); //fetching user,util
 
     });
-  
+
     } // showHeader
 
   }

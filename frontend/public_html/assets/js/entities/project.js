@@ -2,8 +2,7 @@
 // entities/projects.js
 // ================
 
-define(["app"], function(IPS_App){
-
+define(["app"], function(App){
   var Entities={};
 
 Entities.Page = Backbone.Model.extend({
@@ -36,75 +35,63 @@ Entities.Project = Backbone.Model.extend({
   });
 
 Entities.API = {
-
-
   getProjects: function(){
-    var data = {};
-    data['backend_route'] = "get_projects";
     var defer = jQuery.Deferred();
        $.ajax({
-
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-              defer.resolve(JSON.parse(data));
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+         headers: {
+           'Accept': 'application/json'
+         },
+         url: "rest/books?auth=" + App.getAuthToken(),
+         type: "GET",
+         success: function(data) {
+           defer.resolve(data);
+         },
+         error: function(data){
+           defer.reject(data);
+         }
     });
-
     return defer.promise();
   },
 
-getPage: function(data){
-    data['backend_route'] = "get_page";
-  var defer = jQuery.Deferred();
-      $.ajax({
-
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
+  getPage: function(data){
+    var defer = jQuery.Deferred();
+    $.ajax({
+      headers: {
+        'Accept': 'application/json'
+      },
+      url: "rest/books/" + data.pid + "/pages/" + data.page + "?auth=" + App.getAuthToken(),
+      type: "GET",
       success: function(data) {
-          var result = JSON.parse(data);
-        defer.resolve( new Entities.Page(result));
-
-          },
-          error: function(data){
-            defer.reject(data);
-          }
-  });
-
-
-  return defer.promise();
-
+        defer.resolve(new Entities.Page(data));
+      },
+      error: function(data){
+        defer.reject(data);
+      }
+    });
+    return defer.promise();
 },
+
 getProject: function(data){
-    data['backend_route'] = "get_project";
   var defer = jQuery.Deferred();
       $.ajax({
-
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
-      success: function(data) {
-        var result = new Entities.Project(JSON.parse(data));
-        defer.resolve(result);
-
-          },
-          error: function(data){
-            defer.reject(data);
-          }
+        headers: {
+          'Accept': 'application/json'
+        },
+        url: "rest/books/" + data.pid + "?auth=" + App.getAuthToken(),
+        type: "GET",
+        success: function(data) {
+          defer.resolve(new Entities.Project(data));
+        },
+        error: function(data){
+          defer.reject(data);
+        }
   });
-
-
   return defer.promise();
-
 },
 
 uploadProjectData: function(data){
     var defer = jQuery.Deferred();
+  data.auth = App.getAuthToken();
       $.ajax({
         url: "api/upload.php",
         type: "POST",
@@ -152,6 +139,12 @@ downloadProject: function(data){
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+         url: "rest/books/" + data.pid + "?auth=" + App.getAuthToken(),
+        type: "GET",
 
         url: "api/api_controller.php",
         type: "POST",
