@@ -1,4 +1,4 @@
-	
+
 <%
 if(asModal) {
 %>
@@ -8,7 +8,7 @@ if(asModal) {
 
 <div class="modal-header">
         <h3 class="modal-title">Concordance view for "<%-selection%>"</h3>
-       
+
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -27,16 +27,16 @@ if(asModal) {
 	<p><h2>Concordance view for "<%-selection%>"</h2></p>
 	</div>
 
-	
+
 <% } %>
 
  <!--  <nav class="navbar navbar-static-top" id="page-header" data-spy="affix" data-offset-top="197">
   <div class="container-fluid">
   <div class="collapse navbar-collapse">
   <ul class="nav navbar-nav">
-  <li> 
+  <li>
   <form class="navbar-form">-->
-  
+
   <% if (!le){ %>
 
   <div class="input-group mb-3">
@@ -76,12 +76,12 @@ if(asModal) {
     	  _.each(match['tokens'], function(word) {
 
         var offset = word['offset'];
-        var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];   
+        var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];
    %>
 
 
 
-<div class="text-image-line">
+<div class="text-image-line" title="page <%-line.pageId%> line <%-line.lineId%>">
 
 <div class="left_div div_inline">
 	<!-- if ($images["leftImg"] != NULL) { -->
@@ -89,10 +89,10 @@ if(asModal) {
     <div id ="img_<%-line['pageId']%>_<%-line['lineId']%>_parent" class="line-img">
 		<img src="<%-line['imgFile']%>" id="img_<%-line['pageId']%>_<%-line['lineId']%>" width="auto" height="25"/>
     </div>
-	
+
 		</div>
 	</div>
-	
+
 	</div>
 
 
