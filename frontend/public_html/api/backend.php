@@ -332,11 +332,11 @@ function backend_upload_project($post, $name, $file) {
 	return $api;
 }
 
-function backend_get_search_route($pid, $q, $p) {
+function backend_get_search_route($pid, $q, $p, $skip, $max) {
 	global $config;
 	return sprintf($config["backend"]["internalURL"] .
 		$config["backend"]["routes"]["search"],
-		$pid, urlencode($q), (int)$p);
+        $pid, urlencode($q), (int)$p, (int)$skip, (int)$max);
 }
 
 function backend_get_suggestions_route($pid, $q) {
@@ -471,17 +471,17 @@ function backend_get_start_rrdm_route($pid) {
 function backend_get_inspect_rrdm_route($pid) {
 	global $config;
 	return sprintf($config["backend"]["internalURL"] .
-		$config["backend"]["routes"]["getRRDM"],$pid);	
+		$config["backend"]["routes"]["getRRDM"],$pid);
 }
 function backend_get_jobs_route($pid) {
 	global $config;
 	return sprintf($config["backend"]["internalURL"] .
-		$config["backend"]["routes"]["getJob"],$pid);	
+		$config["backend"]["routes"]["getJob"],$pid);
 }
 
 function backend_get_charmap_route($pid) {
 	global $config;
 	return sprintf($config["backend"]["internalURL"] .
-		$config["backend"]["routes"]["getCharmap"],$pid);	
+		$config["backend"]["routes"]["getCharmap"],$pid);
 }
 ?>

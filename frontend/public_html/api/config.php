@@ -42,7 +42,7 @@ $config = array(
 			"correctWord"         => "/books/%d/pages/%d/lines/%d/tokens/%d",
 			"getCharmap"          => "/books/%d/charmap",
 			"uploadProject"       => "/books",
-			"search"              => "/books/%d/search?q=%s&p=%d",
+			"search"              => "/books/%d/search?q=%s&p=%d&skip=%d&max=%d",
 			"splitImages"         => "/books/%d/pages/%d/lines/%d/tokens/%d/split-images",
 			"orderProfile"        => "/profile/books/%d",
 			"searchSuggestions"   => "/profile/books/%d?q=%s",
