@@ -215,7 +215,6 @@ function delete_project(){
 }
 
 function update_project(){
-
   $pid = $_POST['pid'];
   $api = new Api(backend_get_project_route($pid));
   $api->set_session_id(backend_get_session_cookie());
@@ -1094,7 +1093,6 @@ function login(){
 }
 
 function logout(){
-
   $api = new Api(backend_get_logout_route());
   $api->set_session_id(backend_get_session_cookie());
   $api->get_request();
