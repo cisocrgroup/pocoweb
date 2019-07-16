@@ -54,6 +54,9 @@ App.updateCurrentUser = function(user) {
 };
 
 App.getAuthToken = function() {
+  if (sessionStorage.getItem('pcw') === null) {
+      return - 1;
+  }
   return JSON.parse(sessionStorage.getItem('pcw')).auth;
 };
 
