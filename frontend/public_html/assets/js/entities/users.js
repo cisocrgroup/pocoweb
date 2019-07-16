@@ -131,7 +131,6 @@ Entities.API = {
     return defer.promise();
   },
   updateUser: function(data){
-    data['backend_route'] = "update_user";
     var defer = jQuery.Deferred();
        $.ajax({
          headers: {
@@ -140,7 +139,15 @@ Entities.API = {
          },
          url: "rest/users/" + App.getCurrentUser().id + "?auth=" + App.getAuthToken(),
          type: "PUT",
-         data: JSON.stringify(data),
+         data: JSON.stringify({
+           user: {
+             name: data.name,
+             email: data.email,
+             institute: data.institute,
+             id: data.id
+           },
+           password: data['new_password']
+         }),
          success: function(data) {
            defer.resolve(data);
          },

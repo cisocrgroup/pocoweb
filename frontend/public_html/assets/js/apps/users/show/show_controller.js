@@ -25,9 +25,9 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
 			var userShowHeader;
      		var userShowPanel;
 			var userShowForm;
-	
+
 			userShowLayout.on("attach",function(){
-			  
+
 
 			  userShowHeader = new Show.Header({model:userModel});
 			  userShowPanel = new Show.Panel({model:user});
@@ -48,15 +48,12 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
 			  		data['id'] = user['id'];
 			  		var updatingUser = UserEntities.API.updateUser(data);
 						$.when(updatingUser).done(function(user){
-							   App.mainmsg.updateContent("Account updated successfully.",'success');      
-							   $('.loginname').text(user.name);       
-
-						}).fail(function(response){ 
-
-			            App.mainmsg.updateContent(response.responseText,'warning');             
-
+						  App.mainmsg.updateContent("Account updated successfully.",'success');
+                          App.updateCurrentUser(user);
+						  $('.loginname').text(user.name);
+						}).fail(function(response){
+			            App.mainmsg.updateContent(response.responseText,'warning');
 			          });
-
 			  });
  			userShowPanel.on("show:delete",function(){
 
@@ -74,15 +71,15 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
          App.mainLayout.showChildView('mainRegion',userShowLayout);
 
 
-    		}).fail(function(response){ 
+    		}).fail(function(response){
 
-			 Util.defaultErrorHandling(response,'danger');                        
-          
+			 Util.defaultErrorHandling(response,'danger');
+
 
           }); //  $.when(fetchingAuth).done // $when fetchingUser;
 
     	}) // require
-    	
+
 		}
 
 	}

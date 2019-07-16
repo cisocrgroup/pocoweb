@@ -47,6 +47,12 @@ App.getCurrentUser = function() {
   return JSON.parse(sessionStorage.getItem('pcw')).user;
 };
 
+App.updateCurrentUser = function(user) {
+  var data = JSON.parse(sessionStorage.getItem('pcw'));
+  data.user = user;
+  sessionStorage.setItem('pcw', JSON.stringify(data));
+};
+
 App.getAuthToken = function() {
   return JSON.parse(sessionStorage.getItem('pcw')).auth;
 };

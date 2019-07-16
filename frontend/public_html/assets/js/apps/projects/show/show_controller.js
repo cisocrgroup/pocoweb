@@ -13,12 +13,12 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
 
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
-     			  var fetchingproject = ProjectEntities.API.getProject({pid:id});
+     		var fetchingproject = ProjectEntities.API.getProject({pid:id});
             var fetchinglanguages = UtilEntities.API.getLanguages();
             var fetchingprojects = ProjectEntities.API.getProjects();
             var fetchinguser = UserEntities.API.loginCheck();
 
-   
+
       $.when(fetchingproject,fetchinglanguages,fetchingprojects,fetchinguser).done(function(project,languages,projects,user){
 
 		  loadingCircleView.destroy();
@@ -42,7 +42,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
        };
 	 console.log(packages);
 			projectShowLayout.on("attach",function(){
-      var cards = [         
+      var cards = [
            {
                   "color": "green",
                   "icon": "fas fa-history",
@@ -51,7 +51,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                   "seq": 1,
                   "text": "Start profiling the project.",
                   "url": "profile",
-              }, 
+              },
                {
                   "color": "blue",
                   "icon": "far fa-edit",
@@ -86,7 +86,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                   "seq": 1,
                   "text": "Save project files to disk.",
                   "url": "download",
-              }, 
+              },
 
                {
                   "color": "red",
@@ -97,7 +97,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                   "text": "Delete the project.",
                   "url": "delete",
           }
-           
+
           ];
 
 var cards2 = [
@@ -165,8 +165,8 @@ var cards2 = [
                    App.mainLayout.showChildView('dialogRegion',confirmModal)
 
                    }).fail(function(response){
-                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                   }); 
+                         App.mainmsg.updateContent(response.responseText,'danger');
+                   });
             });
 
 
@@ -217,14 +217,14 @@ var cards2 = [
                         console.log(assign_data);
 
                      }).fail(function(response){
-                           App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                     }); 
+                           App.mainmsg.updateContent(response.responseText,'danger');
+                     });
 
                 });
 
               });
 
-   
+
              });
 
        projectShowHub.on('show:download',function(){
@@ -235,11 +235,11 @@ var cards2 = [
                    // App.mainmsg.updateContent(result,'success');
 
                    }).fail(function(response){
-                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                   }); 
+                         App.mainmsg.updateContent(response.responseText,'danger');
+                   });
 
-         
-   
+
+
              });
 
     	  projectShowHub.on("show:edit_clicked",function(){
@@ -259,7 +259,7 @@ var cards2 = [
                      projectShowHeader.options.title = data.title;
                      projectShowHeader.render();
                      projectShowInfo.render();
-                     App.mainmsg.updateContent("Project "+id+" successfully updated.",'success');              
+                     App.mainmsg.updateContent("Project "+id+" successfully updated.",'success');
 
                     })
 
@@ -282,13 +282,13 @@ var cards2 = [
                   $('#deleteModal').modal("hide");
 
                  $.when(deletingProject).done(function(result){
-                   App.mainmsg.updateContent("Project "+id+" successfully deleted.",'success');              
+                   App.mainmsg.updateContent("Project "+id+" successfully deleted.",'success');
 
                      App.trigger('projects:list');
 
-                 }).fail(function(response){ 
+                 }).fail(function(response){
                     App.mainmsg.updateContent(response.responseText,'danger');
-                  });    
+                  });
             })
 
           });
@@ -320,7 +320,7 @@ var cards2 = [
 
 
     	}) // require
-    	
+
 		}
 
 	}
