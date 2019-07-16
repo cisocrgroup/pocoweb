@@ -40,14 +40,14 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
 
                  $.when(loggingOutUser).done(function(result){
-
-                       App.mainmsg.updateContent(result.message,'success');
+                   App.clearCurrentUser();
+                   App.mainmsg.updateContent(result.message,'success');
                          headerShowTopbar.setLoggedOut();
                          App.trigger('home:portal');
 
                 }).fail(function(response){
+                   App.clearCurrentUser();
                   App.mainmsg.updateContent(response.responseText,'danger');
-
           }); //  $.when(loggingOutUser).done
 
 

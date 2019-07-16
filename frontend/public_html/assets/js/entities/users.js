@@ -84,11 +84,9 @@ Entities.API = {
          url: "rest/logout?auth=" + App.getAuthToken(),
          type: "GET",
          success: function(data) {
-           sessionStorage.removeItem('pcw');
            defer.resolve(data);
          },
          error: function(data){
-           sessionStorage.removeItem('pcw');
            defer.reject(data);
          }
     });

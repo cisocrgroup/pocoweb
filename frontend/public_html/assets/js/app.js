@@ -44,20 +44,24 @@ App.getCurrentRoute = function(){
 };
 
 App.getCurrentUser = function() {
-  return JSON.parse(sessionStorage.getItem('pcw')).user;
+  return JSON.parse(localStorage.getItem('pcw')).user;
 };
 
 App.updateCurrentUser = function(user) {
-  var data = JSON.parse(sessionStorage.getItem('pcw'));
+  var data = JSON.parse(localStorage.getItem('pcw'));
   data.user = user;
-  sessionStorage.setItem('pcw', JSON.stringify(data));
+  localStorage.setItem('pcw', JSON.stringify(data));
 };
 
 App.getAuthToken = function() {
-  if (sessionStorage.getItem('pcw') === null) {
+  if (localStorage.getItem('pcw') === null) {
       return - 1;
   }
-  return JSON.parse(sessionStorage.getItem('pcw')).auth;
+  return JSON.parse(localStorage.getItem('pcw')).auth;
+};
+
+App.clearCurrentUser = function() {
+  localStorage.removeItem('pcw');
 };
 
 App.on("start", function(){
@@ -102,7 +106,7 @@ App.on("start", function(){
 
     var loggingInUser = UserEntities.API.login(data);
                  $.when(loggingInUser).done(function(result){
-                   sessionStorage.setItem('pcw', JSON.stringify(result));
+                   localStorage.setItem('pcw', JSON.stringify(result));
 
                         App.mainmsg.updateContent(result.message,'success');
                          Util.setLoggedIn(result.user.name);
