@@ -389,20 +389,20 @@ getAllCorrectionSuggestions: function(data){
 
 },
 getSuspiciousWords: function(data){
-    data['backend_route'] = "get_suspicious_words";
+
   var defer = jQuery.Deferred();
       $.ajax({
-
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
+      headers: {
+        'Accept': 'application/json'
+      },
+      url: "rest/profile/suspicious/books/" + data.pid + "?auth=" + App.getAuthToken(),
+      type: "GET",
       success: function(data) {
-        defer.resolve(JSON.parse(data));
-
-          },
-          error: function(data){
-            defer.reject(data);
-          }
+        defer.resolve(data);
+       },
+      error: function(data){
+        defer.reject(data);
+      }
   });
 
 
@@ -410,17 +410,17 @@ getSuspiciousWords: function(data){
 
 },
 getErrorPatterns: function(data){
-    data['backend_route'] = "get_error_patterns";
+
   var defer = jQuery.Deferred();
-      $.ajax({
-
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
+     $.ajax({
+      headers: {
+        'Accept': 'application/json'
+      },
+      url: "rest/profile/patterns/books/" + data.pid + "?auth=" + App.getAuthToken()+"&ocr=1",
+      type: "GET",
       success: function(data) {
-        defer.resolve(JSON.parse(data));
-
-          },
+        defer.resolve(data);
+        },
           error: function(data){
             defer.reject(data);
           }
@@ -577,19 +577,20 @@ getJobs: function(data){
 
 },
 getCharmap: function(data){
-	data['backend_route'] = "get_charmap";
+
 	data['filter'] = "abcdefghijklmnopqrstuvwxyz" +
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 		"0123456789" +
 		"'\":,-+/@#$.;<>(){}[]\\&?!=*^~_";
   var defer = jQuery.Deferred();
       $.ajax({
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
+      headers: {
+        'Accept': 'application/json'
+      },
+      url: "rest/books/" + data.pid + "/charmap?auth=" + App.getAuthToken()+"&filter="+data['filter'],
+      type: "GET",
       success: function(data) {
-        defer.resolve(JSON.parse(data));
-
+        defer.resolve(data);
           },
           error: function(data){
             defer.reject(data);
