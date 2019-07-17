@@ -21,9 +21,9 @@ struct ProjectEntry;
 namespace detail {
 template <class Row> FileType to_file_type(const Row &row) {
   const auto ft = static_cast<int>(row.filetype);
-  if (ft < static_cast<int>(FileType::Min) or
-      ft > static_cast<int>(FileType::Max))
+  if (ft >= static_cast<int>(FileType::End)) {
     throw std::logic_error("invalid file type");
+  }
   return static_cast<FileType>(ft);
 }
 
