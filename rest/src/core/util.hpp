@@ -9,23 +9,15 @@ using Path = boost::filesystem::path;
 class PageParser;
 using PageParserPtr = std::unique_ptr<PageParser>;
 
-const char*
-what(const std::exception& e) noexcept;
-unsigned long
-genseed();
-std::string
-gensessionid(size_t n);
-std::string
-gensalt();
-std::string
-genhash(const std::string& salt, const std::string& str);
-bool
-check(const std::string& comb, const std::string& passwd);
-std::string
-fix_windows_path(std::string path);
+const char *what(const std::exception &e) noexcept;
+unsigned long genseed();
+std::string gensessionid(size_t n);
+std::string gensalt();
+std::string genhash(const std::string &salt, const std::string &str);
+bool check(const std::string &comb, const std::string &passwd);
+std::string fix_windows_path(std::string path);
 
-enum class FileType
-{
+enum class FileType {
   Other,
   Img,
   AltoXml,

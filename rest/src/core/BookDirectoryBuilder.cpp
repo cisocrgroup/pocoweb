@@ -244,14 +244,10 @@ void BookDirectoryBuilder::copy(const Path &from, const Path &to) {
   CROW_LOG_DEBUG << "(BookDirectoryBuilder) copying " << from << " to " << to;
   boost::system::error_code ec;
   fs::create_hard_link(from, to, ec);
-  if (ec) { // could not create hard link; try copy
-    CROW_LOG_WARNING << "Could not create hardlink from " << from << " to "
-                     << to << ": " << ec.message();
-    fs::copy_file(from, to, ec);
-    if (ec) {
-      THROW(Error, "(BookDirectoryBuilder) Cannot copy ", from.string(), " to ",
-            to.string(), ": ", ec.message());
-    }
+  hard_link_or_copy(from, to, ec);
+  if (ec && ec.value() != boost::system::errc::file_exists /*EEXISTS*/) {
+    THROW(Error, "(BookDirectoryBuilder) cannot copy ", from.string(), " to ",
+          to.string(), ": ", ec.message());
   }
 }
 

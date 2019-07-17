@@ -376,10 +376,11 @@ void pcw::hard_link_or_copy(const Path &from, const Path &to) {
 void pcw::hard_link_or_copy(const Path &from, const Path &to,
                             boost::system::error_code &ec) noexcept {
   boost::filesystem::create_hard_link(from, to, ec);
-  if (ec) { // could not create hard link; try copy
-    CROW_LOG_WARNING << "(hard_link_or_copy) Could not "
-                        "create hardlink from "
-                     << from << " to " << to << ": " << ec.message();
-    boost::filesystem::copy_file(from, to, ec);
+  if (not ec || ec.value() == boost::system::errc::file_exists /*EEXISTS*/) {
+    ec = boost::system::error_code();
   }
+  // could not create hard link; try copy
+  CROW_LOG_WARNING << "(hard_link_or_copy) Could not create hardlink from "
+                   << from << " to " << to << ": " << ec.message();
+  boost::filesystem::copy_file(from, to, ec);
 }
