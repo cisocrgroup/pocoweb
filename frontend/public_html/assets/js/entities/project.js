@@ -290,7 +290,7 @@ profileProject: function(data){
       },
       url: "rest/profile/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "POST",
-       data:data,
+       data: JSON.stringify(data),
       success: function(data) {
         defer.resolve(data);
 
