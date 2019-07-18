@@ -3,7 +3,7 @@ LIBS += lib/libpugixml.a
 
 lib/libsqlpp-mysql.a: ext/mysqlpp11/Makefile | mkdir-lib
 	$(call ECHO,$@)
-	$V cd ext/mysqlpp11 && $(MAKE) -j$(J)
+	$V cd ext/mysqlpp11 && $(MAKE)
 	$V cp ext/mysqlpp11/src/libsqlpp-mysql.a $@
 
 # for unkown reasons, cmake seems to automatically use LDFLAGS environment variable
