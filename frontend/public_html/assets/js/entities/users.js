@@ -69,7 +69,7 @@ Entities.API = {
 
 
   loginCheck: function(){
-    if (sessionStorage.getItem('pcw')) {
+    if (localStorage.getItem('pcw')) {
       return App.getCurrentUser();
     } else {
       return -1;

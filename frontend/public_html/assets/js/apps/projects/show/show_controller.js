@@ -156,7 +156,7 @@ var cards2 = [
         var projectShowPackages= new Show.Packages({packages:packages});
 
         projectShowHub.on('show:profile',function(){
-           var profilingproject = ProjectEntities.API.profileProject({pid:id});
+           var profilingproject = ProjectEntities.API.profileProject({pid:id,tokens:[]});
 
              $.when(profilingproject).done(function(result){
 
@@ -165,7 +165,7 @@ var cards2 = [
                    App.mainLayout.showChildView('dialogRegion',confirmModal)
 
                    }).fail(function(response){
-                         App.mainmsg.updateContent(response.responseText,'danger');
+                               Util.defaultErrorHandling(response,'danger');
                    });
             });
 
@@ -217,7 +217,7 @@ var cards2 = [
                         console.log(assign_data);
 
                      }).fail(function(response){
-                           App.mainmsg.updateContent(response.responseText,'danger');
+                                 Util.defaultErrorHandling(response,'danger');
                      });
 
                 });
@@ -235,7 +235,7 @@ var cards2 = [
                    // App.mainmsg.updateContent(result,'success');
 
                    }).fail(function(response){
-                         App.mainmsg.updateContent(response.responseText,'danger');
+                               Util.defaultErrorHandling(response,'danger');
                    });
 
 
@@ -287,7 +287,7 @@ var cards2 = [
                      App.trigger('projects:list');
 
                  }).fail(function(response){
-                    App.mainmsg.updateContent(response.responseText,'danger');
+                          Util.defaultErrorHandling(response,'danger');
                   });
             })
 

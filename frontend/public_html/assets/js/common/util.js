@@ -177,14 +177,20 @@ addAlignedLine : function(line){
 
     defaultErrorHandling: function(response,mode) {
       console.log(response);
+
       require(["app"],function(App){
-            var mainRegion = App.mainLayout.getRegion('mainRegion');
-            mainRegion.empty();
-         if(response.status==401){
-          App.trigger("nav:login",false);
+        if(response.responseJSON==undefined){
+            App.mainmsg.updateContent(response,mode);
+         }
+         else{
+
+          if(response.status==401){
+             var mainRegion = App.mainLayout.getRegion('mainRegion');
+             mainRegion.empty();
+             App.trigger("nav:login",false);
          }
          App.mainmsg.updateContent("Error "+ response.responseJSON.code +" ("+response.responseJSON.status+") "+response.responseJSON.message,mode);
-
+        }
       });
 
 

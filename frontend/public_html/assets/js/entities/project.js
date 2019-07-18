@@ -100,7 +100,6 @@ uploadProjectData: function(data){
         processData:false,
         contentType: false,
         success: function(data) {
-
               defer.resolve(data);
             },
             error: function(data){
@@ -134,32 +133,6 @@ downloadProject: function(data){
 
 },
 
-  createProject: function(data){
-    data['backend_route'] = "create_project";
-    console.log(data)
-    var defer = jQuery.Deferred();
-       $.ajax({
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-         url: "rest/books/" + data.pid + "?auth=" + App.getAuthToken(),
-        type: "GET",
-
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
-              defer.resolve(JSON.parse(data));
-            },
-            error: function(data){
-              defer.reject(data);
-            }
-    });
-
-    return defer.promise();
-  },
 
 deleteProject: function(data){
     data['backend_route'] = "delete_project";
@@ -182,16 +155,23 @@ deleteProject: function(data){
     return defer.promise();
   },
   updateProject: function(data){
-    data['backend_route'] = "update_project";
-    console.log(data)
+   data['projectdata']['year'] = parseInt(data['projectdata']['year']);
+  console.log(data)
+  //    $year = intval($_POST['projectdata']['year']);
+  // $_POST['projectdata']['year'] = $year;
+  // # handle `\uxxxx` in hist pattern input
+  // $histPatterns = json_decode('"' . $_POST['projectdata']['histPatterns'] . '"');
+  // $_POST['projectdata']['histPatterns'] = $histPatterns;
+
     var defer = jQuery.Deferred();
-       $.ajax({
-
-        url: "api/api_controller.php",
+      $.ajax({
+        headers: {
+          'Accept': 'application/json'
+        },
+        url: "rest/books/" + data.pid + "?auth=" + App.getAuthToken(),
         type: "POST",
-        data: data,
+        data: data['projectdata'],
         success: function(data) {
-
               defer.resolve(data);
             },
             error: function(data){
@@ -301,11 +281,14 @@ assignPackages: function(data){
     return defer.promise();
   },
 profileProject: function(data){
-    data['backend_route'] = "order_profile";
-  var defer = jQuery.Deferred();
-      $.ajax({
-
-      url: "api/api_controller.php",
+    console.log(data);
+    var defer = jQuery.Deferred();
+     $.ajax({
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      url: "rest/profile/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "POST",
        data:data,
       success: function(data) {
@@ -324,21 +307,21 @@ profileProject: function(data){
 
 searchToken: function(data){
     data['backend_route'] = "search_token";
-  var defer = jQuery.Deferred();
+    var defer = jQuery.Deferred();
       $.ajax({
-
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
-      success: function(data) {
-        defer.resolve(JSON.parse(data));
-
-          },
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        url: "rest/books/" + data.pid + "/search?auth=" + App.getAuthToken()+"&q="+data.q+"&p="+data.isErrorPattern+"&skip="+data.skip+"&max="+data.max,
+        type: "GET",
+       success: function(data) {
+        defer.resolve(data);
+        },
           error: function(data){
             defer.reject(data);
           }
   });
-
 
   return defer.promise();
 
@@ -347,14 +330,16 @@ searchToken: function(data){
 getCorrectionSuggestions: function(data){
     data['backend_route'] = "get_correction_suggestions";
     console.log(data);
-  var defer = jQuery.Deferred();
+    var defer = jQuery.Deferred();
       $.ajax({
-
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
-      success: function(data) {
-        defer.resolve(JSON.parse(data));
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        url: "rest/profile/books/" + data.pid + "?auth=" + App.getAuthToken()+"&q="+data.q,
+        type: "GET",
+        success: function(data) {
+        defer.resolve(data);
 
           },
           error: function(data){
@@ -367,27 +352,7 @@ getCorrectionSuggestions: function(data){
 
 },
 
-getAllCorrectionSuggestions: function(data){
-    data['backend_route'] = "get_all_correction_suggestions";
-  var defer = jQuery.Deferred();
-      $.ajax({
 
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
-      success: function(data) {
-        defer.resolve(JSON.parse(data));
-
-          },
-          error: function(data){
-            defer.reject(data);
-          }
-  });
-
-
-  return defer.promise();
-
-},
 getSuspiciousWords: function(data){
 
   var defer = jQuery.Deferred();
@@ -430,38 +395,18 @@ getErrorPatterns: function(data){
   return defer.promise();
 
 },
-getSplitImages: function(data){
-    data['backend_route'] = "get_split_images";
-  var defer = jQuery.Deferred();
-      $.ajax({
 
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
-      success: function(data) {
-        defer.resolve(JSON.parse(data));
-
-          },
-          error: function(data){
-            defer.reject(data);
-          }
-  });
-
-
-  return defer.promise();
-
-},
 getLexiconExtension: function(data){
-  data['backend_route'] = "inspect_extended_lexicon";
   var defer = jQuery.Deferred();
       $.ajax({
-
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      url: "rest/postcorrect/el/books/"+data.pid+"?auth=" + App.getAuthToken(),
+      type: "GET",
       success: function(data) {
-        defer.resolve(JSON.parse(data));
-
+        defer.resolve(data);
           },
           error: function(data){
             defer.reject(data);
@@ -474,15 +419,17 @@ getLexiconExtension: function(data){
 },
 
 startLexiconExtension: function(data){
-  data['backend_route'] = "start_lexicon_extension";
   var defer = jQuery.Deferred();
       $.ajax({
-      url: "api/api_controller.php",
+         headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      url: "rest/postcorrect/el/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "POST",
        data:data,
       success: function(data) {
-        defer.resolve(JSON.parse(data));
-
+        defer.resolve(data);
           },
           error: function(data){
             defer.reject(data);
@@ -494,15 +441,16 @@ startLexiconExtension: function(data){
 
 },
 getProtocol: function(data){
-  data['backend_route'] = "inspect_postcorrection";
   var defer = jQuery.Deferred();
       $.ajax({
-
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
+     headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      url: "rest/postcorrect/rrdm/books/"+data.pid+"?auth=" + App.getAuthToken(),
+      type: "GET",
       success: function(data) {
-        defer.resolve(JSON.parse(data));
+        defer.resolve(data);
 
           },
           error: function(data){
@@ -515,35 +463,17 @@ getProtocol: function(data){
 
 },
 startPostcorrection: function(data){
-  data['backend_route'] = "start_postcorrection";
   var defer = jQuery.Deferred();
       $.ajax({
-      url: "api/api_controller.php",
+     headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      url: "rest/postcorrect/rrdm/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "POST",
-       data:data,
+      data:data,
       success: function(data) {
-        defer.resolve(JSON.parse(data));
-
-          },
-          error: function(data){
-            defer.reject(data);
-          }
-  });
-
-
-  return defer.promise();
-
-},
-
-profileWithExtensions: function(data){
-  data['backend_route'] = "profile_le";
-  var defer = jQuery.Deferred();
-      $.ajax({
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
-      success: function(data) {
-        defer.resolve(JSON.parse(data));
+        defer.resolve(data);
 
           },
           error: function(data){
@@ -557,15 +487,17 @@ profileWithExtensions: function(data){
 },
 
 getJobs: function(data){
-  data['backend_route'] = "get_jobs";
-  var defer = jQuery.Deferred();
-      $.ajax({
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
-      success: function(data) {
-        defer.resolve(JSON.parse(data));
 
+  var defer = jQuery.Deferred();
+    $.ajax({
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      url: "rest/jobs/"+data.pid+"?auth=" + App.getAuthToken(),
+      type:"GET",
+      success: function(data) {
+        defer.resolve(data);
           },
           error: function(data){
             defer.reject(data);

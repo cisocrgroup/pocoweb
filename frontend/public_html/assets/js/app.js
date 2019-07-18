@@ -108,7 +108,7 @@ App.on("start", function(){
                  $.when(loggingInUser).done(function(result){
                    localStorage.setItem('pcw', JSON.stringify(result));
 
-                        App.mainmsg.updateContent(result.message,'success');
+                        App.mainmsg.updateContent("Login successful!",'success');
                          Util.setLoggedIn(result.user.name);
 
                           var currentRoute =  App.getCurrentRoute();
@@ -139,8 +139,7 @@ App.on("start", function(){
 
 
                 }).fail(function(response){
-                  App.mainmsg.updateContent(response.responseText,'danger');
-
+                   Util.defaultErrorHandling(response,'danger');
           }); //  $.when(loggingInUser).done
 
        });
