@@ -157,12 +157,6 @@ deleteProject: function(data){
   updateProject: function(data){
    data['projectdata']['year'] = parseInt(data['projectdata']['year']);
   console.log(data)
-  //    $year = intval($_POST['projectdata']['year']);
-  // $_POST['projectdata']['year'] = $year;
-  // # handle `\uxxxx` in hist pattern input
-  // $histPatterns = json_decode('"' . $_POST['projectdata']['histPatterns'] . '"');
-  // $_POST['projectdata']['histPatterns'] = $histPatterns;
-
     var defer = jQuery.Deferred();
       $.ajax({
         headers: {
@@ -170,7 +164,7 @@ deleteProject: function(data){
         },
         url: "rest/books/" + data.pid + "?auth=" + App.getAuthToken(),
         type: "POST",
-        data: data['projectdata'],
+        data: JSON.stringify(data['projectdata']),
         success: function(data) {
               defer.resolve(data);
             },
