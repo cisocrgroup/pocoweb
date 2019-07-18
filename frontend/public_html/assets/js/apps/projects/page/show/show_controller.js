@@ -299,8 +299,22 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                });
 
-            }) // conc
+            }) 
 
+             projectConcView.on("concordance:pagination",function(page_nr){
+                  console.log(projectConcView)
+                  var max = 10;
+                  var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern,skip:(page_nr-1)*max,max:max});
+                    var that = this;
+                     $.when(searchingToken).done(function(tokens){
+                      that.options.tokendata = tokens;
+                      that.setImages();
+                      that.setContent(false);
+
+
+                     });
+
+            }) 
 
 
              App.mainLayout.showChildView('dialogRegion',projectConcView);

@@ -753,3 +753,12 @@ outline: 0;
 #sg-dropdown{
   display: inline-block;
 }
+
+#msg-region{
+   min-height: 50px; 
+  margin-top: 15px;
+}
+
+#mainmsg{
+  margin-bottom: 0!important;
+}

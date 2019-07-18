@@ -70,7 +70,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
                // profile with lexicon extensions
              projectShowLex.on("show:start_le_profile_clicked",function(extensions){
-                          var profilingleproject = ProjectEntities.API.profileWithExtensions({pid:project.get('projectId'),bid:project.get('bookId'),extensions:extensions});
+                          var profilingleproject = ProjectEntities.API.profileProject({pid:project.get('projectId'),bid:project.get('bookId'),tokens:extensions});
 
                               $.when(profilingleproject).done(function(result){
 

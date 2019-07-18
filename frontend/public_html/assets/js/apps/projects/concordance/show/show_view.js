@@ -240,7 +240,6 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
 
         var text = $(e.currentTarget).text().trim();
-        console.log(text)
 
         if(text=="Next"){
           var next = $(e.currentTarget).parent().find('.active').next();
@@ -265,6 +264,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         $(e.currentTarget).addClass('active');
         }
 
+        this.trigger("concordance:pagination",text);
 
       },
 
@@ -315,73 +315,52 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                      })
      },
 
-    onAttach : function(){
-
+  setImages : function(){
       var that = this;
 
-      var timer = 0;
-      var delay = 200;
-      var prevent = false;
-      var after_db_click = false;
+    $('.all_lines_parent').empty(); // remove alle lines and images
+     var tokendata =  Marionette.getOption(that,"tokendata");
 
+   for (key in tokendata['matches']) {
+           for (var i=0;i<tokendata['matches'][key].length;i++){
 
+            var match = tokendata['matches'][key][i];
+            var line = match['line'];
 
+        _.each(match['tokens'], function(word) {
 
-       if(this.options.asModal){
+        var offset = word['offset'];
+        var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];
 
-          this.$el.attr("id","conc-modal");
-          this.$el.addClass("modal fade conc-modal");
+        var text_image_line = $('<div class="text-image-line" title="page '+line.pageId+ ' line ' + line.lineId+'">');
 
-          $('#conc-modal').on('show.bs.modal', function () {
-            })
-            $('#conc-modal').on('hidden.bs.modal', function () {
-            })
+        var left_div = $('<div class="left_div div_inline">');
+        var invisible_link = $('<div class="invisible=link" href="'+link+'">');
 
-             $('#conc-modal').on('shown.bs.modal', function () {
+        var line_img = $('<div id ="img_'+line['pageId']+'_'+line['lineId']+'_parent" class="line-img">');
+        var img = $('<img src="'+line['imgFile']+'" id="img_'+line['pageId']+'_'+line['lineId']+'" width="auto" height="25"/>');
+        
+        left_div.append(invisible_link);
+        invisible_link.append(line_img);
+        invisible_link.append(img);
+        text_image_line.append(left_div);
+         $('.all_lines_parent').append(text_image_line);
 
+          });
+        }
+      };
+  
 
-                   // $(".cordiv")
-                   //  .on("click", function() {
-                   //    var that = this;
+  },
 
-                   //    if(!after_db_click){
+  setContent : function (init){
+      var that = this;
 
-                   //    timer = setTimeout(function() {
-                   //      if (!prevent) {
-                   //         console.log('single click '+prevent);
-                   //         $(that).toggleClass('cor_selected');
-                   //         console.log($(that));
-                   //         $(that).attr('contenteditable','false');
+    $('#conc-modal').imagesLoaded( function() {
 
-                   //      }
-                   //      prevent = false;
-                   //    }, delay);
-
-                   //    }
-                   //    else {
-                   //      after_db_click = false;
-                   //    }
-
-                   //  })
-                   //  .on("dblclick", function() {
-                   //    clearTimeout(timer);
-                   //    prevent = true;
-                   //    console.log('double click '+prevent);
-                   //    $(this).attr('contenteditable','true');
-                   //    after_db_click = true;
-                   //    $(this).click();
-                   //  });
-
-
-            })
-
-
-       }
-
-$('#conc-modal').imagesLoaded( function() {
-
-  $('#conc-modal').css('opacity','1').show();
-
+    if(init){
+      $('#conc-modal').css('opacity','1').show();
+    }
           var tokendata =  Marionette.getOption(that,"tokendata");
           var suggestions =  Marionette.getOption(that,"suggestions");
           var selection =  Marionette.getOption(that,"selection");
@@ -501,7 +480,75 @@ $('#conc-modal').imagesLoaded( function() {
 
      }
 
-          // remove when clicked somewhere else
+      
+
+
+
+});
+
+
+  },
+
+    onAttach : function(){
+
+      var that = this;
+
+      var timer = 0;
+      var delay = 200;
+      var prevent = false;
+      var after_db_click = false;
+
+
+
+       if(this.options.asModal){
+
+          this.$el.attr("id","conc-modal");
+          this.$el.addClass("modal fade conc-modal");
+
+          $('#conc-modal').on('show.bs.modal', function () {
+            })
+            $('#conc-modal').on('hidden.bs.modal', function () {
+            })
+
+             $('#conc-modal').on('shown.bs.modal', function () {
+
+
+                   // $(".cordiv")
+                   //  .on("click", function() {
+                   //    var that = this;
+
+                   //    if(!after_db_click){
+
+                   //    timer = setTimeout(function() {
+                   //      if (!prevent) {
+                   //         console.log('single click '+prevent);
+                   //         $(that).toggleClass('cor_selected');
+                   //         console.log($(that));
+                   //         $(that).attr('contenteditable','false');
+
+                   //      }
+                   //      prevent = false;
+                   //    }, delay);
+
+                   //    }
+                   //    else {
+                   //      after_db_click = false;
+                   //    }
+
+                   //  })
+                   //  .on("dblclick", function() {
+                   //    clearTimeout(timer);
+                   //    prevent = true;
+                   //    console.log('double click '+prevent);
+                   //    $(this).attr('contenteditable','true');
+                   //    after_db_click = true;
+                   //    $(this).click();
+                   //  });
+
+
+            })
+
+    // remove when clicked somewhere else
          $(that.el).click(function(e)
           {
               var container = $(".cordiv");
@@ -516,8 +563,11 @@ $('#conc-modal').imagesLoaded( function() {
 
 
 
+        this.setContent(true); // insert Concordance Content
 
-});
+
+       }
+
 
 
 
@@ -526,6 +576,8 @@ $('#conc-modal').imagesLoaded( function() {
 
 
   }
+
+
 
 })
 
