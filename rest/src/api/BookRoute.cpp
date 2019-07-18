@@ -226,9 +226,10 @@ Route::Response BookRoute::impl(HttpDelete, const Request &req, int bid) const {
     CROW_LOG_INFO << "(BookRoute) removing directory: " << dir;
     boost::system::error_code ec;
     boost::filesystem::remove_all(dir, ec);
-    if (ec)
+    if (ec) {
       CROW_LOG_WARNING << "(BookRoute) cannot remove directory: " << dir << ": "
                        << ec.message();
+    }
   }
   session->uncache_project(project->id());
   commiter.commit();
