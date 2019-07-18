@@ -26,6 +26,14 @@ replace_all : function(string,search, replacement) {
     return string.replace(new RegExp(search, 'g'), replacement);
 },
 
+escapeAsJSON: function(text) {
+  replace_all = function(string, search, replacement) {
+    return string.replace(new RegExp(search, 'g'), replacement);
+  };
+  text = replace_all(text, "\"", "\\\"");
+  return JSON.parse("\"" + text + "\"");
+},
+
 get_correction_class: function(obj) {
   if (obj["isFullyCorrected"]) {
     return " fully-corrected";

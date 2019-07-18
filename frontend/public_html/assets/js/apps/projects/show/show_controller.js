@@ -249,7 +249,8 @@ var cards2 = [
 
            projectsShowEditProject.on("project:update",function(data){
             project.set(data);
-
+             data.histPatterns = Util.escapeAsJSON(data.histPatterns);
+             console.log(data);//data.histPatterns
             var puttingProject = ProjectEntities.API.updateProject({pid:id,projectdata:data});
 
                  $.when(puttingProject).done(function(result){

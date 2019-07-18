@@ -168,9 +168,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
        projectShowPage.on("page:correct_line",function(data,anchor){
-
-          console.log(data);
-
+         data.text = Util.escapeAsJSON(data.text);
+         console.log(data);
                     var correctingline = ProjectEntities.API.correctLine(data);
                   $.when(correctingline).done(function(result){
 
@@ -251,10 +250,10 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
            $('.custom-popover').remove();
 
             projectConcView.on("concordance:correct_token",function(data,anchor){
-
                console.log(anchor);
                console.log(data);
-
+              data.token = Util.escapeAsJSON(data.token);
+               console.log(data);
                     var correctingtoken = ProjectEntities.API.correctToken(data);
                   $.when(correctingtoken).done(function(result){
 
@@ -299,7 +298,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                });
 
-            }) 
+            })
 
              projectConcView.on("concordance:pagination",function(page_nr){
                   console.log(projectConcView)
@@ -314,7 +313,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                      });
 
-            }) 
+            })
 
 
              App.mainLayout.showChildView('dialogRegion',projectConcView);
