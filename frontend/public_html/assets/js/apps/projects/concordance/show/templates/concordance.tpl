@@ -113,14 +113,27 @@ if(asModal) {
   <div class="modal-footer">
       <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center js-paginate">
-          <li class="page-item">
-            <a class="page-link" href="#" tabindex="-1">Previous</a>
+          <li value ="-2" class="page-item">
+            <a class="page-link" href="">Previous</a>
           </li>
-          <li class="page-item active"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item">
-            <a class="page-link" href="#">Next</a>
+          <li value ="1" class="page-item active"><a class="page-link" href="">1</a></li>
+
+          <% var max_pages = Math.ceil(tokendata.totalCount / tokendata.max);
+          if(max_pages > 5) {
+          for(var i=2;i<=5;i++) { %>
+          <li value ="<%-i%>" class="page-item"><a class="page-link" href="" ><%-i%></a></li>
+          <% } %>
+          <li value ="-1" class="page-item"><a class="page-link">...</a></li>
+          <li value ="<%-max_pages%>"class="page-item"><a class="page-link" href=""><%-max_pages%></a></li>
+
+          <%} else {
+             for(var i=2;i<=max_pages;i++) { %>
+          <li class="page-item"><a class="page-link" href="" ><%-i%></a></li>
+          <% } %>
+          <%}%>
+
+          <li value="-3" class="page-item">
+            <a  class="page-link" href="">Next</a>
           </li>
         </ul>
       </nav>

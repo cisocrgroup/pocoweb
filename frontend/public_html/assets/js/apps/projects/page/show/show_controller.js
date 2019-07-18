@@ -241,7 +241,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
        projectShowPage.on("page:concordance_clicked",function(selection,isErrorPattern){
         console.log(isErrorPattern);
         console.log(selection);
-        var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern,skip:0,max:10});
+        var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern,skip:0,max:9});
         var that = this;
          $.when(searchingToken).done(function(tokens){
           console.log(tokens)
@@ -302,13 +302,14 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
              projectConcView.on("concordance:pagination",function(page_nr){
                   console.log(projectConcView)
-                  var max = 10;
+                  var max = 9;
                   var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern,skip:(page_nr-1)*max,max:max});
                     var that = this;
                      $.when(searchingToken).done(function(tokens){
                       that.options.tokendata = tokens;
-                      that.setImages();
-                      that.setContent(false);
+                       that.setImages();
+                       that.setContent(false);
+     // $('.all_lines_parent').empty(); // remove alle lines and images
 
 
                      });
