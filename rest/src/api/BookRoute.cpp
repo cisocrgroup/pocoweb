@@ -181,34 +181,27 @@ Route::Response BookRoute::impl(HttpGet, const Request &req, int bid) const {
   using namespace sqlpp;
   tables::Projects projects;
   tables::Books books;
-  auto rows1 = conn.db()(
-      select(all_of(books), projects.id)
-          .from(books.join(projects).on(projects.origin == books.bookid))
-          .where(projects.id == bid));
-  if (rows1.empty()) {
+  tables::ProjectPages pages;
+  auto rows = conn.db()(select(all_of(books), all_of(projects), pages.pageid)
+                            .from(books.join(projects)
+                                      .on(projects.origin == books.bookid)
+                                      .join(pages)
+                                      .on(pages.projectid == projects.id))
+                            .where(projects.id == bid));
+  if (rows.empty()) {
     THROW(NotFound, "cannot find project or package id: ", bid);
   }
+  auto first = false;
+  size_t p = 0;
   Json j;
-  set_book(j, rows1.front());
-  tables::ProjectPages ppages;
-  auto rows2 = conn.db()(select(ppages.pageid)
-                             .from(ppages)
-                             .where(ppages.projectid == bid)
-                             .order_by(ppages.pageid.asc()));
-
-  const auto n = append_page_ids(j, rows2);
-
-  j["pages"] = n;
-  // no pages, but we have a book id - maybe pages where (not yet)
-  // inserted into project pages
-  if (n == 0 and rows1.front().bookid == rows1.front().id) {
-    tables::Pages pages;
-    auto rows3 = conn.db()(select(pages.pageid)
-                               .from(pages)
-                               .where(pages.bookid == bid)
-                               .order_by(pages.pageid.asc()));
-
-    j["pages"] = append_page_ids(j, rows3);
+  for (const auto &row : rows) {
+    if (!first) {
+      j["pages"] = row.pages;
+      set_book(j, row);
+      first = true;
+    }
+    j["pageIds"][p] = row.pageid;
+    ++p;
   }
   return j;
 }
