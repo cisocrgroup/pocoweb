@@ -86,9 +86,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
 
            projectsListAddProject.on("project:submit_clicked",function(data,formdata){
-           var uploadingProjectData = ProjectEntities.API.uploadProjectData(formdata);
-
-
+             var uploadingProjectData = ProjectEntities.API.uploadProjectData(formdata);
                  $.when(uploadingProjectData).done(function(result){
 
                            console.log(result);
