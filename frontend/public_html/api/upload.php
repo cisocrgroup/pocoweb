@@ -31,7 +31,7 @@ $post = $_POST;
 
     $post["file"] = $file["tmp_name"];
 	$api = new Api(backend_get_upload_project_route($file["name"]));
-    $api->set_session_id($post['auth']);
+    $api->set_session_id($_GET['auth']);
 	$api->post_request($post);
 
 	$status = $api->get_http_status_code();

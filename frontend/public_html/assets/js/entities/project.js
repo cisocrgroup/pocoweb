@@ -91,9 +91,9 @@ getProject: function(data){
 
 uploadProjectData: function(data){
     var defer = jQuery.Deferred();
-  data.auth = App.getAuthToken();
+  var auth = App.getAuthToken();
       $.ajax({
-        url: "api/upload.php",
+        url: "api/upload.php?auth="+auth,
         type: "POST",
         data: new FormData(data),
         cache:false,
