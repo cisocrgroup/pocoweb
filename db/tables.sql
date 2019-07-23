@@ -28,7 +28,7 @@ create table if not exists sessions (
 alter table sessions convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists books (
-	bookid int not null unique references projects(projectid),
+	bookid int not null unique references projects(id),
 	year int,
 	title varchar(100) not null,
 	author varchar(100) not null,
