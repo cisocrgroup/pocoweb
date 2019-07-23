@@ -22,9 +22,7 @@ using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 static void update_book_data(pcw::Book &book, const crow::json::rvalue &data);
-
-////////////////////////////////////////////////////////////////////////////////
-template <class R> size_t append_page_ids(R &rows, Json &json);
+template <class Row> Json &set_book(Json &json, const Row &row);
 
 ////////////////////////////////////////////////////////////////////////////////
 const char *BookRoute::route_ = BOOK_ROUTE_ROUTE_1 "," BOOK_ROUTE_ROUTE_2;
@@ -42,20 +40,37 @@ void BookRoute::Register(App &app) {
 Route::Response BookRoute::impl(HttpGet, const Request &req) const {
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
-  // no permissions check since all loaded projectes are owned by the user
-  const auto projects = select_all_projects(conn.db(), session->user());
-  CROW_LOG_DEBUG << "(BookRoute) Loaded " << projects.size() << " projects";
+  const auto uid = session->user();
+  CROW_LOG_INFO << "(BookRoute) loading projects and packages for user id: "
+                << uid;
+  using namespace sqlpp;
+  tables::Projects projects;
+  tables::Books books;
+  tables::ProjectPages pages;
+  auto rows = conn.db()(select(all_of(projects), all_of(books), pages.pageid)
+                            .from(projects.join(books)
+                                      .on(projects.origin == books.bookid)
+                                      .join(pages)
+                                      .on(projects.id == pages.projectid))
+                            .where(projects.owner == uid)
+                            .order_by(projects.id.asc()));
   Json j;
   j["books"] = crow::json::rvalue(crow::json::type::List);
-  size_t i = 0;
-  for (const auto &p : projects) {
-    j["books"][i] << p.first;
-    j["books"][i]["bookId"] = p.second.origin;
-    j["books"][i]["projectId"] = p.second.projectid;
-    j["books"][i]["pages"] = p.second.pages;
-    j["books"][i]["isBook"] = p.second.is_book();
-    i++;
+  int last_id = -1;
+  size_t i = -1;
+  size_t p = 0;
+  for (const auto &row : rows) {
+    if (last_id != row.id) {
+      ++i;
+      p = 0;
+      last_id = row.id;
+      j["books"][i]["pages"] = row.pages;
+      set_book(j["books"][i], row);
+    }
+    j["books"][i]["pageIds"][p] = row.pageid;
+    ++p;
   }
+  CROW_LOG_DEBUG << "(BookRoute) loaded " << i << " projects and packages";
   return j;
 }
 
@@ -129,6 +144,35 @@ template <class T> typename T::_cpp_value_type empty_if_null(const T &t) {
     return typename T::_cpp_value_type();
   }
 }
+////////////////////////////////////////////////////////////////////////////////
+template <class Row> Json &set_book(Json &json, const Row &row) {
+  json["bookId"] = empty_if_null(row.bookid);
+  json["projectId"] = empty_if_null(row.id);
+  json["isBook"] = static_cast<bool>(row.bookid == row.id);
+  json["year"] = empty_if_null(row.year);
+  json["author"] = empty_if_null(row.author);
+  json["title"] = empty_if_null(row.title);
+  json["language"] = empty_if_null(row.lang);
+  json["uri"] = empty_if_null(row.uri);
+  json["description"] = empty_if_null(row.description);
+  json["histPatterns"] = empty_if_null(row.histpatterns);
+  json["profilerUrl"] = empty_if_null(row.profilerurl);
+  json["status"]["profiled"] = empty_if_null(row.profiled);
+  json["status"]["extended-lexicon"] = empty_if_null(row.extendedlexicon);
+  json["status"]["post-corrected"] = empty_if_null(row.postcorrected);
+  return json;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template <class Rows> size_t append_page_ids(Json &json, Rows &rows) {
+  json["pageIds"] = std::vector<int>();
+  size_t i = 0;
+  for (const auto &row : rows) {
+    json["pageIds"][i] = row.pageid;
+    i++;
+  }
+  return i;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpGet, const Request &req, int bid) const {
@@ -145,54 +189,28 @@ Route::Response BookRoute::impl(HttpGet, const Request &req, int bid) const {
     THROW(NotFound, "cannot find project or package id: ", bid);
   }
   Json j;
-  const auto isBook = rows1.front().bookid == rows1.front().id;
-  j["bookId"] = empty_if_null(rows1.front().bookid);
-  j["projectId"] = empty_if_null(rows1.front().id);
-  j["isBook"] = isBook;
-  j["year"] = empty_if_null(rows1.front().year);
-  j["author"] = empty_if_null(rows1.front().author);
-  j["title"] = empty_if_null(rows1.front().title);
-  j["language"] = empty_if_null(rows1.front().lang);
-  j["description"] = empty_if_null(rows1.front().description);
-  j["histPatterns"] = empty_if_null(rows1.front().histpatterns);
-  j["profilerUrl"] = empty_if_null(rows1.front().profilerurl);
-  j["status"]["profiled"] = empty_if_null(rows1.front().profiled);
-  j["status"]["extended-lexicon"] =
-      empty_if_null(rows1.front().extendedlexicon);
-  j["status"]["post-corrected"] = empty_if_null(rows1.front().postcorrected);
-
+  set_book(j, rows1.front());
   tables::ProjectPages ppages;
   auto rows2 = conn.db()(select(ppages.pageid)
                              .from(ppages)
                              .where(ppages.projectid == bid)
                              .order_by(ppages.pageid.asc()));
 
-  const auto n = append_page_ids(rows2, j);
+  const auto n = append_page_ids(j, rows2);
 
   j["pages"] = n;
-  if (n == 0 and isBook) { // no pages, but we have a book
-                           // id - maybe pages where (not yet)
-                           // inserted into project pages
+  // no pages, but we have a book id - maybe pages where (not yet)
+  // inserted into project pages
+  if (n == 0 and rows1.front().bookid == rows1.front().id) {
     tables::Pages pages;
     auto rows3 = conn.db()(select(pages.pageid)
                                .from(pages)
                                .where(pages.bookid == bid)
                                .order_by(pages.pageid.asc()));
 
-    j["pages"] = append_page_ids(rows3, j);
+    j["pages"] = append_page_ids(j, rows3);
   }
   return j;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template <class R> size_t append_page_ids(R &rows, Json &json) {
-  json["pageIds"] = std::vector<int>();
-  size_t i = 0;
-  for (const auto &row : rows) {
-    json["pageIds"][i] = row.pageid;
-    i++;
-  }
-  return i;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
