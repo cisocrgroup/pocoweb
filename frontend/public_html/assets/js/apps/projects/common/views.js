@@ -32,23 +32,17 @@ var Views = {};
           {name: "Year"},
           {name: "Language"},
           {name: "Pages"},
-          {name: "Book"}
-
-        ]
-
+          {name: "Project"}
+        ],
         this.columns = [
-        {name:"projectId",id:"projectId",clickrow :true},
-        {name:"title",id:"projectId",clickrow :true},
-        {name:"author",id:"projectId",clickrow :true},
-        {name:"year",id:"projectId",clickrow :true},
-        {name:"language",id:"projectId",clickrow :true},
-        {name:"pages",id:"projectId",clickrow :true},
-        {name:"book",id:"projectId",clickrow :true},
-
-
+          {name:"projectId",id:"projectId",clickrow :true},
+          {name:"title",id:"projectId",clickrow :true},
+          {name:"author",id:"projectId",clickrow :true},
+          {name:"year",id:"projectId",clickrow :true},
+          {name:"language",id:"projectId",clickrow :true},
+          {name:"pages",id:"projectId",clickrow :true},
+          {name:"project",id:"projectId",clickrow :true}
         ]
-
-
         },
         deleteProject : function(e){
         var id = $(e.currentTarget).attr('id');
@@ -123,7 +117,7 @@ Views.ProjectForm = Marionette.View.extend({
    //      $('.loading_background').fadeIn();
 
    //      if(Marionette.getOption(this,"edit_project")) {
-          
+
    //         this.trigger("project:update_clicked", data);
 
 
@@ -133,7 +127,7 @@ Views.ProjectForm = Marionette.View.extend({
 
 
    //      var that = this
-    
+
    //  //    Util.getBase64(this.selected_file,function(base64){
 
 
@@ -153,10 +147,10 @@ Views.ProjectForm = Marionette.View.extend({
 
    //    else {
 
-       
+
 
    //      var that = this
-    
+
    //      // Util.getBase64(this.selected_file,function(base64){
 
 
@@ -175,8 +169,8 @@ Views.ProjectForm = Marionette.View.extend({
 
    // },
 
-  
- 
+
+
 
     serializeData: function(){
 
@@ -190,8 +184,7 @@ Views.ProjectForm = Marionette.View.extend({
           data.languages = Marionette.getOption(this,"languages");
 
         return data;
-
-    },
+    }
 
    });
 

@@ -50,7 +50,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                   "name": "Order Profile",
                   "seq": 1,
                   "text": "Start profiling the project.",
-                  "url": "profile",
+                  "url": "profile"
               },
                {
                   "color": "blue",
@@ -59,7 +59,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                   "name": "Adaptive tokens",
                   "seq": 5,
                   "text": "List adaptive tokens.",
-                  "url": "docs:show",
+                  "url": "docs:show"
               }, {
                   "color": "red",
                   "icon": "fas fa-columns",
@@ -67,7 +67,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                   "name": "Split",
                   "seq": 4,
                   "text": "Split the project.",
-                  "url": "split",
+                  "url": "split"
           },
                 {
                   "color": "green",
@@ -76,7 +76,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                   "name": "Edit",
                   "seq": 5,
                   "text": "Edit the project.",
-                  "url": "edit",
+                  "url": "edit"
               },
                {
                   "color": "blue",
@@ -85,7 +85,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                   "name": "Download",
                   "seq": 1,
                   "text": "Save project files to disk.",
-                  "url": "download",
+                  "url": "download"
               },
 
                {
@@ -95,7 +95,7 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                   "name": "Delete",
                   "seq": 4,
                   "text": "Delete the project.",
-                  "url": "delete",
+                  "url": "delete"
           }
 
           ];
@@ -108,7 +108,7 @@ var cards2 = [
                   "name": "Automatic Postcorrection",
                   "seq": 1,
                   "text": "Fully automatic OCR postcorrection.",
-                  "url": "projects:a_pocoto",
+                  "url": "projects:a_pocoto"
               }, {
                   "color": "green",
                   "icon": "fas fa-file-signature",
@@ -116,7 +116,7 @@ var cards2 = [
                   "name": "Manual Postcorrection",
                   "seq": 2,
                   "text": "Manual interactive postcorrection tools.",
-                  "url": "projects:show_page",
+                  "url": "projects:show_page"
               }
           ]
 

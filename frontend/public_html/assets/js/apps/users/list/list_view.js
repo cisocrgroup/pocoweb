@@ -16,7 +16,7 @@ var List = {}
     }
 
   });
-  
+
  List.Header = Views.Header.extend({
     initialize: function(){
         this.title = "Users"
@@ -49,27 +49,27 @@ var List = {}
         {name:"email",id:"id",clickrow :false},
         {name:"institute",id:"id",clickrow :false},
         {name:"admin",id:"id",clickrow :false},
-        {name:"action",id:"id",clickrow :false},
+        {name:"action",id:"id",clickrow :false}
 
         ]
 
-    
+
         },
        delete_user : function(e){
         var id = $(e.currentTarget).attr('id');
         var parentrow = $(e.currentTarget).parent().parent();
         this.trigger("user:delete",id,parentrow);
-     },
+     }
 
-   
+
   });
 
     List.Panel = Marionette.View.extend({
       template: panelTpl,
        triggers:{
         "click button.js-create":   "user:create"
-      },
-     
+      }
+
   });
 
   List.Form = UserViews.Form.extend({

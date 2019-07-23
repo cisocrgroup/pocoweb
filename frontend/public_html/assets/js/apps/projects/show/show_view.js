@@ -44,15 +44,15 @@ define(["marionette","app","backbone.syphon","common/views","apps/projects/commo
       'click .js-delete-project' : 'delete_clicked',
       'click .js-add-book' : 'add_book_clicked'
 
-      }, 
+      },
       serializeData: function(){
 
          var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
 
         return data;
-    
+
     },
-     
+
 
       edit_clicked:function(e){
         e.preventDefault();
@@ -75,16 +75,14 @@ define(["marionette","app","backbone.syphon","common/views","apps/projects/commo
        var table = $('#book_table').DataTable();
 
       }
-    
+
   });
 
  Show.Packages = Marionette.View.extend({
       template: packagesTpl,
       events:{
-        'click .clickable-row' : 'row_clicked',
-
-
-      }, 
+        'click .clickable-row' : 'row_clicked'
+      },
       row_clicked : function(e){
       e.stopPropagation();
       var url = $(e.currentTarget).attr('data-href')
@@ -98,9 +96,9 @@ define(["marionette","app","backbone.syphon","common/views","apps/projects/commo
         return{
           packages : Marionette.getOption(this,"packages")
         }
-  
+
     },
-     
+
 
       edit_clicked:function(e){
         e.preventDefault();
@@ -123,14 +121,14 @@ define(["marionette","app","backbone.syphon","common/views","apps/projects/commo
        var table = $('#packages_table').DataTable();
 
       }
-    
+
   });
 
 
 Show.FooterPanel = Views.FooterPanel.extend({
     });
 
- 
+
 	Show.Missingprojects = Views.Error.extend({errortext:"Error 404: projects not found"});
 
 Show.ProjectForm = CommonViews.ProjectForm.extend({
@@ -187,9 +185,9 @@ Show.Split = Marionette.View.extend({
 
 
    var row = $('<div class="form-group"><i class="js-close close-x fa fa-times"></i><div class="row"><div class="col-4"><label id="splitLabel" for="splitPage">Select User</label><select class="form-control"></select></div></div></div>');
-   var users = Marionette.getOption(this,'users');      
-   
-    $(".userrows").prepend($('<hr>')); 
+   var users = Marionette.getOption(this,'users');
+
+    $(".userrows").prepend($('<hr>'));
     $(".userrows").prepend(row);
 
     for(i in users){
@@ -231,15 +229,14 @@ Show.Split = Marionette.View.extend({
     //       $("#split-n").attr('disabled',false);
     //       var n = $("#split-n").val();
     //       $('#splitLabel').text("Split into " + n + " pages");
-    //    }        
+    //    }
     // });
 
 
     }
-     
+
   });
 
 return Show;
 
 });
-

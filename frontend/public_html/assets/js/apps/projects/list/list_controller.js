@@ -29,6 +29,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
 
         // only show projects not packages
+        // remember: book = project and project = package :(
          var filtered_projects=[];
         if(projects.books){
          for(var i=0;i<projects.books.length;i++){
@@ -37,14 +38,13 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
              filtered_projects.push(book);
           }
          }
-
        }
 
        if(user.admin){
-        projects.books=filtered_projects;
+         projects.books=filtered_projects;
        }
 
-    		projectsListLayout.on("attach",function(){
+    	   projectsListLayout.on("attach",function(){
 
 
       var projectsListHeader = new List.Header();
@@ -66,10 +66,10 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
                             App.mainmsg.updateContent(result,'success');
 
                        }).fail(function(response){
-      
-                             App.mainmsg.updateContent(response.responseText,'danger');                       
-                                                      
-                            }); 
+
+                             App.mainmsg.updateContent(response.responseText,'danger');
+
+                            });
              });
 
 
@@ -103,17 +103,17 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
                           projectsListView.options.collection=new_projects.books;
                           projectsListView.render();
                           projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
-                          
+
 
                        });
 
-                  
-                
+
+
 
                 }).fail(function(response){
                    $('#projects-modal').modal('hide');
-                   App.mainmsg.updateContent(response.responseText,'danger');                       
-                                    
+                   App.mainmsg.updateContent(response.responseText,'danger');
+
                 }); // $when uploadingProject
 
 
@@ -125,7 +125,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
           })
 
-         
+
 
 
 
@@ -136,9 +136,9 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
        App.mainLayout.showChildView('mainRegion',projectsListLayout);
 
 		}).fail(function(response){
-      
+
           Util.defaultErrorHandling(response,'danger');
-                                    
+
           }); // $when fetchingprojects
 
 		}); // require

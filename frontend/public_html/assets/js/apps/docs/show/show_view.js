@@ -4,7 +4,7 @@
 
 define(["marionette","app","common/views",
         "tpl!apps/docs/show/templates/layout.tpl",
-        "tpl!apps/docs/show/templates/info.tpl",
+        "tpl!apps/docs/show/templates/info.tpl"
 
 
   ], function(Marionette,IPS_App,Views,layoutTpl,infoTpl){
@@ -60,4 +60,3 @@ define(["marionette","app","common/views",
 return Show;
 
 });
-

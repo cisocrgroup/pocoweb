@@ -23,7 +23,7 @@ define(["marionette","app","spin","spin.jquery","common/util","datatables",
 "tpl!common/templates/footerpaneltemplate.tpl",
 "tpl!common/templates/confirm.tpl",
 "tpl!common/templates/msgtemplate.tpl",
-"tpl!common/templates/singlestep.tpl",
+"tpl!common/templates/singlestep.tpl"
 
 	], function(Marionette,IPS_App,Spinner,SpinnerJQuery,Util,dtb,listTpl,loadingTpl,loadingOpcTpl,loadingTpl2,headerTpl,cardHeadTpl,cardhubTpl,layoutTpl,errorTpl,emptyTpl,areYouTpl,okTpl,infoPanelTpl,bgInfoTpl,footerPanelTpl,confirmTpl,msgTpl,singleTpl){
 
@@ -126,7 +126,7 @@ Views.LoadingView = Marionette.View.extend({
 	},
 onAttach: function(){
 
-	
+
 		} // onAttach()
 
 	});
@@ -138,11 +138,11 @@ onAttach: function(){
 	template:headerTpl,
 
 	title: "Header Title",
-	
+
 	isDefault:true,
 	h2:true,
 	 events: {
-   "click .bg_info_btn_parent": "showInfoClicked",
+   "click .bg_info_btn_parent": "showInfoClicked"
    },
 
 
@@ -153,12 +153,12 @@ onAttach: function(){
 				color: Marionette.getOption(this,"color"),
 				backgrounds: Marionette.getOption(this,"backgrounds"),
     			isDefault: Marionette.getOption(this,"isDefault"),
-    			h2: Marionette.getOption(this,"h2"),
+    			h2: Marionette.getOption(this,"h2")
 			}
 		}
-		
 
-		 
+
+
 	});
 
 
@@ -167,18 +167,18 @@ onAttach: function(){
 	template:cardHeadTpl,
 
 	title: "Header Title",
-	
+
 		serializeData: function(){
 			return {
 				title: Marionette.getOption(this,"title"),
 				icon: Marionette.getOption(this,"icon"),
 				color: Marionette.getOption(this,"color"),
-				stroke: Marionette.getOption(this,"stroke"),
+				stroke: Marionette.getOption(this,"stroke")
 			}
 		}
-		
 
-		 
+
+
 	});
 
 
@@ -250,11 +250,11 @@ onAttach: function(){
 
            this.$el.modal();
    		 }
-   			
-   		
+
+
    		 },
    		  updateContent: function(message,type){
-   	
+
    			this.options.message = message;
    			this.options.type = type
    			this.render();
@@ -270,7 +270,7 @@ onAttach: function(){
    		  hide: function(){
    		  	$("#"+this.id).css('display','none');
    		  }
-	
+
 
 
 	});
@@ -288,7 +288,7 @@ onAttach: function(){
 
 		serializeData: function(){
 			return {
-				headers: Marionette.getOption(this,"headers"),	
+				headers: Marionette.getOption(this,"headers"),
 				urlroot: Marionette.getOption(this,"urlroot"),
 				columns: Marionette.getOption(this,"columns"),
 				items: this.collection.toJSON(),
@@ -308,10 +308,10 @@ onAttach: function(){
 
   					]
 	        });
-	   
 
- 
-		     
+
+
+
 		  }
 
   });
@@ -331,16 +331,16 @@ onAttach: function(){
 	datatable_options:{},
 
 	events:{
-	'click .clickable-row' : 'row_clicked',
+	'click .clickable-row' : 'row_clicked'
 	},
 
 		serializeData: function(){
 			return {
-				headers: Marionette.getOption(this,"headers"),	
+				headers: Marionette.getOption(this,"headers"),
 				urlroot: Marionette.getOption(this,"urlroot"),
 				columns: Marionette.getOption(this,"columns"),
-        		header_bg: Marionette.getOption(this,"header_bg"),	
-        		border_color: Marionette.getOption(this,"border_color"),	
+        		header_bg: Marionette.getOption(this,"header_bg"),
+        		border_color: Marionette.getOption(this,"border_color"),
 				items: Marionette.getOption(this,"collection"),
 				actioncolumn: Marionette.getOption(this,"actioncolumn"),
 
@@ -374,9 +374,9 @@ onAttach: function(){
 	  	this.datatable_options['initComplete'] = function(){
 
 	           	   setTimeout(function() {old_table_height = $('#table tr').length;}, 1000);
-	          
+
 	           }
-	       
+
 	      var that = this;
 	  	  var table = $('#table').DataTable(that.datatable_options);
 
@@ -393,7 +393,7 @@ onAttach: function(){
 
 	  	    table.on('draw.dt', function () {
 
-	  	    if(old_table_height!=$('#table tr').length){	
+	  	    if(old_table_height!=$('#table tr').length){
 
 	  	  			$(window).scrollTop(0);
 	  	  			page_changed = false;
@@ -402,15 +402,15 @@ onAttach: function(){
 
 	  	     if(length_changed){
 	  	     	length_changed = false;
-	  	     } 
+	  	     }
 
 
 	  	     old_table_height=$('#table tr').length;
 
 		  	 });
 
-	   
-		     
+
+
 		  }
 
   });
@@ -428,7 +428,7 @@ onAttach: function(){
 	selfRef:false,
 		serializeData: function(){
 			return {
-				headers: Marionette.getOption(this,"headers"),	
+				headers: Marionette.getOption(this,"headers"),
 				urlroot: Marionette.getOption(this,"urlroot"),
 				columns: Marionette.getOption(this,"columns"),
 				items: this.collection.toJSON(),
@@ -451,7 +451,7 @@ onAttach: function(){
     currentRoute:undefined,
     events:{
     	'click .custom_card.active' : 'custom_card_clicked',
-        'click button.js-back':   'backClicked',
+        'click button.js-back':   'backClicked'
 
     },
     custom_card_clicked: function(e){
@@ -465,13 +465,13 @@ onAttach: function(){
         window.history.back();
        // this.trigger("go:back");
 
-     }, 
+     },
 
 		serializeData: function(){
 			return {
 				cards: Marionette.getOption(this,"cards"),
 		    	columns: Marionette.getOption(this,"columns"),
-        		back_btn: Marionette.getOption(this,"back_btn"),
+        		back_btn: Marionette.getOption(this,"back_btn")
 
 			}
 		},
@@ -480,7 +480,7 @@ onAttach: function(){
       balanceCards: function(){
 
 		  var window_width = window.innerWidth;
-			
+
 					if(window_width>767){
 
 						$('.card-block').height("");
@@ -513,7 +513,7 @@ onAttach: function(){
 									current.find('.card-block').height(new_height_block);
 								}
 
-			
+
 
 						})
 
@@ -555,7 +555,7 @@ onAttach: function(){
 
 
 		} // onAttach()
-	
+
   });
 
 
@@ -601,17 +601,17 @@ Views.Layout = Marionette.View.extend({
 		  $('.alert-box').hide();
 		  $('.alert-box').show(200,function(){})
 		  }
-		 
+
 	});
 
 
 
-  
+
 	Views.AreYouSure = Marionette.View.extend({
     template: areYouTpl,
     events:{
      "click #js-yes":"yesClicked",
-      "click #js-no":"noClicked",
+      "click #js-no":"noClicked"
     },
 	serializeData: function(){
 			return {
@@ -633,19 +633,19 @@ Views.Layout = Marionette.View.extend({
       	$("#"+this.id).modal();
 
        }
-     
+
 	});
 
  Views.OkDialog = Marionette.View.extend({
 	 template: okTpl,
 	 events: {
-	 "click .js-ok": "okClicked",
+	 "click .js-ok": "okClicked"
 
 	 },
 
 	 okClicked: function(e){
 	 e.preventDefault();
-    
+
 	 },
 	serializeData: function(){
 			return {
@@ -662,7 +662,7 @@ Views.Layout = Marionette.View.extend({
           })
 
           var that = this;
-         
+
            this.$el.modal();
     }
      else {
@@ -687,9 +687,9 @@ Views.Layout = Marionette.View.extend({
       return {
     asModal: Marionette.getOption(this,"asModal"),
     model: Marionette.getOption(this,"model"),
-    text:  Marionette.getOption(this,"text"), 
-    title:  Marionette.getOption(this,"title"), 
-    color:  Marionette.getOption(this,"color"), 
+    text:  Marionette.getOption(this,"text"),
+    title:  Marionette.getOption(this,"title"),
+    color:  Marionette.getOption(this,"color")
 
     }
   },
@@ -705,14 +705,14 @@ Views.Layout = Marionette.View.extend({
           })
 
           var that = this;
-         
+
            this.$el.modal();
     }
      else {
        var $title = $('#formhl');
      $title.text(this.title);
     }
-     
+
    }, // onAttach()
    confirmClicked: function(e){
      e.preventDefault();
@@ -721,14 +721,14 @@ Views.Layout = Marionette.View.extend({
    cancelClicked: function(e){
      e.preventDefault();
      this.$el.modal('hide');
-   },
-  
+   }
+
 });
 
 Views.FooterPanel = Marionette.View.extend({
 	 manual:false,
      events:{
-        "click button.js-back":   "backClicked",
+        "click button.js-back":   "backClicked"
       },
       backClicked: function(e){
 
@@ -742,21 +742,21 @@ Views.FooterPanel = Marionette.View.extend({
 	    window.history.back();
 	   }
 
-     }, 
+     },
      serializeData: function(){
       return {
-	    manual: Marionette.getOption(this,"manual"),
+	    manual: Marionette.getOption(this,"manual")
      }
 
   },
-      template: footerPanelTpl,
+      template: footerPanelTpl
   });
 
 Views.SingleStep = Marionette.View.extend({
       template: singleTpl,
       events:{
     	'click .custom_card.active' : 'step_clicked',
-        'click button.js-back':   'backClicked',
+        'click button.js-back':   'backClicked'
 
    	   },
        serializeData: function(){
@@ -770,23 +770,18 @@ Views.SingleStep = Marionette.View.extend({
 
         }
       },
-     
 
-    
+
+
     step_clicked: function(e){
     	var url = $(e.currentTarget).attr('url');
 	 	this.trigger('singleStep:clicked',{url:url});
 
-    },
-    
+    }
+
   });
 
 return Views;
 
 
 });
-
-
-
-
-

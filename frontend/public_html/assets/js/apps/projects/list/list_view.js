@@ -4,7 +4,7 @@
 
 define(["marionette","app","common/views","apps/projects/common/views",
   "tpl!apps/projects/list/templates/layout.tpl",
-  "tpl!apps/projects/list/templates/listpanel.tpl",
+  "tpl!apps/projects/list/templates/listpanel.tpl"
 ], function(Marionette,IPS_App,CommonViews,Views,layoutTpl,panelTpl){
 
   var List ={};
@@ -19,7 +19,7 @@ define(["marionette","app","common/views","apps/projects/common/views",
     }
 
   });
-  
+
     List.Header = CommonViews.Header.extend({
     initialize: function(){
         this.title = "Projects"
@@ -32,7 +32,7 @@ define(["marionette","app","common/views","apps/projects/common/views",
   List.ProjectsList = Views.ProjectsList.extend({
   });
 
-    
+
 
   List.Panel = Marionette.View.extend({
     template: panelTpl,
@@ -50,7 +50,7 @@ define(["marionette","app","common/views","apps/projects/common/views",
 
  List.ProjectForm = Views.ProjectForm.extend({
   });
- 
+
 
 
 return List;
