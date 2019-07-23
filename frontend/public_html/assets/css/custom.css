@@ -743,10 +743,10 @@ outline: 0;
     display:none;
 }
 
-#conc-modal .modal-body{
+.all_lines_parent{
     /*max-height: calc(100vh - 130px);*/
-    min-height: 700px;
-    max-height: 700px;
+    min-height: 650px;
+    max-height: 650px;
     overflow-y: auto;
 }
 

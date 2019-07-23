@@ -219,15 +219,16 @@ assignPackages: function(data){
 },
 
     getLine: function(data){
-    data['backend_route'] = "get_line";
-    console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        url: "rest/books/"+data.pid+"/pages/"+data.page_id+"/lines/"+data.line_id+"?auth=" + App.getAuthToken(),
+        type: "GET",
         success: function(data) {
-              defer.resolve(JSON.parse(data));
+              defer.resolve(data);
             },
             error: function(data){
               defer.reject(data);
@@ -237,16 +238,18 @@ assignPackages: function(data){
     return defer.promise();
   },
   correctLine: function(data){
-    data['backend_route'] = "correct_line";
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-
-        url: "api/api_controller.php",
+       headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        url: "rest/books/"+data.pid+"/pages/"+data.page_id+"/lines/"+data.line_id+"?auth=" + App.getAuthToken(),
         type: "POST",
-        data:data,
+        data:JSON.stringify({correction:data.text}),
         success: function(data) {
-              defer.resolve(JSON.parse(data));
+              defer.resolve(data);
             },
             error: function(data){
               defer.reject(data);
@@ -256,16 +259,18 @@ assignPackages: function(data){
     return defer.promise();
   },
     correctToken: function(data){
-    data['backend_route'] = "correct_token";
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-
-        url: "api/api_controller.php",
+          headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        url: "rest/books/"+data.pid+"/pages/"+data.page_id+"/lines/"+data.line_id+"/tokens/"+data.token_id+"?auth=" + App.getAuthToken(),
         type: "POST",
-        data:data,
+        data:JSON.stringify({correction:data.token}),
         success: function(data) {
-              defer.resolve(JSON.parse(data));
+              defer.resolve(data);
             },
             error: function(data){
               defer.reject(data);
@@ -300,7 +305,6 @@ profileProject: function(data){
 },
 
 searchToken: function(data){
-    data['backend_route'] = "search_token";
     var defer = jQuery.Deferred();
       $.ajax({
         headers: {
