@@ -16,7 +16,10 @@ template <class F> void each_text_region(const Xml::Node &pagenode, F f);
 ParserPagePtr PageXmlPageParser::parse() {
   const auto page = std::make_shared<XmlParserPage>(path_);
   const auto pagenode =
-      page->xml().doc().select_node("/pc:PcGts/pc:Page").node();
+      page->xml()
+          .doc()
+          .select_node("/*[local-name()='PcGts']/*[local-name()='Page']")
+          .node();
   page->ocr = path_;
   parse(pagenode, *page);
   done_ = true; // page documents contain just one page
@@ -26,13 +29,13 @@ ParserPagePtr PageXmlPageParser::parse() {
 ////////////////////////////////////////////////////////////////////////////////
 void PageXmlPageParser::parse(const Xml::Node &pagenode,
                               XmlParserPage &page) const {
-  //  const auto textlines = pagenode.select_nodes(".//TextLine");
   const auto filename = pagenode.attribute("imageFilename").value();
   page.img = fix_windows_path(filename);
   page.file_type = FileType::PageXml;
   page.box = get_page_box(pagenode);
   each_text_region(pagenode, [&](const auto &region_node) {
-    for (const auto &line : region_node.select_nodes("./TextLine")) {
+    for (const auto &line :
+         region_node.select_nodes("./*[local-name()='TextLine']")) {
       add_line(line.node(), page);
     }
   });

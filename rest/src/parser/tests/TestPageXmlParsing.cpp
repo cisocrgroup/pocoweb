@@ -100,3 +100,25 @@ BOOST_AUTO_TEST_CASE(PageXmlParserCheckCorrectLineLarger) {
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
+
+struct HerrnhutereyFixture {
+  HerrnhutereyFixture() : page() {
+    PageXmlPageParser parser("misc/data/test/herrnhuterey-page.xml");
+    BOOST_REQUIRE(parser.has_next());
+    page = parser.parse();
+    BOOST_REQUIRE(not parser.has_next());
+    BOOST_REQUIRE(page);
+  }
+  ParserPagePtr page;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_FIXTURE_TEST_SUITE(HerrnhuteryPageXmlTest, HerrnhutereyFixture)
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(HerrnhutereyCheckImgPath) {
+  BOOST_CHECK_EQUAL("benner_herrnhuterey04_1748_0013.tif", page->img);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_SUITE_END()
