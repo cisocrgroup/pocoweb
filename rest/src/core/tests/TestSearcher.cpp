@@ -137,4 +137,13 @@ BOOST_AUTO_TEST_CASE(TestSearchWithLongS) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestSearchWithSkipTotalCount) {
+  searcher.set_skip(1);
+  searcher.set_max(1);
+  const auto res = searcher.find("this");
+  BOOST_CHECK_EQUAL(msize(res), 1);
+  BOOST_CHECK_EQUAL(res.totalCount, 3);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()

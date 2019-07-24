@@ -58,17 +58,13 @@ inline pcw::Searcher::Matches pcw::Searcher::find_impl(F f) const {
             if (not t.is_normal()) {
               return;
             }
-            if (max <= 0) {
-              matches.totalCount++;
-              return;
-            }
             if (f(t)) {
+              matches.totalCount++;
               if (skip > 0) {
                 skip--;
                 return;
               }
               if (max > 0) {
-                matches.totalCount++;
                 matches.matches[line].push_back(t);
                 max--;
               }
