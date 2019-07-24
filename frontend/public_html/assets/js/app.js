@@ -64,6 +64,13 @@ App.clearCurrentUser = function() {
   localStorage.removeItem('pcw');
 };
 
+App.getCharmapFilter = function() {
+   return"abcdefghijklmnopqrstuvwxyz" +
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+	"0123456789" +
+	"\\'\":,-+/@#$.;<>(){}[]\\&?!=*^~_";
+};
+
 App.on("start", function(){
 
 

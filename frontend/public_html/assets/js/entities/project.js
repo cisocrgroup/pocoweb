@@ -503,31 +503,27 @@ getJobs: function(data){
   return defer.promise();
 
 },
-getCharmap: function(data){
 
-	data['filter'] = "abcdefghijklmnopqrstuvwxyz" +
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-		"0123456789" +
-		"'\":,-+/@#$.;<>(){}[]\\&?!=*^~_";
-  var defer = jQuery.Deferred();
-      $.ajax({
+  getCharmap: function(data){
+    var defer = jQuery.Deferred();
+    let url = "rest/books/" + data.pid + "/charmap?auth=" + App.getAuthToken()+
+        "&filter="+encodeURIComponent(App.getCharmapFilter());
+    console.log('url: ' + url);
+    $.ajax({
       headers: {
         'Accept': 'application/json'
       },
-      url: "rest/books/" + data.pid + "/charmap?auth=" + App.getAuthToken()+"&filter="+data['filter'],
+      url: url,
       type: "GET",
       success: function(data) {
         defer.resolve(data);
-          },
-          error: function(data){
-            defer.reject(data);
-          }
-  });
-
-
-  return defer.promise();
-
-}
+      },
+      error: function(data){
+        defer.reject(data);
+      }
+    });
+    return defer.promise();
+  }
 };
 
 
