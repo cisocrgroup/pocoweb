@@ -14,7 +14,7 @@
 
 template <class M> size_t msize(const M &m) {
   size_t n = 0;
-  for (const auto &kv : m) {
+  for (const auto &kv : m.matches) {
     n += kv.second.size();
   }
   return n;
@@ -37,8 +37,7 @@ struct SearcherFixture {
                         "aber dürfen\n"
                         "hab ich mich nicht getraut.\n");
     builder.append_text(
-        "ſunt Alexcandri aut Cæſaris credere recuſarem, non "
-        "puto "
+        "ſunt Alexcandri aut Cæſaris credere recuſarem, non puto "
         "illos merito\nſunt ad Bellum, parata habeant. Sed Civibus "
         "data ſunt à Natura\naſunt ſunta ſſuntſ.");
     book = builder.build();
