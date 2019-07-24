@@ -233,7 +233,10 @@ double get_text_equiv_conf(const Xml::Node &node) {
 ////////////////////////////////////////////////////////////////////////////////
 Box get_coords_points(const Xml::Node &node) {
   Box box;
-  auto points = node.select_node("./Coords").node().attribute(POINTS).value();
+  auto points = node.select_node("./*[local-name()='Coords']")
+                    .node()
+                    .attribute(POINTS)
+                    .value();
   std::vector<std::string> ps, xy;
   boost::split(ps, points, [](char c) { return c == ' '; });
   for (const auto &p : ps) {
