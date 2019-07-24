@@ -131,9 +131,19 @@ BOOST_AUTO_TEST_CASE(HerrnhutereyCheckSecondLine) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(HerrnhutereyCheckSecondLineBuilt) {
+  BOOST_CHECK_EQUAL(std::string("Die"), page->get(1).line(1)->ocr());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(HerrnhutereyCheckSecondLineBox) {
   // <Coords points="687,214 809,214 809,284 687,284"/>
   BOOST_CHECK_EQUAL(Box(687, 214, 809, 284), page->get(1).line(1)->box);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(HerrnhutereyCheckSecondLineCuts) {
+  BOOST_CHECK_EQUAL(3, page->get(1).line(1)->cuts().size());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

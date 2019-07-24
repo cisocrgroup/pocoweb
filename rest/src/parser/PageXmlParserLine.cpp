@@ -138,7 +138,7 @@ LinePtr PageXmlParserLine::line(int id) const {
           get_text_equiv_conf(get_last_text_equiv(words_[i].word));
       const auto wbox = get_coords_points(words_[i].word);
       builder.append(
-          child_wstring(get_last_text_equiv(words_[i].word.child(UNICODE))),
+          child_wstring(get_last_text_equiv(words_[i].word).child(UNICODE)),
           wbox.right(), conf);
     } else {
       for (const auto &g : words_[i].glyphs) {
