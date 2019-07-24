@@ -45,8 +45,9 @@ BOOST_AUTO_TEST_CASE(UpdateProjectOwner) {
 BOOST_AUTO_TEST_CASE(SelectBook) {
   db.expect(
       "SELECT books.bookid,books.year,books.title,books.author,"
-      "books.description,books.uri,books.profilerurl,books.directory,"
-      "books.lang,books.profiled,books.extendedlexicon,books.postcorrected "
+      "books.description,books.uri,books.profilerurl,books.histpatterns,books."
+      "directory,books.lang,books.profiled,books.extendedlexicon,books."
+      "postcorrected "
       "FROM books "
       "INNER JOIN projects ON (books.bookid=projects.origin) "
       "WHERE (books.bookid=13)");
@@ -107,8 +108,9 @@ BOOST_AUTO_TEST_CASE(InsertBook) {
   db.expect("INSERT INTO projects (origin,owner,pages) VALUES(0,42,1)");
   db.expect("UPDATE projects SET origin=0 WHERE (projects.id=0)");
   db.expect("INSERT INTO books (author,title,directory,year,uri,bookid,"
-            "description,lang) VALUES('author','title','directory',2017,"
-            "'uri',0,'description','language')");
+            "description,profilerurl,histpatterns,lang) "
+            "VALUES('author','title','directory',2017,"
+            "'uri',0,'description','','','language')");
   db.expect("INSERT INTO pages (bookid,pageid,imagepath,ocrpath,filetype,pleft,"
             "ptop,pright,pbottom) VALUES(0,1,'image','ocr',0,1,2,3,4)");
   db.expect("INSERT INTO textlines (bookid,pageid,lineid,imagepath,lleft,"
@@ -125,6 +127,7 @@ BOOST_AUTO_TEST_CASE(InsertBook) {
   // t
   db.expect("INSERT INTO contents (bookid,pageid,lineid,seq,ocr,cor,cut,conf) "
             "VALUES(0,1,1,3,116,0,4,1)");
+  db.expect("INSERT INTO project_pages (projectid,pageid) VALUES(0,1)");
   auto view = insert_book(db, *book);
   BOOST_CHECK_EQUAL(view, book);
   db.validate();
@@ -139,11 +142,13 @@ BOOST_AUTO_TEST_CASE(UpdateBook) {
   book->data.uri = "new-uri";
   book->data.description = "new-description";
   book->data.lang = "new-language";
-  db.expect("UPDATE books SET author='new-author',title='new-title',"
-            "directory='new-directory',year=1917,uri='new-uri',"
-            "description='new-description',"
-            "profiled=0,extendedlexicon=0,postcorrected=0,lang='new-language' "
-            "WHERE (books.bookid=0)");
+  book->data.histPatterns = "a:b,c:d";
+  db.expect(
+      "UPDATE books SET author='new-author',title='new-title',"
+      "directory='new-directory',year=1917,uri='new-uri',"
+      "description='new-description',profilerurl='',histpatterns='a:b,c:d',"
+      "profiled=0,extendedlexicon=0,postcorrected=0,lang='new-language' "
+      "WHERE (books.bookid=0)");
   update_book(db, *book);
   db.validate();
 }
@@ -161,8 +166,9 @@ BOOST_AUTO_TEST_CASE(SelectProjectIds) {
   db.expect("SELECT "
             "projects.id,projects.origin,projects.owner,projects.pages,"
             "books.bookid,books.year,books.title,books.author,books."
-            "description,books.uri,books.profilerurl,books.directory,books."
-            "lang,books.profiled,books.extendedlexicon,books.postcorrected "
+            "description,books.uri,books.profilerurl,books.histpatterns,"
+            "books.directory,books.lang,books.profiled,books.extendedlexicon,"
+            "books.postcorrected "
             "FROM books INNER "
             "JOIN projects ON (books.bookid=projects.origin) WHERE "
             "(projects.owner=42)");
