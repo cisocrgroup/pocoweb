@@ -296,7 +296,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                $.when(gettingCorrectionSuggestions).done(function(suggestions){
                   projectConcView.setSuggestionsDropdown(data.dropdowndiv,suggestions.suggestions);
                });
-
             })
 
              projectConcView.on("concordance:pagination",function(page_nr){
