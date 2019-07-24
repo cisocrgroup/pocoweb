@@ -121,4 +121,24 @@ BOOST_AUTO_TEST_CASE(HerrnhutereyCheckImgPath) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(HerrnhutereyCheckFirstLine) {
+  BOOST_CHECK_EQUAL(std::string("1"), page->get(0).string());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(HerrnhutereyCheckSecondLine) {
+  BOOST_CHECK_EQUAL(std::string("Die"), page->get(1).string());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(HerrnhutereyCheckThirdLine) {
+  BOOST_CHECK_EQUAL(std::string("Herrnhuterey"), page->get(2).string());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(HerrnhutereyCheckFourthLine) {
+  BOOST_CHECK_EQUAL(std::string("in ihrer Schalkheit."), page->get(3).string());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_SUITE_END()
