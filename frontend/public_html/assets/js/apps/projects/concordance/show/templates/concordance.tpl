@@ -121,17 +121,23 @@ if(asModal) {
           <% var max_pages = Math.ceil(tokendata.totalCount / tokendata.max);
           if(max_pages > 5) {
           for(var i=2;i<=5;i++) { %>
-          <li value ="<%-i%>" class="page-item"><a class="page-link" href="" ><%-i%></a></li>
+          <li value="<%-i%>" class="page-item"><a class="page-link" href="" ><%-i%></a></li>
           <% } %>
-          <li value ="-1" class="page-item"><a class="page-link">...</a></li>
-          <li value ="<%-max_pages%>"class="page-item"><a class="page-link" href=""><%-max_pages%></a></li>
-
-          <%} else {
-             for(var i=2;i<=max_pages;i++) { %>
-          <li class="page-item"><a class="page-link" href="" ><%-i%></a></li>
+          <li value="-1" class="page-item">
+		  	  <a class="page-link">...</a>
+		  </li>
+          <li value="<%-max_pages%>"class="page-item">
+		  	  <a class="page-link" href=""><%-max_pages%></a>
+		  </li>
+          <%
+			} else {
+             for(var i=2;i<=max_pages;i++) {
+		  %>
+          <li value="<%-i%>" class="page-item">
+		  	  <a class="page-link" href="" ><%-i%></a>
+		  </li>
           <% } %>
-          <%}%>
-
+          <% } %>
           <li value="-3" class="page-item">
             <a  class="page-link" href="">Next</a>
           </li>

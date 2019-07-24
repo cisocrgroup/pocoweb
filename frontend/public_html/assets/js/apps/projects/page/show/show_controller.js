@@ -295,25 +295,28 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
               var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:data.token,pid:id});
                $.when(gettingCorrectionSuggestions).done(function(suggestions){
                   projectConcView.setSuggestionsDropdown(data.dropdowndiv,suggestions.suggestions);
-
                });
 
             })
 
              projectConcView.on("concordance:pagination",function(page_nr){
-                  console.log(projectConcView)
-                  var max = 9;
-                  var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern,skip:(page_nr-1)*max,max:max});
-                    var that = this;
-                     $.when(searchingToken).done(function(tokens){
-                      that.options.tokendata = tokens;
-                       that.setImages();
-                       that.setContent(false);
-     // $('.all_lines_parent').empty(); // remove alle lines and images
-
-
-                     });
-
+               console.log(projectConcView)
+               var max = 9;
+               // console.log("function(" + page_nr + "): skip = " +
+               //             ((page_nr-1)*max) + " max = " + max);
+               var searchingToken = ProjectEntities.API.searchToken({
+                 q: selection,
+                 pid: id,
+                 isErrorPattern: isErrorPattern,
+                 skip: (page_nr-1)*max,
+                 max: max
+               });
+               var that = this;
+               $.when(searchingToken).done(function(tokens){
+                 that.options.tokendata = tokens;
+                 that.setImages();
+                 that.setContent(false);
+               });
             })
 
 

@@ -239,60 +239,55 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         e.preventDefault();
 
        var tokendata =  Marionette.getOption(this,"tokendata");
-
         var value = parseInt($(e.currentTarget).attr('value'));
-        console.log(value)
-        if(value==-1) {
+        console.log(value);
+        if(value==-1) { // value == -1 -> '...' button
           return;
         }
-
-        if(value==-3){
+        if(value==-3){ // value == -3 -> 'Next' button
           var next = $(e.currentTarget).parent().find('.active').next();
           if(next.text().trim()=="Next"){
-           return;
-           }else {
-           value = parseInt(next.attr('value'));
+            return;
+           } else {
+             value = parseInt(next.attr('value'));
           }
         }
-        if(value==-2){
+        if(value==-2){ // value == -2 -> 'Previous' button
           var prev = $(e.currentTarget).parent().find('.active').prev();
           if(prev.text().trim()=="Previous"){
-           return;
-           }else {
-           value = parseInt(prev.attr('value'));
+            return;
+          }else {
+            value = parseInt(prev.attr('value'));
           }
         }
-
-          
-        console.log(value)
+        console.log(value);
 
         if(value>=5){
           $('.js-paginate').empty();
-          
+
           $('.js-paginate').append('<li value="-2" class="page-item"><a class="page-link" href="#">Previous</a></li>');
           $('.js-paginate').append('<li value="1" class="page-item"><a class="page-link" href="#">1</a></li>');
 
           $('.js-paginate').append('<li value="-1" class="page-item"><a class="page-link">...</a></li>');
-          for(var k=value-2;k<value;k++){
+          for(let k=value-2;k<value;k++){
               $('.js-paginate').append('<li value="'+k+'"" class="page-item"><a class="page-link" href="#">'+k+'</a></li>');
-           }  
-           for(var k=value;k<value+2;k++){
+           }
+           for(let k=value;k<value+2;k++){
               $('.js-paginate').append('<li value="'+k+'"" class="page-item"><a class="page-link" href="#">'+k+'</a></li>');
-           }  
+           }
 
-       
           $('.js-paginate').append('<li value="-1" class="page-item"><a class="page-link">...</a></li>');
           $('.js-paginate').append('<li value="'+(Math.ceil(tokendata.totalCount / tokendata.max))+'" class="page-item"><a class="page-link" href="#">'+(Math.ceil(tokendata.totalCount / tokendata.max))+'</a></li>');
           $('.js-paginate').append('<li value="-3" class="page-item"><a class="page-link" href="#">Next</a></li>');
-   
+
         }
 
         // to do : if value < 5
-           
+
         $(e.currentTarget).parent().find('.active').removeClass("active");
         $('.js-paginate').find('li[value='+value+']').addClass('active');
-       
-        
+
+
         this.trigger("concordance:pagination",value);
 
       },
@@ -368,7 +363,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
         var line_img = $('<div id ="img_'+line['pageId']+'_'+line['lineId']+'_parent" class="line-img">');
         var img = $('<img src="'+line['imgFile']+'" id="img_'+line['pageId']+'_'+line['lineId']+'" width="auto" height="25"/>');
-        
+
         left_div.append(invisible_link);
         invisible_link.append(line_img);
         invisible_link.append(img);
@@ -378,7 +373,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           });
         }
       };
-  
+
 
   },
 
@@ -509,7 +504,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
      }
 
-      
+
 
 
 
