@@ -89,26 +89,25 @@ getProject: function(data){
   return defer.promise();
 },
 
-uploadProjectData: function(data){
-    var defer = jQuery.Deferred();
-  var auth = App.getAuthToken();
-      $.ajax({
-        url: "api/upload.php?auth="+auth,
-        type: "POST",
-        data: new FormData(data),
-        cache:false,
-        processData:false,
-        contentType: false,
-        success: function(data) {
-              defer.resolve(data);
+	uploadProjectData: function(data){
+		var defer = jQuery.Deferred();
+		var auth = App.getAuthToken();
+		$.ajax({
+			url: "api/upload.php?auth="+auth,
+			type: "POST",
+			data: new FormData(data),
+			cache:false,
+			processData:false,
+			contentType: false,
+			success: function(data) {
+				defer.resolve(data);
             },
             error: function(data){
-              defer.reject(data);
+				defer.reject(data);
             }
-    });
-
-    return defer.promise();
-  },
+		});
+		return defer.promise();
+	},
 
 downloadProject: function(data){
     data['backend_route'] = "download_project";
