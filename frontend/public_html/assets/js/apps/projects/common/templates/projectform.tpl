@@ -80,7 +80,11 @@ if(asModal) {
 <label for="file-upload" class="btn" style="margin-top:15px; background: #dddddd;">
  <i class="fas fa-file-upload"></i> Upload data (.zip)
 </label>
-<input id="file-upload" type="file" name="archive" style="display:none">
+<input id="file-upload"
+	   type="file"
+	   name="archive"
+	   accept="application/zip"
+	   style="display:none">
 
 <div id="selected_file"></div>
  <button class="btn btn-primary js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>
