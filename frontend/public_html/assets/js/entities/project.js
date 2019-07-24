@@ -134,29 +134,26 @@ downloadProject: function(data){
 },
 
 
-deleteProject: function(data){
-    data['backend_route'] = "delete_project";
-    console.log(data)
+  deleteProject: function(data){
     var defer = jQuery.Deferred();
-       $.ajax({
-
-        url: "api/api_controller.php",
-        type: "POST",
-        data: data,
-        success: function(data) {
-
-              defer.resolve(data);
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+    $.ajax({
+      url: "rest/books/" + data.pid + "?auth=" + App.getAuthToken(),
+      type: "DELETE",
+      data: data,
+      success: function(data) {
+        defer.resolve(data);
+      },
+      error: function(data){
+        defer.reject(data);
+      }
     });
 
     return defer.promise();
   },
+
   updateProject: function(data){
-   data['projectdata']['year'] = parseInt(data['projectdata']['year']);
-  console.log(data)
+    data['projectdata']['year'] = parseInt(data['projectdata']['year']);
+    console.log(data)
     var defer = jQuery.Deferred();
       $.ajax({
         headers: {
