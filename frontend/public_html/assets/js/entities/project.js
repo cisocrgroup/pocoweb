@@ -109,6 +109,28 @@ getProject: function(data){
 		return defer.promise();
 	},
 
+	getAdaptiveTokens: function(data){
+		var defer = jQuery.Deferred();
+		$.ajax({
+			headers: {
+				'Accept': 'application/json'
+			},
+			url: "rest/profile/adaptive/books/" +
+				data.pid + "?auth=" + App.getAuthToken(),
+			type: "GET",
+			cache:false,
+			processData:false,
+			contentType: false,
+			success: function(data) {
+				defer.resolve(data);
+            },
+            error: function(data){
+				defer.reject(data);
+            }
+		});
+		return defer.promise();
+	},
+
 downloadProject: function(data){
     data['backend_route'] = "download_project";
     var defer = jQuery.Deferred();

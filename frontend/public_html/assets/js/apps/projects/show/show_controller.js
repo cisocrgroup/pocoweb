@@ -55,11 +55,11 @@ define(["app","common/util","common/views","apps/projects/show/show_view"], func
                {
                   "color": "blue",
                   "icon": "far fa-edit",
-                  "id": "doc_button",
+                   "id": "adaptive_btn",
                   "name": "Adaptive tokens",
                   "seq": 5,
                   "text": "List adaptive tokens.",
-                  "url": "docs:show"
+                  "url": "adaptive"
               }, {
                   "color": "red",
                   "icon": "fas fa-columns",
@@ -123,7 +123,8 @@ var cards2 = [
         var projectShowHub = new Show.Hub({columns:3,cards:cards,currentRoute:"home"});
         var projectShowHub2 = new Show.Hub({columns:2,cards:cards2,currentRoute:"home"});
 
-        projectShowHub.on('cardHub:clicked',function(data){
+				projectShowHub.on('cardHub:clicked',function(data){
+					console.log("clicked: " + data);
           if(data.url=="delete"){
              this.trigger("show:delete_clicked");
           }
@@ -132,6 +133,9 @@ var cards2 = [
           }
           if(data.url=="profile"){
              this.trigger("show:profile");
+          }
+          if (data.url=="adaptive") {
+              this.trigger("show:adaptive");
           }
             if(data.url=="split"){
              this.trigger("show:split");
@@ -169,6 +173,16 @@ var cards2 = [
                    });
             });
 
+		projectShowHub.on('show:adaptive', function() {
+			console.log('show:adaptive');
+			let fetchinAdaptiveTokens =
+				ProjectEntities.API.getAdaptiveTokens({pid: id});
+			$.when(fetchinAdaptiveTokens).done(function(tokens){
+				console.log(tokens);
+			}).fail(function(response) {
+				Util.defaultErrorHandling(response, 'danger');
+			});
+       }),
 
        projectShowHub.on('show:split',function(){
 
