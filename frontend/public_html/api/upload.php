@@ -28,7 +28,7 @@ $post = $_POST;
 		echo ("Could not upload archive: could publish upload file");
         return;
 	}
-
+    $post["year"] = intval($post["year"]);
     $post["file"] = $file["tmp_name"];
 	$api = new Api(backend_get_upload_project_route($file["name"]));
     $api->set_session_id($_GET['auth']);
@@ -39,7 +39,6 @@ $post = $_POST;
 			  echo ("Successfully uploaded new project");
 	} else {
 		print_r(backend_get_http_status_info($status));
-
 	}
 
 ?>
