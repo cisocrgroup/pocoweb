@@ -177,6 +177,7 @@ var cards2 = [
 			let fetchinAdaptiveTokens =
 				ProjectEntities.API.getAdaptiveTokens({pid: id});
 			$.when(fetchinAdaptiveTokens).done(function(tokens){
+              // show adaptive tokens list
 				console.log(tokens);
 			}).fail(function(response) {
 				Util.defaultErrorHandling(response, 'danger');
