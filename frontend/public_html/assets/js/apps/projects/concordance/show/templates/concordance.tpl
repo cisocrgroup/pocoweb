@@ -67,10 +67,11 @@ if(asModal) {
 
   <div class="all_lines_parent">
 	  <%
+	  let nmatches=0;
    for (key in tokendata['matches']) {
            for (var i=0;i<tokendata['matches'][key].length;i++){
-
             var match = tokendata['matches'][key][i];
+			nmatches += match.tokens.length;
             var line = match['line'];
 
     	  _.each(match['tokens'], function(word) {
@@ -104,6 +105,9 @@ if(asModal) {
      	};
      %>
 
+  	   <div class="concordance-number">
+	   		Showing <%-tokendata.skip+1%> to <%-nmatches%> of <%-tokendata.totalCount%> search results
+	   </div>
 </div>
 
 <%
