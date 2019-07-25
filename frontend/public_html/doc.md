@@ -65,14 +65,9 @@ for suspicious words.
 	* [[POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-post-books-pid-pages-pageid-lines-lid)
    * [[DELETE] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-delete-books-pid-pages-pageid-lines-lid)
 	* [[POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid)
-	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`/split-images](#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid-split-images)
-	* [[GET] `rest-url`/books/`pid`/suggestions](#user-content-api-get-books-pid-suggestions)
-	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`/suggestions](#user-content-api-get-books-pid-pages-pageid-lines-lid-tokens-tid-suggestions)
-    * [[GET] `rest-url`/books/`pid`/suspicious-words](#user-content-api-get-books-pid-suspicious-words)
-    * [[GET] `rest-url`/books/`pid`/pages/`pageid`/suspicious-words](#user-content-api-get-books-pid-pages-pageid-suspicious-words)
-    * [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/suspicious-words](#user-content-api-get-books-pid-pages-pageid-lines-lid-suspicious-words)
 	* [[GET] `rest-url`/profile/books/`pid`](#user-content-api-get-books-pid-profile)
 	* [[POST] `rest-url`/profile/books/`pid`](#user-content-api-post-books-pid-profile)
+	* [[POST] `rest-url`/profile/suspicious/books/`pid`](#user-content-api-get-books-pid-suspicious)
 	* [[GET] `rest-url`/profile/languages](#user-content-api-get-profiler-languages)
 	* [[GET] `rest-url`/ocr](#user-content-api-get-global-ocr-models)
 	* [[GET] `rest-url`/ocr/books/`pid`](#user-content-api-get-ocr-models)
@@ -1444,171 +1439,15 @@ Correct word `tid` in line `lid` in page `pageid` of project or package `pid`.
 ```
 
 ---
-<a id='api-post-books-pid-pages-pageid-lines-lid-tokens-tid-split-images'></a>
-### [GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`/split-images
-Get the left, middle and right split image of a given token with id `tid`
-in line `lid` in page `pageid` of a project or package with an id of `pid`.
-* [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can access its split images.
-
-#### Response data
-```json
-{
-  "leftImg": "path/to/left/image",
-  "middleImg": "path/to/image/of/token",
-  "rightImg": "path/to/right/image"
-}
-```
-If there are no left and/or right images in the split,
-`leftImg` and/or `rightImg` can equal `null`.
-
----
-<a id='api-get-books-pid-suggestions'></a>
-### [GET] `rest-url`/books/`pid`/suggestions
-Get correction suggestions for a query in a project or package with an id `pid`.
-* [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can access the correction suggestions.
-
-#### Query parameters
-* An optional query token can be given with the `q=query` parameter.
-* The optional parameter `p=1|0` specifies if a token search or a error pattern
-search should be performed. If omitted `p=0` is assumed.
-* Note that if `p=1`, `q` becomes mandatory.
-
-#### Response data
-```json
-{
-  "projectId": 27,
-  "profiles": true|false,
-  "timestamp": 1508317390,
-  "suggestions": [
-    {
-			"projectId": 17,
-      "pageId": 38,
-      "lineId": 13,
-      "tokenId": 77,
-      "token": "token string",
-      "suggestion": "correction suggestion for token",
-      "weight": 0.8,
-      "distance": 2,
-      "ocrPatterns": ["first:ocr-pattern", "second:ocr-pattern", ...],
-      "histPatterns": ["first:hist-pattern", "second:hist-pattern", ...],
-			"isOcrError": true,
-			"isTopSuggestion": false
-    },
-    ...
-  ]
-}
-```
-
----
-<a id='api-get-books-pid-pages-pageid-lines-lid-tokens-tid-suggestions'></a>
-### [GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`/suggestions
-Get correction suggestions for a token `tid` in a line `lid` in a page `pid` of
-a project with an id `pid`.
-* [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can access the correction suggestions.
-
-#### Response data
-```json
-{
-  "projectId": 27,
-  "profiles": true|false,
-  "timestamp": 1508317390,
-  "suggestions": [
-    {
-      "pageId": 38,
-      "lineId": 13,
-      "tokenId": 77,
-      "token": "token string",
-      "suggestion": "correction suggestion for token",
-      "weight": 0.8,
-      "distance": 2,
-      "patterns": ["first:pattern", "second:pattern", ...]
-    },
-    ...
-  ]
-}
-```
-
----
-<a id='api-get-books-pid-suspicious-words'></a>
-### [GET] `rest-url`/books/`pid`/suspicious-words
-Get the suspicious words in the project or package with an id `pid`.
-* [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can access the suspicious words.
-
-#### Response data
-```json
-{
-  "projectId": 27,
-  "suspiciousWords": [
-    {
-      "pageId": 38,
-      "lineId": 13,
-      "tokenId": 77,
-      "token": "token string"
-    },
-    ...
-  ]
-}
-```
-
----
-<a id='api-get-books-pid-pages-pageid-suspicious-words'></a>
-### [GET] `rest-url`/books/`pid`/pages/`pageid`/suspicious-words
-Get the suspicious words in page `pageid` of project or package with
-an id `pid`.
-* [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can access the suspicious words.
-
-#### Response data
-```json
-{
-  "projectId": 27,
-  "suspiciousWords": [
-    {
-      "pageId": 38,
-      "lineId": 13,
-      "tokenId": 77,
-      "token": "token string"
-    },
-    ...
-  ]
-}
-```
-
----
-<a id='api-get-books-pid-pages-pageid-lines-lid-suspicious-words'></a>
-### [GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/suspicious-words
-Get the suspicious words in line `lid` in page `pageid` of project or package with
-an id `pid`.
-* [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can access the suspicious words.
-
-#### Response data
-```json
-{
-  "projectId": 27,
-  "suspiciousWords": [
-    {
-      "pageId": 38,
-      "lineId": 13,
-      "tokenId": 77,
-      "token": "token string"
-    },
-    ...
-  ]
-}
-```
-
----
 <a id='api-get-books-pid-profile'></a>
 ### [GET] `rest-url`/profile/books/`pid`
 Get profiler suggestions after the according profiling
 [job](#user-content-api-get-jobs) has finished.
 * [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can access the profiler information.
+* Only the owner of a project or package can access the profiler
+  information.
+* Suggestions for ocr tokens are only available if the project has
+  been profiled.
 
 #### Query parameters
 Optionally you can add `q=q1&q=q2&...` parameters to limit the
@@ -1618,19 +1457,34 @@ whole profile for each type in the document is returned.
 #### Response data
 ```json
 {
-	"wocr1": [
+	"projectId": 13,
+	"bookId": 37,
+	"ocr1": [
 		{
-			"token": "token",
+			"token": "ocr1",
 			"suggestion": "correction suggestion",
 			"modern": "modern lexicon entry",
 			"dict": "dictionary name",
 			"distance": 2,
 			"id": 13446,
 			"weight": 0.3,
-			"top": false,
+			"top": true,
 			"ocrPatterns": ["pat1:pat2:pos2", "pat3:pat4:pos2"],
 			"histPatterns": ["pat5:pat6:pos3"]
-		}
+		},
+		{
+			"token": "ocr1",
+			"suggestion": "correction suggestion",
+			"modern": "modern lexicon entry",
+			"dict": "dictionary name",
+			"distance": 1,
+			"id": 13446,
+			"weight": 0.01,
+			"top": false,
+			"ocrPatterns": ["pat1:pat2:pos2"],
+			"histPatterns": ["pat3:pat4:pos2","pat5:pat6:pos3"]
+		},
+	    ...
 	]
 }
 ```
@@ -1643,7 +1497,10 @@ the original project of a package with an id `pid`.  The request
 starts the profiling as background [job](#user-content-api-get-jobs)
 and returns the according job information.
 * [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can access the profiler information.
+* Only the owner of a project or package can start a profiling job for
+  the (package's base-) project.
+* Returns the [job](#user-content-api-get-jobs) id for the started
+  profiling job.
 
 #### Post data
 The profiling endpoint expects a list of tokens that are used as
@@ -1661,6 +1518,31 @@ used for the profiling.
 ```json
 {
 	"id": 13
+}
+```
+
+---
+<a id='api-get-books-pid-suspicious'></a>
+### [GET] `rest-url`/profile/suspicious/books/`pid`
+Get the `suspicious` words for the given project and/or package.
+Suspicious words are words in the project for which the profiler
+guesses an underlying OCR-error.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access the profiler
+  information.
+* Suspicious words are only available if the project has been
+  profiled.
+
+#### Response data
+```json
+{
+  "projectId": 19,
+  "bookId": 19,
+  "counts": {
+	  "suspicious-word#1": 15,
+	  "suspicious-word#2": 134,
+	  ...
+  }
 }
 ```
 
