@@ -123,43 +123,8 @@ function get_languages(){
 }
 
 function get_documentation(){
-
-
-
- $text = file_get_contents("../doc.md");
-
- // print_r($text);
-
-
-  $data = array(
-    'text' => $text,
-    'mode' => "markdown"
-  );
-
- $data_string = json_encode($data);
-
-  $url = "https://api.github.com/markdown";
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_USERAGENT, "pocoweb");
-  curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__)."/cacert.pem");
-  curl_setopt($ch, CURLOPT_URL,$url);
-  curl_setopt($ch, CURLOPT_POST,1);
-  curl_setopt($ch, CURLOPT_POSTFIELDS,$data_string);
-  curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-      'Content-Type: application/json',
-      'Content-Length: ' . strlen($data_string))
-  );
-
-  curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-  $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-  $htmlstring=curl_exec ($ch);
-
-  echo $htmlstring;
-
-;
-
+    header("Cache-Control: public");
+    readfile("../doc.html");
 }
 
 
