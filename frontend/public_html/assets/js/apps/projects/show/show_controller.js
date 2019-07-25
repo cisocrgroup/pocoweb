@@ -213,8 +213,12 @@ define([
                 );
                 $.when(fetchingAdaptiveTokens)
                   .done(function(tokens) {
-                    tokens.adaptiveTokens.push("adaptive token #1");
-                    tokens.adaptiveTokens.push("adaptive token #2");
+                    if (tokens.adaptiveTokens==null){
+                      return;
+                    }
+                    console.log(tokens)
+                     tokens.adaptiveTokens.push("adaptive token #1");
+                     tokens.adaptiveTokens.push("adaptive token #2");
                     let projectShowAdaptiveTokens = new Show.Adaptive({
                       asModal: true,
                       pid: tokens.projectId,
@@ -290,11 +294,15 @@ define([
                                 .find("tbody")
                                 .append($(string));
                             }
-                          });
+                          }).fail(function(response) {
+                         $("#splitModal").modal("hide");
+                          Util.defaultErrorHandling(response, "danger");
+                        });
 
                           console.log(assign_data);
                         })
                         .fail(function(response) {
+                         $("#splitModal").modal("hide");
                           Util.defaultErrorHandling(response, "danger");
                         });
                     });

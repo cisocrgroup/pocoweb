@@ -42,10 +42,10 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       'click .js-stepforward' : 'forward_clicked',
       'click .js-firstpage' : 'firstpage_clicked',
       'click .js-lastpage' : 'lastpage_clicked',
-
+      'click .js-page-link' : 'page_link_clicked',
       'click .suspicious-words tr' : 'error_tokens_clicked',
       'click .error-patterns tr' : 'error_patterns_clicked',
-	  'click .special-characters tr' : 'special_characters_clicked',
+	    'click .special-characters tr' : 'special_characters_clicked',
       'mouseover .special-characters tr' : 'special_characters_hover'
 
       },
@@ -83,6 +83,14 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         e.preventDefault();
         this.trigger("page:new","last");
       },
+       page_link_clicked:function(e){
+       e.stopPropagation();
+       e.preventDefault();
+       console.log();
+       this.trigger("page:new",$(e.currentTarget).attr('pageid'));
+       $('#pageId').text("Page "+$(e.currentTarget).attr('pageid'));
+
+       },
         error_tokens_clicked : function(e){
         e.stopPropagation();
         e.preventDefault();
@@ -148,7 +156,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         var that = this;
 
 
-          $('#pageId').dropdown();
+          $('#pageDP').dropdown();
 
         // $('#pageId').click(function(){
         // });

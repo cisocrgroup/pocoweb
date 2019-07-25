@@ -763,6 +763,9 @@ outline: 0;
   margin-bottom: 0!important;
 }
 
+.dp_icon{
+     margin-bottom: 8px;
+}
 /* documentation json styles */
 span.pl-s {
 	color: #d14;
