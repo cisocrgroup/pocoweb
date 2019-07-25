@@ -3,8 +3,8 @@
 html, body
 {
     width:100%;
-    height: 100%; 
-  
+    height: 100%;
+
 }
 
 
@@ -107,7 +107,7 @@ opacity: 0.6;
 }
 
 .defaulthl{
- 
+
     width: 100%;
     height: 40px;
     line-height: 100px;
@@ -264,7 +264,7 @@ z-index:2;
     flex: 1 1 auto;
     padding: 1.25rem;
 
-  }  
+  }
 
 .custom_card .card-block{
     transition-property: font-size;
@@ -339,14 +339,14 @@ opacity: 0.5;
     bottom: 0px;
 }
 
-.footer_item_container{   
+.footer_item_container{
 
     display: inline-block;
     width: calc(100% - 73px);
     padding-left: 10px;
     padding-right: 10px;
 
-} 
+}
 
 .footer_item_enter_container{
 
@@ -355,7 +355,7 @@ opacity: 0.5;
 }
 
 .footer_item:hover{
- background: rgba(226, 224, 224, 0.48);   
+ background: rgba(226, 224, 224, 0.48);
  }
 
 .errortext{
@@ -377,33 +377,33 @@ opacity: 0.5;
 
 
 .red{
-color: #d30014;  
+color: #d30014;
 }
 
 
 .red-lighter {
-color:#ff6675;           
+color:#ff6675;
 }
 
 .red-darker {
-color: #80000d;           
+color: #80000d;
 }
 
 
 .green{
-color: #86ba3c;  
+color: #86ba3c;
 }
 
 .blue{
-color: #009edb; 
+color: #009edb;
 }
 
 .purple{
-color: #926fa8;          
+color: #926fa8;
 }
 
 .yellow{
-color: #ffc100;           
+color: #ffc100;
 }
 
 .loginname{
@@ -511,7 +511,7 @@ outline: 0;
 
 .splitLine{
   width: 100%;
-  
+
 }
 .tokendiv{
   display: inline-block;
@@ -625,7 +625,7 @@ outline: 0;
 
 .ui-sortable-helper{
   background-color: #d4edda!important;
-  border-color: #c3e6cb!important; 
+  border-color: #c3e6cb!important;
 }
 
 .sticky{
@@ -635,18 +635,18 @@ outline: 0;
 }
 
 .sidebar-table-container{
-    height: 644px;      
+    height: 644px;
 }
 
 
 #sidebar-container{
-    height: 770px;      
-  
+    height: 770px;
+
 }
 
 #page-container{
-    height: 770px;      
-    overflow-y: auto;    
+    height: 770px;
+    overflow-y: auto;
     padding: 15px;
     z-index: 1020;
 }
@@ -689,7 +689,7 @@ outline: 0;
     align-items: center;
     position: relative;
 }
-   
+
 
   .loading_background3 i {
     margin: auto;
@@ -738,7 +738,7 @@ outline: 0;
     /* border-bottom: 1px solid rgba(128, 128, 128, 0.55); */
     border-radius: 0 !important
   }
-  
+
    .dropdown-toggle::after {
     display:none;
 }
@@ -755,10 +755,21 @@ outline: 0;
 }
 
 #msg-region{
-   min-height: 50px; 
+   min-height: 50px;
   margin-top: 15px;
 }
 
 #mainmsg{
   margin-bottom: 0!important;
+}
+
+/* documentation json styles */
+span.pl-s {
+	color: #d14;
+}
+span.pl-c1 {
+	color: #099;
+}
+span.pl-bl {
+	font-weight: 600;
 }
