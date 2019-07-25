@@ -215,7 +215,9 @@ define([
                 $.when(fetchinAdaptiveTokens)
                   .done(function(tokens) {
                     // TODO: show adaptive tokens list
-                    console.log(tokens);
+                  console.log(tokens);
+                  let preojctsShowAdaptiveTokens = new Show.Split(tokens);
+                    })
                   })
                   .fail(function(response) {
                     Util.defaultErrorHandling(response, "danger");
