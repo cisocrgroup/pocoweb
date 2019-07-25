@@ -13,7 +13,7 @@
           <div class="col-12">
              <button type="button" class="btn btn-primary js-addpackage"><i class="fas fa-folder-plus"></i> Add new package</button>
           </div>
-        </div> 
+        </div>
         <div class="userrows">
         </div>
 
