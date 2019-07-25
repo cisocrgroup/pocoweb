@@ -145,7 +145,6 @@ define([
               });
 
               projectShowHub.on("cardHub:clicked", function(data) {
-                console.log("clicked: " + data);
                 if (data.url == "delete") {
                   this.trigger("show:delete_clicked");
                 }
@@ -209,15 +208,22 @@ define([
               });
 
               projectShowHub.on("show:adaptive", function() {
-                let fetchinAdaptiveTokens = ProjectEntities.API.getAdaptiveTokens(
+                let fetchingAdaptiveTokens = ProjectEntities.API.getAdaptiveTokens(
                   { pid: id }
                 );
-                $.when(fetchinAdaptiveTokens)
+                $.when(fetchingAdaptiveTokens)
                   .done(function(tokens) {
-                    // TODO: show adaptive tokens list
-                  console.log(tokens);
-                  let preojctsShowAdaptiveTokens = new Show.Split(tokens);
-                    })
+                    tokens.adaptiveTokens.push("adaptive token #1");
+                    tokens.adaptiveTokens.push("adaptive token #2");
+                    let projectShowAdaptiveTokens = new Show.Adaptive({
+                      asModal: true,
+                      pid: tokens.projectId,
+                      adaptiveTokens: tokens.adaptiveTokens
+                    });
+                    App.mainLayout.showChildView(
+                      "dialogRegion",
+                      projectShowAdaptiveTokens
+                    );
                   })
                   .fail(function(response) {
                     Util.defaultErrorHandling(response, "danger");
@@ -238,7 +244,6 @@ define([
                       "dialogRegion",
                       projectsShowSplitProject
                     );
-
                     projectsShowSplitProject.on("split:confirmed", function(
                       data
                     ) {
