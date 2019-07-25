@@ -32,7 +32,6 @@ var Views = {};
           {name: "Year"},
           {name: "Language"},
           {name: "Pages"},
-          {name: "Project"}
         ],
         this.columns = [
           {name:"projectId",id:"projectId",clickrow :true},
@@ -41,7 +40,6 @@ var Views = {};
           {name:"year",id:"projectId",clickrow :true},
           {name:"language",id:"projectId",clickrow :true},
           {name:"pages",id:"projectId",clickrow :true},
-          {name:"project",id:"projectId",clickrow :true}
         ]
         },
         deleteProject : function(e){

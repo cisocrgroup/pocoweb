@@ -13,14 +13,18 @@
 
 		<li>
     	<div class="dropdown js-page-dropdown">
-		<button id="pageId" style="margin-top: 7px;" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Page <%-pageId%></button>
-		<div class="dropdown-menu js-page-dropdown-content" aria-labelledby="pageId">
-			<% console.log(project);%>
+    		<div class="btn-group" style="margin-top: 3px;"> 
+
+		<button id="pageId" type="button" class="btn btn-sm btn-outline-primary"> Page <%-pageId%></button>
+		<button id="pageDP"  type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class="dp_icon fas fa-sort-down"></i>
+  </button>
+		<div class="dropdown-menu js-page-dropdown-content" aria-labelledby="pageDP">
    			 <% _.each(project.get('pageIds'), function(pageId) { %>  
-   			   <a class="dropdown-item" href="#/projects/<%-project.get('projectId')%>/page/<%-pageId%>"><%-pageId%></a>
+   			   <a class="js-page-link dropdown-item" pid="<%-project.get('projectId')%>" pageid="<%-pageId%>"><%-pageId%></a>
 
    			<% }); %>
- 
+ 		</div>
 	    </div>
 		</div>
 		</li>
