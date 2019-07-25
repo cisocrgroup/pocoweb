@@ -203,7 +203,7 @@ define([
       }
 
       var row = $(
-        '<div class="form-group"><i class="js-close close-x fa fa-times"></i><div class="row"><div class="col-4"><label id="splitLabel" for="splitPage">Select User</label><select class="form-control"></select></div></div></div>'
+        '<div class="form-group"><i class="js-close close-x fa fa-times"></i><div class="row"><div class="col-6"><label id="splitLabel" for="splitPage">Select User</label><select class="form-control"></select></div></div></div>'
       );
       var users = Marionette.getOption(this, "users");
 

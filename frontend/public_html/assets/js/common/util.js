@@ -187,17 +187,20 @@ addAlignedLine : function(line){
       console.log(response);
 
       require(["app"],function(App){
-        if(response.responseJSON==undefined){
-            App.mainmsg.updateContent(response,mode);
-         }
-         else{
-
-          if(response.status==401){
+        if(response.responseJSON!=undefined){
+           if(response.status==401){
              var mainRegion = App.mainLayout.getRegion('mainRegion');
              mainRegion.empty();
              App.trigger("nav:login",false);
          }
          App.mainmsg.updateContent("Error "+ response.responseJSON.code +" ("+response.responseJSON.status+") "+response.responseJSON.message,mode);
+         }
+         else if(response.responseText!=undefined){
+         App.mainmsg.updateContent("Error "+ response.status+" ("+response.statusText+") ",mode);
+
+         }
+         else{
+            App.mainmsg.updateContent(response,mode);
         }
       });
 

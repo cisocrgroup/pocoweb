@@ -132,15 +132,12 @@ getProject: function(data){
 	},
 
 downloadProject: function(data){
-    data['backend_route'] = "download_project";
     var defer = jQuery.Deferred();
      $.ajax({
 
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
+      url: "rest-url/books/"+ data.pid + "/download" + "?auth=" + App.getAuthToken(),
+      type: "GET",
       success: function(data) {
-        var result = new Entities.Project(JSON.parse(data));
         defer.resolve(result);
 
           },
@@ -194,17 +191,17 @@ downloadProject: function(data){
     return defer.promise();
   },
    splitProject: function(data){
-    data['backend_route'] = "split_project";
     console.log(data)
     var defer = jQuery.Deferred();
        $.ajax({
-
-        url: "api/api_controller.php",
+        headers: {
+          'Accept': 'application/json'
+        },
+        url: "rest/books/"+data.pid+"/split" + "?auth=" + App.getAuthToken(),
         type: "POST",
         data: data,
         success: function(data) {
-
-              defer.resolve(JSON.parse(data));
+              defer.resolve();
             },
             error: function(data){
               defer.reject(data);
@@ -214,14 +211,12 @@ downloadProject: function(data){
     return defer.promise();
   },
 
-assignPackages: function(data){
+assignPackage: function(data){
   console.log(data);
-    data['backend_route'] = "assign_packages";
     var defer = jQuery.Deferred();
      $.ajax({
-      url: "api/api_controller.php",
-      type: "POST",
-       data:data,
+      url: "rest-url/books/pid/assign" + "?auth=" + App.getAuthToken() +"&uid="+data.uid,
+      type: "GET",
       success: function(data) {
         defer.resolve(data);
 
