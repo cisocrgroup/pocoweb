@@ -174,7 +174,6 @@ var cards2 = [
             });
 
 		projectShowHub.on('show:adaptive', function() {
-			console.log('show:adaptive');
 			let fetchinAdaptiveTokens =
 				ProjectEntities.API.getAdaptiveTokens({pid: id});
 			$.when(fetchinAdaptiveTokens).done(function(tokens){
