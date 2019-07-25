@@ -69,23 +69,20 @@ Entities.API = {
     return defer.promise();
   },
   getDocumentation: function(){
-    var data = {};
-    data['backend_route'] = "documentation";
     var defer = jQuery.Deferred();
        $.ajax({
-
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
-        success: function(data) {
-
+         headers: {
+           'Accept': 'text/html'
+         },
+         url: "doc.html",
+         type: "GET",
+         success: function(data) {
               defer.resolve(data);
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+         },
+         error: function(data){
+           defer.reject(data);
+         }
     });
-
     return defer.promise();
   }
 
