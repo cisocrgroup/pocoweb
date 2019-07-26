@@ -22,19 +22,15 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 		     	loadingCircleView.destroy();
             console.log(page);
 
-		 	//currentProposal.set({"url_id":id}); // pass url_id to view..
 			var projectShowLayout = new Show.Layout();
 			var projectShowHeader;
 			var projectShowPage;
       var projectShowSidebar;
-
 			var projectShowFooterPanel;
-			// console.log(reviews);
 
 			projectShowLayout.on("attach",function(){
 
 
-        // ** to do: get junks from server
         var fetchingsuspiciouswords = ProjectEntities.API.getSuspiciousWords({pid:id});
         var fetchingerrorpatterns = ProjectEntities.API.getErrorPatterns({pid:id});
         var fetchingcharmap = ProjectEntities.API.getCharmap({pid:id});

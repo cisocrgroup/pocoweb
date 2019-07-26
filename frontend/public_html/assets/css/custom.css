@@ -414,6 +414,8 @@ div.text-image-line {
 
   padding: 5px;
     border:2px solid transparent;
+      border-bottom:2px solid #eee;
+
  /* transition-property:transform: scale();
     transition-duration: 0.25s;
     transition-timing-function: ease;*/
@@ -425,7 +427,7 @@ div.text-image-line:hover {
   /*box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);*/
   /*background: #d4edda;*/
   /*border-color: #007bff;*/
-  border-bottom:2px solid #eee;
+  border-bottom:2px solid #8d8d8d;
   /*transform: scale(1.03);*/
 }
 
@@ -639,10 +641,7 @@ outline: 0;
 }
 
 
-#sidebar-container{
-    height: 770px;
 
-}
 
 #page-container{
     height: 770px;

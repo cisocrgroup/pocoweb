@@ -125,7 +125,11 @@ getIds : function(anchor) {
 },
 
 addAlignedLine : function(line){
+
+
      var linetokens = line.tokens;
+
+
             var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
 
             var img_id = "line-img-"+anchor;
@@ -133,6 +137,14 @@ addAlignedLine : function(line){
             var line_text =  $('#line-'+anchor);
 			line_text.find('.line-tokens').css('width', (Number(line_img.width)+50).toString() +'px');
             var scalefactor = line_img.width / line.box.width;
+
+             if(linetokens==undefined){
+              var line_parent =  $('#line-anchor-'+anchor).parent();
+              line_parent.empty();
+              line_parent.append('<div class="alert alert-danger" role="alert"> Line ' +line['lineId']+' could not be displayed </div>');
+              return;
+              }
+
 
               for(var i=0;i<linetokens.length;i++) {
 

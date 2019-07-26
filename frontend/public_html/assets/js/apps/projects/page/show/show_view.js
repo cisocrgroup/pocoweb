@@ -155,13 +155,10 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       onAttach:function(){
         var that = this;
 
-
           $('#pageDP').dropdown();
 
         // $('#pageId').click(function(){
         // });
-
-
 
         $('#sidebar_tabs a').on('click', function (e) {
           e.preventDefault()
@@ -346,16 +343,22 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
         // remove when clicked somewhere else
 
-          $(document).off().click(function(e)
+          $(document).click(function(e)
           {
 
-            e.stopPropagation();
+              e.stopPropagation();
 
               var custom_popover = $(".custom-popover");
               if (!custom_popover.is(e.target) && custom_popover.has(e.target).length === 0)
               {
                   custom_popover.remove();
               }
+
+              $('.line').hide();
+              $('.line-tokens').show();
+              $('.correct-btn').hide();
+              $('.line-text').css('border','')
+
           });
 
 
