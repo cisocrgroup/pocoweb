@@ -180,7 +180,12 @@ define([
                 color: "green"
               });
               projectShowInfo = new Show.Info({ model: project });
-              projectShowFooterPanel = new Show.FooterPanel();
+              projectShowFooterPanel = new Show.FooterPanel({manual:true});
+
+              projectShowFooterPanel.on('go:back',function(){
+                App.trigger("projects:list");
+              })
+
               var projectShowPackages = new Show.Packages({
                 packages: packages
               });
@@ -193,7 +198,7 @@ define([
 
                 $.when(profilingproject)
                   .done(function(result) {
-                    App.mainmsg.updateContent(result, "success");
+                    console.log(result)
                     var confirmModal = new Show.OkDialog({
                       asModal: true,
                       title: "Profiling started",
