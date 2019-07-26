@@ -221,7 +221,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                       $('#suggestionsDropdown .dropdown-item').on('click',function(e){
                        e.stopPropagation();
                       var split = $(this).text().split(" ");
-                      Util.replaceSelectedText(split[0]);
+                      Util.replaceSelectedText(split[0].trim());
                      })
 
 

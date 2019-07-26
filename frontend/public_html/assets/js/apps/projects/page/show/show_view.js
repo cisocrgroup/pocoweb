@@ -249,41 +249,47 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         var displayed_line = line_parent.find('.line')
         displayed_line.show();
 
-        console.log(displayed_line.text().trim());
+        console.log(displayed_line.text());
         console.log(clicked_token);
 
 
         var obj = displayed_line.get(0);
         console.log(obj);
 
-        if(clicked_token!= " "||clicked_token!=""){
-            var start = displayed_line.text().trim().indexOf(clicked_token);
-            var end = start + clicked_token.length-1;
+        // pre-select token:: to do :fix..
 
-            console.log("start "+start+" end "+end);
-              var endNode, startNode = endNode = obj.firstChild
+        // if(clicked_token!= " "||clicked_token!=""){
+        //     var start = displayed_line.text().trim().indexOf(clicked_token);
 
-            startNode.nodeValue = startNode.nodeValue.trim();
+        //     if (start != -1){
+ 
+        //       var end = start + clicked_token.length-1;
 
-            var range = document.createRange();
-            range.setStart(startNode, start);
-            range.setEnd(endNode, end + 1);
+        //       console.log("start "+start+" end "+end);
+        //         var endNode, startNode = endNode = obj.firstChild
 
-            var sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
+        //       startNode.nodeValue = startNode.nodeValue.trim();
 
-             this.openCustomPopover(e,clicked_token,line_parent);
-        }
+        //       var range = document.createRange();
+        //       range.setStart(startNode, start);
+        //       range.setEnd(endNode, end + 1);
+
+        //       var sel = window.getSelection();
+        //       sel.removeAllRanges();
+        //       sel.addRange(range);
+
+        //        this.openCustomPopover(e,clicked_token,line_parent);
+        //     }
+        // }
 
         $(e.currentTarget).hide();
 
-        $('.correct-btn').hide();
-        $('.line-text').css('border-bottom','1px solid transparent');
-        $('.line-text').css('border-left','1px solid transparent');
-        $('.line-text').css('border-top','1px solid transparent');
-        $('.line-text').css('border-top-right-radius','.25rem');
-        $('.line-text').css('border-bottom-right-radius','.25rem');
+        // $('.correct-btn').hide();
+        // $('.line-text').css('border-bottom','1px solid transparent');
+        // $('.line-text').css('border-left','1px solid transparent');
+        // $('.line-text').css('border-top','1px solid transparent');
+        // $('.line-text').css('border-top-right-radius','.25rem');
+        // $('.line-text').css('border-bottom-right-radius','.25rem');
 
 
         line_parent.css('border-left','1px solid #ced4da');
