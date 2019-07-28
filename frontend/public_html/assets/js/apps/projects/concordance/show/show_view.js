@@ -395,6 +395,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
         var offset = word['offset'];
         var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];
+        var line_container = $('<div class="line-container">');
 
         var text_image_line = $('<div class="text-image-line" title="page '+line.pageId+ ' line ' + line.lineId+'">');
 
@@ -408,7 +409,8 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         invisible_link.append(line_img);
         invisible_link.append(img);
         text_image_line.append(left_div);
-         $('.all_lines_parent').append(text_image_line);
+        line_container.append(text_image_line);
+        $('.all_lines_parent').append(line_container);
 
           });
         }

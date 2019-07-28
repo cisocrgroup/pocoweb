@@ -80,7 +80,7 @@ if(asModal) {
         var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];
    %>
 
-
+<div class="line-container">
 
 <div class="text-image-line" title="page <%-line.pageId%> line <%-line.lineId%>">
 
@@ -96,7 +96,7 @@ if(asModal) {
 
 	</div>
 
-
+ </div>
 
 
      <%
