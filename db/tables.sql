@@ -186,3 +186,17 @@ create table if not exists jobs (
 	   text varchar(50) NOT NULL,
 	   timestamp INT(11) NOT NULL
 );
+
+/* views */
+create view lines_contents_view
+	   as select c.*,l.imagepath,l.lleft,l.lright,l.ltop,l.lbottom
+	   from contents as c
+	   join lines as l on c.bookid=l.bookid
+	   join on c.pageid=l.pageid
+	   join on c.lineid=l.lineid;
+
+create view jobs_status_projects_view
+	   as select j.id,j.statusid,j.text,j.timestamp,s.text
+	   from jobs j
+	   join status as s on s.id=j.statuid
+	   join on projects as p on p.origin=j.id;
