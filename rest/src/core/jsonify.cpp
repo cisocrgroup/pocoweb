@@ -4,8 +4,6 @@
 #include <crow/json.h>
 #include <limits>
 
-static double fix_double(double val);
-
 ////////////////////////////////////////////////////////////////////////////////
 pcw::Json &pcw::operator<<(Json &json, const std::vector<ProjectPtr> &books) {
   int i = 0;
@@ -304,7 +302,22 @@ bool pcw::get(const RJson &j, const char *key, std::string &res) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-double fix_double(double val) {
+bool pcw::get(const RJson &j, const char *key, std::vector<int> &res) {
+  if (j.t() != crow::json::type::List or not j.has(key)) {
+    return false;
+  }
+  res.clear();
+  for (const auto &val : j) {
+    if (val.t() != crow::json::type::Number) {
+      return false;
+    }
+    res.push_back(val.i());
+  }
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+double pcw::fix_double(double val) {
   if (std::isnan(val)) {
     return 0;
   }
