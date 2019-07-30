@@ -46,7 +46,7 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   CROW_LOG_INFO << "POST line: " << pid << ":" << p << ":" << lid;
   const auto json = crow::json::load(req.body);
   const auto correction = get<std::string>(json, "correction");
-  if (not correction.has_value()) {
+  if (not correction) {
     THROW(BadRequest, "(LineRoute) missing correction data");
   }
   LockedSession session(get_session(req));

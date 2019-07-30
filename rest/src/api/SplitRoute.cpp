@@ -31,7 +31,7 @@ Route::Response SplitRoute::impl(HttpPost, const Request &req, int bid) const {
   auto data = crow::json::load(req.body);
   const auto random = get<bool>(data, "random").value_or(false);
   const auto ids = get<std::vector<int>>(data, "ids");
-  if (not ids.has_value() or ids.value().empty()) {
+  if (not ids or ids.value().empty()) {
     THROW(BadRequest,
           "(SplitRoute) cannot split package: missing or empty ids");
   }
