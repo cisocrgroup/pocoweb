@@ -241,9 +241,11 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
        var tokendata =  Marionette.getOption(this,"tokendata");
         var value = parseInt($(e.currentTarget).attr('value'));
         console.log(value);
+
         if(value==-1) { // value == -1 -> '...' button
           return;
         }
+
         if(value==-3){ // value == -3 -> 'Next' button
           var next = $(e.currentTarget).parent().find('.active').next();
           if(next.text().trim()=="Next"){
@@ -260,9 +262,31 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
             value = parseInt(prev.attr('value'));
           }
         }
-        console.log(value);
 
-        if(value>=5){
+       var max_pages = Math.ceil(tokendata.totalCount / tokendata.max);
+
+       // case at the end
+        if(value>=5&&(value+3)>=max_pages){
+          $('.js-paginate').empty();
+
+          $('.js-paginate').append('<li value="-2" class="page-item"><a class="page-link" href="#">Previous</a></li>');
+          $('.js-paginate').append('<li value="-1" class="page-item"><a class="page-link">...</a></li>');
+           for(let k=value-3;k<value;k++){
+              $('.js-paginate').append('<li value="'+k+'"" class="page-item"><a class="page-link" href="#">'+k+'</a></li>');
+           }
+          for(let k=value;k<max_pages;k++){
+              $('.js-paginate').append('<li value="'+k+'"" class="page-item"><a class="page-link" href="#">'+k+'</a></li>');
+           }
+      
+
+          $('.js-paginate').append('<li value="'+(max_pages)+'" class="page-item"><a class="page-link" href="#">'+(max_pages)+'</a></li>');
+          $('.js-paginate').append('<li value="-3" class="page-item"><a class="page-link" href="#">Next</a></li>');
+
+        }
+
+
+        // in the middle
+        else if(value>=5&&value<(max_pages)-1){
           $('.js-paginate').empty();
 
           $('.js-paginate').append('<li value="-2" class="page-item"><a class="page-link" href="#">Previous</a></li>');
@@ -277,12 +301,28 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
            }
 
           $('.js-paginate').append('<li value="-1" class="page-item"><a class="page-link">...</a></li>');
-          $('.js-paginate').append('<li value="'+(Math.ceil(tokendata.totalCount / tokendata.max))+'" class="page-item"><a class="page-link" href="#">'+(Math.ceil(tokendata.totalCount / tokendata.max))+'</a></li>');
+          $('.js-paginate').append('<li value="'+(max_pages)+'" class="page-item"><a class="page-link" href="#">'+(max_pages)+'</a></li>');
           $('.js-paginate').append('<li value="-3" class="page-item"><a class="page-link" href="#">Next</a></li>');
 
         }
 
-        // to do : if value < 5
+        // at the start
+        else if (value<5&&(max_pages>5)) {
+          $('.js-paginate').empty();
+          
+          $('.js-paginate').append('<li value="-2" class="page-item"><a class="page-link" href="#">Previous</a></li>');
+          $('.js-paginate').append('<li value="1" class="page-item"><a class="page-link" href="#">1</a></li>');
+
+          for(var k=2;k<=5;k++){
+              $('.js-paginate').append('<li value="'+k+'"" class="page-item"><a class="page-link" href="#">'+k+'</a></li>');
+           }  
+
+
+               
+          $('.js-paginate').append('<li value="-1" class="page-item"><a class="page-link">...</a></li>');
+          $('.js-paginate').append('<li value="'+(max_pages)+'" class="page-item"><a class="page-link" href="#">'+(max_pages)+'</a></li>');
+          $('.js-paginate').append('<li value="-3" class="page-item"><a class="page-link" href="#">Next</a></li>');
+        }
 
         $(e.currentTarget).parent().find('.active').removeClass("active");
         $('.js-paginate').find('li[value='+value+']').addClass('active');
@@ -355,6 +395,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
         var offset = word['offset'];
         var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];
+        var line_container = $('<div class="line-container">');
 
         var text_image_line = $('<div class="text-image-line" title="page '+line.pageId+ ' line ' + line.lineId+'">');
 
@@ -368,7 +409,8 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         invisible_link.append(line_img);
         invisible_link.append(img);
         text_image_line.append(left_div);
-         $('.all_lines_parent').append(text_image_line);
+        line_container.append(text_image_line);
+        $('.all_lines_parent').append(line_container);
 
           });
         }

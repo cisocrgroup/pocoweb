@@ -3,7 +3,7 @@
 
 	
 
-		<ul class="nav  navbar-light justify-content-center">
+		<ul class="nav  navbar-light justify-content-center" style="margin-top: 15px;">
 		<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">
 			<i class="fas fa-angle-double-left"></i>
 			</a></li>
@@ -19,7 +19,7 @@
 		<button id="pageDP"  type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <i class="dp_icon fas fa-sort-down"></i>
   </button>
-		<div class="dropdown-menu js-page-dropdown-content" aria-labelledby="pageDP">
+		<div class="dropdown-menu dropdown-menu-right js-page-dropdown-content" aria-labelledby="pageDP">
    			 <% _.each(project.get('pageIds'), function(pageId) { %>  
    			   <a class="js-page-link dropdown-item" pid="<%-project.get('projectId')%>" pageid="<%-pageId%>"><%-pageId%></a>
 
@@ -55,7 +55,7 @@
 			</a></li>
 		</ul>
 
- <ul class="nav nav-tabs" id="sidebar_tabs" role="tablist">
+ <ul class="nav nav-tabs" id="sidebar_tabs" role="tablist" style="margin-top: 10px;">
   <li class="nav-item">
     <a class="nav-link active" id="sp-tab" data-toggle="tab" href="#sp" role="tab" aria-controls="sp" aria-selected="true">Suspicious </br> words</a>
   </li>

@@ -22,19 +22,15 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 		     	loadingCircleView.destroy();
             console.log(page);
 
-		 	//currentProposal.set({"url_id":id}); // pass url_id to view..
 			var projectShowLayout = new Show.Layout();
 			var projectShowHeader;
 			var projectShowPage;
       var projectShowSidebar;
-
 			var projectShowFooterPanel;
-			// console.log(reviews);
 
 			projectShowLayout.on("attach",function(){
 
 
-        // ** to do: get junks from server
         var fetchingsuspiciouswords = ProjectEntities.API.getSuspiciousWords({pid:id});
         var fetchingerrorpatterns = ProjectEntities.API.getErrorPatterns({pid:id});
         var fetchingcharmap = ProjectEntities.API.getCharmap({pid:id});
@@ -215,17 +211,17 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                      for(key in suggestions.suggestions){
                        for (var i=0;i<suggestions.suggestions[key].length;i++){
                         // to do: datatable instead ?
-						   var s = suggestions.suggestions[key][i];
-						   var content = Util.formatSuggestion(s);
+          						   var s = suggestions.suggestions[key][i];
+          						   var content = Util.formatSuggestion(s);
                      $('#suggestionsDropdown').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
                    }
 
 
-                      $('.dropdown-item').on('click',function(e){
+                      $('#suggestionsDropdown .dropdown-item').on('click',function(e){
                        e.stopPropagation();
                       var split = $(this).text().split(" ");
-                      Util.replaceSelectedText(split[0]);
+                      Util.replaceSelectedText(split[0].trim());
                      })
 
 
