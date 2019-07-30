@@ -176,23 +176,15 @@ define([
     },
     confirmClicked: function() {
       var n = $(".userrows").find(".row").length;
-      var random = false;
-      if ($("#checkRnd").is(":checked")) {
-        random = true;
-      }
-
+      var random = $("#checkRnd").is(":checked");
       var ids = [];
-      $(".userrows")
-        .find(".row")
-        .each(function() {
+      $(".userrows").find(".row").each(function() {
           var selected = $(this)
             .find("select")
             .val();
           ids.push(Number(selected));
         });
-
-      var data = { n: n, random: random, ids: ids };
-      this.trigger("split:confirmed", data);
+      this.trigger("split:confirmed", {ids: ids, random: random});
     },
     addSplitrow: function() {
       var pages = Marionette.getOption(this, "n");
