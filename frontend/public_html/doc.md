@@ -870,13 +870,16 @@ Split a [project into packages](#user-content-projects).
 #### Post data
 ```json
 {
-  "n": 8,
+  "ids": [1, 2, 3],
   "random": true|false
 }
 ```
-* The mandatory argument `n` gives the number of packages to create.
-* The optional argument `random` specifies if the pages of the packages
-should be generated at random or sequential. If omitted `random=false` is assumed.
+* The mandatory argument `ids` specifies an not empty array of user
+  ids. The split route creates that many packages and assignes them to
+  the given users. User-IDs in the `ids` array need not be unique.
+* The optional argument `random` specifies if the pages of the
+  packages should be generated at random or sequential. If omitted
+  `random=false` is assumed.
 
 #### Response data
 ```json
