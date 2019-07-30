@@ -188,18 +188,20 @@ create table if not exists jobs (
 );
 
 /* views */
-drop view if exists contents_lines_view;
-create view contents_lines_view
-	   as select c.*,l.imagepath,l.lleft,l.lright,l.ltop,l.lbottom
+drop view if exists content_line_view;
+create view content_line_view as
+	   select c.*,l.imagepath,l.lleft,l.lright,l.ltop,l.lbottom
 	   from contents c
 	   join textlines l on
 	   		c.bookid=l.bookid and
 			c.pageid=l.pageid and
 			c.lineid=l.lineid;
 
-drop view if exists jobs_status_projects_view;
-create view jobs_status_projects_view
-	   as select j.id,j.statusid,j.text,j.timestamp,s.text
+drop view if exists job_status_project_view;
+create view job_status_project_view as
+	   select j.id,j.statusid,j.text as jobname,j.timestamp,s.text as statusname
 	   from jobs j
-	   join status as s on s.id=j.statuid
-	   join on projects as p on p.origin=j.id;
+	   join status s on
+	   		j.statusid=s.id
+	   join projects p on
+	   		j.id=p.origin
