@@ -6,7 +6,6 @@
 #include "api/LineRoute.hpp"
 #include "api/PageRoute.hpp"
 #include "api/SearchRoute.hpp"
-#include "api/SplitImagesRoute.hpp"
 #include "api/SplitRoute.hpp"
 #include "api/TokenRoute.hpp"
 #include "api/VersionRoute.hpp"
@@ -64,7 +63,6 @@ void run(App &app) {
   app.Register(std::make_unique<pcw::LineRoute>());
   app.Register(std::make_unique<pcw::PageRoute>());
   app.Register(std::make_unique<pcw::SearchRoute>());
-  app.Register(std::make_unique<pcw::SplitImagesRoute>());
   app.Register(std::make_unique<pcw::SplitRoute>());
   app.Register(std::make_unique<pcw::TokenRoute>());
   app.Register(std::make_unique<pcw::VersionRoute>());
