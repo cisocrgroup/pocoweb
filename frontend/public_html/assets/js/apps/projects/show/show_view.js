@@ -209,21 +209,17 @@ define([
 
       $(".userrows").prepend($("<hr>"));
       $(".userrows").prepend(row);
-
       for (i in users) {
-        if (!users[i].admin) {
-          row
-            .find("select")
-            .append(
-              $(
-                '<option value="' +
-                  users[i].id +
-                  '">' +
-                  users[i].name +
-                  "</option>"
-              )
-            );
-        }
+        row.find("select")
+        .append(
+          $(
+            '<option value="' +
+              users[i].id +
+              '">' +
+              users[i].name +
+              "</option>"
+          )
+        );
       }
     },
     closeClicked: function(e) {
