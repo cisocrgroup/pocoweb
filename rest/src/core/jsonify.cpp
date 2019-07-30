@@ -303,11 +303,14 @@ bool pcw::get(const RJson &j, const char *key, std::string &res) {
 
 ////////////////////////////////////////////////////////////////////////////////
 bool pcw::get(const RJson &j, const char *key, std::vector<int> &res) {
-  if (j.t() != crow::json::type::List or not j.has(key)) {
+  // j = object
+  // j.key = list
+  if (j.t() != crow::json::type::Object or not j.has(key) or
+      j[key].t() != crow::json::type::List) {
     return false;
   }
   res.clear();
-  for (const auto &val : j) {
+  for (const auto &val : j[key]) {
     if (val.t() != crow::json::type::Number) {
       return false;
     }
