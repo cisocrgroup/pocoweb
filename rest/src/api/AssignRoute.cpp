@@ -13,20 +13,16 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* AssignRoute::route_ = ASSIGN_ROUTE_ROUTE;
-const char* AssignRoute::name_ = "AssignRoute";
+const char *AssignRoute::route_ = ASSIGN_ROUTE_ROUTE;
+const char *AssignRoute::name_ = "AssignRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-AssignRoute::Register(App& app)
-{
+void AssignRoute::Register(App &app) {
   CROW_ROUTE(app, ASSIGN_ROUTE_ROUTE).methods("GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-AssignRoute::impl(HttpGet, const Request& req, int bid) const
-{
+Route::Response AssignRoute::impl(HttpGet, const Request &req, int bid) const {
   CROW_LOG_DEBUG << "(AssignRoute::assign) body: " << req.body;
   const auto data = crow::json::load(req.body);
   auto conn = must_get_connection();
@@ -36,14 +32,14 @@ AssignRoute::impl(HttpGet, const Request& req, int bid) const
   if (not id) {
     THROW(BadRequest, "missing or invalid user id");
   }
-  MysqlCommiter commiter(conn);
+  MysqlCommitter committer(conn);
   using namespace sqlpp;
   tables::Projects projects;
   auto stmnt = update(projects)
-                 .set(projects.owner = *id)
-                 .where(projects.id == project->id());
+                   .set(projects.owner = *id)
+                   .where(projects.id == project->id());
   conn.db()(stmnt);
   project->set_owner(*id);
-  commiter.commit();
+  committer.commit();
   return ok();
 }

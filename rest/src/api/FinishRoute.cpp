@@ -13,35 +13,27 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* FinishRoute::route_ = FINISH_ROUTE_ROUTE;
-const char* FinishRoute::name_ = "FinishRoute";
+const char *FinishRoute::route_ = FINISH_ROUTE_ROUTE;
+const char *FinishRoute::name_ = "FinishRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-FinishRoute::Register(App& app)
-{
+void FinishRoute::Register(App &app) {
   CROW_ROUTE(app, FINISH_ROUTE_ROUTE)
-    .methods("POST"_method, "GET"_method)(*this);
+      .methods("POST"_method, "GET"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-FinishRoute::impl(HttpPost, const Request& req, int bid) const
-{
+Route::Response FinishRoute::impl(HttpPost, const Request &req, int bid) const {
   return finish(req, bid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-FinishRoute::impl(HttpGet, const Request& req, int bid) const
-{
+Route::Response FinishRoute::impl(HttpGet, const Request &req, int bid) const {
   return finish(req, bid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-FinishRoute::finish(const Request& req, int bid) const
-{
+Route::Response FinishRoute::finish(const Request &req, int bid) const {
   CROW_LOG_DEBUG << "(FinishRoute::finish) body: " << req.body;
   const auto data = crow::json::load(req.body);
   auto conn = must_get_connection();
@@ -55,10 +47,10 @@ FinishRoute::finish(const Request& req, int bid) const
     THROW(Error, "cannot finish project: no such project id: ", pentry->origin);
   using namespace sqlpp;
   tables::Projects p;
-  MysqlCommiter commiter(conn);
+  MysqlCommitter committer(conn);
   conn.db()(
-    update(p).set(p.owner = oentry->owner).where(p.id == project->id()));
+      update(p).set(p.owner = oentry->owner).where(p.id == project->id()));
   project->set_owner(oentry->owner);
-  commiter.commit();
+  committer.commit();
   return ok();
 }

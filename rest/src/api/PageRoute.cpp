@@ -21,17 +21,15 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* PageRoute::route_ = PAGE_ROUTE_ROUTE_1
-  "," PAGE_ROUTE_ROUTE_2 "," PAGE_ROUTE_ROUTE_3 "," PAGE_ROUTE_ROUTE_4
-  "," PAGE_ROUTE_ROUTE_5 "," PAGE_ROUTE_ROUTE_6;
-const char* PageRoute::name_ = "PageRoute";
+const char *PageRoute::route_ = PAGE_ROUTE_ROUTE_1
+    "," PAGE_ROUTE_ROUTE_2 "," PAGE_ROUTE_ROUTE_3 "," PAGE_ROUTE_ROUTE_4
+    "," PAGE_ROUTE_ROUTE_5 "," PAGE_ROUTE_ROUTE_6;
+const char *PageRoute::name_ = "PageRoute";
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-PageRoute::Register(App& app)
-{
+void PageRoute::Register(App &app) {
   CROW_ROUTE(app, PAGE_ROUTE_ROUTE_1)
-    .methods("GET"_method, "DELETE"_method)(*this);
+      .methods("GET"_method, "DELETE"_method)(*this);
   CROW_ROUTE(app, PAGE_ROUTE_ROUTE_2).methods("GET"_method)(*this);
   CROW_ROUTE(app, PAGE_ROUTE_ROUTE_3).methods("GET"_method)(*this);
   CROW_ROUTE(app, PAGE_ROUTE_ROUTE_4).methods("GET"_method)(*this);
@@ -40,9 +38,8 @@ PageRoute::Register(App& app)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-PageRoute::impl(HttpGet, const Request& req, int bid, int pid) const
-{
+Route::Response PageRoute::impl(HttpGet, const Request &req, int bid,
+                                int pid) const {
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
   CROW_LOG_DEBUG << "(PageRoute) searching for book id: " << bid
@@ -53,9 +50,8 @@ PageRoute::impl(HttpGet, const Request& req, int bid, int pid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-PageRoute::impl(HttpDelete, const Request& req, int bid, int pid) const
-{
+Route::Response PageRoute::impl(HttpDelete, const Request &req, int bid,
+                                int pid) const {
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
   CROW_LOG_DEBUG << "(PageRoute) searching for book id: " << bid
@@ -66,17 +62,15 @@ PageRoute::impl(HttpDelete, const Request& req, int bid, int pid) const
           "(PageRoute) cannot delete page from project (must be a book)");
   }
   const auto page = session->must_find(conn, bid, pid);
-  MysqlCommiter commiter(conn);
+  MysqlCommitter committer(conn);
   delete_page(conn.db(), bid, pid);
   book->delete_page(page->id());
-  commiter.commit();
+  committer.commit();
   return ok();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-PageRoute::impl(HttpGet, const Request& req, int bid) const
-{
+Route::Response PageRoute::impl(HttpGet, const Request &req, int bid) const {
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
   auto book = session->must_find(conn, bid);
@@ -111,9 +105,8 @@ PageRoute::impl(HttpGet, const Request& req, int bid) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-PageRoute::impl(HttpGet, const Request& req, int bid, int pid, int val) const
-{
+Route::Response PageRoute::impl(HttpGet, const Request &req, int bid, int pid,
+                                int val) const {
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
   auto book = session->must_find(conn, bid);
@@ -126,9 +119,7 @@ PageRoute::impl(HttpGet, const Request& req, int bid, int pid, int val) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-PageRoute::next(const Project& book, int pid, int val) const
-{
+Route::Response PageRoute::next(const Project &book, int pid, int val) const {
   auto page = book.next(pid, val);
   if (not page)
     return not_found();
@@ -137,9 +128,7 @@ PageRoute::next(const Project& book, int pid, int val) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-PageRoute::prev(const Project& book, int pid, int val) const
-{
+Route::Response PageRoute::prev(const Project &book, int pid, int val) const {
   auto page = book.next(pid, -val);
   if (not page)
     return not_found();
@@ -148,9 +137,8 @@ PageRoute::prev(const Project& book, int pid, int val) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response
-PageRoute::print(Json& json, int pid, const Page& page, const Project& project)
-{
+Route::Response PageRoute::print(Json &json, int pid, const Page &page,
+                                 const Project &project) {
   wj(json, page, pid);
   const auto nextpage = project.next(page.id(), 1);
   const auto prevpage = project.next(page.id(), -1);

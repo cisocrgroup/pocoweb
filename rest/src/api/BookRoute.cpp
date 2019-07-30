@@ -106,11 +106,11 @@ Route::Response BookRoute::impl(HttpPost, const Request &req) const {
   }
   // insert book into database
   CROW_LOG_INFO << "(BookRoute) Inserting a new book into database";
-  MysqlCommiter commiter(conn);
+  MysqlCommitter committer(conn);
   insert_book(conn.db(), *book);
   CROW_LOG_INFO << "(BookRoute) Created a new book id: " << book->id();
   // update and clean up
-  commiter.commit();
+  committer.commit();
   sg.dismiss();
   Json j;
   Response response(j << *book);
@@ -218,9 +218,9 @@ Route::Response BookRoute::impl(HttpPost, const Request &req, int bid) const {
   }
   const auto book = std::dynamic_pointer_cast<Book>(view);
   update_book_data(*book, data);
-  MysqlCommiter commiter(conn);
+  MysqlCommitter committer(conn);
   update_book(conn.db(), *book);
-  commiter.commit();
+  committer.commit();
   Json json;
   return json << *book;
 }
@@ -230,7 +230,7 @@ Route::Response BookRoute::impl(HttpDelete, const Request &req, int bid) const {
   const LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
-  MysqlCommiter commiter(conn);
+  MysqlCommitter committer(conn);
   delete_project(conn.db(), project->id());
   if (project->is_book()) {
     const auto dir = project->origin().data.dir;
@@ -243,7 +243,7 @@ Route::Response BookRoute::impl(HttpDelete, const Request &req, int bid) const {
     }
   }
   session->uncache_project(project->id());
-  commiter.commit();
+  committer.commit();
   return ok();
 }
 
@@ -253,10 +253,10 @@ void BookRoute::remove_project(MysqlConnection &conn, const Session &session,
                                const Project &project) const {
   assert(not project.is_book());
   CROW_LOG_DEBUG << "(BookRoute) removing project id: " << project.id();
-  MysqlCommiter commiter(conn);
+  MysqlCommitter committer(conn);
   remove_project_impl(conn, project.id());
   session.uncache_project(project.id());
-  commiter.commit();
+  committer.commit();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -293,7 +293,7 @@ void BookRoute::remove_book(MysqlConnection &conn, const Session &session,
   tables::Errorpatterns e;
   tables::Types t;
   tables::Books b;
-  MysqlCommiter commiter(conn);
+  MysqlCommitter committer(conn);
   auto pids = conn.db()(
       select(p.projectid, p.owner).from(p).where(p.origin == book.id()));
   for (const auto &pid : pids) {
@@ -320,6 +320,6 @@ void BookRoute::remove_book(MysqlConnection &conn, const Session &session,
     CROW_LOG_WARNING << "(BookRoute) cannot remove directory: " << dir << ": "
                      << ec.message();
   session.uncache_project(book.id());
-  commiter.commit();
+  committer.commit();
 }
 #endif

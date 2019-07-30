@@ -86,7 +86,7 @@ std::unordered_map<int, std::vector<int>>
 Splitter::assign(const std::vector<int> &userids,
                  const std::vector<std::vector<int>> &projs) const {
   assert(userids.size() == projs.size());
-  MysqlCommiter commiter(c_);
+  MysqlCommitter committer(c_);
   using namespace sqlpp;
   tables::ProjectPages pp;
   tables::Projects p;
@@ -107,7 +107,7 @@ Splitter::assign(const std::vector<int> &userids,
       projmap[pid].push_back(pageid);
     }
   }
-  commiter.commit();
+  committer.commit();
   return projmap;
 }
 

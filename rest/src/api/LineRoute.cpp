@@ -65,10 +65,10 @@ Route::Response LineRoute::impl(HttpDelete, const Request &req, int pid, int p,
     THROW(BadRequest,
           "(LineRoute) cannot delete line from project (must be a book)");
   }
-  MysqlCommiter commiter(conn);
+  MysqlCommitter committer(conn);
   delete_line(conn.db(), pid, p, lid);
   page->delete_line(lid);
-  commiter.commit();
+  committer.commit();
   return ok();
 }
 
@@ -182,20 +182,20 @@ boost::optional<Token> LineRoute::find_token(const Line &line, int tid) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void LineRoute::update_line(MysqlConnection &conn, const Line &line) {
-  MysqlCommiter commiter(conn);
+  MysqlCommitter committer(conn);
   pcw::update_line(conn.db(), line);
-  commiter.commit();
+  committer.commit();
 }
 ////////////////////////////////////////////////////////////////////////////////
 std::shared_ptr<Line>
 Corrector::correctWholeLine(const std::string &correction) {
-  MysqlCommiter commiter(c_);
+  MysqlCommitter committer(c_);
   origin_ = loadOrigin();
   assert(origin_ != 0);
   auto line = loadLine();
   assert(line);
   correct(*line, correction);
-  commiter.commit();
+  committer.commit();
   return line;
 }
 
