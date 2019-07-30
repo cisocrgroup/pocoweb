@@ -188,6 +188,7 @@ create table if not exists jobs (
 );
 
 /* views */
+drop view if exists contents_lines_view;
 create view contents_lines_view
 	   as select c.*,l.imagepath,l.lleft,l.lright,l.ltop,l.lbottom
 	   from contents c
@@ -196,6 +197,7 @@ create view contents_lines_view
 			c.pageid=l.pageid and
 			c.lineid=l.lineid;
 
+drop view if exists jobs_status_projects_view;
 create view jobs_status_projects_view
 	   as select j.id,j.statusid,j.text,j.timestamp,s.text
 	   from jobs j
