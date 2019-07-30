@@ -64,8 +64,7 @@ Route::Response SplitRoute::impl(HttpPost, const Request &req, int bid) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::unordered_map<int, std::vector<int>>
-Splitter::split(const std::vector<int> &userids) {
+Splitter::Projects Splitter::split(const std::vector<int> &userids) {
   using namespace sqlpp;
   tables::Projects p;
   auto rows = c_.db()(select(all_of(p)).from(p).where(p.id == pid_));
@@ -77,15 +76,12 @@ Splitter::split(const std::vector<int> &userids) {
           "(Splitter) cannot split package: only projects can be split");
   }
   owner_ = rows.front().owner;
-  const auto projs = genProjects(userids.size());
-  return assign(userids, projs);
+  const auto projs = genProjects(userids);
+  return insert(projs);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::unordered_map<int, std::vector<int>>
-Splitter::assign(const std::vector<int> &userids,
-                 const std::vector<std::vector<int>> &projs) const {
-  assert(userids.size() == projs.size());
+Splitter::Projects Splitter::insert(const std::vector<Project> &projs) const {
   MysqlCommitter committer(c_);
   using namespace sqlpp;
   tables::ProjectPages pp;
@@ -96,23 +92,25 @@ Splitter::assign(const std::vector<int> &userids,
   auto insertpp = c_.db().prepare(
       insert_into(pp).set(pp.projectid = parameter(pp.projectid),
                           pp.pageid = parameter(pp.pageid)));
-  std::unordered_map<int, std::vector<int>> projmap;
-  for (auto i = 0U; i < userids.size(); i++) {
-    insertp.params.pages = static_cast<int>(projs[i].size());
+  Projects ret;
+  for (auto &proj : projs) {
+    insertp.params.pages = static_cast<int>(proj.pageids.size());
+    insertp.params.owner = proj.owner;
     const auto pid = c_.db()(insertp);
-    for (const auto pageid : projs[i]) {
+    for (const auto pageid : proj.pageids) {
       insertpp.params.projectid = pid;
       insertpp.params.pageid = pageid;
       c_.db()(insertpp);
-      projmap[pid].push_back(pageid);
     }
+    ret[pid] = std::move(proj);
   }
   committer.commit();
-  return projmap;
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::vector<std::vector<int>> Splitter::genProjects(size_t n) const {
+std::vector<Splitter::Project>
+Splitter::genProjects(const std::vector<int> &userids) const {
   using namespace sqlpp;
   tables::ProjectPages p;
   auto rows = c_.db()(select(all_of(p)).from(p).where(p.projectid == pid_));
@@ -124,26 +122,37 @@ std::vector<std::vector<int>> Splitter::genProjects(size_t n) const {
     std::mt19937 g(genseed());
     std::shuffle(begin(pageids), end(pageids), g);
   }
-  std::vector<std::vector<int>> projs(n);
+  const auto n = userids.size();
   const auto d = pageids.size() / n;
   auto r = pageids.size() % n;
   auto o = 0U;
+  std::vector<Project> ret(n);
   for (auto i = 0U; i < n; ++i) {
     for (auto j = 0U; j < (d + r); ++j) {
-      projs[i].push_back(pageids[j + o]);
+      ret[i].pageids.push_back(pageids[j + o]);
     }
     o += (d + r);
     if (r > 0) {
       --r;
     }
-    std::sort(projs[i].begin(), projs[i].end());
+    ret[i].owner = userids[i];
+    if (random_) {
+      std::sort(ret[i].pageids.begin(), ret[i].pageids.end());
+    }
   }
-  return projs;
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Json Splitter::toJSON(
-    const std::unordered_map<int, std::vector<int>> &projs) const {
+Json Splitter::toJSON(const Splitter::Projects &projs) const {
   Json j;
+  j["bookID"] = pid_;
+  size_t i = 0;
+  for (const auto &proj : projs) {
+    j["projects"][i]["projectId"] = proj.first;
+    j["projects"][i]["owner"] = proj.second.owner;
+    j["projects"][i]["pages"] = proj.second.pageids.size();
+    j["projects"][i]["pageIds"] = proj.second.pageids;
+  }
   return j;
 }

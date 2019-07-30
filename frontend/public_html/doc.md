@@ -876,28 +876,23 @@ Split a [project into packages](#user-content-projects).
 ```
 * The mandatory argument `ids` specifies an not empty array of user
   ids. The split route creates that many packages and assignes them to
-  the given users. User-IDs in the `ids` array need not be unique.
+  the given users.  User-IDs in the `ids` array need not be unique.
 * The optional argument `random` specifies if the pages of the
-  packages should be generated at random or sequential. If omitted
+  packages should be generated at random or sequential.  If omitted
   `random=false` is assumed.
 
 #### Response data
 ```json
 {
-  "books": [
+  "bookId": 19
+  "projects": [
     {
-      "author": "book-author",
-      "title": "book-title",
-      "year": 1234,
-      "language": "language",
-      "profilerUrl": "profiler-url|local",
-      "bookId": 27,
-      "projectId": 42,
-      "pages": 100,
-      "pageIds": [15,18,20,27,...],
-      "isBook": true|false
-    },
-    ...
+	  "projectId": 38,
+      "owner": 1,
+	  "pages": 20,
+	  "pageIds": [15, 16, ...]
+	},
+	...
   ]
 }
 ```

@@ -30,16 +30,20 @@ private:
 
 class Splitter {
 public:
+  struct Project {
+    int owner;
+    std::vector<int> pageids;
+  };
+  using Projects = std::unordered_map<int, Project>;
   Splitter(MysqlConnection &c, int pid, bool random)
       : c_(c), pid_(pid), owner_(), random_(random) {}
-  std::unordered_map<int, std::vector<int>> split(const std::vector<int> &ids);
-  Json toJSON(const std::unordered_map<int, std::vector<int>> &projs) const;
+  Projects split(const std::vector<int> &ids);
+  Json toJSON(const Projects &projs) const;
 
 private:
-  std::vector<std::vector<int>> genProjects(size_t n) const;
-  std::unordered_map<int, std::vector<int>>
-  assign(const std::vector<int> &ids,
-         const std::vector<std::vector<int>> &projs) const;
+  std::vector<Project> genProjects(const std::vector<int> &ids) const;
+  Projects insert(const std::vector<Project> &projs) const;
+
   MysqlConnection &c_;
   int pid_, owner_;
   bool random_;
