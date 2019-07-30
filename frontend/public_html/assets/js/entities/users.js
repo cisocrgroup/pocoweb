@@ -155,45 +155,43 @@ Entities.API = {
     });
     return defer.promise();
   },
-      deleteUser: function(data){
-    data['backend_route'] = "delete_user";
+   deleteUser: function(data){
     var defer = jQuery.Deferred();
        $.ajax({
-
-        url: "api/api_controller.php",
-        type: "POST",
-        data:data,
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+         },
+        url: "rest/users/" + data.id + "?auth=" + App.getAuthToken(),
+        type: "DELETE",
         success: function(data) {
-
-              defer.resolve(JSON.parse(data));
+              defer.resolve(data);
             },
             error: function(data){
               defer.reject(data);
             }
     });
-
     return defer.promise();
   },
-
    createUser: function(data){
-    data['backend_route'] = "create_user";
     var defer = jQuery.Deferred();
        $.ajax({
-
-        url: "api/api_controller.php",
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+         },
+        url: "rest/users?auth=" + App.getAuthToken(),
         type: "POST",
-        data:data,
+        data:JSON.stringify(data),
         success: function(data) {
-
-              defer.resolve(JSON.parse(data));
+              defer.resolve(data);
             },
             error: function(data){
               defer.reject(data);
             }
     });
-
     return defer.promise();
-  },
+  }
 };
 
 
