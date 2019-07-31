@@ -1,10 +1,10 @@
 SUDO ?= sudo
 TAG ?= flobar/pocoweb
-TAGS := ${addprefix -t${TAG}:,${shell git describe --tags HEAD} latest}
+TAGS := ${addprefix ${TAG}:,${shell git describe --tags HEAD} latest}
 
 .PHONY: docker-build
 docker-build: Dockerfile
-	${SUDO} docker build ${TAGS} .
+	${SUDO} docker build ${addprefix -t,${TAGS}} .
 
 .PHONY: docker-run
 docker-run: docker-build
@@ -12,4 +12,4 @@ docker-run: docker-build
 
 .PHONY: docker-push
 docker-push: docker-build
-	${SUDO} docker push ${TAG}
+	for t in ${TAGS}; do ${SUDO} docker push $$t; done
