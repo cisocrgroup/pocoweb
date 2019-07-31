@@ -870,7 +870,7 @@ Split a [project into packages](#user-content-projects).
 #### Post data
 ```json
 {
-  "ids": [1, 2, 3],
+  "userIds": [1, 2, 3],
   "random": true|false
 }
 ```
@@ -888,8 +888,7 @@ Split a [project into packages](#user-content-projects).
   "projects": [
     {
 	  "projectId": 38,
-      "owner": 1,
-	  "pages": 20,
+	  "owner": 17,
 	  "pageIds": [15, 16, ...]
 	},
 	...
