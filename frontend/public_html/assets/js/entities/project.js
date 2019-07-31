@@ -134,21 +134,16 @@ getProject: function(data){
 downloadProject: function(data){
     var defer = jQuery.Deferred();
      $.ajax({
-
-      url: "rest-url/books/"+ data.pid + "/download" + "?auth=" + App.getAuthToken(),
-      type: "GET",
-      success: function(data) {
-        defer.resolve(result);
-
-          },
-          error: function(data){
-            defer.reject(data);
-          }
+       url: "rest-url/books/"+ data.pid + "/download" + "?auth=" + App.getAuthToken(),
+       type: "GET",
+       success: function(data) {
+         defer.resolve(result);
+       },
+       error: function(data){
+         defer.reject(data);
+       }
   });
-
-
   return defer.promise();
-
 },
 
 
@@ -195,19 +190,19 @@ downloadProject: function(data){
     var defer = jQuery.Deferred();
        $.ajax({
         headers: {
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
         },
-        url: "rest/books/"+data.pid+"/split" + "?auth=" + App.getAuthToken(),
+        url: "rest/pkg/split/books/" + data.pid + "?auth=" + App.getAuthToken(),
         type: "POST",
         data: JSON.stringify(data),
         success: function(data) {
               defer.resolve();
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+        },
+         error: function(data){
+           defer.reject(data);
+         }
     });
-
     return defer.promise();
   },
 

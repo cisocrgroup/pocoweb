@@ -177,14 +177,17 @@ define([
     confirmClicked: function() {
       var n = $(".userrows").find(".row").length;
       var random = $("#checkRnd").is(":checked");
-      var ids = [];
+      var userIds = [];
       $(".userrows").find(".row").each(function() {
           var selected = $(this)
             .find("select")
             .val();
-          ids.push(Number(selected));
+          userIds.push(Number(selected));
         });
-      this.trigger("split:confirmed", {ids: ids, random: random});
+      this.trigger("split:confirmed", {
+        userIds: userIds,
+        random: random
+      });
     },
     addSplitrow: function() {
       var pages = Marionette.getOption(this, "n");
