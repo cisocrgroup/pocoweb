@@ -221,9 +221,7 @@ define([
                     if (tokens.adaptiveTokens==null){
                       return;
                     }
-                    console.log(tokens)
-                     tokens.adaptiveTokens.push("adaptive token #1");
-                     tokens.adaptiveTokens.push("adaptive token #2");
+                    console.log(tokens);
                     let projectShowAdaptiveTokens = new Show.Adaptive({
                       asModal: true,
                       pid: tokens.projectId,
