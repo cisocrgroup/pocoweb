@@ -144,7 +144,7 @@ Entities.API = {
              institute: data.institute,
              id: data.id
            },
-           password: data.['new_password']
+           password: data['new_password']
          }),
          success: function(data) {
            defer.resolve(data);
