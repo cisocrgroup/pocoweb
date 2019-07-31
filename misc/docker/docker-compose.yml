@@ -130,3 +130,14 @@ services:
     volumes:
       - ${PCW_BASE_DIR}/project-data:/project-data:rw
       - ${PCW_BASE_DIR}/ocr-data:/data/models:rw
+
+  # pocoweb ocr
+  pcwpkg:
+    image: flobar/pcwpkg
+    restart: always
+    links:
+      - db
+    depends_on:
+      - db
+    env_file:
+      - env.sh
