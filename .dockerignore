@@ -14,6 +14,7 @@ tests/**
 pcwd
 TAGS
 Dockerfile
+services/**
 README.md
 !misc/docker/pocoweb/
 !LICENCE
