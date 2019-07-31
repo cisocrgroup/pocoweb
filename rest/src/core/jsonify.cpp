@@ -57,6 +57,8 @@ pcw::Json &pcw::operator<<(Json &json, const Project &view) {
   json["projectId"] = view.id();
   json["bookId"] = view.origin().id();
   json["isBook"] = view.is_book();
+  json["owner"] = view.owner();
+  json["bookOwner"] = view.origin().owner();
   json << view.origin().data;
 
   std::vector<int> ids;
@@ -75,6 +77,8 @@ pcw::Json &pcw::wj(Json &json, const Project &view) {
   json["projectId"] = view.id();
   json["bookId"] = view.origin().id();
   json["isBook"] = view.is_book();
+  json["owner"] = view.owner();
+  json["bookOwner"] = view.origin().owner();
   wj(json, view.origin().data);
 
   std::vector<int> ids;
