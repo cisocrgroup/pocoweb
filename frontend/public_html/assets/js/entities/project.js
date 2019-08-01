@@ -206,24 +206,55 @@ downloadProject: function(data){
     return defer.promise();
   },
 
-assignPackage: function(data){
+assignPackageTo: function(data){
   console.log(data);
     var defer = jQuery.Deferred();
      $.ajax({
-      url: "rest-url/books/pid/assign" + "?auth=" + App.getAuthToken() +"&uid="+data.uid,
+      url: "rest/pkg/assign/books/" + data.pid +
+         "?auth=" + App.getAuthToken() + "&assignto="+data.uid,
       type: "GET",
       success: function(data) {
         defer.resolve(data);
-
-          },
-          error: function(data){
-            defer.reject(data);
-          }
+      },
+       error: function(data){
+         defer.reject(data);
+       }
   });
-
-
   return defer.promise();
+},
 
+assignPackageBack: function(data){
+  console.log(data);
+    var defer = jQuery.Deferred();
+     $.ajax({
+      url: "rest/pkg/assign/books/" + data.pid +
+         "?auth=" + App.getAuthToken(),
+      type: "GET",
+      success: function(data) {
+        defer.resolve(data);
+      },
+       error: function(data){
+         defer.reject(data);
+       }
+  });
+  return defer.promise();
+},
+
+takeBackPackages: function(data){
+  console.log(data);
+    var defer = jQuery.Deferred();
+     $.ajax({
+      url: "rest/pkg/takeback/books/" + data.pid +
+         "?auth=" + App.getAuthToken(),
+      type: "GET",
+      success: function(data) {
+        defer.resolve(data);
+      },
+       error: function(data){
+         defer.reject(data);
+       }
+  });
+  return defer.promise();
 },
 
     getLine: function(data){
