@@ -54,8 +54,6 @@ for suspicious words.
 	* [[GET] `rest-url`/pkg/takeback/books/`pid`](#api-get-books-pid-takeback)
 	* [[GET] `rest-url`/books/`pid`/adaptive-tokens](#user-content-api-post-books-pid-adaptive-tokens)
 	* [[GET] `rest-url`/books/`pid`/download](#user-content-api-get-books-pid-download)
-	* [[GET] `rest-url`/books/`pid`/assign](#user-content-api-get-books-pid-assign)
-	* [[GET] `rest-url`/books/`pid`/finish](#user-content-api-get-books-pid-finish)
 	* [[GET] `rest-url`/books/`pid`/search](#user-content-api-get-books-pid-search)
 	* [[GET] `rest-url`/books/`pid`/pages/`pageid`](#user-content-api-get-books-pid-pages-pageid)
 	* [[DELETE] `rest-url`/books/`pid`/pages/`pageid`](#user-content-api-delete-books-pid-pages-pageid)

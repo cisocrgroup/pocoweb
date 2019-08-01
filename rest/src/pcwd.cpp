@@ -1,7 +1,6 @@
 #include "api/BookRoute.hpp"
 #include "api/CharMapRoute.hpp"
 #include "api/DownloadRoute.hpp"
-#include "api/FinishRoute.hpp"
 #include "api/LineRoute.hpp"
 #include "api/PageRoute.hpp"
 #include "api/SearchRoute.hpp"
@@ -56,7 +55,6 @@ void run(App &app) {
   app.Register(std::make_unique<pcw::BookRoute>());
   app.Register(std::make_unique<pcw::CharMapRoute>());
   app.Register(std::make_unique<pcw::DownloadRoute>());
-  app.Register(std::make_unique<pcw::FinishRoute>());
   app.Register(std::make_unique<pcw::LineRoute>());
   app.Register(std::make_unique<pcw::PageRoute>());
   app.Register(std::make_unique<pcw::SearchRoute>());

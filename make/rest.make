@@ -31,7 +31,6 @@ CORE_OBJS += rest/src/core/util.o
 API_OBJS += rest/src/api/BookRoute.o
 API_OBJS += rest/src/api/CharMapRoute.o
 API_OBJS += rest/src/api/DownloadRoute.o
-API_OBJS += rest/src/api/FinishRoute.o
 API_OBJS += rest/src/api/LineRoute.o
 API_OBJS += rest/src/api/PageRoute.o
 API_OBJS += rest/src/api/SearchRoute.o
