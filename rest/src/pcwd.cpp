@@ -1,4 +1,3 @@
-#include "api/AssignRoute.hpp"
 #include "api/BookRoute.hpp"
 #include "api/CharMapRoute.hpp"
 #include "api/DownloadRoute.hpp"
@@ -6,7 +5,6 @@
 #include "api/LineRoute.hpp"
 #include "api/PageRoute.hpp"
 #include "api/SearchRoute.hpp"
-#include "api/SplitRoute.hpp"
 #include "api/TokenRoute.hpp"
 #include "api/VersionRoute.hpp"
 #include "core/App.hpp"
@@ -55,7 +53,6 @@ void run(App &app) {
   change_user_and_group(app.config());
   create_base_directory(app.config());
   detach(app.config());
-  app.Register(std::make_unique<pcw::AssignRoute>());
   app.Register(std::make_unique<pcw::BookRoute>());
   app.Register(std::make_unique<pcw::CharMapRoute>());
   app.Register(std::make_unique<pcw::DownloadRoute>());
@@ -63,7 +60,6 @@ void run(App &app) {
   app.Register(std::make_unique<pcw::LineRoute>());
   app.Register(std::make_unique<pcw::PageRoute>());
   app.Register(std::make_unique<pcw::SearchRoute>());
-  app.Register(std::make_unique<pcw::SplitRoute>());
   app.Register(std::make_unique<pcw::TokenRoute>());
   app.Register(std::make_unique<pcw::VersionRoute>());
   app.run();
