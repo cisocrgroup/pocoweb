@@ -181,6 +181,11 @@ an associated package.
 This could lead to cases where one user accidentally
 overrides an other users work.*
 
+*Note: For historical reasons the api uses the term «books» to refer
+to projects and the term «projects» to refer to packages.  So for
+example `projectId` refers to the id of a package and `bookId` refers
+to the id of a project.  Hopefully this issue can be solved soon.*
+
 <a id='upload-new-project'></a>
 ### Uploading new projects
 

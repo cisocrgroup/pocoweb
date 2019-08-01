@@ -16,7 +16,7 @@ digraph ov {
  dbd [label="db-data" shape=folder fillcolor=gray style=filled]
 
  www -> nginx [label="http://pocoweb...."]
- nginx -> pcwauth [label="/rest"]
+ nginx -> pcwauth [label="/rest/*"]
  nginx -> projectd [label="/project-data"]
  nginx -> wwwd [label="*.css,*.js,*.html,*.php"]
  pocoweb -> mysql [style=dotted]
