@@ -28,7 +28,11 @@ define([
           fetchingprojects,
           fetchinguser
         )
-          .done(function(project, languages, projects, user) {
+        .done(function(project, languages, projects, user) {
+          let isProject = project.attributes.bookId == project.attributes.projectId;
+          let projectId = project.get('bookId');
+          let isAdmin = user.admin;
+
             loadingCircleView.destroy();
             console.log(project);
 
@@ -52,8 +56,8 @@ define([
                 packages.push(book);
               }
             }
-            console.log(packages);
             projectShowLayout.on("attach", function() {
+              if (isProject) { // project view
               var cards = [
                 {
                   color: "green",
@@ -109,9 +113,88 @@ define([
                   seq: 4,
                   text: "Delete the project.",
                   url: "delete"
+                },
+                {
+                  color: "blue",
+                  icon: "fas fa-chevron-circle-left",
+                  id: "takeback_btn",
+                  name: "Reclaim packages",
+                  seq: 5,
+                  text: "Reclaim all packages.",
+                  url: "takeback"
+                }
+
+              ];
+                } else if (isAdmin) { // admin: package view
+                  var cards = [
+                {
+                  color: "green",
+                  icon: "fas fa-history",
+                  id: "test_btn",
+                  name: "Order Profile",
+                  seq: 1,
+                  text: "Start profiling the package.",
+                  url: "profile"
+                },
+                {
+                  color: "blue",
+                  icon: "far fa-edit",
+                  id: "adaptive_btn",
+                  name: "Adaptive tokens",
+                  seq: 5,
+                  text: "List adaptive tokens.",
+                  url: "adaptive"
+                },
+                {
+                  color: "red",
+                  icon: "far fa-times-circle",
+                  id: "about_btn",
+                  name: "Delete",
+                  seq: 4,
+                  text: "Delete the package.",
+                  url: "delete"
+                },
+                {
+                  color: "blue",
+                  icon: "fas fa-user-tag",
+                  id: "assign_btn",
+                  name: "Assign",
+                  seq: 5,
+                  text: "Assign package to a user.",
+                  url: "assign"
                 }
               ];
-
+                  } else { // normal user: package view
+                  var cards = [
+                {
+                  color: "green",
+                  icon: "fas fa-history",
+                  id: "test_btn",
+                  name: "Order Profile",
+                  seq: 1,
+                  text: "Start profiling the project.",
+                  url: "profile"
+                },
+                {
+                  color: "blue",
+                  icon: "far fa-edit",
+                  id: "adaptive_btn",
+                  name: "Adaptive tokens",
+                  seq: 5,
+                  text: "List adaptive tokens.",
+                  url: "adaptive"
+                },
+                {
+                  color: "red",
+                  icon: "far fa-times-circle",
+                  id: "assign_btn",
+                  name: "Reassign",
+                  seq: 4,
+                  text: "Reassign the package back to its owner.",
+                  url: "reassign"
+                }
+              ];
+                  }
               var cards2 = [
                 {
                   color: "blue",
@@ -163,6 +246,15 @@ define([
                 if (data.url == "download") {
                   this.trigger("show:download");
                 }
+                if (data.url == "reassign") {
+                  this.trigger("show:reassign");
+                }
+                if (data.url == "takeback") {
+                  this.trigger("show:takeback");
+                }
+                if (data.url == "assign") {
+                  this.trigger("show:assign");
+                }
               });
 
               projectShowHub2.on("cardHub:clicked", function(data) {
@@ -173,10 +265,10 @@ define([
                   App.trigger("projects:a_pocoto", id);
                 }
               });
-
+              let icon = isProject ? 'fas fa-book-open' : 'fas fa-box-open';
               projectShowHeader = new Show.Header({
                 title: project.get("title"),
-                icon: "fas fa-book-open",
+                icon: icon,
                 color: "green"
               });
               projectShowInfo = new Show.Info({ model: project });
@@ -236,6 +328,60 @@ define([
                     Util.defaultErrorHandling(response, "danger");
                   });
               }),
+
+              projectShowHub.on("show:reassign", function() {
+                let fetchingReassign = ProjectEntities.API.assignPackageBack({pid: id});
+                $.when(fetchingReassign)
+                .done(function(ignore) {
+                  App.trigger('projects:list');
+                  App.mainmsg.updateContent(
+                    "Reassigned package " + id + " successfully", 'success');
+                })
+                .fail(function(response) {
+                  Util.defaultErrorHandling(response, "danger");
+                });
+              }),
+
+              projectShowHub.on("show:takeback", function() {
+                let fetchingTakeBack = ProjectEntities.API.takeBackPackages({pid: id});
+                $.when(fetchingTakeBack)
+                .done(function(ignore) {
+                  App.trigger('projects:show', id);
+                  App.mainmsg.updateContent(
+                    "Took all packages back", 'success');
+                })
+                .fail(function(response) {
+                  Util.defaultErrorHandling(response, "danger");
+                });
+              }),
+
+              projectShowHub.on("show:assign", function() {
+                let fetchingUsers = UserEntities.API.getUsers();
+                $.when(fetchingUsers).done(function(users) {
+                  let projectShowAssign = new Show.Assign({id: id, users: users});
+                    App.mainLayout.showChildView(
+                      "dialogRegion",
+                      projectShowAssign
+                    );
+                  projectShowAssign.on("assign:confirmed", function(data) {
+                    console.log(data);
+                    let assigning = ProjectEntities.API.assignPackageTo({
+                      pid: id,
+                      uid: data.userId
+                    });
+                    $.when(assigning).done(function(ignored) {
+                      $('#assignModal').modal('hide');
+                      console.log('App.trigger(' + projectId + ')');
+                      App.trigger('projects:show', projectId);
+                    }).fail(function(response) {
+                      Util.defaultErrorHandling(response, "danger");
+                    });
+                  });
+                }).fail(function(response) {
+                  Util.defaultErrorHandling(response, "danger");
+                });
+              }),
+
                 projectShowHub.on("show:split", function() {
                   var fetchingusers = UserEntities.API.getUsers();
 

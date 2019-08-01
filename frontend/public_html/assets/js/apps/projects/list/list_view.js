@@ -41,7 +41,12 @@ define(["marionette","app","common/views","apps/projects/common/views",
       },
       create_clicked: function(){
         this.trigger("list:create_clicked");
-      }
+      },
+	serializeData: function(){
+		return {
+			user: Marionette.getOption(this,"user")
+		}
+	}
     });
 
   List.FooterPanel = CommonViews.FooterPanel.extend({

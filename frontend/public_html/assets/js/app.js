@@ -22,8 +22,7 @@ var App = new App();
 
     },
     template: mainTpl,
-    className:"sub-app-region",
-
+    className:"sub-app-region"
   })
 
 
@@ -44,7 +43,11 @@ App.getCurrentRoute = function(){
 };
 
 App.getCurrentUser = function() {
-  return JSON.parse(localStorage.getItem('pcw')).user;
+  let pcw = localStorage.getItem('pcw');
+  if (pcw != null) {
+    return JSON.parse(pcw).user;
+  }
+  return null;
 };
 
 App.updateCurrentUser = function(user) {
@@ -114,10 +117,11 @@ App.on("start", function(){
     var loggingInUser = UserEntities.API.login(data);
                  $.when(loggingInUser).done(function(result){
                    localStorage.setItem('pcw', JSON.stringify(result));
-
                         App.mainmsg.updateContent("Login successful!",'success');
                          Util.setLoggedIn(result.user.name);
-
+                   // console.log(App.getCurrentUser());
+                   // console.log(App.Navbar);
+                   // App.Navbar.render();
                           var currentRoute =  App.getCurrentRoute();
                           var page_re = /projects\/\d+.*/;
                           var page_route_found = App.getCurrentRoute().match(page_re);

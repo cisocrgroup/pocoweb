@@ -14,7 +14,7 @@ define(["app","common/util","apps/users/home/home_view","apps/header/show/show_v
 
 		var usersHomeLayout = new Home.Layout();
 		var usersHomeHeader = new Home.Header();
-     
+
         var cards = [
         {
                 "color": "red",
@@ -23,7 +23,7 @@ define(["app","common/util","apps/users/home/home_view","apps/header/show/show_v
                 "name": "List Users",
                 "seq": 1,
                 "text": "List of all registered users.",
-                "url": "users:list",
+                "url": "users:list"
             }, {
                 "color": "red",
                 "icon": "fa-user-plus",
@@ -31,17 +31,9 @@ define(["app","common/util","apps/users/home/home_view","apps/header/show/show_v
                 "name": "Create User",
                 "seq": 3,
                 "text": "Create a new user account.",
-                "url": "users:new",
-            },
-             {
-                "color": "red",
-                "icon": "fa-user-circle",
-                "id": "my_account_btn",
-                "name": "My Account",
-                "seq": 5,
-                "text": "Update or delete your account.",
-                "url": "users:account",
-            }]
+                "url": "users:new"
+            }
+        ]
 
 
 		var usersHomeHub = new Home.Hub({cards:cards,currentRoute:"users"});
@@ -49,24 +41,24 @@ define(["app","common/util","apps/users/home/home_view","apps/header/show/show_v
 
         usersHomeHub.on("cardHub:clicked",function(data){
             App.trigger(data.url);
-        })       
+        })
 
 		usersHomeLayout.on("attach",function(){
                 usersHomeLayout.showChildView('headerRegion',usersHomeHeader);
                 usersHomeLayout.showChildView('contentRegion',usersHomeHub);
 	            usersHomeLayout.showChildView('panelRegion',usersFooterPanel);
 
-      
+
  		}); // on:show
 
-  
+
          App.mainLayout.showChildView('mainRegion',usersHomeLayout);
 
 
      });
 
 	}
-   
+
  }
 
 

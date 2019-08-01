@@ -11,15 +11,16 @@
     <span class="navbar-toggler-icon"></span>
   </button>
 
-
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
      <ul class="navbar-nav mr-auto">
       <li class="nav-item">
         <a class="nav-link" href="#projects">Projects</a>
       </li>
+	  	<% if (user != null && user.admin) { %>
        <li class="nav-item">
         <a class="nav-link" href="#users">Users</a>
       </li>
+	  <% } %>
        <li class="nav-item">
         <a class="nav-link" href="#users/account">Account</a>
       </li>
@@ -35,7 +36,6 @@
        <li class="nav-item js-login">
         <a class="nav-link" href="#"><i class="fas fa-sign-in-alt fa-sm"></i> Login</a>
       </li>
-     
     </ul>
    <ul class="navbar-nav my-2 my-lg-0 version-nav">
        <li class="nav-item">
@@ -44,9 +44,3 @@
     </ul>
   </div>
 </nav>
-
-
-
-
-
-

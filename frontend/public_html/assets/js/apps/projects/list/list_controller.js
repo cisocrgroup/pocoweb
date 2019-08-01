@@ -49,7 +49,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
       var projectsListHeader = new List.Header();
 			var projectsListView = new List.ProjectsList({collection: projects.books,hover:true});
-      var projectsListPanel = new List.Panel();
+      var projectsListPanel = new List.Panel({user: App.getCurrentUser()});
       var projectsListFooterPanel = new List.FooterPanel();
 
           projectsListLayout.showChildView('headerRegion',projectsListHeader);

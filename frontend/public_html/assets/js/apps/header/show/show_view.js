@@ -18,7 +18,7 @@ define(["marionette","app","common/views","common/util",
       msgRegion: "#msg-region"
 
     }
-  
+
 
   });
 
@@ -30,7 +30,7 @@ define(["marionette","app","common/views","common/util",
       "click .js-exit":"nav:exit",
       "click #help_button":"nav:help"
      },
-   
+
     events:{
       "click .js-login":"login_clicked",
       'click .nav_item.active' : 'nav_item_clicked',
@@ -42,18 +42,17 @@ define(["marionette","app","common/views","common/util",
       App.trigger("nav:login",true);
     },
 
-    
-      serializeData: function(){
-          var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
-          data.navbarItems = Marionette.getOption(this,"navbarItems");
-          data.version = Marionette.getOption(this,"version");
 
-          // data.currentRoute = Marionette.getOption(this,"currentRoute");
+      serializeData: function(){
+        var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+        data.navbarItems = Marionette.getOption(this,"navbarItems");
+        data.version = Marionette.getOption(this,"version");
+        data.user = Marionette.getOption(this,"user");
+        // data.currentRoute = Marionette.getOption(this,"currentRoute");
         return data;
-    
     },
     setLoggedIn: function(name){
-    
+
           $('.right-nav').empty();
           $('.right-nav').prepend('<li class="nav-item js-logout"><a href="#" class="nav-link">Logout</a></li>');
           $('.right-nav').prepend('<li><p class="navbar-text" style="margin:0;">Logged in as user: <span class="loginname">'+name+"</span></p></li>");
@@ -62,7 +61,7 @@ define(["marionette","app","common/views","common/util",
       $('.right-nav').empty();
       $('.right-nav').append('<li class="nav-item js-login"><a class="nav-link" href="#"><i class="fas fa-sign-in-alt fa-sm"></i> Login</a></li>');
     }
-  
+
 
 
   });
@@ -73,4 +72,3 @@ define(["marionette","app","common/views","common/util",
 return Show;
 
 });
-

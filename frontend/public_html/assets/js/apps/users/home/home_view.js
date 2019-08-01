@@ -2,8 +2,7 @@
 // apps/users/home/home_view.js
 // ===========================
 
-define(["marionette","app","common/views","common/util",
-
+define(["marionette","app","common/views","common/util"
 ], function(Marionette,App,Views,Util){
 
 
@@ -22,7 +21,7 @@ define(["marionette","app","common/views","common/util",
   });
 
  Home.Hub = Views.CardHub.extend({
-  
+
  })
 
   Home.FooterPanel = Views.FooterPanel.extend({

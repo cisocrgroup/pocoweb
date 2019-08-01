@@ -22,9 +22,11 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
          var headerLogin ;
 
 
-      var headerShowTopbar = new Show.Topbar({version:api_version.version});
+      var headerShowTopbar = new Show.Topbar({
+        version:api_version.version,
+        user: App.getCurrentUser()
+      });
       App.Navbar = headerShowTopbar;
-
 
       // var headerShowMsg = new Show.Message({id:"mainmsg",message:'Welcome to PoCoWeb. Please <a href="#" class="js-login">login</a>.',type:'info'});
       // App.mainmsg = headerShowMsg; // save view to be changed form other views..

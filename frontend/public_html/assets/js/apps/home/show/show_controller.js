@@ -14,7 +14,7 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
 
 		var homeHomeLayout = new Home.Layout();
 		var homeHomeHeader = new Home.Header();
-     
+
         var cards = [
         {
                 "color": "green",
@@ -23,24 +23,15 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
                 "name": "Projects",
                 "seq": 1,
                 "text": "Your current OCR - projects.",
-                "url": "projects:list",
+                "url": "projects:list"
             }, {
-                "color": "red",
-                "icon": "fa-users-cog",
-                "id": "users_button",
-                "name": "User Management",
-                "seq": 3,
-                "text": "Manage user accounts.",
-                "url": "users:home",
-            },
-             {
                 "color": "blue",
                 "icon": "fa-book",
                 "id": "doc_button",
                 "name": "Documentation",
                 "seq": 5,
                 "text": "Documentation of API-routes.",
-                "url": "docs:show",
+                "url": "docs:show"
             }, {
                 "color": "purple",
                 "icon": "far fa-question-circle",
@@ -48,31 +39,42 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
                 "name": "About",
                 "seq": 4,
                 "text": "About this project.",
-                "url": "about:home",
-        }]
-
+                "url": "about:home"
+        }];
+         let user = App.getCurrentUser();
+         if (user != null && user.admin) {
+           cards.push({
+                "color": "red",
+                "icon": "fa-users-cog",
+                "id": "users_button",
+                "name": "User Management",
+                "seq": 2,
+                "text": "Manage user accounts.",
+                "url": "users:home"
+           });
+         }
 
 		var homeHomeHub = new Home.Hub({cards:cards,currentRoute:"home"});
 
         homeHomeHub.on("cardHub:clicked",function(data){
             App.trigger(data.url);
-        })       
+        })
 
 		homeHomeLayout.on("attach",function(){
                 homeHomeLayout.showChildView('headerRegion',homeHomeHeader);
                 homeHomeLayout.showChildView('hubRegion',homeHomeHub);
-	
-      
+
+
  		}); // on:show
 
-  
+
          App.mainLayout.showChildView('mainRegion',homeHomeLayout);
 
 
      });
 
 	}
-   
+
  }
 
 

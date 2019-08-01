@@ -14,6 +14,7 @@ define([
   "tpl!apps/projects/show/templates/info.tpl",
   "tpl!apps/projects/show/templates/split.tpl",
   "tpl!apps/projects/show/templates/adaptive.tpl",
+  "tpl!apps/projects/show/templates/assign.tpl",
   "tpl!apps/projects/show/templates/packages.tpl"
 ], function(
   Marionette,
@@ -27,6 +28,7 @@ define([
   infoTpl,
   splitTpl,
   adaptiveTpl,
+  assignTpl,
   packagesTpl
 ) {
   var Show = {};
@@ -131,9 +133,7 @@ define([
   Show.Missingprojects = Views.Error.extend({
     errortext: "Error 404: projects not found"
   });
-
   Show.ProjectForm = CommonViews.ProjectForm.extend({});
-
   Show.AreYouSure = Views.AreYouSure.extend({
     triggers: {
       "click .js-yes": "delete:confirm"
@@ -253,6 +253,32 @@ define([
       //       $('#splitLabel').text("Split into " + n + " pages");
       //    }
       // });
+    }
+  });
+  Show.Assign = Marionette.View.extend({
+    template: assignTpl,
+    events: {
+      "click .js-confirm": "confirmClicked"
+    },
+    serializeData: function() {
+      return {
+        users: Marionette.getOption(this, "users"),
+        id: Marionette.getOption(this, "id")
+      };
+    },
+    confirmClicked: function() {
+      var selected = this.$el.find(".form-control").val();
+      this.trigger("assign:confirmed", {
+        userId: selected
+      });
+    },
+    onAttach: function() {
+      this.$el.addClass("modal fade");
+      this.$el.attr("tabindex", "-1");
+      this.$el.attr("role", "dialog");
+      this.$el.attr("id", "assignModal");
+      $("#assignModal").modal();
+      var that = this;
     }
   });
 
