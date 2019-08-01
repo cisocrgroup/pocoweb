@@ -49,7 +49,9 @@ for suspicious words.
 	* [[GET] `rest-url`/books/`pid`](#user-content-api-get-books-pid)
 	* [[POST] `rest-url`/books/`pid`](#user-content-api-post-books-pid)
 	* [[DELETE] `rest-url`/books/`pid`](#user-content-api-delete-books-pid)
-	* [[POST] `rest-url`/books/`pid`/split](#user-content-api-post-books-pid-split)
+	* [[POST] `rest-url`/pkg/split/books/`pid`](#user-content-api-post-books-pid-split)
+	* [[GET] `rest-url`/pkg/assign/books/`pid`](#api-get-books-pid-assign)
+	* [[GET] `rest-url`/pkg/takeback/books/`pid`](#api-get-books-pid-takeback)
 	* [[GET] `rest-url`/books/`pid`/adaptive-tokens](#user-content-api-post-books-pid-adaptive-tokens)
 	* [[GET] `rest-url`/books/`pid`/download](#user-content-api-get-books-pid-download)
 	* [[GET] `rest-url`/books/`pid`/assign](#user-content-api-get-books-pid-assign)
@@ -862,7 +864,7 @@ archives are removed from the server.
 
 ---
 <a id='api-post-books-pid-split'></a>
-### [POST] `rest-url`/books/`pid`/split
+### [POST] `rest-url`/pkg/split/books/`pid`
 Split a [project into packages](#user-content-projects).
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can split a project into packages.
@@ -895,6 +897,30 @@ Split a [project into packages](#user-content-projects).
   ]
 }
 ```
+
+---
+<a id='api-get-books-pid-assign'></a>
+### [GET] `rest-url`/pkg/assign/books/`pid`
+Assign a packages to users.
+* [Authorization](#user-content-authorization) is required.
+* Only an administrator can assign packages to different users.
+* Only the owner of a package can assign it back to its original
+  owner.
+
+#### Query parameters
+* The id of the user to which the package should be assigned,
+  must be given with the `assignto=user-id` parameter.
+* If the parameter `assignto` is ommited, the package is assigned to
+  the original owner of the package (the owner of the associated
+  project).
+
+---
+<a id='api-get-books-pid-takeback'></a>
+### [GET] `rest-url`/pkg/takeback/books/`pid`
+Take all packages of a project back.  All packages beloning to the
+project are reasigned to the project's owner.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project can take packages back.
 
 ---
 <a id='api-post-books-pid-adaptive-tokens'></a>
@@ -942,25 +968,6 @@ only the according ground truth files are updated.
   "archive": "relative download url of project archive",
 }
 ```
-
----
-<a id='api-get-books-pid-assign'></a>
-### [GET] `rest-url`/books/`pid`/assign
-Assign a packages to another user.
-* [Authorization](#user-content-authorization) is required.
-* Only the owner of a package can assign it to another user.
-
-#### Query parameters
-* The id of the user to which the package should be assigned,
-must be given with the `uid=user-id` parameter.
-
----
-<a id='api-get-books-pid-finish'></a>
-### [GET] `rest-url`/books/`pid`/finish
-Reassign a package to its original owner.
-* [Authorization](#user-content-authorization) is required.
-* Only the owner of a package can reassign a it.
-
 
 ---
 <a id='api-get-books-pid-search'></a>
