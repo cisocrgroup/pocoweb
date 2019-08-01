@@ -495,7 +495,7 @@ Pocoweb is composed with a number of interdependend services:
 * pcwprofiler handles profiling of projects
 * pcwpostcorrection handles the automatic postcorrection
 * pcwocr handles ocr prediction and training
-
+* pcwpkg handles splitting and assignment of packages
 ![Service Overview](img/doc/overview.png "Pocoweb service overview")
 
 - - -
