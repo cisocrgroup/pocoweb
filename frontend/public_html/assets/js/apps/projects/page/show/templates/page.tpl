@@ -1,3 +1,7 @@
+  
+  <div class="slidecontainer">
+<input type="range" min="1" max="100" value="50" class="slider" id="line_size_slider">
+</div>
 
 
     <div id="page-container" class="border rounded">
