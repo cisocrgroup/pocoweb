@@ -345,8 +345,6 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       onAttach:function(e){
         var that = this;
 
-
-
         // remove when clicked somewhere else
 
           $(document).click(function(e)
@@ -366,6 +364,25 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
               $('.line-text').css('border','')
 
           });
+
+         var slider = document.getElementById("line_size_slider");
+         
+
+            slider.oninput = function() {
+              $('.line-img > img').height(this.value);
+               $('.line-tokens').empty();
+
+                $('.line-img').each(function(index){
+                  var img = $(this);
+
+                      var line = that.model.get('lines')[index];
+                      if(line!=undefined){
+                        Util.addAlignedLine(line);
+                      }
+                  
+               });
+
+            }
 
 
 

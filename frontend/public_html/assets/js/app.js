@@ -118,10 +118,10 @@ App.on("start", function(){
                  $.when(loggingInUser).done(function(result){
                    localStorage.setItem('pcw', JSON.stringify(result));
                         App.mainmsg.updateContent("Login successful!",'success');
-                         Util.setLoggedIn(result.user.name);
-                   // console.log(App.getCurrentUser());
-                   // console.log(App.Navbar);
-                   // App.Navbar.render();
+
+                         App.Navbar.options.user = App.getCurrentUser();
+                         App.Navbar.render();
+
                           var currentRoute =  App.getCurrentRoute();
                           var page_re = /projects\/\d+.*/;
                           var page_route_found = App.getCurrentRoute().match(page_re);

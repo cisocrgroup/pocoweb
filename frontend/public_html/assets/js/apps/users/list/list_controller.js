@@ -50,7 +50,7 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 				 	 var creatingUser = UserEntities.API.createUser(data);
 			   	 	$.when(creatingUser).done(function(result){
 			   	 		$('#userModal').modal('hide');
-				         App.mainmsg.updateContent(result,'success');
+				         App.mainmsg.updateContent("Successfully created new user.",'success');
 
 				         	var fetchingUsers = UserEntities.API.getUsers();
 
