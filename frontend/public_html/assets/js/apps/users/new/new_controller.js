@@ -24,7 +24,8 @@ define(["app","common/util","apps/users/new/new_view"], function(App,Util,New){
 				 	 var creatingUser = UserEntities.API.createUser(data);
 			   	 	$.when(creatingUser).done(function(result){
 			   	 		$('#userModal').modal('hide');
-				         App.mainmsg.updateContent(result,'success');
+			   	 		console.log(result)
+				         App.mainmsg.updateContent("Successfully created new user.",'success');
 
 				         App.trigger('users:list');
 

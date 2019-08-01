@@ -44,11 +44,15 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
                  $.when(loggingOutUser).done(function(result){
                    App.clearCurrentUser();
                    App.mainmsg.updateContent("Logout successful",'success');
-                         headerShowTopbar.setLoggedOut();
-                         App.trigger('home:portal');
+                   headerShowTopbar.options.user = App.getCurrentUser();
+                   headerShowTopbar.render();
+
+                   App.trigger('home:portal');
 
                 }).fail(function(response){
                    App.clearCurrentUser();
+                   headerShowTopbar.options.user = App.getCurrentUser();
+                   headerShowTopbar.render();
                    Util.defaultErrorHandling(response,'danger');
           }); //  $.when(loggingOutUser).done
 
@@ -88,9 +92,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
              var user = login_check;
 
       App.mainmsg.updateContent("Welcome back to PoCoWeb: "+user.name+"!",'success');
-      headerShowTopbar.setLoggedIn(user.name);
         headerShowLayout.showChildView('msgRegion',App.mainmsg)
-
       }
       else {
         headerShowLayout.showChildView('msgRegion',App.mainmsg)
