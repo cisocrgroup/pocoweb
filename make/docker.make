@@ -1,6 +1,10 @@
 SUDO ?= sudo
 TAG ?= flobar/pocoweb
+ifeq (, ${shell which git})
+TAGS := latest
+else
 TAGS := ${addprefix ${TAG}:,${shell git describe --tags HEAD} latest}
+endif
 
 .PHONY: docker-build
 docker-build: Dockerfile
