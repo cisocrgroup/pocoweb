@@ -385,6 +385,17 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
             }
 
 
+             $('#line_nr_toggle').change(function() {
+
+                 $('.line-nr').toggle();
+                // if($(this).is(":checked")) {
+                //     var returnVal = confirm("Are you sure?");
+                //     $(this).attr("checked", returnVal);
+                // }
+                // $('#textbox1').val($(this).is(':checked'));        
+            });
+
+
 
 
       },
