@@ -34,7 +34,6 @@ API_OBJS += rest/src/api/DownloadRoute.o
 API_OBJS += rest/src/api/LineRoute.o
 API_OBJS += rest/src/api/PageRoute.o
 API_OBJS += rest/src/api/SearchRoute.o
-API_OBJS += rest/src/api/TokenRoute.o
 API_OBJS += rest/src/api/VersionRoute.o
 API_OBJS += rest/src/utils/Base64.o
 
