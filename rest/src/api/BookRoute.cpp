@@ -34,7 +34,8 @@ void BookRoute::Register(App &app) {
   CROW_ROUTE(app, BOOK_ROUTE_ROUTE_1)
       .methods("GET"_method, "POST"_method)(*this);
   CROW_ROUTE(app, BOOK_ROUTE_ROUTE_2)
-      .methods("GET"_method, "POST"_method, "DELETE"_method)(*this);
+      .methods("GET"_method, "POST"_method, "PUT"_method,
+               "DELETE"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -193,32 +194,6 @@ Route::Response BookRoute::impl(HttpGet, const Request &req, int bid) const {
   }
   Json j;
   return j << package;
-  // using namespace sqlpp;
-  // tables::Projects projects;
-  // tables::Books books;
-  // tables::ProjectPages pages;
-  // auto rows = conn.db()(select(all_of(books), all_of(projects), pages.pageid)
-  //                           .from(books.join(projects)
-  //                                     .on(projects.origin == books.bookid)
-  //                                     .join(pages)
-  //                                     .on(pages.projectid == projects.id))
-  //                           .where(projects.id == bid));
-  // if (rows.empty()) {
-
-  // }
-  // auto first = false;
-  // size_t p = 0;
-  // Json j;
-  // for (const auto &row : rows) {
-  //   if (!first) {
-  //     j["pages"] = row.pages;
-  //     set_book(j, row);
-  //     first = true;
-  //   }
-  //   j["pageIds"][p] = row.pageid;
-  //   ++p;
-  // }
-  // return j;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
