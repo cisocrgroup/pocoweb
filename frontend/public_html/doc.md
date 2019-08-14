@@ -47,7 +47,7 @@ for suspicious words.
 	* [[GET] `rest-url`/books](#user-content-api-get-books)
 	* [[POST] `rest-url`/books](#user-content-api-post-books)
 	* [[GET] `rest-url`/books/`pid`](#user-content-api-get-books-pid)
-	* [[POST] `rest-url`/books/`pid`](#user-content-api-post-books-pid)
+	* [[PUT] `rest-url`/books/`pid`](#user-content-api-put-books-pid)
 	* [[DELETE] `rest-url`/books/`pid`](#user-content-api-delete-books-pid)
 	* [[POST] `rest-url`/pkg/split/books/`pid`](#user-content-api-post-books-pid-split)
 	* [[GET] `rest-url`/pkg/assign/books/`pid`](#api-get-books-pid-assign)
@@ -784,25 +784,43 @@ Get all books of an user account.
 Create a new project.
 * [Authorization](#user-content-authorization) is required.
 * Only administrators can upload new projects.
-* There are two kinds of post requests:
-  1. Raw upload of [project archive](#user-content-project-archives).
-  2. Upload of local [project archive](#user-content-project-archives).
+* Upload [project archive](#user-content-project-archives).
+* You can add optional query parameters to set the book's metadata.
+* Use `Content-Type: application/zip` in the request header.
 
-#### POST raw data
-The raw data of the zipped [project
-archive](#user-content-project-archives). Use `Content-Type:
-application/zip` as request header.
+#### POST data
+Zipped content of the [project archive](#user-content-project-archives).
 
-#### POST local data
-Use `Content-Type: application/json` as request header.
+#### Query parameters
+All query parameters are optional.  Missing parameters are set to the
+empty string `""` or `0` respectively.
+* `author=book-author`
+* `title=book-title`
+* `description=description`
+* `language=language`
+* `profilerUrl=url`
+* `histPatterns=[m1:h1[,m2:h2]...]`
+* `year=1900`
+
+#### Response data
 ```json
 {
   "author": "book-author",
   "title": "book-title",
+  "description": "book's description",
   "year": 1234,
   "language": "language",
   "profilerUrl": "profiler-url|local",
-  "file": "/path/to/server-local/file
+  "bookId": 27,
+  "projectId": 27,
+  "pages": 100,
+  "pageIds": [15,18,20,27,...],
+  "status": {
+	"profile": false,
+	"extended-lexicon": false,
+	"post-corrected": false
+  },
+  "isBook": true
 }
 ```
 
@@ -811,13 +829,15 @@ Use `Content-Type: application/json` as request header.
 ### [GET] `rest-url`/books/`pid`
 Get the content of a project or package.
 * [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can access the project's or package's data.
+* Only the owner of a project or package can access the project's or
+  package's data.
 
 #### Response data
 ```json
 {
   "author": "book-author",
   "title": "book-title",
+  "description": "book's description",
   "year": 1234,
   "language": "language",
   "profilerUrl": "profiler-url|local",
@@ -835,11 +855,13 @@ Get the content of a project or package.
 ```
 
 ---
-<a id='api-post-books-pid'></a>
-### [POST] `rest-url`/books/`pid`
+<a id='api-put-books-pid'></a>
+### [PUT] `rest-url`/books/`pid`
 Update the meta data of a project.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can update the project's data.
+* Since only adminstrators can upload and therefore own projects, only
+  administrator can change a project's metadata.
 * Fields can be ommitted.
 
 #### POST data
@@ -849,6 +871,7 @@ Update the meta data of a project.
   "title": "book-title",
   "year": 1234,
   "language": "language",
+  "histPatterns": "[m1:h1[,m2:h2]...]",
   "profilerUrl": "profiler-url|local"
 }
 ```
