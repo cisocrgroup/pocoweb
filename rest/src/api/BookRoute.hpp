@@ -20,6 +20,7 @@ public:
   Response impl(HttpGet, const Request &req) const;
   Response impl(HttpGet, const Request &req, int bid) const;
   Response impl(HttpPost, const Request &req, int bid) const;
+  Response impl(HttpPut, const Request &req, int bid) const;
   Response impl(HttpDelete, const Request &req, int bid) const;
 
 private:
