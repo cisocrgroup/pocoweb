@@ -60,6 +60,8 @@ alter table projects convert to character set utf8mb4 collate utf8mb4_unicode_ci
 create table if not exists project_pages (
 	projectid int not null references projects(id),
 	pageid int not null references pages(pageid),
+	nextpageid int not null references pages(pageid),
+	prevpageid int not null references pages(pageid),
 	primary key (projectid, pageid)
 );
 alter table project_pages convert to character set utf8mb4 collate utf8mb4_unicode_ci;

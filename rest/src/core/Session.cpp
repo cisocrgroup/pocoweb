@@ -41,5 +41,6 @@ void Session::uncache_project(int pid) const {
   }
   if (cache_) {
     cache_->projects.del(pid);
+    cache_->books.del(pid);
   }
 }

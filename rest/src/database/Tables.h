@@ -122,7 +122,7 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::boolean>;
     };
-  }
+  } // namespace Users_
 
   struct Users: sqlpp::table_t<Users,
                Users_::Id,
@@ -196,7 +196,7 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
     };
-  }
+  } // namespace Sessions_
 
   struct Sessions: sqlpp::table_t<Sessions,
                Sessions_::Auth,
@@ -426,7 +426,7 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::boolean>;
     };
-  }
+  } // namespace Books_
 
   struct Books: sqlpp::table_t<Books,
                Books_::Bookid,
@@ -522,7 +522,7 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
     };
-  }
+  } // namespace Projects_
 
   struct Projects: sqlpp::table_t<Projects,
                Projects_::Id,
@@ -577,11 +577,45 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
     };
-  }
+    struct Nextpageid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "nextpageid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T nextpageid;
+            T& operator()() { return nextpageid; }
+            const T& operator()() const { return nextpageid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
+    };
+    struct Prevpageid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "prevpageid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T prevpageid;
+            T& operator()() { return prevpageid; }
+            const T& operator()() const { return prevpageid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
+    };
+  } // namespace ProjectPages_
 
   struct ProjectPages: sqlpp::table_t<ProjectPages,
                ProjectPages_::Projectid,
-               ProjectPages_::Pageid>
+               ProjectPages_::Pageid,
+               ProjectPages_::Nextpageid,
+               ProjectPages_::Prevpageid>
   {
     struct _alias_t
     {
@@ -742,7 +776,7 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
     };
-  }
+  } // namespace Pages_
 
   struct Pages: sqlpp::table_t<Pages,
                Pages_::Bookid,
@@ -898,7 +932,7 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
     };
-  }
+  } // namespace Textlines_
 
   struct Textlines: sqlpp::table_t<Textlines,
                Textlines_::Bookid,
@@ -1053,7 +1087,7 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::floating_point, sqlpp::tag::require_insert>;
     };
-  }
+  } // namespace Contents_
 
   struct Contents: sqlpp::table_t<Contents,
                Contents_::Bookid,
@@ -1112,7 +1146,7 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
-  }
+  } // namespace Types_
 
   struct Types: sqlpp::table_t<Types,
                Types_::Id,
@@ -1165,7 +1199,7 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::bigint, sqlpp::tag::require_insert>;
     };
-  }
+  } // namespace Profiles_
 
   struct Profiles: sqlpp::table_t<Profiles,
                Profiles_::Bookid,
@@ -1362,7 +1396,7 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::boolean, sqlpp::tag::require_insert>;
     };
-  }
+  } // namespace Suggestions_
 
   struct Suggestions: sqlpp::table_t<Suggestions,
                Suggestions_::Id,
@@ -1456,7 +1490,7 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::boolean, sqlpp::tag::require_insert>;
     };
-  }
+  } // namespace Errorpatterns_
 
   struct Errorpatterns: sqlpp::table_t<Errorpatterns,
                Errorpatterns_::Suggestionid,
@@ -1527,7 +1561,7 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
     };
-  }
+  } // namespace Typcounts_
 
   struct Typcounts: sqlpp::table_t<Typcounts,
                Typcounts_::Bookid,
@@ -1581,7 +1615,7 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
     };
-  }
+  } // namespace Adaptivetokens_
 
   struct Adaptivetokens: sqlpp::table_t<Adaptivetokens,
                Adaptivetokens_::Bookid,
@@ -1634,7 +1668,7 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
     };
-  }
+  } // namespace Status_
 
   struct Status: sqlpp::table_t<Status,
                Status_::Id,
@@ -1719,7 +1753,7 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
     };
-  }
+  } // namespace Jobs_
 
   struct Jobs: sqlpp::table_t<Jobs,
                Jobs_::Id,
@@ -1740,5 +1774,5 @@ namespace tables
       };
     };
   };
-}
+} // namespace tables
 #endif

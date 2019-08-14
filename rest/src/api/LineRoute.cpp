@@ -7,6 +7,7 @@
 #include "core/SessionDirectory.hpp"
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
+#include "database/DbStructs.hpp"
 #include "utils/Error.hpp"
 #include "utils/ScopeGuard.hpp"
 #include <crow.h>
@@ -31,19 +32,27 @@ void LineRoute::Register(App &app) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response LineRoute::impl(HttpGet, const Request &req, int bid, int pid,
-                                int lid) const {
-  LockedSession session(get_session(req));
+// GET /books/<bid>/pages/<pid>/lines/<lid>
+////////////////////////////////////////////////////////////////////////////////
+Route::Response LineRoute::impl(HttpGet, const Request &req, int pid,
+                                int pageid, int lid) const {
+  CROW_LOG_INFO << "(LineRoute) GET line: " << pid << ":" << pageid << ":"
+                << lid;
   auto conn = must_get_connection();
-  auto line = session->must_find(conn, bid, pid, lid);
+  DbLine line(pid, pageid, lid);
+  if (not line.load(conn)) {
+    THROW(NotFound, "(LineRoute) cannot find ", pid, ":", pageid, ":", lid);
+  }
   Json j;
-  return wj(j, *line, bid);
+  return j << line;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// POST /books/<bid>/pages/<pid>/lines/<lid>
+////////////////////////////////////////////////////////////////////////////////
 Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
                                 int lid) const {
-  CROW_LOG_INFO << "POST line: " << pid << ":" << p << ":" << lid;
+  CROW_LOG_INFO << "(LineRoute) POST line: " << pid << ":" << p << ":" << lid;
   const auto json = crow::json::load(req.body);
   const auto correction = get<std::string>(json, "correction");
   if (not correction) {
@@ -52,12 +61,17 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
   Corrector corrector(conn, pid, p, lid);
-  return corrector.toJSON(corrector.correctWholeLine(correction.value()));
+  auto line = corrector.correctWholeLine(correction.value());
+  session->uncache_project(pid);
+  return corrector.toJSON(line);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// DELETE /books/<bid>/pages/<pid>/lines/<lid>
+////////////////////////////////////////////////////////////////////////////////
 Route::Response LineRoute::impl(HttpDelete, const Request &req, int pid, int p,
                                 int lid) const {
+  CROW_LOG_INFO << "(LineRoute) DELETE line: " << pid << ":" << p << ":" << lid;
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
   auto page = session->must_find(conn, pid, p);
@@ -73,22 +87,29 @@ Route::Response LineRoute::impl(HttpDelete, const Request &req, int pid, int p,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response LineRoute::impl(HttpGet, const Request &req, int pid, int p,
-                                int lid, int tid) const {
-  LockedSession session(get_session(req));
+// GET /books/<bid>/pages/<pid>/lines/<lid>/tokens/<tid>{?len=}
+////////////////////////////////////////////////////////////////////////////////
+Route::Response LineRoute::impl(HttpGet, const Request &req, int pid,
+                                int pageid, int lid, int tid) const {
+  CROW_LOG_INFO << "(LineRoute) GET token: " << pid << ":" << pageid << ":"
+                << lid << ":" << tid;
+  const auto len = get<int>(req.url_params, "len");
   auto conn = must_get_connection();
-  auto line = session->must_find(conn, pid, p, lid);
-  auto token = find_token(*line, tid);
-  if (not token) {
-    THROW(NotFound, "(LineRoute) cannot find token id ", tid);
+  DbLine line{pid, pageid, lid};
+  if (not line.load(conn)) {
+    THROW(NotFound, "(LineRoute) cannot find ", pid, ":", pageid, ":", lid);
   }
   Json j;
-  return wj(j, *token, pid);
+  return j << line.token(tid, len);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// POST /books/<bid>/pages/<pid>/lines/<lid>/tokens/<tid>{?len=}
+////////////////////////////////////////////////////////////////////////////////
 Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
                                 int lid, int tid) const {
+  CROW_LOG_INFO << "(LineRoute) POST token: " << pid << ":" << p << ":" << lid
+                << ":" << tid;
   const auto json = crow::json::load(req.body);
   const auto c = get<std::string>(json, "correction");
   if (not c) {
@@ -142,8 +163,8 @@ Route::Response LineRoute::correctx(MysqlConnection &conn, int pid, int tid,
                                     Line &line, const std::string &c) const {
   auto token = find_token(line, tid);
   if (not token) {
-    THROW(NotFound, "(LineRoute) cannot find ", line.page().book().id(), "-",
-          line.page().id(), "-", line.id(), "-", tid);
+    THROW(NotFound, "(LineRoute) cannot find ", line.page().book().id(), ":",
+          line.page().id(), ":", line.id(), ":", tid);
   }
   WagnerFischer wf;
   wf.set_ocr(line);
@@ -186,13 +207,83 @@ void LineRoute::update_line(MysqlConnection &conn, const Line &line) {
   pcw::update_line(conn.db(), line);
   committer.commit();
 }
+
+// ////////////////////////////////////////////////////////////////////////////////
+// std::shared_ptr<Line>
+// LineLoader::loadLine()
+// {
+//   // using namespace sqlpp;
+//   // tables::Contents c;
+//   // tables::Textlines l;
+//   // tables::Projects p;
+//   // auto x =
+//   //   c_.db()(select(p.id,
+//   //                  l.bookid,
+//   //                  l.pageid,
+//   //                  l.lineid,
+//   //                  l.imagepath,
+//   //                  l.lleft,
+//   //                  l.ltop,
+//   //                  l.lright,
+//   //                  l.lbottom,
+//   //                  c.cut,
+//   //                  c.conf,
+//   //                  c.ocr,
+//   //                  c.cor)
+//   //             .from(p.join(l)
+//   //                     .on(p.origin == l.bookid)
+//   //                     .join(c)
+//   //                     .on(c.bookid == l.bookid and c.pageid == l.pageid
+//   and
+//   //                         c.lineid == l.lineid))
+//   //             .where(p.id == pid_ and l.pageid == pageid_ and l.lineid ==
+//   //             lid_) .order_by(c.seq.asc()));
+//   // select text line
+//   // auto rows1 = c_.db()(
+//   //   select(l.imagepath, l.lleft, l.lright, l.ltop, l.lbottom)
+//   //     .from(l)
+//   //     .where(l.lineid == lid_ and l.pageid == pageid_ and l.bookid ==
+//   pid_));
+//   // if (rows1.empty()) {
+//   //   THROW(NotFound, "(LineLoader) no line");
+//   // }
+//   // LineBuilder builder;
+//   // builder.set_id(lid_);
+//   //
+//   builder.set_image_path(static_cast<std::string>(rows1.front().imagepath));
+//   // builder.set_box({ static_cast<int>(rows1.front().lleft),
+//   //                   static_cast<int>(rows1.front().ltop),
+//   //                   static_cast<int>(rows1.front().lright),
+//   //                   static_cast<int>(rows1.front().lbottom) });
+//   // // select content
+//   // auto rows = c_.db()(
+//   //   select(all_of(c))
+//   //     .from(c)
+//   //     .where(c.lineid == lid_ and c.pageid == pageid_ and c.bookid ==
+//   pid_)
+//   //     .order_by(c.seq.asc()));
+//   // if (rows.empty()) {
+//   //   THROW(NotFound, "(LineLoader) no content");
+//   // }
+//   // for (const auto& row : rows) {
+//   //   builder.append(static_cast<wchar_t>(row.ocr),
+//   //                  static_cast<wchar_t>(row.cor),
+//   //                  row.cut,
+//   //                  row.conf);
+//   // }
+//   // return builder.build();
+//   return nullptr;
+// }
+
 ////////////////////////////////////////////////////////////////////////////////
 std::shared_ptr<Line>
 Corrector::correctWholeLine(const std::string &correction) {
   MysqlCommitter committer(c_);
   origin_ = loadOrigin();
   assert(origin_ != 0);
-  auto line = loadLine();
+  // LineLoader ll(c_, origin_, pageid_, lid_);
+  // auto line = ll.loadLine();
+  std::shared_ptr<Line> line;
   assert(line);
   correct(*line, correction);
   committer.commit();
@@ -240,34 +331,6 @@ int Corrector::loadOrigin() const {
     THROW(NotFound, "(Corrector) cannot find origin id for project");
   }
   return rows.front().origin;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr<Line> Corrector::loadLine() const {
-  using namespace sqlpp;
-  tables::Contents c;
-  tables::Textlines l;
-  auto rows = c_.db()(
-      select(all_of(c), l.imagepath, l.lleft, l.lright, l.ltop, l.lbottom)
-          .from(c.join(l).on(c.bookid == l.bookid))
-          .where(c.lineid == lid_ and c.pageid == pageid_ and
-                 c.bookid == origin_)
-          .order_by(c.seq.asc()));
-  if (rows.empty()) {
-    THROW(NotFound, "(Corrector) no content");
-  }
-  LineBuilder builder;
-  builder.set_id(lid_);
-  builder.set_image_path(static_cast<std::string>(rows.front().imagepath));
-  builder.set_box({static_cast<int>(rows.front().lleft),
-                   static_cast<int>(rows.front().ltop),
-                   static_cast<int>(rows.front().lright),
-                   static_cast<int>(rows.front().lbottom)});
-  for (const auto &row : rows) {
-    builder.append(static_cast<wchar_t>(row.ocr), static_cast<wchar_t>(row.cor),
-                   row.cut, row.conf);
-  }
-  return builder.build();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -8,6 +8,7 @@
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
 #include "core/util.hpp"
+#include "database/DbStructs.hpp"
 #include "utils/Error.hpp"
 #include "utils/ScopeGuard.hpp"
 #include <boost/filesystem.hpp>
@@ -37,43 +38,49 @@ void BookRoute::Register(App &app) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// GET /books
+////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpGet, const Request &req) const {
-  LockedSession session(get_session(req));
+  const auto uid = get<int>(req.url_params, "userid");
+  if (not uid) {
+    THROW(BadRequest, "(BookRoute) Missing userid");
+  }
+  CROW_LOG_INFO << "(BookRoute) GET packages for user: " << uid.value();
   auto conn = must_get_connection();
-  const auto uid = session->user();
-  CROW_LOG_INFO << "(BookRoute) loading projects and packages for user id: "
-                << uid;
   using namespace sqlpp;
   tables::Projects projects;
+  tables::ProjectPages pp;
   tables::Books books;
-  tables::ProjectPages pages;
-  auto rows = conn.db()(select(all_of(projects), all_of(books), pages.pageid)
+  auto rows = conn.db()(select(all_of(projects), all_of(books), pp.pageid)
                             .from(projects.join(books)
                                       .on(projects.origin == books.bookid)
-                                      .join(pages)
-                                      .on(projects.id == pages.projectid))
-                            .where(projects.owner == uid)
-                            .order_by(projects.id.asc()));
+                                      .join(pp)
+                                      .on(pp.projectid == projects.id))
+                            .where(projects.owner == uid.value())
+                            .order_by(projects.id.asc(), pp.pageid.asc()));
+  // build packages with their page ids
+  std::vector<DbPackage> packages;
+  auto pid = -1;
+  for (const auto &row : rows) {
+    if (pid != row.id) {
+      packages.emplace_back(int(row.id));
+      load_from_row(row, packages.back());
+      pid = row.id;
+    }
+    packages.back().pageids.push_back(row.pageid);
+  }
+  // build json response
   Json j;
   j["books"] = crow::json::rvalue(crow::json::type::List);
-  int last_id = -1;
-  size_t i = -1;
-  size_t p = 0;
-  for (const auto &row : rows) {
-    if (last_id != row.id) {
-      ++i;
-      p = 0;
-      last_id = row.id;
-      j["books"][i]["pages"] = row.pages;
-      set_book(j["books"][i], row);
-    }
-    j["books"][i]["pageIds"][p] = row.pageid;
-    ++p;
+  auto i = 0;
+  for (const auto &package : packages) {
+    j["books"][i++] << package;
   }
-  CROW_LOG_DEBUG << "(BookRoute) loaded " << i << " projects and packages";
   return j;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// POST /books
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpPost, const Request &req) const {
   LockedSession session(get_session(req));
@@ -175,40 +182,50 @@ template <class Rows> size_t append_page_ids(Json &json, Rows &rows) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// GET /books/<bid>
+////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpGet, const Request &req, int bid) const {
-  LockedSession session(get_session(req));
+  CROW_LOG_DEBUG << "(BookRoute) GET package: " << bid;
   auto conn = must_get_connection();
-  using namespace sqlpp;
-  tables::Projects projects;
-  tables::Books books;
-  tables::ProjectPages pages;
-  auto rows = conn.db()(select(all_of(books), all_of(projects), pages.pageid)
-                            .from(books.join(projects)
-                                      .on(projects.origin == books.bookid)
-                                      .join(pages)
-                                      .on(pages.projectid == projects.id))
-                            .where(projects.id == bid));
-  if (rows.empty()) {
-    THROW(NotFound, "cannot find project or package id: ", bid);
+  DbPackage package(bid);
+  if (not package.load(conn)) {
+    THROW(NotFound, "cannot find package id: ", bid);
   }
-  auto first = false;
-  size_t p = 0;
   Json j;
-  for (const auto &row : rows) {
-    if (!first) {
-      j["pages"] = row.pages;
-      set_book(j, row);
-      first = true;
-    }
-    j["pageIds"][p] = row.pageid;
-    ++p;
-  }
-  return j;
+  return j << package;
+  // using namespace sqlpp;
+  // tables::Projects projects;
+  // tables::Books books;
+  // tables::ProjectPages pages;
+  // auto rows = conn.db()(select(all_of(books), all_of(projects), pages.pageid)
+  //                           .from(books.join(projects)
+  //                                     .on(projects.origin == books.bookid)
+  //                                     .join(pages)
+  //                                     .on(pages.projectid == projects.id))
+  //                           .where(projects.id == bid));
+  // if (rows.empty()) {
+
+  // }
+  // auto first = false;
+  // size_t p = 0;
+  // Json j;
+  // for (const auto &row : rows) {
+  //   if (!first) {
+  //     j["pages"] = row.pages;
+  //     set_book(j, row);
+  //     first = true;
+  //   }
+  //   j["pageIds"][p] = row.pageid;
+  //   ++p;
+  // }
+  // return j;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// POST /books/<bid>
+////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpPost, const Request &req, int bid) const {
-  CROW_LOG_DEBUG << "(BookRoute) post book: " << bid;
+  CROW_LOG_DEBUG << "(BookRoute) POST package: " << bid;
   auto data = crow::json::load(req.body);
   LockedSession session(get_session(req));
   auto conn = must_get_connection();
@@ -226,7 +243,10 @@ Route::Response BookRoute::impl(HttpPost, const Request &req, int bid) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// DELETE /books/bid
+////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpDelete, const Request &req, int bid) const {
+  CROW_LOG_DEBUG << "(BookRoute) DELETE package: " << bid;
   const LockedSession session(get_session(req));
   auto conn = must_get_connection();
   const auto project = session->must_find(conn, bid);
@@ -246,80 +266,3 @@ Route::Response BookRoute::impl(HttpDelete, const Request &req, int bid) const {
   committer.commit();
   return ok();
 }
-
-#ifdef foo
-////////////////////////////////////////////////////////////////////////////////
-void BookRoute::remove_project(MysqlConnection &conn, const Session &session,
-                               const Project &project) const {
-  assert(not project.is_book());
-  CROW_LOG_DEBUG << "(BookRoute) removing project id: " << project.id();
-  MysqlCommitter committer(conn);
-  remove_project_impl(conn, project.id());
-  session.uncache_project(project.id());
-  committer.commit();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void BookRoute::remove_project_impl(MysqlConnection &conn, int pid) const {
-  using namespace sqlpp;
-  tables::Projects p;
-  tables::ProjectPages pp;
-  tables::Profiles ppp;
-  tables::Suggestions s;
-  tables::Errorpatterns e;
-  tables::Adaptivetokens a;
-  tables::Types t;
-  conn.db()(remove_from(pp).where(pp.projectid == pid));
-  conn.db()(remove_from(p).where(p.projectid == pid));
-  conn.db()(remove_from(ppp).where(ppp.bookid == pid));
-  conn.db()(remove_from(s).where(s.bookid == pid));
-  conn.db()(remove_from(e).where(e.bookid == pid));
-  conn.db()(remove_from(t).where(t.bookid == pid));
-  conn.db()(remove_from(a).where(a.bookid == pid));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void BookRoute::remove_book(MysqlConnection &conn, const Session &session,
-                            const Book &book) const {
-  assert(book.is_book());
-  CROW_LOG_DEBUG << "(BookRoute) removing book id: " << book.id();
-  using namespace sqlpp;
-  tables::Projects p;
-  tables::Textlines l;
-  tables::Contents c;
-  tables::Pages pgs;
-  tables::Profiles ppp;
-  tables::Suggestions s;
-  tables::Errorpatterns e;
-  tables::Types t;
-  tables::Books b;
-  MysqlCommitter committer(conn);
-  auto pids = conn.db()(
-      select(p.projectid, p.owner).from(p).where(p.origin == book.id()));
-  for (const auto &pid : pids) {
-    if (static_cast<int>(pid.owner) != session.user().id()) {
-      THROW(Forbidden, "cannot delete book: project id: ", pid.projectid,
-            " is not finished");
-    }
-    remove_project_impl(conn, pid.projectid);
-    session.uncache_project(pid.projectid);
-  }
-  conn.db()(remove_from(c).where(c.bookid == book.id()));
-  conn.db()(remove_from(l).where(l.bookid == book.id()));
-  conn.db()(remove_from(pgs).where(pgs.bookid == book.id()));
-  conn.db()(remove_from(ppp).where(ppp.bookid == book.id()));
-  conn.db()(remove_from(s).where(s.bookid == book.id()));
-  conn.db()(remove_from(e).where(e.bookid == book.id()));
-  conn.db()(remove_from(t).where(t.bookid == book.id()));
-  conn.db()(remove_from(b).where(b.bookid == book.id()));
-  const auto dir = book.data.dir;
-  CROW_LOG_INFO << "(BookRoute) removing directory: " << dir;
-  boost::system::error_code ec;
-  boost::filesystem::remove_all(dir, ec);
-  if (ec)
-    CROW_LOG_WARNING << "(BookRoute) cannot remove directory: " << dir << ": "
-                     << ec.message();
-  session.uncache_project(book.id());
-  committer.commit();
-}
-#endif

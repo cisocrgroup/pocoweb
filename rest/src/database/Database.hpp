@@ -35,6 +35,9 @@ template <class Row> BookData make_book_data(const Row &row) noexcept;
 
 template <class Row> ProjectEntry make_project_entry(const Row &row) noexcept;
 
+template <class Db>
+void insert_pages_into_project_pages(Db &db, const Project &p);
+
 template <class Db, class P, class Q, class R>
 void insert_page(Db &db, P &p, Q &q, R &r, const Page &page);
 
@@ -114,20 +117,38 @@ void pcw::detail::insert_project_info_and_set_id(Db &db, Project &view) {
 ////////////////////////////////////////////////////////////////////////////////
 template <class Db>
 pcw::ProjectSptr pcw::insert_project(Db &db, Project &view) {
-  using namespace sqlpp;
   detail::insert_project_info_and_set_id(db, view);
+  detail::insert_pages_into_project_pages(db, view);
+  return view.shared_from_this();
+}
 
+////////////////////////////////////////////////////////////////////////////////
+template <class Db>
+void pcw::detail::insert_pages_into_project_pages(Db &db, const Project &view) {
+  using namespace sqlpp;
   tables::ProjectPages project_pages;
   auto stmnt = db.prepare(
       insert_into(project_pages)
           .set(project_pages.projectid = view.id(),
-               project_pages.pageid = parameter(project_pages.pageid)));
-  for (const auto &page : view) {
-    assert(page);
-    stmnt.params.pageid = page->id();
+               project_pages.pageid = parameter(project_pages.pageid),
+               project_pages.nextpageid = parameter(project_pages.nextpageid),
+               project_pages.prevpageid = parameter(project_pages.prevpageid)));
+
+  const auto e = view.end();
+  boost::optional<int> prev;
+  for (auto i = view.begin(); i != e;) {
+    const auto id = (*i)->id();
+    ++i;
+    boost::optional<int> next;
+    if (i != e) {
+      next = (*i)->id();
+    }
+    stmnt.params.pageid = id;
+    stmnt.params.nextpageid = next.value_or(id);
+    stmnt.params.prevpageid = prev.value_or(id);
     db(stmnt);
+    prev = id;
   }
-  return view.shared_from_this();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -196,16 +217,10 @@ template <class Db> pcw::BookSptr pcw::insert_book(Db &db, Book &book) {
                                 contents.cor = parameter(contents.cor),
                                 contents.cut = parameter(contents.cut),
                                 contents.conf = parameter(contents.conf)));
-  tables::ProjectPages pp;
-  auto pps =
-      db.prepare(insert_into(pp).set(pp.projectid = parameter(pp.projectid),
-                                     pp.pageid = parameter(pp.pageid)));
+  detail::insert_pages_into_project_pages(db, book);
   for (const auto &page : book) {
     assert(page);
     detail::insert_page(db, p, q, r, *page);
-    pps.params.pageid = page->id();
-    pps.params.projectid = book.id();
-    db(pps);
   }
   return std::static_pointer_cast<Book>(book.shared_from_this());
 }

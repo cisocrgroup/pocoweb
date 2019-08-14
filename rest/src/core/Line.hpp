@@ -16,8 +16,7 @@ using ConstLineSptr = std::shared_ptr<const Line>;
 struct Token;
 struct Char;
 
-class Line : public std::enable_shared_from_this<Line>
-{
+class Line : public std::enable_shared_from_this<Line> {
 public:
   using Chars = std::vector<Char>;
   using CharIterator = Chars::const_iterator;
@@ -39,23 +38,23 @@ public:
   std::string cor() const;
   Cuts cuts() const;
   Confidences confidences() const;
-  const Chars& chars() const noexcept { return chars_; }
-  const Char& operator[](size_t i) const noexcept { return chars_[i]; }
+  const Chars &chars() const noexcept { return chars_; }
+  const Char &operator[](size_t i) const noexcept { return chars_[i]; }
   double average_conf() const noexcept;
 
-  const Page& page() const noexcept { return *page_.lock(); }
+  const Page &page() const noexcept { return *page_.lock(); }
   bool has_img_path() const noexcept { return not img.empty(); }
-  void each_token(std::function<void(const Token&)> f) const;
+  void each_token(std::function<void(const Token &)> f) const;
   std::vector<Token> tokens() const;
   std::vector<Token> words() const;
   int id() const noexcept { return id_; }
 
-  void append(const std::string& str, int l, int r, double c);
-  void append(const std::wstring& str, int l, int r, double c);
-  void append(const char* str, int l, int r, double);
-  void append(const wchar_t* str, int l, int r, double c);
-  void append(const char* str, size_t n, int l, int r, double c);
-  void append(const wchar_t* str, size_t n, int l, int r, double c);
+  void append(const std::string &str, int l, int r, double c);
+  void append(const std::wstring &str, int l, int r, double c);
+  void append(const char *str, int l, int r, double);
+  void append(const wchar_t *str, int l, int r, double c);
+  void append(const char *str, size_t n, int l, int r, double c);
+  void append(const wchar_t *str, size_t n, int l, int r, double c);
   void append(wchar_t c, int r, double conf);
   void append(wchar_t o, wchar_t c, int r, double conf);
 
@@ -76,18 +75,14 @@ private:
   static int64_t unique_id(int bid, int pid, int lid, int tid) noexcept;
   void divide_cuts(Chars::iterator f, Chars::iterator l);
 
-  template<class It, class F>
-  static void cor(It b, It e, F f)
-  {
+  template <class It, class F> static void cor(It b, It e, F f) {
     while (b != e) {
       if (b->get_cor())
         f(*b);
       ++b;
     }
   }
-  template<class It, class F>
-  static void ocr(It b, It e, F f)
-  {
+  template <class It, class F> static void ocr(It b, It e, F f) {
     while (b != e) {
       if (b->ocr)
         f(*b);
@@ -105,8 +100,7 @@ private:
   friend struct Char;
 };
 
-struct Token
-{
+struct Token {
   Token() = default;
 
   double average_conf() const;
@@ -123,8 +117,7 @@ struct Token
   bool is_partially_corrected() const noexcept;
   bool is_normal() const;
   size_t size() const noexcept { return std::distance(begin, end); }
-  size_t offset() const noexcept
-  {
+  size_t offset() const noexcept {
     return std::distance(line->chars_.begin(), begin);
   }
 
@@ -134,24 +127,18 @@ struct Token
   int id;
 };
 
-struct Char
-{
+struct Char {
   static const wchar_t DELETION = 0xffffffff;
   Char() = default;
   Char(wchar_t o, wchar_t c, int ccut, double cconf)
-    : ocr(o)
-    , cor(c)
-    , conf(cconf)
-    , cut(ccut)
-  {}
+      : ocr(o), cor(c), conf(cconf), cut(ccut) {}
   bool is_deletion() const noexcept { return cor == DELETION; }
   bool is_insertion() const noexcept { return cor and not ocr; }
   bool is_substitution() const noexcept { return cor and ocr and cor != ocr; }
   bool is_corrected() const noexcept { return cor; }
   bool is_word() const noexcept;
   bool is_sep() const noexcept;
-  wchar_t get_cor() const noexcept
-  {
+  wchar_t get_cor() const noexcept {
     return is_deletion() ? 0 : is_corrected() ? cor : ocr;
   }
 
@@ -159,6 +146,6 @@ struct Char
   double conf;
   int cut;
 };
-}
+} // namespace pcw
 
 #endif // pcw_Line_hpp__
