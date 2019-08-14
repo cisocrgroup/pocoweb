@@ -90,14 +90,28 @@ getProject: function(data){
 },
 
 	uploadProjectData: function(data){
-		var defer = jQuery.Deferred();
-		var auth = App.getAuthToken();
+		let defer = jQuery.Deferred();
+        let formData = new FormData(data);
+        let params = jQuery.param({
+             "auth": App.getAuthToken(),
+             "title": formData.get('title'),
+             "author": formData.get('author'),
+             "profilerUrl": formData.get('profilerUrl'),
+             "language": formData.get('language'),
+             "year": formData.get('year'),
+             "histPatterns": formData.get('histPatterns')
+        });
+        let zip = formData.get('archive');
 		$.ajax({
-			url: "api/upload.php?auth="+auth,
+			headers: {
+				'Content-Type': 'application/zip',
+                'Accept': 'application/json'
+			},
+			url: "rest/books?" + params,
 			type: "POST",
-			data: new FormData(data),
-			cache:false,
-			processData:false,
+			data: zip,
+			cache: false,
+			processData: false,
 			contentType: false,
 			success: function(data) {
 				defer.resolve(data);
