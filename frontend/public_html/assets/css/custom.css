@@ -786,7 +786,7 @@ span.pl-bl {
 
 .slider {
   -webkit-appearance: none;
-  width: 100%;
+  width: 200px;
   height: 15px;
   border-radius: 5px;   
   background: #d3d3d3;
@@ -802,7 +802,7 @@ span.pl-bl {
   width: 25px;
   height: 25px;
   border-radius: 50%; 
-  background: #4CAF50;
+  background: #0062cc;
   cursor: pointer;
 }
 
@@ -810,6 +810,6 @@ span.pl-bl {
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background: #4CAF50;
+  background: #0062cc;
   cursor: pointer;
 }
