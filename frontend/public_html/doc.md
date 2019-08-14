@@ -620,6 +620,8 @@ Check if logged in and get the settings of the logged in user account.
 Create a new user account.
 * [Authorization](#user-content-authorization) is required.
 * Only administrators can create new user accounts.
+* If the `"password"` field in the post data is omitted (or is set to
+  `""` explicitly), the user's password is not changed.
 
 #### POST data
 ```json
