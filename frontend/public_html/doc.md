@@ -65,6 +65,7 @@ for suspicious words.
 	* [[POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-post-books-pid-pages-pageid-lines-lid)
    * [[DELETE] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-delete-books-pid-pages-pageid-lines-lid)
 	* [[POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid)
+	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-get-books-pid-pages-pageid-lines-lid-tokens-tid)
 	* [[GET] `rest-url`/profile/books/`pid`](#user-content-api-get-books-pid-profile)
 	* [[POST] `rest-url`/profile/books/`pid`](#user-content-api-post-books-pid-profile)
 	* [[POST] `rest-url`/profile/suspicious/books/`pid`](#user-content-api-get-books-pid-suspicious)
@@ -1430,11 +1431,53 @@ Delete line `lid` in page `pageid` of project with id `pid`.
 * Only the owner of a project can delete a line.
 
 ---
-<a id='api-post-books-pid-pages-pageid-lines-lid-tokens-tid'></a>
+<a id='api-get-books-pid-pages-pageid-lines-lid-tokens-tid'></a>
+### [GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`
+Get a token (or slice) of a token in a line starting at position
+`tid`.  The position specifies the offset of the token in the line
+(counting unicode code-points).
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access its tokens.
+
+#### Query parameters
+An optional parameter `len=n` can be specified to get a specific slice
+of the line starting at position `tid` and ending at position
+`tid+len-1` (counting unicode code-points).  If `len` is omitted an
+according token (ending at the first encountered whitespace character
+after `tid` or the end of the line) is returned.
+
+#### Response data
+```json
+{
+  "lineId": 13,
+  "pageId": 38,
+  "projectId": 27,
+  "bookId": 27,
+  "tokenId": 77,
+  "offset": 77,
+  "cor": "corrected content",
+  "ocr": "ocr content",
+  "cuts": [1, 3, 5, 7, 9, 11, ...],
+  "confidences": [0.1, 0.1, 0.9, 1.0, ...],
+  "averageConfidence": 0.5,
+  "isFullyCorrected": true|false,
+  "isPartiallyCorrected": true|false,
+  "box": {
+    "left": 1,
+    "right": 2,
+    "top": 3,
+    "bottom": 4,
+    "width": 1,
+    "height": 1
+  }
+}
+```
+
+--- <a id='api-post-books-pid-pages-pageid-lines-lid-tokens-tid'></a>
 ### [POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`
 Correct word `tid` in line `lid` in page `pageid` of project or package `pid`.
 * [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can read its lines.
+* Only the owner of a project or package can correct its tokens.
 
 #### Post data
 ```json
