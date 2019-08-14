@@ -1,0 +1,16 @@
+{
+  "ocr": [
+    {
+      "type": "ocropy",
+      "path": "${DATA}/config/ocrd-cis-ocropy-fraktur1.json"
+    }
+  ],
+  "jar": "/apps/ocrd-cis.jar",
+  "lexiconExtensionProtocol": ".",
+  "decisionMakerProtocol": ".",
+  "additionalLexicon": ".",
+  "model": "${DATA}/models/model.zip",
+  "nOCR": 2,
+  "runLexiconExtension": true,
+  "runDescisionMaker": true
+}

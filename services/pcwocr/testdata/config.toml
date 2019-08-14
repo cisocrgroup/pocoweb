@@ -1,0 +1,8 @@
+TrainArgs = [
+  	"--no_progress_bars",
+]
+PredictArgs = [
+	"--no_progress_bars",
+	"--processes", "3", # because it's prime
+	"--batch_size", "3",
+]

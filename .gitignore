@@ -22,3 +22,5 @@ env
 tests.log
 profile-tmp.xml
 TAGS
+cover.out
+pcw*
