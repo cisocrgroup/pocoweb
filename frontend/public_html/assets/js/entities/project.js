@@ -182,19 +182,20 @@ downloadProject: function(data){
     data['projectdata']['year'] = parseInt(data['projectdata']['year']);
     console.log(data)
     var defer = jQuery.Deferred();
-      $.ajax({
-        headers: {
-          'Accept': 'application/json'
-        },
-        url: "rest/books/" + data.pid + "?auth=" + App.getAuthToken(),
-        type: "POST",
-        data: JSON.stringify(data['projectdata']),
-        success: function(data) {
-              defer.resolve(data);
-            },
-            error: function(data){
-              defer.reject(data);
-            }
+    $.ajax({
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      url: "rest/books/" + data.pid + "?auth=" + App.getAuthToken(),
+      type: "PUT",
+      data: JSON.stringify(data['projectdata']),
+      success: function(data) {
+        defer.resolve(data);
+      },
+      error: function(data){
+        defer.reject(data);
+      }
     });
 
     return defer.promise();

@@ -121,17 +121,24 @@ func main() {
 		http.MethodGet, service.WithAuth(forward(pocoweb)),
 		http.MethodPost, service.WithAuth(forward(pocoweb)))))
 	http.HandleFunc("/books/", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithAuth(service.WithProject(projectOwner(forward(pocoweb)))),
-		http.MethodPost, service.WithAuth(service.WithProject(projectOwner(forward(pocoweb)))),
-		http.MethodDelete, service.WithAuth(service.WithProject(projectOwner(forward(pocoweb)))))))
+		http.MethodGet, service.WithAuth(
+			service.WithProject(projectOwner(forward(pocoweb)))),
+		http.MethodPut, service.WithAuth(
+			service.WithProject(projectOwner(forward(pocoweb)))),
+		http.MethodPost, service.WithAuth(
+			service.WithProject(projectOwner(forward(pocoweb)))),
+		http.MethodDelete, service.WithAuth(
+			service.WithProject(projectOwner(forward(pocoweb)))))))
 	// profiling
 	http.HandleFunc("/profile/languages", service.WithLog(service.WithMethods(
 		http.MethodGet, forward(profiler))))
 	http.HandleFunc("/profile/jobs/", service.WithLog(service.WithMethods(
 		http.MethodGet, service.WithAuth(forward(profiler)))))
 	http.HandleFunc("/profile/", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithAuth(service.WithProject(projectOwner(forward(profiler)))),
-		http.MethodPost, service.WithAuth(service.WithProject(projectOwner(forward(profiler)))))))
+		http.MethodGet, service.WithAuth(
+			service.WithProject(projectOwner(forward(profiler)))),
+		http.MethodPost, service.WithAuth(
+			service.WithProject(projectOwner(forward(profiler)))))))
 	// version
 	http.HandleFunc(api.VersionURL, service.WithMethods(
 		http.MethodGet, getVersion()))
