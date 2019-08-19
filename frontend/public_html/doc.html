@@ -1,0 +1,1919 @@
+<h1>
+<a id="user-content-pocoweb" class="anchor" href="#pocoweb" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Pocoweb</h1>
+<p>Pocoweb is a web based post-correction system for OCRed historical documents.
+It is loosely based on <a href="https://github.com/cisocrgroup/PoCoTo">PoCoTo</a>.</p>
+<p>Users can upload their OCRed documents and correct them in the web front end.
+The corrected documents can then be downloaded and further processed.
+Pocoweb understands various OCR formats that can be used.
+Any corrections are written back into the original format of the documents.
+This makes it possible to integrate the manual post-correction of OCRed documents
+into other digitalisation workflows.</p>
+<p>As PoCoTo, Pocoweb is connected with a language
+<a href="https://github.com/cisocrgroup/Profiler">profiler</a>
+that enables semi-automatic correction of historical documents.
+The profiler is able to differentiate between historical spelling variation
+and real OCR errors in the documents and generates correction suggestions
+for suspicious words.</p>
+<hr>
+<h2>
+<a id="user-content-table-of-contents" class="anchor" href="#table-of-contents" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Table of contents</h2>
+<ul>
+<li><a href="#users-content-users">Users</a></li>
+<li><a href="#user-content-account-settings">Account settings</a></li>
+<li><a href="#user-content-user-management">User management</a></li>
+<li>
+<a href="#user-content-projects">Projects</a>
+<ul>
+<li><a href="#user-content-upload-new-project">Uploading new projects</a></li>
+<li><a href="#user-content-project-archives">Project archives</a></li>
+<li><a href="#user-content-project-table">Project table</a></li>
+<li><a href="#user-content-download-project">Downloading projects</a></li>
+<li><a href="#user-content-profile-project">Profiling projects</a></li>
+</ul>
+</li>
+<li>
+<a href="#user-content-post-correction">Post correction</a>
+<ul>
+<li><a href="#user-content-page-correction">Page correction</a></li>
+<li><a href="#user-content-navigation-bar">Navigation bar</a></li>
+<li><a href="#user-content-concordance-view">Concordance view</a></li>
+</ul>
+</li>
+<li><a href="#user-content-installation">Installation</a></li>
+<li><a href="#user-content-overview-services">Services</a></li>
+<li>
+<a href="#user-content-rest-api">REST API</a>
+<ul>
+<li><a href="#user-content-api-get-version">[GET] rest/api-version</a></li>
+<li><a href="#user-content-api-post-login">[POST] rest/login</a></li>
+<li><a href="#user-content-api-get-login">[GET] rest/login</a></li>
+<li><a href="#user-content-api-post-users">[POST] rest/users</a></li>
+<li><a href="#user-content-api-get-users">[GET] rest/users</a></li>
+<li><a href="#user-content-api-post-users-uid">[PUT] rest/users/<code>uid</code></a></li>
+<li><a href="#user-content-api-get-users-uid">[GET] rest/users/<code>uid</code></a></li>
+<li><a href="#user-content-api-delete-users-uid">[DELETE] rest/users/<code>uid</code></a></li>
+<li><a href="#user-content-api-get-books">[GET] rest/books</a></li>
+<li><a href="#user-content-api-post-books">[POST] rest/books</a></li>
+<li><a href="#user-content-api-get-books-pid">[GET] rest/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-put-books-pid">[PUT] rest/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-delete-books-pid">[DELETE] rest/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-post-books-pid-split">[POST] rest/pkg/split/books/<code>pid</code></a></li>
+<li><a href="#api-get-books-pid-assign">[GET] rest/pkg/assign/books/<code>pid</code></a></li>
+<li><a href="#api-get-books-pid-takeback">[GET] rest/pkg/takeback/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-post-books-pid-adaptive-tokens">[GET] rest/books/<code>pid</code>/adaptive-tokens</a></li>
+<li><a href="#user-content-api-get-books-pid-download">[GET] rest/books/<code>pid</code>/download</a></li>
+<li><a href="#user-content-api-get-books-pid-search">[GET] rest/books/<code>pid</code>/search</a></li>
+<li><a href="#user-content-api-get-books-pid-pages-pageid">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code></a></li>
+<li><a href="#user-content-api-delete-books-pid-pages-pageid">[DELETE] rest/books/<code>pid</code>/pages/<code>pageid</code></a></li>
+<li><a href="#user-content-api-get-books-pid-pages-first">[GET] rest/books/<code>pid</code>/pages/first</a></li>
+<li><a href="#user-content-api-get-books-pid-pages-last">[GET] rest/books/<code>pid</code>/pages/last</a></li>
+<li><a href="#user-content-api-get-books-pid-pages-pageid-next-n">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/next/<code>n</code></a></li>
+<li><a href="#user-content-api-get-books-pid-pages-pageid-prev-n">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/prev/<code>n</code></a></li>
+<li><a href="#user-content-api-get-books-pid-pages-pageid-lines-lid">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></li>
+<li><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid">[POST] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></li>
+<li><a href="#user-content-api-delete-books-pid-pages-pageid-lines-lid">[DELETE] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></li>
+<li><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid">[POST] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code></a></li>
+<li><a href="#user-content-api-get-books-pid-pages-pageid-lines-lid-tokens-tid">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code></a></li>
+<li><a href="#user-content-api-get-books-pid-profile">[GET] rest/profile/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-post-books-pid-profile">[POST] rest/profile/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-get-books-pid-suspicious">[POST] rest/profile/suspicious/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-get-profiler-languages">[GET] rest/profile/languages</a></li>
+<li><a href="#user-content-api-get-global-ocr-models">[GET] rest/ocr</a></li>
+<li><a href="#user-content-api-get-ocr-models">[GET] rest/ocr/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-post-ocr-book">[POST] rest/ocr/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-post-ocr-book-page">[POST] rest/ocr/books/<code>pid</code>/pages/<code>pageid</code></a></li>
+<li><a href="#user-content-api-post-ocr-book-page-line">[POST] rest/ocr/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lineid</code></a></li>
+<li><a href="#user-content-api-get-el">[GET] rest/postcorrect/el/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-post-el">[POST] rest/postcorrect/el/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-get-rrdm">[GET] rest/postcorrect/rrdm/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-post-rrdm">[POST] rest/postcorrect/rrdm/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-get-jobs">[GET] rest/jobs/<code>jobid</code></a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><a id="user-content-users"></a></p>
+<h2>
+<a id="user-content-users" class="anchor" href="#users" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Users</h2>
+<p>In order to use Pocoweb, each user has to login in the
+<a href="/login.php">login page</a> using her user name and password.</p>
+<p>There are two kinds of user accounts in Pocoweb, that have
+different permissions in the system:</p>
+<ol>
+<li>
+<p>Administrator accounts</p>
+<ul>
+<li>Create new administrator and normal users accounts</li>
+<li>Delete user accounts</li>
+<li>Upload new documents and create new <a href="#user-content-project-management">projects</a>
+</li>
+<li>Split projects into <a href="#user-content-project-management">packages</a>
+</li>
+<li>Assign packages to different user accounts</li>
+<li>Profile projects.</li>
+<li>Post correct projects and packages.</li>
+<li>Delete documents and packages.</li>
+<li>Download corrected projects</li>
+</ul>
+</li>
+<li>
+<p>Normal user accounts</p>
+<ul>
+<li>Post correct packages that where assigned to them</li>
+<li>Profile projects.</li>
+<li>Reassign packages back to their original owner.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p><a id="user-content-account-settings"></a></p>
+<h2>
+<a id="user-content-account-settings" class="anchor" href="#account-settings" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Account settings</h2>
+<p>Users can manage their account settings using the <a href="/account.php">Account</a> tab.
+They can only manage their own user's settings. It is not possible to change
+the settings of another user account even if you are logged in with an
+administrator account.</p>
+<p>In order to update user settings or to change the user's password, fill in
+or change the appropriate fields and click on the
+<a href="img/doc/button-update-account-settings.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/button-update-account-settings.png" alt="update account settings" style="max-width:100%;"></a> button.</p>
+<p>If you want to delete your account click on the
+<a href="img/doc/button-delete-account.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/button-delete-account.png" alt="delete account" style="max-width:100%;"></a> button.
+This will delete the user and all its projects and packages.
+Use with caution.</p>
+<p>Note that using the account settings is the only way to delete
+an administrator account (see
+<a href="#user-content-user-management">User management</a> below).</p>
+<hr>
+<p><a id="user-content-user-management"></a></p>
+<h2>
+<a id="user-content-user-management" class="anchor" href="#user-management" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>User management</h2>
+<p>User management is done via the <a href="/users.php">Users</a> tab.
+You have to be logged in with an administrator account in order
+to access and use the user management page.</p>
+<p>The user management page consist of a mask to create new users and
+a user table that lists all existing users. To create a new user,
+fill out the input fields accordingly and then click to the
+<a href="img/doc/button-create-user.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/button-create-user.png" alt="create user" style="max-width:100%;"></a> button.
+If the account should be an administrator account, do not forget to
+check the <a href="img/doc/checkbox-admin.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/checkbox-admin.png" alt="administrator check box" style="max-width:100%;"></a> check box.</p>
+<p>After the mask follows the user table.
+In order to remove an user account click on the
+<a href="img/doc/glyphicon-remove.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/glyphicon-remove.png" alt="remove" style="max-width:100%;"></a> button in the according user entry
+in the user table.
+It is not possible at the moment to delete an existing administrator account;
+only regular user accounts can be deleted.</p>
+<p>To delete an administrator account log in with this account, go to the
+<a href="/account.php">Account</a> tab and click to the
+<a href="img/doc/button-delete-account.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/button-delete-account.png" alt="delete account" style="max-width:100%;"></a>
+button (see <a href="#user-content-account-settings">Account settings</a> above).</p>
+<hr>
+<p><a id="user-content-projects"></a></p>
+<h2>
+<a id="user-content-projects" class="anchor" href="#projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Projects</h2>
+<p>Project management is done via the <a href="/index.php">Projects</a> tab.
+On this page you can manage the projects and packages (see below) that your
+user owns.
+n
+Pocoweb uses two different kinds of correctable documents.
+<em>Projects</em> on the one hand represent whole documents that should be corrected.
+<em>Packages</em> on the other hand are smaller subsets of projects that contain
+a smaller subset of the pages of their parent project.
+Two packages with the same parent never contain overlapping pages.
+This makes it possible for two different users to correct different packages
+of the same project in parallel.</p>
+<p>Only administrators can upload new projects, split them into a number of
+packages and assign those packages to different users.
+It is not possible to assign a project to a different user.</p>
+<p><em>Note: Since is possible to correct a whole project as well,
+one should never correct a project while other users could be correcting
+an associated package.
+This could lead to cases where one user accidentally
+overrides an other users work.</em></p>
+<p><em>Note: For historical reasons the api uses the term «books» to refer
+to projects and the term «projects» to refer to packages.  So for
+example <code>projectId</code> refers to the id of a package and <code>bookId</code> refers
+to the id of a project.  Hopefully this issue can be solved soon.</em></p>
+<p><a id="user-content-upload-new-project"></a></p>
+<h3>
+<a id="user-content-uploading-new-projects" class="anchor" href="#uploading-new-projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Uploading new projects</h3>
+<p>If you are logged in with an administrator account, you can create a new project.
+Fill in the meta data fields in the mask, select the according
+<a href="#user-content-project-archives">project archive</a> on your computer and click
+on the <a href="img/doc/button-upload.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/button-upload.png" alt="upload" style="max-width:100%;"></a> button.
+Depending on the size of the project archive,
+the uploading of the project can take a while.</p>
+<p>The <a href="#user-content-pocoweb-backend">Pocoweb back-end</a> analyzes the project archive,
+processes its OCR and image files and publishes the project.
+If the uploading was successfully, you should see the new project in the
+project table.</p>
+<p>The project's author, title and year can be filled out as it seems fit.
+Theses values are not used internally and are there for an easy reference.</p>
+<p>A project's profiler and its language are settings specific for the language
+profiler.
+If you plan to use a profiler for the post correction of your project, you
+have to set them accordingly.
+If the installation of Pocoweb comes with a local configured profiler,
+you can use <code>default</code> or <code>local</code> as value for your profiler.
+If not or if you want to use another profiler, you have to specify its URL.</p>
+<p>Do not forget to set the right language for the new project.
+The language field lists all available languages for your chosen profiler.</p>
+<p><a id="user-content-project-archives"></a></p>
+<h3>
+<a id="user-content-project-archives" class="anchor" href="#project-archives" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Project archives</h3>
+<p>A project archive is a zipped directory structure that contains the OCR and
+image files for the pages of a document.
+Image files should be encoded as PNG files if possible, but specify or TIFF
+encoded images are fine, too.
+The OCR files should be either
+<a href="">ABBYY-XML</a>,
+<a href="">ALTO-XML</a> or
+<a href="">hOCR</a>
+encoded files.</p>
+<p>The back-end tries its best to automatically search and order the pages
+in project archives.
+Therefore the matching OCR and image files should have the same name
+(without the extension).
+It does not matter in which directory structure the different image and OCR
+files reside.
+If the matching OCR and image files do have the same filenames for any reason,
+you can add a <a href="">METS/MOTS</a> meta data file to the archive, in which the
+page ordering and the association between image and OCR files is specified.</p>
+<p>Example structure of a project archive:</p>
+<pre><code>archive
+├── img
+│   ├── page-0001.png
+│   ├── page-0002.png
+│   └── page-0003.png
+└── ocr
+    ├── page-0001.xml
+    ├── page-0002.xml
+    └── page-0003.xml
+</code></pre>
+<p>There is no need to separate the image and OCR files with different directories.
+You can also use a flat directory structure:</p>
+<pre><code>archive
+├── page-0001.png
+├── page-0001.xml
+├── page-0002.png
+├── page-0002.xml
+├── page-0003.png
+└── page-0003.xml
+</code></pre>
+<p>It is also possible to have the files in a page directory structure like this:</p>
+<pre><code>archive
+├── page-0001
+│   ├── page.xml
+│   └── page.png
+├── page-0003
+│   ├── page.xml
+│   └── page.png
+└── page-0002
+    ├── page.xml
+    └── page.png
+</code></pre>
+<p>If you use <a href="https://github.com/tmbdev/ocropy">ocropy</a>,
+you can also use its project structure directly to upload a project archive:</p>
+<pre><code>archive
+└── book
+    ├── 0001.png
+    ├── 0001
+    │   ├── 010001.bin.png
+    │   ├── 010001.txt
+    │   └─ ...
+    ├── 0002.png
+    ├── 0002
+    │   ├── 010001.bin.png
+    │   ├── 010001.txt
+    │   └─ ...
+    ├── 0003.png
+    └── 0003
+        ├── 010001.bin.png
+        ├── 010001.txt
+        └─ ...
+</code></pre>
+<p><a id="user-content-project-table"></a></p>
+<h3>
+<a id="user-content-project-table" class="anchor" href="#project-table" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Project table</h3>
+<p>After the create project mask, a table with all the projects
+and packages that you own is shown.
+If you are logged in with an administrator account you see all your uploaded
+projects and all packages that you have not yet assigned to another user.
+If you are logged in with a normal user account, you only see the packages
+that have been assigned to you.</p>
+<p>You can manage the projects by clicking on the according buttons
+in the rows of the table:</p>
+<ol>
+<li>
+<p>Click on the <a href="img/doc/glyphicon-open-project.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/glyphicon-open-project.png" alt="open" style="max-width:100%;"></a> button to open
+the project and start <a href="#user-content-post-correction">correcting</a> it.</p>
+</li>
+<li>
+<p>Click on the <a href="img/doc/glyphicon-download-project.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/glyphicon-download-project.png" alt="download" style="max-width:100%;"></a> button
+to <a href="#user-content-download-project">download</a> the project.</p>
+</li>
+<li>
+<p>Click on the <a href="img/doc/glyphicon-remove-project.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/glyphicon-remove-project.png" alt="remove" style="max-width:100%;"></a> button
+to remove the project.</p>
+</li>
+<li>
+<p>Click on the <a href="img/doc/glyphicon-order-profile.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/glyphicon-order-profile.png" alt="order" style="max-width:100%;"></a> button to
+order a <a href="#user-content-profile-project">document profile</a>.</p>
+</li>
+<li>
+<p>Click on the <a href="img/doc/glyphicon-list-adaptive-tokens.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/glyphicon-list-adaptive-tokens.png" alt="adaptive" style="max-width:100%;"></a> button
+to open a list of all <a href="#user-content-profile-project">adptive tokens</a>.</p>
+</li>
+<li>
+<p>Click on the <a href="img/doc/glyphicon-split-project.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/glyphicon-split-project.png" alt="split" style="max-width:100%;"></a> button
+to split the project into multiple packages.</p>
+</li>
+<li>
+<p>Click on the <a href="img/doc/glyphicon-assign-to-user.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/glyphicon-assign-to-user.png" alt="assign" style="max-width:100%;"></a>
+button to assign a package to an user.</p>
+</li>
+</ol>
+<p><a id="user-content-download-project"></a></p>
+<h3>
+<a id="user-content-downloading-projects" class="anchor" href="#downloading-projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Downloading projects</h3>
+<p>You can click on the <a href="img/doc/glyphicon-download-project.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/glyphicon-download-project.png" alt="download button" style="max-width:100%;"></a>
+button in the project table to download a project.
+The pocoweb back-end will then generate a project archive and give
+you a link from where you can download it.</p>
+<p>The project archive will retain the same structure as the project archive,
+that was used to create the project. All corrections are written back into
+the original OCR files.</p>
+<p>Additionally the archive contains a list of all adaptive tokens of the last
+profiler run over the document and a page an line segmented directory structure,
+that can directly be used with ocropy.</p>
+<p><a id="user-content-profile-project"></a></p>
+<h3>
+<a id="user-content-profiling-projects" class="anchor" href="#profiling-projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Profiling projects</h3>
+<p>You can order a document profile by clicking on the
+<a href="img/doc/glyphicon-order-profile.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/glyphicon-order-profile.png" alt="order profile" style="max-width:100%;"></a> button in the project
+table. This will start a profiler that profiles the document. The profiler
+uses the language settings that where given when the profject was created.</p>
+<p>The profiling is done in the background. If the profiling is done,
+various helpers are available for the post correction of the profiled project
+and its associated packages.</p>
+<p>After the profiling is done, you can inspect the list of <em>adaptive tokens</em>.
+Just click to the
+<a href="img/doc/glyphicon-list-adaptive-tokens.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/glyphicon-list-adaptive-tokens.png" alt="adaptive token list" style="max-width:100%;"></a>
+button on the project table.</p>
+<p>Adaptive tokens are generated by the profiler.
+Whenever a corrected token is found during the profiling,
+the profiler tries to match the correction to a known dictionary entry.
+If no such match can be generated, a new adaptive token is generated and
+inserted into a temporary dictionary for this document. For this reason
+Adaptive tokens are possible candidates for new dictionary entries.</p>
+<p>For more information about the profiling and adaptive tokens
+see the <a href="">profiler paper</a> and <a href="">profiler paper 2</a></p>
+<hr>
+<p><a id="user-content-post-correction"></a></p>
+<h2>
+<a id="user-content-post-correction" class="anchor" href="#post-correction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post correction</h2>
+<p>In order to correct a project or package click to the
+<a href="img/doc/glyphicon-open-project.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/glyphicon-open-project.png" alt="open" style="max-width:100%;"></a> button.
+Pocoweb opens the first page of the project or package
+and presents the page correction view.
+In generally the post correction is the same for projects an packages.
+Every statement about the correction of projects also applies to the
+correction of packages.</p>
+<p>Other than PoCoTo the post correction with Pocoweb is line based.
+Generally you correct whole lines of the document and not single tokens.
+The page correction view presents the lines of the document and lets
+you correct each line individually.</p>
+<p><a id="user-content-page-correction"></a></p>
+<h3>
+<a id="user-content-page-correction" class="anchor" href="#page-correction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Page correction</h3>
+<p>The page correction view shows the lines of a page of the project.
+You can use the forward and backward buttons of the navigation bar
+to go to the next, previous first and last pages of the project.</p>
+<p>For each line the image of the line and the according OCR text are shown.
+If the project has been profiled, <em>suspicious tokens</em> (tokens that the profiler
+thinks are real OCR errors) are marked red in the text.
+The suspicious tokens are meant to give you a visual clue about errors on
+the page.</p>
+<p>You can click on the line image to see an overview over the whole line's page image.
+If you click in the text you can edit the text.
+It is also possible to select single tokens in a line, by marking them with
+the mouse. If a token is selected, you can choose a correction candidate for
+it or list all occurrences of the token in the
+<a href="#user-content-navigation-bar">navigation bar</a>.</p>
+<p>After you have corrected a line you can click on the
+<a href="img/doc/button-correct.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/button-correct.png" alt="correct" style="max-width:100%;"></a> button to correct the line and
+send the correction to the back-end (you can also click on the button on the
+button of the page to correct all lines of a page).
+After the line is corrected it is shown with a green background.</p>
+<p>In general if a line was corrected it is shown with a green background.
+If a line was partially corrected (see
+<a href="#user-content-concordance-view">concordance view</a> below)
+the background is yellow and
+if the line was not yet touched it has a white background.</p>
+<p><a id="user-content-navigation-bar"></a></p>
+<h3>
+<a id="user-content-navigation-bar" class="anchor" href="#navigation-bar" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Navigation bar</h3>
+<p>The navigation bar lets you navigate the pages of you project.
+It stays on top of your browser's screen even while you navigate down the
+browser page.</p>
+<p>Besides the navigation buttons, the navigation bar shows a tab to list
+the assumed error patterns and error tokens of the project.
+If the project was profiled these list assumed errors in the document
+by the number of their occurrence or by their common error patterns.
+Click one of the entries to open the
+<a href="#user-content-concordance-view">concordance view</a> of the according token
+or error patterns.</p>
+<p>If a token is selected it shows the concordance count of the token.
+If the document was profiled you can use the correction suggestion tab to
+select a correction candidate for the selected token.
+The selected token with one of the listed correction suggestions.</p>
+<p><a id="user-content-concordance-view"></a></p>
+<h3>
+<a id="user-content-concordance-view" class="anchor" href="#concordance-view" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Concordance view</h3>
+<p>The concordance view lists similar tokens of the whole project and
+shows them in their respective line context. With the concordance
+view you can correct a series of tokens at once.
+If you do this each token of the concordance view is corrected
+in the lines.
+In this way the corrected lines become <em>partially corrected</em>,
+since not the whole line was corrected but just a token in the line.</p>
+<p>You can correct each token individually.
+Just edit the token and then click to the
+<a href="img/doc/button-correct.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/button-correct.png" alt="correct" style="max-width:100%;"></a> button.
+If you want to correct multiple occurrences of the tokens in
+the concordance view you can either set a global correction
+in the concordance bar
+<a href="img/doc/button-concordance-correction.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/button-concordance-correction.png" alt="concordance-bar" style="max-width:100%;"></a>
+or select a correction suggestion using the
+<a href="img/doc/button-select-correction-suggestion.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/button-select-correction-suggestion.png" alt="select correction suggestion" style="max-width:100%;"></a>
+selection for each individual token.</p>
+<p>Before you correct all tokens in a series make sure, that only the
+tokens you want to correct are checked.</p>
+<hr>
+<p><a id="user-content-installation"></a></p>
+<h2>
+<a id="user-content-installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+<p>Pocoweb is open source software and is distributed under the
+<a href="LICENSE">Apache 2.0</a> license.
+You can download the source code from its
+<a href="http://github.com/cisocrgroup/pocoweb">github repository</a>.
+Installation instructions can be found in the project's
+<a href="https://github.com/cisocrgroup/pocoweb/blob/master/README.md">README</a>
+file.</p>
+<hr>
+<p><a id="user-content-overview-services"></a></p>
+<h2>
+<a id="user-content-services" class="anchor" href="#services" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Services</h2>
+<p>Pocoweb is composed with a number of interdependend services:</p>
+<ul>
+<li>nginx serves images, web-content and redirectes API calls</li>
+<li>pcwauth authentificates API requests and forwards them to the various other services</li>
+<li>mysql holds all database tables</li>
+<li>pocoweb manages project, packages and the up- and download</li>
+<li>www-data is a directory (volume) that holds the frontend</li>
+<li>project-data is a directory (volume) that holds the project files</li>
+<li>db-data is a directory (volume) that holds the database files</li>
+<li>ocr-data is a direcotry (volume) that holds the global ocr models</li>
+<li>pcwuser handles user management</li>
+<li>pcwprofiler handles profiling of projects</li>
+<li>pcwpostcorrection handles the automatic postcorrection</li>
+<li>pcwocr handles ocr prediction and training</li>
+<li>pcwpkg handles splitting and assignment of packages
+<a href="img/doc/overview.png" target="_blank" rel="noopener noreferrer"><img src="img/doc/overview.png" alt="Service Overview" title="Pocoweb service overview" style="max-width:100%;"></a>
+</li>
+</ul>
+<hr>
+<p><a id="user-content-rest-api"></a></p>
+<h2>
+<a id="user-content-rest-api" class="anchor" href="#rest-api" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>REST API</h2>
+<p>The REST API documentation lists the available URLs of Pocoweb's REST API.
+Each entry gives the request method (GET, POST or DELETE) in square brackets,
+the request path and the layout of the response data is listed.
+Additionally for POST requests the expected layout of the POST data is listed.
+You have to replace the parameters in the request path
+by valid ids (otherwise the API returns <code>404 Not Found</code>):</p>
+<ul>
+<li>
+<code>uid</code> references a valid user id.</li>
+<li>
+<code>pid</code> references a valid project or package id.</li>
+<li>
+<code>pageid</code> references a valid page id in a project or package.</li>
+<li>
+<code>lid</code> references a valid line id on a page.</li>
+<li>
+<code>tid</code> references a valid token id on a line.</li>
+</ul>
+<p>You have to be logged in with a valid user account
+(see <a href="#user-content-authorization">Authorization</a> below).</p>
+<p>All URLs in the API documentation reference a relative path starting
+with <code>rest/...</code>.  If you want to use external tools such as <code>curl</code> to
+access the API, you have to use the according absolute URL.  So for
+example if <code>pocoweb</code> runs on your local host you can access the API
+using <code>http://localhost/rest/...</code>.  E.g. to get the API's version (see
+<a href="#user-content-api-get-version">Version</a> below) using <code>curl</code> you have
+to execute the following command: <code>curl http://localhost/rest/api-version</code>.</p>
+<p><a id="user-content-authorization"></a></p>
+<h3>
+<a id="user-content-authorization" class="anchor" href="#authorization" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authorization</h3>
+<p>You have to be authenticated for most of the API calls.
+If you are not authenticated the API will return <code>403 Forbidden</code>
+with no response data.</p>
+<p>In order to authenticate you first have to
+<a href="#user-content-api-post-login">login</a> with a valid user account at the
+back-end.  The login will return an unique session id token.  You have
+to send this session token using an additional <code>auth=id</code> parameter for
+each API call.</p>
+<p>For example if your session id is <code>my-session-id</code> you have to append
+the <code>auth=my-session-id</code> to any URL. So for example using <code>curl</code>, you
+would need to call <code>curl http://localhost/rest/books/pid/pages/pageid?auth=my-session-id</code>.</p>
+<p>In order to get the 13-th line of the 38-th page of a project with an id of 27
+from this Pocoweb back-end using curl you would have to run:</p>
+<p><code>curl <?php global $config; echo
+$config['backend']['externalURL'];?>/books/27/pages/38/lines/13?auth=my-session-id</code></p>
+<hr>
+<p><a id="user-content-api-get-version"></a></p>
+<h3>
+<a id="user-content-get-restapi-version" class="anchor" href="#get-restapi-version" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/api-version</h3>
+<p>Get the semantic version of the back-end instance.</p>
+<ul>
+<li>No <a href="#user-content-authorization">authorization</a> is required.</li>
+</ul>
+<h4>
+<a id="user-content-response-data" class="anchor" href="#response-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>version<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>1.2.3<span class="pl-pds">"</span></span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-post-login"></a></p>
+<h3>
+<a id="user-content-post-restlogin" class="anchor" href="#post-restlogin" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/login</h3>
+<p>You have to log in with a valid user account to use most of the API calls
+(see <a href="#user-content-authorization">authorization</a> above).
+No <a href="#user-content-authorization">authorization</a> is required.</p>
+<p>After a successfully login you can use the returned session id in the
+<code>Authorization</code> header of your future API calls.</p>
+<h4>
+<a id="user-content-post-data" class="anchor" href="#post-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user email<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>
+}</pre></div>
+<h4>
+<a id="user-content-response-data-1" class="anchor" href="#response-data-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>auth<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>auth-token<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>: {
+	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-name<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-email<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-institute<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
+  }
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-login"></a></p>
+<h3>
+<a id="user-content-get-restlogin" class="anchor" href="#get-restlogin" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/login</h3>
+<p>Check if logged in and get the settings of the logged in user account.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-2" class="anchor" href="#response-data-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-name<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-email<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-institute<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-post-users"></a></p>
+<h3>
+<a id="user-content-post-restusers" class="anchor" href="#post-restusers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/users</h3>
+<p>Create a new user account.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only administrators can create new user accounts.</li>
+<li>If the <code>"password"</code> field in the post data is omitted (or is set to
+<code>""</code> explicitly), the user's password is not changed.</li>
+</ul>
+<h4>
+<a id="user-content-post-data-1" class="anchor" href="#post-data-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>: {
+	    <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">0</span>,
+		<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-name<span class="pl-pds">"</span></span>,
+		<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user's unique email<span class="pl-pds">"</span></span>,
+		<span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-institute<span class="pl-pds">"</span></span>,
+		<span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
+	},
+	<span class="pl-s"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>new user's password<span class="pl-pds">"</span></span>
+}</pre></div>
+<h4>
+<a id="user-content-response-data-3" class="anchor" href="#response-data-3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-name<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-email<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-institute<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-users"></a></p>
+<h3>
+<a id="user-content-get-restusers" class="anchor" href="#get-restusers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/users</h3>
+<p>Get a list of all users in the system.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only administrators can list all user accounts.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-4" class="anchor" href="#response-data-4" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>users<span class="pl-pds">"</span></span>: [
+    {
+      <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-name-1<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-email-1<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-institute-1<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
+    },
+    {
+      <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-name-2<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-email-2<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-institute-2<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
+    },
+	<span class="pl-ii">...</span>
+  ]
+}</pre></div>
+<hr>
+<p><a id="user-content-api-post-users-uid"></a></p>
+<h3>
+<a id="user-content-put-restusersuid" class="anchor" href="#put-restusersuid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[PUT] rest/users/<code>uid</code>
+</h3>
+<p>Update the account settings of an user with an id of <code>uid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Administrators can update any normal user account.</li>
+<li>Every user can change his own user account.</li>
+<li>You cannot change the type (administrator or normal) of an user account.</li>
+</ul>
+<h4>
+<a id="user-content-post-data-2" class="anchor" href="#post-data-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>: {
+	    <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
+		<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-name<span class="pl-pds">"</span></span>,
+		<span class="pl-s"><span class="pl-pds">"</span>pass<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>,
+		<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-email<span class="pl-pds">"</span></span>,
+		<span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-institute<span class="pl-pds">"</span></span>
+	},
+	<span class="pl-s"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user's new password<span class="pl-pds">"</span></span>
+}</pre></div>
+<p>You can leave out the password or use the empty string,
+if you do not want to update the user's password. It is
+not possible to change a user's id.</p>
+<h4>
+<a id="user-content-response-data-5" class="anchor" href="#response-data-5" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>updated-user-name<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>updated-user-email<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>updated-user-institute<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-users-uid"></a></p>
+<h3>
+<a id="user-content-get-restusersuid" class="anchor" href="#get-restusersuid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/users/<code>uid</code>
+</h3>
+<p>Get the settings of an user account with an id of <code>uid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Administrators can get the settings of any normal user account.</li>
+<li>Every user can get the settings of her own user account.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-6" class="anchor" href="#response-data-6" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-name<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-email<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-institute<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-delete-users-uid"></a></p>
+<h3>
+<a id="user-content-delete-restusersuid" class="anchor" href="#delete-restusersuid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[DELETE] rest/users/<code>uid</code>
+</h3>
+<p>Delete the user account of the user with an id of <code>uid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Administrators can delete any user account.</li>
+<li>Every user can delete her own user account.</li>
+</ul>
+<p>If an user account is deleted, any projects and or packages,
+that the user owned are deleted.
+Since packages just define a subset of a project, the deletion of packages
+deletes the package information, but not the project information.
+It is save to delete a user that still owns a package.
+Note that if a project is deleted, all associated packages are deleted as well.</p>
+<hr>
+<p><a id="user-content-api-get-books"></a></p>
+<h3>
+<a id="user-content-get-restbooks" class="anchor" href="#get-restbooks" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/books</h3>
+<p>Get all books of an user account.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-7" class="anchor" href="#response-data-7" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>books<span class="pl-pds">"</span></span>: [
+    {
+      <span class="pl-s"><span class="pl-pds">"</span>author<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book-author<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>title<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book-title<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>year<span class="pl-pds">"</span></span>: <span class="pl-c1">1234</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>language<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>language<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>profilerUrl<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>profiler-url|local<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>pages<span class="pl-pds">"</span></span>: <span class="pl-c1">100</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>pageIds<span class="pl-pds">"</span></span>: [<span class="pl-c1">15</span>,<span class="pl-c1">18</span>,<span class="pl-c1">20</span>,<span class="pl-c1">27</span>,<span class="pl-ii">...</span>],
+      <span class="pl-s"><span class="pl-pds">"</span>isBook<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
+    },
+    <span class="pl-ii">...</span>
+  ]
+}</pre></div>
+<hr>
+<p><a id="user-content-api-post-books"></a></p>
+<h3>
+<a id="user-content-post-restbooks" class="anchor" href="#post-restbooks" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/books</h3>
+<p>Create a new project.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only administrators can upload new projects.</li>
+<li>Upload <a href="#user-content-project-archives">project archive</a>.</li>
+<li>You can add optional query parameters to set the book's metadata.</li>
+<li>Use <code>Content-Type: application/zip</code> in the request header.</li>
+</ul>
+<h4>
+<a id="user-content-post-data-3" class="anchor" href="#post-data-3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST data</h4>
+<p>Zipped content of the <a href="#user-content-project-archives">project archive</a>.</p>
+<h4>
+<a id="user-content-query-parameters" class="anchor" href="#query-parameters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<p>All query parameters are optional.  Missing parameters are set to the
+empty string <code>""</code> or <code>0</code> respectively.</p>
+<ul>
+<li><code>author=book-author</code></li>
+<li><code>title=book-title</code></li>
+<li><code>description=description</code></li>
+<li><code>language=language</code></li>
+<li><code>profilerUrl=url</code></li>
+<li><code>histPatterns=[m1:h1[,m2:h2]...]</code></li>
+<li><code>year=1900</code></li>
+</ul>
+<h4>
+<a id="user-content-response-data-8" class="anchor" href="#response-data-8" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>author<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book-author<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>title<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book-title<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>description<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book's description<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>year<span class="pl-pds">"</span></span>: <span class="pl-c1">1234</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>language<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>language<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>profilerUrl<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>profiler-url|local<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>pages<span class="pl-pds">"</span></span>: <span class="pl-c1">100</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>pageIds<span class="pl-pds">"</span></span>: [<span class="pl-c1">15</span>,<span class="pl-c1">18</span>,<span class="pl-c1">20</span>,<span class="pl-c1">27</span>,<span class="pl-ii">...</span>],
+  <span class="pl-s"><span class="pl-pds">"</span>status<span class="pl-pds">"</span></span>: {
+	<span class="pl-s"><span class="pl-pds">"</span>profile<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>extended-lexicon<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>post-corrected<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>
+  },
+  <span class="pl-s"><span class="pl-pds">"</span>isBook<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-books-pid"></a></p>
+<h3>
+<a id="user-content-get-restbookspid" class="anchor" href="#get-restbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/books/<code>pid</code>
+</h3>
+<p>Get the content of a project or package.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can access the project's or
+package's data.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-9" class="anchor" href="#response-data-9" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>author<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book-author<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>title<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book-title<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>description<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book's description<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>year<span class="pl-pds">"</span></span>: <span class="pl-c1">1234</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>language<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>language<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>profilerUrl<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>profiler-url|local<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>pages<span class="pl-pds">"</span></span>: <span class="pl-c1">100</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>pageIds<span class="pl-pds">"</span></span>: [<span class="pl-c1">15</span>,<span class="pl-c1">18</span>,<span class="pl-c1">20</span>,<span class="pl-c1">27</span>,<span class="pl-ii">...</span>],
+  <span class="pl-s"><span class="pl-pds">"</span>status<span class="pl-pds">"</span></span>: {
+	<span class="pl-s"><span class="pl-pds">"</span>profile<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>extended-lexicon<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>post-corrected<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>
+  },
+  <span class="pl-s"><span class="pl-pds">"</span>isBook<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-put-books-pid"></a></p>
+<h3>
+<a id="user-content-put-restbookspid" class="anchor" href="#put-restbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[PUT] rest/books/<code>pid</code>
+</h3>
+<p>Update the meta data of a project.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project can update the project's data.</li>
+<li>Since only adminstrators can upload and therefore own projects, only
+administrator can change a project's metadata.</li>
+<li>Fields can be ommitted.</li>
+</ul>
+<h4>
+<a id="user-content-post-data-4" class="anchor" href="#post-data-4" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>author<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book-author<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>title<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book-title<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>year<span class="pl-pds">"</span></span>: <span class="pl-c1">1234</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>language<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>language<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>histPatterns<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>[m1:h1[,m2:h2]...]<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>profilerUrl<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>profiler-url|local<span class="pl-pds">"</span></span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-delete-books-pid"></a></p>
+<h3>
+<a id="user-content-delete-restbookspid" class="anchor" href="#delete-restbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[DELETE] rest/books/<code>pid</code>
+</h3>
+<p>Delete a project.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project can delete a project.</li>
+</ul>
+<p>If a project is deleted, all associated packages are deleted as well.
+It is not possible to delete a package.
+The deletion remove all database entries of the projects and all
+associated packages.
+In addition to this the page and line images and all remaining project
+archives are removed from the server.</p>
+<hr>
+<p><a id="user-content-api-post-books-pid-split"></a></p>
+<h3>
+<a id="user-content-post-restpkgsplitbookspid" class="anchor" href="#post-restpkgsplitbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/pkg/split/books/<code>pid</code>
+</h3>
+<p>Split a <a href="#user-content-projects">project into packages</a>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project can split a project into packages.</li>
+</ul>
+<h4>
+<a id="user-content-post-data-5" class="anchor" href="#post-data-5" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>userIds<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">2</span>, <span class="pl-c1">3</span>],
+  <span class="pl-s"><span class="pl-pds">"</span>random<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
+}</pre></div>
+<ul>
+<li>The mandatory argument <code>ids</code> specifies an not empty array of user
+ids. The split route creates that many packages and assignes them to
+the given users.  User-IDs in the <code>ids</code> array need not be unique.</li>
+<li>The optional argument <code>random</code> specifies if the pages of the
+packages should be generated at random or sequential.  If omitted
+<code>random=false</code> is assumed.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-10" class="anchor" href="#response-data-10" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">19</span>
+  <span class="pl-s"><span class="pl-pds">"</span>projects<span class="pl-pds">"</span></span><span class="pl-ii">:</span> [
+    {
+	  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+	  <span class="pl-s"><span class="pl-pds">"</span>owner<span class="pl-pds">"</span></span>: <span class="pl-c1">17</span>,
+	  <span class="pl-s"><span class="pl-pds">"</span>pageIds<span class="pl-pds">"</span></span>: [<span class="pl-c1">15</span>, <span class="pl-c1">16</span>, <span class="pl-ii">...</span>]
+	},
+	<span class="pl-ii">...</span>
+  ]
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-books-pid-assign"></a></p>
+<h3>
+<a id="user-content-get-restpkgassignbookspid" class="anchor" href="#get-restpkgassignbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/pkg/assign/books/<code>pid</code>
+</h3>
+<p>Assign a packages to users.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only an administrator can assign packages to different users.</li>
+<li>Only the owner of a package can assign it back to its original
+owner.</li>
+</ul>
+<h4>
+<a id="user-content-query-parameters-1" class="anchor" href="#query-parameters-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<ul>
+<li>The id of the user to which the package should be assigned,
+must be given with the <code>assignto=user-id</code> parameter.</li>
+<li>If the parameter <code>assignto</code> is ommited, the package is assigned to
+the original owner of the package (the owner of the associated
+project).</li>
+</ul>
+<hr>
+<p><a id="user-content-api-get-books-pid-takeback"></a></p>
+<h3>
+<a id="user-content-get-restpkgtakebackbookspid" class="anchor" href="#get-restpkgtakebackbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/pkg/takeback/books/<code>pid</code>
+</h3>
+<p>Take all packages of a project back.  All packages beloning to the
+project are reasigned to the project's owner.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project can take packages back.</li>
+</ul>
+<hr>
+<p><a id="user-content-api-post-books-pid-adaptive-tokens"></a></p>
+<h3>
+<a id="user-content-get-restbookspidadaptive-tokens" class="anchor" href="#get-restbookspidadaptive-tokens" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/books/<code>pid</code>/adaptive-tokens</h3>
+<p>Get a list of the adaptive tokens of the last profiler run.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project can access the adaptive token set of the project.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-11" class="anchor" href="#response-data-11" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>adaptiveTokens<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>token1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>token2<span class="pl-pds">"</span></span>, <span class="pl-ii">...</span>]
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-books-pid-download"></a></p>
+<h3>
+<a id="user-content-get-restbookspiddownload" class="anchor" href="#get-restbookspiddownload" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/books/<code>pid</code>/download</h3>
+<p>Download a project.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project can delete a project.</li>
+</ul>
+<p>This API call generates a new project archive and returns
+the relative URL of the new archive.
+The new project contains all original OCR and image files with
+all corrections.
+Additionally the archive contains a file called <code>adaptive_tokens.txt</code> as well
+as a <code>ocropus-book</code> directory structure.</p>
+<p>The file <code>adaptive_tokens.txt</code> contains the
+<a href="#user-content-profile-project">adaptive token set</a> of the various
+profiler runs (if any). This file can be empty, if no profiling was used or
+if the profiler could not find any adaptive tokens.</p>
+<p>The <code>ocorpus-book</code> directory contains an
+<a href="#user-content-project-archives">ocropy directory structure</a>
+that can directly be used for model training with ocropy.
+If the project archive was already a ocropy directory structure,
+only the according ground truth files are updated.</p>
+<h4>
+<a id="user-content-response-data-12" class="anchor" href="#response-data-12" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>archive<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>relative download url of project archive<span class="pl-pds">"</span></span>,
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-books-pid-search"></a></p>
+<h3>
+<a id="user-content-get-restbookspidsearch" class="anchor" href="#get-restbookspidsearch" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/books/<code>pid</code>/search</h3>
+<p>Search for a token or error pattern in a project or package with id <code>pid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can search for tokens or error patterns.</li>
+</ul>
+<h4>
+<a id="user-content-query-parameters-2" class="anchor" href="#query-parameters-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<ul>
+<li>The query is given with the <code>q=query</code> parameter. This parameter is mandatory.</li>
+<li>The optional parameter <code>p=1|0</code> specifies if a token search or a error pattern
+search should be performed (default: <code>p=0</code>).</li>
+<li>The optional parameter <code>max=n</code> sets the maximal number of returned
+hits (default: <code>max=50</code>).</li>
+<li>The optional parameter <code>skip=n</code> sets the number of hits to skip
+(default: <code>skip=0</code>).</li>
+</ul>
+<h4>
+<a id="user-content-response-data-13" class="anchor" href="#response-data-13" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">17</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isErrorPattern<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>skip<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>max<span class="pl-pds">"</span></span>: <span class="pl-c1">14</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>totalCount<span class="pl-pds">"</span></span>: <span class="pl-c1">1000</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>matches<span class="pl-pds">"</span></span>: {
+	<span class="pl-s"><span class="pl-pds">"</span>query1<span class="pl-pds">"</span></span>: [{
+	   <span class="pl-s"><span class="pl-pds">"</span>totalCount<span class="pl-pds">"</span></span>: <span class="pl-c1">30</span>,
+	   <span class="pl-s"><span class="pl-pds">"</span>line<span class="pl-pds">"</span></span>: {
+          <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>imgFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path/to/line/image/file<span class="pl-pds">"</span></span>,
+          <span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected content<span class="pl-pds">"</span></span>,
+          <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr content<span class="pl-pds">"</span></span>,
+          <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
+          <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
+          <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isFullyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isPartiallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+            <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+          }
+        }
+		},<span class="pl-ii">...</span>],
+		<span class="pl-s"><span class="pl-pds">"</span>matches<span class="pl-pds">"</span></span>: [{
+          <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>tokenId<span class="pl-pds">"</span></span>: <span class="pl-c1">17</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>offset<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isFullyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isPartiallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected content of token<span class="pl-pds">"</span></span>,
+          <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr content of token<span class="pl-pds">"</span></span>,
+          <span class="pl-s"><span class="pl-pds">"</span>averageConf<span class="pl-pds">"</span></span>: <span class="pl-c1">0.3</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isNormal<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+            <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+          }},<span class="pl-ii">...</span>
+		]
+	}
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-books-pid-pages-pageid"></a></p>
+<h3>
+<a id="user-content-get-restbookspidpagespageid" class="anchor" href="#get-restbookspidpagespageid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>
+</h3>
+<p>Get the content of a page with id <code>pageid</code> of a package or project with id <code>pid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can read its pages.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-14" class="anchor" href="#response-data-14" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>ocrFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of ocr file<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>imgFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of image file<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+    <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+  },
+  <span class="pl-s"><span class="pl-pds">"</span>lines<span class="pl-pds">"</span></span>: [
+    {
+      <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>imgFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path/to/line/image/file<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected content<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr content<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
+      <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
+      <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isFullyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isPartiallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+        <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+      }
+      <span class="pl-s"><span class="pl-pds">"</span>tokens<span class="pl-pds">"</span></span><span class="pl-ii">:</span> [
+        {
+          <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>tokenId<span class="pl-pds">"</span></span>: <span class="pl-c1">17</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>offset<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isFullyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isPartiallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected content of token<span class="pl-pds">"</span></span>,
+          <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr content of token<span class="pl-pds">"</span></span>,
+          <span class="pl-s"><span class="pl-pds">"</span>averageConf<span class="pl-pds">"</span></span>: <span class="pl-c1">0.3</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isNormal<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+            <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+            <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+          },
+        },
+        <span class="pl-ii">...</span>
+      ]
+	}
+  ]
+}</pre></div>
+<hr>
+<p><a id="user-content-api-delete-books-pid-pages-pageid"></a></p>
+<h3>
+<a id="user-content-delete-restbookspidpagespageid" class="anchor" href="#delete-restbookspidpagespageid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[DELETE] rest/books/<code>pid</code>/pages/<code>pageid</code>
+</h3>
+<p>Delete the pages with <code>pageid</code> from the project with id <code>pid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only pages from projects can be deleted.  You cannot delete pages
+from packages.</li>
+<li>Only the owner of a project can delete it.</li>
+</ul>
+<hr>
+<p><a id="user-content-api-get-books-pid-pages-first"></a></p>
+<h3>
+<a id="user-content-get-restbookspidpagesfirst" class="anchor" href="#get-restbookspidpagesfirst" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/books/<code>pid</code>/pages/first</h3>
+<p>Get the first page of a project or package with id <code>pid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can read its pages.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-15" class="anchor" href="#response-data-15" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>ocrFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of ocr file<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>imgFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of image file<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+    <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+  },
+  <span class="pl-s"><span class="pl-pds">"</span>lines<span class="pl-pds">"</span></span>: [
+    {
+      <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>imgFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path/to/line/image/file<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected content<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr content<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
+      <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
+      <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isFullyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isPartiallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+        <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+      }
+    },
+    <span class="pl-ii">...</span>
+  ]
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-books-pid-pages-last"></a></p>
+<h3>
+<a id="user-content-get-restbookspidpageslast" class="anchor" href="#get-restbookspidpageslast" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/books/<code>pid</code>/pages/last</h3>
+<p>Get the last page of a project or package with id <code>pid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can read its pages.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-16" class="anchor" href="#response-data-16" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>ocrFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of ocr file<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>imgFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of image file<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+    <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+  },
+  <span class="pl-s"><span class="pl-pds">"</span>lines<span class="pl-pds">"</span></span>: [
+    {
+      <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>imgFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path/to/line/image/file<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected content<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr content<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
+      <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
+      <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isFullyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isPartiallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+        <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+      }
+    },
+    <span class="pl-ii">...</span>
+  ]
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-books-pid-pages-pageid-next-n"></a></p>
+<h3>
+<a id="user-content-get-restbookspidpagespageidnextn" class="anchor" href="#get-restbookspidpagespageidnextn" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/next/<code>n</code>
+</h3>
+<p>Get the <code>n</code>-th next page of a page with id <code>pageid</code> of a project or package with id <code>pid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can read its pages.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-17" class="anchor" href="#response-data-17" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>ocrFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of ocr file<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>imgFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of image file<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+    <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+  },
+  <span class="pl-s"><span class="pl-pds">"</span>lines<span class="pl-pds">"</span></span>: [
+    {
+      <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>imgFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path/to/line/image/file<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected content<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr content<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
+      <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
+      <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isFullyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isPartiallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+        <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+      }
+    },
+    <span class="pl-ii">...</span>
+  ]
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-books-pid-pages-pageid-prev-n"></a></p>
+<h3>
+<a id="user-content-get-restbookspidpagespageidprevn" class="anchor" href="#get-restbookspidpagespageidprevn" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/prev/<code>n</code>
+</h3>
+<p>Get the <code>n</code>-th previous page of a page with id <code>pageid</code> of a project or package with id <code>pid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can read its pages.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-18" class="anchor" href="#response-data-18" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>ocrFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of ocr file<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>imgFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of image file<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+    <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+  },
+  <span class="pl-s"><span class="pl-pds">"</span>lines<span class="pl-pds">"</span></span>: [
+    {
+      <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>imgFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path/to/line/image/file<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected content<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr content<span class="pl-pds">"</span></span>,
+      <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
+      <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
+      <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isFullyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isPartiallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+        <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+        <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+      }
+    },
+    <span class="pl-ii">...</span>
+  ]
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-books-pid-pages-pageid-lines-lid"></a></p>
+<h3>
+<a id="user-content-get-restbookspidpagespageidlineslid" class="anchor" href="#get-restbookspidpagespageidlineslid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>
+</h3>
+<p>Get the line with id <code>lid</code> of a page with id <code>pageid</code> from a project
+or package with id <code>pid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can read its lines.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-19" class="anchor" href="#response-data-19" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>imgFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path/to/line/image/file<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected content<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr content<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
+  <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
+  <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isFullyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isPartiallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+    <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+  }
+}</pre></div>
+<hr>
+<p><a id="user-content-api-post-books-pid-pages-pageid-lines-lid"></a></p>
+<h3>
+<a id="user-content-post-restbookspidpagespageidlineslid" class="anchor" href="#post-restbookspidpagespageidlineslid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>
+</h3>
+<p>Correct line <code>lid</code> in page <code>pageid</code> of project or package <code>pid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can read its lines.</li>
+</ul>
+<h4>
+<a id="user-content-post-data-6" class="anchor" href="#post-data-6" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>correction<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected line<span class="pl-pds">"</span></span>
+}</pre></div>
+<h4>
+<a id="user-content-response-data-20" class="anchor" href="#response-data-20" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>imgFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path/to/line/image/file<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected content<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr content<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
+  <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
+  <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isFullyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isPartiallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+    <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+  }
+}</pre></div>
+<hr>
+<p><a id="user-content-api-delete-books-pid-pages-pageid-lines-lid"></a></p>
+<h3>
+<a id="user-content-delete-restbookspidpagespageidlineslid" class="anchor" href="#delete-restbookspidpagespageidlineslid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[DELETE] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>
+</h3>
+<p>Delete line <code>lid</code> in page <code>pageid</code> of project with id <code>pid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>You can only delete lines from projects.  You cannot delete lines
+from packages.</li>
+<li>Only the owner of a project can delete a line.</li>
+</ul>
+<hr>
+<p><a id="user-content-api-get-books-pid-pages-pageid-lines-lid-tokens-tid"></a></p>
+<h3>
+<a id="user-content-get-restbookspidpagespageidlineslidtokenstid" class="anchor" href="#get-restbookspidpagespageidlineslidtokenstid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code>
+</h3>
+<p>Get a token (or slice) of a token in a line starting at position
+<code>tid</code>.  The position specifies the offset of the token in the line
+(counting unicode code-points).</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can access its tokens.</li>
+</ul>
+<h4>
+<a id="user-content-query-parameters-3" class="anchor" href="#query-parameters-3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<p>An optional parameter <code>len=n</code> can be specified to get a specific slice
+of the line starting at position <code>tid</code> and ending at position
+<code>tid+len-1</code> (counting unicode code-points).  If <code>len</code> is omitted an
+according token (ending at the first encountered whitespace character
+after <code>tid</code> or the end of the line) is returned.</p>
+<h4>
+<a id="user-content-response-data-21" class="anchor" href="#response-data-21" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>tokenId<span class="pl-pds">"</span></span>: <span class="pl-c1">77</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>offset<span class="pl-pds">"</span></span>: <span class="pl-c1">77</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected content<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr content<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
+  <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
+  <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isFullyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isPartiallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+    <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+  }
+}</pre></div>
+<p>--- <a id="user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid"></a></p>
+<h3>
+<a id="user-content-post-restbookspidpagespageidlineslidtokenstid" class="anchor" href="#post-restbookspidpagespageidlineslidtokenstid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code>
+</h3>
+<p>Correct word <code>tid</code> in line <code>lid</code> in page <code>pageid</code> of project or package <code>pid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can correct its tokens.</li>
+</ul>
+<h4>
+<a id="user-content-post-data-7" class="anchor" href="#post-data-7" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>correction<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected token<span class="pl-pds">"</span></span>
+}</pre></div>
+<h4>
+<a id="user-content-response-data-22" class="anchor" href="#response-data-22" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>tokenId<span class="pl-pds">"</span></span>: <span class="pl-c1">77</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>offset<span class="pl-pds">"</span></span>: <span class="pl-c1">10</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>imgFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path/to/line/image/file<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected content<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr content<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
+  <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
+  <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isFullyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isPartiallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
+    <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>bottom<span class="pl-pds">"</span></span>: <span class="pl-c1">4</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>width<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+    <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
+  }
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-books-pid-profile"></a></p>
+<h3>
+<a id="user-content-get-restprofilebookspid" class="anchor" href="#get-restprofilebookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/profile/books/<code>pid</code>
+</h3>
+<p>Get profiler suggestions after the according profiling
+<a href="#user-content-api-get-jobs">job</a> has finished.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can access the profiler
+information.</li>
+<li>Suggestions for ocr tokens are only available if the project has
+been profiled.</li>
+</ul>
+<h4>
+<a id="user-content-query-parameters-4" class="anchor" href="#query-parameters-4" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<p>Optionally you can add <code>q=q1&amp;q=q2&amp;...</code> parameters to limit the
+suggestions to the given queries.  If no query parameters are set, the
+whole profile for each type in the document is returned.</p>
+<h4>
+<a id="user-content-response-data-23" class="anchor" href="#response-data-23" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">37</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>ocr1<span class="pl-pds">"</span></span>: [
+		{
+			<span class="pl-s"><span class="pl-pds">"</span>token<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr1<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>suggestion<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>correction suggestion<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>modern<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>modern lexicon entry<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>dict<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>dictionary name<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>distance<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">13446</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>weight<span class="pl-pds">"</span></span>: <span class="pl-c1">0.3</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>ocrPatterns<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>pat1:pat2:pos2<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>pat3:pat4:pos2<span class="pl-pds">"</span></span>],
+			<span class="pl-s"><span class="pl-pds">"</span>histPatterns<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>pat5:pat6:pos3<span class="pl-pds">"</span></span>]
+		},
+		{
+			<span class="pl-s"><span class="pl-pds">"</span>token<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr1<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>suggestion<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>correction suggestion<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>modern<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>modern lexicon entry<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>dict<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>dictionary name<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>distance<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">13446</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>weight<span class="pl-pds">"</span></span>: <span class="pl-c1">0.01</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>ocrPatterns<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>pat1:pat2:pos2<span class="pl-pds">"</span></span>],
+			<span class="pl-s"><span class="pl-pds">"</span>histPatterns<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>pat3:pat4:pos2<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>pat5:pat6:pos3<span class="pl-pds">"</span></span>]
+		},
+	    <span class="pl-ii">...</span>
+	]
+}</pre></div>
+<hr>
+<p><a id="user-content-api-post-books-pid-profile"></a></p>
+<h3>
+<a id="user-content-post-restprofilebookspid" class="anchor" href="#post-restprofilebookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/profile/books/<code>pid</code>
+</h3>
+<p>Request to profile the project with an id <code>pid</code> or request to profile
+the original project of a package with an id <code>pid</code>.  The request
+starts the profiling as background <a href="#user-content-api-get-jobs">job</a>
+and returns the according job information.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can start a profiling job for
+the (package's base-) project.</li>
+<li>Returns the <a href="#user-content-api-get-jobs">job</a> id for the started
+profiling job.</li>
+</ul>
+<h4>
+<a id="user-content-post-data-8" class="anchor" href="#post-data-8" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
+<p>The profiling endpoint expects a list of tokens that are used as
+additional lexicon entries for the profiling.  It is possible to just
+send an empty tokens list if no additional lexicon entries should be
+used for the profiling.</p>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>tokens<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>additional lexicon token 1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>additional lexicon token 2<span class="pl-pds">"</span></span>]
+}</pre></div>
+<h4>
+<a id="user-content-response-data-24" class="anchor" href="#response-data-24" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-books-pid-suspicious"></a></p>
+<h3>
+<a id="user-content-get-restprofilesuspiciousbookspid" class="anchor" href="#get-restprofilesuspiciousbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/profile/suspicious/books/<code>pid</code>
+</h3>
+<p>Get the <code>suspicious</code> words for the given project and/or package.
+Suspicious words are words in the project for which the profiler
+guesses an underlying OCR-error.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can access the profiler
+information.</li>
+<li>Suspicious words are only available if the project has been
+profiled.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-25" class="anchor" href="#response-data-25" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">19</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">19</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>counts<span class="pl-pds">"</span></span>: {
+	  <span class="pl-s"><span class="pl-pds">"</span>suspicious-word#1<span class="pl-pds">"</span></span>: <span class="pl-c1">15</span>,
+	  <span class="pl-s"><span class="pl-pds">"</span>suspicious-word#2<span class="pl-pds">"</span></span>: <span class="pl-c1">134</span>,
+	  <span class="pl-ii">...</span>
+  }
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-profiler-languages"></a></p>
+<h3>
+<a id="user-content-get-restprofilelanguages" class="anchor" href="#get-restprofilelanguages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/profile/languages</h3>
+<p>Get the available languages of a language profiler.</p>
+<ul>
+<li>No <a href="#user-content-authorization">Authorization</a> is required.</li>
+</ul>
+<h4>
+<a id="user-content-query-parameters-5" class="anchor" href="#query-parameters-5" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<ul>
+<li>The optional parameter <code>url=profiler-url</code> specifies the URL of the profiler.
+Use <code>local</code> to use the local profiler. If omitted, <code>url=local</code> is assumed.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-26" class="anchor" href="#response-data-26" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>url<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>profiler-url|local<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>languages<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>language1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>language2<span class="pl-pds">"</span></span>, <span class="pl-ii">...</span>]
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-global-ocr-models"></a></p>
+<h3>
+<a id="user-content-get-restocr" class="anchor" href="#get-restocr" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/ocr</h3>
+<p>Get the list of available global ocr models.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-27" class="anchor" href="#response-data-27" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>models<span class="pl-pds">"</span></span>: [
+		{
+			<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of model<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>description<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>description for model<span class="pl-pds">"</span></span>
+		},
+		<span class="pl-ii">...</span>
+	]
+}
+</pre></div>
+<hr>
+<p><a id="user-content-api-get-ocr-models"></a></p>
+<h3>
+<a id="user-content-get-restocrbookspid" class="anchor" href="#get-restocrbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/ocr/books/<code>pid</code>
+</h3>
+<p>Get the list of available global ocr models and specific trained
+models for the project.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can access the project's models.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-28" class="anchor" href="#response-data-28" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>models<span class="pl-pds">"</span></span>: [
+		{
+			<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of model<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>description<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>description for model<span class="pl-pds">"</span></span>
+		},
+		<span class="pl-ii">...</span>
+	]
+}
+</pre></div>
+<hr>
+<p><a id="user-content-api-post-ocr-book"></a></p>
+<h3>
+<a id="user-content-post-restocrbookspid" class="anchor" href="#post-restocrbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/ocr/books/<code>pid</code>
+</h3>
+<p>Starts an OCR <a href="#user-content-api-get-jobs">job</a> on the given project
+(or on the given package's project).</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can start an OCR-job.</li>
+<li>Only lines that are neither fully nor partially corrected are predicted.</li>
+</ul>
+<h4>
+<a id="user-content-post-data-9" class="anchor" href="#post-data-9" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of the  model<span class="pl-pds">"</span></span>
+}</pre></div>
+<h4>
+<a id="user-content-response-data-29" class="anchor" href="#response-data-29" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-post-ocr-book-page"></a></p>
+<h3>
+<a id="user-content-post-restocrbookspidpagespageid" class="anchor" href="#post-restocrbookspidpagespageid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/ocr/books/<code>pid</code>/pages/<code>pageid</code>
+</h3>
+<p>Starts an OCR <a href="#user-content-api-get-jobs">job</a> on the given page.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can start an OCR-job.</li>
+<li>Only lines that are neither fully nor partially corrected are predicted.</li>
+</ul>
+<h4>
+<a id="user-content-post-data-10" class="anchor" href="#post-data-10" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of the  model<span class="pl-pds">"</span></span>
+}</pre></div>
+<h4>
+<a id="user-content-response-data-30" class="anchor" href="#response-data-30" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-post-ocr-book-page-line"></a></p>
+<h3>
+<a id="user-content-post-restocrbookspidpagespageidlineslid" class="anchor" href="#post-restocrbookspidpagespageidlineslid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/ocr/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>
+</h3>
+<p>Starts an OCR <a href="#user-content-api-get-jobs">job</a> on the given line.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can start an OCR-job.</li>
+<li>Only lines that are neither fully nor partially corrected are predicted.</li>
+</ul>
+<h4>
+<a id="user-content-post-data-11" class="anchor" href="#post-data-11" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of the  model<span class="pl-pds">"</span></span>
+}</pre></div>
+<h4>
+<a id="user-content-response-data-31" class="anchor" href="#response-data-31" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-post-train-book"></a></p>
+<h3>
+<a id="user-content-post-restocrtrainbookspid" class="anchor" href="#post-restocrtrainbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/ocr/train/books/<code>pid</code>
+</h3>
+<p>Starts the training <a href="#user-content-api-get-jobs">job</a> of an individual
+OCR-model for the given book (or package).</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can start an OCR-job.</li>
+<li>Only fully corrected lines are used for the training.</li>
+</ul>
+<h4>
+<a id="user-content-post-data-12" class="anchor" href="#post-data-12" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name for the base model<span class="pl-pds">"</span></span>
+}</pre></div>
+<h4>
+<a id="user-content-response-data-32" class="anchor" href="#response-data-32" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-el"></a></p>
+<h3>
+<a id="user-content-get-restpostcorrectelbookspid" class="anchor" href="#get-restpostcorrectelbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/postcorrect/el/books/<code>pid</code>
+</h3>
+<p>Get the extended lexicon for the project.  The extendend lexicon is
+available after the <a href="#user-content-api-get-jobs">job</a> for the
+according <a href="#user-content-api-post-el">post request</a> has finished.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can access the extended lexicon.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-33" class="anchor" href="#response-data-33" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>yes<span class="pl-pds">"</span></span>: {
+		<span class="pl-s"><span class="pl-pds">"</span>foo<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+		<span class="pl-s"><span class="pl-pds">"</span>bar<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>
+	},
+	<span class="pl-s"><span class="pl-pds">"</span>no<span class="pl-pds">"</span></span>: {
+		<span class="pl-s"><span class="pl-pds">"</span>baz<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>
+	}
+}</pre></div>
+<p><a id="user-content-api-post-el"></a></p>
+<h3>
+<a id="user-content-post-restpostcorrectelbookspid" class="anchor" href="#post-restpostcorrectelbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/postcorrect/el/books/<code>pid</code>
+</h3>
+<p>Start the <a href="#user-content-api-get-jobs">job</a> to generate the extended
+lexicon.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can start the job.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-34" class="anchor" href="#response-data-34" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">31</span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-rrdm"></a></p>
+<h3>
+<a id="user-content-get-restpostcorrectrrdmbookspid" class="anchor" href="#get-restpostcorrectrrdmbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/postcorrect/rrdm/books/<code>pid</code>
+</h3>
+<p>Get the post-correction information.  The post-correction information
+available after the <a href="#user-content-api-get-jobs">job</a> for the
+according <a href="#user-content-api-post-rrdm">post request</a> has finished.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can access the post-correction information.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-35" class="anchor" href="#response-data-35" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>always<span class="pl-pds">"</span></span>: {
+		<span class="pl-s"><span class="pl-pds">"</span>foo<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+		<span class="pl-s"><span class="pl-pds">"</span>bar<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>
+	},
+	<span class="pl-s"><span class="pl-pds">"</span>sometimes<span class="pl-pds">"</span></span>: {
+		<span class="pl-s"><span class="pl-pds">"</span>baz<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>
+	},
+	<span class="pl-s"><span class="pl-pds">"</span>never<span class="pl-pds">"</span></span>: {
+		<span class="pl-s"><span class="pl-pds">"</span>abc<span class="pl-pds">"</span></span>: <span class="pl-c1">7</span>
+	}
+}</pre></div>
+<hr>
+<p><a id="user-content-api-post-rrdm"></a></p>
+<h3>
+<a id="user-content-post-restpostcorrectrrdmbookspid" class="anchor" href="#post-restpostcorrectrrdmbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/postcorrect/rrdm/books/<code>pid</code>
+</h3>
+<p>Start the <a href="#user-content-api-get-jobs">job</a> to generate the post
+correction.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can start the job.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-36" class="anchor" href="#response-data-36" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">31</span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-jobs"></a></p>
+<h3>
+<a id="user-content-get-restjobsjobid" class="anchor" href="#get-restjobsjobid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/jobs/<code>jobid</code>
+</h3>
+<p>Get the status of a job for the given job-id.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can see the job.</li>
+<li>If the job failed <code>500 Internal Server Error</code> is returned.</li>
+</ul>
+<h4>
+<a id="user-content-query-parameters-6" class="anchor" href="#query-parameters-6" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<p>You can specify an optional <code>q=job-name</code> parameter to check the status
+of a specific running job (such as predict, train, profiler,
+postcorrection) with the according id.</p>
+<h4>
+<a id="user-content-response-data-37" class="anchor" href="#response-data-37" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-ii">jobId</span>: <span class="pl-c1">8</span>,
+	<span class="pl-ii">bookId</span>: <span class="pl-c1">13</span>,
+	<span class="pl-ii">statusId</span>: <span class="pl-c1">1</span>,
+	<span class="pl-ii">statusName</span>: <span class="pl-s"><span class="pl-pds">"</span>failed|running|done<span class="pl-pds">"</span></span>,
+	<span class="pl-ii">jobName</span>: <span class="pl-s"><span class="pl-pds">"</span>name of job<span class="pl-pds">"</span></span>,
+	<span class="pl-ii">Timestamp</span>: <span class="pl-c1">0</span>
+}</pre></div>
+

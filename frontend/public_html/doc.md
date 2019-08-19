@@ -36,50 +36,50 @@ for suspicious words.
 * [Installation](#user-content-installation)
 * [Services](#user-content-overview-services)
 * [REST API](#user-content-rest-api)
-    * [[GET] `rest-url`/api-version](#user-content-api-get-version)
-    * [[POST] `rest-url`/login](#user-content-api-post-login)
-    * [[GET] `rest-url`/login](#user-content-api-get-login)
-	* [[POST] `rest-url`/users](#user-content-api-post-users)
-	* [[GET] `rest-url`/users](#user-content-api-get-users)
-	* [[PUT] `rest-url`/users/`uid`](#user-content-api-post-users-uid)
-	* [[GET] `rest-url`/users/`uid`](#user-content-api-get-users-uid)
-	* [[DELETE] `rest-url`/users/`uid`](#user-content-api-delete-users-uid)
-	* [[GET] `rest-url`/books](#user-content-api-get-books)
-	* [[POST] `rest-url`/books](#user-content-api-post-books)
-	* [[GET] `rest-url`/books/`pid`](#user-content-api-get-books-pid)
-	* [[PUT] `rest-url`/books/`pid`](#user-content-api-put-books-pid)
-	* [[DELETE] `rest-url`/books/`pid`](#user-content-api-delete-books-pid)
-	* [[POST] `rest-url`/pkg/split/books/`pid`](#user-content-api-post-books-pid-split)
-	* [[GET] `rest-url`/pkg/assign/books/`pid`](#api-get-books-pid-assign)
-	* [[GET] `rest-url`/pkg/takeback/books/`pid`](#api-get-books-pid-takeback)
-	* [[GET] `rest-url`/books/`pid`/adaptive-tokens](#user-content-api-post-books-pid-adaptive-tokens)
-	* [[GET] `rest-url`/books/`pid`/download](#user-content-api-get-books-pid-download)
-	* [[GET] `rest-url`/books/`pid`/search](#user-content-api-get-books-pid-search)
-	* [[GET] `rest-url`/books/`pid`/pages/`pageid`](#user-content-api-get-books-pid-pages-pageid)
-	* [[DELETE] `rest-url`/books/`pid`/pages/`pageid`](#user-content-api-delete-books-pid-pages-pageid)
-	* [[GET] `rest-url`/books/`pid`/pages/first](#user-content-api-get-books-pid-pages-first)
-	* [[GET] `rest-url`/books/`pid`/pages/last](#user-content-api-get-books-pid-pages-last)
-	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/next/`n`](#user-content-api-get-books-pid-pages-pageid-next-n)
-	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/prev/`n`](#user-content-api-get-books-pid-pages-pageid-prev-n)
-	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-get-books-pid-pages-pageid-lines-lid)
-	* [[POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-post-books-pid-pages-pageid-lines-lid)
-   * [[DELETE] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-delete-books-pid-pages-pageid-lines-lid)
-	* [[POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid)
-	* [[GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-get-books-pid-pages-pageid-lines-lid-tokens-tid)
-	* [[GET] `rest-url`/profile/books/`pid`](#user-content-api-get-books-pid-profile)
-	* [[POST] `rest-url`/profile/books/`pid`](#user-content-api-post-books-pid-profile)
-	* [[POST] `rest-url`/profile/suspicious/books/`pid`](#user-content-api-get-books-pid-suspicious)
-	* [[GET] `rest-url`/profile/languages](#user-content-api-get-profiler-languages)
-	* [[GET] `rest-url`/ocr](#user-content-api-get-global-ocr-models)
-	* [[GET] `rest-url`/ocr/books/`pid`](#user-content-api-get-ocr-models)
-	* [[POST] `rest-url`/ocr/books/`pid`](#user-content-api-post-ocr-book)
-	* [[POST] `rest-url`/ocr/books/`pid`/pages/`pageid`](#user-content-api-post-ocr-book-page)
-	* [[POST] `rest-url`/ocr/books/`pid`/pages/`pageid`/lines/`lineid`](#user-content-api-post-ocr-book-page-line)
-	* [[GET] `rest-url`/postcorrect/el/books/`pid`](#user-content-api-get-el)
-	* [[POST] `rest-url`/postcorrect/el/books/`pid`](#user-content-api-post-el)
-	* [[GET] `rest-url`/postcorrect/rrdm/books/`pid`](#user-content-api-get-rrdm)
-	* [[POST] `rest-url`/postcorrect/rrdm/books/`pid`](#user-content-api-post-rrdm)
-	* [[GET] `rest-url`/jobs/`jobid`](#user-content-api-get-jobs)
+    * [[GET] rest/api-version](#user-content-api-get-version)
+    * [[POST] rest/login](#user-content-api-post-login)
+    * [[GET] rest/login](#user-content-api-get-login)
+	* [[POST] rest/users](#user-content-api-post-users)
+	* [[GET] rest/users](#user-content-api-get-users)
+	* [[PUT] rest/users/`uid`](#user-content-api-post-users-uid)
+	* [[GET] rest/users/`uid`](#user-content-api-get-users-uid)
+	* [[DELETE] rest/users/`uid`](#user-content-api-delete-users-uid)
+	* [[GET] rest/books](#user-content-api-get-books)
+	* [[POST] rest/books](#user-content-api-post-books)
+	* [[GET] rest/books/`pid`](#user-content-api-get-books-pid)
+	* [[PUT] rest/books/`pid`](#user-content-api-put-books-pid)
+	* [[DELETE] rest/books/`pid`](#user-content-api-delete-books-pid)
+	* [[POST] rest/pkg/split/books/`pid`](#user-content-api-post-books-pid-split)
+	* [[GET] rest/pkg/assign/books/`pid`](#api-get-books-pid-assign)
+	* [[GET] rest/pkg/takeback/books/`pid`](#api-get-books-pid-takeback)
+	* [[GET] rest/books/`pid`/adaptive-tokens](#user-content-api-post-books-pid-adaptive-tokens)
+	* [[GET] rest/books/`pid`/download](#user-content-api-get-books-pid-download)
+	* [[GET] rest/books/`pid`/search](#user-content-api-get-books-pid-search)
+	* [[GET] rest/books/`pid`/pages/`pageid`](#user-content-api-get-books-pid-pages-pageid)
+	* [[DELETE] rest/books/`pid`/pages/`pageid`](#user-content-api-delete-books-pid-pages-pageid)
+	* [[GET] rest/books/`pid`/pages/first](#user-content-api-get-books-pid-pages-first)
+	* [[GET] rest/books/`pid`/pages/last](#user-content-api-get-books-pid-pages-last)
+	* [[GET] rest/books/`pid`/pages/`pageid`/next/`n`](#user-content-api-get-books-pid-pages-pageid-next-n)
+	* [[GET] rest/books/`pid`/pages/`pageid`/prev/`n`](#user-content-api-get-books-pid-pages-pageid-prev-n)
+	* [[GET] rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-get-books-pid-pages-pageid-lines-lid)
+	* [[POST] rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-post-books-pid-pages-pageid-lines-lid)
+   * [[DELETE] rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-delete-books-pid-pages-pageid-lines-lid)
+	* [[POST] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid)
+	* [[GET] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-get-books-pid-pages-pageid-lines-lid-tokens-tid)
+	* [[GET] rest/profile/books/`pid`](#user-content-api-get-books-pid-profile)
+	* [[POST] rest/profile/books/`pid`](#user-content-api-post-books-pid-profile)
+	* [[POST] rest/profile/suspicious/books/`pid`](#user-content-api-get-books-pid-suspicious)
+	* [[GET] rest/profile/languages](#user-content-api-get-profiler-languages)
+	* [[GET] rest/ocr](#user-content-api-get-global-ocr-models)
+	* [[GET] rest/ocr/books/`pid`](#user-content-api-get-ocr-models)
+	* [[POST] rest/ocr/books/`pid`](#user-content-api-post-ocr-book)
+	* [[POST] rest/ocr/books/`pid`/pages/`pageid`](#user-content-api-post-ocr-book-page)
+	* [[POST] rest/ocr/books/`pid`/pages/`pageid`/lines/`lineid`](#user-content-api-post-ocr-book-page-line)
+	* [[GET] rest/postcorrect/el/books/`pid`](#user-content-api-get-el)
+	* [[POST] rest/postcorrect/el/books/`pid`](#user-content-api-post-el)
+	* [[GET] rest/postcorrect/rrdm/books/`pid`](#user-content-api-get-rrdm)
+	* [[POST] rest/postcorrect/rrdm/books/`pid`](#user-content-api-post-rrdm)
+	* [[GET] rest/jobs/`jobid`](#user-content-api-get-jobs)
 
 - - -
 <a id='users'></a>
@@ -511,7 +511,7 @@ Each entry gives the request method (GET, POST or DELETE) in square brackets,
 the request path and the layout of the response data is listed.
 Additionally for POST requests the expected layout of the POST data is listed.
 You have to replace the parameters in the request path
-by valid ids:
+by valid ids (otherwise the API returns `404 Not Found`):
  * `uid` references a valid user id.
  * `pid` references a valid project or package id.
  * `pageid` references a valid page id in a project or package.
@@ -521,12 +521,14 @@ by valid ids:
 You have to be logged in with a valid user account
 (see [Authorization](#user-content-authorization) below).
 
-All URLs in the API documentation reference a `rest-url`.
-You have to set this parameter for your back-end accordingly.
-So for example the back-end URL for this site is <code><?php global $config; echo $config['backend']['externalURL'];?></code>.
-This means that you have to replace the occurences of `rest-url`
-in the paths of the REST API documentation with
-<code><?php global $config; echo $config['backend']['externalURL'];?></code>.
+All URLs in the API documentation reference a relative path starting
+with `rest/...`.  If you want to use external tools such as `curl` to
+access the API, you have to use the according absolute URL.  So for
+example if `pocoweb` runs on your local host you can access the API
+using `http://localhost/rest/...`.  E.g. to get the API's version (see
+[Version](#user-content-api-get-version) below) using `curl` you have
+to execute the following command: `curl
+http://localhost/rest/api-version`.
 
 <a id='authorization'></a>
 ### Authorization
@@ -544,7 +546,7 @@ each API call.
 For example if your session id is `my-session-id` you have to append
 the `auth=my-session-id` to any URL. So for example using `curl`, you
 would need to call `curl
-rest-url/books/pid/pages/pageid?auth=my-session-id`.
+http://localhost/rest/books/pid/pages/pageid?auth=my-session-id`.
 
 In order to get the 13-th line of the 38-th page of a project with an id of 27
 from this Pocoweb back-end using curl you would have to run:
@@ -554,7 +556,7 @@ $config['backend']['externalURL'];?>/books/27/pages/38/lines/13?auth=my-session-
 
 ---
 <a id='api-get-version'></a>
-### [GET] `rest-url`/api-version
+### [GET] rest/api-version
 
 Get the semantic version of the back-end instance.
 * No [authorization](#user-content-authorization) is required.
@@ -568,7 +570,7 @@ Get the semantic version of the back-end instance.
 
 ---
 <a id='api-post-login'></a>
-### [POST] `rest-url`/login
+### [POST] rest/login
 You have to log in with a valid user account to use most of the API calls
 (see [authorization](#user-content-authorization) above).
 No [authorization](#user-content-authorization) is required.
@@ -600,7 +602,7 @@ After a successfully login you can use the returned session id in the
 
 ---
 <a id='api-get-login'></a>
-### [GET] `rest-url`/login
+### [GET] rest/login
 Check if logged in and get the settings of the logged in user account.
 * [Authorization](#user-content-authorization) is required.
 
@@ -617,7 +619,7 @@ Check if logged in and get the settings of the logged in user account.
 
 ---
 <a id='api-post-users'></a>
-### [POST] `rest-url`/users
+### [POST] rest/users
 Create a new user account.
 * [Authorization](#user-content-authorization) is required.
 * Only administrators can create new user accounts.
@@ -651,7 +653,7 @@ Create a new user account.
 
 ---
 <a id='api-get-users'></a>
-### [GET] `rest-url`/users
+### [GET] rest/users
 Get a list of all users in the system.
 * [Authorization](#user-content-authorization) is required.
 * Only administrators can list all user accounts.
@@ -682,7 +684,7 @@ Get a list of all users in the system.
 
 ---
 <a id='api-post-users-uid'></a>
-### [PUT] `rest-url`/users/`uid`
+### [PUT] rest/users/`uid`
 Update the account settings of an user with an id of `uid`.
 * [Authorization](#user-content-authorization) is required.
 * Administrators can update any normal user account.
@@ -719,7 +721,7 @@ not possible to change a user's id.
 
 ---
 <a id='api-get-users-uid'></a>
-### [GET] `rest-url`/users/`uid`
+### [GET] rest/users/`uid`
 
 Get the settings of an user account with an id of `uid`.
 * [Authorization](#user-content-authorization) is required.
@@ -739,7 +741,7 @@ Get the settings of an user account with an id of `uid`.
 
 ---
 <a id='api-delete-users-uid'></a>
-### [DELETE] `rest-url`/users/`uid`
+### [DELETE] rest/users/`uid`
 Delete the user account of the user with an id of `uid`.
 * [Authorization](#user-content-authorization) is required.
 * Administrators can delete any user account.
@@ -754,7 +756,7 @@ Note that if a project is deleted, all associated packages are deleted as well.
 
 ---
 <a id='api-get-books'></a>
-### [GET] `rest-url`/books
+### [GET] rest/books
 Get all books of an user account.
 * [Authorization](#user-content-authorization) is required.
 
@@ -781,7 +783,7 @@ Get all books of an user account.
 
 ---
 <a id='api-post-books'></a>
-### [POST] `rest-url`/books
+### [POST] rest/books
 Create a new project.
 * [Authorization](#user-content-authorization) is required.
 * Only administrators can upload new projects.
@@ -827,7 +829,7 @@ empty string `""` or `0` respectively.
 
 ---
 <a id='api-get-books-pid'></a>
-### [GET] `rest-url`/books/`pid`
+### [GET] rest/books/`pid`
 Get the content of a project or package.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can access the project's or
@@ -857,7 +859,7 @@ Get the content of a project or package.
 
 ---
 <a id='api-put-books-pid'></a>
-### [PUT] `rest-url`/books/`pid`
+### [PUT] rest/books/`pid`
 Update the meta data of a project.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can update the project's data.
@@ -879,7 +881,7 @@ Update the meta data of a project.
 
 ---
 <a id='api-delete-books-pid'></a>
-### [DELETE] `rest-url`/books/`pid`
+### [DELETE] rest/books/`pid`
 Delete a project.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can delete a project.
@@ -893,7 +895,7 @@ archives are removed from the server.
 
 ---
 <a id='api-post-books-pid-split'></a>
-### [POST] `rest-url`/pkg/split/books/`pid`
+### [POST] rest/pkg/split/books/`pid`
 Split a [project into packages](#user-content-projects).
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can split a project into packages.
@@ -929,7 +931,7 @@ Split a [project into packages](#user-content-projects).
 
 ---
 <a id='api-get-books-pid-assign'></a>
-### [GET] `rest-url`/pkg/assign/books/`pid`
+### [GET] rest/pkg/assign/books/`pid`
 Assign a packages to users.
 * [Authorization](#user-content-authorization) is required.
 * Only an administrator can assign packages to different users.
@@ -945,7 +947,7 @@ Assign a packages to users.
 
 ---
 <a id='api-get-books-pid-takeback'></a>
-### [GET] `rest-url`/pkg/takeback/books/`pid`
+### [GET] rest/pkg/takeback/books/`pid`
 Take all packages of a project back.  All packages beloning to the
 project are reasigned to the project's owner.
 * [Authorization](#user-content-authorization) is required.
@@ -953,7 +955,7 @@ project are reasigned to the project's owner.
 
 ---
 <a id='api-post-books-pid-adaptive-tokens'></a>
-### [GET] `rest-url`/books/`pid`/adaptive-tokens
+### [GET] rest/books/`pid`/adaptive-tokens
 Get a list of the adaptive tokens of the last profiler run.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can access the adaptive token set of the project.
@@ -968,7 +970,7 @@ Get a list of the adaptive tokens of the last profiler run.
 
 ---
 <a id='api-get-books-pid-download'></a>
-### [GET] `rest-url`/books/`pid`/download
+### [GET] rest/books/`pid`/download
 Download a project.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can delete a project.
@@ -1000,7 +1002,7 @@ only the according ground truth files are updated.
 
 ---
 <a id='api-get-books-pid-search'></a>
-### [GET] `rest-url`/books/`pid`/search
+### [GET] rest/books/`pid`/search
 Search for a token or error pattern in a project or package with id `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can search for tokens or error patterns.
@@ -1075,7 +1077,7 @@ search should be performed (default: `p=0`).
 
 ---
 <a id='api-get-books-pid-pages-pageid'></a>
-### [GET] `rest-url`/books/`pid`/pages/`pageid`
+### [GET] rest/books/`pid`/pages/`pageid`
 Get the content of a page with id `pageid` of a package or project with id `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its pages.
@@ -1147,7 +1149,7 @@ Get the content of a page with id `pageid` of a package or project with id `pid`
 
 ---
 <a id='api-delete-books-pid-pages-pageid'></a>
-### [DELETE] `rest-url`/books/`pid`/pages/`pageid`
+### [DELETE] rest/books/`pid`/pages/`pageid`
 Delete the pages with `pageid` from the project with id `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only pages from projects can be deleted.  You cannot delete pages
@@ -1156,7 +1158,7 @@ Delete the pages with `pageid` from the project with id `pid`.
 
 ---
 <a id='api-get-books-pid-pages-first'></a>
-### [GET] `rest-url`/books/`pid`/pages/first
+### [GET] rest/books/`pid`/pages/first
 Get the first page of a project or package with id `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its pages.
@@ -1204,7 +1206,7 @@ Get the first page of a project or package with id `pid`.
 ```
 ---
 <a id='api-get-books-pid-pages-last'></a>
-### [GET] `rest-url`/books/`pid`/pages/last
+### [GET] rest/books/`pid`/pages/last
 Get the last page of a project or package with id `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its pages.
@@ -1253,7 +1255,7 @@ Get the last page of a project or package with id `pid`.
 
 ---
 <a id='api-get-books-pid-pages-pageid-next-n'></a>
-### [GET] `rest-url`/books/`pid`/pages/`pageid`/next/`n`
+### [GET] rest/books/`pid`/pages/`pageid`/next/`n`
 Get the `n`-th next page of a page with id `pageid` of a project or package with id `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its pages.
@@ -1302,7 +1304,7 @@ Get the `n`-th next page of a page with id `pageid` of a project or package with
 
 ---
 <a id='api-get-books-pid-pages-pageid-prev-n'></a>
-### [GET] `rest-url`/books/`pid`/pages/`pageid`/prev/`n`
+### [GET] rest/books/`pid`/pages/`pageid`/prev/`n`
 Get the `n`-th previous page of a page with id `pageid` of a project or package with id `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its pages.
@@ -1351,7 +1353,7 @@ Get the `n`-th previous page of a page with id `pageid` of a project or package 
 
 ---
 <a id='api-get-books-pid-pages-pageid-lines-lid'></a>
-### [GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`
+### [GET] rest/books/`pid`/pages/`pageid`/lines/`lid`
 Get the line with id `lid` of a page with id `pageid` from a project
 or package with id `pid`.
 * [Authorization](#user-content-authorization) is required.
@@ -1384,7 +1386,7 @@ or package with id `pid`.
 
 ---
 <a id='api-post-books-pid-pages-pageid-lines-lid'></a>
-### [POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`
+### [POST] rest/books/`pid`/pages/`pageid`/lines/`lid`
 Correct line `lid` in page `pageid` of project or package `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its lines.
@@ -1423,7 +1425,7 @@ Correct line `lid` in page `pageid` of project or package `pid`.
 
 ---
 <a id='api-delete-books-pid-pages-pageid-lines-lid'></a>
-### [DELETE] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`
+### [DELETE] rest/books/`pid`/pages/`pageid`/lines/`lid`
 Delete line `lid` in page `pageid` of project with id `pid`.
 * [Authorization](#user-content-authorization) is required.
 * You can only delete lines from projects.  You cannot delete lines
@@ -1432,7 +1434,7 @@ Delete line `lid` in page `pageid` of project with id `pid`.
 
 ---
 <a id='api-get-books-pid-pages-pageid-lines-lid-tokens-tid'></a>
-### [GET] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`
+### [GET] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`
 Get a token (or slice) of a token in a line starting at position
 `tid`.  The position specifies the offset of the token in the line
 (counting unicode code-points).
@@ -1474,7 +1476,7 @@ after `tid` or the end of the line) is returned.
 ```
 
 --- <a id='api-post-books-pid-pages-pageid-lines-lid-tokens-tid'></a>
-### [POST] `rest-url`/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`
+### [POST] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`
 Correct word `tid` in line `lid` in page `pageid` of project or package `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can correct its tokens.
@@ -1515,7 +1517,7 @@ Correct word `tid` in line `lid` in page `pageid` of project or package `pid`.
 
 ---
 <a id='api-get-books-pid-profile'></a>
-### [GET] `rest-url`/profile/books/`pid`
+### [GET] rest/profile/books/`pid`
 Get profiler suggestions after the according profiling
 [job](#user-content-api-get-jobs) has finished.
 * [Authorization](#user-content-authorization) is required.
@@ -1566,7 +1568,7 @@ whole profile for each type in the document is returned.
 
 ---
 <a id='api-post-books-pid-profile'></a>
-### [POST] `rest-url`/profile/books/`pid`
+### [POST] rest/profile/books/`pid`
 Request to profile the project with an id `pid` or request to profile
 the original project of a package with an id `pid`.  The request
 starts the profiling as background [job](#user-content-api-get-jobs)
@@ -1598,7 +1600,7 @@ used for the profiling.
 
 ---
 <a id='api-get-books-pid-suspicious'></a>
-### [GET] `rest-url`/profile/suspicious/books/`pid`
+### [GET] rest/profile/suspicious/books/`pid`
 Get the `suspicious` words for the given project and/or package.
 Suspicious words are words in the project for which the profiler
 guesses an underlying OCR-error.
@@ -1623,7 +1625,7 @@ guesses an underlying OCR-error.
 
 ---
 <a id='api-get-profiler-languages'></a>
-### [GET] `rest-url`/profile/languages
+### [GET] rest/profile/languages
 Get the available languages of a language profiler.
 * No [Authorization](#user-content-authorization) is required.
 
@@ -1641,7 +1643,7 @@ Use `local` to use the local profiler. If omitted, `url=local` is assumed.
 
 ---
 <a id='api-get-global-ocr-models'></a>
-### [GET] `rest-url`/ocr
+### [GET] rest/ocr
 Get the list of available global ocr models.
 * [Authorization](#user-content-authorization) is required.
 
@@ -1660,7 +1662,7 @@ Get the list of available global ocr models.
 ```
 ---
 <a id='api-get-ocr-models'></a>
-### [GET] `rest-url`/ocr/books/`pid`
+### [GET] rest/ocr/books/`pid`
 Get the list of available global ocr models and specific trained
 models for the project.
 * [Authorization](#user-content-authorization) is required.
@@ -1681,7 +1683,7 @@ models for the project.
 ```
 ---
 <a id='api-post-ocr-book'></a>
-### [POST] `rest-url`/ocr/books/`pid`
+### [POST] rest/ocr/books/`pid`
 Starts an OCR [job](#user-content-api-get-jobs) on the given project
 (or on the given package's project).
 * [Authorization](#user-content-authorization) is required.
@@ -1704,7 +1706,7 @@ Starts an OCR [job](#user-content-api-get-jobs) on the given project
 
 ---
 <a id='api-post-ocr-book-page'></a>
-### [POST] `rest-url`/ocr/books/`pid`/pages/`pageid`
+### [POST] rest/ocr/books/`pid`/pages/`pageid`
 Starts an OCR [job](#user-content-api-get-jobs) on the given page.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can start an OCR-job.
@@ -1726,7 +1728,7 @@ Starts an OCR [job](#user-content-api-get-jobs) on the given page.
 
 ---
 <a id='api-post-ocr-book-page-line'></a>
-### [POST] `rest-url`/ocr/books/`pid`/pages/`pageid`/lines/`lid`
+### [POST] rest/ocr/books/`pid`/pages/`pageid`/lines/`lid`
 Starts an OCR [job](#user-content-api-get-jobs) on the given line.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can start an OCR-job.
@@ -1748,7 +1750,7 @@ Starts an OCR [job](#user-content-api-get-jobs) on the given line.
 
 ---
 <a id='api-post-train-book'></a>
-### [POST] `rest-url`/ocr/train/books/`pid`
+### [POST] rest/ocr/train/books/`pid`
 Starts the training [job](#user-content-api-get-jobs) of an individual
 OCR-model for the given book (or package).
 * [Authorization](#user-content-authorization) is required.
@@ -1771,7 +1773,7 @@ OCR-model for the given book (or package).
 
 ---
 <a id='api-get-el'></a>
-### [GET] `rest-url`/postcorrect/el/books/`pid`
+### [GET] rest/postcorrect/el/books/`pid`
 Get the extended lexicon for the project.  The extendend lexicon is
 available after the [job](#user-content-api-get-jobs) for the
 according [post request](#user-content-api-post-el) has finished.
@@ -1795,7 +1797,7 @@ according [post request](#user-content-api-post-el) has finished.
 
 
 <a id='api-post-el'></a>
-### [POST] `rest-url`/postcorrect/el/books/`pid`
+### [POST] rest/postcorrect/el/books/`pid`
 Start the [job](#user-content-api-get-jobs) to generate the extended
 lexicon.
 * [Authorization](#user-content-authorization) is required.
@@ -1810,7 +1812,7 @@ lexicon.
 
 ---
 <a id='api-get-rrdm'></a>
-### [GET] `rest-url`/postcorrect/rrdm/books/`pid`
+### [GET] rest/postcorrect/rrdm/books/`pid`
 Get the post-correction information.  The post-correction information
 available after the [job](#user-content-api-get-jobs) for the
 according [post request](#user-content-api-post-rrdm) has finished.
@@ -1837,7 +1839,7 @@ according [post request](#user-content-api-post-rrdm) has finished.
 
 ---
 <a id='api-post-rrdm'></a>
-### [POST] `rest-url`/postcorrect/rrdm/books/`pid`
+### [POST] rest/postcorrect/rrdm/books/`pid`
 Start the [job](#user-content-api-get-jobs) to generate the post
 correction.
 * [Authorization](#user-content-authorization) is required.
@@ -1852,7 +1854,7 @@ correction.
 
 ---
 <a id='api-get-jobs'></a>
-### [GET] `rest-url`/jobs/`jobid`
+### [GET] rest/jobs/`jobid`
 Get the status of a job for the given job-id.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can see the job.
