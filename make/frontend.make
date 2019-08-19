@@ -1,120 +1,27 @@
-PCW_FRONTEND_DIR ?= /srv/pocoweb/www-data
+INSTALL_FRONTEND_DIR ?= /srv/pocoweb/www-data
+PUBLIC_HTML = frontend/public_html
+FE_FILES += $(PUBLIC_HTML)/doc.html
+FE_FILES += $(PUBLIC_HTML)/index.html
+FE_FILES += $(PUBLIC_HTML)/assets/js/require_main.built.js
+FE_IMG_FILES := $(shell find $(PUBLIC_HTML) -type f -name '*.png' -o -name '*.ico')
+FE_CSS_FILES := $(shell find $(PUBLIC_HTML)/assets -type f -name '*.css')
+FE_APP_FILES := $(shell find $(PUBLIC_HTML)/assets -type f -name '*.js' -o -name '*.tpl' | grep -v built)
 
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/LICENSE
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/about.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/account.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/adaptive.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/api.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/api_controller.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/backend.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/cacert.pem
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/config.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/upload.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/api/utils.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/assets/js/build.js
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/concordance.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/css/pcw.css
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/doc.html
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/doc.md
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/documentation.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/button-concordance-correction.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/button-correct.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/button-create-user.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/button-delete-account.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/button-select-correction-suggestion.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/button-update-account-settings.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/button-upload.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/checkbox-admin.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-assign-to-user.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-download-project.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-download-project.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-list-adaptive-tokens.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-open-project.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-order-profile.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-remove-project.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-remove.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/glyphicon-split-project.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/doc/overview.png
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/favicon.ico
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/img/logo.jpg
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/index.html
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/index.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/info.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/js/api.js
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/js/pcw.js
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/login.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/logout.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/page.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/upload.php
-FE_FILES += $(PCW_FRONTEND_DIR)/public_html/users.php
-FE_FILES += $(PCW_FRONTEND_DIR)/resources/config.php
-FE_FILES += $(PCW_FRONTEND_DIR)/resources/library/api.php
-FE_FILES += $(PCW_FRONTEND_DIR)/resources/library/backend.php
-FE_FILES += $(PCW_FRONTEND_DIR)/resources/library/frontend.php
-FE_FILES += $(PCW_FRONTEND_DIR)/resources/library/utils.php
-FE_FILES += $(PCW_FRONTEND_DIR)/resources/templates/footer.php
-FE_FILES += $(PCW_FRONTEND_DIR)/resources/templates/header.php
+frontend: $(FE_FILES)
 
-$(PCW_FRONTEND_DIR)/public_html/doc.html: frontend/public_html/doc.md
+$(PUBLIC_HTML)/img/doc/overview.png: $(PUBLIC_HTML)/img/doc/overview.dot
+	$(call ECHO,$@)
+	cat $< | dot -T png > $@
+
+$(PUBLIC_HTML)/doc.html: $(PUBLIC_HTML)/doc.md $(PUBLIC_HTML)/img/doc/overview.png
 	$(call ECHO,$@)
 	$V bash misc/scripts/md2html.sh $< | sed -e 's#<br>##g' > $@
 
-# TODO: not that nice
-.PHONY: $(PCW_FRONTEND_DIR)/public_html/assets/js/build.js
-$(PCW_FRONTEND_DIR)/public_html/assets/js/build.js:
-	$V cd frontend/public_html/assets/js && node r.js -o build.js
-	$V cp -r frontend/public_html/assets $(PCW_FRONTEND_DIR)/public_html
-
-.SECONDEXPANSION:
-%.js: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
+$(PUBLIC_HTML)/assets/js/require_main.built.js: $(FE_APP_FILES) $(FE_CSS_FILES)
 	$(call ECHO,$@)
-	$V install -d $(dir $@)
-	$V install -m 644 $< $@
-%.md: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
-	$(call ECHO,$@)
-	$V install -d $(dir $@)
-	$V install -m 644 $< $@
-%.css: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
-	$(call ECHO,$@)
-	$V install -d $(dir $@)
-	$V install -m 644 $< $@
-%.jpg: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
-	$(call ECHO,$@)
-	$V install -d $(dir $@)
-	$V install -m 644 $< $@
-%.pem: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
-	$(call ECHO,$@)
-	$V install -d $(dir $@)
-	$V install -m 644 $< $@
-%.png: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
-	$(call ECHO,$@)
-	$V install -d $(dir $@)
-	$V install -m 644 $< $@
-%.ico: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
-	$(call ECHO,$@)
-	$V install -d $(dir $@)
-	$V install -m 644 $< $@
-%.html: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
-	$(call ECHO,$@)
-	$V install -d $(dir $@)
-	$V install -m 644 $< $@
-%/LICENSE: LICENSE
-	$(call ECHO,$@)
-	$V install -d $(dir $@)
-	$V install -m 644 $< $@
-%.php: frontend/$$(subst $(PCW_FRONTEND_DIR)/,,$$@)
-	$(call ECHO,$@)
-	$V php -l $< > /dev/null
-	$V install -d $(dir $@)
-	$V install -m 644 $< $@
-frontend/public_html/img/doc/overview.png: frontend/public_html/img/doc/overview.dot
-	$(call ECHO,$@)
-	cat $< | dot -T png > $@
-$(PCW_FRONTEND_DIR)/public_html/img/doc/overview.png: frontend/public_html/img/doc/overview.png
-	$(call ECHO,$@)
-	$V install -d $(dir $@)
-	$V install -m 644 $< $@
-
-install-frontend: $(FE_FILES)
+	$V cd $(PUBLIC_HTML)/assets/js && node r.js -o build.js
 
 .PHONY: install-frontend
+install-frontend: $(FE_FILES)
+	@for i in $(FE_CSS_FILES) $(FE_IMG_FILES) $(FE_FILES); do \
+		install -D -v -m 644 $$i $(INSTALL_FRONTEND_DIR)$${i/frontend/}; done
