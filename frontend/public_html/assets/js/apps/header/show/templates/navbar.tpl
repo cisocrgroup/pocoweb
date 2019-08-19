@@ -1,7 +1,7 @@
 
 
 <div class="text-center">
-<img class="rounded" src="assets/images/logo.jpg" style="margin: 15px;" />
+<img class="rounded" src="assets/images/logo.png" style="margin: 15px;" />
 </div>
 
 
