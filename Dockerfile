@@ -14,8 +14,7 @@ COPY LICENSE Makefile /build/
 COPY make /build/make
 COPY misc/scripts/md2html.sh /build/misc/scripts/
 COPY frontend /build/frontend
-RUN cd /build \
-	&& make PCW_FRONTEND_DIR=/apps install-frontend
+RUN cd /build && make INSTALL_FRONTEND_DIR=/apps install-frontend
 
 FROM frontend AS libs
 COPY modules /build/modules
