@@ -774,6 +774,9 @@ outline: 0;
 
 
 /* documentation json styles */
+div.highlight-source-json {
+	background-color: lightgray;
+}
 span.pl-s {
 	color: #d14;
 }
