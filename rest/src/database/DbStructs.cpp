@@ -294,8 +294,8 @@ pcw::Json &pcw::operator<<(Json &j, const DbPage &page) {
   j["bookId"] = page.bookid;
   j["projectId"] = page.projectid;
   j["pageId"] = page.pageid;
-  j["prevPageId"] = (int)page.nextpageid;
-  j["nextPageId"] = (int)page.prevpageid;
+  j["prevPageId"] = (int)page.prevpageid;
+  j["nextPageId"] = (int)page.nextpageid;
   j["box"] << page.box;
   j["imgFile"] = page.imagepath;
   j["ocrFile"] = page.ocrpath;
