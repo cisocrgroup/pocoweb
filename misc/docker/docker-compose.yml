@@ -61,6 +61,7 @@ services:
       - pcwusers
       - pcwpostcorrection
       - pcwocr
+      - pcwpkg
     depends_on:
       - db
     restart: always
