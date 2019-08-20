@@ -7,6 +7,8 @@
 - PCW_BASE_DIR=/base/dir docker-compose build
 - PCW_BASE_DIR=/base/dir docker-compose up (starts in forground) or
 - PCW_BASE_DIR=/base/dir docker-compose run (starts in background)
+- setup htpasswd file: `echo 'password' | htpasswd -ci
+  /srv/pocoweb/www-data/public_html htpasswd user`
 
 ## Database
 - connect to the database requires the following steps:
