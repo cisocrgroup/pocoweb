@@ -4,17 +4,17 @@ FE_FILES += $(PUBLIC_HTML)/doc.html
 FE_FILES += $(PUBLIC_HTML)/index.html
 FE_FILES += $(PUBLIC_HTML)/assets/js/vendor/rangy-core.js
 FE_FILES += $(PUBLIC_HTML)/assets/js/require_main.built.js
-FE_FILES += $(shell find $(PUBLIC_HTML) -type f -name '*.png' -o -name '*.ico')
+FE_FILES += $(shell find $(PUBLIC_HTML)/assets -type f -name '*.png' -o -name '*.ico')
 FE_CSS_FILES = $(shell find $(PUBLIC_HTML)/assets -type f -name '*.css')
 FE_APP_FILES += $(shell find $(PUBLIC_HTML)/assets -type f -name '*.js' -o -name '*.tpl' | grep -v built)
 
 frontend: $(FE_FILES)
 
-$(PUBLIC_HTML)/img/doc/overview.png: $(PUBLIC_HTML)/img/doc/overview.dot
+$(PUBLIC_HTML)/assets/images/doc/overview.png: $(PUBLIC_HTML)/assets/images/doc/overview.dot
 	$(call ECHO,$@)
 	cat $< | dot -T png > $@
 
-$(PUBLIC_HTML)/doc.html: $(PUBLIC_HTML)/doc.md $(PUBLIC_HTML)/img/doc/overview.png
+$(PUBLIC_HTML)/doc.html: $(PUBLIC_HTML)/doc.md $(PUBLIC_HTML)/assets/images/doc/overview.png
 	$(call ECHO,$@)
 	$V bash misc/scripts/md2html.sh $< | sed -e 's#<br>##g' > $@
 
