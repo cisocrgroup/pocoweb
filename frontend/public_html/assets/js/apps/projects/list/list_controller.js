@@ -81,33 +81,25 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
           projectsListPanel.on("list:create_clicked",function(){
 
 
-             var projectsListAddProject = new List.ProjectForm({model: new ProjectEntities.Project,languages:languages.languages,asModal:true,text:"Create a new project",loading_text:"Upload in progress"});
-
-
+             var projectsListAddProject = new List.ProjectForm({
+               model: new ProjectEntities.Project,
+               languages:languages.languages,
+               asModal:true,
+               text:"Create a new project",
+               loading_text:"Upload in progress"});
 
            projectsListAddProject.on("project:submit_clicked",function(data,formdata){
              var uploadingProjectData = ProjectEntities.API.uploadProjectData(formdata);
                  $.when(uploadingProjectData).done(function(result){
-
-                           console.log(result);
-                            $('.loading_background').fadeOut();
-                            $('#projects-modal').modal('toggle');
-                            $('#selected_file').text("");
-
-                          App.mainmsg.updateContent(result,'success');
-
-                      var fetchingnewprojects = ProjectEntities.API.getProjects();
-                       $.when(fetchingnewprojects).done(function(new_projects){
-                          projectsListView.options.collection=new_projects.books;
-                          projectsListView.render();
-                          projectsListAddProject.model.clear().set(projectsListAddProject.model.defaults);
-
-
-                       });
-
-
-
-
+                   console.log(result);
+                   $('.loading_background').fadeOut();
+                   $('#projects-modal').modal('toggle');
+                   $('#selected_file').text("");
+                   App.mainmsg.updateContent(
+                     "Project " + result.projectId + " successfully created.",
+                     "success"
+                   );
+                   App.trigger("projects:list");
                 }).fail(function(response){
                    $('#projects-modal').modal('hide');
                    App.mainmsg.updateContent(response.responseText,'danger');
