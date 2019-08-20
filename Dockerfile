@@ -36,8 +36,12 @@ RUN cd /build \
 	&& apk del ${BUILD_DEPS}
 
 FROM frontend as RUN
-COPY db/tables.sql \
-	misc/docker/pocoweb/pocoweb.conf \
-	misc/docker/pocoweb/startup.sh \
-	/apps/
-CMD bash /apps/startup.sh
+#	-dsn "${MYSQL_USER}:${MYSQL_PASSWORD}@(db)/${MYSQL_DATABASE}" \
+COPY db/tables.sql misc/scripts/startup.sh /apps/
+CMD bash /apps/startup.sh \
+	-m db \
+	-p $MYSQL_PASSWORD \
+	-n $MYSQL_DATABASE \
+	-u $MYSQL_USER \
+	-b /project-data \
+	-l "0.0.0.0:80"

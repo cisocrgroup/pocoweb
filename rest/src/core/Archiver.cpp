@@ -23,7 +23,7 @@ namespace fs = boost::filesystem;
 Archiver::Archiver(const Project &project, MysqlConnection &conn,
                    const Config &config)
     : project_(project.shared_from_this()), conn_(conn),
-      basedir_(config.daemon.basedir) {}
+      basedir_(config.daemon.projectdir) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 Archiver::Path Archiver::operator()() const {

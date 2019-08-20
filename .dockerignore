@@ -16,6 +16,4 @@ TAGS
 Dockerfile
 services/**
 README.md
-!misc/docker/pocoweb/
-!LICENCE
-!misc/scripts/md2html.sh
+!misc/scripts/startup.sh

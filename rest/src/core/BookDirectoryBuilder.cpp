@@ -24,21 +24,23 @@ using namespace pcw;
 ////////////////////////////////////////////////////////////////////////////////
 static BookDirectoryBuilder::Path
 create_unique_bookdir_path(const Config &config) {
-  BookDirectoryBuilder::Path path(config.daemon.basedir);
+  BookDirectoryBuilder::Path pdir(config.daemon.projectdir);
+  auto bdir = pdir.parent_path();
   while (true) {
     auto id = gensessionid(16);
-    auto dir = path / config.daemon.projectdir / id;
-    if (not fs::is_directory(dir)) {
+    auto dir = pdir / id;
+    if (not fs::exists(dir) and not fs::is_directory(dir)) {
       fs::create_directory(dir);
-      return BookDirectoryBuilder::Path(config.daemon.projectdir) / id;
+      return BookDirectoryBuilder::Path(pdir).filename() / id;
     }
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 BookDirectoryBuilder::BookDirectoryBuilder(const Config &config)
-    : BookDirectoryBuilder(config.daemon.basedir,
-                           create_unique_bookdir_path(config)) {
+    : BookDirectoryBuilder(
+          BookDirectoryBuilder::Path(config.daemon.projectdir).parent_path(),
+          create_unique_bookdir_path(config)) {
   if (not fs::is_directory(base_dir_ / dir_)) {
     fs::create_directory(base_dir_ / dir_);
   }

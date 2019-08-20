@@ -8,53 +8,53 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-App::App(const char* config)
-  : routes_()
-  , app_()
-  , cache_(std::make_shared<AppCache>(100, 100))
-  , config_(std::make_shared<Config>(Config::load(config)))
-  , session_store_(std::make_shared<SessionStore>())
-  , connection_pool_(std::make_shared<MysqlConnectionPool>(
-      config_->db.connections,
-      mysqlConnectionConfigFromConfig(*config_)))
-{}
+App::App(const char *config)
+    : App(std::make_shared<Config>(Config::load(config))) {}
 
 ////////////////////////////////////////////////////////////////////////////////
-App::~App() noexcept
-{
-  stop();
+App::App(std::shared_ptr<Config> config)
+    : routes_(), app_(), cache_(std::make_shared<AppCache>(100, 100)),
+      config_(std::move(config)),
+      session_store_(std::make_shared<SessionStore>()),
+      connection_pool_(std::make_shared<MysqlConnectionPool>(
+          config_->db.connections, mysqlConnectionConfigFromConfig(*config_))) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-App::run()
-{
+App::~App() noexcept { stop(); }
+
+////////////////////////////////////////////////////////////////////////////////
+void App::run() {
   assert(config_);
-  if (not app_)
+  if (not app_) {
     app_ = std::make_unique<Route::App>();
-  CROW_LOG_DEBUG << "(App) Starting server version " << App::version_str()
-                 << " on " << config_->daemon.host << ":"
-                 << config_->daemon.port;
-  app_->port(config_->daemon.port)
-    .concurrency(config_->daemon.threads)
-    .bindaddr(config_->daemon.host)
-    .run();
-  CROW_LOG_DEBUG << "(App) Started server version " << App::version_str()
-                 << " on " << config_->daemon.host << ":"
-                 << config_->daemon.port;
+  }
+  CROW_LOG_INFO << "(App) Starting server version " << App::version_str()
+                << " on " << config_->daemon.host;
+  auto port = 80;
+  auto host = config_->daemon.host;
+  const auto pos = config_->daemon.host.find(":");
+  if (pos != std::string::npos) {
+    host = config_->daemon.host.substr(0, pos);
+    port = std::atoi(config_->daemon.host.substr(pos + 1).data());
+  }
+  app_->concurrency(std::thread::hardware_concurrency())
+      .bindaddr(host)
+      .port(port)
+      .run();
+  CROW_LOG_INFO << "(App) Started server version " << App::version_str()
+                << " on " << config_->daemon.host;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-App::stop() noexcept
-{
+void App::stop() noexcept {
   try {
     // Order matters here: first delete the server, then delete all routes.
     if (app_) {
       app_.reset();
     }
     routes_.clear();
-  } catch (const std::exception& e) {
+  } catch (const std::exception &e) {
     CROW_LOG_ERROR << "(App) Error: " << e.what();
   } catch (...) {
     CROW_LOG_ERROR << "(App) Unknown error";
@@ -62,9 +62,7 @@ App::stop() noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-App::Register(RoutePtr route)
-{
+void App::Register(RoutePtr route) {
   if (route) {
     if (not app_)
       app_ = std::make_unique<Route::App>();
@@ -80,18 +78,16 @@ App::Register(RoutePtr route)
       route->Register(*app_);
       routes_.push_back(std::move(route));
       log(*routes_.back());
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
       CROW_LOG_ERROR << "(App) Could not register: " << e.what();
     }
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-App::log(const Route& route) const
-{
+void App::log(const Route &route) const {
   for (auto i = route.route(); i;) {
-    const char* e = strchr(i, ',');
+    const char *e = strchr(i, ',');
     std::string r;
     if (e) {
       r.assign(i, e);
@@ -106,38 +102,22 @@ App::log(const Route& route) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-int
-App::version() noexcept
-{
+int App::version() noexcept {
   return (100 * 100 * PCW_API_VERSION_MAJOR) + (100 * PCW_API_VERSION_MINOR) +
          (1 * PCW_API_VERSION_PATCH);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-int
-App::version_major() noexcept
-{
-  return PCW_API_VERSION_MAJOR;
-}
+int App::version_major() noexcept { return PCW_API_VERSION_MAJOR; }
 
 ////////////////////////////////////////////////////////////////////////////////
-int
-App::version_minor() noexcept
-{
-  return PCW_API_VERSION_MINOR;
-}
+int App::version_minor() noexcept { return PCW_API_VERSION_MINOR; }
 
 ////////////////////////////////////////////////////////////////////////////////
-int
-App::version_patch() noexcept
-{
-  return PCW_API_VERSION_PATCH;
-}
+int App::version_patch() noexcept { return PCW_API_VERSION_PATCH; }
 
 ////////////////////////////////////////////////////////////////////////////////
-const char*
-App::version_str() noexcept
-{
+const char *App::version_str() noexcept {
 #define QQUOTE(x) #x
 #define QUOTE(x) QQUOTE(x)
 

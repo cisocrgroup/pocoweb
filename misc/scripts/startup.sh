@@ -1,6 +1,5 @@
 #/bin/sh
 
-config=/apps/pocoweb.conf
 sql=/apps/tables.sql
 public_html=/apps/public_html
 
@@ -18,4 +17,4 @@ if [[ $ok == false ]]; then
    echo "cannot setup databse tables";
    exit 1;
 fi
-/apps/pocoweb $config || exit 1
+/apps/pocoweb $@ || exit 1

@@ -23,11 +23,8 @@ using AppPtr = std::unique_ptr<App>;
 static int run(int argc, char **argv);
 static void run(App &app);
 static AppPtr get_app(int argc, char **argv);
-static void change_user_and_group(const Config &config);
-static void detach(const Config &config);
 static void create_base_directory(const Config &config);
-static const char *find_config_file(int argc, char **argv);
-static void write_pidfile(const Config &config);
+static std::shared_ptr<Config> config(int argc, char **argv);
 
 ////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv) {
@@ -48,9 +45,7 @@ int run(int argc, char **argv) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void run(App &app) {
-  change_user_and_group(app.config());
   create_base_directory(app.config());
-  detach(app.config());
   app.Register(std::make_unique<pcw::BookRoute>());
   app.Register(std::make_unique<pcw::CharMapRoute>());
   app.Register(std::make_unique<pcw::DownloadRoute>());
@@ -62,35 +57,9 @@ void run(App &app) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void change_user_and_group(const Config &config) {
-  const auto user = config.daemon.user.data();
-  errno = 0;
-  const auto pw = getpwnam(user);
-  if (not pw and errno)
-    throw std::system_error(errno, std::system_category(), user);
-  else if (not pw)
-    THROW(Error, "(pcwd) Could not find user: ", user);
-
-  // set processes uid and gid
-  if (setgid(pw->pw_gid) != 0)
-    throw std::system_error(errno, std::system_category(), "setgid");
-  if (setuid(pw->pw_uid) != 0)
-    throw std::system_error(errno, std::system_category(), "setuid");
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void detach(const Config &config) {
-  if (config.daemon.detach) {
-    write_pidfile(config);
-    if (daemon(0, 0) != 0) {
-      throw std::system_error(errno, std::system_category(), "daemon");
-    }
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
 AppPtr get_app(int argc, char **argv) {
-  auto app = std::make_unique<pcw::App>(find_config_file(argc, argv));
+  auto cnf = config(argc, argv);
+  auto app = std::make_unique<pcw::App>(cnf);
   app->config().setup_logging();
   app->config().LOG();
   return app;
@@ -99,28 +68,60 @@ AppPtr get_app(int argc, char **argv) {
 ////////////////////////////////////////////////////////////////////////////////
 void create_base_directory(const Config &config) {
   boost::system::error_code ec;
-  const auto dir = config.daemon.basedir + "/" + config.daemon.projectdir;
+  const auto dir = config.daemon.projectdir;
   if (not boost::filesystem::create_directories(dir, ec) and ec.value() != 0) {
     throw std::system_error(ec.value(), std::system_category(),
-                            config.daemon.basedir);
+                            config.daemon.projectdir);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const char *find_config_file(int argc, char **argv) {
-  if (not(argc > 1)) {
-    throw std::runtime_error("usage: " + std::string(argv[0]) + " config");
-  }
-  return argv[1];
-}
+std::shared_ptr<Config> config(int argc, char **argv) {
+  const char *usage =
+      "[-d] [-m mysql-host] [-p mysql-pass] [-u mysql-user] "
+      "[-n mysql-table-name] [-l listen-host] [-b projects-dir]";
+  const char *flags = "dm:p:n:u:l:b:";
+  const char *mpass = "";
+  const char *mhost = "pocoweb";
+  const char *mname = "pocoweb";
+  const char *muser = "pocoweb";
+  const char *host = "0.0.0.0:80";
+  const char *pdir = "/srv/pocoweb/project-data";
+  bool debug = false;
 
-////////////////////////////////////////////////////////////////////////////////
-void write_pidfile(const Config &config) {
-  std::ofstream out(config.daemon.pidfile);
-  if (not out.good()) {
-    throw std::system_error(errno, std::system_category(),
-                            config.daemon.pidfile);
+  int c;
+  while ((c = getopt(argc, argv, flags)) != -1) {
+    switch (c) {
+    case 'd':
+      debug = true;
+      break;
+    case 'm':
+      mhost = optarg;
+      break;
+    case 'p':
+      mpass = optarg;
+      break;
+    case 'n':
+      mname = optarg;
+      break;
+    case 'u':
+      muser = optarg;
+      break;
+    case 'l':
+      host = optarg;
+      break;
+    case 'b':
+      pdir = optarg;
+      break;
+    default:
+      throw std::runtime_error("Usage: " + std::string(argv[0]) + " " + usage);
+    }
   }
-  out << getpid() << std::endl;
-  out.close();
+  auto ret = std::make_shared<Config>(Config{
+      {muser, mhost, mpass, mname, 10, false},
+      {host, pdir},
+      {debug ? static_cast<int>(crow::LogLevel::Debug)
+             : static_cast<int>(crow::LogLevel::Info)},
+  });
+  return ret;
 }
