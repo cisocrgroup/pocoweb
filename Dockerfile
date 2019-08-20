@@ -30,7 +30,7 @@ RUN cd /build \
 FROM backend AS frontend
 COPY frontend /build/frontend
 RUN cd /build \
-	&& make -C frontend install \
+	&& make -C frontend install INSTALL_DIR=/apps \
 	&& cd / \
 	&& rm -rf /build \
 	&& apk del ${BUILD_DEPS}
