@@ -565,7 +565,6 @@ getJobs: function(data){
     var defer = jQuery.Deferred();
     let url = "rest/books/" + data.pid + "/charmap?auth=" + App.getAuthToken()+
         "&filter="+encodeURIComponent(App.getCharmapFilter());
-    console.log('url: ' + url);
     $.ajax({
       headers: {
         'Accept': 'application/json'
