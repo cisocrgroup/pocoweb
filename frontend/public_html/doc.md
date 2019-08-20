@@ -500,7 +500,8 @@ Pocoweb is composed with a number of interdependend services:
 * pcwpostcorrection handles the automatic postcorrection
 * pcwocr handles ocr prediction and training
 * pcwpkg handles splitting and assignment of packages
-![Service Overview](assets/images/doc/overview.png "Pocoweb service overview")
+
+![Service Overview](assets/images/doc/overview.svg "Pocoweb service overview")
 
 - - -
 <a id='rest-api'></a>

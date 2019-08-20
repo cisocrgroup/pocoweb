@@ -7,7 +7,6 @@ include make/external.make
 include make/clean.make
 include make/rest.make
 include make/test.make
-include make/frontend.make
 include make/docker.make
 
 .PHONY: all default
