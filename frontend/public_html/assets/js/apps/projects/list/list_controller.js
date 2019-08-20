@@ -96,7 +96,8 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
                    $('#projects-modal').modal('toggle');
                    $('#selected_file').text("");
                    App.mainmsg.updateContent(
-                     "Project " + result.projectId + " successfully created.",
+                     "Project " + result.projectId + " successfully created (" +
+                       result.pages + " pages).",
                      "success"
                    );
                    App.trigger("projects:list");
