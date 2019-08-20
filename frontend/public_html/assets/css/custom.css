@@ -780,7 +780,8 @@ div.highlight-source-json {
 	background-color: lightgray;
 }
 span.pl-ii {
-	color: gray;
+	color: #438ab0;
+	font-style: italic;
 }
 span.pl-s {
 	color: #d14;
