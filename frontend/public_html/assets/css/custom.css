@@ -779,6 +779,9 @@ div.highlight-source-json {
 	border-radius: 5px;
 	background-color: lightgray;
 }
+span.pl-ii {
+	color: gray;
+}
 span.pl-s {
 	color: #d14;
 }

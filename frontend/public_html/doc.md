@@ -565,7 +565,7 @@ Get the semantic version of the back-end instance.
 #### Response data
 ```json
 {
-  "version": "1.2.3"
+  "version": "1.2.3" // pocoweb API version
 }
 ```
 
