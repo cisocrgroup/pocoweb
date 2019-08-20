@@ -3,10 +3,8 @@
 config=/apps/pocoweb.conf
 sql=/apps/tables.sql
 public_html=/apps/public_html
-resoures=/apps/resources
 
 cp -r $public_html /www-data
-cp -r $resoures /www-data
 
 ok=false
 n=10

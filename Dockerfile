@@ -9,28 +9,33 @@ ENV LC_ALL="${LANG}"
 
 RUN apk add ${DEPS} ${BUILD_DEPS}
 
-FROM deps AS frontend
+FROM deps AS libs
+COPY modules /build/modules
 COPY LICENSE Makefile /build/
 COPY make /build/make
-COPY misc/scripts/md2html.sh /build/misc/scripts/
-COPY frontend /build/frontend
-RUN cd /build && make INSTALL_FRONTEND_DIR=/apps install-frontend
-
-FROM frontend AS libs
-COPY modules /build/modules
 RUN cd /build \
-	&& make CXX=clang++ -j $(nproc) lib/libpugixml.a lib/libsqlpp-mysql.a
+	&& make CXX=clang++ -j $(nproc) lib/libpugixml.a lib/libsqlpp-mysql.a \
+	&& make modules-clean
 
-FROM libs
+FROM libs as backend
 VOLUME /project-data /www-data /tmp
 COPY rest /build/rest
 RUN cd /build \
 	&& make CXX=clang++ -j $(nproc) \
+	&& mkdir /apps/ \
 	&& cp pcwd /apps/pocoweb \
+	&& cd / \
+	&& rm -rf /build
+
+FROM backend AS frontend
+COPY frontend /build/frontend
+RUN cd /build \
+	&& make -C frontend install \
 	&& cd / \
 	&& rm -rf /build \
 	&& apk del ${BUILD_DEPS}
 
+FROM frontend as RUN
 COPY db/tables.sql \
 	misc/docker/pocoweb/pocoweb.conf \
 	misc/docker/pocoweb/startup.sh \
