@@ -128,7 +128,7 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   correct(line, correction.value(), tid, l);
   update(conn, line);
   Json j;
-  return j << line;
+  return j << line.slice(tid, int(correction.value().size()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -137,13 +137,15 @@ void LineRoute::correct(DbLine &line, const std::string &correction) {
   const auto slice = line.slice();
   wf.set_gt(correction);
   wf.set_ocr(slice.ocr());
-  // correct
   const auto lev = wf();
   CROW_LOG_INFO << "(LineRoute) correction: " << correction;
-  CROW_LOG_INFO << "(LineRoute) line.cor(): " << slice.cor();
   CROW_LOG_INFO << "(LineRoute) line.ocr(): " << slice.ocr();
-  CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
+
+  // correct
   wf.correct(line);
+
+  CROW_LOG_INFO << "(LineRoute) line.cor(): " << slice.cor();
+  CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -153,13 +155,15 @@ void LineRoute::correct(DbLine &line, const std::string &correction, int b,
   const auto slice = line.slice();
   wf.set_gt(correction);
   wf.set_ocr(slice.ocr());
-  // correct
   const auto lev = wf(b, len);
   CROW_LOG_INFO << "(LineRoute) correction: " << correction;
-  CROW_LOG_INFO << "(LineRoute) line.cor(): " << slice.cor();
   CROW_LOG_INFO << "(LineRoute) line.ocr(): " << slice.ocr();
-  CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
+
+  // correct
   wf.correct(line, b, len);
+
+  CROW_LOG_INFO << "(LineRoute) line.cor(): " << slice.cor();
+  CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
