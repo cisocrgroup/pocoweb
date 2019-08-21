@@ -1,5 +1,6 @@
 #include "DbStructs.hpp"
 #include "core/jsonify.hpp"
+#include "core/util.hpp"
 #include <crow/json.h>
 #include <stdexcept>
 #include <utf8.h>
@@ -7,8 +8,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 template <class It, class F> static void each_cor(It b, It e, F f) {
   while (b != e) {
-    if (b->get_cor())
+    if (b->get_cor() > 0) {
       f(*b);
+    }
     ++b;
   }
 }
@@ -16,8 +18,9 @@ template <class It, class F> static void each_cor(It b, It e, F f) {
 ////////////////////////////////////////////////////////////////////////////////
 template <class It, class F> static void each_ocr(It b, It e, F f) {
   while (b != e) {
-    if (b->ocr)
+    if (b->ocr > 0) {
       f(*b);
+    }
     ++b;
   }
 }
@@ -26,47 +29,25 @@ using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
 std::wstring DbSlice::wcor() const {
-  std::wstring ret(std::distance(begin, end), 0);
-  int i = 0;
-  each_cor(begin, end, [&](const auto &c) {
-    ret[i] = c.get_cor();
-    i++;
-  });
+  std::wstring ret;
+  ret.reserve(std::distance(begin, end));
+  each_cor(begin, end, [&](const auto &c) { ret.push_back(c.get_cor()); });
   return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 std::wstring DbSlice::wocr() const {
-  std::wstring ret(std::distance(begin, end), 0);
-  int i = 0;
-  each_ocr(begin, end, [&](const auto &c) {
-    ret[i] = c.ocr;
-    i++;
-  });
+  std::wstring ret;
+  ret.reserve(std::distance(begin, end));
+  each_ocr(begin, end, [&](const auto &c) { ret.push_back(c.ocr); });
   return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string DbSlice::cor() const {
-  std::string res;
-  res.reserve(std::distance(begin, end));
-  each_cor(begin, end, [&res](const auto &c) {
-    const auto cc = c.get_cor();
-    utf8::utf32to8(&cc, &cc + 1, std::back_inserter(res));
-  });
-  return res;
-}
+std::string DbSlice::cor() const { return utf8(wcor()); }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string DbSlice::ocr() const {
-  std::string res;
-  res.reserve(std::distance(begin, end));
-  each_ocr(begin, end, [&res](const auto &c) {
-    const auto cc = c.ocr;
-    utf8::utf32to8(&cc, &cc + 1, std::back_inserter(res));
-  });
-  return res;
-}
+std::string DbSlice::ocr() const { return utf8(wocr()); }
 
 ////////////////////////////////////////////////////////////////////////////////
 std::vector<int> DbSlice::cuts() const {
@@ -190,7 +171,7 @@ int DbLine::tokenLength(int begin) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbLine::begin_wagner_fischer(size_t b, size_t e) {
-  // std::cerr << "DbLine::begin_wagner_fischer(" << b << "," << e << ")\n";
+  std::cerr << "DbLine::begin_wagner_fischer(" << b << "," << e << ")\n";
   e = std::min(e, line.size());
   assert(b <= line.size());
   assert(e <= line.size());
@@ -210,7 +191,7 @@ void DbLine::begin_wagner_fischer(size_t b, size_t e) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbLine::set(size_t i, wchar_t c) {
-  // std::cerr << "DbLine::set(" << i << "," << char(c) << ")\n";
+  std::cerr << "DbLine::set(" << i << "," << char(c) << ")\n";
   const auto ii = i + offset_;
   assert(ii < line.size());
   line[ii].cor = c;
@@ -220,7 +201,7 @@ void DbLine::set(size_t i, wchar_t c) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbLine::insert(size_t i, wchar_t c) {
-  // std::cerr << "DbLine::insert(" << i << "," << char(c) << ")\n";
+  std::cerr << "DbLine::insert(" << i << "," << char(c) << ")\n";
   const auto ii = i + offset_;
   assert(ii <= line.size());
   const auto left = ii > 0 ? line[ii - 1].cut : box.left();
@@ -238,7 +219,7 @@ void DbLine::insert(size_t i, wchar_t c) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbLine::erase(size_t i) {
-  // std::cerr << "DbLine::erase(" << i << ")\n";
+  std::cerr << "DbLine::erase(" << i << ")\n";
   const auto ii = i + offset_;
   assert(ii < line.size());
   line[ii].cor = DbChar::DEL;
@@ -249,7 +230,7 @@ void DbLine::erase(size_t i) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbLine::noop(size_t i) {
-  // std::cerr << "DbLine::noop(" << i << ")\n";
+  std::cerr << "DbLine::noop(" << i << ")\n";
   const auto ii = i + offset_;
   assert(ii < line.size());
   // Noop means that the ocr char is correct.
