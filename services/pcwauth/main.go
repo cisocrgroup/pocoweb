@@ -248,7 +248,7 @@ func getLogin() service.HandlerFunc {
 func getLogout() service.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
 		log.Debugf("logout session: %s", d.Session)
-		service.RemoveSession(d.Session)
+		db.Exec(service.Pool(), "remove from sessions where auth=?", d.Session.Auth)
 		if err := db.DeleteSessionByUserID(service.Pool(), d.Session.User.ID); err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot logout: cannot delete session: %v", err)
