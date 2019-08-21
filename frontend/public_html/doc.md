@@ -1869,11 +1869,11 @@ postcorrection) with the according id.
 #### Response data
 ```json
 {
-	jobId: 8,
-	bookId: 13,
-	statusId: 1,
-	statusName: "failed|running|done",
-	jobName: "name of job",
-	Timestamp: 0
+	"jobId": 8,
+	"bookId": 13,
+	"statusId": 1,
+	"statusName": "failed|running|done",
+	"jobName": "name of job",
+	"Timestamp": 0
 }
 ```
