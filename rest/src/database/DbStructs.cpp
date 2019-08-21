@@ -164,11 +164,10 @@ void DbLine::each_token(std::function<void(const DbSlice &)> f) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-DbSlice DbLine::slice(int begin, int end) const {
-  const auto len = end - begin;
-  if (begin < 0 or end < 0 or len < 0 or size_t(begin + len) > line.size() or
+DbSlice DbLine::slice(int begin, int len) const {
+  if (begin < 0 or len < 0 or size_t(begin + len) > line.size() or
       size_t(begin) >= line.size()) {
-    throw std::logic_error("(DbLine::slice) invalid begin or end index");
+    throw std::logic_error("(DbLine::slice) invalid start or end index");
   }
   const auto b = line.begin() + begin;
   const auto e = b + len;
@@ -179,17 +178,85 @@ DbSlice DbLine::slice(int begin, int end) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-DbSlice DbLine::token(int begin, boost::optional<int> len) const {
+int DbLine::tokenLength(int begin) const {
   if (begin < 0 or size_t(begin) >= line.size()) {
-    throw std::logic_error("(DbLine::token) invalid begin index");
-  }
-  if (len) {
-    return slice(begin, begin + len.value());
+    throw std::logic_error("(DbLine::endOfToken) invalid start index");
   }
   const auto e =
       std::find_if(line.begin() + begin, line.end(),
                    [](const auto &c) { return std::iswspace(c.get_cor()); });
-  return slice(begin, int(std::distance(line.begin(), e)));
+  return int(std::distance(line.begin() + begin, e));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void DbLine::begin_wagner_fischer(size_t b, size_t e) {
+  // std::cerr << "DbLine::begin_wagner_fischer(" << b << "," << e << ")\n";
+  e = std::min(e, line.size());
+  assert(b <= line.size());
+  assert(e <= line.size());
+  // reset to original ocr
+  std::vector<DbChar> tmp;
+  tmp.reserve(line.size());
+  std::copy(line.begin(), line.begin() + b, std::back_inserter(tmp));
+  // remove possible insertions
+  std::copy_if(line.begin() + b, line.begin() + e, std::back_inserter(tmp),
+               [](const auto &c) { return c.ocr != 0; });
+  // reset corrections
+  std::for_each(line.begin() + b, line.begin() + e, [](auto &c) { c.cor = 0; });
+  std::copy(line.begin() + e, line.end(), std::back_inserter(tmp));
+  std::swap(line, tmp);
+  offset_ = 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void DbLine::set(size_t i, wchar_t c) {
+  // std::cerr << "DbLine::set(" << i << "," << char(c) << ")\n";
+  const auto ii = i + offset_;
+  assert(ii < line.size());
+  line[ii].cor = c;
+  assert(line[ii].is_subst());
+  assert(line[ii].is_cor());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void DbLine::insert(size_t i, wchar_t c) {
+  // std::cerr << "DbLine::insert(" << i << "," << char(c) << ")\n";
+  const auto ii = i + offset_;
+  assert(ii <= line.size());
+  const auto left = ii > 0 ? line[ii - 1].cut : box.left();
+  const auto right = ii == line.size() ? box.right() : line[ii + 1].cut;
+  const auto cut = (right - left) / 2;
+  if (ii == line.size()) { // insertion at the end
+    line.push_back(DbChar{0, c, 1, cut});
+  } else {
+    line.insert(line.begin() + ii, DbChar{0, c, 1, cut});
+  }
+  assert(ii < line.size());
+  assert(line[ii].is_ins());
+  assert(line[ii].is_cor());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void DbLine::erase(size_t i) {
+  // std::cerr << "DbLine::erase(" << i << ")\n";
+  const auto ii = i + offset_;
+  assert(ii < line.size());
+  line[ii].cor = DbChar::DEL;
+  assert(line[ii].is_del());
+  assert(line[ii].is_cor());
+  ++offset_;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void DbLine::noop(size_t i) {
+  // std::cerr << "DbLine::noop(" << i << ")\n";
+  const auto ii = i + offset_;
+  assert(ii < line.size());
+  // Noop means that the ocr char is correct.
+  // We still need to mark it as corrected though.
+  line[ii].cor = line[ii].ocr;
+  line[ii].conf = 1;
+  assert(line[ii].is_cor());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
