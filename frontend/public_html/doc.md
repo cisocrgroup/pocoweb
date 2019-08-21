@@ -1478,9 +1478,17 @@ after `tid` or the end of the line) is returned.
 
 --- <a id='api-post-books-pid-pages-pageid-lines-lid-tokens-tid'></a>
 ### [POST] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`
-Correct word `tid` in line `lid` in page `pageid` of project or package `pid`.
+Correct word `tid` in line `lid` in page `pageid` of project or
+package `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can correct its tokens.
+
+#### Query parameters
+An optional parameter `len=n` can be specified to correct a specific
+slice of the line starting at position `tid` and ending at position
+`tid+len-1` (counting unicode code-points).  If `len` is omitted an
+according token (ending at the first encountered whitespace character
+after `tid` or the end of the line) is corrected.
 
 #### Post data
 ```json

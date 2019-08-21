@@ -1498,12 +1498,20 @@ after <code>tid</code> or the end of the line) is returned.</p>
 <h3>
 <a id="user-content-post-restbookspidpagespageidlineslidtokenstid" class="anchor" href="#post-restbookspidpagespageidlineslidtokenstid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code>
 </h3>
-<p>Correct word <code>tid</code> in line <code>lid</code> in page <code>pageid</code> of project or package <code>pid</code>.</p>
+<p>Correct word <code>tid</code> in line <code>lid</code> in page <code>pageid</code> of project or
+package <code>pid</code>.</p>
 <ul>
 <li>
 <a href="#user-content-authorization">Authorization</a> is required.</li>
 <li>Only the owner of a project or package can correct its tokens.</li>
 </ul>
+<h4>
+<a id="user-content-query-parameters-4" class="anchor" href="#query-parameters-4" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<p>An optional parameter <code>len=n</code> can be specified to correct a specific
+slice of the line starting at position <code>tid</code> and ending at position
+<code>tid+len-1</code> (counting unicode code-points).  If <code>len</code> is omitted an
+according token (ending at the first encountered whitespace character
+after <code>tid</code> or the end of the line) is corrected.</p>
 <h4>
 <a id="user-content-post-data-7" class="anchor" href="#post-data-7" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
 <div class="highlight highlight-source-json"><pre>{
@@ -1550,7 +1558,7 @@ information.</li>
 been profiled.</li>
 </ul>
 <h4>
-<a id="user-content-query-parameters-4" class="anchor" href="#query-parameters-4" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<a id="user-content-query-parameters-5" class="anchor" href="#query-parameters-5" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
 <p>Optionally you can add <code>q=q1&amp;q=q2&amp;...</code> parameters to limit the
 suggestions to the given queries.  If no query parameters are set, the
 whole profile for each type in the document is returned.</p>
@@ -1654,7 +1662,7 @@ profiled.</li>
 <li>No <a href="#user-content-authorization">Authorization</a> is required.</li>
 </ul>
 <h4>
-<a id="user-content-query-parameters-5" class="anchor" href="#query-parameters-5" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<a id="user-content-query-parameters-6" class="anchor" href="#query-parameters-6" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
 <ul>
 <li>The optional parameter <code>url=profiler-url</code> specifies the URL of the profiler.
 Use <code>local</code> to use the local profiler. If omitted, <code>url=local</code> is assumed.</li>
@@ -1901,7 +1909,7 @@ correction.</p>
 <li>If the job failed <code>500 Internal Server Error</code> is returned.</li>
 </ul>
 <h4>
-<a id="user-content-query-parameters-6" class="anchor" href="#query-parameters-6" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<a id="user-content-query-parameters-7" class="anchor" href="#query-parameters-7" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
 <p>You can specify an optional <code>q=job-name</code> parameter to check the status
 of a specific running job (such as predict, train, profiler,
 postcorrection) with the according id.</p>
