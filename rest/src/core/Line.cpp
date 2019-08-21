@@ -13,51 +13,34 @@ using namespace pcw;
 #define PRAECONDITION assert(r >= 0 and conf >= 0 and conf <= 1.0)
 
 ////////////////////////////////////////////////////////////////////////////////
-Line::Line(int i, Box b)
-  : box(b)
-  , img()
-  , chars_()
-  , page_()
-  , id_(i)
-  , ofs_()
-{}
+Line::Line(int i, Box b) : box(b), img(), chars_(), page_(), id_(i), ofs_() {}
 
 ////////////////////////////////////////////////////////////////////////////////
-bool
-Line::is_fully_corrected() const noexcept
-{
-  return std::all_of(
-    begin(chars_), end(chars_), [](const auto& c) { return c.is_corrected(); });
+bool Line::is_fully_corrected() const noexcept {
+  return std::all_of(begin(chars_), end(chars_),
+                     [](const auto &c) { return c.is_corrected(); });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool
-Line::is_partially_corrected() const noexcept
-{
-  return std::any_of(
-    begin(chars_), end(chars_), [](const auto& c) { return c.is_corrected(); });
+bool Line::is_partially_corrected() const noexcept {
+  return std::any_of(begin(chars_), end(chars_),
+                     [](const auto &c) { return c.is_corrected(); });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::append(const std::string& str, int l, int r, double conf)
-{
+void Line::append(const std::string &str, int l, int r, double conf) {
   PRAECONDITION;
   append(str.data(), str.size(), l, r, conf);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::append(const std::wstring& wstr, int l, int r, double conf)
-{
+void Line::append(const std::wstring &wstr, int l, int r, double conf) {
   PRAECONDITION;
   append(wstr.data(), wstr.size(), l, r, conf);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::append(const char* str, size_t n, int l, int r, double conf)
-{
+void Line::append(const char *str, size_t n, int l, int r, double conf) {
   PRAECONDITION;
   if (not str or not*str)
     return;
@@ -67,9 +50,7 @@ Line::append(const char* str, size_t n, int l, int r, double conf)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::append(const char* str, int l, int r, double conf)
-{
+void Line::append(const char *str, int l, int r, double conf) {
   PRAECONDITION;
   if (not str or not*str)
     return;
@@ -77,9 +58,7 @@ Line::append(const char* str, int l, int r, double conf)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::append(const wchar_t* str, size_t n, int l, int r, double conf)
-{
+void Line::append(const wchar_t *str, size_t n, int l, int r, double conf) {
   PRAECONDITION;
   if (not str or not*str)
     return;
@@ -93,9 +72,7 @@ Line::append(const wchar_t* str, size_t n, int l, int r, double conf)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::append(const wchar_t* str, int l, int r, double conf)
-{
+void Line::append(const wchar_t *str, int l, int r, double conf) {
   PRAECONDITION;
   if (not str or not*str)
     return;
@@ -103,52 +80,40 @@ Line::append(const wchar_t* str, int l, int r, double conf)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::append(wchar_t c, int r, double conf)
-{
+void Line::append(wchar_t c, int r, double conf) {
   PRAECONDITION;
   chars_.emplace_back(c, 0, r, conf);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::append(wchar_t o, wchar_t c, int r, double conf)
-{
+void Line::append(wchar_t o, wchar_t c, int r, double conf) {
   PRAECONDITION;
   chars_.emplace_back(o, c, r, conf);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::wstring
-Line::wcor() const
-{
+std::wstring Line::wcor() const {
   std::wstring res;
   res.reserve(chars_.size());
-  cor(begin(chars_), end(chars_), [&res](const Char& c) {
-    res.push_back(c.get_cor());
-  });
+  cor(begin(chars_), end(chars_),
+      [&res](const Char &c) { res.push_back(c.get_cor()); });
   return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::wstring
-Line::wocr() const
-{
+std::wstring Line::wocr() const {
   std::wstring res;
   res.reserve(chars_.size());
-  ocr(begin(chars_), end(chars_), [&res](const Char& c) {
-    res.push_back(c.ocr);
-  });
+  ocr(begin(chars_), end(chars_),
+      [&res](const Char &c) { res.push_back(c.ocr); });
   return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string
-Line::cor() const
-{
+std::string Line::cor() const {
   std::string res;
   res.reserve(chars_.size());
-  cor(begin(chars_), end(chars_), [&res](const Char& c) {
+  cor(begin(chars_), end(chars_), [&res](const Char &c) {
     const auto cc = c.get_cor();
     utf8::utf32to8(&cc, &cc + 1, std::back_inserter(res));
   });
@@ -156,48 +121,38 @@ Line::cor() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string
-Line::ocr() const
-{
+std::string Line::ocr() const {
   std::string res;
   res.reserve(chars_.size());
-  ocr(begin(chars_), end(chars_), [&res](const Char& c) {
+  ocr(begin(chars_), end(chars_), [&res](const Char &c) {
     utf8::utf32to8(&c.ocr, &c.ocr + 1, std::back_inserter(res));
   });
   return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Line::Confidences
-Line::confidences() const
-{
+Line::Confidences Line::confidences() const {
   Confidences confidences;
   confidences.reserve(chars_.size());
-  cor(begin(chars_), end(chars_), [&confidences](const Char& c) {
-    confidences.push_back(c.conf);
-  });
+  cor(begin(chars_), end(chars_),
+      [&confidences](const Char &c) { confidences.push_back(c.conf); });
   return confidences;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Line::Cuts
-Line::cuts() const
-{
+Line::Cuts Line::cuts() const {
   Cuts cuts;
   cuts.reserve(chars_.size());
-  cor(begin(chars_), end(chars_), [&cuts](const Char& c) {
-    cuts.push_back(c.cut);
-  });
+  cor(begin(chars_), end(chars_),
+      [&cuts](const Char &c) { cuts.push_back(c.cut); });
   return cuts;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-double
-Line::average_conf() const noexcept
-{
+double Line::average_conf() const noexcept {
   double sum = 0;
   double n = 0;
-  cor(begin(chars_), end(chars_), [&sum, &n](const Char& c) {
+  cor(begin(chars_), end(chars_), [&sum, &n](const Char &c) {
     ++n;
     sum += c.conf;
   });
@@ -205,9 +160,7 @@ Line::average_conf() const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::begin_wagner_fischer(size_t b, size_t e) noexcept
-{
+void Line::begin_wagner_fischer(size_t b, size_t e) noexcept {
   e = std::min(e, chars_.size());
   assert(b <= chars_.size());
   assert(e <= chars_.size());
@@ -216,9 +169,7 @@ Line::begin_wagner_fischer(size_t b, size_t e) noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::set(size_t i, wchar_t c)
-{
+void Line::set(size_t i, wchar_t c) {
   const auto ii = i + ofs_;
   assert(ii < chars_.size());
   chars_[ii].cor = c;
@@ -228,9 +179,7 @@ Line::set(size_t i, wchar_t c)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::insert(size_t i, wchar_t c)
-{
+void Line::insert(size_t i, wchar_t c) {
   const auto ii = i + ofs_;
   assert(ii <= chars_.size()); // if ii == chars_.size() append to end
 
@@ -250,9 +199,7 @@ Line::insert(size_t i, wchar_t c)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::divide_cuts(Chars::iterator first, Chars::iterator last)
-{
+void Line::divide_cuts(Chars::iterator first, Chars::iterator last) {
   auto e = end(chars_);
   if (first != last and first != e and last != e) {
     auto left = first == begin(chars_) ? first : std::prev(first);
@@ -269,9 +216,7 @@ Line::divide_cuts(Chars::iterator first, Chars::iterator last)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::erase(size_t i)
-{
+void Line::erase(size_t i) {
   const auto ii = i + ofs_;
   assert(ii < chars_.size());
   chars_[ii].cor = Char::DELETION;
@@ -281,9 +226,7 @@ Line::erase(size_t i)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::noop(size_t i)
-{
+void Line::noop(size_t i) {
   const auto ii = i + ofs_;
   assert(ii < chars_.size());
   chars_[ii].cor = chars_[ii].ocr;
@@ -292,26 +235,22 @@ Line::noop(size_t i)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-static Line::CharIterator
-next(Line::CharIterator i, Line::CharIterator e)
-{
+static Line::CharIterator next(Line::CharIterator i, Line::CharIterator e) {
   if (i != e) {
     // we need find_if_not in order to handle deletions (which are
     // both considered part of words and separators) correctly.
     if (i->is_word())
-      return std::find_if_not(
-        i + 1, e, [](const auto& c) { return c.is_word(); });
+      return std::find_if_not(i + 1, e,
+                              [](const auto &c) { return c.is_word(); });
     else
-      return std::find_if_not(
-        i + 1, e, [](const auto& c) { return c.is_sep(); });
+      return std::find_if_not(i + 1, e,
+                              [](const auto &c) { return c.is_sep(); });
   }
   return e;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::each_token(std::function<void(const Token&)> f) const
-{
+void Line::each_token(std::function<void(const Token &)> f) const {
   Token token;
   token.box.set_top(this->box.top());
   token.box.set_bottom(this->box.bottom());
@@ -341,20 +280,16 @@ Line::each_token(std::function<void(const Token&)> f) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::vector<Token>
-Line::tokens() const
-{
+std::vector<Token> Line::tokens() const {
   std::vector<Token> tokens;
-  each_token([&tokens](const Token& token) { tokens.push_back(token); });
+  each_token([&tokens](const Token &token) { tokens.push_back(token); });
   return tokens;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::vector<Token>
-Line::words() const
-{
+std::vector<Token> Line::words() const {
   std::vector<Token> words;
-  each_token([&words](const Token& token) {
+  each_token([&words](const Token &token) {
     if (token.is_normal())
       words.push_back(token);
   });
@@ -362,9 +297,7 @@ Line::words() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-int64_t
-Line::unique_id(int bid, int pid, int lid, int tid) noexcept
-{
+int64_t Line::unique_id(int bid, int pid, int lid, int tid) noexcept {
   const auto r = static_cast<uint16_t>(static_cast<unsigned int>(bid));
   const auto s = static_cast<uint16_t>(static_cast<unsigned int>(pid));
   const auto t = static_cast<uint16_t>(static_cast<unsigned int>(lid));
@@ -385,13 +318,11 @@ Line::unique_id(int bid, int pid, int lid, int tid) noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void
-Line::reset(CharIterator b, CharIterator e)
-{
+void Line::reset(CharIterator b, CharIterator e) {
   Chars tmp;
   tmp.reserve(chars_.size());
   std::copy(cbegin(chars_), b, std::back_inserter(tmp));
-  std::for_each(b, e, [&tmp](const auto& c) {
+  std::for_each(b, e, [&tmp](const auto &c) {
     if (c.ocr != 0) {
       tmp.emplace_back(c.ocr, 0, c.cut, c.conf);
     }
@@ -405,38 +336,32 @@ Line::reset(CharIterator b, CharIterator e)
 //
 
 ////////////////////////////////////////////////////////////////////////////////
-static bool
-isword(wchar_t c) noexcept
-{
+static bool isword(wchar_t c) noexcept {
   switch (u_charType(c)) { // all cases fall through
-    case U_UPPERCASE_LETTER:
-    case U_LOWERCASE_LETTER:
-    case U_TITLECASE_LETTER:
-    case U_MODIFIER_LETTER:
-    case U_OTHER_LETTER:
-    case U_DECIMAL_DIGIT_NUMBER:
-    case U_LETTER_NUMBER:
-    case U_OTHER_NUMBER:
-    case U_NON_SPACING_MARK:
-      return true;
-    default:
-      return false;
+  case U_UPPERCASE_LETTER:
+  case U_LOWERCASE_LETTER:
+  case U_TITLECASE_LETTER:
+  case U_MODIFIER_LETTER:
+  case U_OTHER_LETTER:
+  case U_DECIMAL_DIGIT_NUMBER:
+  case U_LETTER_NUMBER:
+  case U_OTHER_NUMBER:
+  case U_NON_SPACING_MARK:
+    return true;
+  default:
+    return false;
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool
-Char::is_word() const noexcept
-{
+bool Char::is_word() const noexcept {
   auto c = get_cor();
   // c=0 means deletion and is considered to be part of a word.
   return c ? isword(c) : true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool
-Char::is_sep() const noexcept
-{
+bool Char::is_sep() const noexcept {
   auto c = get_cor();
   // c=0 means deletion and is considered to be part of a
   // separator.
@@ -448,11 +373,9 @@ Char::is_sep() const noexcept
 //
 
 ////////////////////////////////////////////////////////////////////////////////
-double
-Token::average_conf() const
-{
+double Token::average_conf() const {
   double sum = 0, n = 0;
-  Line::cor(begin, end, [&sum, &n](const Char& c) {
+  Line::cor(begin, end, [&sum, &n](const Char &c) {
     sum += c.conf;
     ++n;
   });
@@ -460,55 +383,44 @@ Token::average_conf() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::wstring
-Token::wcor_lc() const
-{
+std::wstring Token::wcor_lc() const {
   std::wstring res;
   res.reserve(std::distance(begin, end));
-  Line::cor(begin, end, [&res](const Char& c) {
-    res.push_back(u_tolower(c.get_cor()));
-  });
+  Line::cor(begin, end,
+            [&res](const Char &c) { res.push_back(u_tolower(c.get_cor())); });
   return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::wstring
-Token::wcor() const
-{
+std::wstring Token::wcor() const {
   std::wstring res;
   res.reserve(std::distance(begin, end));
-  Line::cor(begin, end, [&res](const Char& c) { res.push_back(c.get_cor()); });
+  Line::cor(begin, end, [&res](const Char &c) { res.push_back(c.get_cor()); });
   return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::wstring
-Token::wocr_lc() const
-{
+std::wstring Token::wocr_lc() const {
   std::wstring res;
   res.reserve(std::distance(begin, end));
-  Line::ocr(
-    begin, end, [&res](const Char& c) { res.push_back(u_tolower(c.ocr)); });
+  Line::ocr(begin, end,
+            [&res](const Char &c) { res.push_back(u_tolower(c.ocr)); });
   return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::wstring
-Token::wocr() const
-{
+std::wstring Token::wocr() const {
   std::wstring res;
   res.reserve(std::distance(begin, end));
-  Line::ocr(begin, end, [&res](const Char& c) { res.push_back(c.ocr); });
+  Line::ocr(begin, end, [&res](const Char &c) { res.push_back(c.ocr); });
   return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string
-Token::cor_lc() const
-{
+std::string Token::cor_lc() const {
   std::string res;
   res.reserve(std::distance(begin, end));
-  Line::cor(begin, end, [&res](const Char& c) {
+  Line::cor(begin, end, [&res](const Char &c) {
     const auto cc = u_tolower(c.get_cor());
     utf8::utf32to8(&cc, &cc + 1, std::back_inserter(res));
   });
@@ -516,12 +428,10 @@ Token::cor_lc() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string
-Token::cor() const
-{
+std::string Token::cor() const {
   std::string res;
   res.reserve(std::distance(begin, end));
-  Line::cor(begin, end, [&res](const Char& c) {
+  Line::cor(begin, end, [&res](const Char &c) {
     const auto cc = c.get_cor();
     utf8::utf32to8(&cc, &cc + 1, std::back_inserter(res));
   });
@@ -529,12 +439,10 @@ Token::cor() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string
-Token::ocr_lc() const
-{
+std::string Token::ocr_lc() const {
   std::string res;
   res.reserve(std::distance(begin, end));
-  Line::ocr(begin, end, [&res](const Char& c) {
+  Line::ocr(begin, end, [&res](const Char &c) {
     auto cc = u_tolower(c.ocr);
     utf8::utf32to8(&cc, &cc + 1, std::back_inserter(res));
   });
@@ -542,47 +450,37 @@ Token::ocr_lc() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string
-Token::ocr() const
-{
+std::string Token::ocr() const {
   std::string res;
   res.reserve(std::distance(begin, end));
-  Line::ocr(begin, end, [&res](const Char& c) {
+  Line::ocr(begin, end, [&res](const Char &c) {
     utf8::utf32to8(&c.ocr, &c.ocr + 1, std::back_inserter(res));
   });
   return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool
-Token::is_fully_corrected() const noexcept
-{
-  return std::all_of(
-    begin, end, [](const Char& c) { return c.is_corrected(); });
+bool Token::is_fully_corrected() const noexcept {
+  return std::all_of(begin, end,
+                     [](const Char &c) { return c.is_corrected(); });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool
-Token::is_partially_corrected() const noexcept
-{
-  return std::any_of(
-    begin, end, [](const Char& c) { return c.is_corrected(); });
+bool Token::is_partially_corrected() const noexcept {
+  return std::any_of(begin, end,
+                     [](const Char &c) { return c.is_corrected(); });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool
-Token::is_normal() const
-{
-  return std::all_of(begin, end, [](const Char& c) { return c.is_word(); });
+bool Token::is_normal() const {
+  return std::all_of(begin, end, [](const Char &c) { return c.is_word(); });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-uint64_t
-Token::unique_id() const noexcept
-{
+uint64_t Token::unique_id() const noexcept {
   if (line)
-    return Line::unique_id(
-      line->page().book().id(), line->page().id(), line->id(), id);
+    return Line::unique_id(line->page().book().id(), line->page().id(),
+                           line->id(), id);
   else
     return 0;
 }
