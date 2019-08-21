@@ -58,12 +58,12 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
               var pid = tokendiv.attr('projectId');
               var lineid =  tokendiv.attr('lineId');
               var pageid =  tokendiv.attr('pageId');
-              var tokenid =  tokendiv.attr('tokenId');
+              var offset =  tokendiv.attr('offset');
 
               var token  = tokendiv.text().trim();
               var anchor = $(this).attr('anchor');
               // console.log({pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token});
-              that.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token},anchor);
+              that.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:offset,token:token},anchor);
 
             }
           });
@@ -142,10 +142,10 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
             var pid = tokendiv.attr('projectId');
             var lineid =  tokendiv.attr('lineId');
             var pageid =  tokendiv.attr('pageId');
-            var tokenid =  tokendiv.attr('tokenId');
+            var offset =  tokendiv.attr('offset');
             var token  = tokendiv.text();
             var anchor = concLine.attr('anchor');
-            this.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token},anchor)
+            this.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:offset,token:token},anchor)
       },
       cor_suggestions:function(e){
          e.stopPropagation();
@@ -277,7 +277,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           for(let k=value;k<max_pages;k++){
               $('.js-paginate').append('<li value="'+k+'"" class="page-item"><a class="page-link" href="#">'+k+'</a></li>');
            }
-      
+
 
           $('.js-paginate').append('<li value="'+(max_pages)+'" class="page-item"><a class="page-link" href="#">'+(max_pages)+'</a></li>');
           $('.js-paginate').append('<li value="-3" class="page-item"><a class="page-link" href="#">Next</a></li>');
@@ -309,16 +309,16 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         // at the start
         else if (value<5&&(max_pages>5)) {
           $('.js-paginate').empty();
-          
+
           $('.js-paginate').append('<li value="-2" class="page-item"><a class="page-link" href="#">Previous</a></li>');
           $('.js-paginate').append('<li value="1" class="page-item"><a class="page-link" href="#">1</a></li>');
 
           for(var k=2;k<=5;k++){
               $('.js-paginate').append('<li value="'+k+'"" class="page-item"><a class="page-link" href="#">'+k+'</a></li>');
-           }  
+           }
 
 
-               
+
           $('.js-paginate').append('<li value="-1" class="page-item"><a class="page-link">...</a></li>');
           $('.js-paginate').append('<li value="'+(max_pages)+'" class="page-item"><a class="page-link" href="#">'+(max_pages)+'</a></li>');
           $('.js-paginate').append('<li value="-3" class="page-item"><a class="page-link" href="#">Next</a></li>');
@@ -519,9 +519,11 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                       tokendiv = $('<div class="tokendiv"></div>').append(cordiv);
                     }
 
-                        tokendiv.attr('pageId',token['pageId']).attr('lineId',token['lineId']).attr('projectId',token['projectId']).
-                       attr('tokenId',token['tokenId']);
-                    // var div = $("<div style='display:inline-block;'></div>").append(img).append(cordiv);
+                tokendiv.attr('pageId',token.pageId)
+                .attr('lineId',token.lineId)
+                .attr('projectId',token.projectId)
+                .attr('tokenId',token.tokenId)
+                .attr('offset', token.offset);
                     $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().find('.concLine').append(tokendiv);
 
 
