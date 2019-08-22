@@ -52,7 +52,6 @@ for suspicious words.
 	* [[POST] rest/pkg/split/books/`pid`](#user-content-api-post-books-pid-split)
 	* [[GET] rest/pkg/assign/books/`pid`](#api-get-books-pid-assign)
 	* [[GET] rest/pkg/takeback/books/`pid`](#api-get-books-pid-takeback)
-	* [[GET] rest/books/`pid`/adaptive-tokens](#user-content-api-post-books-pid-adaptive-tokens)
 	* [[GET] rest/books/`pid`/download](#user-content-api-get-books-pid-download)
 	* [[GET] rest/books/`pid`/search](#user-content-api-get-books-pid-search)
 	* [[GET] rest/books/`pid`/pages/`pageid`](#user-content-api-get-books-pid-pages-pageid)
@@ -70,6 +69,8 @@ for suspicious words.
 	* [[POST] rest/profile/books/`pid`](#user-content-api-post-books-pid-profile)
 	* [[POST] rest/profile/suspicious/books/`pid`](#user-content-api-get-books-pid-suspicious)
 	* [[GET] rest/profile/languages](#user-content-api-get-profiler-languages)
+	* [[GET] rest/profile/adaptive/books/`pid`](#user-content-api-post-books-pid-adaptive-tokens)
+
 	* [[GET] rest/ocr](#user-content-api-get-global-ocr-models)
 	* [[GET] rest/ocr/books/`pid`](#user-content-api-get-ocr-models)
 	* [[POST] rest/ocr/books/`pid`](#user-content-api-post-ocr-book)
@@ -955,21 +956,6 @@ project are reasigned to the project's owner.
 * Only the owner of a project can take packages back.
 
 ---
-<a id='api-post-books-pid-adaptive-tokens'></a>
-### [GET] rest/books/`pid`/adaptive-tokens
-Get a list of the adaptive tokens of the last profiler run.
-* [Authorization](#user-content-authorization) is required.
-* Only the owner of a project can access the adaptive token set of the project.
-
-#### Response data
-```json
-{
-  "projectId": 27,
-  "adaptiveTokens": ["token1", "token2", ...]
-}
-```
-
----
 <a id='api-get-books-pid-download'></a>
 ### [GET] rest/books/`pid`/download
 Download a project.
@@ -1647,6 +1633,24 @@ Use `local` to use the local profiler. If omitted, `url=local` is assumed.
 {
   "url": "profiler-url|local",
   "languages": ["language1", "language2", ...]
+}
+```
+
+---
+<a id='api-post-books-pid-adaptive-tokens'></a>
+### [GET] rest/profile/adaptive/books/`pid`
+Get a list of the adaptive tokens of the last profiler run.  Adaptive
+tokens are tokens that where manually corrected in the
+project/package.  They are used as hints for the profiler.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project can access the adaptive token set of the project.
+
+#### Response data
+```json
+{
+  "projectId": 27, // package id
+  "bookId": 27, // project id
+  "adaptiveTokens": ["token1", "token2", ...] // list of adaptive tokens
 }
 ```
 

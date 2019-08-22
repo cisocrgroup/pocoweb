@@ -44,50 +44,138 @@ for suspicious words.</p>
 <li>
 <a href="#user-content-rest-api">REST API</a>
 <ul>
-<li><a href="#user-content-api-get-version">[GET] rest/api-version</a></li>
-<li><a href="#user-content-api-post-login">[POST] rest/login</a></li>
-<li><a href="#user-content-api-get-login">[GET] rest/login</a></li>
-<li><a href="#user-content-api-post-users">[POST] rest/users</a></li>
-<li><a href="#user-content-api-get-users">[GET] rest/users</a></li>
-<li><a href="#user-content-api-post-users-uid">[PUT] rest/users/<code>uid</code></a></li>
-<li><a href="#user-content-api-get-users-uid">[GET] rest/users/<code>uid</code></a></li>
-<li><a href="#user-content-api-delete-users-uid">[DELETE] rest/users/<code>uid</code></a></li>
-<li><a href="#user-content-api-get-books">[GET] rest/books</a></li>
-<li><a href="#user-content-api-post-books">[POST] rest/books</a></li>
-<li><a href="#user-content-api-get-books-pid">[GET] rest/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-put-books-pid">[PUT] rest/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-delete-books-pid">[DELETE] rest/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-post-books-pid-split">[POST] rest/pkg/split/books/<code>pid</code></a></li>
-<li><a href="#api-get-books-pid-assign">[GET] rest/pkg/assign/books/<code>pid</code></a></li>
-<li><a href="#api-get-books-pid-takeback">[GET] rest/pkg/takeback/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-post-books-pid-adaptive-tokens">[GET] rest/books/<code>pid</code>/adaptive-tokens</a></li>
-<li><a href="#user-content-api-get-books-pid-download">[GET] rest/books/<code>pid</code>/download</a></li>
-<li><a href="#user-content-api-get-books-pid-search">[GET] rest/books/<code>pid</code>/search</a></li>
-<li><a href="#user-content-api-get-books-pid-pages-pageid">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code></a></li>
-<li><a href="#user-content-api-delete-books-pid-pages-pageid">[DELETE] rest/books/<code>pid</code>/pages/<code>pageid</code></a></li>
-<li><a href="#user-content-api-get-books-pid-pages-first">[GET] rest/books/<code>pid</code>/pages/first</a></li>
-<li><a href="#user-content-api-get-books-pid-pages-last">[GET] rest/books/<code>pid</code>/pages/last</a></li>
-<li><a href="#user-content-api-get-books-pid-pages-pageid-next-n">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/next/<code>n</code></a></li>
-<li><a href="#user-content-api-get-books-pid-pages-pageid-prev-n">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/prev/<code>n</code></a></li>
-<li><a href="#user-content-api-get-books-pid-pages-pageid-lines-lid">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></li>
-<li><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid">[POST] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></li>
-<li><a href="#user-content-api-delete-books-pid-pages-pageid-lines-lid">[DELETE] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></li>
-<li><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid">[POST] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code></a></li>
-<li><a href="#user-content-api-get-books-pid-pages-pageid-lines-lid-tokens-tid">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code></a></li>
-<li><a href="#user-content-api-get-books-pid-profile">[GET] rest/profile/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-post-books-pid-profile">[POST] rest/profile/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-get-books-pid-suspicious">[POST] rest/profile/suspicious/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-get-profiler-languages">[GET] rest/profile/languages</a></li>
-<li><a href="#user-content-api-get-global-ocr-models">[GET] rest/ocr</a></li>
-<li><a href="#user-content-api-get-ocr-models">[GET] rest/ocr/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-post-ocr-book">[POST] rest/ocr/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-post-ocr-book-page">[POST] rest/ocr/books/<code>pid</code>/pages/<code>pageid</code></a></li>
-<li><a href="#user-content-api-post-ocr-book-page-line">[POST] rest/ocr/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lineid</code></a></li>
-<li><a href="#user-content-api-get-el">[GET] rest/postcorrect/el/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-post-el">[POST] rest/postcorrect/el/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-get-rrdm">[GET] rest/postcorrect/rrdm/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-post-rrdm">[POST] rest/postcorrect/rrdm/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-get-jobs">[GET] rest/jobs/<code>jobid</code></a></li>
+<li>
+<p><a href="#user-content-api-get-version">[GET] rest/api-version</a></p>
+</li>
+<li>
+<p><a href="#user-content-api-post-login">[POST] rest/login</a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-login">[GET] rest/login</a></p>
+</li>
+<li>
+<p><a href="#user-content-api-post-users">[POST] rest/users</a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-users">[GET] rest/users</a></p>
+</li>
+<li>
+<p><a href="#user-content-api-post-users-uid">[PUT] rest/users/<code>uid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-users-uid">[GET] rest/users/<code>uid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-delete-users-uid">[DELETE] rest/users/<code>uid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-books">[GET] rest/books</a></p>
+</li>
+<li>
+<p><a href="#user-content-api-post-books">[POST] rest/books</a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-books-pid">[GET] rest/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-put-books-pid">[PUT] rest/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-delete-books-pid">[DELETE] rest/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-post-books-pid-split">[POST] rest/pkg/split/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#api-get-books-pid-assign">[GET] rest/pkg/assign/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#api-get-books-pid-takeback">[GET] rest/pkg/takeback/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-books-pid-download">[GET] rest/books/<code>pid</code>/download</a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-books-pid-search">[GET] rest/books/<code>pid</code>/search</a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-books-pid-pages-pageid">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-delete-books-pid-pages-pageid">[DELETE] rest/books/<code>pid</code>/pages/<code>pageid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-books-pid-pages-first">[GET] rest/books/<code>pid</code>/pages/first</a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-books-pid-pages-last">[GET] rest/books/<code>pid</code>/pages/last</a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-books-pid-pages-pageid-next-n">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/next/<code>n</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-books-pid-pages-pageid-prev-n">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/prev/<code>n</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-books-pid-pages-pageid-lines-lid">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid">[POST] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-delete-books-pid-pages-pageid-lines-lid">[DELETE] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid">[POST] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-books-pid-pages-pageid-lines-lid-tokens-tid">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-books-pid-profile">[GET] rest/profile/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-post-books-pid-profile">[POST] rest/profile/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-books-pid-suspicious">[POST] rest/profile/suspicious/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-profiler-languages">[GET] rest/profile/languages</a></p>
+</li>
+<li>
+<p><a href="#user-content-api-post-books-pid-adaptive-tokens">[GET] rest/profile/adaptive/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-global-ocr-models">[GET] rest/ocr</a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-ocr-models">[GET] rest/ocr/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-post-ocr-book">[POST] rest/ocr/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-post-ocr-book-page">[POST] rest/ocr/books/<code>pid</code>/pages/<code>pageid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-post-ocr-book-page-line">[POST] rest/ocr/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lineid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-el">[GET] rest/postcorrect/el/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-post-el">[POST] rest/postcorrect/el/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-rrdm">[GET] rest/postcorrect/rrdm/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-post-rrdm">[POST] rest/postcorrect/rrdm/books/<code>pid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-jobs">[GET] rest/jobs/<code>jobid</code></a></p>
+</li>
 </ul>
 </li>
 </ul>
@@ -950,22 +1038,6 @@ project are reasigned to the project's owner.</p>
 <li>Only the owner of a project can take packages back.</li>
 </ul>
 <hr>
-<p><a id="user-content-api-post-books-pid-adaptive-tokens"></a></p>
-<h3>
-<a id="user-content-get-restbookspidadaptive-tokens" class="anchor" href="#get-restbookspidadaptive-tokens" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/books/<code>pid</code>/adaptive-tokens</h3>
-<p>Get a list of the adaptive tokens of the last profiler run.</p>
-<ul>
-<li>
-<a href="#user-content-authorization">Authorization</a> is required.</li>
-<li>Only the owner of a project can access the adaptive token set of the project.</li>
-</ul>
-<h4>
-<a id="user-content-response-data-11" class="anchor" href="#response-data-11" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
-<div class="highlight highlight-source-json"><pre>{
-  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
-  <span class="pl-s"><span class="pl-pds">"</span>adaptiveTokens<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>token1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>token2<span class="pl-pds">"</span></span>, <span class="pl-ii">...</span>]
-}</pre></div>
-<hr>
 <p><a id="user-content-api-get-books-pid-download"></a></p>
 <h3>
 <a id="user-content-get-restbookspiddownload" class="anchor" href="#get-restbookspiddownload" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/books/<code>pid</code>/download</h3>
@@ -991,7 +1063,7 @@ that can directly be used for model training with ocropy.
 If the project archive was already a ocropy directory structure,
 only the according ground truth files are updated.</p>
 <h4>
-<a id="user-content-response-data-12" class="anchor" href="#response-data-12" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-11" class="anchor" href="#response-data-11" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>archive<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>relative download url of project archive<span class="pl-pds">"</span></span>,
 }</pre></div>
@@ -1017,7 +1089,7 @@ hits (default: <code>max=50</code>).</li>
 (default: <code>skip=0</code>).</li>
 </ul>
 <h4>
-<a id="user-content-response-data-13" class="anchor" href="#response-data-13" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-12" class="anchor" href="#response-data-12" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
   <span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">17</span>,
@@ -1085,7 +1157,7 @@ hits (default: <code>max=50</code>).</li>
 <li>Only the owner of a project or package can read its pages.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-14" class="anchor" href="#response-data-14" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-13" class="anchor" href="#response-data-13" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
@@ -1171,7 +1243,7 @@ from packages.</li>
 <li>Only the owner of a project or package can read its pages.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-15" class="anchor" href="#response-data-15" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-14" class="anchor" href="#response-data-14" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
@@ -1221,7 +1293,7 @@ from packages.</li>
 <li>Only the owner of a project or package can read its pages.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-16" class="anchor" href="#response-data-16" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-15" class="anchor" href="#response-data-15" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
@@ -1272,7 +1344,7 @@ from packages.</li>
 <li>Only the owner of a project or package can read its pages.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-17" class="anchor" href="#response-data-17" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-16" class="anchor" href="#response-data-16" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
@@ -1323,7 +1395,7 @@ from packages.</li>
 <li>Only the owner of a project or package can read its pages.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-18" class="anchor" href="#response-data-18" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-17" class="anchor" href="#response-data-17" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
@@ -1375,7 +1447,7 @@ or package with id <code>pid</code>.</p>
 <li>Only the owner of a project or package can read its lines.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-19" class="anchor" href="#response-data-19" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-18" class="anchor" href="#response-data-18" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
@@ -1414,7 +1486,7 @@ or package with id <code>pid</code>.</p>
   <span class="pl-s"><span class="pl-pds">"</span>correction<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected line<span class="pl-pds">"</span></span>
 }</pre></div>
 <h4>
-<a id="user-content-response-data-20" class="anchor" href="#response-data-20" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-19" class="anchor" href="#response-data-19" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
@@ -1470,7 +1542,7 @@ of the line starting at position <code>tid</code> and ending at position
 according token (ending at the first encountered whitespace character
 after <code>tid</code> or the end of the line) is returned.</p>
 <h4>
-<a id="user-content-response-data-21" class="anchor" href="#response-data-21" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-20" class="anchor" href="#response-data-20" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
@@ -1518,7 +1590,7 @@ after <code>tid</code> or the end of the line) is corrected.</p>
   <span class="pl-s"><span class="pl-pds">"</span>correction<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected token<span class="pl-pds">"</span></span>
 }</pre></div>
 <h4>
-<a id="user-content-response-data-22" class="anchor" href="#response-data-22" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-21" class="anchor" href="#response-data-21" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
@@ -1563,7 +1635,7 @@ been profiled.</li>
 suggestions to the given queries.  If no query parameters are set, the
 whole profile for each type in the document is returned.</p>
 <h4>
-<a id="user-content-response-data-23" class="anchor" href="#response-data-23" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-22" class="anchor" href="#response-data-22" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">37</span>,
@@ -1622,7 +1694,7 @@ used for the profiling.</p>
 	<span class="pl-s"><span class="pl-pds">"</span>tokens<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>additional lexicon token 1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>additional lexicon token 2<span class="pl-pds">"</span></span>]
 }</pre></div>
 <h4>
-<a id="user-content-response-data-24" class="anchor" href="#response-data-24" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-23" class="anchor" href="#response-data-23" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>
 }</pre></div>
@@ -1643,7 +1715,7 @@ information.</li>
 profiled.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-25" class="anchor" href="#response-data-25" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-24" class="anchor" href="#response-data-24" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">19</span>,
   <span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">19</span>,
@@ -1668,10 +1740,30 @@ profiled.</li>
 Use <code>local</code> to use the local profiler. If omitted, <code>url=local</code> is assumed.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-26" class="anchor" href="#response-data-26" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-25" class="anchor" href="#response-data-25" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>url<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>profiler-url|local<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>languages<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>language1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>language2<span class="pl-pds">"</span></span>, <span class="pl-ii">...</span>]
+}</pre></div>
+<hr>
+<p><a id="user-content-api-post-books-pid-adaptive-tokens"></a></p>
+<h3>
+<a id="user-content-get-restprofileadaptivebookspid" class="anchor" href="#get-restprofileadaptivebookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/profile/adaptive/books/<code>pid</code>
+</h3>
+<p>Get a list of the adaptive tokens of the last profiler run.  Adaptive
+tokens are tokens that where manually corrected in the
+project/package.  They are used as hints for the profiler.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project can access the adaptive token set of the project.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-26" class="anchor" href="#response-data-26" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>, <span class="pl-ii">//</span> <span class="pl-ii">package</span> <span class="pl-ii">id</span>
+  <span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>, <span class="pl-ii">//</span> <span class="pl-ii">project</span> <span class="pl-ii">id</span>
+  <span class="pl-s"><span class="pl-pds">"</span>adaptiveTokens<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>token1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>token2<span class="pl-pds">"</span></span>, <span class="pl-ii">...</span>] <span class="pl-ii">//</span> <span class="pl-ii">list</span> <span class="pl-ii">of</span> <span class="pl-ii">adaptive</span> <span class="pl-ii">tokens</span>
 }</pre></div>
 <hr>
 <p><a id="user-content-api-get-global-ocr-models"></a></p>
