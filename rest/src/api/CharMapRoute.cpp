@@ -1,7 +1,6 @@
 #include "CharMapRoute.hpp"
 #include "core/Session.hpp"
 #include "core/jsonify.hpp"
-#include "core/queries.hpp"
 #include "database/Database.hpp"
 #include <crow.h>
 #include <unicode/uchar.h>
@@ -37,9 +36,10 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// GET /books/<int>/charmap
+////////////////////////////////////////////////////////////////////////////////
 Route::Response CharMapRoute::impl(HttpGet, const Request &req, int bid) const {
-  const auto filter =
-      query_get<std::string>(req.url_params, "filter").value_or("");
+  const auto filter = get<std::string>(req.url_params, "filter").value_or("");
   std::wstring wfilter;
   utf8::utf8to32(filter.begin(), filter.end(), std::back_inserter(wfilter));
 

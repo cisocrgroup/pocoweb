@@ -46,17 +46,26 @@ Json &wj(Json &j, const Token &token, int projectid);
 Json &wj(Json &j, const std::vector<Token> &tokens, int projectid);
 Json &wj(Json &j, const Box &box);
 
-template <class T> boost::optional<T> get(const RJson &j, const char *key);
 template <class T>
 boost::optional<T> get(const crow::query_string &params, const char *key);
+
+using Query = crow::query_string;
+template <class T>
+boost::optional<T> query_get(const Query &q, const char *key);
+template <class T> T query_get_default(const Query &q, const char *key, T def);
+bool get(const Query &q, const char *key, bool &out);
+bool get(const Query &q, const char *key, int &out);
+bool get(const Query &q, const char *key, double &out);
+bool get(const Query &q, const char *key, std::string &out);
+bool get(const Query &q, const char *key, std::vector<std::string> &out);
+
+template <class T> boost::optional<T> get(const RJson &j, const char *key);
 template <class T, class F> void ifset(const RJson &j, const char *key, F f);
 bool get(const RJson &j, const char *key, std::vector<int> &res);
 bool get(const RJson &j, const char *key, bool &res);
-bool get(const crow::query_string &q, const char *key, int &res);
 bool get(const RJson &j, const char *key, int &res);
 bool get(const RJson &j, const char *key, double &res);
 bool get(const RJson &j, const char *key, std::string &res);
-bool get(const crow::query_string &q, const char *key, std::string &res);
 } // namespace pcw
 
 ////////////////////////////////////////////////////////////////////////////////

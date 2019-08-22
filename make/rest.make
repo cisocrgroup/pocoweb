@@ -25,7 +25,6 @@ CORE_OBJS += rest/src/core/SessionStore.o
 CORE_OBJS += rest/src/core/WagnerFischer.o
 CORE_OBJS += rest/src/core/XmlFile.o
 CORE_OBJS += rest/src/core/jsonify.o
-CORE_OBJS += rest/src/core/queries.o
 CORE_OBJS += rest/src/core/util.o
 CORE_OBJS += rest/src/database/DbStructs.o
 

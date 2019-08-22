@@ -2,7 +2,9 @@
 #include "Box.hpp"
 #include "Page.hpp"
 #include <crow/json.h>
+#define private public // We need to acces Query's private parts :(
 #include <crow/query_string.h>
+#define public public
 #include <limits>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -277,27 +279,71 @@ bool pcw::get(const RJson &j, const char *key, bool &res) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool pcw::get(const crow::query_string &q, const char *key, int &res) {
-  const auto val = q.get(key);
-  if (val == nullptr or strcmp(val, "") == 0) {
+bool pcw::get(const Query &q, const char *key, bool &out) {
+  const auto p = q.get(key);
+  if (not p) {
     return false;
   }
   try {
-    res = std::stoi(val);
+    out = boost::lexical_cast<bool>(p);
     return true;
-  } catch (const std::exception &) {
+  } catch (const boost::bad_lexical_cast &) {
+  }
+  return false;
+}
+////////////////////////////////////////////////////////////////////////////////
+bool pcw::get(const Query &q, const char *key, int &out) {
+  const auto p = q.get(key);
+  if (not p) {
+    return false;
+  }
+  try {
+    out = boost::lexical_cast<int>(p);
+    return true;
+  } catch (const boost::bad_lexical_cast &) {
   }
   return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool pcw::get(const crow::query_string &q, const char *key, std::string &res) {
-  const auto val = q.get(key);
-  if (val == nullptr) {
+bool pcw::get(const Query &q, const char *key, double &out) {
+  const auto p = q.get(key);
+  if (not p) {
     return false;
   }
-  res = val;
+  try {
+    out = boost::lexical_cast<double>(p);
+    return true;
+  } catch (const boost::bad_lexical_cast &) {
+  }
+  return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool pcw::get(const Query &q, const char *key, std::string &out) {
+  const auto p = q.get(key);
+  if (not p) {
+    return false;
+  }
+  out = p;
   return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool pcw::get(const Query &q, const char *key, std::vector<std::string> &out) {
+  out.clear();
+  int count = 0;
+  while (true) {
+    // We need to access the internals of q, since q.get_list(key)
+    // does not seem to do what is should.
+    const char *val = crow::qs_k2v(key, q.key_value_pairs_.data(),
+                                   q.key_value_pairs_.size(), count++);
+    if (not val) {
+      break;
+    }
+    out.push_back(std::string(val));
+  }
+  return not out.empty();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

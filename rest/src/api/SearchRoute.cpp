@@ -8,7 +8,6 @@
 #include "core/Session.hpp"
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
-#include "core/queries.hpp"
 #include "core/util.hpp"
 #include "utils/Error.hpp"
 #include "utils/ScopeGuard.hpp"
@@ -36,14 +35,16 @@ void SearchRoute::Register(App &app) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// GET /books/<bid>search?q=[&p=][&skip=][&max=][&q=]...
+////////////////////////////////////////////////////////////////////////////////
 Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
-  const auto qs = query_get<std::vector<std::string>>(req.url_params, "q");
+  const auto qs = get<std::vector<std::string>>(req.url_params, "q");
   if (not qs) {
     THROW(BadRequest, "(SearchRoute) invalid or missing query parameters");
   }
-  const auto p = query_get_default<bool>(req.url_params, "p", false);
-  const auto skip = query_get_default<int>(req.url_params, "skip", 0);
-  const auto max = query_get_default<int>(req.url_params, "max", 50);
+  const auto p = get<bool>(req.url_params, "p").value_or(false);
+  const auto skip = get<int>(req.url_params, "skip").value_or(0);
+  const auto max = get<int>(req.url_params, "max").value_or(50);
   if (not p) {
     return search(req, *qs, bid, tq{skip, max});
   } else {
