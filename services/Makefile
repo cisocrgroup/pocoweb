@@ -1,4 +1,3 @@
-SUDO ?= sudo
 SUBMAKES = ${wildcard */Makefile}
 
 docker-push docker-build clean: $(SUBMAKES)

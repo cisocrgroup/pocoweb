@@ -1,5 +1,4 @@
 TARGET := pcwauth
-SUDO ?= sudo
 TAG ?= flobar/${TARGET}
 PORTS ?= 8080:80
 TAGS := ${addprefix ${TAG}:,${shell git describe --tags HEAD} latest}
@@ -12,15 +11,15 @@ ${TARGET}: ${SRCS}
 
 .PHONY: docker-build
 docker-build:
-	${SUDO} docker build ${addprefix -t,${TAGS}} .
+	docker build ${addprefix -t,${TAGS}} .
 
 .PHONY: docker-run
 docker-run: docker-build
-	${SUDO} docker run -p ${PORTS} ${TAG}
+	docker run -p ${PORTS} ${TAG}
 
 .PHONY: docker-push
 docker-push: docker-build
-	for t in ${TAGS}; do ${SUDO} docker push $$t; done
+	for t in ${TAGS}; do docker push $$t; done
 
 .PHONY: clean
 clean:
