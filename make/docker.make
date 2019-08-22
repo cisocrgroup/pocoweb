@@ -33,4 +33,4 @@ docker-compose-pull:
 
 .PHONY: docker-deploy
 docker-deploy: docker-push services-push docker-compose-pull docker-compose-build
-	cd misc/docker && ${SUDO} PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose up
+	cd misc/docker && ${SUDO} PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose start
