@@ -69,12 +69,12 @@ Route::Response SearchRoute::search(const Request &req,
   size_t totalCount = 0;
   Searcher searcher(*project, x.skip, x.max);
   for (size_t i = 0; i < qs.size() and searcher.max() > 0; i++) {
-    CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
-                   << " for query string: " << qs[i] << " (skip = " << x.skip
-                   << ", max = " << x.max << ")";
+    CROW_LOG_INFO << "(SearchRoute::search) searching project id: " << bid
+                  << " for query string: " << qs[i] << " (skip = " << x.skip
+                  << ", max = " << x.max << ")";
     const auto matches = searcher.find(qs[i]);
-    CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.matches.size()
-                   << " matches for q='" << qs[i] << "'";
+    CROW_LOG_INFO << "(SearchRoute::search) found " << matches.matches.size()
+                  << " matches for q='" << qs[i] << "'";
     add_matches(json, matches, qs[i], false);
     totalCount += matches.totalCount;
   }
@@ -91,9 +91,9 @@ Route::Response SearchRoute::search(const Request &req,
   const auto project = session->must_find(conn, bid);
   std::vector<std::string> tokens;
   for (const auto &q : qs) {
-    CROW_LOG_DEBUG << "(SearchRoute::search) searching project id: " << bid
-                   << " for error pattern: " << q << " (skip = " << x.skip
-                   << ", max = " << x.max << ")";
+    CROW_LOG_INFO << "(SearchRoute::search) searching project id: " << bid
+                  << " for error pattern: " << q << " (skip = " << x.skip
+                  << ", max = " << x.max << ")";
     tables::Errorpatterns e;
     tables::Suggestions s;
     tables::Types t;
@@ -119,9 +119,9 @@ Route::Response SearchRoute::search(const Request &req,
   Searcher searcher(*project, x.skip, x.max);
   for (size_t i = 0; i < tokens.size() and searcher.max() > 0; i++) {
     const auto matches = searcher.find(tokens[i]);
-    CROW_LOG_DEBUG << "(SearchRoute::search) found " << matches.matches.size()
-                   << " matches for q='" << tokens[i] << "' (skip = " << x.skip
-                   << ", max = " << x.max << ")";
+    CROW_LOG_INFO << "(SearchRoute::search) found " << matches.matches.size()
+                  << " matches for q='" << tokens[i] << "' (skip = " << x.skip
+                  << ", max = " << x.max << ")";
     add_matches(json, matches, tokens[i], true);
     totalCount += matches.totalCount;
   }
