@@ -1,7 +1,7 @@
 
     <div class="card" id="sidebar-container">
 
-	
+
 
 		<ul class="nav  navbar-light justify-content-center" style="margin-top: 15px;">
 		<li class="nav-item js-firstpage"><a class="nav-link" href="#" title="go to first page">
@@ -13,14 +13,14 @@
 
 		<li>
     	<div class="dropdown js-page-dropdown">
-    		<div class="btn-group" style="margin-top: 3px;"> 
+    		<div class="btn-group" style="margin-top: 3px;">
 
 		<button id="pageId" type="button" class="btn btn-sm btn-outline-primary"> Page <%-pageId%></button>
 		<button id="pageDP"  type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <i class="dp_icon fas fa-sort-down"></i>
   </button>
 		<div class="dropdown-menu dropdown-menu-right js-page-dropdown-content" aria-labelledby="pageDP">
-   			 <% _.each(project.get('pageIds'), function(pageId) { %>  
+   			 <% _.each(project.get('pageIds'), function(pageId) { %>
    			   <a class="js-page-link dropdown-item" pid="<%-project.get('projectId')%>" pageid="<%-pageId%>"><%-pageId%></a>
 
    			<% }); %>
@@ -37,14 +37,14 @@
         </div>
     </li> -->
 	<!-- error-tokens -->
-	<!-- <li class="nav-item dropdown"> 
+	<!-- <li class="nav-item dropdown">
 	<a href="#" class="dropdown-toggle nav-link" id="pcw-error-tokens-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-flip="false" data-target="#pcw-error-tokens-dropdown">
 		Error tokens<span class="caret"></span></a>
 		 <div class="dropdown-menu scrollable-menu" id="pcw-error-tokens-dropdown" aria-labelledby="pcw-error-tokens-link">
         </div>
      </li> -->
 
-   
+
 
 	<!--nextpage and last page -->
 		<li class="nav-item js-stepforward"><a class="nav-link"  href="#" title="go to next page #<%-nextPageId%>">
@@ -89,7 +89,7 @@
 		      </tr>
 		    </thead>
 		    <tbody>
-		    
+
 		    </tbody>
 		  </table>
 		</div>
@@ -114,7 +114,7 @@
 		      </tr>
 		    </thead>
 		    <tbody>
-		    
+
 		    </tbody>
 		  </table>
 	</div>
@@ -122,7 +122,7 @@
 
  </div>
   <div class="tab-pane fade" id="chars" role="tabpanel" aria-labelledby="chars-tab">
-	  	
+
 	<div id="special-characters-container" class="sidebar-table-container">
 			   	<div class="loading_background2">
 		         <div class="loading_text_parent">
@@ -135,18 +135,18 @@
 			   <table class="table special-characters table-hover table-sm">
 			    <thead>
 			      <tr>
-			        <th>Word</th>
+			        <th>Character</th>
 			        <th>Count</th>
 			      </tr>
 			    </thead>
 			    <tbody>
-			    
+
 			    </tbody>
 			  </table>
 		</div>
 
   </div>
-  
+
 </div>
-	
+
 </div>
