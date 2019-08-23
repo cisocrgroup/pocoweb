@@ -49,22 +49,27 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         var that = this;
 
           $('.concLine').each(function(){
-
+            console.log(this);
              var cordiv_left = $(this).find('.cordiv_left');
-             if(cordiv_left.find('i').hasClass('fa-check-square')){
-
-              var tokendiv = cordiv_left.parent();
-
-              var pid = tokendiv.attr('projectId');
-              var lineid =  tokendiv.attr('lineId');
-              var pageid =  tokendiv.attr('pageId');
-              var offset =  tokendiv.attr('offset');
-
-              var token  = tokendiv.text().trim();
-              var anchor = $(this).attr('anchor');
-              // console.log({pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token});
-              that.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:offset,token:token},anchor);
-
+            console.log(cordiv_left)
+            if(cordiv_left.find('i').hasClass('fa-check-square')){
+              var anchor = $(this).anchor;
+              cordiv_left.parent().each(function(i, tokendiv) {
+                console.log(tokendiv);
+                console.log(tokendiv.textContent);
+                var pid = tokendiv.attributes.projectid.value;
+                var pageid = tokendiv.attributes.pageid.value;
+                var lineid = tokendiv.attributes.lineid.value;
+                var offset = tokendiv.attributes.offset.value;
+                var token  = tokendiv.textContent.trim();
+                console.log({pid:pid,page_id:pageid,line_id:lineid,token_id:offset,token:token});
+                that.trigger("concordance:correct_token",{
+                  pid:pid,
+                  page_id:pageid,
+                  line_id:lineid,
+                  token_id:offset,
+                  token:token}, anchor);
+              });
             }
           });
 
