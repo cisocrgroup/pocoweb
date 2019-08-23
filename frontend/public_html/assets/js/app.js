@@ -68,17 +68,17 @@ App.clearCurrentUser = function() {
 };
 
 App.setLineHeight = function(id,val){
-  var data = JSON.parse(localStorage.getItem('pcw'));
+  var data = JSON.parse(localStorage.getItem('pcw_options'));
     if(data.lineHeights==null){
       data.lineHeights = {};
     }
 
   data.lineHeights[id] = val;
-  localStorage.setItem('pcw', JSON.stringify(data));
+  localStorage.setItem('pcw_options', JSON.stringify(data));
 };
 
 App.getLineHeight = function(id){
-  var data = JSON.parse(localStorage.getItem('pcw'));
+  var data = JSON.parse(localStorage.getItem('pcw_options'));
     if(data.lineHeights!=null&&data.lineHeights[id]!=undefined){
       return data.lineHeights[id];
     }
@@ -86,17 +86,17 @@ App.getLineHeight = function(id){
 };
 
 App.setLineNumbers = function(id,val){
-  var data = JSON.parse(localStorage.getItem('pcw'));
+  var data = JSON.parse(localStorage.getItem('pcw_options'));
     if(data.lineNumbers==null){
       data.lineNumbers = {};
     }
 
   data.lineNumbers[id] = val;
-  localStorage.setItem('pcw', JSON.stringify(data));
+  localStorage.setItem('pcw_options', JSON.stringify(data));
 };
 
 App.getLineNumbers = function(id){
-  var data = JSON.parse(localStorage.getItem('pcw'));
+  var data = JSON.parse(localStorage.getItem('pcw_options'));
     if(data.lineNumbers!=null&&data.lineNumbers[id]!=undefined){
       return data.lineNumbers[id];
     }
@@ -112,6 +112,12 @@ App.getCharmapFilter = function() {
 
 App.on("start", function(){
 
+    // init options
+    if (localStorage.getItem('pcw_options') === null) {
+      var options = {lineHeights:{},lineNumbers:{}};
+      console.log(options);
+        localStorage.setItem('pcw_options',JSON.stringify(options));
+    }
 
     if(Backbone.history){
        require([
@@ -214,9 +220,10 @@ App.on("start", function(){
 
      HeaderApp.API.showHeader(function(){
        FooterApp.API.showFooter();
-        Backbone.history.start();
+       Backbone.history.start();
 
        if(App.getCurrentRoute() === ""){
+       
           App.trigger("home:portal");
 
        }

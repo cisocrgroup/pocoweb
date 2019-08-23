@@ -16,13 +16,13 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
     			  var fetchingpage = ProjectEntities.API.getPage({pid:id, page:page_id});
            var fetchingproject = ProjectEntities.API.getProject({pid:id});
-           var fetchinglineheight = App.getLineHeight(id);
-           var fetchinglinenumbers = App.getLineNumbers(id);
 
-        	 $.when(fetchingpage,fetchingproject,fetchinglineheight,fetchinglinenumbers).done(function(page,project,lineheight,linenumbers){
+        	 $.when(fetchingpage,fetchingproject).done(function(page,project){
 
 		     	loadingCircleView.destroy();
             console.log(page);
+           var lineheight = App.getLineHeight(id);
+           var linenumbers = App.getLineNumbers(id);
 
 			var projectShowLayout = new Show.Layout();
 			var projectShowHeader;
