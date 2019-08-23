@@ -67,6 +67,42 @@ App.clearCurrentUser = function() {
   localStorage.removeItem('pcw');
 };
 
+App.setLineHeight = function(id,val){
+  var data = JSON.parse(localStorage.getItem('pcw'));
+    if(data.lineHeights==null){
+      data.lineHeights = {};
+    }
+
+  data.lineHeights[id] = val;
+  localStorage.setItem('pcw', JSON.stringify(data));
+};
+
+App.getLineHeight = function(id){
+  var data = JSON.parse(localStorage.getItem('pcw'));
+    if(data.lineHeights!=null&&data.lineHeights[id]!=undefined){
+      return data.lineHeights[id];
+    }
+    return 30;
+};
+
+App.setLineNumbers = function(id,val){
+  var data = JSON.parse(localStorage.getItem('pcw'));
+    if(data.lineNumbers==null){
+      data.lineNumbers = {};
+    }
+
+  data.lineNumbers[id] = val;
+  localStorage.setItem('pcw', JSON.stringify(data));
+};
+
+App.getLineNumbers = function(id){
+  var data = JSON.parse(localStorage.getItem('pcw'));
+    if(data.lineNumbers!=null&&data.lineNumbers[id]!=undefined){
+      return data.lineNumbers[id];
+    }
+    return true;
+};
+
 App.getCharmapFilter = function() {
    return"abcdefghijklmnopqrstuvwxyz" +
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +

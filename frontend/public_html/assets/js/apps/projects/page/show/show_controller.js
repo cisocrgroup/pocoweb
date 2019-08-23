@@ -16,8 +16,10 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
     			  var fetchingpage = ProjectEntities.API.getPage({pid:id, page:page_id});
            var fetchingproject = ProjectEntities.API.getProject({pid:id});
+           var fetchinglineheight = App.getLineHeight(id);
+           var fetchinglinenumbers = App.getLineNumbers(id);
 
-        	 $.when(fetchingpage,fetchingproject).done(function(page,project){
+        	 $.when(fetchingpage,fetchingproject,fetchinglineheight,fetchinglinenumbers).done(function(page,project,lineheight,linenumbers){
 
 		     	loadingCircleView.destroy();
             console.log(page);
@@ -34,7 +36,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         var fetchingsuspiciouswords = ProjectEntities.API.getSuspiciousWords({pid:id});
         var fetchingerrorpatterns = ProjectEntities.API.getErrorPatterns({pid:id});
         var fetchingcharmap = ProjectEntities.API.getCharmap({pid:id});
-
            $.when(fetchingsuspiciouswords,fetchingerrorpatterns,fetchingcharmap).done(function(suspicious_words,error_patterns,charmap){
 
             var suspicious_words_array = [];
@@ -121,7 +122,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
 			  projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
-        projectShowPage = new Show.Page({model:page});
+        console.log(lineheight)
+        projectShowPage = new Show.Page({model:page,lineheight:lineheight,linenumbers:linenumbers});
 			  projectShowSidebar = new Show.Sidebar({model:page,project:project});
       	projectShowFooterPanel = new Show.FooterPanel();
 
@@ -141,13 +143,17 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
        });
        projectShowSidebar.on("page:new",function(page_id){
         console.log(id)
+                    var fetchinglineheight = App.getLineHeight(id);
+                    var fetchinglinenumbers = App.getLineNumbers(id);
                     var fetchingnewpage = ProjectEntities.API.getPage({pid:id, page:page_id});
-                  $.when(fetchingnewpage).done(function(new_page){
+                  $.when(fetchingnewpage,fetchinglineheight,fetchinglinenumbers).done(function(new_page,lineheight,linenumbers){
                     console.log("NEW page")
                     console.log(new_page)
                      new_page.attributes.title = project.get('title');
+                      projectShowPage.model=new_page;
+                      projectShowPage.options.lineheight=lineheight;
+                      projectShowPage.options.linenumbers=linenumbers;
 
-                      projectShowPage.model=new_page
                       projectShowPage.render();
                       projectShowSidebar.model = new_page;
                       $('#pageId').text('Page '+new_page.get('pageId'))
@@ -322,6 +328,14 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
               });
 
         });
+
+          projectShowPage.on("page:update_line_height",function(value){
+            App.setLineHeight(id,value);
+          });
+
+          projectShowPage.on("page:update_line_numbers",function(value){
+            App.setLineNumbers(id,value);
+          });
 
 
           projectShowFooterPanel.on("go:back",function(){

@@ -194,6 +194,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
       serializeData: function(){
       var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+          data.lineheight = Backbone.Marionette.getOption(this,'lineheight');
           data.Util = Util;
 
         return data;
@@ -365,35 +366,6 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
           });
 
-         var slider = document.getElementById("line_size_slider");
-         
-
-            slider.oninput = function() {
-              $('.line-img > img').height(this.value);
-               $('.line-tokens').empty();
-
-                $('.line-img').each(function(index){
-                  var img = $(this);
-
-                      var line = that.model.get('lines')[index];
-                      if(line!=undefined){
-                        Util.addAlignedLine(line);
-                      }
-                  
-               });
-
-            }
-
-
-             $('#line_nr_toggle').change(function() {
-
-                 $('.line-nr').toggle();
-                // if($(this).is(":checked")) {
-                //     var returnVal = confirm("Are you sure?");
-                //     $(this).attr("checked", returnVal);
-                // }
-                // $('#textbox1').val($(this).is(':checked'));        
-            });
 
 
 
@@ -437,6 +409,54 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         // });
 
         */
+
+        var lineheight = Backbone.Marionette.getOption(this,'lineheight');
+
+         var slider = document.getElementById("line_size_slider");
+         
+         $('#line_size_slider').val(lineheight);
+
+            slider.oninput = function() {
+              $('.line-img > img').height(this.value);
+               $('.line-tokens').empty();
+
+                $('.line-img').each(function(index){
+                  var img = $(this);
+
+                      var line = that.model.get('lines')[index];
+                      if(line!=undefined){
+                        Util.addAlignedLine(line);
+                      }
+                  
+               });
+
+                that.trigger("page:update_line_height",this.value);
+
+            }
+             var linenumbers = Backbone.Marionette.getOption(this,'linenumbers');
+              if(linenumbers){
+                $('#line_nr_toggle').val(this.checked);
+                $('.line-nr').show();   
+              }
+              else{
+                $('#line_nr_toggle').prop( "checked", false );
+                $('.line-nr').hide();   
+
+              }
+
+             $('#line_nr_toggle').change(function() {
+
+                   if(this.checked) {
+                    linenumbers=true;
+                  }
+                  else {
+                    linenumbers=false;
+                  }
+                   $('.line-nr').toggle();          
+
+                  that.trigger("page:update_line_numbers",linenumbers);
+
+            });
 
       },
       openCustomPopover:function(e,sel,parent_div){
