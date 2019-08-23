@@ -171,7 +171,7 @@ int DbLine::tokenLength(int begin) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbLine::begin_wagner_fischer(size_t b, size_t e) {
-  // std::cerr << "DbLine::begin_wagner_fischer(" << b << "," << e << ")\n";
+  std::cerr << "DbLine::begin_wagner_fischer(" << b << "," << e << ")\n";
   e = std::min(e, line.size());
   assert(b <= line.size());
   assert(e <= line.size());
@@ -191,7 +191,7 @@ void DbLine::begin_wagner_fischer(size_t b, size_t e) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbLine::set(size_t i, wchar_t c) {
-  // std::cerr << "DbLine::set(" << i << "," << char(c) << ")\n";
+  std::cerr << "DbLine::set(" << i << "," << char(c) << ")\n";
   const auto ii = i + offset_;
   assert(ii < line.size());
   line[ii].cor = c;
@@ -201,12 +201,14 @@ void DbLine::set(size_t i, wchar_t c) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbLine::insert(size_t i, wchar_t c) {
-  // std::cerr << "DbLine::insert(" << i << "," << char(c) << ")\n";
+  std::cerr << "DbLine::insert(" << i << "," << char(c) << ")\n";
   const auto ii = i + offset_;
   assert(ii <= line.size());
   const auto left = ii > 0 ? line[ii - 1].cut : box.left();
   const auto right = ii == line.size() ? box.right() : line[ii + 1].cut;
-  const auto cut = (right - left) / 2;
+  const auto cut = left + ((right - left) / 2);
+  std::cerr << "left cut: " << left << ", right cut: " << right
+            << ", cut: " << cut << "\n";
   if (ii == line.size()) { // insertion at the end
     line.push_back(DbChar{0, c, 1, cut});
   } else {
@@ -219,7 +221,7 @@ void DbLine::insert(size_t i, wchar_t c) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbLine::erase(size_t i) {
-  // std::cerr << "DbLine::erase(" << i << ")\n";
+  std::cerr << "DbLine::erase(" << i << ")\n";
   const auto ii = i + offset_;
   assert(ii < line.size());
   line[ii].cor = DbChar::DEL;
@@ -230,7 +232,7 @@ void DbLine::erase(size_t i) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbLine::noop(size_t i) {
-  // std::cerr << "DbLine::noop(" << i << ")\n";
+  std::cerr << "DbLine::noop(" << i << ")\n";
   const auto ii = i + offset_;
   assert(ii < line.size());
   // Noop means that the ocr char is correct.
