@@ -8,6 +8,19 @@
 #define LINE_ROUTE_ROUTE "/books/<int>/pages/<int>/lines/<int>"
 #define WORD_ROUTE_ROUTE "/books/<int>/pages/<int>/lines/<int>/tokens/<int>"
 
+using lock_set = std::set<std::tuple<int, int, int>>;
+static std::mutex LOCK;
+static lock_set ID_SET;
+
+struct line_lock_guard {
+  line_lock_guard(int bid, int pid, int lid, std::mutex &lock,
+                  lock_set &id_locks);
+  ~line_lock_guard();
+  std::tuple<int, int, int> t_;
+  std::mutex &lock_;
+  lock_set &id_locks_;
+};
+
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,6 +61,8 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   if (not correction) {
     THROW(BadRequest, "(LineRoute) missing correction data");
   }
+  // make shure that we can uniquely edit this line
+  line_lock_guard lock(pid, p, lid, LOCK, ID_SET);
   DbLine line(pid, p, lid);
   auto conn = must_get_connection();
   if (not line.load(conn)) {
@@ -119,6 +134,8 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   if (not correction) {
     THROW(BadRequest, "(LineRoute) missing correction data");
   }
+  // make shure that we can uniquely edit this line
+  line_lock_guard lock(pid, p, lid, LOCK, ID_SET);
   auto conn = must_get_connection();
   DbLine line{pid, p, lid};
   if (not line.load(conn)) {
@@ -193,4 +210,26 @@ void LineRoute::update(MysqlConnection &mysql, const DbLine &line) {
     mysql.db()(stmnt);
   }
   committer.commit();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+line_lock_guard::line_lock_guard(int bid, int pid, int lid, std::mutex &lock,
+                                 lock_set &id_locks)
+    : t_(std::make_tuple(bid, pid, lid)), lock_(lock), id_locks_(id_locks) {
+  /* spin lock */
+  while (true) {
+    std::lock_guard<std::mutex> lock(lock_);
+    if (not id_locks_.count(t_)) {
+      id_locks_.insert(t_);
+      break;
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+line_lock_guard::~line_lock_guard() {
+  std::lock_guard<std::mutex> lock(lock_);
+  auto i = id_locks_.find(t_);
+  assert(i != id_locks_.end());
+  id_locks_.erase(i);
 }
