@@ -15,7 +15,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
     			  var fetchingpage = ProjectEntities.API.getPage({pid:id, page:page_id});
-           var fetchingproject = ProjectEntities.API.getProject({pid:id});
+            var fetchingproject = ProjectEntities.API.getProject({pid:id});
 
         	 $.when(fetchingpage,fetchingproject).done(function(page,project){
 
@@ -44,7 +44,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             }
 
             var sp_table = $('.suspicious-words').DataTable({
-                 "scrollY": "560px",
+                 "scrollY": "616px",
                   "data":suspicious_words_array,
                   "info":false,
                   "paging": false,
@@ -70,7 +70,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             }
 
              var ep_table = $('.error-patterns').DataTable({
-                  "scrollY": "560px",
+                  "scrollY": "616px",
                   "data":error_patterns_array,
                   "info":false,
                   "paging": false,
@@ -96,7 +96,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 				   data.push([key, charmap.charMap[key]]);
 			   }
              var char_table = $('.special-characters').DataTable({
-                  "scrollY": "560px",
+                  "scrollY": "616px",
                   "data": data,//[],//[["a",10],["b",10],["c",10]],
                   "info":false,
                   "paging": false,
@@ -248,7 +248,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
          $.when(searchingToken).done(function(tokens){
           console.log(tokens)
 
-           var projectConcView = new Show.Concordance({isErrorPattern:isErrorPattern,selection:selection,tokendata:tokens,asModal:true});
+          var lineheight = App.getLineHeight(id);
+
+           var projectConcView = new Show.Concordance({isErrorPattern:isErrorPattern,selection:selection,tokendata:tokens,lineheight:lineheight,asModal:true});
            $('.custom-popover').remove();
 
             projectConcView.on("concordance:correct_token",function(data,anchor){

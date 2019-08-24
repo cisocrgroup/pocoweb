@@ -88,7 +88,7 @@ if(asModal) {
 	<!-- if ($images["leftImg"] != NULL) { -->
 		<div class="invisible=link" href="<%-link%>">
     <div id ="img_<%-line['pageId']%>_<%-line['lineId']%>_parent" class="line-img">
-		<img src="<%-line['imgFile']%>" id="img_<%-line['pageId']%>_<%-line['lineId']%>" width="auto" height="25"/>
+		<img src="<%-line['imgFile']%>" id="img_<%-line['pageId']%>_<%-line['lineId']%>" width="auto" height="<%-lineheight%>"/>
     </div>
 
 		</div>

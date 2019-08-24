@@ -661,7 +661,9 @@ outline: 0;
 }
 
 
-
+#sidebar-container{
+  height: 834px;
+}
 
 #page-container{
     height: 770px;

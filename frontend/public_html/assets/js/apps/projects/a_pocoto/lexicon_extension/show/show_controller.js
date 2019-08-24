@@ -59,8 +59,27 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                         var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:true});
 
                         $.when(searchingToken).done(function(tokens){
+                        var lineheight = App.getLineHeight(id);
 
-                        var projectConcView = new Show.Concordance({selection:word,tokendata:tokens,asModal:true,le:true});
+                        var projectConcView = new Show.Concordance({selection:word,tokendata:tokens,asModal:true,le:true,lineheight:lineheight});
+
+                         projectConcView.on("concordance:pagination",function(page_nr){
+                                 var max = 9;
+                                 var searchingToken = ProjectEntities.API.searchToken({
+                                   q: selection,
+                                   pid: id,
+                                   isErrorPattern: isErrorPattern,
+                                   skip: (page_nr-1)*max,
+                                   max: max
+                                 });
+                                 var that = this;
+                                 $.when(searchingToken).done(function(tokens){
+                                   that.options.tokendata = tokens;
+                                   that.setImages(max);
+                                   that.setContent(false);
+                                 });
+                           });
+
                         App.mainLayout.showChildView('dialogRegion',projectConcView);
 
                        });

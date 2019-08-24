@@ -35,6 +35,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           data.suggestions =  Marionette.getOption(this,"suggestions");
           data.selection =  Marionette.getOption(this,"selection");
           data.le =  Marionette.getOption(this,"le");
+          data.lineheight =  Marionette.getOption(this,"lineheight");
 
           data.Util = Util;
           data.asModal = asModal;
@@ -389,6 +390,8 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
      $('.all_lines_parent').empty(); // remove alle lines and images
      var tokendata =  Marionette.getOption(that,"tokendata");
+     var lineheight =  Marionette.getOption(that,"lineheight");
+
      let nmatches=0;
 
    for (key in tokendata['matches']) {
@@ -409,7 +412,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         var invisible_link = $('<div class="invisible=link" href="'+link+'">');
 
         var line_img = $('<div id ="img_'+line['pageId']+'_'+line['lineId']+'_parent" class="line-img">');
-        var img = $('<img src="'+line['imgFile']+'" id="img_'+line['pageId']+'_'+line['lineId']+'" width="auto" height="25"/>');
+        var img = $('<img src="'+line['imgFile']+'" id="img_'+line['pageId']+'_'+line['lineId']+'" width="auto" height='+lineheight+'/>');
 
         left_div.append(invisible_link);
         invisible_link.append(line_img);
