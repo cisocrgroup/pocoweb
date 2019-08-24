@@ -44,7 +44,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             }
 
             var sp_table = $('.suspicious-words').DataTable({
-                 "scrollY": "616px",
+                 "scrollY": "627px",
                   "data":suspicious_words_array,
                   "info":false,
                   "paging": false,
@@ -70,7 +70,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             }
 
              var ep_table = $('.error-patterns').DataTable({
-                  "scrollY": "616px",
+                  "scrollY": "627px",
                   "data":error_patterns_array,
                   "info":false,
                   "paging": false,
@@ -96,7 +96,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 				   data.push([key, charmap.charMap[key]]);
 			   }
              var char_table = $('.special-characters').DataTable({
-                  "scrollY": "616px",
+                  "scrollY": "627px",
                   "data": data,//[],//[["a",10],["b",10],["c",10]],
                   "info":false,
                   "paging": false,
@@ -305,8 +305,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
              projectConcView.on("concordance:pagination",function(page_nr){
                console.log(projectConcView)
                var max = 9;
-               // console.log("function(" + page_nr + "): skip = " +
-               //             ((page_nr-1)*max) + " max = " + max);
                var searchingToken = ProjectEntities.API.searchToken({
                  q: selection,
                  pid: id,
