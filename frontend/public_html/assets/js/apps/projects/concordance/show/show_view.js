@@ -384,17 +384,18 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                      })
      },
 
-  setImages : function(){
+  setImages : function(max){
       var that = this;
 
      $('.all_lines_parent').empty(); // remove alle lines and images
      var tokendata =  Marionette.getOption(that,"tokendata");
+     let nmatches=0;
 
    for (key in tokendata['matches']) {
            for (var i=0;i<tokendata['matches'][key].length;i++){
-
             var match = tokendata['matches'][key][i];
             var line = match['line'];
+             nmatches += match.tokens.length;
 
         _.each(match['tokens'], function(word) {
 
@@ -420,6 +421,18 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           });
         }
       };
+
+      var paginated_item = $('.js-paginate').find('.active').val();
+
+      var to;
+      if(nmatches<max){
+        to = tokendata.totalCount;
+      }
+      else {
+       to = nmatches*paginated_item;
+      }
+
+      $('.concordance-number').text("Showing " + (tokendata.skip+1) + " to " + to +" of " + tokendata.totalCount +" search results");
 
 
   },

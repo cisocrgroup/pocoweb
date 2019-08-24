@@ -105,9 +105,7 @@ if(asModal) {
      	};
      %>
 
-  	   <div class="concordance-number">
-	   		Showing <%-tokendata.skip+1%> to <%-nmatches%> of <%-tokendata.totalCount%> search results
-	   </div>
+  	
 </div>
 
 <%
@@ -115,7 +113,17 @@ if(asModal) {
 %>
 
   <div class="modal-footer">
-      <nav aria-label="Page navigation">
+
+    <div class="col col-md-6">
+
+       <div class="concordance-number" style="margin-bottom: 12px;">
+        Showing <%-tokendata.skip+1%> to <%-nmatches%> of <%-tokendata.totalCount%> search results
+     </div>
+
+   </div>
+    <div class="col col-md-6">
+
+      <nav aria-label="Page navigation" class="float-right">
         <ul class="pagination justify-content-center js-paginate">
           <li value ="-2" class="page-item">
             <a class="page-link" href="">Previous</a>
@@ -147,6 +155,7 @@ if(asModal) {
           </li>
         </ul>
       </nav>
+     </div>
   </div>
 
 <% } %>

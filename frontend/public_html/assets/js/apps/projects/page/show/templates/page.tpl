@@ -41,7 +41,7 @@
 
       %>
       <div class="line-container">
-       <div class="line-nr"> <%-line['lineId']%></div>
+       <div class="line-nr"> <span><%-line['lineId']%></span></div>
        <div class="text-image-line" title="<%-text%>">
 
        	<a class="line-anchor" id="line-anchor-<%-anchor%>"></a>

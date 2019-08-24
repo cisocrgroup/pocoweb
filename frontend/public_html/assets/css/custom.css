@@ -412,7 +412,8 @@ color: #ffc100;
 
 .line-container{
   position: relative;
-    border-bottom:2px solid #eee;
+  border-bottom:2px solid #eee;
+  display: flex;
 
 }
 .line-container:hover {
@@ -434,11 +435,20 @@ position: relative;
 }
 
 .line-nr{
-    display: inline-block;
+     min-width: 31px;
+    display: flex;
     font-size: 1.3em;
     color: #007bff;
     opacity: .9;
     font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    margin-right: 7px;
+    border-right: 1px solid #eeeeee;
+    padding-right: 7px;
+    justify-content: center;
+}
+
+.line-nr > span {
+    align-self: center;
 }
 
 
@@ -612,8 +622,13 @@ outline: 0;
 
   .table-hover{
     cursor: pointer;
+    width: 100% !important;
   }
-
+/* fix datatables bug */
+.dataTables_scrollHeadInner{
+ width: 100% !important;
+ padding: 0;
+}
 .close-x{
   float: right;
   color:rgb(108,117,125);
