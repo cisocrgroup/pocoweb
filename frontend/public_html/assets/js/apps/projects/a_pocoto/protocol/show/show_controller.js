@@ -62,7 +62,10 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
         
                       projectShowProtocol.on("show:word_clicked",function(word){
                       
-                      var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:true});
+
+
+
+                      var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:false,skip:0,max:9});
 
                       $.when(searchingToken).done(function(tokens,suggestions){
                       var lineheight = App.getLineHeight(id);
@@ -97,12 +100,12 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
                             });
 
-                         projectConcView.on("concordance:pagination",function(page_nr){
+                    projectConcView.on("concordance:pagination",function(page_nr){
                                  var max = 9;
                                  var searchingToken = ProjectEntities.API.searchToken({
-                                   q: selection,
+                                   q: word,
                                    pid: id,
-                                   isErrorPattern: isErrorPattern,
+                                   isErrorPattern: false,
                                    skip: (page_nr-1)*max,
                                    max: max
                                  });
@@ -112,8 +115,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                                    that.setImages(max);
                                    that.setContent(false);
                                  });
-                           });
-
+                      });
 
                       App.mainLayout.showChildView('dialogRegion',projectConcView);
 

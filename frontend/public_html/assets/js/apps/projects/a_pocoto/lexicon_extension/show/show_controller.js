@@ -51,12 +51,14 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
               var fetchingle = ProjectEntities.API.getLexiconExtension({pid:id});
                $.when(fetchingle).done(function(le){
+                        le.yes["vnd"] = 31;
+                        le.no["Preiß"] = 1;
                        projectShowLex = new Show.LexiconExtension({le});
                        projectShowLayout.showChildView('contentRegion',projectShowLex);
 
                         projectShowLex.on("show:word_clicked",function(word){
             
-                        var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:true});
+                        var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:false,skip:0,max:9});
 
                         $.when(searchingToken).done(function(tokens){
                         var lineheight = App.getLineHeight(id);
@@ -66,9 +68,9 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                          projectConcView.on("concordance:pagination",function(page_nr){
                                  var max = 9;
                                  var searchingToken = ProjectEntities.API.searchToken({
-                                   q: selection,
+                                   q: word,
                                    pid: id,
-                                   isErrorPattern: isErrorPattern,
+                                   isErrorPattern: false,
                                    skip: (page_nr-1)*max,
                                    max: max
                                  });

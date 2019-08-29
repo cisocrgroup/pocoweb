@@ -80,12 +80,11 @@ if(asModal) {
         var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];
    %>
 
-<div class="line-container">
+<!-- <div class="line-container">
 
 <div class="text-image-line" title="page <%-line.pageId%> line <%-line.lineId%>">
 
 <div class="left_div div_inline">
-	<!-- if ($images["leftImg"] != NULL) { -->
 		<div class="invisible=link" href="<%-link%>">
     <div id ="img_<%-line['pageId']%>_<%-line['lineId']%>_parent" class="line-img">
 		<img src="<%-line['imgFile']%>" id="img_<%-line['pageId']%>_<%-line['lineId']%>" width="auto" height="<%-lineheight%>"/>
@@ -96,8 +95,7 @@ if(asModal) {
 
 	</div>
 
- </div>
-
+ </div> -->
 
      <%
      	  	});

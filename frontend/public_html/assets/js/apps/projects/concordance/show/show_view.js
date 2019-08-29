@@ -414,6 +414,13 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         var line_img = $('<div id ="img_'+line['pageId']+'_'+line['lineId']+'_parent" class="line-img">');
         var img = $('<img src="'+line['imgFile']+'" id="img_'+line['pageId']+'_'+line['lineId']+'" width="auto" height='+lineheight+'/>');
 
+        console.log($("#img_"+line['pageId']+"_"+line['lineId']).length);
+
+        if ($("#img_"+line['pageId']+"_"+line['lineId']).length!=0) {
+          return; 
+        }
+
+
         left_div.append(invisible_link);
         invisible_link.append(line_img);
         invisible_link.append(img);
@@ -652,6 +659,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
 
 
+        this.setImages(9); // insert Concordance Content
         this.setContent(true); // insert Concordance Content
 
 
