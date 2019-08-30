@@ -55,6 +55,7 @@ struct DbLine {
       : line(), imagepath(), box(), bookid(), projectid(pid), pageid(pageid),
         lineid(lid), offset_() {}
   bool load(MysqlConnection &mysql);
+
   // slices
   void each_token(std::function<void(const DbSlice &)> f) const;
   DbSlice slice() const { return slice(0, line.size()); }
