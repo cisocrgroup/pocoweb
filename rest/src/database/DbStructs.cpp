@@ -113,7 +113,7 @@ bool DbLine::load(MysqlConnection &mysql) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void DbLine::each_token(std::function<void(const DbSlice &)> f) const {
+void DbLine::each_token(std::function<void(DbSlice &)> f) const {
   auto nospace = [](const auto &c) { return not std::iswspace(c.get_cor()); };
   auto isspace = [](const auto &c) { return std::iswspace(c.get_cor()); };
   auto e = line.end();
@@ -314,6 +314,7 @@ pcw::Json &pcw::operator<<(Json &j, const DbSlice &slice) {
   j["averageConfidence"] = fix_double(slice.average_conf());
   j["isFullyCorrected"] = slice.is_fully_corrected();
   j["isPartiallyCorrected"] = slice.is_partially_corrected();
+  j["match"] = slice.match;
   return j;
 }
 

@@ -46,6 +46,7 @@ struct DbSlice {
   int bookid, projectid, pageid, lineid, offset;
   std::vector<DbChar>::const_iterator begin, end;
   Box box;
+  bool match;
 };
 
 Json &operator<<(Json &j, const DbSlice &line);
@@ -57,7 +58,7 @@ struct DbLine {
   bool load(MysqlConnection &mysql);
 
   // slices
-  void each_token(std::function<void(const DbSlice &)> f) const;
+  void each_token(std::function<void(DbSlice &)> f) const;
   DbSlice slice() const { return slice(0, line.size()); }
   DbSlice slice(int begin, int len) const;
   int tokenLength(int begin) const;
