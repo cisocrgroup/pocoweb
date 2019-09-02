@@ -102,30 +102,8 @@ void App::log(const Route &route) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-int App::version() noexcept {
-  return (100 * 100 * PCW_API_VERSION_MAJOR) + (100 * PCW_API_VERSION_MINOR) +
-         (1 * PCW_API_VERSION_PATCH);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-int App::version_major() noexcept { return PCW_API_VERSION_MAJOR; }
-
-////////////////////////////////////////////////////////////////////////////////
-int App::version_minor() noexcept { return PCW_API_VERSION_MINOR; }
-
-////////////////////////////////////////////////////////////////////////////////
-int App::version_patch() noexcept { return PCW_API_VERSION_PATCH; }
-
-////////////////////////////////////////////////////////////////////////////////
 const char *App::version_str() noexcept {
 #define QQUOTE(x) #x
 #define QUOTE(x) QQUOTE(x)
-
-#define PCW_API_VERSION_STR                                                    \
-  QUOTE(PCW_API_VERSION_MAJOR)                                                 \
-  "." QUOTE(PCW_API_VERSION_MINOR) "." QUOTE(PCW_API_VERSION_PATCH)
-  return PCW_API_VERSION_STR;
-#undef QQUOTE
-#undef QUOTE
-#undef PCW_API_VERSION_STR
+  return QUOTE(PCW_API_VERSION);
 }

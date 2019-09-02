@@ -1,13 +1,11 @@
-PCW_API_VERSION_MAJOR := 0
-PCW_API_VERSION_MINOR := 9
-PCW_API_VERSION_PATCH := 7
+PCW_API_VERSION := "0.9.7"
 
 V ?= @
 C ?= yes
 DESTDIR ?=
 PREFIX ?= /usr/local
-BINDIR := $(DESTDIR)/$(PREFIX)/bin
-LIBDIR := $(DESTDIR)/$(PREFIX)/lib
+BINDIR := $(DESTDIR)$(PREFIX)/bin
+ETCDIR := $(DESTDIR)/etc
 
 CXX ?= g++
 
@@ -28,9 +26,7 @@ CXXFLAGS += -isystem modules/date/include
 CXXFLAGS += -isystem modules/crow/include
 CXXFLAGS += -isystem modules/utfcpp/source
 CXXFLAGS += -isystem modules/pugixml/src
-CXXFLAGS += -DPCW_API_VERSION_MAJOR=$(PCW_API_VERSION_MAJOR)
-CXXFLAGS += -DPCW_API_VERSION_MINOR=$(PCW_API_VERSION_MINOR)
-CXXFLAGS += -DPCW_API_VERSION_PATCH=$(PCW_API_VERSION_PATCH)
+CXXFLAGS += -DPCW_API_VERSION=$(PCW_API_VERSION)
 CXXFLAGS += -DPCW_DESTDIR=$(DESTDIR)
 
 LDFLAGS += -Llib
@@ -88,7 +84,6 @@ dbg-%:; @echo $*: ${$*}
 # 	@echo "FPIC := $(FPIC)" >> $@
 # 	@echo "PREFIX := $(PREFIX)" >> $@
 # 	@echo "BINDIR := $(BINDIR)" >> $@
-# 	@echo "LIBDIR := $(LIBDIR)" >> $@
 # 	@echo "DESTDIR := $(DESTDIR)" >> $@
 # 	@echo "PCW_DB_HOST := $(PCW_DB_HOST)" >> $@
 # 	@echo "PCW_DB_USER := $(PCW_DB_USER)" >> $@
