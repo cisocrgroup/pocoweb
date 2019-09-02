@@ -75,10 +75,10 @@ db/tables.sql.tmp: db/tables.sql
 		 -e '/--/d' $< > $@
 
 
-install: pcwd
+install: pcwd db/tables.sql
 	$(call install pcwd)
-	$V install -d $(BINDIR)
-	$V install -m 751 $< $(BINDIR)/pcwd
+	$V install -D -m 751 $< $(BINDIR)/pcwd
+	$V install -D -m 644 db/tables.sql $(ETCDIR)/pcwd.sql
 
 DEPS += $(patsubst %.o,%.d,$(CORE_OBJS) $(API_OBJS) $(PARSER_OBJS) $(PROFILER_OBJS) $(PUGI_OBJS))
 DEPS += $(patsubst %,%.d,$(MAINS))

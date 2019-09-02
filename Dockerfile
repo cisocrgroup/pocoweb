@@ -20,10 +20,9 @@ RUN cd /build \
 FROM libs as backend
 VOLUME /project-data /www-data /tmp
 COPY rest /build/rest
+COPY db /build/db
 RUN cd /build \
-	&& make CXX=clang++ -j $(nproc) \
-	&& mkdir /apps/ \
-	&& cp pcwd /apps/pocoweb \
+	&& make V='' CXX=clang++ -j $(nproc) install \
 	&& cd / \
 	&& rm -rf /build
 
@@ -37,7 +36,7 @@ RUN cd /build \
 
 FROM frontend as RUN
 #	-dsn "${MYSQL_USER}:${MYSQL_PASSWORD}@(db)/${MYSQL_DATABASE}" \
-COPY db/tables.sql misc/scripts/startup.sh /apps/
+COPY misc/scripts/startup.sh /apps/
 CMD bash /apps/startup.sh \
 	-m db \
 	-p $MYSQL_PASSWORD \

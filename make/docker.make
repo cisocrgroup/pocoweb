@@ -1,5 +1,4 @@
 PCW_SRV_DIR ?= /srv/pocoweb
-SUDO ?= sudo
 TAG ?= flobar/pocoweb
 ifeq (, ${shell which git})
 TAGS := latest
@@ -9,15 +8,15 @@ endif
 
 .PHONY: docker-build
 docker-build: Dockerfile
-	${SUDO} docker build ${addprefix -t,${TAGS}} .
+	docker build ${addprefix -t,${TAGS}} .
 
 .PHONY: docker-run
 docker-run: docker-build
-	${SUDO} docker run $(TAG) #-p 0:80 ${TAG}
+	docker run $(TAG) #-p 0:80 ${TAG}
 
 .PHONY: docker-push
 docker-push: docker-build
-	for t in ${TAGS}; do ${SUDO} docker push $$t; done
+	for t in ${TAGS}; do docker push $$t; done
 
 .PHONY: services-push
 services-push:
@@ -25,12 +24,12 @@ services-push:
 
 .PHONY: docker-compose-build
 docker-compose-build:
-	cd misc/docker && ${SUDO} PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose build
+	cd misc/docker && PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose build
 
 .PHONY: docker-compose-pull
 docker-compose-pull:
-	cd misc/docker && ${SUDO} PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose pull
+	cd misc/docker && PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose pull
 
 .PHONY: docker-deploy
 docker-deploy: docker-push services-push docker-compose-pull docker-compose-build
-	cd misc/docker && ${SUDO} PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose up
+	cd misc/docker && PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose up
