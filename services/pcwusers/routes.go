@@ -13,14 +13,20 @@ import (
 )
 
 type server struct {
-	pool *sql.DB
+	router *http.ServeMux
+	pool   *sql.DB
+}
+
+func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	s.router.ServeHTTP(w, r)
 }
 
 func (s *server) routes() {
-	http.HandleFunc("/users", service.WithLog(service.WithMethods(
+	s.router = http.DefaultServeMux
+	s.router.HandleFunc("/users", service.WithLog(service.WithMethods(
 		http.MethodPost, s.withPostUser(s.postUser()),
 		http.MethodGet, s.getAllUsers())))
-	http.HandleFunc("/users/", service.WithLog(service.WithMethods(
+	s.router.HandleFunc("/users/", service.WithLog(service.WithMethods(
 		http.MethodGet, service.WithIDs(s.getUser(), "users"),
 		http.MethodPut, s.withPostUser(service.WithIDs(s.putUser(), "users")),
 		http.MethodDelete, service.WithIDs(s.deleteUser(), "users"))))

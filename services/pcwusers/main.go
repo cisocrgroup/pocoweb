@@ -43,12 +43,12 @@ func main() {
 	// database
 	must(service.Init(dsn))
 	defer service.Close()
-	s := server{service.Pool().(*sql.DB)}
+	s := server{pool: service.Pool().(*sql.DB)}
 	// root
 	if root.Name != "" && root.Email != "" && pass != "" {
 		must(s.insertRoot(root, pass))
 	}
 	s.routes()
 	log.Infof("listening on %s", listen)
-	must(http.ListenAndServe(listen, nil))
+	must(http.ListenAndServe(listen, &s))
 }
