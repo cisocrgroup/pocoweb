@@ -24,4 +24,5 @@ tests.log
 profile-tmp.xml
 TAGS
 cover.out
-pcw*
+# ignore executable microservice files
+services/pcw*/pcw*
