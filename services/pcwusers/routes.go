@@ -24,12 +24,12 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s *server) routes() {
 	s.router = http.DefaultServeMux
 	s.router.HandleFunc("/users", service.WithLog(service.WithMethods(
-		http.MethodPost, s.withPostUser(s.postUser()),
-		http.MethodGet, s.getAllUsers())))
+		http.MethodPost, s.withPostUser(s.handlePostUser()),
+		http.MethodGet, s.handleGetAllUsers())))
 	s.router.HandleFunc("/users/", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithIDs(s.getUser(), "users"),
-		http.MethodPut, s.withPostUser(service.WithIDs(s.putUser(), "users")),
-		http.MethodDelete, service.WithIDs(s.deleteUser(), "users"))))
+		http.MethodGet, service.WithIDs(s.handleGetUser(), "users"),
+		http.MethodPut, s.withPostUser(service.WithIDs(s.handlePutUser(), "users")),
+		http.MethodDelete, service.WithIDs(s.handleDeleteUser(), "users"))))
 }
 
 func (s *server) withPostUser(f service.HandlerFunc) service.HandlerFunc {
@@ -46,7 +46,7 @@ func (s *server) withPostUser(f service.HandlerFunc) service.HandlerFunc {
 	}
 }
 
-func (s *server) postUser() service.HandlerFunc {
+func (s *server) handlePostUser() service.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
 		t := db.NewTransaction(s.pool.Begin())
 		u := d.Post.(api.CreateUserRequest)
@@ -67,7 +67,7 @@ func (s *server) postUser() service.HandlerFunc {
 	}
 }
 
-func (s *server) getAllUsers() service.HandlerFunc {
+func (s *server) handleGetAllUsers() service.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
 		log.Debugf("get all users")
 		users, err := db.FindAllUsers(s.pool)
@@ -80,7 +80,7 @@ func (s *server) getAllUsers() service.HandlerFunc {
 	}
 }
 
-func (s *server) getUser() service.HandlerFunc {
+func (s *server) handleGetUser() service.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
 		u, found, err := db.FindUserByID(s.pool, int64(d.IDs["users"]))
 		if err != nil {
@@ -98,7 +98,7 @@ func (s *server) getUser() service.HandlerFunc {
 	}
 }
 
-func (s *server) putUser() service.HandlerFunc {
+func (s *server) handlePutUser() service.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
 		// this must not fail
 		u := d.Post.(api.CreateUserRequest)
@@ -131,7 +131,7 @@ func (s *server) putUser() service.HandlerFunc {
 	}
 }
 
-func (s *server) deleteUser() service.HandlerFunc {
+func (s *server) handleDeleteUser() service.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
 		uid := d.IDs["users"]
 		// you cannot delete users that still own books
@@ -160,9 +160,9 @@ func (s *server) deleteUser() service.HandlerFunc {
 	}
 }
 
-func (s *server) ownsBooks(id int) bool {
+func (s *server) ownsBooks(uid int) bool {
 	sel := "SELECT * FROM projects where owner=? and id=origin"
-	rows, err := db.Query(s.pool, sel, id)
+	rows, err := db.Query(s.pool, sel, uid)
 	if err != nil {
 		log.Infof("cannot query for projects: %v", err)
 		// we don't know if the user owns projects;
