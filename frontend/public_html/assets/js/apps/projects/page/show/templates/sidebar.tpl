@@ -65,6 +65,9 @@
   <li class="nav-item">
         <a class="nav-link" id="chars-tab" data-toggle="tab" href="#chars" role="tab" aria-controls="chars" aria-selected="true">Special </br>  characters</a>
   </li>
+   <li class="nav-item">
+        <a class="nav-link" id="options-tab" data-toggle="tab" href="#options" role="tab" aria-controls="chars" aria-selected="true">Page </br> settings</a>
+  </li>
 </ul>
 
 <div class="tab-content">
@@ -146,6 +149,28 @@
 		</div>
 
   </div>
+
+
+<div class="tab-pane fade" id="options" role="tabpanel" aria-labelledby="options-tab">
+
+  <div class="form-group options_row">
+  <label for="line_size_slider"> Line Height: <span id="lineheight_value"><%-lineheight%>px</span></label>
+   <input  type="range" min="20" max="60" value="30" class="slider form-control" id="line_size_slider">
+  </div>
+  <hr>
+  <div class="form-group options_row">
+  <span><input type="checkbox" id="line_nr_toggle" name="line_nr_toggle" checked></span>
+  <span for="line_nr_toggle"> Line Numbers </span>
+  </div>
+    <hr>
+ <div class="form-group options_row">
+  <span><input type="checkbox" id="cor_toggle" name="cor_toggle"></span>
+  <span for="cor_toggle"> Hide Corrections </span>
+  </div>
+  <hr>
+
+</div>
+
 
 </div>
 
