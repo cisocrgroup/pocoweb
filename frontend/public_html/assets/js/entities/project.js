@@ -148,7 +148,7 @@ getProject: function(data){
 downloadProject: function(data){
     var defer = jQuery.Deferred();
      $.ajax({
-       url: "rest-url/books/"+ data.pid + "/download" + "?auth=" + App.getAuthToken(),
+       url: "rest/books/"+ data.pid + "/download" + "?auth=" + App.getAuthToken(),
        type: "GET",
        success: function(data) {
          defer.resolve(result);
