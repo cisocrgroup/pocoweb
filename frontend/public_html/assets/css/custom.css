@@ -109,16 +109,19 @@ opacity: 0.6;
 .defaulthl{
 
     width: 100%;
-    height: 40px;
-    line-height: 100px;
+    /*height: 40px;*/
+    /*line-height: 100px;*/
     text-align: center;
     font-size: 40px;
     left: 0;
-    min-height: 100px;
+    /*min-height: 100px;*/
 }
 
-
-
+.navbar-pcw{
+min-height: 4rem;
+    /*background-color: #0459b5d9;;*/
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.05), inset 0 -1px 0 rgba(0,0,0,.1)
+}
 
 #footer{
    z-index: -1;
@@ -407,7 +410,7 @@ color: #ffc100;
 }
 
 .loginname{
-  color:black;
+  color:white;
 }
 
 .line-container{

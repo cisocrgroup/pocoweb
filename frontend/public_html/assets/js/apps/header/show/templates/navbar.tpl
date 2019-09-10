@@ -1,11 +1,9 @@
 
 
-<div class="text-center">
-<img class="rounded" src="assets/images/logo.png" style="margin: 15px;" />
-</div>
 
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary navbar-pcw">
    <a class="navbar-brand" href="#home">PoCoWeb</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
