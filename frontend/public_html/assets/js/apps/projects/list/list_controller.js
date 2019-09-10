@@ -118,6 +118,10 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
 
 
+          projectsListFooterPanel.on("go:back",function(){
+            App.trigger("home:portal");
+          });
+
 
 
 

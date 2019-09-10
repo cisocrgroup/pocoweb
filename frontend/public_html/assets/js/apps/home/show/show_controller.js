@@ -17,7 +17,7 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
 
         var cards = [
         {
-                "color": "green",
+                "color": "blue",
                 "icon": "fa-list",
                 "id": "test_btn",
                 "name": "Projects",
@@ -33,7 +33,7 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
                 "text": "Documentation of API-routes.",
                 "url": "docs:show"
             }, {
-                "color": "purple",
+                "color": "blue",
                 "icon": "far fa-question-circle",
                 "id": "about_btn",
                 "name": "About",
@@ -44,7 +44,7 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
          let user = App.getCurrentUser();
          if (user != null && user.admin) {
            cards.push({
-                "color": "red",
+                "color": "blue",
                 "icon": "fa-users-cog",
                 "id": "users_button",
                 "name": "User Management",
