@@ -218,7 +218,7 @@ func postLogin() service.HandlerFunc {
 
 		log.Infof("login request for user: %s", user)
 		if err = db.AuthenticateUser(service.Pool(), user, data.Password); err != nil {
-			service.ErrorResponse(w, http.StatusForbidden,
+			service.ErrorResponse(w, http.StatusUnauthorized,
 				"cannot login: invalid password: %v", err)
 			return
 		}
