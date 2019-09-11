@@ -317,7 +317,7 @@ define([
                 .done(function(ignore) {
                   App.trigger('projects:list');
                   App.mainmsg.updateContent(
-                    "Reassigned package " + id + " successfully", 'success');
+                    "Successfully reassigned package " + id, 'success');
                 })
                 .fail(function(response) {
                   Util.defaultErrorHandling(response, "danger");
@@ -330,7 +330,7 @@ define([
                 .done(function(ignore) {
                   App.trigger('projects:show', id);
                   App.mainmsg.updateContent(
-                    "Took all packages back", 'success');
+                    "Successfully reclaimed all packages", 'success');
                 })
                 .fail(function(response) {
                   Util.defaultErrorHandling(response, "danger");
@@ -489,9 +489,7 @@ define([
                     projectShowHeader.render();
                     projectShowInfo.render();
                     App.mainmsg.updateContent(
-                      "Project " + id + " successfully updated.",
-                      "success"
-                    );
+                      "Successfully updated project " + id, 'success');
                   });
                 });
 
@@ -521,10 +519,7 @@ define([
                   $.when(deletingProject)
                     .done(function(result) {
                       App.mainmsg.updateContent(
-                        "Project " + id + " successfully deleted.",
-                        "success"
-                      );
-
+                        "Successfully deleted project " + id, 'success');
                       App.trigger("projects:list");
                     })
                     .fail(function(response) {
