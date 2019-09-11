@@ -1,4 +1,5 @@
-# Setup
+# Docker compose
+## Setup
 - edit `externalURL` variable in `frontend/public_html/api/config.php`
 - edit `externalURL` variable in `frontend/resources/config.php`
 - update settings in env.sh file.
@@ -20,6 +21,17 @@
     prints all information about the database docker container
   - from the server connect to the database container with the
     according ip address `mysql -h 172.18.0.2 -u pocoweb -p pocoweb`
-# Frontend development
+## Frontend development
 - Update frontend data:
 `make -j V="" PCW_FRONTEND_DIR=$PCW_BASE_DIR/www-data install-frontend`
+
+## https via letsencrypt
+ - use `--dry-run` for testing
+ - Create a new certificate: `sudo PCW_BASE_DIR=/srv/pocoweb
+   docker-compose run --rm letsencrypt certbot certonly --webroot
+   --email finkf@cis.lmu.de --agree-tos -w /var/www/letsencrypt -d
+   pocoweb.cis.lmu.de --force-renewal`
+ - Renew a certificate: `sudo PCW_BASE_DIR=/srv/pocoweb docker-compose
+   run --rm letsencrypt certbot renew`
+ - Restart nginx with new certificate: `sudo PCW_BASE_DIR=/srv/pocoweb
+   docker-compose kill -s SIGHUB nginx`

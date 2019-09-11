@@ -7,29 +7,34 @@ services:
     build: nginx/
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ${PCW_BASE_DIR}/www-data:/www-data:ro
       - ${PCW_BASE_DIR}/project-data:/project-data:ro
+      - letsencrypt_certs:/etc/nginx/certs
+      - letsencrypt_www:/var/www/letsencrypt
     links:
       - pocoweb
     depends_on:
       - pocoweb
       - pcwauth
     restart: always
-
+  # let's encrypt for https
+  letsencrypt:
+    build: letsencrypt/
+    command: /bin/true
+    volumes:
+      - letsencrypt_certs:/etc/letsencrypt
+      - letsencrypt_www:/var/www/letsencrypt
   # pocoweb rest service
   pocoweb:
-    # build: pocoweb/
     image: flobar/pocoweb
-    # ports:
-    #   - "8080:8080"
     links:
       - db
     volumes:
       - ${PCW_BASE_DIR}/project-data:/project-data:rw
       - ${PCW_BASE_DIR}/tmp-data:/tmp:rw
       - ${PCW_BASE_DIR}/www-data:/www-data:rw
-      # - ${PCW_BASE_DIR}/language-data:/language-data:ro
     depends_on:
       - db
     restart: always
@@ -39,8 +44,6 @@ services:
   # mysql database
   db:
     image: mariadb
-    # ports:
-    #   - "3306:3306"
     volumes:
       - ${PCW_BASE_DIR}/db-data:/var/lib/mysql
       - ./db:/etc/mysql/conf.d:ro
@@ -52,8 +55,6 @@ services:
   pcwauth:
     # build: pcwauth/
     image: flobar/pcwauth
-    # ports:
-    #   - "8081:8081"
     links:
       - db
       - pocoweb
@@ -129,3 +130,7 @@ services:
       - db
     env_file:
       - env.sh
+# named volumes
+volumes:
+  letsencrypt_certs:
+  letsencrypt_www:
