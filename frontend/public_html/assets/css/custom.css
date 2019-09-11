@@ -818,6 +818,10 @@ outline: 0;
 
 
 /* documentation json styles */
+code {
+	padding: 2px;
+	background-color: lightgray;
+}
 div.highlight-source-json {
 	padding: 10px 10px 1px 10px;
 	border-radius: 5px;
