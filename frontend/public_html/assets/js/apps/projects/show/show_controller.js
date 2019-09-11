@@ -60,15 +60,6 @@ define([
               if (isProject) { // project view
               var cards = [
                 {
-                  color: "green",
-                  icon: "fas fa-history",
-                  id: "test_btn",
-                  name: "Order Profile",
-                  seq: 1,
-                  text: "Start profiling the project.",
-                  url: "profile"
-                },
-                {
                   color: "blue",
                   icon: "far fa-edit",
                   id: "adaptive_btn",
@@ -128,15 +119,6 @@ define([
                 } else if (isAdmin) { // admin: package view
                   var cards = [
                 {
-                  color: "green",
-                  icon: "fas fa-history",
-                  id: "test_btn",
-                  name: "Order Profile",
-                  seq: 1,
-                  text: "Start profiling the package.",
-                  url: "profile"
-                },
-                {
                   color: "blue",
                   icon: "far fa-edit",
                   id: "adaptive_btn",
@@ -167,15 +149,6 @@ define([
                   } else { // normal user: package view
                   var cards = [
                 {
-                  color: "green",
-                  icon: "fas fa-history",
-                  id: "test_btn",
-                  name: "Order Profile",
-                  seq: 1,
-                  text: "Start profiling the project.",
-                  url: "profile"
-                },
-                {
                   color: "blue",
                   icon: "far fa-edit",
                   id: "adaptive_btn",
@@ -197,11 +170,20 @@ define([
                   }
               var cards2 = [
                 {
+                  color: "green",
+                  icon: "fas fa-history",
+                  id: "test_btn",
+                  name: "Order Profile",
+                  seq: 1,
+                  text: "Start profiling the project.",
+                  url: "profile"
+                },
+                {
                   color: "blue",
                   icon: "fas fa-cogs",
                   id: "test_btn",
                   name: "Automatic Postcorrection",
-                  seq: 1,
+                  seq: 2,
                   text: "Fully automatic OCR postcorrection.",
                   url: "projects:a_pocoto"
                 },
@@ -210,7 +192,7 @@ define([
                   icon: "fas fa-file-signature",
                   id: "users_button",
                   name: "Manual Postcorrection",
-                  seq: 2,
+                  seq: 3,
                   text: "Manual interactive postcorrection tools.",
                   url: "projects:show_page"
                 }
@@ -222,7 +204,7 @@ define([
                 currentRoute: "home"
               });
               var projectShowHub2 = new Show.Hub({
-                columns: 2,
+                columns: 3,
                 cards: cards2,
                 currentRoute: "home"
               });
