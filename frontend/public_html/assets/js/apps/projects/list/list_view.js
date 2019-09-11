@@ -49,7 +49,7 @@ define(["marionette","app","common/views","apps/projects/common/views",
 	}
     });
 
-  List.FooterPanel = CommonViews.FooterPanel.extend({
+  List.FooterPanel = CommonViews.FooterPanel.extend({manual:true
     });
 
 

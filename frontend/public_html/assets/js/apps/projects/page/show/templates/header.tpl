@@ -3,5 +3,6 @@
     <i class="fas fa-book-open card_main_icon green"></i>
 	<%-title%> 
 	</div>
+	<hr>
 	</div>
 

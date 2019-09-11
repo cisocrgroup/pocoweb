@@ -18,6 +18,7 @@ rem pscp -r -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/ tobias@pocoweb.cis
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/js/require_main.built.js tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/assets/js/
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/css/custom.css tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/assets/css/
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/index.html tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/
+pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/images/pocoweb_logo.png tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/assets/images/
 
 
 

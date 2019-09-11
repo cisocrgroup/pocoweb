@@ -9,14 +9,29 @@ html, body
 
 
 body{
-  overflow-x:hidden;
+     overflow-x: hidden;
+    background: url(../images/bg_page.png) no-repeat 37% -3% fixed;
+    /* background-size: 86%;*/
 }
 
 h4{
   margin-bottom: 15px !important;
 }
 
+a{
+  color:#1857e6;
+}
 
+
+.fullscreen-cover{
+ position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    background: white;
+    opacity: 0.96;
+    z-index: -1;
+}
 
 #main-region{
   min-height: 75vh;
@@ -109,27 +124,32 @@ opacity: 0.6;
 .defaulthl{
 
     width: 100%;
-    height: 40px;
-    line-height: 100px;
+    /*height: 40px;*/
+    /*line-height: 100px;*/
     text-align: center;
     font-size: 40px;
     left: 0;
-    min-height: 100px;
+    /*min-height: 100px;*/
 }
 
+.navbar-pcw{
+min-height: 4rem;
+    /*background-color: #0459b5d9;;*/
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.05), inset 0 -1px 0 rgba(0,0,0,.1);
+     /*color: #e00000;*/
+    border-bottom: 1px solid #1857e6;
+}
 
+.navbar-brand{
+  padding: 0;
+}
 
-
-#footer{
-   z-index: -1;
-    position: absolute;
-    width: 100%;
+.footer{
     text-align: center;
-    height: 100px;
     background: rgba(255, 255, 255, 0.66);
-    padding-top: 44px;
-
-
+    padding-bottom: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #1857e6;;
   }
 
 .footercontainer{
@@ -377,7 +397,7 @@ opacity: 0.5;
 
 
 .red{
-color: #d30014;
+color: #b12020;
 }
 
 
@@ -395,8 +415,15 @@ color: #86ba3c;
 }
 
 .blue{
-color: #009edb;
+color: #1857e6;
+border-color: #1857e6;
 }
+
+.blue:hover{
+color: white;
+background-color: #1857e6;
+}
+
 
 .purple{
 color: #926fa8;
@@ -438,7 +465,7 @@ position: relative;
      min-width: 31px;
     display: flex;
     font-size: 1.3em;
-    color: #007bff;
+    color: #1857e6;
     opacity: .9;
     font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
     margin-right: 7px;
@@ -839,4 +866,15 @@ span.pl-bl {
   border-radius: 50%;
   background: #0062cc;
   cursor: pointer;
+}
+
+
+.options_row{
+  padding-left: 1rem;
+  padding-top: 1rem;
+}
+
+.back_btn{
+  margin-top: 15px;
+  margin-bottom: 15px;
 }

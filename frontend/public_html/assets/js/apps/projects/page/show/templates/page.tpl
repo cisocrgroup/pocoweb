@@ -1,23 +1,4 @@
 
-<div class="container">
-
-<div class="row border rounded-top border-bottom-0" style="padding-top: 10px;">
-<div class="col col-sm-3">
-  <div class="form-group">
-  <label for="line_size_slider"> Line Height </label>
-   <input  type="range" min="20" max="60" value="30" class="slider form-control" id="line_size_slider">
-</div>
-</div>
-<div class="col col-sm-3">
-  <div class="form-group">
-  <span for="line_nr_toggle"> Line Numbers </span>
-  <div><input type="checkbox" id="line_nr_toggle" name="line_nr_toggle" checked></div>
- </div>
-</div>
-
-</div>
-
-</div>
 
 
     <div id="page-container" class="border">

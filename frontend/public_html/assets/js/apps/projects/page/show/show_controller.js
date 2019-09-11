@@ -121,10 +121,10 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
 
-			  projectShowHeader = new Show.Header({title:"Project: "+project.get('title')});
+			  projectShowHeader = new Show.Header({title:project.get('title')});
         console.log(lineheight)
         projectShowPage = new Show.Page({model:page,lineheight:lineheight,linenumbers:linenumbers});
-			  projectShowSidebar = new Show.Sidebar({model:page,project:project});
+			  projectShowSidebar = new Show.Sidebar({model:page,project:project,lineheight:lineheight,linenumbers:linenumbers});
       	projectShowFooterPanel = new Show.FooterPanel();
 
        projectShowSidebar.on("sidebar:error-patterns-clicked",function(pid,pat){
@@ -141,6 +141,16 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
        });
+
+        projectShowSidebar.on("sidebar:update_line_height",function(value){
+          App.setLineHeight(id,value);
+        });
+
+        projectShowSidebar.on("sidebar:update_line_numbers",function(value){
+          App.setLineNumbers(id,value);
+        });
+
+
        projectShowSidebar.on("page:new",function(page_id){
         console.log(id)
                     var fetchinglineheight = App.getLineHeight(id);
@@ -151,8 +161,10 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     console.log(new_page)
                      new_page.attributes.title = project.get('title');
                       projectShowPage.model=new_page;
-                      projectShowPage.options.lineheight=lineheight;
-                      projectShowPage.options.linenumbers=linenumbers;
+
+                      projectShowSidebar.options.lineheight=lineheight;
+                      projectShowSidebar.options.linenumbers=linenumbers;
+
 
                       projectShowPage.render();
                       projectShowSidebar.model = new_page;
@@ -329,14 +341,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
         });
 
-          projectShowPage.on("page:update_line_height",function(value){
-            App.setLineHeight(id,value);
-          });
-
-          projectShowPage.on("page:update_line_numbers",function(value){
-            App.setLineNumbers(id,value);
-          });
-
+  
 
           projectShowFooterPanel.on("go:back",function(){
             App.trigger("projects:show",id);

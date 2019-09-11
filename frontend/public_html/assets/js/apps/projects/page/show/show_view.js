@@ -3,13 +3,12 @@
 // ================================
 
 define(["marionette","app","backbone.syphon","common/views","common/util","apps/projects/concordance/show/show_view",
-        "tpl!apps/projects/page/show/templates/header.tpl",
         "tpl!apps/projects/page/show/templates/page.tpl",
         "tpl!apps/projects/page/show/templates/sidebar.tpl",
         "tpl!apps/projects/page/show/templates/layout.tpl",
 
 
-  ], function(Marionette,App,BackboneSyphon,Views,Util,Concordance,heaerTpl,pageTpl,sidebarTpl,layoutTpl){
+  ], function(Marionette,App,BackboneSyphon,Views,Util,Concordance,pageTpl,sidebarTpl,layoutTpl){
 
 
     var Show = {};
@@ -25,15 +24,15 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
   });
 
-   Show.Header = Marionette.View.extend({
 
-      template:heaerTpl,
-      serializeData: function(){
-      return {
-        title: Marionette.getOption(this,"title")
+  Show.Header = Views.Header.extend({
+    initialize: function(){
+        this.title = Marionette.getOption(this,"title"),
+        this.icon ="fas fa-book-open"
+        this.color ="green"
       }
-    }
   });
+
 
   Show.Sidebar = Marionette.View.extend({
       template:sidebarTpl,
@@ -51,6 +50,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       },
          serializeData: function(){
           var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+          data.lineheight = Marionette.getOption(this,'lineheight');
           data.project = Marionette.getOption(this,"project");
 
         return data;
@@ -173,6 +173,63 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
             })
 
           })
+
+            var lineheight = Backbone.Marionette.getOption(this,'lineheight');
+
+         var slider = document.getElementById("line_size_slider");
+         
+         $('#line_size_slider').val(lineheight);
+
+            slider.oninput = function() {
+              $('.line-img > img').height(this.value);
+               $('.line-tokens').empty();
+
+                $('.line-img').each(function(index){
+                  var img = $(this);
+
+                      var line = that.model.get('lines')[index];
+                      if(line!=undefined){
+                        Util.addAlignedLine(line);
+                      }
+                  
+               });
+                $('#lineheight_value').text(this.value+"px");
+                that.trigger("sidebar:update_line_height",this.value);
+
+            }
+             var linenumbers = Backbone.Marionette.getOption(this,'linenumbers');
+              if(linenumbers){
+                $('#line_nr_toggle').val(this.checked);
+                $('.line-nr').show();   
+              }
+              else{
+                $('#line_nr_toggle').prop( "checked", false );
+                $('.line-nr').hide();   
+
+              }
+
+             $('#line_nr_toggle').change(function() {
+
+                   if(this.checked) {
+                    linenumbers=true;
+                  }
+                  else {
+                    linenumbers=false;
+                  }
+                   $('.line-nr').toggle();          
+
+                  that.trigger("sidebar:update_line_numbers",linenumbers);
+
+            });
+
+
+                 $('#cor_toggle').change(function() {
+                   $('.line-text-parent').toggle();          
+
+            });
+
+
+
       }
 
   });
@@ -410,53 +467,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
         */
 
-        var lineheight = Backbone.Marionette.getOption(this,'lineheight');
-
-         var slider = document.getElementById("line_size_slider");
-         
-         $('#line_size_slider').val(lineheight);
-
-            slider.oninput = function() {
-              $('.line-img > img').height(this.value);
-               $('.line-tokens').empty();
-
-                $('.line-img').each(function(index){
-                  var img = $(this);
-
-                      var line = that.model.get('lines')[index];
-                      if(line!=undefined){
-                        Util.addAlignedLine(line);
-                      }
-                  
-               });
-
-                that.trigger("page:update_line_height",this.value);
-
-            }
-             var linenumbers = Backbone.Marionette.getOption(this,'linenumbers');
-              if(linenumbers){
-                $('#line_nr_toggle').val(this.checked);
-                $('.line-nr').show();   
-              }
-              else{
-                $('#line_nr_toggle').prop( "checked", false );
-                $('.line-nr').hide();   
-
-              }
-
-             $('#line_nr_toggle').change(function() {
-
-                   if(this.checked) {
-                    linenumbers=true;
-                  }
-                  else {
-                    linenumbers=false;
-                  }
-                   $('.line-nr').toggle();          
-
-                  that.trigger("page:update_line_numbers",linenumbers);
-
-            });
+    
 
       },
       openCustomPopover:function(e,sel,parent_div){
