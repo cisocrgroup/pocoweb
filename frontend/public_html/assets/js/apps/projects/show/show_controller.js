@@ -353,7 +353,6 @@ define([
                     });
                     $.when(assigning).done(function(ignored) {
                       $('#assignModal').modal('hide');
-                      console.log('App.trigger(' + projectId + ')');
                       App.trigger('projects:show', projectId);
                     }).fail(function(response) {
                       Util.defaultErrorHandling(response, "danger");
@@ -415,8 +414,6 @@ define([
                             assign_result
                           ) {
                             // show message and update table
-                            App.mainmsg.updateContent(assign_result, "success");
-
                             for (var i = 0; i < result.length; i++) {
                               var string = "";
                               string +=
@@ -436,9 +433,7 @@ define([
                           }).fail(function(response) {
                          $("#splitModal").modal("hide");
                           Util.defaultErrorHandling(response, "danger");
-                        });
-
-                          console.log(assign_data);
+                          });
                         })
                         .fail(function(response) {
                          $("#splitModal").modal("hide");
