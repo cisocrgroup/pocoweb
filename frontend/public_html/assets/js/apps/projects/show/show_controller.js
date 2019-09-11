@@ -368,6 +368,14 @@ define([
                   var fetchingusers = UserEntities.API.getUsers();
 
                   $.when(fetchingusers).done(function(users) {
+                    let currentUser = App.getCurrentUser();
+                    users.users.forEach(function(user, i){
+                      if (user.id == currentUser.id) {
+                        let tmp = users.users[0];
+                        users.users[0] = user;
+                        users.users[i] = tmp;
+                      }
+                    });
                     var projectsShowSplitProject = new Show.Split({
                       users: users.users,
                       model: project,
