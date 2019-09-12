@@ -484,6 +484,9 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
             var prevdiv;
              // linecor = Util.replace_all(linecor,word['cor'],'<span class="badge badge-pill badge-primary">'+word['cor']+'</span>');
 
+        
+             // Util.addAlignedLine(line); // add aligned line to conc view
+
               for(var j=0;j<linetokens.length;j++) {
 
                 var token = linetokens[j];
@@ -495,25 +498,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
                 var box = token['box'];
 
-                // var line_img = document.getElementById(img_id);
-                // var boxwidth = box.width + whitespace_length;
-                // console.log(line_img);
-
-                // console.log(token);
-
-                // var c = document.createElement("canvas");
-                // c.width=boxwidth;
-                // c.height=box.height;
-
-                //   var ctx = c.getContext("2d");
-                //   ctx.drawImage(line_img, offset, 0, boxwidth, box.height, 0, 0, boxwidth, box.height);
-
-                //     var img = new Image();
-                //     img.src = c.toDataURL();
-                //     img.setAttribute('id','splitImg_'+line['pageId']+"_"+line['lineId']+"_"+cnt);
-                //     img.height = '25';
-
-                    $('#splitImg_'+line['lineId']+"_"+cnt).css('width','auto');
+                 $('#splitImg_'+line['lineId']+"_"+cnt).css('width','auto');
 
                     var tokendiv;
                     var cordiv = $("<div>"+token.cor+"</div>");
@@ -555,15 +540,12 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                     $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().find('.concLine').append(tokendiv);
 
 
-
                     cnt++;
 
                        // if (token.ocr.includes(" ")){
 
-
                         var whitespace_div_length = token.box.width*scalefactor ;
                          cordiv.css('width',whitespace_div_length);
-
 
                         prevdiv = cordiv;
                        //  current_position+=(prev_div_width + whitespace_div_length);
@@ -571,7 +553,6 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
 
                }
-           // $("#"+img_id).remove();
       }
 
      }
