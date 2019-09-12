@@ -22,6 +22,9 @@ a{
   color:#1857e6;
 }
 
+tbody{
+  background: white;
+}
 
 .fullscreen-cover{
  position: fixed;
@@ -431,6 +434,11 @@ color: #926fa8;
 
 .yellow{
 color: #ffc100;
+}
+
+.disabled{
+color:#636c72;
+opacity: 0.8;
 }
 
 .loginname{

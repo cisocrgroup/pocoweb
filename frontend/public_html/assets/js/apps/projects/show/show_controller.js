@@ -21,21 +21,22 @@ define([
         var fetchinglanguages = UtilEntities.API.getLanguages();
         var fetchingprojects = ProjectEntities.API.getProjects();
         var fetchinguser = UserEntities.API.loginCheck();
+        var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
 
         $.when(
           fetchingproject,
           fetchinglanguages,
           fetchingprojects,
-          fetchinguser
+          fetchinguser,
+          fetchingjobs
         )
-        .done(function(project, languages, projects, user) {
+        .done(function(project, languages, projects, user,jobs) {
           let isProject = project.attributes.bookId == project.attributes.projectId;
           let projectId = project.get('bookId');
           let isAdmin = user.admin;
 
             loadingCircleView.destroy();
             console.log(project);
-
             var projectShowLayout = new Show.Layout();
             var projectShowHeader;
             var projectShowInfo;
@@ -56,6 +57,8 @@ define([
                 packages.push(book);
               }
             }
+
+
             projectShowLayout.on("attach", function() {
               if (isProject) { // project view
               var cards = [
@@ -216,9 +219,6 @@ define([
                 if (data.url == "edit") {
                   this.trigger("show:edit_clicked");
                 }
-                if (data.url == "profile") {
-                  this.trigger("show:profile");
-                }
                 if (data.url == "adaptive") {
                   this.trigger("show:adaptive");
                 }
@@ -246,6 +246,9 @@ define([
                 if (data.url == "projects:a_pocoto") {
                   App.trigger("projects:a_pocoto", id);
                 }
+                if (data.url == "profile") {
+                  this.trigger("show:profile");
+                }
               });
               let icon = isProject ? 'fas fa-book-open' : 'fas fa-box-open';
               projectShowHeader = new Show.Header({
@@ -253,7 +256,7 @@ define([
                 icon: icon,
                 color: "green"
               });
-              projectShowInfo = new Show.Info({ model: project });
+              projectShowInfo = new Show.Info({ model: project, jobs:jobs });
               projectShowFooterPanel = new Show.FooterPanel({manual:true});
 
               projectShowFooterPanel.on('go:back',function(){
@@ -264,7 +267,7 @@ define([
                 packages: packages
               });
 
-              projectShowHub.on("show:profile", function() {
+              projectShowHub2.on("show:profile", function() {
                 var profilingproject = ProjectEntities.API.profileProject({
                   pid: id,
                   tokens: []
@@ -280,6 +283,13 @@ define([
                       id: "profileModal"
                     });
                     App.mainLayout.showChildView("dialogRegion", confirmModal);
+
+                       var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+                      $.when(fetchingjobs).done(function(jobs) {
+                        projectShowInfo.setJobSymbol(jobs);
+
+                      });
+
                   })
                   .fail(function(response) {
                     Util.defaultErrorHandling(response, "danger");

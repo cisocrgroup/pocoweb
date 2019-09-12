@@ -15,7 +15,7 @@
         <th>Author</th>
         <th>Language</th>
         <th>Pages</th>
-		<th>Project</th>
+		    <th>Status</th>
       </tr>
  </thead>
  <tbody>
@@ -25,7 +25,11 @@
         <td><%-author%></td>
         <td><%-language%></td>
         <td><%-pages%></td>
-		<td><i class="fa <%-isBook?'fa-check-circle icon green':'fa-times-circle icon red'%>"></i></td>
+		<td>
+        <i class="profile_icon fas fas fa-history card_main_icon disabled" title="not yet profiled"></i>
+        <i class="le_icon fas fa-list card_main_icon disabled" title="lexicon extension not yet started"></i>
+        <i class="post_cor_icon fas fas fa-cogs card_main_icon disabled" title="postcorrection not yet started"></i>
+    </td>
     </tr>
 
  </tbody>

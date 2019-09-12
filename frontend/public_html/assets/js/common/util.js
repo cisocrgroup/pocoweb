@@ -204,6 +204,13 @@ addAlignedLine : function(line){
       });
 
 
+    },
+
+    removeStatusClasses:function(elem){
+      elem.removeClass('disabled');
+      elem.removeClass('green');
+      elem.removeClass('yellow');
+      elem.removeClass('red');
     }
 
 });

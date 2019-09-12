@@ -7,6 +7,7 @@ define([
   "app",
   "backbone.syphon",
   "common/views",
+  "common/util",
   "apps/projects/common/views",
   "apps/projects/page/show/show_view",
   "apps/projects/concordance/show/show_view",
@@ -21,6 +22,7 @@ define([
   App,
   BackboneSyphon,
   Views,
+  Util,
   CommonViews,
   Page,
   Concordance,
@@ -85,7 +87,75 @@ define([
     },
     onAttach: function() {
       var table = $("#book_table").DataTable();
+      console.log(this)
+      let status = this.model.attributes.status;
+
+      if(status['profiled']){
+        Util.removeStatusClasses($('.profile_icon'));
+        $('.profile_icon').addClass("green").attr('title','Profiling successful');;
+      }
+      if(status['post-corrected']){
+        Util.removeStatusClasses($('.post_cor_icon'));
+        $('.post_cor_icon').addClass("green").attr('title','Post Correction successful');
+      }
+      if(status['extended-lexicon']){
+        Util.removeStatusClasses($('.le_icon'));
+        $('.le_icon').addClass("green").attr('title','Lexicon Extension successful');
+
+      }
+
+      var jobs = Marionette.getOption(this, "jobs");
+      this.setJobSymbol(jobs);
+
+    },
+  
+    setJobSymbol:function(jobs){
+       if(jobs.statusName=="running"){
+        if(jobs.jobName=="profiling"){
+           Util.removeStatusClasses($('.profile_icon'));
+           $('.profile_icon').addClass("yellow").attr('title','Profiling in progress');;
+        }
+        if(jobs.jobName=="calculating extended lexicon"){
+           Util.removeStatusClasses($('.le_icon'));
+           $('.le_icon').addClass("yellow").attr('title','Lexcion Extension in progress');;
+        }
+        if(jobs.jobName=="calculating post-correction"){
+           Util.removeStatusClasses($('.post_cor_icon'));
+           $('.post_cor_icon').addClass("yellow").attr('title','Post Correction in progress');;
+        }
+      }
+
+       if(jobs.statusName=="failed"){
+        if(jobs.jobName=="profiling"){
+           Util.removeStatusClasses($('.profile_icon'));
+           $('.profile_icon').addClass("red").attr('title','Profiling failed');;
+        }
+        if(jobs.jobName=="calculating extended lexicon"){
+           Util.removeStatusClasses($('.le_icon'));
+           $('.le_icon').addClass("red").attr('title','Lexcion Extension failed');;
+        }
+        if(jobs.jobName=="calculating post-correction"){
+           Util.removeStatusClasses($('.post_cor_icon'));
+           $('.post_cor_icon').addClass("red").attr('title','Post Correction failed');;
+        }
+      }
+
+    if(jobs.statusName=="done"){
+        if(jobs.jobName=="profiling"){
+           Util.removeStatusClasses($('.profile_icon'));
+           $('.profile_icon').addClass("green").attr('title','Profiling successful');;
+        }
+        if(jobs.jobName=="calculating extended lexicon"){
+           Util.removeStatusClasses($('.le_icon'));
+           $('.le_icon').addClass("green").attr('title','Post Correction successful');;
+        }
+        if(jobs.jobName=="calculating post-correction"){
+           Util.removeStatusClasses($('.post_cor_icon'));
+           $('.post_cor_icon').addClass("green").attr('title','Lexicon Extension successful');;
+        }
+      }
     }
+
   });
 
   Show.Packages = Marionette.View.extend({
