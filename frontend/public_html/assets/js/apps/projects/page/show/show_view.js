@@ -177,10 +177,13 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
         var pagehits = Backbone.Marionette.getOption(this, 'pagehits');
         var phslider = document.getElementById("page_hits_slider");
+
+        $('#page_hits_slider').val(pagehits);
+
         phslider.oninput = function() {
           that.trigger("sidebar:update_page_hits",this.value);
+          $('#page_hits_value').text(this.value);
         };
-        $('#page_hits_slider').val(pagehits);
 
         var lineheight = Backbone.Marionette.getOption(this,'lineheight');
          var slider = document.getElementById("line_size_slider");
