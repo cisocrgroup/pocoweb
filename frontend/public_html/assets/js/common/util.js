@@ -145,26 +145,24 @@ addAlignedLine : function(line){
               return;
               }
 
-
+              let addDiv = function(text, width, boxstr) {
+                  let textdiv = $('<div>' + text + "</div>");
+                  textdiv.css('width', width * scalefactor);
+                  textdiv.attr('boundingBox', boxstr);
+                  let div = $('<div class="tokendiv noselect"></div>').append(textdiv);
+                  line_text.find('.line-tokens').append(div);
+              };
               for(var i=0;i<linetokens.length;i++) {
-
-                var token = linetokens[i];
-                var cordiv;
-                if(token.cor.includes(" ")){
-                   cordiv = $('<div>'+token.cor+"</div>");
+                // add whitespace between tokens
+                if (i > 0) {
+                  let width = linetokens[i].box.left - linetokens[i-1].box.right;
+                  addDiv("", width, "");
                 }
-                else {
-                   cordiv = $('<div>'+token.cor.trim()+"</div>");
-                }
-                var div = $('<div class="tokendiv noselect"></div>').append(cordiv);
-                line_text.find('.line-tokens').append(div);
-                var box = token['box'];
-
-                    var div_length = token.box.width*scalefactor ;
-                    cordiv.css('width',div_length);
-					var boxstr = "(" + box.left + "," + box.top + "," +
-						box.right + "," + box.bottom + ")";
-					cordiv.attr('boundingBox', boxstr);
+                let token = linetokens[i];
+                let box = token['box'];
+				let boxstr = "(" + box.left + "," + box.top + "," +
+				  box.right + "," + box.bottom + ")";
+                addDiv(token.cor.trim(), token.box.width, boxstr);
                }
 },
   copyStringToClipboard :function(str) {
