@@ -30,6 +30,7 @@ static void add_matches(Json &json, const M &matches, const std::string &q,
 template <class F>
 static void each_package_line(MysqlConnection &mysql, int pid, F f);
 
+#ifdef NEW_SEARCH__
 struct matches {
   std::vector<std::pair<DbLine, std::unordered_set<int>>> line_matches;
   int total;
@@ -83,6 +84,7 @@ Json &operator<<(Json &j, const match_results &res) {
   }
   return j;
 }
+#endif // NEW_SEARCH__
 
 ////////////////////////////////////////////////////////////////////////////////
 const char *SearchRoute::route_ = SEARCH_ROUTE_ROUTE;
