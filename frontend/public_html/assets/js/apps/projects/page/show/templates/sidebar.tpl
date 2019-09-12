@@ -66,7 +66,7 @@
         <a class="nav-link" id="chars-tab" data-toggle="tab" href="#chars" role="tab" aria-controls="chars" aria-selected="true">Special </br>  characters</a>
   </li>
    <li class="nav-item">
-        <a class="nav-link" id="options-tab" data-toggle="tab" href="#options" role="tab" aria-controls="chars" aria-selected="true">Page </br> settings</a>
+        <a class="nav-link" id="options-tab" data-toggle="tab" href="#options" role="tab" aria-controls="chars" aria-selected="true">Display </br> settings</a>
   </li>
 </ul>
 
