@@ -19,6 +19,7 @@
 #include <set>
 #include <unordered_set>
 
+#define NEW_SEARCH__
 #define SEARCH_ROUTE_ROUTE "/books/<int>/search"
 
 using namespace pcw;
@@ -107,10 +108,10 @@ Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
   }
   if (p) {
     return search(req, *qs, bid, pq{pskip, pmax});
-  } else {
-    return search(req, *qs, bid, tq{pskip, pmax});
   }
-#ifdef NEW_SEARCH
+#ifndef NEW_SEARCH__
+  return search(req, *qs, bid, tq{pskip, pmax});
+#else  // NEW_SEARCH__
   auto max = pmax;
   auto skip = pskip;
   auto conn = must_get_connection();
@@ -153,7 +154,7 @@ Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
   }
   Json j;
   return j << ret;
-#endif // NEW_SEARCH
+#endif // NEW_SEARCH__
   // DbLine line(pid, pageid, lid);
   // if (not line.load(conn)) {
   //   THROW(NotFound, "(LineRoute) cannot find ", pid, ":", pageid, ":",
