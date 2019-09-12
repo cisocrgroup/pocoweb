@@ -683,13 +683,10 @@ outline: 0;
   z-index: 1020;
 }
 
-.sidebar-table-container{
-    height: 644px;
-}
 
 
 #sidebar-container{
-  height: 844px;
+  height: 770px;
 }
 
 #page-container{
