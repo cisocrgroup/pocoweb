@@ -58,7 +58,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
                         projectShowLex.on("show:word_clicked",function(word){
             
-                        var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:false,skip:0,max:9});
+                        var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:false,skip:0,max:App.getPageHits(id)});
 
                         $.when(searchingToken).done(function(tokens){
                         var lineheight = App.getLineHeight(id);
