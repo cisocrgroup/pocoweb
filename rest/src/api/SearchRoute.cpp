@@ -185,6 +185,7 @@ Route::Response SearchRoute::search(const Request &req,
   json["bookId"] = project->origin().id();
   json["isErrorPattern"] = false;
   json["skip"] = x.skip;
+  json["max"] = x.max;
   // json["projprojectidprojectidprojectid;
   size_t totalCount = 0;
   Searcher searcher(*project, x.skip, x.max);
