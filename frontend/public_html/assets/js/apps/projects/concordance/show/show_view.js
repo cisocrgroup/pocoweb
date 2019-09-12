@@ -56,14 +56,11 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
             if(cordiv_left.find('i').hasClass('fa-check-square')){
               var anchor = $(this).anchor;
               cordiv_left.parent().each(function(i, tokendiv) {
-                console.log(tokendiv);
-                console.log(tokendiv.textContent);
                 var pid = tokendiv.attributes.projectid.value;
                 var pageid = tokendiv.attributes.pageid.value;
                 var lineid = tokendiv.attributes.lineid.value;
                 var offset = tokendiv.attributes.offset.value;
                 var token  = tokendiv.textContent.trim();
-                console.log({pid:pid,page_id:pageid,line_id:lineid,token_id:offset,token:token});
                 that.trigger("concordance:correct_token",{
                   pid:pid,
                   page_id:pageid,
@@ -103,7 +100,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       set_correction:function(e){
 
         $('.cordiv_container').each(function(){
-          console.log($(this));
+          // console.log($(this));
           var cordiv_left = $(this).find('.cordiv_left');
           var cordiv = $(this).find('.cordiv');
 
@@ -141,7 +138,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       },
       cor_correct:function(e){
         e.stopPropagation();
-        console.log($(e.currentTarget));
+        // console.log($(e.currentTarget));
         var concLine = $(e.currentTarget).parent().parent();
         var tokendiv = $(e.currentTarget).parent();
 
@@ -246,7 +243,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
        var tokendata =  Marionette.getOption(this,"tokendata");
         var value = parseInt($(e.currentTarget).attr('value'));
-        console.log(value);
+        // console.log(value);
 
         if(value==-1) { // value == -1 -> '...' button
           return;
@@ -269,7 +266,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           }
         }
 
-       var max_pages = Math.ceil(tokendata.totalCount / tokendata.max);
+       var max_pages = Math.ceil(tokendata.total / tokendata.max);
 
        // case at the end
         if(value>=5&&(value+3)>=max_pages){
@@ -414,10 +411,10 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         var line_img = $('<div id ="img_'+line['pageId']+'_'+line['lineId']+'_parent" class="line-img">');
         var img = $('<img src="'+line['imgFile']+'" id="img_'+line['pageId']+'_'+line['lineId']+'" width="auto" height='+lineheight+'/>');
 
-        console.log($("#img_"+line['pageId']+"_"+line['lineId']).length);
+        // console.log($("#img_"+line['pageId']+"_"+line['lineId']).length);
 
         if ($("#img_"+line['pageId']+"_"+line['lineId']).length!=0) {
-          return; 
+          return;
         }
 
 
@@ -436,13 +433,13 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
       var to;
       if(nmatches<max){
-        to = tokendata.totalCount;
+        to = tokendata.total;
       }
       else {
        to = nmatches*paginated_item;
       }
 
-      $('.concordance-number').text("Showing " + (tokendata.skip+1) + " to " + to +" of " + tokendata.totalCount +" search results");
+      $('.concordance-number').text("Showing " + (tokendata.skip+1) + " to " + to +" of " + tokendata.total +" search results");
 
 
   },
@@ -463,10 +460,10 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
            for (key in tokendata['matches']) {
 
-            for (var i=0;i<tokendata['matches'][key].length;i++){
+            for (var i=0;i<tokendata['matches'][key].lines.length;i++){
 
-            var match = tokendata['matches'][key][i];
-            var line = match['line'];
+            var line = tokendata['matches'][key].lines[i];
+            // var line = match['lines'];
             var linetokens = line['tokens'];
             var concLine = $('<div class="concLine"></div>')
             var anchor = line['projectId']+"-"+line['pageId']+"-"+line['lineId'];
@@ -484,44 +481,24 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
             var prevdiv;
              // linecor = Util.replace_all(linecor,word['cor'],'<span class="badge badge-pill badge-primary">'+word['cor']+'</span>');
 
-        
-             // Util.addAlignedLine(line); // add aligned line to conc view
 
               for(var j=0;j<linetokens.length;j++) {
-
-                var token = linetokens[j];
-
-                var whitespace_width=0;
-                if (token.ocr.includes(" ")){
-                  whitespace_width = token.box.width;
+                let token = linetokens[j];
+                if (j > 0) {
+                  let width = linetokens[j].box.left - linetokens[j-1].box.right;
+                  let div = $('<div></div>');
+                  div.addClass('tokendiv');
+                  div.css('width', width * scalefactor);
+                  $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().find('.concLine').append(div);
                 }
-
-                var box = token['box'];
-
-                 $('#splitImg_'+line['lineId']+"_"+cnt).css('width','auto');
-
-                    var tokendiv;
-                    var cordiv = $("<div>"+token.cor+"</div>");
-
-                    if(querytoken.toLowerCase()==token.cor.toLowerCase()){
-
-                        var contenteditable = 'true';
-                        if(le){
-                          contenteditable = 'false'
-                         }
-
-
-                       cordiv = $("<div class='cordiv' contenteditable='"+contenteditable+"'>"+token.cor.trim()+"</div>");
-
-                       //var grp = $ ("<div class='input-group-mb-3'></div>");
-                       // grp.append($("<span class='concbtn_left'><i class='far fa-square'></i></span>"));
-                       // grp.append($("<span class='cortoken' contenteditable='true'>"+token.cor.trim()+"</span>"));
-                       // grp.append($("<span class='concbtn_right'><i class='fas fa-caret-down'></i></span>"));
-
-                       // cordiv.find('span').append(grp);
-                      //
-                   //  cordiv = $("<div style='color:green;'>"+token.cor.trim()+"</div>");
-
+                var tokendiv;
+                var cordiv = $("<div>"+token.cor.trim()+"</div>");
+                if (token.match) {
+                  var contenteditable = 'true';
+                  if(le){
+                    contenteditable = 'false'
+                  }
+                  cordiv = $("<div class='cordiv' contenteditable='"+contenteditable+"'>"+token.cor.trim()+"</div>");
                     tokendiv = $('<div class="tokendiv cordiv_container"></div>')
                     tokendiv.append($("<span class='cordiv_left js-select-cor'><i class='cor_item far fa-square'></i></span>")).append(cordiv);;
                     tokendiv.append($("<span class='cordiv_right js-suggestions-cor'><i class='far fa-caret-square-down cor_item'></i></span><span class='cordiv_right js-correct-cor'><i class='cor_item far fa-arrow-alt-circle-up'></i></span>"));
@@ -537,19 +514,8 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                 .attr('projectId',token.projectId)
                 .attr('tokenId',token.tokenId)
                 .attr('offset', token.offset);
-                    $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().find('.concLine').append(tokendiv);
-
-
-                    cnt++;
-
-                       // if (token.ocr.includes(" ")){
-
-                        var whitespace_div_length = token.box.width*scalefactor ;
-                         cordiv.css('width',whitespace_div_length);
-
-                        prevdiv = cordiv;
-                       //  current_position+=(prev_div_width + whitespace_div_length);
-                       // }
+                 $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().find('.concLine').append(tokendiv);
+                cordiv.css('width',token.box.width * scalefactor);
 
 
                }
@@ -638,12 +604,10 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
     that.$el.modal('show');
 
-
-
-        this.setImages(9); // insert Concordance Content
-        this.setContent(true); // insert Concordance Content
-
-
+         that = this;
+           $(this).imagesLoaded( function() {
+             that.setContent(true); // insert Concordance Content
+           });
        }
 
 

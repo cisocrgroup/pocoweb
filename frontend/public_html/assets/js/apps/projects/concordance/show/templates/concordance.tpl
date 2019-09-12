@@ -69,18 +69,13 @@ if(asModal) {
 	  <%
 	  let nmatches=0;
    for (key in tokendata['matches']) {
-           for (var i=0;i<tokendata['matches'][key].length;i++){
-            var match = tokendata['matches'][key][i];
-			nmatches += match.tokens.length;
-            var line = match['line'];
-
-    	  _.each(match['tokens'], function(word) {
-
-        var offset = word['offset'];
-        var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];
+           for (var i=0;i<tokendata['matches'][key].lines.length;i++){
+            var line = tokendata['matches'][key].lines[i];
+			nmatches++;
+        	var link = "#/projects/"+line['projectId']+"/page/"+line['pageId'];
    %>
 
-<!-- <div class="line-container">
+<div class="line-container">
 
 <div class="text-image-line" title="page <%-line.pageId%> line <%-line.lineId%>">
 
@@ -95,15 +90,15 @@ if(asModal) {
 
 	</div>
 
- </div> -->
+ </div>
 
      <%
-     	  	});
+     	  	//});
         }
      	};
      %>
 
-  	
+
 </div>
 
 <%
@@ -115,7 +110,7 @@ if(asModal) {
     <div class="col col-md-6">
 
        <div class="concordance-number" style="margin-bottom: 12px;">
-        Showing <%-tokendata.skip+1%> to <%-nmatches%> of <%-tokendata.totalCount%> search results
+        Showing <%-tokendata.skip+1%> to <%-nmatches%> of <%-tokendata.total%> search results
      </div>
 
    </div>
@@ -128,7 +123,7 @@ if(asModal) {
           </li>
           <li value ="1" class="page-item active"><a class="page-link" href="">1</a></li>
 
-          <% var max_pages = Math.ceil(tokendata.totalCount / tokendata.max);
+          <% var max_pages = Math.ceil(tokendata.total / tokendata.max);
           if(max_pages > 5) {
           for(var i=2;i<=5;i++) { %>
           <li value="<%-i%>" class="page-item"><a class="page-link" href="" ><%-i%></a></li>
