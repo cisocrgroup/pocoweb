@@ -51,6 +51,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
          serializeData: function(){
           var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
           data.lineheight = Marionette.getOption(this,'lineheight');
+          data.pagehits = Marionette.getOption(this, 'pagehits');
           data.project = Marionette.getOption(this,"project");
 
         return data;
@@ -174,10 +175,16 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
           })
 
-            var lineheight = Backbone.Marionette.getOption(this,'lineheight');
+        var pagehits = Backbone.Marionette.getOption(this, 'pagehits');
+        var phslider = document.getElementById("page_hits_slider");
+        phslider.oninput = function() {
+          that.trigger("sidebar:update_page_hits",this.value);
+        };
+        $('#page_hits_slider').val(pagehits);
 
+        var lineheight = Backbone.Marionette.getOption(this,'lineheight');
          var slider = document.getElementById("line_size_slider");
-         
+
          $('#line_size_slider').val(lineheight);
 
             slider.oninput = function() {
@@ -191,7 +198,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
                       if(line!=undefined){
                         Util.addAlignedLine(line);
                       }
-                  
+
                });
                 $('#lineheight_value').text(this.value+"px");
                 that.trigger("sidebar:update_line_height",this.value);
@@ -200,11 +207,11 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
              var linenumbers = Backbone.Marionette.getOption(this,'linenumbers');
               if(linenumbers){
                 $('#line_nr_toggle').val(this.checked);
-                $('.line-nr').show();   
+                $('.line-nr').show();
               }
               else{
                 $('#line_nr_toggle').prop( "checked", false );
-                $('.line-nr').hide();   
+                $('.line-nr').hide();
 
               }
 
@@ -216,7 +223,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
                   else {
                     linenumbers=false;
                   }
-                   $('.line-nr').toggle();          
+                   $('.line-nr').toggle();
 
                   that.trigger("sidebar:update_line_numbers",linenumbers);
 
@@ -224,7 +231,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
 
                  $('#cor_toggle').change(function() {
-                   $('.line-text-parent').toggle();          
+                   $('.line-text-parent').toggle();
 
             });
 
@@ -320,7 +327,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         //     var start = displayed_line.text().trim().indexOf(clicked_token);
 
         //     if (start != -1){
- 
+
         //       var end = start + clicked_token.length-1;
 
         //       console.log("start "+start+" end "+end);
@@ -467,7 +474,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
         */
 
-    
+
 
       },
       openCustomPopover:function(e,sel,parent_div){

@@ -22,6 +22,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 		     	loadingCircleView.destroy();
             console.log(page);
            var lineheight = App.getLineHeight(id);
+           var pagehits = App.getPageHits(id);
            var linenumbers = App.getLineNumbers(id);
 
 			var projectShowLayout = new Show.Layout();
@@ -124,7 +125,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 			  projectShowHeader = new Show.Header({title:project.get('title')});
         console.log(lineheight)
         projectShowPage = new Show.Page({model:page,lineheight:lineheight,linenumbers:linenumbers});
-			  projectShowSidebar = new Show.Sidebar({model:page,project:project,lineheight:lineheight,linenumbers:linenumbers});
+	    projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,lineheight:lineheight,linenumbers:linenumbers});
       	projectShowFooterPanel = new Show.FooterPanel();
 
        projectShowSidebar.on("sidebar:error-patterns-clicked",function(pid,pat){
@@ -141,7 +142,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
        });
-
+       projectShowSidebar.on("sidebar:update_page_hits", function(value) {
+         App.setPageHits(id, value);
+       });
         projectShowSidebar.on("sidebar:update_line_height",function(value){
           App.setLineHeight(id,value);
         });
@@ -255,7 +258,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
        projectShowPage.on("page:concordance_clicked",function(selection,isErrorPattern){
         console.log(isErrorPattern);
         console.log(selection);
-        var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern,skip:0,max:9});
+        var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern,skip:0,max:App.getPageHits(id)});
         var that = this;
          $.when(searchingToken).done(function(tokens){
           console.log(tokens)
@@ -316,7 +319,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
              projectConcView.on("concordance:pagination",function(page_nr){
                console.log(projectConcView)
-               var max = 9;
+               var max = App.getPageHits(id);
                var searchingToken = ProjectEntities.API.searchToken({
                  q: selection,
                  pid: id,
@@ -341,7 +344,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
         });
 
-  
+
 
           projectShowFooterPanel.on("go:back",function(){
             App.trigger("projects:show",id);

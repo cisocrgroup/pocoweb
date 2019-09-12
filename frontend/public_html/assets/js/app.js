@@ -85,6 +85,23 @@ App.getLineHeight = function(id){
     return 30;
 };
 
+App.getPageHits = function(id) {
+  var data = JSON.parse(localStorage.getItem('pcw_options'));
+    if(data.pageHits != null && data.pageHits[id]!=undefined){
+      return data.pageHits[id];
+    }
+    return 8;
+};
+
+App.setPageHits = function(id, val){
+  var data = JSON.parse(localStorage.getItem('pcw_options'));
+  if(data.pageHits == null){
+    data.pageHits = {};
+  }
+  data.pageHits[id] = val;
+  localStorage.setItem('pcw_options', JSON.stringify(data));
+};
+
 App.setLineNumbers = function(id,val){
   var data = JSON.parse(localStorage.getItem('pcw_options'));
     if(data.lineNumbers==null){
@@ -223,7 +240,7 @@ App.on("start", function(){
        Backbone.history.start();
 
        if(App.getCurrentRoute() === ""){
-       
+
           App.trigger("home:portal");
 
        }

@@ -168,6 +168,11 @@
   <span for="cor_toggle"> Hide corrections </span>
   </div>
   <hr>
+  <div class="form-group options_row">
+  <label for="page_hits_slider"> Search hits per page: <span id="page_hits_value"><%-pagehits%></span></label>
+   <input  type="range" min="1" max="100" value="8" class="slider form-control" id="page_hits_slider">
+  </div>
+  <hr>
 
 </div>
 
