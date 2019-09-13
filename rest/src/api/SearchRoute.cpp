@@ -4,7 +4,6 @@
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/Package.hpp"
 #include "core/Page.hpp"
-#include "core/Searcher.hpp"
 #include "core/Session.hpp"
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
@@ -19,24 +18,19 @@
 #include <set>
 #include <unordered_set>
 
-#define NEW_SEARCH__
 #define SEARCH_ROUTE_ROUTE "/books/<int>/search"
 
 using namespace pcw;
 
-template <class M>
-static void add_matches(Json &json, const M &matches, const std::string &q,
-                        bool ep);
-template <class F>
-static void each_package_line(MysqlConnection &mysql, int pid, F f);
-
-#ifdef NEW_SEARCH__
 struct matches {
+  matches() : line_matches{}, total{0} {}
   std::vector<std::pair<DbLine, std::unordered_set<int>>> line_matches;
   int total;
 };
 
 struct match_results {
+  match_results()
+      : results{}, bookid{0}, projectid{0}, total{0}, skip{0}, max{0} {}
   std::unordered_map<std::string, matches> results;
   int bookid, projectid, total, skip, max;
 };
@@ -84,7 +78,13 @@ Json &operator<<(Json &j, const match_results &res) {
   }
   return j;
 }
-#endif // NEW_SEARCH__
+
+template <class F>
+static void each_package_line(MysqlConnection &mysql, int pid, F f);
+
+template <class F>
+static match_results search_impl(MysqlConnection &conn, int bid, int skip,
+                                 int max, F f);
 
 ////////////////////////////////////////////////////////////////////////////////
 const char *SearchRoute::route_ = SEARCH_ROUTE_ROUTE;
@@ -108,166 +108,101 @@ Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
   if (not qs) {
     THROW(BadRequest, "(SearchRoute) missing query parameters");
   }
-  if (p) {
-    return search(req, *qs, bid, pq{pskip, pmax});
-  }
-#ifndef NEW_SEARCH__
-  return search(req, *qs, bid, tq{pskip, pmax});
-#else  // NEW_SEARCH__
-  auto max = pmax;
-  auto skip = pskip;
   auto conn = must_get_connection();
+  if (p) {
+    return search(conn,
+                  pq{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
+  }
+  return search(conn,
+                tq{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template <class F>
+static match_results search_impl(MysqlConnection &conn, int bid, int skip,
+                                 int max, F f) {
   match_results ret;
-  ret.total = 0;
   ret.projectid = bid;
-  for (const auto &q : qs.value()) {
-    matches m;
-    m.total = 0;
-    each_package_line(conn, bid, [&](const auto &line) {
-      std::unordered_set<int> offsets;
-      line.each_token([&](DbSlice &slice) {
-        const auto cor = slice.cor();
-        if (cor != q) {
-          return;
-        }
-        offsets.insert(slice.offset);
-      });
-      ret.total += int(offsets.size());
-      m.total += int(offsets.size());
-      if (offsets.empty()) { // we did not find any matching tokens
+  ret.max = max;
+  ret.skip = skip;
+  each_package_line(conn, bid, [&](const auto &line) {
+    line.each_token([&](DbSlice &slice) {
+      std::string q;         // match key
+      if (not f(slice, q)) { // no match
         return;
       }
-      if (skip > 0) {
+      if (skip > 0) { // skip match
         --skip;
         return;
       }
-      if (max <= 0) {
+      if (max <= 0) { // max matches found
         return;
       }
       --max;
+      ret.total++;
+      ret.results[q].total++;
+      // add line if first match in this line or for this q
+      if (ret.results[q].line_matches.empty() or
+          ret.results[q].line_matches.back().first != line) {
+        ret.results[q].line_matches.emplace_back(line,
+                                                 std::unordered_set<int>{});
+      }
+      // add token match
+      ret.results[q].line_matches.back().second.insert(slice.offset);
+      // set bookid from line
       ret.bookid = line.bookid;
-      ret.max = pmax;
-      ret.skip = pskip;
-      m.line_matches.emplace_back(line, offsets);
     });
-    if (m.total > 0) {
-      ret.results[q] = m;
-    }
-  }
+  });
+  return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response SearchRoute::search(MysqlConnection &mysql, tq q) const {
+  const std::unordered_set<std::string> qset(q.qs.begin(), q.qs.end());
+  const auto ret =
+      search_impl(mysql, q.bid, q.skip, q.max, [&](const auto &t, auto &q) {
+        auto i = qset.find(t.cor());
+        if (i == qset.end()) {
+          return false;
+        }
+        q = *i;
+        return true;
+      });
   Json j;
   return j << ret;
-#endif // NEW_SEARCH__
-  // DbLine line(pid, pageid, lid);
-  // if (not line.load(conn)) {
-  //   THROW(NotFound, "(LineRoute) cannot find ", pid, ":", pageid, ":",
-  //   lid);
-  // }
-  // Json j;
-  // return j << line;
-
-  // const auto p = get<bool>(req.url_params, "p").value_or(false);
-  // const auto skip = get<int>(req.url_params, "skip").value_or(0);
-  // const auto max = get<int>(req.url_params, "max").value_or(50);
-  // if (not p) {
-  //   return search(req, *qs, bid, tq{skip, max});
-  // } else {
-
-  // }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response SearchRoute::search(const Request &req,
-                                    const std::vector<std::string> &qs, int bid,
-                                    tq x) const {
-  const LockedSession session(get_session(req));
-  auto conn = must_get_connection();
-  const auto project = session->must_find(conn, bid);
-  Json json;
-  json["matches"] = crow::json::rvalue(crow::json::type::Object);
-  json["projectId"] = bid;
-  json["bookId"] = project->origin().id();
-  json["isErrorPattern"] = false;
-  json["skip"] = x.skip;
-  json["max"] = x.max;
-  // json["projprojectidprojectidprojectid;
-  size_t totalCount = 0;
-  Searcher searcher(*project, x.skip, x.max);
-  for (size_t i = 0; i < qs.size() and searcher.max() > 0; i++) {
-    CROW_LOG_INFO << "(SearchRoute::search) searching project id: " << bid
-                  << " for query string: " << qs[i] << " (skip = " << x.skip
-                  << ", max = " << x.max << ")";
-    const auto matches = searcher.find(qs[i]);
-    CROW_LOG_INFO << "(SearchRoute::search) found " << matches.matches.size()
-                  << " matches for q='" << qs[i] << "'";
-    add_matches(json, matches, qs[i], false);
-    totalCount += matches.totalCount;
-  }
-  json["totalCount"] = totalCount;
-  return json;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-Route::Response SearchRoute::search(const Request &req,
-                                    const std::vector<std::string> &qs, int bid,
-                                    pq x) const {
-  const LockedSession session(get_session(req));
-  auto conn = must_get_connection();
-  const auto project = session->must_find(conn, bid);
-  std::vector<std::string> tokens;
-  for (const auto &q : qs) {
-    CROW_LOG_INFO << "(SearchRoute::search) searching project id: " << bid
-                  << " for error pattern: " << q << " (skip = " << x.skip
-                  << ", max = " << x.max << ")";
+Route::Response SearchRoute::search(MysqlConnection &mysql, pq q) const {
+  std::unordered_map<std::string, std::string> qs;
+  // select tokens
+  for (const auto &p : q.qs) {
     tables::Errorpatterns e;
     tables::Suggestions s;
     tables::Types t;
-    auto rows = conn.db()(select(t.typ)
-                              .from(e.join(s)
-                                        .on(e.suggestionid == s.id)
-                                        .join(t)
-                                        .on(t.id == s.tokentypid))
-                              .where(e.pattern == q));
+    auto rows = mysql.db()(select(t.typ)
+                               .from(e.join(s)
+                                         .on(e.suggestionid == s.id)
+                                         .join(t)
+                                         .on(t.id == s.tokentypid))
+                               .where(e.pattern == p));
+    // later patterns overwrite prior ones
     for (const auto &row : rows) {
-      tokens.push_back(row.typ);
+      qs.emplace(row.typ, p);
     }
   }
-  Json json;
-  json["matches"] = crow::json::rvalue(crow::json::type::Object);
-  json["matches"]["totalCount"] = 0;
-  json["projectId"] = bid;
-  json["bookId"] = project->origin().id();
-  json["isErrorPattern"] = false;
-  json["skip"] = x.skip;
-  json["max"] = x.max;
-  size_t totalCount = 0;
-  Searcher searcher(*project, x.skip, x.max);
-  for (size_t i = 0; i < tokens.size() and searcher.max() > 0; i++) {
-    const auto matches = searcher.find(tokens[i]);
-    CROW_LOG_INFO << "(SearchRoute::search) found " << matches.matches.size()
-                  << " matches for q='" << tokens[i] << "' (skip = " << x.skip
-                  << ", max = " << x.max << ")";
-    add_matches(json, matches, tokens[i], true);
-    totalCount += matches.totalCount;
-  }
-  json["totalCount"] = totalCount;
-  return json;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template <class M>
-void add_matches(Json &json, const M &matches, const std::string &q, bool ep) {
-  CROW_LOG_DEBUG << "(SearchRoute::search) building response";
-  size_t i = 0;
-  json["matches"][q]["totalCount"] = matches.totalCount;
-  for (const auto &m : matches.matches) {
-    json["matches"][q][i]["line"] << *m.first;
-    size_t j = 0;
-    for (const auto &token : m.second) {
-      json["matches"][q][i]["tokens"][j++] << token;
-    }
-    ++i;
-  }
-  CROW_LOG_DEBUG << "(SearchRoute::search) built response";
+  // search
+  const auto ret =
+      search_impl(mysql, q.bid, q.skip, q.max, [&](const auto &t, auto &q) {
+        auto i = qs.find(t.cor());
+        if (i == qs.end()) {
+          return false;
+        }
+        q = i->second; // give pattern (not matched type) as key
+        return true;
+      });
+  Json j;
+  return j << ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

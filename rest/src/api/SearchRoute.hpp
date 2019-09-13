@@ -20,15 +20,16 @@ public:
 
 private:
   struct tq { // token queries
-    int skip, max;
+    std::vector<std::string> qs;
+    int bid, skip, max;
   };
   struct pq { // pattern queries
-    int skip, max;
+    std::vector<std::string> qs;
+    int bid, skip, max;
   };
-  Response search(const Request &req, const std::vector<std::string> &qs,
-                  int bid, tq x) const;
-  Response search(const Request &req, const std::vector<std::string> &qs,
-                  int bid, pq x) const;
+  Response search(MysqlConnection &mysql, tq q) const;
+  Response search(MysqlConnection &mysql, pq q) const;
+
   static const char *route_;
   static const char *name_;
 };
