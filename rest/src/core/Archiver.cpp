@@ -46,7 +46,9 @@ Archiver::Path Archiver::operator()() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void Archiver::zip(const Path &dir, const Path &archive) const {
+void Archiver::zip(const Path &xdir, const Path &archive) const {
+  const auto base = basedir_.parent_path();
+  const auto dir = base / xdir;
   const auto old = fs::current_path();
   ScopeGuard restoreold([&old]() { fs::current_path(old); });
   auto new__ = dir.parent_path();
@@ -55,7 +57,7 @@ void Archiver::zip(const Path &dir, const Path &archive) const {
   fs::current_path(new__);
   const auto command = "zip -r -qq " + archive.filename().string() + " " +
                        dir.filename().string();
-  CROW_LOG_DEBUG << "(Archiver) zip command: " << command;
+  CROW_LOG_INFO << "(Archiver) zip command: " << command;
   const auto err = system(command.data());
   if (err)
     THROW(Error, "Cannot unzip file: `", command, "` returned: ", err);
@@ -73,16 +75,24 @@ void Archiver::write_gt_file(const Line &line, const Path &to) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void Archiver::copy_files(const Path &dir) const {
+void Archiver::copy_files(const Path &xdir) const {
+  const auto base = basedir_.parent_path();
+  const auto dir = base / xdir;
+  CROW_LOG_INFO << "(Archiver) dir:        " << dir;
   assert(project_);
   WagnerFischer wf;
   for (const auto &page : *project_) {
+    CROW_LOG_INFO << "(Archiver) ocr path:  " << page->ocr;
+    CROW_LOG_INFO << "(Archiver) base dir:  " << base;
     if (not page->has_ocr_path()) {
       CROW_LOG_WARNING << "(Archiver) page id: " << page->id()
                        << " has no associated ocr path";
       continue;
     }
-    const auto pp = make_page_parser(page->file_type, page->ocr)->parse();
+    const auto path = base / page->ocr;
+    CROW_LOG_INFO << "(Archiver) file path: " << path;
+    const auto pp =
+        make_page_parser(page->file_type, base / page->ocr)->parse();
     for (const auto &line : *page) {
       if (line->has_img_path()) {
         wf.set_gt(line->wcor());
@@ -90,20 +100,25 @@ void Archiver::copy_files(const Path &dir) const {
         // line ids start at 1.
         assert(line->id() > 0);
         pp->get(line->id() - 1).correct(wf);
-        const auto img = copy_to_tmp_dir(line->img, dir);
+        const auto img = copy_to_tmp_dir(base / line->img, dir);
         auto tmp = img.parent_path() / img.stem().replace_extension(".gt.txt");
+        CROW_LOG_INFO << "(Archiver) tmp path:  " << tmp;
         write_gt_file(*line, tmp);
       }
     }
     pp->write(get_tmp_file(page->ocr, dir));
     if (page->has_img_path()) {
-      copy_to_tmp_dir(page->img, dir);
+      CROW_LOG_INFO << "(Archiver) img path:  " << base / page->img;
+      CROW_LOG_INFO << "(Archiver) copy to:   " << dir;
+      copy_to_tmp_dir(base / page->img, dir);
     }
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void Archiver::write_adaptive_token_set(const Path &dir) const {
+void Archiver::write_adaptive_token_set(const Path &xdir) const {
+  const auto base = basedir_.parent_path();
+  const auto dir = base / xdir;
   const auto bookid = project_->id();
   const auto path = dir / "adaptive_tokens.txt";
   std::ofstream os(path.string());
