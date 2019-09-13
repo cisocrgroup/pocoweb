@@ -97,7 +97,8 @@ BOOST_FIXTURE_TEST_SUITE(Books, BooksFixture)
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(InsertProject) {
   db.expect("INSERT INTO projects (origin,pages,owner) VALUES(0,1,42)");
-  db.expect("INSERT INTO project_pages (projectid,pageid) VALUES(0,1)");
+  db.expect("INSERT INTO project_pages "
+            "(projectid,pageid,nextpageid,prevpageid) VALUES(0,1,1,1)");
   auto view = insert_project(db, *book);
   BOOST_CHECK_EQUAL(view, book);
   db.validate();
@@ -111,6 +112,8 @@ BOOST_AUTO_TEST_CASE(InsertBook) {
             "description,profilerurl,histpatterns,lang) "
             "VALUES('author','title','directory',2017,"
             "'uri',0,'description','','','language')");
+  db.expect("INSERT INTO project_pages "
+            "(projectid,pageid,nextpageid,prevpageid) VALUES(0,1,1,1)");
   db.expect("INSERT INTO pages (bookid,pageid,imagepath,ocrpath,filetype,pleft,"
             "ptop,pright,pbottom) VALUES(0,1,'image','ocr',0,1,2,3,4)");
   db.expect("INSERT INTO textlines (bookid,pageid,lineid,imagepath,lleft,"
@@ -127,7 +130,6 @@ BOOST_AUTO_TEST_CASE(InsertBook) {
   // t
   db.expect("INSERT INTO contents (bookid,pageid,lineid,seq,ocr,cor,cut,conf) "
             "VALUES(0,1,1,3,116,0,4,1)");
-  db.expect("INSERT INTO project_pages (projectid,pageid) VALUES(0,1)");
   auto view = insert_book(db, *book);
   BOOST_CHECK_EQUAL(view, book);
   db.validate();

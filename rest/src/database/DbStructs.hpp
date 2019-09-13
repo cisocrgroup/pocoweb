@@ -80,6 +80,15 @@ private:
   int offset_;
 };
 
+inline bool operator==(const DbLine &lhs, const DbLine &rhs) {
+  return lhs.bookid == rhs.bookid and lhs.projectid == lhs.projectid and
+         lhs.pageid == rhs.pageid and lhs.lineid == rhs.lineid;
+}
+
+inline bool operator!=(const DbLine &lhs, const DbLine &rhs) {
+  return not operator==(lhs, rhs);
+}
+
 Json &operator<<(Json &j, const DbLine &line);
 
 struct DbPage {
