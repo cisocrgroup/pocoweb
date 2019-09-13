@@ -155,13 +155,11 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
        projectShowSidebar.on("page:new",function(page_id){
-        console.log(id)
+        
                     var fetchinglineheight = App.getLineHeight(id);
                     var fetchinglinenumbers = App.getLineNumbers(id);
                     var fetchingnewpage = ProjectEntities.API.getPage({pid:id, page:page_id});
                   $.when(fetchingnewpage,fetchinglineheight,fetchinglinenumbers).done(function(new_page,lineheight,linenumbers){
-                    console.log("NEW page")
-                    console.log(new_page)
                      new_page.attributes.title = project.get('title');
                       projectShowPage.model=new_page;
 
@@ -330,8 +328,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                var that = this;
                $.when(searchingToken).done(function(tokens){
                  that.options.tokendata = tokens;
-                 // that.setImages(max);
-                 that.render();
+                 that.setImages(max);
                  that.setContent(false);
                });
             })

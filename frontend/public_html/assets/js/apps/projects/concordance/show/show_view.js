@@ -392,15 +392,14 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
      let nmatches=0;
 
    for (key in tokendata['matches']) {
-           for (var i=0;i<tokendata['matches'][key].length;i++){
+            for (var i=0;i<tokendata['matches'][key].lines.length;i++){
             var match = tokendata['matches'][key][i];
-            var line = match['line'];
-             nmatches += match.tokens.length;
+            var line = tokendata['matches'][key].lines[i];
 
-        _.each(match['tokens'], function(word) {
+             nmatches ++;
 
-        var offset = word['offset'];
-        var link = "#/projects/"+word['projectId']+"/page/"+word['pageId'];
+
+        var link = "#/projects/"+line['projectId']+"/page/"+line['pageId'];
         var line_container = $('<div class="line-container">');
 
         var text_image_line = $('<div class="text-image-line" title="page '+line.pageId+ ' line ' + line.lineId+'">');
@@ -425,7 +424,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         line_container.append(text_image_line);
         $('.all_lines_parent').append(line_container);
 
-          });
+        
         }
       };
 
@@ -463,7 +462,6 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
             for (var i=0;i<tokendata['matches'][key].lines.length;i++){
 
             var line = tokendata['matches'][key].lines[i];
-            // var line = match['lines'];
             var linetokens = line['tokens'];
             var concLine = $('<div class="concLine"></div>')
             var anchor = line['projectId']+"-"+line['pageId']+"-"+line['lineId'];

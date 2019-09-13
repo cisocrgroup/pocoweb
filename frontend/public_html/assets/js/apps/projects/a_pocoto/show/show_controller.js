@@ -11,10 +11,9 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
 
      		require(["entities/project","entities/util","entities/users"], function(ProjectEntities,UtilEntities,UserEntities){
 
-	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
+	   	    var loadingCircleView = new  Views.LoadingBackdropOpc();
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
-     			  var fetchingproject = ProjectEntities.API.getProject({pid:id});
-    
+     		var fetchingproject = ProjectEntities.API.getProject({pid:id});
 
 
 
