@@ -151,7 +151,7 @@ downloadProject: function(data){
        url: "rest/books/"+ data.pid + "/download" + "?auth=" + App.getAuthToken(),
        type: "GET",
        success: function(data) {
-         defer.resolve(result);
+         defer.resolve(data);
        },
        error: function(data){
          defer.reject(data);

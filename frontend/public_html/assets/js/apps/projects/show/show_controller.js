@@ -460,7 +460,8 @@ define([
 
                 $.when(downloadinggproject)
                   .done(function(result) {
-                    // App.mainmsg.updateContent(result,'success');
+                    console.log(result);
+                    window.open("/" + result.archive);
                   })
                   .fail(function(response) {
                     Util.defaultErrorHandling(response, "danger");
