@@ -59,6 +59,7 @@ Box PageXmlPageParser::get_page_box(const Xml::Node &node) {
   return Box{0, 0, r, b};
 }
 
+////////////////////////////////////////////////////////////////////////////////
 static std::vector<std::string>
 get_ordered_text_regions(const Xml::Node &pagenode) {
   std::vector<std::pair<int, std::string>> text_regions;
