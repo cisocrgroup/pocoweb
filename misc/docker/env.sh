@@ -1,13 +1,5 @@
 #/bin/sh
 
-# Base dirctory of volumes
-#
-# Set here or use export if you want another value:
-# export PCW_BASE_DIR=/srv/pocoweb
-# docker-compose ...
-# PCW_BASE_DIR=$(PCW_BASE_DIR:-/srv/pocoweb)
-PCW_BASE_DIR=/srv/pocoweb
-
 # Settings for the mysql user
 MYSQL_ROOT_PASSWORD=example
 MYSQL_USER=pocoweb

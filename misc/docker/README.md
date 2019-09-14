@@ -1,5 +1,6 @@
 # Docker compose
 ## Setup
+- set PCW_BASE_DIR variable in `.env` file
 - edit `externalURL` variable in `frontend/public_html/api/config.php`
 - edit `externalURL` variable in `frontend/resources/config.php`
 - update settings in env.sh file.
