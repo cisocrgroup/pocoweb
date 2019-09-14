@@ -145,10 +145,12 @@ addAlignedLine : function(line){
               return;
               }
 
-              let addDiv = function(text, width, boxstr) {
+              let addDiv = function(text, width, box) {
                   let textdiv = $('<div>' + text + "</div>");
+ 				  let boxstr = "(" + box.left + "," + box.top + "," +
+				      box.right + "," + box.bottom + ")";
                   textdiv.css('width', width * scalefactor);
-                  textdiv.attr('boundingBox', boxstr);
+                  textdiv.attr('boundingbox', boxstr);
                   let div = $('<div class="tokendiv noselect"></div>').append(textdiv);
                   line_text.find('.line-tokens').append(div);
               };
@@ -156,13 +158,17 @@ addAlignedLine : function(line){
                 // add whitespace between tokens
                 if (i > 0) {
                   let width = linetokens[i].box.left - linetokens[i-1].box.right;
-                  addDiv("", width, "");
+                  let box = {
+                      left: linetokens[i-1].box.right+1,
+                      right: linetokens[i].box.left-1,
+                      top: linetokens[i].box.top,
+                      bottom: linetokens[i].box.bottom
+                  };
+                  addDiv("", width, box);
                 }
                 let token = linetokens[i];
                 let box = token['box'];
-				let boxstr = "(" + box.left + "," + box.top + "," +
-				  box.right + "," + box.bottom + ")";
-                addDiv(token.cor.trim(), token.box.width, boxstr);
+                addDiv(token.cor.trim(), token.box.width, box);
                }
 },
   copyStringToClipboard :function(str) {
