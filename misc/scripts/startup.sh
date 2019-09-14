@@ -11,7 +11,7 @@ sleeps=2
 while [[ $ok == false ]] && (($n > 0)); do
 	n=$((n-1))
 	sleep $sleeps
-	mysql -h$PCW_DB_HOST -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE < $sql \
+	mysql -hdb -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE < $sql \
 		&& ok=true;
 done
 if [[ $ok == false ]]; then
