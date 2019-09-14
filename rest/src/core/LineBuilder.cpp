@@ -37,15 +37,18 @@ const LineBuilder &LineBuilder::append(const std::wstring &wstr, int r,
   if (wstr.empty()) {
     return *this;
   }
-  auto l = line_->chars_.empty() ? 0 : line_->chars_.back().cut;
+  auto l = line_->chars_.empty() ? line_->box.left() : line_->chars_.back().cut;
   auto d = (r - l) / static_cast<int>(wstr.size());
+  auto rest = d % static_cast<int>(wstr.size());
   for (auto c : wstr) {
     l += d;
+    if (rest > 0) {
+      --rest;
+      l += 1;
+    }
     append(c, 0, l, conf);
   }
   assert(not line_->chars_.empty());
-  // fix error (not bug) in d
-  line_->chars_.back().cut = r;
   return *this;
 }
 
