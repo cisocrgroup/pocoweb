@@ -34,17 +34,18 @@ const LineBuilder &LineBuilder::append(const std::string &str, int r,
 const LineBuilder &LineBuilder::append(const std::wstring &wstr, int r,
                                        double conf) const {
   PRAECONDITION;
-  if (not wstr.empty()) {
-    auto l = line_->chars_.empty() ? 0 : line_->chars_.back().cut;
-    auto d = (r - l) / static_cast<int>(wstr.size());
-    for (auto c : wstr) {
-      l += d;
-      append(c, 0, l, conf);
-    }
-    assert(not line_->chars_.empty());
-    // fix error (not bug) in d
-    line_->chars_.back().cut = r;
+  if (wstr.empty()) {
+    return *this;
   }
+  auto l = line_->chars_.empty() ? 0 : line_->chars_.back().cut;
+  auto d = (r - l) / static_cast<int>(wstr.size());
+  for (auto c : wstr) {
+    l += d;
+    append(c, 0, l, conf);
+  }
+  assert(not line_->chars_.empty());
+  // fix error (not bug) in d
+  line_->chars_.back().cut = r;
   return *this;
 }
 
