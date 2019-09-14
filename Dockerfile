@@ -22,7 +22,7 @@ VOLUME /project-data /www-data /tmp
 COPY rest /build/rest
 COPY db /build/db
 RUN cd /build \
-	&& make V='' CXX=clang++ -j $(nproc) install \
+	&& make CXX=clang++ -j $(nproc) install \
 	&& cd / \
 	&& rm -rf /build
 
