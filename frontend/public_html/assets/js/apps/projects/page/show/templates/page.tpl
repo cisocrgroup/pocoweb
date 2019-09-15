@@ -10,7 +10,8 @@
 
        var split_img = line["imgFile"].split("/");
   	   var imgbasename = split_img[4];
-  	   var text = "line " + line['lineId'] + ", " + imgbasename;
+  	   var text = "line " + line['lineId'] + ", " + imgbasename +
+	              ", " + line.cor.trim();
   	   var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
   	   var inputclass = Util.get_correction_class(line);
   	   var correction_class="";

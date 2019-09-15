@@ -145,30 +145,32 @@ addAlignedLine : function(line){
               return;
               }
 
-              let addDiv = function(text, width, box) {
+              let addDiv = function(text, width, box, offset) {
                   let textdiv = $('<div>' + text + "</div>");
  				  let boxstr = "(" + box.left + "," + box.top + "," +
 				      box.right + "," + box.bottom + ")";
                   textdiv.css('width', width * scalefactor);
                   textdiv.attr('boundingbox', boxstr);
+                  textdiv.attr('title', 'token ' + offset + ', ' + text);
                   let div = $('<div class="tokendiv noselect"></div>').append(textdiv);
                   line_text.find('.line-tokens').append(div);
               };
               for(var i=0;i<linetokens.length;i++) {
+                let token = linetokens[i];
                 // add whitespace between tokens
                 if (i > 0) {
-                  let width = linetokens[i].box.left - linetokens[i-1].box.right;
+                  let prev = linetokens[i-1];
+                  let width = token.box.left - prev.box.right;
                   let box = {
-                      left: linetokens[i-1].box.right+1,
-                      right: linetokens[i].box.left-1,
-                      top: linetokens[i].box.top,
-                      bottom: linetokens[i].box.bottom
+                      left: prev.box.right+1,
+                      right: token.box.left-1,
+                      top: token.box.top,
+                      bottom: token.box.bottom
                   };
-                  addDiv("", width, box);
+                  let offset = prev.offset + prev.cor.trim().length + 1;
+                  addDiv("", width, box, offset);
                 }
-                let token = linetokens[i];
-                let box = token['box'];
-                addDiv(token.cor.trim(), token.box.width, box);
+                addDiv(token.cor.trim(), token.box.width, token.box, token.offset);
                }
 },
   copyStringToClipboard :function(str) {
