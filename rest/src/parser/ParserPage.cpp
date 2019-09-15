@@ -5,6 +5,7 @@
 #include <crow/logging.h>
 #include <fstream>
 #include <iostream>
+#include <regex>
 #include <utf8.h>
 
 using namespace pcw;
@@ -32,4 +33,20 @@ PagePtr ParserPage::page() const {
     page->push_back(get(i).line(id));
   }
   return page;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int pcw::guess_id_from_string(const std::string &str) {
+  // search for last number in string
+  static const std::regex re(R"re((\d+)[^\d]*$)re");
+  std::smatch m;
+  if (not std::regex_search(str, m, re)) { // no number: cannot guess id
+    return 0;
+  }
+  return std::stoi(m[1]);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int pcw::guess_id_from_path(const Path &path) {
+  return guess_id_from_string(path.filename().string());
 }
