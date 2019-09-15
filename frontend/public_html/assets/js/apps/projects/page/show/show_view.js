@@ -5,9 +5,7 @@
 define(["marionette","app","backbone.syphon","common/views","common/util","apps/projects/concordance/show/show_view",
         "tpl!apps/projects/page/show/templates/page.tpl",
         "tpl!apps/projects/page/show/templates/sidebar.tpl",
-        "tpl!apps/projects/page/show/templates/layout.tpl",
-
-
+        "tpl!apps/projects/page/show/templates/layout.tpl"
   ], function(Marionette,App,BackboneSyphon,Views,Util,Concordance,pageTpl,sidebarTpl,layoutTpl){
 
 
