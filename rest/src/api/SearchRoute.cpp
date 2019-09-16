@@ -158,15 +158,26 @@ static match_results search_impl(MysqlConnection &conn, int bid, int skip,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+struct iless : public std::binary_function<std::wstring, std::wstring, bool> {
+  bool operator()(const std::wstring &lhs, const std::wstring &rhs) const {
+    return wcscasecmp(lhs.c_str(), rhs.c_str()) < 0;
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////
 Route::Response SearchRoute::search(MysqlConnection &mysql, tq q) const {
-  const std::unordered_set<std::string> qset(q.qs.begin(), q.qs.end());
+  // map wstrings to strings
+  std::map<std::wstring, std::string, iless> qset;
+  for (const auto &x : q.qs) {
+    qset[utf8(x)] = x;
+  }
   const auto ret =
       search_impl(mysql, q.bid, q.skip, q.max, [&](const auto &t, auto &q) {
-        auto i = qset.find(t.cor());
+        auto i = qset.find(t.wcor());
         if (i == qset.end()) {
           return false;
         }
-        q = *i;
+        q = i->second;
         return true;
       });
   Json j;
