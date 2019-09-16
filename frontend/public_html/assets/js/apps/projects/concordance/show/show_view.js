@@ -430,7 +430,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
       var paginated_item = $('.js-paginate').find('.active').val();
 
-      var to = nmatches*paginated_item;
+      var to = tokendata.skip + nmatches;//*paginated_item;
       $('.concordance-number').text("Showing " + (tokendata.skip+1) + " to " + to +" of " + tokendata.total +" search results");
 
 
