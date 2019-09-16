@@ -424,20 +424,13 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         line_container.append(text_image_line);
         $('.all_lines_parent').append(line_container);
 
-        
+
         }
       };
 
       var paginated_item = $('.js-paginate').find('.active').val();
 
-      var to;
-      if(nmatches<max){
-        to = tokendata.total;
-      }
-      else {
-       to = nmatches*paginated_item;
-      }
-
+      var to = nmatches*paginated_item;
       $('.concordance-number').text("Showing " + (tokendata.skip+1) + " to " + to +" of " + tokendata.total +" search results");
 
 
