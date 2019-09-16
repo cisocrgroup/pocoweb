@@ -42,99 +42,94 @@ App.getCurrentRoute = function(){
  return Backbone.history.fragment
 };
 
+App.newPcw = function() {
+  return {
+    'user': null,
+    'auth': -1,
+    'options': {
+      'lineHeights': {}, // id: lineHeight
+      'pageHits': {},    // id: pageHits
+      'lineNumbers': {}, // id: lineNumber
+      'charMapFilter': "abcdefghijklmnopqrstuvwxyz" +
+	    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+	    "0123456789" +
+	    "\\'\":,-+/@#$.;<>(){}[]\\&?!=*^~_"
+    }
+  };
+};
+
+App.getPcw = function() {
+  let pcw = JSON.parse(localStorage.getItem('pcw')) || App.newPcw();
+  return pcw;
+};
+
+App.setPcw = function(pcw) {
+  localStorage.setItem('pcw', JSON.stringify(pcw));
+};
+
 App.getCurrentUser = function() {
-  let pcw = localStorage.getItem('pcw');
-  if (pcw != null) {
-    return JSON.parse(pcw).user;
-  }
-  return null;
+  return App.getPcw().user;
 };
 
 App.updateCurrentUser = function(user) {
-  var data = JSON.parse(localStorage.getItem('pcw'));
-  data.user = user;
-  localStorage.setItem('pcw', JSON.stringify(data));
+  let pcw = App.getPcw();
+  pcw.user = user.user;
+  pcw.auth = user.auth;
+  App.setPcw(pcw);
 };
 
 App.getAuthToken = function() {
-  if (localStorage.getItem('pcw') === null) {
-      return - 1;
-  }
-  return JSON.parse(localStorage.getItem('pcw')).auth;
+  return App.getPcw().auth;
 };
 
 App.clearCurrentUser = function() {
-  localStorage.removeItem('pcw');
+  let pcw = App.getPcw();
+  pcw.user = null;
+  App.setPcw(pcw);
 };
 
 App.setLineHeight = function(id,val){
-  var data = JSON.parse(localStorage.getItem('pcw_options'));
-    if(data.lineHeights==null){
-      data.lineHeights = {};
-    }
-
-  data.lineHeights[id] = val;
-  localStorage.setItem('pcw_options', JSON.stringify(data));
-};
+  let pcw = App.getPcw();
+  pcw.options.lineHeights[id] = val;
+  App.setPcw(pcw);
+}
 
 App.getLineHeight = function(id){
-  var data = JSON.parse(localStorage.getItem('pcw_options'));
-    if(data.lineHeights!=null&&data.lineHeights[id]!=undefined){
-      return data.lineHeights[id];
-    }
-    return 30;
+  let height = App.getPcw().options.lineHeights[id] || 30;
+  return height;
 };
 
 App.getPageHits = function(id) {
-  var data = JSON.parse(localStorage.getItem('pcw_options'));
-    if(data.pageHits != null && data.pageHits[id]!=undefined){
-      return data.pageHits[id];
-    }
-    return 8;
+  let pageHits = App.getPcw().options.pageHits[id] || 8;
+  return pageHits;
 };
 
 App.setPageHits = function(id, val){
-  var data = JSON.parse(localStorage.getItem('pcw_options'));
-  if(data.pageHits == null){
-    data.pageHits = {};
-  }
-  data.pageHits[id] = val;
-  localStorage.setItem('pcw_options', JSON.stringify(data));
+  let pcw = App.getPcw();
+  pcw.options.pageHits[id] = val;
+  App.setPcw(pcw);
 };
 
 App.setLineNumbers = function(id,val){
-  var data = JSON.parse(localStorage.getItem('pcw_options'));
-    if(data.lineNumbers==null){
-      data.lineNumbers = {};
-    }
-
-  data.lineNumbers[id] = val;
-  localStorage.setItem('pcw_options', JSON.stringify(data));
+  let pcw = App.getPcw();
+  pcw.options.lineNumbers[id] = val;
+  App.setPcw(pcw);
 };
 
 App.getLineNumbers = function(id){
-  var data = JSON.parse(localStorage.getItem('pcw_options'));
-    if(data.lineNumbers!=null&&data.lineNumbers[id]!=undefined){
-      return data.lineNumbers[id];
-    }
-    return true;
+  let lineNumbers = App.getPcw().options.lineNumbers[id] || false;
+  return lineNumbers;
 };
 
 App.getCharmapFilter = function() {
-   return"abcdefghijklmnopqrstuvwxyz" +
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-	"0123456789" +
-	"\\'\":,-+/@#$.;<>(){}[]\\&?!=*^~_";
+  return App.getPcw().options.charMapFilter;
 };
 
 App.on("start", function(){
-
-    // init options
-    if (localStorage.getItem('pcw_options') === null) {
-      var options = {lineHeights:{},lineNumbers:{}};
-      console.log(options);
-        localStorage.setItem('pcw_options',JSON.stringify(options));
-    }
+  // init pcw local storage configuration
+  let pcw = App.getPcw();
+  App.setPcw(pcw);
+  console.log(pcw);
 
     if(Backbone.history){
        require([
@@ -175,7 +170,7 @@ App.on("start", function(){
 
     var loggingInUser = UserEntities.API.login(data);
                  $.when(loggingInUser).done(function(result){
-                   localStorage.setItem('pcw', JSON.stringify(result));
+                   App.updateCurrentUser(result);
                         App.mainmsg.updateContent("Login successful!",'success');
 
                          App.Navbar.options.user = App.getCurrentUser();

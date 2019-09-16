@@ -69,11 +69,8 @@ Entities.API = {
 
 
   loginCheck: function(){
-    if (localStorage.getItem('pcw')) {
-      return App.getCurrentUser();
-    } else {
-      return -1;
-    }
+    let user = App.getPcw().user || -1;
+    return user;
   },
     logout: function(data){
       var defer = jQuery.Deferred();
