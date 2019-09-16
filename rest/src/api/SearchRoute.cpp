@@ -131,6 +131,9 @@ static match_results search_impl(MysqlConnection &conn, int bid, int skip,
       if (not f(slice, q)) { // no match
         return;
       }
+      // we have a search match
+      ret.total++;
+      ret.results[q].total++;
       if (skip > 0) { // skip match
         --skip;
         return;
@@ -139,8 +142,6 @@ static match_results search_impl(MysqlConnection &conn, int bid, int skip,
         return;
       }
       --max;
-      ret.total++;
-      ret.results[q].total++;
       // add line if first match in this line or for this q
       if (ret.results[q].line_matches.empty() or
           ret.results[q].line_matches.back().first != line) {
