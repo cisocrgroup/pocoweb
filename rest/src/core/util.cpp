@@ -207,12 +207,12 @@ pcw::FileType pcw::file_type_from_string(const std::string &type) {
 
 ////////////////////////////////////////////////////////////////////////////////
 pcw::FileType pcw::get_file_type(const Path &path) {
-  static const std::regex hocr{
-      R"(\.((html?)|(hocr))$)", std::regex_constants::icase};
+  static const std::regex hocr{R"(\.((html?)|(hocr))$)",
+                               std::regex_constants::icase};
   static const std::regex xml{R"(\.xml$)", std::regex_constants::icase};
   static const std::regex llocs{R"(\.llocs$)"};
-  static const std::regex img{
-      R"(\.((png)|(jpe?g)|(tiff?))$)", std::regex_constants::icase};
+  static const std::regex img{R"(\.((png)|(jpe?g)|(tiff?))$)",
+                              std::regex_constants::icase};
   auto str = path.string();
   if (std::regex_search(str, img))
     return FileType::Img;
@@ -384,4 +384,20 @@ void pcw::hard_link_or_copy(const Path &from, const Path &to,
   CROW_LOG_WARNING << "(hard_link_or_copy) Could not create hardlink from "
                    << from << " to " << to << ": " << ec.message();
   boost::filesystem::copy_file(from, to, ec);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int pcw::guess_id(const std::string &str) {
+  // search for last number in string
+  static const std::regex re(R"re((\d+)[^\d]*$)re");
+  std::smatch m;
+  if (not std::regex_search(str, m, re)) { // no number: cannot guess id
+    return 0;
+  }
+  return std::stoi(m[1]);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int pcw::guess_id(const Path &path) {
+  return guess_id(path.filename().string());
 }

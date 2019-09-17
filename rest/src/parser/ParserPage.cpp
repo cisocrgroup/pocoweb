@@ -34,19 +34,3 @@ PagePtr ParserPage::page() const {
   }
   return page;
 }
-
-////////////////////////////////////////////////////////////////////////////////
-int pcw::guess_id(const std::string &str) {
-  // search for last number in string
-  static const std::regex re(R"re((\d+)[^\d]*$)re");
-  std::smatch m;
-  if (not std::regex_search(str, m, re)) { // no number: cannot guess id
-    return 0;
-  }
-  return std::stoi(m[1]);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-int pcw::guess_id(const Path &path) {
-  return guess_id(path.filename().string());
-}

@@ -50,6 +50,8 @@ void apply_capitalization(Capitalization cap, std::string &str) noexcept;
 void hard_link_or_copy(const Path &from, const Path &to);
 void hard_link_or_copy(const Path &from, const Path &to,
                        boost::system::error_code &ec) noexcept;
+int guess_id(const Path &path);
+int guess_id(const std::string &str);
 } // namespace pcw
 
 #endif // pcw_util_hpp__
