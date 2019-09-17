@@ -33,7 +33,7 @@ void PageXmlPageParser::parse(const Xml::Node &pagenode,
   page.img = fix_windows_path(filename);
   page.file_type = FileType::PageXml;
   page.box = get_page_box(pagenode);
-  page.id = guess_id_from_path(path_);
+  page.id = guess_id(path_);
   each_text_region(pagenode, [&](const auto &region_node) {
     for (const auto &line :
          region_node.select_nodes("./*[local-name()='TextLine']")) {

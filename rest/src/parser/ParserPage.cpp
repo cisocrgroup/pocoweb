@@ -36,7 +36,7 @@ PagePtr ParserPage::page() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-int pcw::guess_id_from_string(const std::string &str) {
+int pcw::guess_id(const std::string &str) {
   // search for last number in string
   static const std::regex re(R"re((\d+)[^\d]*$)re");
   std::smatch m;
@@ -47,6 +47,6 @@ int pcw::guess_id_from_string(const std::string &str) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-int pcw::guess_id_from_path(const Path &path) {
-  return guess_id_from_string(path.filename().string());
+int pcw::guess_id(const Path &path) {
+  return guess_id(path.filename().string());
 }

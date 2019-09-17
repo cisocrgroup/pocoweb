@@ -61,8 +61,8 @@ public:
   int id;
 };
 
-int guess_id_from_path(const Path &path);
-int guess_id_from_string(const std::string &str);
+int guess_id(const Path &path);
+int guess_id(const std::string &str);
 } // namespace pcw
 
 #endif // pcw_ParserPage_hpp__
