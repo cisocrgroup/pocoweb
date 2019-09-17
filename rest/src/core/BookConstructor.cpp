@@ -153,9 +153,14 @@ BookConstructor::find_matching_img_file(const Path &path) const noexcept {
 
 ////////////////////////////////////////////////////////////////////////////////
 void BookConstructor::order_pages(std::vector<PagePtr> &pages) noexcept {
+  // try to calculate missing page ids from the page paths
+  for (const auto &page : pages) {
+    if (page->id() == 0) {
+      page->set_id(guess_id(page->ocr));
+    }
+  }
   const auto b = begin(pages);
   const auto e = end(pages);
-
   if (std::all_of(b, e, [](const auto &page) { return page->id() > 0; })) {
     // sort by page index of ocr source file
     std::sort(b, e,
