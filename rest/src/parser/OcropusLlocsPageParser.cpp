@@ -27,7 +27,7 @@ OcropusLlocsPageParser::OcropusLlocsPageParser(Path path)
     THROW(Error, "(OcropusLlocsPageParser) not a directory: ", dir_);
   }
   CROW_LOG_DEBUG << "(OcropusLlocsPageParser) dir: " << dir_;
-  id_ = std::stoi(path.filename().string(), nullptr, 10);
+  id_ = guess_id(path);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,6 @@ ParserPagePtr OcropusLlocsPageParser::parse_page() const {
   }
   page->ocr = dir_;
   page->file_type = FileType::Llocs;
-  page->id = guess_id(dir_);
   return page;
 }
 
