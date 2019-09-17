@@ -13,7 +13,7 @@
       <li class="nav-item">
         <a class="nav-link" href="#projects">Projects</a>
       </li>
-	  	<% if (user != null && user.admin) { %>
+	  	<% if (user.id != -1 && user.admin) { %>
        <li class="nav-item">
         <a class="nav-link" href="#users">Users</a>
       </li>
@@ -30,7 +30,7 @@
     </ul>
 
      <ul class="navbar-nav my-2 my-lg-0 right-nav">
-      <% if (user != null) { %>
+      <% if (user.id != -1) { %>
         <li><p class="navbar-text" style="margin:0;">Logged in as: <span class="loginname"> <%-user.name%></span></p></li>
         <li class="nav-item js-logout"><a href="#" class="nav-link">Logout</a></li>
 

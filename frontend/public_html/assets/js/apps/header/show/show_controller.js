@@ -88,7 +88,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
        });
 
   headerShowTopbar.on("attach",function(){
-       if(login_check!=-1){
+       if(login_check.id!=-1){
              var user = login_check;
 
       App.mainmsg.updateContent("Welcome back to PoCoWeb: "+user.name+"!",'success');
