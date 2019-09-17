@@ -694,7 +694,10 @@ outline: 0;
 
 
 #sidebar-container{
-  height: 770px;
+    height: 770px;
+    /* max-height: 770px; */
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 #page-container{
