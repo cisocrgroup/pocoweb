@@ -43,9 +43,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             for (word in suspicious_words['counts']) {
                suspicious_words_array.push([word,suspicious_words['counts'][word]]);
             }
-
+            var tab_content_height = $('.tab-content').height();
             var sp_table = $('.suspicious-words').DataTable({
-                 "scrollY": "489px",
+                 "scrollY": '556px',
                   "data":suspicious_words_array,
                   "info":false,
                   "paging": false,
@@ -71,7 +71,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             }
 
              var ep_table = $('.error-patterns').DataTable({
-                  "scrollY": "489px",
+                  "scrollY": '556px',
                   "data":error_patterns_array,
                   "info":false,
                   "paging": false,
@@ -97,7 +97,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 				   data.push([key, charmap.charMap[key]]);
 			   }
              var char_table = $('.special-characters').DataTable({
-                  "scrollY": "489px",
+                  "scrollY": '556px',
                   "data": data,//[],//[["a",10],["b",10],["c",10]],
                   "info":false,
                   "paging": false,
