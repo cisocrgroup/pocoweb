@@ -84,7 +84,7 @@ App.getAuthToken = function() {
 
 App.clearCurrentUser = function() {
   let pcw = App.getPcw();
-  pcw.user = null;
+  pcw.user = {id:-1};
   App.setPcw(pcw);
 };
 

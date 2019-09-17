@@ -48,13 +48,15 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       correct_clicked:function(e){
 
         var that = this;
-
+        var checked_length  =   $('.concLine').find('.fa-check-square').length;
           $('.concLine').each(function(){
-            console.log(this);
              var cordiv_left = $(this).find('.cordiv_left');
             console.log(cordiv_left)
             if(cordiv_left.find('i').hasClass('fa-check-square')){
-              var anchor = $(this).anchor;
+                          console.log($(this));
+
+              var anchor = $(this).attr('anchor');
+
               cordiv_left.parent().each(function(i, tokendiv) {
                 var pid = tokendiv.attributes.projectid.value;
                 var pageid = tokendiv.attributes.pageid.value;
@@ -66,7 +68,14 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                   page_id:pageid,
                   line_id:lineid,
                   token_id:offset,
-                  token:token}, anchor);
+                  token:token}, anchor, function(){
+                    checked_length--;
+                    console.log(checked_length);
+                    if (checked_length == 0){
+                       that.trigger("concordance:update_after_correction",
+                        {pid:pid,query:Marionette.getOption(that,"selection")});
+                    }
+                  });
               });
             }
           });
@@ -141,14 +150,19 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         // console.log($(e.currentTarget));
         var concLine = $(e.currentTarget).parent().parent();
         var tokendiv = $(e.currentTarget).parent();
-
+            var that = this;
             var pid = tokendiv.attr('projectId');
             var lineid =  tokendiv.attr('lineId');
             var pageid =  tokendiv.attr('pageId');
             var offset =  tokendiv.attr('offset');
             var token  = tokendiv.text();
             var anchor = concLine.attr('anchor');
-            this.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:offset,token:token},anchor)
+            this.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:offset,token:token}
+              ,anchor
+              ,function(){
+                       that.trigger("concordance:update_after_correction",
+                        {pid:pid,query:Marionette.getOption(that,"selection")});
+               });
       },
       cor_suggestions:function(e){
          e.stopPropagation();
