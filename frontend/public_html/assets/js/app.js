@@ -44,13 +44,13 @@ App.getCurrentRoute = function(){
 
 App.newPcw = function() {
   return {
-    'user': null,
-    'auth': -1,
-    'options': {
-      'lineHeights': {}, // id: lineHeight
-      'pageHits': {},    // id: pageHits
-      'lineNumbers': {}, // id: lineNumber
-      'charMapFilter': "abcdefghijklmnopqrstuvwxyz" +
+    user: {id: -1},
+    auth: -1,
+    options: {
+      lineHeights: {}, // id: lineHeight
+      pageHits: {},    // id: pageHits
+      lineNumbers: {}, // id: lineNumber
+      charMapFilter: "abcdefghijklmnopqrstuvwxyz" +
 	    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 	    "0123456789" +
 	    "\\'\":,-+/@#$.;<>(){}[]\\&?!=*^~_"
