@@ -266,7 +266,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
            var projectConcView = new Show.Concordance({isErrorPattern:isErrorPattern,selection:selection,tokendata:tokens,lineheight:lineheight,asModal:true});
            $('.custom-popover').remove();
 
-            projectConcView.on("concordance:correct_token",function(data,anchor){
+            projectConcView.on("concordance:correct_token",function(data,anchor,done){
                console.log(anchor);
                console.log(data);
               data.token = Util.escapeAsJSON(data.token);
@@ -276,6 +276,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                     console.log(result);
 
+               
+
+                      done();
                        // update lines in background with corrections
 
                        var gettingLine = ProjectEntities.API.getLine(data);
@@ -283,10 +286,17 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                         console.log(line_result);
 
                         var lineanchor = $('#line-'+anchor);
-
                             if(lineanchor.length>0) {
-                            lineanchor.removeClass('line_fully_corrected');
-                            lineanchor.addClass('line_partially_corrected');
+                                lineanchor.removeClass('line_fully_corrected');
+                                lineanchor.removeClass('line_partially_corrected');
+
+                              if(line_result.isFullyCorrected) {
+                                lineanchor.addClass('line_fully_corrected');
+                              }
+                              else if(line_result.isPartiallyCorrected){
+                                lineanchor.addClass('line_partially_corrected');
+                              }
+                           
                             console.log("lineanchor")
                             console.log(lineanchor);
                              lineanchor.find('.line').empty().text(line_result['cor']);
@@ -316,7 +326,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             })
 
              projectConcView.on("concordance:pagination",function(page_nr){
-               console.log(projectConcView)
                var max = App.getPageHits(id);
                var searchingToken = ProjectEntities.API.searchToken({
                  q: selection,
@@ -333,7 +342,22 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                });
             })
 
-
+              projectConcView.on("concordance:update_after_correction",function(data){
+               var max = App.getPageHits(id);
+               var searchingToken = ProjectEntities.API.searchToken({
+                 q: data.query,
+                 pid: data.pid,
+                 isErrorPattern: isErrorPattern,
+                 skip:0,
+                 max: max
+               });
+               var that = this;
+               $.when(searchingToken).done(function(tokens){
+                 that.options.tokendata = tokens;
+                 that.render();
+                 that.setContent(false);
+               });
+            })
              App.mainLayout.showChildView('dialogRegion',projectConcView);
 
 
