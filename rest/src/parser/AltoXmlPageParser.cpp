@@ -32,9 +32,13 @@ ParserPagePtr AltoXmlPageParser::parse() {
 ////////////////////////////////////////////////////////////////////////////////
 void AltoXmlPageParser::parse(const Xml::Node &pagenode,
                               XmlParserPage &page) const {
-  const auto textlines = pagenode.select_nodes(".//TextLine");
   page.box = get_box(pagenode);
   page.id = pagenode.attribute("PHYSICAL_IMG_NR").as_int();
+  // if img nr is missing guess id from file path
+  if (page.id == 0) {
+    page.id = guess_id(page.ocr);
+  }
+  const auto textlines = pagenode.select_nodes(".//TextLine");
   for (const auto &l : textlines) {
     add_line(l.node(), page);
   }
