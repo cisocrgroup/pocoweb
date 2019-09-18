@@ -38,8 +38,8 @@ ParserPagePtr HocrPageParser::parse() {
 bool HocrPageParser::begin(Xml::Node &node) {
   page_ = std::make_shared<XmlParserPage>(xml_);
   page_->ocr = path_;
-  if (page->id == 0) {
-    page->id = guess_id(path_);
+  if (page_->id == 0) {
+    page_->id = guess_id(path_);
   }
   page_->img = hocr::get_img(node);
   page_->box = hocr::get_box(node);

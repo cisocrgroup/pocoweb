@@ -24,6 +24,9 @@ ParserPagePtr AbbyyXmlPageParser::parse() {
   assert(page_);
   auto page = std::make_shared<XmlParserPage>(xml_);
   page->ocr = path_;
+  if (page->id == 0) {
+    page->id = guess_id(path_);
+  }
   page->box = {0, 0, page_.attribute("width").as_int(),
                page_.attribute("heigth").as_int()};
   page->file_type = FileType::AbbyyXml;
