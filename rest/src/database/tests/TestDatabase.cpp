@@ -120,16 +120,16 @@ BOOST_AUTO_TEST_CASE(InsertBook) {
             "ltop,lright,lbottom) VALUES(0,1,1,'image',2,3,4,5)");
   // t
   db.expect("INSERT INTO contents (bookid,pageid,lineid,seq,ocr,cor,cut,conf) "
-            "VALUES(0,1,1,0,116,0,1,1)");
+            "VALUES(0,1,1,0,116,0,2,1)");
   // e
   db.expect("INSERT INTO contents (bookid,pageid,lineid,seq,ocr,cor,cut,conf) "
             "VALUES(0,1,1,1,101,0,2,1)");
   // x
   db.expect("INSERT INTO contents (bookid,pageid,lineid,seq,ocr,cor,cut,conf) "
-            "VALUES(0,1,1,2,120,0,3,1)");
+            "VALUES(0,1,1,2,120,0,2,1)");
   // t
   db.expect("INSERT INTO contents (bookid,pageid,lineid,seq,ocr,cor,cut,conf) "
-            "VALUES(0,1,1,3,116,0,4,1)");
+            "VALUES(0,1,1,3,116,0,2,1)");
   auto view = insert_book(db, *book);
   BOOST_CHECK_EQUAL(view, book);
   db.validate();
