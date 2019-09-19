@@ -117,6 +117,45 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                                  });
                       });
 
+                           projectConcView.on("concordance:update_after_correction",function(data){
+                           var max = App.getPageHits(id);
+                           var searchingToken = ProjectEntities.API.searchToken({
+                             q: data.query,
+                             pid: data.pid,
+                             isErrorPattern: isErrorPattern,
+                             skip:0,
+                             max: max
+                           });
+                           var that = this;
+                           $.when(searchingToken).done(function(tokens){
+
+                            if(tokens.total==0){
+                              $('#conc-modal').modal('hide');
+                            }
+                            else{
+                             that.options.tokendata = tokens;
+                             that.render();
+                             $(".js-global-correction-suggestion").val(data.current_input);
+                             that.setContent(false);
+                           }
+                           });
+                        })
+
+                     projectConcView.on("concordance:jump_to_page",function(data){
+                       
+                              $('#conc-modal').modal('hide');
+
+                              App.trigger("projects:show_page",data.pid,data.pageId);
+
+                              setTimeout(function() {
+                                
+                              var lineanchor = document.getElementById('line-anchor-'+data.pid+"-"+data.pageId+"-"+data.lineId);
+                              lineanchor.scrollIntoView();
+                              }, 500);
+
+                      
+                           });
+
                       App.mainLayout.showChildView('dialogRegion',projectConcView);
 
                      });

@@ -179,7 +179,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                      App.mainmsg.updateContent(response.responseText,'danger');
                     });  // $when fetchingproject
 
-       })
+              });
 
 
        projectShowPage.on("page:correct_line",function(data,anchor){
@@ -363,7 +363,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                 else{
                  that.options.tokendata = tokens;
                  that.render();
-                 console.log(data.current_input)
                  $(".js-global-correction-suggestion").val(data.current_input);
                  that.setContent(false);
                }
@@ -374,7 +373,14 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
            
                   $('#conc-modal').modal('hide');
 
-                  projectShowSidebar.trigger("page:new",data.pageId);
+                   projectShowSidebar.trigger("page:new",data.pageId);
+
+
+                  setTimeout(function() {
+                  var lineanchor = document.getElementById('line-anchor-'+data.pid+"-"+data.pageId+"-"+data.lineId);
+                  lineanchor.scrollIntoView();
+                  }, 500);
+
           
                });
             
