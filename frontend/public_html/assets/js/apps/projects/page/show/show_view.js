@@ -85,7 +85,6 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
        page_link_clicked:function(e){
        e.stopPropagation();
        e.preventDefault();
-       console.log($(e.currentTarget).parent());
        $('#pageDP').dropdown('hide');
        this.trigger("page:new",$(e.currentTarget).attr('pageid'));
        $('#pageId').text("Page "+$(e.currentTarget).attr('pageid'));
@@ -487,9 +486,9 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       var btn_group = $('<div class="btn-group"></div>');
 
 
-      var suggestions_btn  = $('<div class="dropdown"><button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary btn-sm btn dropdown-toggle noselect" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fas fa-list-ol"></i> Suggestions <i class="fas fa-caret-down"></button></div>')
+      var suggestions_btn  = $('<div class="dropdown"><button type="button" title="Show Correction suggestions" id="js-suggestions" class="btn btn-primary btn-sm btn blue-bg dropdown-toggle noselect" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fas fa-list-ol"></i> Suggestions <i class="fas fa-caret-down"></button></div>')
 
-      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary btn-sm noselect"><i class="fas fa-align-justify"></i> Concordance </button>'))
+      btn_group.append($('<button type="button" id="js-concordance" title="Show concordance" class="btn btn-primary blue-bg btn-sm noselect"><i class="fas fa-align-justify"></i> Concordance </button>'))
       .append(suggestions_btn);
 
        var dropdown_content = $('<div></div>');

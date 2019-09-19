@@ -260,6 +260,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         var that = this;
          $.when(searchingToken).done(function(tokens){
           console.log(tokens)
+            if(tokens.total==0){
+                  return;
+            }
 
           var lineheight = App.getLineHeight(id);
 
@@ -353,13 +356,29 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                });
                var that = this;
                $.when(searchingToken).done(function(tokens){
+
+                if(tokens.total==0){
+                  $('#conc-modal').modal('hide');
+                }
+                else{
                  that.options.tokendata = tokens;
                  that.render();
                  console.log(data.current_input)
                  $(".js-global-correction-suggestion").val(data.current_input);
                  that.setContent(false);
+               }
                });
             })
+
+         projectConcView.on("concordance:jump_to_page",function(data){
+           
+                  $('#conc-modal').modal('hide');
+
+                  projectShowSidebar.trigger("page:new",data.pageId);
+          
+               });
+            
+
              App.mainLayout.showChildView('dialogRegion',projectConcView);
 
 

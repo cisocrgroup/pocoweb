@@ -42,16 +42,16 @@ if(asModal) {
   <div class="input-group mb-3">
   <div class="input-group-prepend">
   <button class="js-toggle-selection btn btn-outline-secondary" title="Toggle selection">
-  Toggle selection
+  <i class="fas fa-toggle-on"></i> Toggle selection
   </button>
   </div>
   <input class="js-global-correction-suggestion form-control" title="correction" type="text" placeholder="Correction"/>
   <div class="input-group-append">
   <button class="js-set-correction btn btn-outline-secondary" title="Set correction">
-  Set correction
+  <i class="fas fa-level-down-alt"></i> Set correction
   </button>
   <button class="js-correct-conc selected btn btn-outline-secondary" title="Correct selected">
-  Correct selected
+  <i class="far fa-arrow-alt-circle-right"></i> Correct selected
   </button>
   </div>
   </div>
@@ -89,11 +89,11 @@ if(asModal) {
 	</div>
 
 	</div>
-
+ <div class="page_jump" pid="<%-line['projectId']%>" pageid="<%-line['pageId']%>" lineid="<%-line['lineId']%>" title="Jump to page <%-line['pageId']%>, line <%-line['lineId']%>"> <span><i class="fas fa-chevron-right"></i></span></div>
  </div>
 
      <%
-     	  	//});
+     	  
         }
      	};
      %>

@@ -25,7 +25,8 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       'click .js-toggle-selection' :'toggle_selection',
       'click .js-set-correction' :'set_correction',
       'click .js-paginate li' : 'paginate_clicked',
-      'keyup .js-global-correction-suggestion' : 'cor_input'
+      'keyup .js-global-correction-suggestion' : 'cor_input',
+      'click .page_jump' : 'jump_to_page'
       },
 
 
@@ -42,6 +43,20 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           data.asModal = asModal;
 
         return data;
+      },
+
+      jump_to_page: function(e){
+        e.stopPropagation();
+
+        var pageId = $(e.currentTarget).attr('pageid');
+        var lineId = $(e.currentTarget).attr('lineid');
+        var pid = $(e.currentTarget).attr('pid');
+
+         this.trigger("concordance:jump_to_page",{
+                  pid:pid,
+                  pageId:pageId,
+                  lineId:lineId,});
+
       },
 
       cor_input : function(e){
@@ -90,6 +105,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       },
 
       toggle_selection:function(e){
+
         $('.cordiv_container').toggleClass("cor_selected");
 
         $('.cordiv_container').each(function(){
@@ -100,6 +116,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           cordiv_left.append($('<i class="far fa-check-square"></i>'));
           cordiv_left.parent().css('background-color','#d4edda');
           cordiv_left.parent().css('border-color','#c3e6cb');
+          $('.js-toggle-selection').empty().html('<i class="fas fa-toggle-on"></i> Toggle selection');
 
          }
         else{
@@ -107,6 +124,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           cordiv_left.append($('<i class="far fa-square"></i>'));
           cordiv_left.parent().css('background-color','#cce5ff');
           cordiv_left.parent().css('border-color','#b8daff');
+          $('.js-toggle-selection').empty().html('<i class="fas fa-toggle-off"></i> Toggle selection');
 
         }
 
@@ -115,14 +133,18 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       },
 
       set_correction:function(e){
+          var that = this;
 
         $('.cordiv_container').each(function(){
           // console.log($(this));
           var cordiv_left = $(this).find('.cordiv_left');
           var cordiv = $(this).find('.cordiv');
-
         if(cordiv_left.find('i').hasClass('fa-check-square')){
-          cordiv.text($(".js-global-correction-suggestion").val());
+           var cor = $(".js-global-correction-suggestion").val();
+           if (cor == ""){
+            cor = Marionette.getOption(that,'selection');
+          }
+          cordiv.text(cor);
          }
 
 
@@ -447,6 +469,10 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         invisible_link.append(img);
         text_image_line.append(left_div);
         line_container.append(text_image_line);
+
+        var line_jump =$('<div class="page_jump" pid="'+line['projectId']+'" pageid="'+line['pageId']+'" lineid="'+line['lineId']+'" title="Jump to page '+line['pageId']+', line '+line['lineId']+'"> <span><i class="fas fa-chevron-right"></i></span></div>');
+        line_container.append(line_jump);
+
         $('.all_lines_parent').append(line_container);
 
 

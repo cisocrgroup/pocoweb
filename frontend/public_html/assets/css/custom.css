@@ -429,6 +429,12 @@ background-color: #1857e6;
 
 .blue-bg{
   background-color: #1857e6;
+   border-color: #1857e6;
+
+}
+
+.blue-bg:hover{
+ background-color: #1857e6;
 }
 
 
@@ -459,8 +465,33 @@ opacity: 0.8;
   border-bottom:2px solid #8d8d8d;
 }
 
-div.text-image-line {
+.page_jump{
+     min-width: 31px;
+    display: flex;
+    font-size: 1.3em;
+    color: #1857e6;
+    opacity: .9;
+    font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    margin-right: 7px;
+    padding-right: 7px;
+    justify-content: center;
+}
 
+.page_jump > span {
+    align-self: center;
+}
+
+.page_jump:hover{
+  cursor: pointer;
+  color: #926fa8;
+}
+
+.line-nr > span {
+    align-self: center;
+}
+
+div.text-image-line {
+  width: 100%;
   padding: 5px;
   border:2px solid transparent;
   /*border-bottom:2px solid #eee;*/
@@ -597,7 +628,7 @@ outline: 0;
 .custom-popover-arrow{
     top: -10px;
     position: absolute;
-    color: #007bff;
+    color: #1857e6;
 }
 
 .cordiv_right{
