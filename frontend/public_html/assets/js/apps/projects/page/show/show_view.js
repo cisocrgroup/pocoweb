@@ -85,7 +85,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
        page_link_clicked:function(e){
        e.stopPropagation();
        e.preventDefault();
-       console.log();
+       console.log($(e.currentTarget).parent());
+       $('#pageDP').dropdown('hide');
        this.trigger("page:new",$(e.currentTarget).attr('pageid'));
        $('#pageId').text("Page "+$(e.currentTarget).attr('pageid'));
 
