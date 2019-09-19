@@ -179,7 +179,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                      App.mainmsg.updateContent(response.responseText,'danger');
                     });  // $when fetchingproject
 
-       })
+              });
 
 
        projectShowPage.on("page:correct_line",function(data,anchor){
@@ -260,6 +260,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         var that = this;
          $.when(searchingToken).done(function(tokens){
           console.log(tokens)
+            if(tokens.total==0){
+                  return;
+            }
 
           var lineheight = App.getLineHeight(id);
 
@@ -353,11 +356,35 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                });
                var that = this;
                $.when(searchingToken).done(function(tokens){
+
+                if(tokens.total==0){
+                  $('#conc-modal').modal('hide');
+                }
+                else{
                  that.options.tokendata = tokens;
                  that.render();
+                 $(".js-global-correction-suggestion").val(data.current_input);
                  that.setContent(false);
+               }
                });
             })
+
+         projectConcView.on("concordance:jump_to_page",function(data){
+           
+                  $('#conc-modal').modal('hide');
+
+                   projectShowSidebar.trigger("page:new",data.pageId);
+
+
+                  setTimeout(function() {
+                  var lineanchor = document.getElementById('line-anchor-'+data.pid+"-"+data.pageId+"-"+data.lineId);
+                  lineanchor.scrollIntoView();
+                  }, 500);
+
+          
+               });
+            
+
              App.mainLayout.showChildView('dialogRegion',projectConcView);
 
 

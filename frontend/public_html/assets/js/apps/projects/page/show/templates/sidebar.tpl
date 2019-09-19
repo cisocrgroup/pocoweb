@@ -15,8 +15,8 @@
     	<div class="dropdown js-page-dropdown">
     		<div class="btn-group" style="margin-top: 3px;">
 
-		<button id="pageId" type="button" class="btn btn-sm btn-outline-primary"> Page <%-pageId%></button>
-		<button id="pageDP"  type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		<button id="pageId" type="button" class="btn btn-sm btn-outline-primary blue"> Page <%-pageId%></button>
+		<button id="pageDP"  type="button" class="btn btn-sm btn-primary blue-bg hover dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <i class="dp_icon fas fa-sort-down"></i>
   </button>
 		<div class="dropdown-menu dropdown-menu-right js-page-dropdown-content" aria-labelledby="pageDP">
