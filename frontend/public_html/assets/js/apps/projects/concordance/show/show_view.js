@@ -24,7 +24,8 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       'click .cordiv_container' :'cordiv_clicked',
       'click .js-toggle-selection' :'toggle_selection',
       'click .js-set-correction' :'set_correction',
-      'click .js-paginate li' : 'paginate_clicked'
+      'click .js-paginate li' : 'paginate_clicked',
+      'keyup .js-global-correction-suggestion' : 'cor_input'
       },
 
 
@@ -43,20 +44,26 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         return data;
       },
 
-
+      cor_input : function(e){
+        var new_cor = $(".js-global-correction-suggestion").val();
+        if(new_cor=="") new_cor = Marionette.getOption(this,"selection");
+         $('.cordiv_container').each(function(){
+          if($(this).hasClass('cor_selected')){
+            $(this).find('.cordiv').text(new_cor);
+          }
+        });
+      },
 
       correct_clicked:function(e){
 
         var that = this;
         var checked_length  =   $('.concLine').find('.fa-check-square').length;
+        var current_input = $(".js-global-correction-suggestion").val();
           $('.concLine').each(function(){
              var cordiv_left = $(this).find('.cordiv_left');
-            console.log(cordiv_left)
             if(cordiv_left.find('i').hasClass('fa-check-square')){
-                          console.log($(this));
 
               var anchor = $(this).attr('anchor');
-
               cordiv_left.parent().each(function(i, tokendiv) {
                 var pid = tokendiv.attributes.projectid.value;
                 var pageid = tokendiv.attributes.pageid.value;
@@ -73,7 +80,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                     console.log(checked_length);
                     if (checked_length == 0){
                        that.trigger("concordance:update_after_correction",
-                        {pid:pid,query:Marionette.getOption(that,"selection")});
+                        {pid:pid,query:Marionette.getOption(that,"selection"),current_input:current_input});
                     }
                   });
               });
@@ -83,11 +90,12 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       },
 
       toggle_selection:function(e){
+        $('.cordiv_container').toggleClass("cor_selected");
 
         $('.cordiv_container').each(function(){
           var cordiv_left = $(this).find('.cordiv_left');
 
-        if(cordiv_left.find('i').hasClass('fa-square')){
+        if($(this).hasClass('cor_selected')){
           cordiv_left.empty();
           cordiv_left.append($('<i class="far fa-check-square"></i>'));
           cordiv_left.parent().css('background-color','#d4edda');
@@ -125,7 +133,8 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
       cor_checked:function(e){
          e.stopPropagation();
-        var currentTarget = $(e.currentTarget);
+         var currentTarget = $(e.currentTarget);
+         currentTarget.parent().toggleClass("cor_selected");
 
         if(currentTarget.find('i').hasClass('fa-square')){
           currentTarget.empty();
@@ -146,7 +155,9 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
       },
       cor_correct:function(e){
-        e.stopPropagation();
+        e.stopPropagation(); 
+
+        var current_input = $(".js-global-correction-suggestion").val();
         // console.log($(e.currentTarget));
         var concLine = $(e.currentTarget).parent().parent();
         var tokendiv = $(e.currentTarget).parent();
@@ -161,7 +172,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
               ,anchor
               ,function(){
                        that.trigger("concordance:update_after_correction",
-                        {pid:pid,query:Marionette.getOption(that,"selection")});
+                        {pid:pid,query:Marionette.getOption(that,"selection"),current_input:current_input});
                });
       },
       cor_suggestions:function(e){
@@ -503,7 +514,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                   if(le){
                     contenteditable = 'false'
                   }
-                  cordiv = $("<div class='cordiv' contenteditable='"+contenteditable+"'>"+token.cor.trim()+"</div>");
+                    cordiv = $("<div class='cordiv' contenteditable='"+contenteditable+"'>"+token.cor.trim()+"</div>");
                     tokendiv = $('<div class="tokendiv cordiv_container"></div>')
                     tokendiv.append($("<span class='cordiv_left js-select-cor'><i class='cor_item far fa-square'></i></span>")).append(cordiv);;
                     tokendiv.append($("<span class='cordiv_right js-suggestions-cor'><i class='far fa-caret-square-down cor_item'></i></span><span class='cordiv_right js-correct-cor'><i class='cor_item far fa-arrow-alt-circle-up'></i></span>"));
@@ -528,7 +539,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
      }
 
-
+     that.toggle_selection();
 
 
 

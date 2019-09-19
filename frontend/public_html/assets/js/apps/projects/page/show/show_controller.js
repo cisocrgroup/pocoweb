@@ -355,6 +355,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                $.when(searchingToken).done(function(tokens){
                  that.options.tokendata = tokens;
                  that.render();
+                 console.log(data.current_input)
+                 $(".js-global-correction-suggestion").val(data.current_input);
                  that.setContent(false);
                });
             })
