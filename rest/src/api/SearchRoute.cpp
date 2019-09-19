@@ -102,6 +102,7 @@ Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
   const auto p = get<bool>(req.url_params, "p").value_or(false);
   const auto pskip = get<int>(req.url_params, "skip").value_or(0);
   const auto pmax = get<int>(req.url_params, "max").value_or(50);
+  const auto pi = get<bool>(req.url_params, "i").value_or(false);
   CROW_LOG_INFO << "(SearchRoute) GET " << bid << ": skip=" << pskip
                 << ", max=" << pmax << ",p=" << p;
   const auto qs = get<std::vector<std::string>>(req.url_params, "q");
@@ -112,6 +113,10 @@ Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
   if (p) {
     return search(conn,
                   pq{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
+  }
+  if (pi) {
+    return isearch(
+        conn, tq{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
   }
   return search(conn,
                 tq{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
@@ -165,7 +170,7 @@ struct iless : public std::binary_function<std::wstring, std::wstring, bool> {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response SearchRoute::search(MysqlConnection &mysql, tq q) const {
+Route::Response SearchRoute::isearch(MysqlConnection &mysql, tq q) const {
   // map wstrings to strings
   std::map<std::wstring, std::string, iless> qset;
   for (const auto &x : q.qs) {
@@ -178,6 +183,22 @@ Route::Response SearchRoute::search(MysqlConnection &mysql, tq q) const {
           return false;
         }
         q = i->second;
+        return true;
+      });
+  Json j;
+  return j << ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response SearchRoute::search(MysqlConnection &mysql, tq q) const {
+  std::unordered_set<std::string> qset(q.qs.begin(), q.qs.end());
+  const auto ret =
+      search_impl(mysql, q.bid, q.skip, q.max, [&](const auto &t, auto &q) {
+        auto i = qset.find(t.cor());
+        if (i == qset.end()) {
+          return false;
+        }
+        q = *i;
         return true;
       });
   Json j;

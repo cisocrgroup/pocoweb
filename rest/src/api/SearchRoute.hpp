@@ -28,6 +28,7 @@ private:
     int bid, skip, max;
   };
   Response search(MysqlConnection &mysql, tq q) const;
+  Response isearch(MysqlConnection &mysql, tq q) const;
   Response search(MysqlConnection &mysql, pq q) const;
 
   static const char *route_;
