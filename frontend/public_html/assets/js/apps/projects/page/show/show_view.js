@@ -229,8 +229,9 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
                   that.trigger("sidebar:update_line_numbers",linenumbers);
 
             });
-
-
+        $('#ignore_case_toggle').change(function() {
+          that.trigger("sidebar:update_ignore_case", this.checked);
+        });
                  $('#cor_toggle').change(function() {
                    $('.line-text-parent').toggle();
 
@@ -251,8 +252,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       'click .line-text' : 'line_selected',
       'mouseover .line-tokens' : 'tokens_hovered',
       'mouseleave .line-text-parent' : 'line_left',
-      'keydown .line' : 'line_edited',
-
+      'keydown .line' : 'line_edited'
       },
 
 

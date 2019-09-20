@@ -50,6 +50,7 @@ App.newPcw = function() {
       lineHeights: {}, // id: lineHeight
       pageHits: {},    // id: pageHits
       lineNumbers: {}, // id: lineNumber
+      ignoreCase: {},  // id: ignore case
       charMapFilter: "abcdefghijklmnopqrstuvwxyz" +
 	    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 	    "0123456789" +
@@ -119,6 +120,17 @@ App.setLineNumbers = function(id,val){
 App.getLineNumbers = function(id){
   let lineNumbers = App.getPcw().options.lineNumbers[id] || false;
   return lineNumbers;
+};
+
+App.getIgnoreCase = function(id) {
+  let ignoreCase = App.getPcw().options.ignoreCase[id] || false;
+  return ignoreCase;
+};
+
+App.setIgnoreCase = function(id, ic) {
+  let pcw = App.getPcw();
+  pcw.options.ignoreCase[id] = ic;
+  App.setPcw(pcw);
 };
 
 App.getCharmapFilter = function() {

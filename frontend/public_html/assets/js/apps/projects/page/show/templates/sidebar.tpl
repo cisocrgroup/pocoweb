@@ -176,7 +176,12 @@
    <input  type="range" min="1" max="100" value="8" class="slider form-control" id="page_hits_slider">
   </div>
   <hr>
-
+  <div class="form-group options_row"
+  	   title="Ignore case for search results">
+	   <span><input type="checkbox" id="ignore_case_toggle" name="ignore_case_toggle"></span>
+	   <span for="cor_toggle"> Ignore case </span>
+  </div>
+  <hr>
 </div>
 
 

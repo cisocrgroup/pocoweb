@@ -152,10 +152,12 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         projectShowSidebar.on("sidebar:update_line_numbers",function(value){
           App.setLineNumbers(id,value);
         });
-
+        projectShowSidebar.on("sidebar:update_ignore_case", function(value) {
+          App.setIgnoreCase(id, value);
+        });
 
        projectShowSidebar.on("page:new",function(page_id){
-        
+
                     var fetchinglineheight = App.getLineHeight(id);
                     var fetchinglinenumbers = App.getLineNumbers(id);
                     var fetchingnewpage = ProjectEntities.API.getPage({pid:id, page:page_id});
@@ -279,7 +281,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                     console.log(result);
 
-               
+
 
                       done();
                        // update lines in background with corrections
@@ -299,7 +301,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                               else if(line_result.isPartiallyCorrected){
                                 lineanchor.addClass('line_partially_corrected');
                               }
-                           
+
                             console.log("lineanchor")
                             console.log(lineanchor);
                              lineanchor.find('.line').empty().text(line_result['cor']);
@@ -370,7 +372,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             })
 
          projectConcView.on("concordance:jump_to_page",function(data){
-           
+
                   $('#conc-modal').modal('hide');
 
                    projectShowSidebar.trigger("page:new",data.pageId);
@@ -381,9 +383,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                   lineanchor.scrollIntoView();
                   }, 500);
 
-          
+
                });
-            
+
 
              App.mainLayout.showChildView('dialogRegion',projectConcView);
 

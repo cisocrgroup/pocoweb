@@ -365,7 +365,7 @@ searchToken: function(data){
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        url: "rest/books/" + data.pid + "/search?auth=" + App.getAuthToken()+"&q="+data.q+"&p="+data.isErrorPattern+"&skip="+data.skip+"&max="+data.max,
+        url: "rest/books/" + data.pid + "/search?auth=" + App.getAuthToken()+"&q="+data.q+"&p="+data.isErrorPattern+"&skip="+data.skip+"&max="+data.max+"&i="+App.getIgnoreCase(data.pid),
         type: "GET",
        success: function(data) {
         defer.resolve(data);
