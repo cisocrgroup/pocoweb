@@ -284,6 +284,14 @@ bool pcw::get(const Query &q, const char *key, bool &out) {
   if (not p) {
     return false;
   }
+  if (strcmp(p, "true") == 0) {
+    out = true;
+    return true;
+  }
+  if (strcmp(p, "false") == 0) {
+    out = false;
+    return true;
+  }
   try {
     out = boost::lexical_cast<bool>(p);
     return true;
