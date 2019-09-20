@@ -153,22 +153,25 @@
 
 <div class="tab-pane fade" id="options" role="tabpanel" aria-labelledby="options-tab">
 
-  <div class="form-group options_row">
+  <div class="form-group options_row"
+  	   title="Adjust the height of the line images">
   <label for="line_size_slider"> Line height: <span id="lineheight_value"><%-lineheight%>px</span></label>
    <input  type="range" min="20" max="60" value="30" class="slider form-control" id="line_size_slider">
   </div>
   <hr>
-  <div class="form-group options_row">
+  <div class="form-group options_row" title="Display line numbers">
   <span><input type="checkbox" id="line_nr_toggle" name="line_nr_toggle" checked></span>
   <span for="line_nr_toggle"> Line numbers </span>
   </div>
     <hr>
- <div class="form-group options_row">
+ <div class="form-group options_row"
+ 	  title="Hide correction text lines">
   <span><input type="checkbox" id="cor_toggle" name="cor_toggle"></span>
   <span for="cor_toggle"> Hide corrections </span>
   </div>
   <hr>
-  <div class="form-group options_row">
+  <div class="form-group options_row"
+  	   title="Set the maximum number of search results in concordance view">
   <label for="page_hits_slider"> Search hits per page: <span id="page_hits_value"><%-pagehits%></span></label>
    <input  type="range" min="1" max="100" value="8" class="slider form-control" id="page_hits_slider">
   </div>
