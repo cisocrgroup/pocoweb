@@ -148,8 +148,9 @@ void DbLine::each_token(std::function<void(DbSlice &)> f) const {
 DbSlice DbLine::slice(int begin, int len) const {
   if (begin < 0 or len < 0 or size_t(begin + len) > line.size() or
       size_t(begin) >= line.size()) {
-    throw std::logic_error("(DbLine::slice) invalid start or len: " +
-                           std::to_string(begin) + ", " + std::to_string(len));
+    throw std::logic_error(
+        "(DbLine::slice) invalid start or len: " + std::to_string(begin) +
+        ", " + std::to_string(len) + " [size = " + std::to_string(line.size()));
   }
   const auto b = line.begin() + begin;
   const auto e = b + len;
@@ -162,8 +163,9 @@ DbSlice DbLine::slice(int begin, int len) const {
 ////////////////////////////////////////////////////////////////////////////////
 int DbLine::tokenLength(int begin) const {
   if (begin < 0 or size_t(begin) >= line.size()) {
-    throw std::logic_error("(DbLine::endOfToken) invalid start index: " +
-                           std::to_string(begin));
+    throw std::logic_error(
+        "(DbLine::endOfToken) invalid start index: " + std::to_string(begin) +
+        " [size = " + std::to_string(line.size()));
   }
   const auto e =
       std::find_if(line.begin() + begin, line.end(),

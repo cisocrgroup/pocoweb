@@ -145,11 +145,12 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   correct(line, correction.value(), tid, l);
   update(conn, line);
   Json j;
-  return j << line.slice(tid, int(correction.value().size()));
+  return j << line.slice(tid, l);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void LineRoute::correct(DbLine &line, const std::string &correction) {
+  CROW_LOG_INFO << "(LineRoute::correct): " << correction;
   WagnerFischer wf;
   wf.set_gt(correction);
   wf.set_ocr(line.slice().wocr());
@@ -168,6 +169,8 @@ void LineRoute::correct(DbLine &line, const std::string &correction) {
 ////////////////////////////////////////////////////////////////////////////////
 void LineRoute::correct(DbLine &line, const std::string &correction, int b,
                         int len) {
+  CROW_LOG_INFO << "(LineRoute::correct): " << correction << " " << b << " "
+                << len;
   std::cerr << "(LineRoute::correct) b = " << b << " len = " << len << "\n";
   WagnerFischer wf;
   wf.set_gt(correction);
@@ -178,7 +181,7 @@ void LineRoute::correct(DbLine &line, const std::string &correction, int b,
   CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
 
   // correct
-  wf.correct(line, b, correction.size());
+  wf.correct(line, b, len); // correction.size());
 
   CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
   CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
