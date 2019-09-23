@@ -97,16 +97,8 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                           projectConcView.on("concordance:jump_to_page",function(data){
                        
                               $('#conc-modal').modal('hide');
-
                               App.trigger("projects:show_page",data.pid,data.pageId,data.lineId);
-
-                              setTimeout(function() {
-                                
-                              var lineanchor = document.getElementById('line-anchor-'+data.pid+"-"+data.pageId+"-"+data.lineId);
-                              lineanchor.scrollIntoView();
-                              }, 500);
-
-                      
+                                            
                            });
 
                         App.mainLayout.showChildView('dialogRegion',projectConcView);

@@ -42,7 +42,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             for (word in suspicious_words['counts']) {
                suspicious_words_array.push([word,suspicious_words['counts'][word]]);
             }
-            var tab_content_height = $('.tab-content').height();
             var sp_table = $('.suspicious-words').DataTable({
                  "scrollY": '556px',
                   "data":suspicious_words_array,
@@ -90,7 +89,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
               rows[0].remove();
              $('#error-patterns-container > .loading_background2').fadeOut();
 
-               console.log(charmap);
 			   var data = [];
 			   for (var key in charmap.charMap) {
 				   data.push([key, charmap.charMap[key]]);
@@ -234,11 +232,13 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     // var searchingToken = ProjectEntities.API.searchToken({q:selection,p:page_id,pid:id,isErrorPattern:0});
 
                   $.when(gettingCorrectionSuggestions).done(function(suggestions){
-
-
-                    // $('#js-concordance').attr('title','Show concordance of <b>'+ selection+'</b> ('+tokens.nWords+' occurrences)');
+                  
 
                     $("#suggestionsDropdown").empty();
+
+                      if(_.isEmpty(suggestions.suggestions)){
+                         $('#suggestionsDropdown').append($('<a class="dropdown-item noselect">No suggestions available</a>"'));
+                      }
 
                      var suggestions_btn = $('#js-suggestions');
 
@@ -345,7 +345,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
              // build suggestions drop down
              projectConcView.on("concordance:show_suggestions",function(data){
-
               var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:data.token,pid:id});
                $.when(gettingCorrectionSuggestions).done(function(suggestions){
                   projectConcView.setSuggestionsDropdown(data.dropdowndiv,suggestions.suggestions);

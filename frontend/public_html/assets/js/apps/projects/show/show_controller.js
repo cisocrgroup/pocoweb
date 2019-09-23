@@ -313,11 +313,21 @@ define([
                     if (tokens.adaptiveTokens==null){
                       return;
                     }
-                    console.log(tokens);
                     let projectShowAdaptiveTokens = new Show.Adaptive({
                       asModal: true,
                       pid: tokens.projectId,
                       adaptiveTokens: tokens.adaptiveTokens
+                    });
+
+
+                      projectShowAdaptiveTokens.on('attach',function(){
+                      var ad_table = $('.adaptive-tokens').DataTable({
+                           "scrollY": '500px',
+                            "info":false,
+                            "paging": false,
+                            "lengthChange": false,
+                          });
+
                     });
                     App.mainLayout.showChildView(
                       "dialogRegion",

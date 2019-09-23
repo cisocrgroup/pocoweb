@@ -7,11 +7,20 @@
         </button>
       </div>
       <div class="modal-body">
-           <div class="adaptive-tokens-list">
-           <% adaptiveTokens.forEach(function(token) { %>
-           <div class="adaptive-token"> <%-token%> </div>
+        
+        <table class="table adaptive-tokens table-sm">
+        <thead>
+          <tr>
+            <th>Token</th>
+          </tr>
+        </thead>
+        <tbody>
+            <% adaptiveTokens.forEach(function(token) { %>
+           <tr class="adaptive-token"> <td><%-token%></td> </tr>
            <% }); %>
-           </div>
+        </tbody>
+      </table>
+
       </div>
       <div class="modal-footer">
         <button type="button" data-dismiss="modal" class="btn btn-primary js-ok">OK</button>
