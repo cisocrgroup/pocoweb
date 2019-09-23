@@ -534,6 +534,20 @@ define([
                 });
               });
 
+              
+            projectShowLayout.on("show:checkJobStatus",function(){
+                      var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+                       $.when(fetchingjobs).done(function(jobs){
+                                          
+                            projectShowInfo.setJobSymbol(jobs);
+
+
+                       }).fail(function(response){
+                             App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                       }); 
+                 });
+                 
+
               // projectPanel = new Show.FooterPanel();
 
               projectShowLayout.showChildView(

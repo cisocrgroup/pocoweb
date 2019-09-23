@@ -44,7 +44,17 @@ define([
       hubRegion2: "#hub2-region",
       packagesRegion: "#packages-region",
       footerRegion: "#footer-region"
-    }
+    },
+      trackJobStatus : function(){ // regulary check if job is finished
+      var that = this;
+        this.interval = setInterval(function(){ 
+           that.trigger("show:checkJobStatus");
+          },
+          5000);
+      },
+      onDestroy : function(){
+         clearInterval(this.interval);
+      }
   });
 
   Show.Header = Views.Header.extend({
