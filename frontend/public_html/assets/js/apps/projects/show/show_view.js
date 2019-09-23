@@ -52,6 +52,10 @@ define([
           },
           5000);
       },
+      stopJobTracking : function(){
+        console.log("STOP");
+         clearInterval(this.interval);
+      },
       onDestroy : function(){
          clearInterval(this.interval);
       }

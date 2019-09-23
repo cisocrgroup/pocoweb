@@ -19,7 +19,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         	 $.when(fetchingpage,fetchingproject).done(function(page,project){
 
 		     	loadingCircleView.destroy();
-            console.log(page);
+            console.log(project);
            var lineheight = App.getLineHeight(id);
            var pagehits = App.getPageHits(id);
            var linenumbers = App.getLineNumbers(id);
@@ -184,11 +184,11 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
               });
         
        projectShowPage.on("page:lines_appended",function(){
-
+                if(page_id=="first") page_id = project.get('pageIds')[0];
+                if(page_id=="last") page_id = project.get('pageIds')[project.get('pageIds').length-1];
                  if(line_id!=null){
                       var container = $('#page-container');
                       var scrollTo = $('#line-anchor-'+id+"-"+page_id+"-"+line_id);
-
                         
                     container.animate({
                         scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
