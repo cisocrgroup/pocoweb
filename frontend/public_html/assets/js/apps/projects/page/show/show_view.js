@@ -297,7 +297,6 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
          e.preventDefault();
          e.stopPropagation();
-         console.log($(e.target));
 
          var clicked_token = "";
 
@@ -315,12 +314,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         var displayed_line = line_parent.find('.line')
         displayed_line.show();
 
-        console.log(displayed_line.text());
-        console.log(clicked_token);
-
-
+      
         var obj = displayed_line.get(0);
-        console.log(obj);
 
         // pre-select token:: to do :fix..
 
@@ -399,7 +394,6 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
           }
 
       sel = sel.trim();
-      console.log(sel);
 
       if($(e.target).hasClass('line')){
 
@@ -444,16 +438,19 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
 
            var that = this;
+           $('#page-container').imagesLoaded( function() {
+
            $('.line-img').each(function(index){
 	       	 var img = $(this);
-           $(this).imagesLoaded( function() {
                 var line = that.model.get('lines')[index];
                 if(line!=undefined){
                   Util.addAlignedLine(line);
                 }
             });
+           that.trigger('page:lines_appended');
 
          });
+
 
           /*  sticky sidebar
 

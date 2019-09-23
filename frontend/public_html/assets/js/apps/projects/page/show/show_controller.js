@@ -7,8 +7,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
  Controller = {
 
-		showPage: function(id,page_id){
-
+		showPage: function(id,page_id,line_id){
 
      		require(["entities/project"], function(ProjectEntities){
 
@@ -157,6 +156,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         });
 
        projectShowSidebar.on("page:new",function(page_id){
+                    line_id=null;
 
                     var fetchinglineheight = App.getLineHeight(id);
                     var fetchinglinenumbers = App.getLineNumbers(id);
@@ -182,7 +182,22 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     });  // $when fetchingproject
 
               });
+        
+       projectShowPage.on("page:lines_appended",function(){
 
+                 if(line_id!=null){
+                      var container = $('#page-container');
+                      var scrollTo = $('#line-anchor-'+id+"-"+page_id+"-"+line_id);
+
+                        
+                    container.animate({
+                        scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
+                    },2000, function() {
+                      scrollTo.parent().fadeOut(500).fadeIn(500);
+                    });
+
+        }
+       });
 
        projectShowPage.on("page:correct_line",function(data,anchor){
          data.text = Util.escapeAsJSON(data.text);
@@ -266,7 +281,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                 var confirmModal = new Show.OkDialog({
                       asModal: true,
                       title: "Empty results",
-                      text: "Sorry, no matches found for token: '" + selection + "'", 
+                      text: "No matches found for token: '" + selection + "'", 
                       id: "emptymodal"
                     });
                     App.mainLayout.showChildView("dialogRegion", confirmModal);
@@ -382,13 +397,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                   $('#conc-modal').modal('hide');
 
-                   projectShowSidebar.trigger("page:new",data.pageId);
-
-
-                  setTimeout(function() {
-                  var lineanchor = document.getElementById('line-anchor-'+data.pid+"-"+data.pageId+"-"+data.lineId);
-                  lineanchor.scrollIntoView();
-                  }, 500);
+                  App.trigger("projects:show_page",data.pid,data.pageId,data.lineId);
 
 
                });

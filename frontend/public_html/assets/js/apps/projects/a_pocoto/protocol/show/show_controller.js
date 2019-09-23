@@ -154,15 +154,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                      projectConcView.on("concordance:jump_to_page",function(data){
                        
                               $('#conc-modal').modal('hide');
-
-                              App.trigger("projects:show_page",data.pid,data.pageId);
-
-                              setTimeout(function() {
-                                
-                              var lineanchor = document.getElementById('line-anchor-'+data.pid+"-"+data.pageId+"-"+data.lineId);
-                              lineanchor.scrollIntoView();
-                              }, 500);
-
+                              App.trigger("projects:show_page",data.pid,data.pageId,data.lineId);
                       
                            });
 

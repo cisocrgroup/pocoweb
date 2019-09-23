@@ -98,7 +98,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                        
                               $('#conc-modal').modal('hide');
 
-                              App.trigger("projects:show_page",data.pid,data.pageId);
+                              App.trigger("projects:show_page",data.pid,data.pageId,data.lineId);
 
                               setTimeout(function() {
                                 
