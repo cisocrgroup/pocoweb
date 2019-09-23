@@ -23,7 +23,7 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" data-dismiss="modal" class="btn btn-primary js-ok">OK</button>
+        <button type="button" data-dismiss="modal" class="btn btn-primary blue-bg js-ok">OK</button>
       </div>
     </div>
   </div>

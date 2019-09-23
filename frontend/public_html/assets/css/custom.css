@@ -22,7 +22,7 @@ a{
   color:#1857e6;
 }
 
-tbody{
+tbody,thead{
   background: white;
 }
 
@@ -430,7 +430,7 @@ background-color: #1857e6;
 .blue-bg{
   background-color: #1857e6;
    border-color: #1857e6;
-
+   color: white;
 }
 
 .blue-bg:hover{
@@ -745,7 +745,7 @@ outline: 0;
 
 .loading_background2 {
     top: 0;
-    height: 100%;
+    height: 700px;
     width: 100%;
     left: 0px;
     background: white;
@@ -904,7 +904,7 @@ span.pl-bl {
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background: #0062cc;
+  background: #1857e6;
   cursor: pointer;
 }
 
@@ -912,7 +912,7 @@ span.pl-bl {
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background: #0062cc;
+  background: #1857e6;
   cursor: pointer;
 }
 
@@ -925,4 +925,14 @@ span.pl-bl {
 .back_btn{
   margin-top: 15px;
   margin-bottom: 15px;
+}
+
+.page-link {
+    color: #1857e6 !important;
+}
+
+.page-item.active .page-link {
+  color: white !important;
+    background-color: #1857e6 !important;
+    border-color: #1857e6 !important;
 }

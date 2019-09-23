@@ -51,22 +51,21 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                   "order": [[ 1, "desc" ]]
                 });
 
-            projectShowSidebar.sp_table = sp_table;
-
+               projectShowSidebar.sp_table = sp_table;
 
               $('#suspicious-words_filter input').on('keyup click', function () {
                 sp_table.search($(this).val()).draw();
               });
               var rows = $('#suspicious-words_filter').next().find('.row');
               rows[0].remove();
-            $('#suspicious-words-container > .loading_background2').fadeOut();
 
-            $('#suspicious-words-container').find('.dataTables_wrapper').removeClass('.container-fluid');
+             $('#suspicious-words-container > .loading_background2').fadeOut();
+             $('#suspicious-words-container').find('.dataTables_wrapper').removeClass('.container-fluid');
 
               var error_patterns_array = [];
               for (word in error_patterns['counts']) {
                error_patterns_array.push([word,error_patterns['counts'][word]]);
-            }
+              }
 
              var ep_table = $('.error-patterns').DataTable({
                   "scrollY": '556px',
