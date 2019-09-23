@@ -3,7 +3,7 @@ module github.com/finkf/pcwprofiler
 go 1.12
 
 require (
-	github.com/finkf/gofiler v0.1.3
+	github.com/finkf/gofiler v0.2.0
 	github.com/finkf/pcwgo/api v0.15.0
 	github.com/finkf/pcwgo/db v0.14.1
 	github.com/finkf/pcwgo/jobs v0.5.3

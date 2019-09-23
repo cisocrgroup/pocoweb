@@ -85,7 +85,8 @@ func (p *profiler) runProfiler(ctx context.Context) error {
 		return fmt.Errorf("cannot run profiler: %v", err)
 	}
 	log.Debugf("profiler: profiling %d tokens", len(tokens))
-	profile, err := gofiler.Run(ctx, profbin, p.config.Path, tokens, logger{})
+	x := gofiler.Profiler{Exe: profbin, Log: logger{}, Adaptive: true, Types: true}
+	profile, err := x.Run(ctx, p.config.Path, tokens)
 	if err != nil {
 		return fmt.Errorf("cannot run profiler: %v", err)
 	}
