@@ -70,6 +70,16 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                       $.when(searchingToken).done(function(tokens,suggestions){
                       var lineheight = App.getLineHeight(id);
 
+                        if(tokens.total==0){
+                                var confirmModal = new Show.OkDialog({
+                                      asModal: true,
+                                      title: "Empty results",
+                                      text: "No matches found for token: '" + word + "'", 
+                                      id: "emptymodal"
+                                    });
+                                    App.mainLayout.showChildView("dialogRegion", confirmModal);
+                                  return;
+                        }
 
                       var projectConcView = new Show.Concordance({selection:word,tokendata:tokens,asModal:true,lineheight:lineheight});
 

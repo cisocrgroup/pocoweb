@@ -113,6 +113,7 @@ Show.FooterPanel = Views.FooterPanel.extend({
     });
 
 Show.SingleStep = Views.SingleStep.extend({});
+Show.OkDialog = Views.OkDialog.extend({});
 
 return Show;
 

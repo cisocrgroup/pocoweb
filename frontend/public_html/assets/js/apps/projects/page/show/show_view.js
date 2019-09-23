@@ -536,6 +536,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 })
 
 Show.Concordance = Concordance.Concordance.extend({});
+Show.OkDialog = Views.OkDialog.extend({});
 
 Show.FooterPanel = Views.FooterPanel.extend({
   manual:true

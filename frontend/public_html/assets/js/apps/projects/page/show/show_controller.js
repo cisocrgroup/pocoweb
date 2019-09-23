@@ -263,6 +263,13 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
          $.when(searchingToken).done(function(tokens){
           console.log(tokens)
             if(tokens.total==0){
+                var confirmModal = new Show.OkDialog({
+                      asModal: true,
+                      title: "Empty results",
+                      text: "Sorry, no matches found for token: '" + selection + "'", 
+                      id: "emptymodal"
+                    });
+                    App.mainLayout.showChildView("dialogRegion", confirmModal);
                   return;
             }
 
