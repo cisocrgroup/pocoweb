@@ -215,9 +215,10 @@ func getPatterns() service.HandlerFunc {
 func getAllPatterns(w http.ResponseWriter, d *service.Data, ocr bool) {
 	const stmt = "SELECT p.pattern,COUNT(*) " +
 		"FROM errorpatterns p " +
-		"WHERE p.bookID=? AND p.ocr=? " +
+		"JOIN suggestions s ON s.id=p.suggestionid " +
+		"WHERE p.bookID=? AND p.ocr=? AND s.topsuggestion=? " +
 		"GROUP BY p.pattern"
-	rows, err := db.Query(service.Pool(), stmt, d.Project.BookID, ocr)
+	rows, err := db.Query(service.Pool(), stmt, d.Project.BookID, ocr, true)
 	if err != nil {
 		service.ErrorResponse(w, http.StatusInternalServerError,
 			"cannot get patterns: %v", err)
