@@ -200,31 +200,38 @@ Route::Response SearchRoute::search(MysqlConnection &mysql, tq q) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response SearchRoute::search(MysqlConnection &mysql, pq q) const {
-  std::unordered_map<std::string, std::string> qs;
+  std::unordered_map<std::string, std::string> q2p; // map queries to patterns
+  std::vector<std::string> qs; // list of queries with the given pattern
   // select tokens
   for (const auto &p : q.qs) {
     tables::Errorpatterns e;
     tables::Suggestions s;
     tables::Types t;
-    auto rows = mysql.db()(select(t.typ)
-                               .from(e.join(s)
-                                         .on(e.suggestionid == s.id)
-                                         .join(t)
-                                         .on(t.id == s.tokentypid))
-                               .where(e.pattern == p));
-    // later patterns overwrite prior ones
+    auto rows = mysql.db()(
+        select(t.typ)
+            .from(e.join(s)
+                      .on(e.suggestionid == s.id)
+                      .join(t)
+                      .on(t.id == s.tokentypid))
+            .where(e.pattern == p and s.bookid == q.bid and s.topsuggestion));
+
     for (const auto &row : rows) {
-      qs.emplace(row.typ, p);
+      // later patterns overwrite prior ones
+      q2p.emplace(row.typ, p);
+      qs.push_back(row.typ);
     }
   }
+  const auto re = make_regex(qs, true); // types and patterns are all lower case
   // search
   const auto ret =
       search_impl(mysql, q.bid, q.skip, q.max, [&](const auto &t, auto &q) {
-        auto i = qs.find(t.cor());
-        if (i == qs.end()) {
+        const auto cor = t.wcor();
+        std::wsmatch m;
+        if (not std::regex_match(cor, m, re)) {
           return false;
         }
-        q = i->second; // give pattern (not matched type) as key
+        q = q2p[utf8(boost::algorithm::to_lower_copy(
+            std::wstring(m[1])))]; // give pattern (not matched type) as key
         return true;
       });
   Json j;
