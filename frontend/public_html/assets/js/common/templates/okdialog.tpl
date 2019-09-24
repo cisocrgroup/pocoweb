@@ -10,7 +10,7 @@
         <p><%-text%></p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary js-ok" data-dismiss="modal">Ok</button>
+        <button type="button" class="btn btn-primary blue-bg js-ok" data-dismiss="modal">Ok</button>
       </div>
     </div>
   </div>

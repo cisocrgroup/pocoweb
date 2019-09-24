@@ -10,7 +10,7 @@ define(["marionette","app"], function(Marionette,App){
 		appRoutes: {
 		   "projects"    :"listProjects",
   		   "projects/:id"    :"showProject",
-  		   "projects/:id/page/:page_id"    :"showPage",
+  		   "projects/:id/page/:page_id(/line/:line_id)"    :"showPage",
   		   "projects/:id/a_pocoto"    :"showAPoCoTo",
   		   "projects/:id/a_pocoto/lexicon_extension"    :"showLexiconExtension",
   		   "projects/:id/a_pocoto/postcorrection"    :"showPostcorrection"
@@ -26,9 +26,9 @@ define(["marionette","app"], function(Marionette,App){
 				});
 		},
 	
-		showPage: function(id,page_id){
+		showPage: function(id,page_id,line_id){
 			require(["apps/projects/page/show/show_controller"], function(ShowController){
-       				ShowController.showPage(id,page_id);
+       				ShowController.showPage(id,page_id,line_id);
 				});
 		},
 
@@ -76,9 +76,15 @@ define(["marionette","app"], function(Marionette,App){
 		API.showPostcorrection(id);
 	});
 
-	App.on("projects:show_page",function(id,page_id){
+	App.on("projects:show_page",function(id,page_id,line_id){
+		if(line_id!=undefined){
+
+		App.navigate("projects/"+id+"/page/"+page_id+"/line/"+line_id);
+		} else {
 		App.navigate("projects/"+id+"/page/"+page_id);
-		API.showPage(id,page_id);
+		line_id=null;
+		}
+		API.showPage(id,page_id,line_id);
 	});
 
 	App.on("projects:list",function(){

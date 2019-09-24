@@ -11,7 +11,7 @@
         <form class="splitform">
           <div class="form-group row">
           <div class="col-12">
-             <button type="button" class="btn btn-primary js-addpackage"><i class="fas fa-folder-plus"></i> Add new package</button>
+             <button type="button" class="btn btn-primary blue-bg js-addpackage"><i class="fas fa-folder-plus"></i> Add new package</button>
           </div>
         </div>
         <div class="userrows">
@@ -30,7 +30,7 @@
       </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary js-confirm">Confirm</button>
+        <button type="button" class="btn btn-primary blue-bg js-confirm">Confirm</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
       </div>
     </div>

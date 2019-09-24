@@ -31,6 +31,9 @@ define([
           fetchingjobs
         )
         .done(function(project, languages, projects, user,jobs) {
+
+
+
           let isProject = project.attributes.bookId == project.attributes.projectId;
           let projectId = project.get('bookId');
           let isAdmin = user.admin;
@@ -45,6 +48,10 @@ define([
 
             // only show packages of this project
             console.log(projects);
+
+           if(jobs.statusName=="running"){ // start job tracking if job is running
+            projectShowLayout.trackJobStatus();
+            }
 
             var packages = [];
             for (var i = 0; i < projects.books.length; i++) {
@@ -287,6 +294,7 @@ define([
                        var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
                       $.when(fetchingjobs).done(function(jobs) {
                         projectShowInfo.setJobSymbol(jobs);
+                        projectShowLayout.trackJobStatus();
 
                       });
 
@@ -305,11 +313,21 @@ define([
                     if (tokens.adaptiveTokens==null){
                       return;
                     }
-                    console.log(tokens);
                     let projectShowAdaptiveTokens = new Show.Adaptive({
                       asModal: true,
                       pid: tokens.projectId,
                       adaptiveTokens: tokens.adaptiveTokens
+                    });
+
+
+                      projectShowAdaptiveTokens.on('attach',function(){
+                      var ad_table = $('.adaptive-tokens').DataTable({
+                           "scrollY": '500px',
+                            "info":false,
+                            "paging": false,
+                            "lengthChange": false,
+                          });
+
                     });
                     App.mainLayout.showChildView(
                       "dialogRegion",
@@ -533,6 +551,23 @@ define([
                     });
                 });
               });
+
+              
+            projectShowLayout.on("show:checkJobStatus",function(){
+                      var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+                       $.when(fetchingjobs).done(function(jobs){
+                                           
+                            projectShowInfo.setJobSymbol(jobs);
+                            console.log(jobs);
+                           if(jobs.statusName!="running"){ // stop job tracking if job is not running
+                            projectShowLayout.stopJobTracking();
+                            }
+
+                       }).fail(function(response){
+                             App.mainmsg.updateContent(response.responseText,'danger');                                                 
+                       }); 
+                 });
+                 
 
               // projectPanel = new Show.FooterPanel();
 

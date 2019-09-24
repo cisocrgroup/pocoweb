@@ -205,7 +205,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           }
           else{
 
-          $('.dropdown').remove();
+          $('.js-suggestions-cor').find('.dropdown').remove();
             var concLine = $(e.currentTarget).parent().parent();
             var tokendiv = $(e.currentTarget).parent();
             var pid = tokendiv.attr('projectId');
@@ -401,10 +401,14 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                  dropdown_content.attr('aria-labelledby','dropdownMenuConc');
                  suggestions_btn.parent().append(dropdown_content);
 
+                    
+                      if(_.isEmpty(suggestions)){
+                         $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">No suggestions available</a>"'));
+                      }
 
                      for(i=0;i<suggestions.length;i++){
-						 var s = suggestions[i];
-						 var content = Util.formatSuggestion(s);
+        						 var s = suggestions[i];
+        						 var content = Util.formatSuggestion(s);
                      $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
 
@@ -414,7 +418,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                         // to do: datatable instead ?
 
                      var s = suggestions[key][i];
-						   var content = Util.formatSuggestion(s);
+						         var content = Util.formatSuggestion(s);
                      $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
                    }

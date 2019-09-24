@@ -63,6 +63,17 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                         $.when(searchingToken).done(function(tokens){
                         var lineheight = App.getLineHeight(id);
 
+                            if(tokens.total==0){
+                                var confirmModal = new Show.OkDialog({
+                                      asModal: true,
+                                      title: "Empty results",
+                                      text: "No matches found for token: '" + word + "'", 
+                                      id: "emptymodal"
+                                    });
+                                    App.mainLayout.showChildView("dialogRegion", confirmModal);
+                                  return;
+                            }
+
                         var projectConcView = new Show.Concordance({selection:word,tokendata:tokens,asModal:true,le:true,lineheight:lineheight});
 
                          projectConcView.on("concordance:pagination",function(page_nr){
@@ -86,16 +97,8 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                           projectConcView.on("concordance:jump_to_page",function(data){
                        
                               $('#conc-modal').modal('hide');
-
-                              App.trigger("projects:show_page",data.pid,data.pageId);
-
-                              setTimeout(function() {
-                                
-                              var lineanchor = document.getElementById('line-anchor-'+data.pid+"-"+data.pageId+"-"+data.lineId);
-                              lineanchor.scrollIntoView();
-                              }, 500);
-
-                      
+                              App.trigger("projects:show_page",data.pid,data.pageId,data.lineId);
+                                            
                            });
 
                         App.mainLayout.showChildView('dialogRegion',projectConcView);

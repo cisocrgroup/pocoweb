@@ -72,7 +72,7 @@
 <div class="col col-sm-12">
 <div class="btn-group" role="group" style="float:right;margin-bottom: 15px;">
 <button class="btn btn-secondary js-le-redo"> <i class="fas fa-redo"></i> Recalculate </button>
-<button class="btn btn-primary js-le-profile"><i class="fas fa-play"></i> Profile with extended lexicon </button>
+<button class="btn btn-primary blue-bg js-le-profile"><i class="fas fa-play"></i> Profile with extended lexicon </button>
 </div>
 
 </div>

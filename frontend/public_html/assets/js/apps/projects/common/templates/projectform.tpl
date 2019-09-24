@@ -87,12 +87,12 @@ if(asModal) {
 	   style="display:none">
 
 <div id="selected_file"></div>
- <button class="btn btn-primary js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>
+ <button class="btn btn-primary blue-bg js-submit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Submit</button>
 
 
 <% } else { %>
 
- <button class="btn btn-primary js-edit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Update</button>
+ <button class="btn btn-primary blue-bg js-edit-project" type="submit"> <i class="fa fa-check" aria-hidden="true"></i> Update</button>
 
 <% } %>
 

@@ -7,8 +7,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
  Controller = {
 
-		showPage: function(id,page_id){
-
+		showPage: function(id,page_id,line_id){
 
      		require(["entities/project"], function(ProjectEntities){
 
@@ -20,7 +19,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         	 $.when(fetchingpage,fetchingproject).done(function(page,project){
 
 		     	loadingCircleView.destroy();
-            console.log(page);
+            console.log(project);
            var lineheight = App.getLineHeight(id);
            var pagehits = App.getPageHits(id);
            var linenumbers = App.getLineNumbers(id);
@@ -43,7 +42,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             for (word in suspicious_words['counts']) {
                suspicious_words_array.push([word,suspicious_words['counts'][word]]);
             }
-            var tab_content_height = $('.tab-content').height();
             var sp_table = $('.suspicious-words').DataTable({
                  "scrollY": '556px',
                   "data":suspicious_words_array,
@@ -53,22 +51,21 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                   "order": [[ 1, "desc" ]]
                 });
 
-            projectShowSidebar.sp_table = sp_table;
-
+               projectShowSidebar.sp_table = sp_table;
 
               $('#suspicious-words_filter input').on('keyup click', function () {
                 sp_table.search($(this).val()).draw();
               });
               var rows = $('#suspicious-words_filter').next().find('.row');
               rows[0].remove();
-            $('#suspicious-words-container > .loading_background2').fadeOut();
 
-            $('#suspicious-words-container').find('.dataTables_wrapper').removeClass('.container-fluid');
+             $('#suspicious-words-container > .loading_background2').fadeOut();
+             $('#suspicious-words-container').find('.dataTables_wrapper').removeClass('.container-fluid');
 
               var error_patterns_array = [];
               for (word in error_patterns['counts']) {
                error_patterns_array.push([word,error_patterns['counts'][word]]);
-            }
+              }
 
              var ep_table = $('.error-patterns').DataTable({
                   "scrollY": '556px',
@@ -91,7 +88,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
               rows[0].remove();
              $('#error-patterns-container > .loading_background2').fadeOut();
 
-               console.log(charmap);
 			   var data = [];
 			   for (var key in charmap.charMap) {
 				   data.push([key, charmap.charMap[key]]);
@@ -157,6 +153,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         });
 
        projectShowSidebar.on("page:new",function(page_id){
+                    line_id=null;
 
                     var fetchinglineheight = App.getLineHeight(id);
                     var fetchinglinenumbers = App.getLineNumbers(id);
@@ -182,7 +179,22 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     });  // $when fetchingproject
 
               });
+        
+       projectShowPage.on("page:lines_appended",function(){
+                if(page_id=="first") page_id = project.get('pageIds')[0];
+                if(page_id=="last") page_id = project.get('pageIds')[project.get('pageIds').length-1];
+                 if(line_id!=null){
+                      var container = $('#page-container');
+                      var scrollTo = $('#line-anchor-'+id+"-"+page_id+"-"+line_id);
+                        
+                    container.animate({
+                        scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
+                    },2000, function() {
+                      scrollTo.parent().fadeOut(500).fadeIn(500);
+                    });
 
+        }
+       });
 
        projectShowPage.on("page:correct_line",function(data,anchor){
          data.text = Util.escapeAsJSON(data.text);
@@ -219,11 +231,13 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     // var searchingToken = ProjectEntities.API.searchToken({q:selection,p:page_id,pid:id,isErrorPattern:0});
 
                   $.when(gettingCorrectionSuggestions).done(function(suggestions){
-
-
-                    // $('#js-concordance').attr('title','Show concordance of <b>'+ selection+'</b> ('+tokens.nWords+' occurrences)');
+                  
 
                     $("#suggestionsDropdown").empty();
+
+                      if(_.isEmpty(suggestions.suggestions)){
+                         $('#suggestionsDropdown').append($('<a class="dropdown-item noselect">No suggestions available</a>"'));
+                      }
 
                      var suggestions_btn = $('#js-suggestions');
 
@@ -263,6 +277,13 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
          $.when(searchingToken).done(function(tokens){
           console.log(tokens)
             if(tokens.total==0){
+                var confirmModal = new Show.OkDialog({
+                      asModal: true,
+                      title: "Empty results",
+                      text: "No matches found for token: '" + selection + "'", 
+                      id: "emptymodal"
+                    });
+                    App.mainLayout.showChildView("dialogRegion", confirmModal);
                   return;
             }
 
@@ -323,7 +344,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
              // build suggestions drop down
              projectConcView.on("concordance:show_suggestions",function(data){
-
               var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:data.token,pid:id});
                $.when(gettingCorrectionSuggestions).done(function(suggestions){
                   projectConcView.setSuggestionsDropdown(data.dropdowndiv,suggestions.suggestions);
@@ -375,13 +395,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                   $('#conc-modal').modal('hide');
 
-                   projectShowSidebar.trigger("page:new",data.pageId);
-
-
-                  setTimeout(function() {
-                  var lineanchor = document.getElementById('line-anchor-'+data.pid+"-"+data.pageId+"-"+data.lineId);
-                  lineanchor.scrollIntoView();
-                  }, 500);
+                  App.trigger("projects:show_page",data.pid,data.pageId,data.lineId);
 
 
                });

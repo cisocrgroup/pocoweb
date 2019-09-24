@@ -17,7 +17,7 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
 
         var cards = [
         {
-                "color": "blue",
+                "color": "green",
                 "icon": "fa-list",
                 "id": "test_btn",
                 "name": "Projects",
@@ -25,7 +25,7 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
                 "text": "Your current OCR - projects.",
                 "url": "projects:list"
             }, {
-                "color": "blue",
+                "color": "purple",
                 "icon": "fa-book",
                 "id": "doc_button",
                 "name": "Documentation",
@@ -44,7 +44,7 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
          let user = App.getCurrentUser();
          if (user != null && user.admin) {
            cards.push({
-                "color": "blue",
+                "color": "red",
                 "icon": "fa-users-cog",
                 "id": "users_button",
                 "name": "User Management",
