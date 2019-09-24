@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -33,7 +34,7 @@ func (s *server) routes() {
 }
 
 func (s *server) withPostUser(f service.HandlerFunc) service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		var data api.CreateUserRequest
 		if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
 			service.ErrorResponse(w, http.StatusBadRequest,
@@ -41,15 +42,14 @@ func (s *server) withPostUser(f service.HandlerFunc) service.HandlerFunc {
 			return
 		}
 		log.Debugf("withPostUser: %s", data.User)
-		d.Post = data
-		f(w, r, d)
+		f(context.WithValue(ctx, "post", data), w, r)
 	}
 }
 
 func (s *server) handlePostUser() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		t := db.NewTransaction(s.pool.Begin())
-		u := d.Post.(api.CreateUserRequest)
+		u := ctx.Value("post").(api.CreateUserRequest)
 		t.Do(func(dtb db.DB) error {
 			if err := db.InsertUser(dtb, &u.User); err != nil {
 				return fmt.Errorf("cannot insert user into database: %v", err)
@@ -68,7 +68,7 @@ func (s *server) handlePostUser() service.HandlerFunc {
 }
 
 func (s *server) handleGetAllUsers() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		log.Debugf("get all users")
 		users, err := db.FindAllUsers(s.pool)
 		if err != nil {
@@ -81,8 +81,8 @@ func (s *server) handleGetAllUsers() service.HandlerFunc {
 }
 
 func (s *server) handleGetUser() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		u, found, err := db.FindUserByID(s.pool, int64(d.IDs["users"]))
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		u, found, err := db.FindUserByID(s.pool, ctx.Value("users").(int64))
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot get user: %v", err)
@@ -99,9 +99,9 @@ func (s *server) handleGetUser() service.HandlerFunc {
 }
 
 func (s *server) handlePutUser() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		// this must not fail
-		u := d.Post.(api.CreateUserRequest)
+		u := ctx.Value("post").(api.CreateUserRequest)
 		t := db.NewTransaction(s.pool.Begin())
 		t.Do(func(dtb db.DB) error {
 			if err := db.UpdateUser(dtb, u.User); err != nil {
@@ -132,8 +132,8 @@ func (s *server) handlePutUser() service.HandlerFunc {
 }
 
 func (s *server) handleDeleteUser() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		uid := d.IDs["users"]
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		uid := ctx.Value("users").(int)
 		// you cannot delete users that still own books
 		if s.ownsBooks(uid) {
 			service.ErrorResponse(w, http.StatusBadRequest,

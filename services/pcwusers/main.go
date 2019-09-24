@@ -37,11 +37,8 @@ func must(err error) {
 func main() {
 	// flags
 	flag.Parse()
-	if debug {
-		log.SetLevel(log.DebugLevel)
-	}
 	// database
-	must(service.Init(dsn))
+	must(service.InitDebug(dsn, debug))
 	defer service.Close()
 	s := server{pool: service.Pool().(*sql.DB)}
 	// root
