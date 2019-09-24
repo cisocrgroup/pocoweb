@@ -87,6 +87,22 @@ static match_results search_impl(MysqlConnection &conn, int bid, int skip,
                                  int max, F f);
 
 ////////////////////////////////////////////////////////////////////////////////
+static std::wregex make_regex(const std::vector<std::string> &qs, bool ic) {
+  std::wstring pre = L"[:punct:]*((";
+  std::wstring restr;
+  for (const auto &q : qs) {
+    restr += pre + utf8(q);
+    pre = std::wstring(L")|(");
+  }
+  restr += L"))[:punct:]*";
+  CROW_LOG_INFO << "(make_regex) regex: " << utf8(restr) << (ic ? "/i" : "");
+  if (ic) {
+    return std::wregex(restr, std::regex::icase);
+  }
+  return std::wregex(restr);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 const char *SearchRoute::route_ = SEARCH_ROUTE_ROUTE;
 const char *SearchRoute::name_ = "SearchRoute";
 
@@ -114,12 +130,9 @@ Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
     return search(conn,
                   pq{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
   }
-  if (pi) {
-    return isearch(
-        conn, tq{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
-  }
-  return search(conn,
-                tq{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
+  return search(
+      conn,
+      tq{.bid = bid, .max = pmax, .skip = pskip, .ic = pi, .qs = qs.value()});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -163,42 +176,16 @@ static match_results search_impl(MysqlConnection &conn, int bid, int skip,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-struct iless : public std::binary_function<std::wstring, std::wstring, bool> {
-  bool operator()(const std::wstring &lhs, const std::wstring &rhs) const {
-    return wcscasecmp(lhs.c_str(), rhs.c_str()) < 0;
-  }
-};
-
-////////////////////////////////////////////////////////////////////////////////
-Route::Response SearchRoute::isearch(MysqlConnection &mysql, tq q) const {
-  // map wstrings to strings
-  std::map<std::wstring, std::string, iless> qset;
-  for (const auto &x : q.qs) {
-    qset[utf8(x)] = x;
-  }
-  const auto ret =
-      search_impl(mysql, q.bid, q.skip, q.max, [&](const auto &t, auto &q) {
-        auto i = qset.find(t.wcor());
-        if (i == qset.end()) {
-          return false;
-        }
-        q = i->second;
-        return true;
-      });
-  Json j;
-  return j << ret;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 Route::Response SearchRoute::search(MysqlConnection &mysql, tq q) const {
-  std::unordered_set<std::string> qset(q.qs.begin(), q.qs.end());
+  const auto re = make_regex(q.qs, q.ic);
   const auto ret =
       search_impl(mysql, q.bid, q.skip, q.max, [&](const auto &t, auto &q) {
-        auto i = qset.find(t.cor());
-        if (i == qset.end()) {
+        std::wsmatch m;
+        auto cor = t.wcor();
+        if (not std::regex_match(cor, m, re)) {
           return false;
         }
-        q = *i;
+        q = utf8(m[1]);
         return true;
       });
   Json j;

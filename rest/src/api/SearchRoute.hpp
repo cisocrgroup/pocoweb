@@ -22,13 +22,13 @@ private:
   struct tq { // token queries
     std::vector<std::string> qs;
     int bid, skip, max;
+    bool ic;
   };
   struct pq { // pattern queries
     std::vector<std::string> qs;
     int bid, skip, max;
   };
   Response search(MysqlConnection &mysql, tq q) const;
-  Response isearch(MysqlConnection &mysql, tq q) const;
   Response search(MysqlConnection &mysql, pq q) const;
 
   static const char *route_;
