@@ -11,6 +11,7 @@
 #include "database/DbStructs.hpp"
 #include "utils/Error.hpp"
 #include "utils/ScopeGuard.hpp"
+#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <crow.h>
 #include <random>
@@ -87,7 +88,7 @@ static match_results search_impl(MysqlConnection &conn, int bid, int skip,
                                  int max, F f);
 
 ////////////////////////////////////////////////////////////////////////////////
-static std::wregex make_regex(const std::vector<std::string> &qs, bool ic) {
+template <class T> static std::wregex make_regex(const T &qs, bool ic) {
   std::wstring pre = L"[:punct:]*((";
   std::wstring restr;
   for (const auto &q : qs) {
@@ -177,7 +178,8 @@ static match_results search_impl(MysqlConnection &conn, int bid, int skip,
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response SearchRoute::search(MysqlConnection &mysql, tq q) const {
-  const auto re = make_regex(q.qs, q.ic);
+  const auto ic = q.ic;
+  const auto re = make_regex(q.qs, ic);
   const auto ret =
       search_impl(mysql, q.bid, q.skip, q.max, [&](const auto &t, auto &q) {
         std::wsmatch m;
@@ -185,7 +187,11 @@ Route::Response SearchRoute::search(MysqlConnection &mysql, tq q) const {
         if (not std::regex_match(cor, m, re)) {
           return false;
         }
-        q = utf8(m[1]);
+        if (ic) {
+          q = utf8(boost::algorithm::to_lower_copy(std::wstring(m[1])));
+        } else {
+          q = utf8(m[1]);
+        }
         return true;
       });
   Json j;
