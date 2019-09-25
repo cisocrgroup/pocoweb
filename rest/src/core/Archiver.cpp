@@ -4,6 +4,7 @@
 #include "Page.hpp"
 #include "Project.hpp"
 #include "WagnerFischer.hpp"
+#include "database/DbStructs.hpp"
 #include "database/Tables.h"
 #include "parser/PageParser.hpp"
 #include "parser/ParserPage.hpp"
@@ -20,29 +21,31 @@ using namespace pcw;
 namespace fs = boost::filesystem;
 
 ////////////////////////////////////////////////////////////////////////////////
-Archiver::Archiver(const Project &project, MysqlConnection &conn,
-                   const Config &config)
-    : project_(project.shared_from_this()), conn_(conn),
-      basedir_(config.daemon.projectdir) {}
+Archiver::Archiver(int pid, MysqlConnection &conn, const Config &config)
+    : conn_(conn), basedir_(config.daemon.projectdir), pid_(pid) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 Archiver::Path Archiver::operator()() const {
-  assert(project_);
-  const auto oldwd = fs::current_path();
-  ScopeGuard restoreoldwd([&oldwd]() { fs::current_path(oldwd); });
-  fs::current_path(basedir_);
-  const auto archive = project_->origin().data.dir / archive_name();
+  // const auto oldwd = fs::current_path();
+  // ScopeGuard restoreoldwd([&oldwd]() { fs::current_path(oldwd); });
+  // fs::current_path(basedir_);
+  DbPackage package(pid_);
+  if (not package.load(conn_)) {
+    THROW(Error, "cannot load package: ", pid_);
+  }
+  const auto archive =
+      basedir_.parent_path() / package.directory / archive_name(package);
   const auto dir = archive.parent_path() / archive.stem();
   ScopeGuard deltmpdir([&dir]() { fs::remove_all(dir); });
   ScopeGuard delarchive([&archive]() { fs::remove(archive); });
-  copy_files(dir);
+  copy_files(dir, package);
   write_adaptive_token_set(dir);
   zip(dir, archive);
   delarchive.dismiss();
   // do *not* dismiss deltmpdir; it should be removed all the time.
-  // do *not* dissmiss restoreoldwd, since we want change back to it in
+  // // do *not* dissmiss restoreoldwd, since we want change back to it in
   // any case.
-  return archive;
+  return package.directory / archive.filename();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,51 +69,50 @@ void Archiver::zip(const Path &xdir, const Path &archive) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void Archiver::write_gt_file(const Line &line, const Path &to) const {
-  std::ofstream os(to.string());
-  if (not os.good())
-    throw std::system_error(errno, std::system_category(), to.string());
-  os << line.cor() << std::endl;
-  os.close();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void Archiver::copy_files(const Path &xdir) const {
+void Archiver::copy_files(const Path &xdir, const DbPackage &package) const {
   const auto base = basedir_.parent_path();
   const auto dir = base / xdir;
   CROW_LOG_INFO << "(Archiver) dir:        " << dir;
-  assert(project_);
   WagnerFischer wf;
-  for (const auto &page : *project_) {
-    CROW_LOG_INFO << "(Archiver) ocr path:  " << page->ocr;
+  for (const auto pageid : package.pageids) {
+    DbPage page(pid_, pageid);
+    if (not page.load(conn_)) {
+      THROW(Error, "cannot load page: ", pid_, ":", pageid);
+    }
+    CROW_LOG_INFO << "(Archiver) ocr path:  " << page.ocrpath;
     CROW_LOG_INFO << "(Archiver) base dir:  " << base;
-    if (not page->has_ocr_path()) {
-      CROW_LOG_WARNING << "(Archiver) page id: " << page->id()
+    if (page.ocrpath.empty()) {
+      CROW_LOG_WARNING << "(Archiver) page: " << pid_ << ":" << pageid
                        << " has no associated ocr path";
       continue;
     }
-    const auto path = base / page->ocr;
+    const auto path = base / page.ocrpath;
     CROW_LOG_INFO << "(Archiver) file path: " << path;
     const auto pp =
-        make_page_parser(page->file_type, base / page->ocr)->parse();
-    for (const auto &line : *page) {
-      if (line->has_img_path()) {
-        wf.set_gt(line->wcor());
-        // page parser starts with 0,
-        // line ids start at 1.
-        assert(line->id() > 0);
-        pp->get(line->id() - 1).correct(wf);
-        const auto img = copy_to_tmp_dir(base / line->img, dir);
-        auto tmp = img.parent_path() / img.stem().replace_extension(".gt.txt");
-        CROW_LOG_INFO << "(Archiver) tmp path:  " << tmp;
-        write_gt_file(*line, tmp);
+        make_page_parser(FileType(page.filetype), base / page.ocrpath)->parse();
+    for (const auto &line : page.lines) {
+      if (line.imagepath.empty()) {
+        CROW_LOG_WARNING << "(Archiver) line: " << pid_ << ":" << pageid << ":"
+                         << line.lineid << " has no image path";
+        continue;
       }
+      wf.set_gt(line.slice().wcor());
+      // page parser starts with 0,
+      // line ids start at 1.
+      assert(line.lineid > 0);
+      pp->get(line.lineid - 1).correct(wf);
+      const auto img = copy_to_tmp_dir(base / line.imagepath, dir);
+      const auto cor =
+          img.parent_path() / img.stem().replace_extension(".gt.txt");
+      const auto ocr = img.parent_path() / img.stem().replace_extension(".txt");
+      CROW_LOG_INFO << "(Archiver) paths: " << cor << " " << ocr;
+      write_line_text_snippets(line, cor, ocr);
     }
-    pp->write(get_tmp_file(page->ocr, dir));
-    if (page->has_img_path()) {
-      CROW_LOG_INFO << "(Archiver) img path:  " << base / page->img;
+    pp->write(get_tmp_file(page.ocrpath, dir));
+    if (not page.imagepath.empty()) {
+      CROW_LOG_INFO << "(Archiver) img path:  " << base / page.imagepath;
       CROW_LOG_INFO << "(Archiver) copy to:   " << dir;
-      copy_to_tmp_dir(base / page->img, dir);
+      copy_to_tmp_dir(base / page.imagepath, dir);
     }
   }
 }
@@ -119,7 +121,7 @@ void Archiver::copy_files(const Path &xdir) const {
 void Archiver::write_adaptive_token_set(const Path &xdir) const {
   const auto base = basedir_.parent_path();
   const auto dir = base / xdir;
-  const auto bookid = project_->id();
+  const auto bookid = pid_;
   const auto path = dir / "adaptive_tokens.txt";
   std::ofstream os(path.string());
   if (not os.good()) {
@@ -162,14 +164,35 @@ Archiver::Path Archiver::copy_to_tmp_dir(const Path &source,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Archiver::Path Archiver::archive_name() const noexcept {
+void Archiver::write_line_text_snippets(const DbLine &line, const Path &cor,
+                                        const Path &ocr) {
+  const auto slice = line.slice();
+  CROW_LOG_INFO << "writting snippet: " << slice.cor() << " (" << slice.ocr()
+                << ") -- " << slice.is_fully_corrected() << ", "
+                << slice.is_partially_corrected();
+  if (slice.is_fully_corrected()) {
+    write_text_snippet(slice.cor(), cor);
+  }
+  write_text_snippet(slice.ocr(), ocr);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void Archiver::write_text_snippet(const std::string &line, const Path &to) {
+  std::ofstream os(to.string());
+  if (not os.good()) {
+    throw std::system_error(errno, std::system_category(), to.string());
+  }
+  os << line << std::endl;
+  os.close();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Archiver::Path Archiver::archive_name(const DbPackage &package) noexcept {
   static const auto delre = std::regex(R"([<>:"'/\\|?*]+)");
   static const auto replre = std::regex(R"(\s+)");
-  assert(project_);
-  auto basename = project_->origin().data.dir.filename().string() + "_" +
-                  project_->origin().data.author + "_" +
-                  project_->origin().data.title + "_" +
-                  std::to_string(project_->origin().data.year) + ".zip";
+  const auto dir = Path(package.directory);
+  auto basename = dir.filename().string() + "_" + package.author + "_" +
+                  package.title + "_" + std::to_string(package.year) + ".zip";
   basename = std::regex_replace(basename, delre, "");
   basename = std::regex_replace(basename, replre, "_");
   return basename;
