@@ -82,7 +82,7 @@ func (s *server) handleGetAllUsers() service.HandlerFunc {
 
 func (s *server) handleGetUser() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		u, found, err := db.FindUserByID(s.pool, ctx.Value("users").(int64))
+		u, found, err := db.FindUserByID(s.pool, int64(ctx.Value("users").(int)))
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot get user: %v", err)
