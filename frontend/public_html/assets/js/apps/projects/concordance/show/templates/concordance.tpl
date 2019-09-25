@@ -76,8 +76,9 @@ if(asModal) {
    %>
 
 <div class="line-container">
+<div class="line-nr line-nr-conc" title="page <%-line.pageId%>, line <%-line.lineId%>" > <span><%-line.pageId%>:<%-line['lineId']%></span></div>
 
-<div class="text-image-line" title="page <%-line.pageId%> line <%-line.lineId%>">
+<div class="text-image-line" title="page <%-line.pageId%>, line <%-line.lineId%>">
 
 <div class="left_div div_inline">
 		<div class="invisible=link" href="<%-link%>">

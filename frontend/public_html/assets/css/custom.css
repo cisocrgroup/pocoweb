@@ -521,6 +521,9 @@ position: relative;
     align-self: center;
 }
 
+.line-nr-conc {
+    min-width: 80px;
+}
 
 .line-text{
   display: inline-block;

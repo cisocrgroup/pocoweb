@@ -69,6 +69,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
                       $.when(searchingToken).done(function(tokens,suggestions){
                       var lineheight = App.getLineHeight(id);
+                      var linenumbers = App.getLineNumbers(id);
 
                         if(tokens.total==0){
                                 var confirmModal = new Show.OkDialog({
@@ -81,7 +82,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                                   return;
                         }
 
-                      var projectConcView = new Show.Concordance({selection:word,tokendata:tokens,asModal:true,lineheight:lineheight});
+                      var projectConcView = new Show.Concordance({selection:word,tokendata:tokens,asModal:true,lineheight:lineheight,linenumbers:linenumbers});
 
                       projectConcView.on("concordance:correct_token",function(data,anchor){
 
