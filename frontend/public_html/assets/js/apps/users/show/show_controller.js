@@ -49,6 +49,7 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
 			  		var updatingUser = UserEntities.API.updateUser(data);
 						$.when(updatingUser).done(function(user){
 						  App.mainmsg.updateContent("Account updated successfully.",'success');
+                          console.log(user);
                           App.updateCurrentUser(user);
 						  $('.loginname').text(user.name);
 						}).fail(function(response){
@@ -60,8 +61,6 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
  				var confirmModal = new Show.AreYouSure({title:"Are you sure...",text:"...you want to delete your account?",id:"deleteModal"})
  				App.mainLayout.showChildView('dialogRegion',confirmModal)
 			  });
-
-
     		}); // show
 
 
