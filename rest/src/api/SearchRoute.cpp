@@ -86,13 +86,19 @@ static void each_package_line(MysqlConnection &mysql, int pid, F f);
 template <class F>
 static match_results search_impl(MysqlConnection &conn, int bid, int skip,
                                  int max, F f);
+////////////////////////////////////////////////////////////////////////////////
+static std::wstring regex_escape(const std::wstring &str) {
+  static const auto re =
+      std::wregex(L"[-[\\]{}()*+?.\\^$|#\\\\]", std::regex::optimize);
+  return std::regex_replace(str, re, L"\\$&");
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 template <class T> static std::wregex make_regex(const T &qs, bool ic) {
   std::wstring pre = L"[:punct:]*((";
   std::wstring restr;
   for (const auto &q : qs) {
-    restr += pre + utf8(q);
+    restr += pre + regex_escape(utf8(q));
     pre = std::wstring(L")|(");
   }
   restr += L"))[:punct:]*";
@@ -192,6 +198,10 @@ Route::Response SearchRoute::search(MysqlConnection &mysql, tq q) const {
         } else {
           q = utf8(m[1]);
         }
+        // CROW_LOG_INFO << "matched: " << t.cor() << " (" << t.ocr() << ")";
+        // std::for_each(t.begin, t.end, [](const auto &c) {
+        //   CROW_LOG_INFO << "char: " << int(c.cor) << ", " << int(c.ocr);
+        // });
         return true;
       });
   Json j;
