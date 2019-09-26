@@ -77,7 +77,7 @@ func main() {
 }
 
 func getLanguages() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		configs, err := gofiler.ListLanguages(languageDir)
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
@@ -93,13 +93,14 @@ func getLanguages() service.HandlerFunc {
 }
 
 func getProfile() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()["q"]
+		p := ctx.Value("project").(*db.Project)
 		if len(q) == 0 { // return the whole profile
-			getWholeProfile(w, r, d.Project)
+			getWholeProfile(w, r, p)
 			return
 		}
-		queryProfile(w, d.Project, q)
+		queryProfile(w, p, q)
 	}
 }
 
@@ -171,21 +172,24 @@ func applyCasing(model, str string) string {
 }
 
 func withAdditionalLexicon(f service.HandlerFunc) service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		var alex api.AdditionalLexicon
 		if err := json.NewDecoder(r.Body).Decode(&alex); err != nil {
 			service.ErrorResponse(w, http.StatusBadRequest,
 				"cannot decode additional lexicon: %v", err)
 			return
 		}
-		d.Post = alex
-		f(w, r, d)
+		// d.Post = alex
+		f(context.WithValue(ctx, "data", alex), w, r)
 	}
 }
 
 func run() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		p := profiler{project: d.Project, alex: d.Post.(api.AdditionalLexicon)}
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		p := profiler{
+			project: ctx.Value("project").(*db.Project),
+			alex: ctx.Value("data").(api.AdditionalLexicon),
+		}
 		jobID, err := jobs.Start(context.Background(), &p)
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
@@ -197,7 +201,7 @@ func run() service.HandlerFunc {
 }
 
 func getPatterns() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		qs := r.URL.Query()["q"]
 		h := strings.ToLower(r.URL.Query().Get("ocr"))
 		var ocr bool
@@ -205,20 +209,21 @@ func getPatterns() service.HandlerFunc {
 			ocr = true
 		}
 		if len(qs) == 0 {
-			getAllPatterns(w, d, ocr)
+			getAllPatterns(ctx, w, ocr)
 			return
 		}
-		queryPatterns(w, d, qs, ocr)
+		queryPatterns(ctx, w, qs, ocr)
 	}
 }
 
-func getAllPatterns(w http.ResponseWriter, d *service.Data, ocr bool) {
+func getAllPatterns(ctx context.Context, w http.ResponseWriter, ocr bool) {
 	const stmt = "SELECT p.pattern,COUNT(*) " +
 		"FROM errorpatterns p " +
 		"JOIN suggestions s ON s.id=p.suggestionid " +
 		"WHERE p.bookID=? AND p.ocr=? AND s.topsuggestion=? " +
 		"GROUP BY p.pattern"
-	rows, err := db.Query(service.Pool(), stmt, d.Project.BookID, ocr, true)
+	p := ctx.Value("project").(*db.Project)
+	rows, err := db.Query(service.Pool(), stmt, p.BookID, ocr, true)
 	if err != nil {
 		service.ErrorResponse(w, http.StatusInternalServerError,
 			"cannot get patterns: %v", err)
@@ -226,7 +231,7 @@ func getAllPatterns(w http.ResponseWriter, d *service.Data, ocr bool) {
 	}
 	defer rows.Close()
 	patterns := api.PatternCounts{
-		BookID: d.Project.BookID,
+		BookID: p.BookID,
 		OCR:    ocr,
 		Counts: make(map[string]int),
 	}
@@ -243,7 +248,7 @@ func getAllPatterns(w http.ResponseWriter, d *service.Data, ocr bool) {
 	service.JSONResponse(w, patterns)
 }
 
-func queryPatterns(w http.ResponseWriter, d *service.Data, qs []string, ocr bool) {
+func queryPatterns(ctx context.Context, w http.ResponseWriter, qs []string, ocr bool) {
 	const stmt = "SELECT p.pattern,s.id,s.weight,s.distance," +
 		"s.dict,s.histpatterns,s.ocrpatterns,s.topsuggestion,t1.typ,t2.typ,t3.typ " +
 		"FROM errorpatterns p " +
@@ -252,13 +257,14 @@ func queryPatterns(w http.ResponseWriter, d *service.Data, qs []string, ocr bool
 		"JOIN types t2 on s.suggestiontypid=t2.id " +
 		"JOIN types t3 on s.moderntypid=t3.id " +
 		"WHERE p.bookID=? AND p.pattern=? AND p.ocr=?"
+	p := ctx.Value("project").(*db.Project)
 	res := api.Patterns{
-		BookID:   d.Project.BookID,
+		BookID:   p.BookID,
 		OCR:      ocr,
 		Patterns: make(map[string][]api.Suggestion),
 	}
 	for _, q := range qs {
-		rows, err := db.Query(service.Pool(), stmt, d.Project.BookID, q, ocr)
+		rows, err := db.Query(service.Pool(), stmt, p.BookID, q, ocr)
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot query pattern %q: %v", q, err)
@@ -283,13 +289,14 @@ func queryPatterns(w http.ResponseWriter, d *service.Data, qs []string, ocr bool
 }
 
 func getSuspiciousWords() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		const stmt = "SELECT t.typ,tc.counts " +
 			"FROM suggestions s " +
 			"JOIN types t ON s.tokentypid=t.id " +
 			"JOIN typcounts tc ON s.tokentypid=tc.typid AND s.bookid=tc.bookid " +
 			"WHERE s.bookID=? AND s.topsuggestion=true AND s.distance > 0"
-		rows, err := db.Query(service.Pool(), stmt, d.Project.BookID)
+		p := ctx.Value("project").(*db.Project)
+		rows, err := db.Query(service.Pool(), stmt, p.BookID)
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot get suspicious words: %v", err)
@@ -297,8 +304,8 @@ func getSuspiciousWords() service.HandlerFunc {
 		}
 		defer rows.Close()
 		patterns := api.SuggestionCounts{
-			BookID:    d.Project.BookID,
-			ProjectID: d.Project.ProjectID,
+			BookID:    p.BookID,
+			ProjectID: p.ProjectID,
 			Counts:    make(map[string]int),
 			// explicit map to avoid null entry in json
 		}
@@ -317,16 +324,17 @@ func getSuspiciousWords() service.HandlerFunc {
 }
 
 func getAdaptiveTokens() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		p := ctx.Value("project").(*db.Project)
 		at := api.AdaptiveTokens{
-			BookID:         d.Project.BookID,
-			ProjectID:      d.Project.ProjectID,
+			BookID:         p.BookID,
+			ProjectID:      p.ProjectID,
 			AdaptiveTokens: []string{},
 			// set explicitly to return an empty list
 		}
 		seen := make(map[string]bool)
 		var i int
-		eachLine(d.Project.BookID, func(line db.Chars) error {
+		eachLine(p.BookID, func(line db.Chars) error {
 			eachWord(line, func(word db.Chars) error {
 				if i < 10 {
 					i++
