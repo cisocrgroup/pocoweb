@@ -148,7 +148,7 @@ create table if not exists errorpatterns (
 	ocr boolean not null
 );
 alter table errorpatterns convert to character set utf8mb4 collate utf8mb4_unicode_ci;
-alter table errorpatterns change pattern pattern varchar(25) character set utf8mb4 collate utf8mb4_unicode_ci;
+/*alter table errorpatterns change pattern pattern varchar(25) character set utf8mb4 collate utf8mb4_unicode_ci;*/
 
 create table if not exists typcounts (
 	   bookid int references books(bookid),
