@@ -1,7 +1,7 @@
 #include "CharMapRoute.hpp"
-#include "core/Session.hpp"
 #include "core/jsonify.hpp"
 #include "database/Database.hpp"
+#include "database/DbStructs.hpp"
 #include <crow.h>
 #include <unicode/uchar.h>
 #include <utf8.h>
@@ -42,19 +42,19 @@ Route::Response CharMapRoute::impl(HttpGet, const Request &req, int bid) const {
   const auto filter = get<std::string>(req.url_params, "filter").value_or("");
   std::wstring wfilter;
   utf8::utf8to32(filter.begin(), filter.end(), std::back_inserter(wfilter));
-
-  LockedSession session(get_session(req));
-  auto conn = must_get_connection();
-  auto book = session->must_find(conn, bid);
-  bid = book->origin().id();
   CROW_LOG_DEBUG << "(CharMapRoute) book: " << bid << ", filter: " << filter;
+
+  auto conn = must_get_connection();
+  DbPackage package(bid);
+  if (not package.load(conn)) {
+    THROW(Error, "cannot load package: ", bid);
+  }
   using namespace sqlpp;
   tables::Contents c;
   const auto stmnt = select(c.cor, c.ocr)
                          .from(c)
-                         .where(c.bookid == bid)
+                         .where(c.bookid == package.bookid)
                          .order_by(c.pageid.asc(), c.lineid.asc(), c.seq.asc());
-
   CharFreqTransducer t;
   for (const auto &c : conn.db()(stmnt)) {
     const auto ocr = static_cast<wchar_t>(c.ocr);
@@ -67,8 +67,8 @@ Route::Response CharMapRoute::impl(HttpGet, const Request &req, int bid) const {
   }
   const auto freqs = t.freq_map(wfilter);
   Json j;
-  j["projectId"] = book->id();
-  j["bookId"] = book->origin().id();
+  j["projectId"] = package.projectid;
+  j["bookId"] = package.bookid;
   for (const auto &kv : freqs) {
     j["charMap"][kv.first] = kv.second;
   }

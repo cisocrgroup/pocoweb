@@ -3,10 +3,10 @@
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/Package.hpp"
 #include "core/Page.hpp"
-#include "core/Session.hpp"
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
 #include "core/util.hpp"
+#include "database/Database.hpp"
 #include "database/DbStructs.hpp"
 #include "utils/Error.hpp"
 #include "utils/ScopeGuard.hpp"
@@ -21,8 +21,10 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class D> void update_book_data(pcw::Book &book, const D &data);
+template <class D> void update_book_data(DbPackage package, const D &data);
+template <class D> void update_book_data(BookData bdata, const D &data);
 template <class Row> Json &set_book(Json &json, const Row &row);
+static BookData as_book_data(const DbPackage &package);
 
 ////////////////////////////////////////////////////////////////////////////////
 const char *BookRoute::route_ = BOOK_ROUTE_ROUTE_1 "," BOOK_ROUTE_ROUTE_2;
@@ -93,7 +95,6 @@ Route::Response BookRoute::impl(HttpPost, const Request &req) const {
     THROW(BadRequest, "(BookRoute) invalid Content-Type: ",
           crow::get_header_value(req.headers, "Content-Type"));
   }
-  // LockedSession session(get_session(req));
   auto conn = must_get_connection();
   // create new bookdir
   BookDirectoryBuilder dir(get_config());
@@ -104,7 +105,7 @@ Route::Response BookRoute::impl(HttpPost, const Request &req) const {
   if (not book) {
     THROW(BadRequest, "(BookRoute) could not build book");
   }
-  update_book_data(*book, req.url_params);
+  update_book_data(book->data, req.url_params);
   book->set_owner(uid.value());
   // insert book into database
   CROW_LOG_INFO << "(BookRoute) Inserting a new book into the database";
@@ -116,40 +117,6 @@ Route::Response BookRoute::impl(HttpPost, const Request &req) const {
   sg.dismiss();
   Json j;
   return j << *book;
-
-  // if (crow::get_header_value(req.headers, "Content-Type") ==
-  //     "application/json") {
-  //   // CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
-  //   const auto json = crow::json::load(req.body);
-  //   const auto file = get<std::string>(json, "file");
-  //   if (not file)
-  //     THROW(BadRequest, "(BookRoute) missing file parameter");
-  //   dir.add_zip_file_path(*file);
-  //   book = dir.build();
-  //   if (not book)
-  //     THROW(BadRequest, "(BookRoute) could not build book");
-  //   book->set_owner(session->user());
-  //   // update book data
-  //   update_book_data(*book, json);
-  // } else {
-  //   dir.add_zip_file_content(extract_content(req));
-  //   book = dir.build();
-  //   if (not book)
-  //     THROW(BadRequest, "(BookRoute) could not build book");
-  //   book->set_owner(session->user());
-  // }
-  // // insert book into database
-  // CROW_LOG_INFO << "(BookRoute) Inserting a new book into database";
-  // MysqlCommitter committer(conn);
-  // insert_book(conn.db(), *book);
-  // CROW_LOG_INFO << "(BookRoute) Created a new book id: " << book->id();
-  // // update and clean up
-  // committer.commit();
-  // sg.dismiss();
-  // Json j;
-  // Response response(j << *book);
-  // response.code = created().code;
-  // return response;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -159,15 +126,27 @@ void set_if_set(T &t, const D &data, const char *key) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class D> void update_book_data(pcw::Book &book, const D &data) {
-  set_if_set(book.data.author, data, "author");
-  set_if_set(book.data.title, data, "title");
-  set_if_set(book.data.lang, data, "language");
-  set_if_set(book.data.uri, data, "uri");
-  set_if_set(book.data.description, data, "description");
-  set_if_set(book.data.histPatterns, data, "histPatterns");
-  set_if_set(book.data.profilerUrl, data, "profilerUrl");
-  set_if_set(book.data.year, data, "year");
+template <class D> void update_book_data(DbPackage package, const D &data) {
+  set_if_set(package.author, data, "author");
+  set_if_set(package.title, data, "title");
+  set_if_set(package.language, data, "language");
+  set_if_set(package.uri, data, "uri");
+  set_if_set(package.description, data, "description");
+  set_if_set(package.histpatterns, data, "histPatterns");
+  set_if_set(package.profilerurl, data, "profilerUrl");
+  set_if_set(package.year, data, "year");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template <class D> void update_book_data(BookData bdata, const D &data) {
+  set_if_set(bdata.author, data, "author");
+  set_if_set(bdata.title, data, "title");
+  set_if_set(bdata.lang, data, "language");
+  set_if_set(bdata.uri, data, "uri");
+  set_if_set(bdata.description, data, "description");
+  set_if_set(bdata.histPatterns, data, "histPatterns");
+  set_if_set(bdata.profilerUrl, data, "profilerUrl");
+  set_if_set(bdata.year, data, "year");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -235,20 +214,21 @@ Route::Response BookRoute::impl(HttpPut, const Request &req, int bid) const {
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpPost, const Request &req, int bid) const {
   CROW_LOG_DEBUG << "(BookRoute) POST package: " << bid;
-  auto data = crow::json::load(req.body);
-  LockedSession session(get_session(req));
   auto conn = must_get_connection();
-  const auto view = session->must_find(conn, bid);
-  if (not view->is_book()) {
-    THROW(BadRequest, "cannot set parameters of project id: ", bid);
+  DbPackage package(bid);
+  if (!package.load(conn)) {
+    THROW(Error, "cannot load package: ", bid);
   }
-  const auto book = std::dynamic_pointer_cast<Book>(view);
-  update_book_data(*book, data);
+  // projects but not packages cannot be updated
+  if (not package.isBook()) {
+    THROW(BadRequest, "cannot set parameters of a package");
+  }
+  update_book_data(package, crow::json::load(req.body));
   MysqlCommitter committer(conn);
-  update_book(conn.db(), *book);
+  update_book(conn.db(), package.bookid, as_book_data(package));
   committer.commit();
   Json json;
-  return json << *book;
+  return json << package;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -256,22 +236,40 @@ Route::Response BookRoute::impl(HttpPost, const Request &req, int bid) const {
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpDelete, const Request &req, int bid) const {
   CROW_LOG_DEBUG << "(BookRoute) DELETE package: " << bid;
-  const LockedSession session(get_session(req));
   auto conn = must_get_connection();
-  const auto project = session->must_find(conn, bid);
+  DbPackage package(bid);
+  if (!package.load(conn)) {
+    THROW(Error, "cannot load package: ", bid);
+  }
   MysqlCommitter committer(conn);
-  delete_project(conn.db(), project->id());
-  if (project->is_book()) {
-    const auto dir = project->origin().data.dir;
-    CROW_LOG_INFO << "(BookRoute) removing directory: " << dir;
+  delete_project(conn.db(), package.projectid);
+  if (package.isBook()) {
+    CROW_LOG_INFO << "(BookRoute) removing directory: " << package.directory;
     boost::system::error_code ec;
-    boost::filesystem::remove_all(dir, ec);
+    boost::filesystem::remove_all(package.directory, ec);
     if (ec) {
-      CROW_LOG_WARNING << "(BookRoute) cannot remove directory: " << dir << ": "
-                       << ec.message();
+      CROW_LOG_WARNING << "(BookRoute) cannot remove directory: "
+                       << package.directory << ": " << ec.message();
     }
   }
-  session->uncache_project(project->id());
   committer.commit();
   return ok();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BookData as_book_data(const DbPackage &package) {
+  BookData ret;
+  ret.author = package.author;
+  ret.title = package.title;
+  ret.description = package.description;
+  ret.histPatterns = package.histpatterns;
+  ret.uri = package.uri;
+  ret.profilerUrl = package.profilerurl;
+  ret.lang = package.language;
+  ret.dir = package.directory;
+  ret.year = package.year;
+  ret.profiled = package.profiled;
+  ret.extendedLexicon = package.extendedLexicon;
+  ret.postCorrected = package.postCorrected;
+  return ret;
 }

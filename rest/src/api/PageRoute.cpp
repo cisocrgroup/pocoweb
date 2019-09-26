@@ -56,19 +56,10 @@ Route::Response PageRoute::impl(HttpGet, const Request &req, int bid,
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response PageRoute::impl(HttpDelete, const Request &req, int bid,
                                 int pid) const {
-  LockedSession session(get_session(req));
+  CROW_LOG_DEBUG << "(PageRoute) delete page " << bid << ":" << pid;
   auto conn = must_get_connection();
-  CROW_LOG_DEBUG << "(PageRoute) searching for book id: " << bid
-                 << " page id: " << pid;
-  const auto book = session->must_find(conn, bid);
-  if (!book->is_book()) {
-    THROW(BadRequest,
-          "(PageRoute) cannot delete page from project (must be a book)");
-  }
-  const auto page = session->must_find(conn, bid, pid);
   MysqlCommitter committer(conn);
   delete_page(conn.db(), bid, pid);
-  book->delete_page(page->id());
   committer.commit();
   return ok();
 }
@@ -121,9 +112,6 @@ Route::Response PageRoute::first(const Request &req, int bid) const {
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response PageRoute::impl(HttpGet, const Request &req, int bid, int pid,
                                 int n) const {
-  // LockedSession session(get_session(req));
-  // auto conn = must_get_connection();
-  // auto book = session->must_find(conn, bid);
   if (strcasestr(req.url.data(), "/next/")) {
     return next(req, bid, pid, std::abs(n));
   } else if (strcasestr(req.url.data(), "/prev/")) {

@@ -111,7 +111,7 @@ struct DbPackage {
         histpatterns(), directory(), language(), bookid(pid), projectid(pid),
         owner(), year(), profiled(), extendedLexicon(), postCorrected() {}
   bool load(MysqlConnection &mysql);
-
+  bool isBook() const noexcept { return projectid == bookid; }
   std::vector<int> pageids;
   std::string title, author, description, uri, profilerurl, histpatterns,
       directory, language;

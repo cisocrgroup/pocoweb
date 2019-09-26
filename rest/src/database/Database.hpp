@@ -72,7 +72,7 @@ template <class Db> ProjectSptr insert_project(Db &db, Project &book);
 
 template <class Db> BookSptr insert_book(Db &db, Book &book);
 
-template <class Db> void update_book(Db &db, Project &view);
+template <class Db> void update_book(Db &db, int id, const BookData &data);
 
 struct ProjectEntry {
   bool is_book() const noexcept { return this->origin == this->projectid; }
@@ -292,25 +292,20 @@ void pcw::detail::insert_content(Db &db, R &r, const Line &line) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class Db> void pcw::update_book(Db &db, Project &view) {
+template <class Db>
+void pcw::update_book(Db &db, int id, const BookData &data) {
   using namespace sqlpp;
   tables::Books books;
-  auto stmnt =
-      update(books)
-          .set(books.author = view.origin().data.author,
-               books.title = view.origin().data.title,
-               books.directory = view.origin().data.dir.string(),
-               books.year = view.origin().data.year,
-               books.uri = view.origin().data.uri,
-               books.description = view.origin().data.description,
-               books.profilerurl = view.origin().data.profilerUrl,
-               books.histpatterns = view.origin().data.histPatterns,
-               books.profiled = view.origin().data.profiled,
-               books.extendedlexicon = view.origin().data.extendedLexicon,
-               books.postcorrected = view.origin().data.postCorrected,
-               books.lang = view.origin().data.lang)
-          .where(books.bookid == view.origin().id());
-  db(stmnt);
+  db(update(books)
+         .set(books.author = data.author, books.title = data.title,
+              books.directory = data.dir.string(), books.year = data.year,
+              books.uri = data.uri, books.description = data.description,
+              books.profilerurl = data.profilerUrl,
+              books.histpatterns = data.histPatterns,
+              books.profiled = data.profiled,
+              books.extendedlexicon = data.extendedLexicon,
+              books.postcorrected = data.postCorrected, books.lang = data.lang)
+         .where(books.bookid == id));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
