@@ -6,6 +6,7 @@ import (
 	"flag"
 	"net/http"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"unicode"
 
@@ -111,12 +112,14 @@ func getWholeProfile(w http.ResponseWriter, r *http.Request, p *db.Project) {
 }
 
 func queryProfile(w http.ResponseWriter, p *db.Project, qs []string) {
+	var splitRe = regexp.MustCompile(`^(\p{P}*)(.*?)(\p{P}*)$`)
 	ss := api.Suggestions{
 		BookID:      p.BookID,
 		Suggestions: make(map[string][]api.Suggestion),
 	}
 	for _, q := range qs {
-		if err := selectSuggestions(q, &ss); err != nil {
+		m := splitRe.FindStringSubmatch(q)
+		if err := selectSuggestions(m[1], m[2], m[3], &ss); err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot get suggestions: %v", err)
 			return
@@ -125,7 +128,7 @@ func queryProfile(w http.ResponseWriter, p *db.Project, qs []string) {
 	service.JSONResponse(w, ss)
 }
 
-func selectSuggestions(q string, ss *api.Suggestions) error {
+func selectSuggestions(pre, q, suf string, ss *api.Suggestions) error {
 	const stmt = "SELECT s.id,s.weight,s.distance,s.dict," +
 		"s.histpatterns,s.ocrpatterns," +
 		"s.topsuggestion,t1.typ,t2.typ,t3.typ " +
@@ -148,14 +151,15 @@ func selectSuggestions(q string, ss *api.Suggestions) error {
 		}
 		s.HistPatterns = strings.Split(h, ",")
 		s.OCRPatterns = strings.Split(o, ",")
-		s.Token = applyCasing(q, s.Token)
-		s.Suggestion = applyCasing(q, s.Suggestion)
-		s.Modern = applyCasing(q, s.Modern)
+		s.Token = pre + applyCasing(q, s.Token) + suf
+		s.Suggestion = pre + applyCasing(q, s.Suggestion) + suf
+		s.Modern = pre + applyCasing(q, s.Modern) + suf
 		ss.Suggestions[q] = append(ss.Suggestions[q], s)
 	}
 	return nil
 }
 
+// Apply the casing of model to string.
 func applyCasing(model, str string) string {
 	wmodel := []rune(model)
 	wstr := []rune(str)
@@ -188,7 +192,7 @@ func run() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := profiler{
 			project: ctx.Value("project").(*db.Project),
-			alex: ctx.Value("data").(api.AdditionalLexicon),
+			alex:    ctx.Value("data").(api.AdditionalLexicon),
 		}
 		jobID, err := jobs.Start(context.Background(), &p)
 		if err != nil {
