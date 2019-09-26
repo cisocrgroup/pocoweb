@@ -46,11 +46,8 @@ func init() {
 func main() {
 	// command line args
 	flag.Parse()
-	if debug {
-		log.SetLevel(log.DebugLevel)
-	}
 	// init
-	if err := service.Init(dsn); err != nil {
+	if err := service.InitDebug(dsn, debug); err != nil {
 		log.Fatalf("cannot initialize service: %v", err)
 	}
 	defer service.Close()
