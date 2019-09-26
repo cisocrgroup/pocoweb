@@ -91,13 +91,13 @@ static std::wstring regex_escape(const std::wstring &str) {
 
 ////////////////////////////////////////////////////////////////////////////////
 template <class T> static std::wregex make_regex(const T &qs, bool ic) {
-  std::wstring pre = L"[:punct:]*((";
+  std::wstring pre = L"[[:punct:]]*((";
   std::wstring restr;
   for (const auto &q : qs) {
     restr += pre + regex_escape(utf8(q));
     pre = std::wstring(L")|(");
   }
-  restr += L"))[:punct:]*";
+  restr += L"))[[:punct:]]*";
   CROW_LOG_INFO << "(make_regex) regex: " << utf8(restr) << (ic ? "/i" : "");
   if (ic) {
     return std::wregex(restr, std::regex::icase);
@@ -213,15 +213,19 @@ Route::Response SearchRoute::search(MysqlConnection &mysql, pq q) const {
     tables::Errorpatterns e;
     tables::Suggestions s;
     tables::Types t;
-    auto rows = mysql.db()(
-        select(t.typ)
-            .from(e.join(s)
-                      .on(e.suggestionid == s.id)
-                      .join(t)
-                      .on(t.id == s.tokentypid))
-            .where(e.pattern == p and s.bookid == q.bid and s.topsuggestion));
+    auto rows = mysql.db()(select(t.typ, e.pattern)
+                               .from(e.join(s)
+                                         .on(e.suggestionid == s.id)
+                                         .join(t)
+                                         .on(t.id == s.tokentypid))
+                               .where(e.pattern == p and s.bookid == q.bid and
+                                      s.topsuggestion == true));
 
     for (const auto &row : rows) {
+      // skip collate artifacts
+      if (row.pattern != p) {
+        continue;
+      }
       // later patterns overwrite prior ones
       q2p.emplace(row.typ, p);
       qs.push_back(row.typ);
