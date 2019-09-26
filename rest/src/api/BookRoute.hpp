@@ -4,9 +4,6 @@
 #include "core/CrtpRoute.hpp"
 
 namespace pcw {
-class Book;
-class Project;
-
 class BookRoute : public CrtpRoute<BookRoute> {
 public:
   virtual ~BookRoute() noexcept override = default;
@@ -24,12 +21,6 @@ public:
   Response impl(HttpDelete, const Request &req, int bid) const;
 
 private:
-  void remove_project(MysqlConnection &c, const Session &session,
-                      const Project &project) const;
-  void remove_project_impl(MysqlConnection &conn, int pid) const;
-  void remove_book(MysqlConnection &c, const Session &session,
-                   const Book &book) const;
-
   static const char *route_;
   static const char *name_;
 };

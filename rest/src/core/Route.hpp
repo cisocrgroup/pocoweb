@@ -10,18 +10,13 @@
 #include <vector>
 
 namespace crow {
-template<typename... Middleware>
-class Crow;
+template <typename... Middleware> class Crow;
 }
 
 namespace pcw {
 class Database;
 struct Config;
 using ConfigPtr = std::shared_ptr<Config>;
-class Session;
-using SessionPtr = std::shared_ptr<Session>;
-class Sessions;
-using SessionsPtr = std::shared_ptr<Sessions>;
 class Route;
 using RoutePtr = std::unique_ptr<Route>;
 class Project;
@@ -34,12 +29,9 @@ class Page;
 using PagePtr = std::shared_ptr<Page>;
 class Line;
 using LinePtr = std::shared_ptr<Line>;
-class SessionStore;
-using SessionStoreSptr = std::shared_ptr<SessionStore>;
 class Route;
 
-class Route
-{
+class Route {
 public:
   using Response = crow::response;
   using Request = crow::request;
@@ -57,48 +49,38 @@ public:
 
   using App = crow::Crow<>;
   virtual ~Route() noexcept = default;
-  virtual void Register(App&) = 0;
-  virtual const char* route() const noexcept = 0;
-  virtual const char* name() const noexcept = 0;
-  virtual void Deregister(App&) {}
+  virtual void Register(App &) = 0;
+  virtual const char *route() const noexcept = 0;
+  virtual const char *name() const noexcept = 0;
+  virtual void Deregister(App &) {}
   void set_cache(CachePtr cache) noexcept { cache_ = std::move(cache); }
   void set_config(ConfigPtr c) noexcept { config_ = std::move(c); }
-  void set_session_store(SessionStoreSptr s) noexcept
-  {
-    session_store_ = std::move(s);
-  }
-  void set_connection_pool(MysqlConnectionPoolSptr pool) noexcept
-  {
+  void set_connection_pool(MysqlConnectionPoolSptr pool) noexcept {
     connection_pool_ = std::move(pool);
   }
-  MysqlConnectionPoolSptr get_connection_pool() const noexcept
-  {
+  MysqlConnectionPoolSptr get_connection_pool() const noexcept {
     return connection_pool_;
   }
 
 protected:
-  SessionPtr get_session(const Request& request) const;
-  void delete_session(const Session& session) const;
-  const Config& get_config() const noexcept { return *config_; }
+  const Config &get_config() const noexcept { return *config_; }
   MysqlConnection get_connection() const;
   MysqlConnection must_get_connection() const;
 
-  static std::string extract_content(const crow::request& request);
+  static std::string extract_content(const crow::request &request);
 
 private:
-  std::pair<int, std::string> get_userid(const Request& request) const noexcept;
-  static std::string extract_multipart(const Request& req,
-                                       const std::string& boundary);
-  static std::string extract_raw(const Request& req);
+  std::pair<int, std::string> get_userid(const Request &request) const noexcept;
+  static std::string extract_multipart(const Request &req,
+                                       const std::string &boundary);
+  static std::string extract_raw(const Request &req);
 
-  SessionStoreSptr session_store_;
   MysqlConnectionPoolSptr connection_pool_;
   CachePtr cache_;
   ConfigPtr config_;
 };
 
-class Routes : private std::vector<RoutePtr>
-{
+class Routes : private std::vector<RoutePtr> {
 public:
   using Base = std::vector<RoutePtr>;
   using Base::back;
@@ -108,6 +90,6 @@ public:
   using Base::push_back;
   using Base::value_type;
 };
-}
+} // namespace pcw
 
 #endif // pcw_Route_hpp__

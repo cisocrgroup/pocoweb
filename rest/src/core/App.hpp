@@ -9,8 +9,6 @@
 namespace pcw {
 struct Config;
 using ConfigPtr = std::shared_ptr<Config>;
-class SessionStore;
-using SessionsStoreSptr = std::shared_ptr<SessionStore>;
 struct AppCache;
 using CachePtr = std::shared_ptr<AppCache>;
 
@@ -46,7 +44,6 @@ private:
   std::unique_ptr<pcw::Route::App> app_;
   const CachePtr cache_;
   const std::shared_ptr<Config> config_;
-  const SessionStoreSptr session_store_;
   const MysqlConnectionPoolSptr connection_pool_;
 };
 } // namespace pcw

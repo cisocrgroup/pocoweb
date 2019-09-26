@@ -4,8 +4,6 @@
 #include "Cache.hpp"
 #include "Line.hpp"
 #include "Page.hpp"
-#include "Session.hpp"
-#include "SessionStore.hpp"
 #include "utils/Error.hpp"
 #include <chrono>
 #include <crow/logging.h>
@@ -16,9 +14,8 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-std::pair<int, std::string>
-Route::get_userid(const Request& request) const noexcept
-{
+std::pair<int, std::string> Route::get_userid(const Request &request) const
+    noexcept {
   static const std::string userid("userid");
   const auto idstr = request.url_params.get(userid);
   if (idstr == nullptr) {
@@ -33,38 +30,7 @@ Route::get_userid(const Request& request) const noexcept
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-SessionPtr
-Route::get_session(const crow::request& request) const
-{
-  CROW_LOG_DEBUG << "(Route::get_session) BEGIN";
-  const auto id = get_userid(request);
-  CROW_LOG_DEBUG << "(Route::get_session) ID: " << id.first << "," << id.second;
-  assert(session_store_);
-  CROW_LOG_DEBUG << "(Route::get_session) SEARCHING";
-  auto session = session_store_->find_session(id.second);
-  if (session == nullptr) {
-    CROW_LOG_DEBUG << "(Route::get_session) CREATING NEW SESSION";
-    session = session_store_->new_session(id.first, cache_, get_config());
-    CROW_LOG_DEBUG << "(Route::get_session) ID: " << session->id();
-  }
-  CROW_LOG_DEBUG << "(Route::get_session) RETURN EXISTING SESSION";
-  CROW_LOG_DEBUG << "(Route::get_session) ID: " << session->id();
-  return session;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void
-Route::delete_session(const Session& session) const
-{
-  assert(session_store_);
-  CROW_LOG_DEBUG << "(Route) deleting session: " << session.id();
-  session_store_->delete_session(session.id());
-}
-
-////////////////////////////////////////////////////////////////////////////////
-MysqlConnection
-Route::must_get_connection() const
-{
+MysqlConnection Route::must_get_connection() const {
   auto connection = get_connection();
   if (not connection)
     THROW(ServiceNotAvailable,
@@ -73,34 +39,28 @@ Route::must_get_connection() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-MysqlConnection
-Route::get_connection() const
-{
+MysqlConnection Route::get_connection() const {
   assert(connection_pool_);
   return connection_pool_->get_connection();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string
-Route::extract_content(const crow::request& request)
-{
-  static const std::string ContentType{ "Content-Type" };
-  static const std::regex BoundaryRegex{ R"(boundary=(.*);?$)" };
+std::string Route::extract_content(const crow::request &request) {
+  static const std::string ContentType{"Content-Type"};
+  static const std::regex BoundaryRegex{R"(boundary=(.*);?$)"};
   // CROW_LOG_INFO << "### BODY ###\n" << request.body;
 
   std::smatch m;
-  if (std::regex_search(
-        request.get_header_value(ContentType), m, BoundaryRegex))
+  if (std::regex_search(request.get_header_value(ContentType), m,
+                        BoundaryRegex))
     return extract_multipart(request, m[1]);
   else
     return extract_raw(request);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string
-Route::extract_multipart(const crow::request& request,
-                         const std::string& boundary)
-{
+std::string Route::extract_multipart(const crow::request &request,
+                                     const std::string &boundary) {
   CROW_LOG_INFO << "(Route) Boundary in multipart data: " << boundary;
   auto b = request.body.find("\r\n\r\n");
   if (b == std::string::npos)
@@ -117,8 +77,6 @@ Route::extract_multipart(const crow::request& request,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::string
-Route::extract_raw(const crow::request& request)
-{
+std::string Route::extract_raw(const crow::request &request) {
   return request.body;
 }

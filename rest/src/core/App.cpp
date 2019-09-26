@@ -2,7 +2,6 @@
 #include "AppCache.hpp"
 #include "Cache.hpp"
 #include "Config.hpp"
-#include "SessionStore.hpp"
 #include <crow.h>
 
 using namespace pcw;
@@ -15,7 +14,6 @@ App::App(const char *config)
 App::App(std::shared_ptr<Config> config)
     : routes_(), app_(), cache_(std::make_shared<AppCache>(100, 100)),
       config_(std::move(config)),
-      session_store_(std::make_shared<SessionStore>()),
       connection_pool_(std::make_shared<MysqlConnectionPool>(
           config_->db.connections, mysqlConnectionConfigFromConfig(*config_))) {
 }
@@ -67,11 +65,9 @@ void App::Register(RoutePtr route) {
     if (not app_)
       app_ = std::make_unique<Route::App>();
     try {
-      assert(session_store_);
       assert(connection_pool_);
       assert(config_);
       assert(cache_);
-      route->set_session_store(session_store_);
       route->set_config(config_);
       route->set_cache(cache_);
       route->set_connection_pool(connection_pool_);
