@@ -50,7 +50,7 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
 						$.when(updatingUser).done(function(user){
 						  App.mainmsg.updateContent("Account updated successfully.",'success');
                           console.log(user);
-                          App.updateCurrentUser(user);
+                          App.setCurrentUser(user);
 						  $('.loginname').text(user.name);
 						}).fail(function(response){
 			            App.mainmsg.updateContent(response.responseText,'warning');

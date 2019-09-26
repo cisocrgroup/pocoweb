@@ -72,7 +72,7 @@ App.getCurrentUser = function() {
   return App.getPcw().user;
 };
 
-App.updateCurrentUser = function(user) {
+App.setCurrentUser = function(user) {
   let pcw = App.getPcw();
   pcw.user = user;
   App.setPcw(pcw);
@@ -187,7 +187,7 @@ App.on("start", function(){
 
     var loggingInUser = UserEntities.API.login(data);
                  $.when(loggingInUser).done(function(result){
-                   App.updateCurrentUser(result.user);
+                   App.setCurrentUser(result.user);
                    App.setAuthToken(result.auth);
                         App.mainmsg.updateContent("Login successful!",'success');
 
