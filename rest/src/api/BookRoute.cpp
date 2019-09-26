@@ -21,8 +21,8 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class D> void update_book_data(DbPackage package, const D &data);
-template <class D> void update_book_data(BookData bdata, const D &data);
+template <class D> void update_book_data(DbPackage &package, const D &data);
+template <class D> void update_book_data(BookData &bdata, const D &data);
 template <class Row> Json &set_book(Json &json, const Row &row);
 static BookData as_book_data(const DbPackage &package);
 
@@ -126,7 +126,7 @@ void set_if_set(T &t, const D &data, const char *key) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class D> void update_book_data(DbPackage package, const D &data) {
+template <class D> void update_book_data(DbPackage &package, const D &data) {
   set_if_set(package.author, data, "author");
   set_if_set(package.title, data, "title");
   set_if_set(package.language, data, "language");
@@ -138,7 +138,7 @@ template <class D> void update_book_data(DbPackage package, const D &data) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class D> void update_book_data(BookData bdata, const D &data) {
+template <class D> void update_book_data(BookData &bdata, const D &data) {
   set_if_set(bdata.author, data, "author");
   set_if_set(bdata.title, data, "title");
   set_if_set(bdata.lang, data, "language");
