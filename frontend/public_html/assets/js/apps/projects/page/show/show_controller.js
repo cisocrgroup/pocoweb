@@ -119,7 +119,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
 			  projectShowHeader = new Show.Header({title:project.get('title')});
-        console.log(lineheight)
         projectShowPage = new Show.Page({model:page,lineheight:lineheight,linenumbers:linenumbers});
 	    projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,lineheight:lineheight,linenumbers:linenumbers});
       	projectShowFooterPanel = new Show.FooterPanel();
@@ -206,10 +205,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     var lineanchor = $('#line-'+anchor);
                     lineanchor.addClass('line_fully_corrected');
 
-
-
-                    lineanchor.fadeOut(200,function(){
-                      lineanchor.fadeIn(200,function(){
+                          lineanchor.fadeOut(200,function(){
+                          lineanchor.fadeIn(200,function(){
                           lineanchor.find('.line-tokens').empty();
                           Util.addAlignedLine(result);
                           lineanchor.find('.line').hide();
@@ -252,13 +249,15 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                      }
                    }
 
-
+                   if(!_.isEmpty(suggestions.suggestions)){
                       $('#suggestionsDropdown .dropdown-item').on('click',function(e){
                        e.stopPropagation();
                       var split = $(this).text().split(" ");
                       Util.replaceSelectedText(split[0].trim());
+                      suggestions_btn.dropdown('toggle')
+                       // $('.custom-popover').remove();
                      })
-
+                  }
 
 
 
@@ -270,12 +269,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
        projectShowPage.on("page:concordance_clicked",function(selection,isErrorPattern){
-        console.log(isErrorPattern);
-        console.log(selection);
         var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern,skip:0,max:App.getPageHits(id)});
         var that = this;
          $.when(searchingToken).done(function(tokens){
-          console.log(tokens)
             if(tokens.total==0){
                 var confirmModal = new Show.OkDialog({
                       asModal: true,
@@ -288,28 +284,22 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             }
 
           var lineheight = App.getLineHeight(id);
+          var linenumbers = App.getLineNumbers(id);
 
-           var projectConcView = new Show.Concordance({isErrorPattern:isErrorPattern,selection:selection,tokendata:tokens,lineheight:lineheight,asModal:true});
+           var projectConcView = new Show.Concordance({isErrorPattern:isErrorPattern,selection:selection,tokendata:tokens,lineheight:lineheight,linenumbers:linenumbers,asModal:true});
            $('.custom-popover').remove();
 
             projectConcView.on("concordance:correct_token",function(data,anchor,done){
-               console.log(anchor);
-               console.log(data);
+             
               data.token = Util.escapeAsJSON(data.token);
-               console.log(data);
                     var correctingtoken = ProjectEntities.API.correctToken(data);
                   $.when(correctingtoken).done(function(result){
-
-                    console.log(result);
-
-
 
                       done();
                        // update lines in background with corrections
 
                        var gettingLine = ProjectEntities.API.getLine(data);
                       $.when(gettingLine).done(function(line_result){
-                        console.log(line_result);
 
                         var lineanchor = $('#line-'+anchor);
                             if(lineanchor.length>0) {

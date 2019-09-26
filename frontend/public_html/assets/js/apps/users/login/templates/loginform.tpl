@@ -32,8 +32,7 @@ if(asModal) {
     <label for="password">Password</label>
     <input type="password" class="form-control" name="password" id="password" placeholder="Password">
   </div>
-
-  <button type="submit" class="btn btn-primary js-loginsubmit">Submit</button>
+  <button type="submit" class="btn btn-primary blue-bg js-loginsubmit">Submit</button>
 </form>
 
 <%
@@ -56,7 +55,7 @@ if(asModal) {
    <div class="row">
 
   <div class="col col-md-12">
-  <button class="btn back_btn js-back btn-primary hover"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>
+  <button class="btn back_btn js-back btn btn-outline-primary blue hover"> <i class="fa fa-caret-left" aria-hidden="true"></i> Back</button>
 
 
   </div>

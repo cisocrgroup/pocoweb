@@ -345,12 +345,12 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
         $(e.currentTarget).hide();
 
-        // $('.correct-btn').hide();
-        // $('.line-text').css('border-bottom','1px solid transparent');
-        // $('.line-text').css('border-left','1px solid transparent');
-        // $('.line-text').css('border-top','1px solid transparent');
-        // $('.line-text').css('border-top-right-radius','.25rem');
-        // $('.line-text').css('border-bottom-right-radius','.25rem');
+        $('.correct-btn').hide();
+        $('.line-text').css('border-bottom','1px solid transparent');
+        $('.line-text').css('border-left','1px solid transparent');
+        $('.line-text').css('border-top','1px solid transparent');
+        $('.line-text').css('border-top-right-radius','.25rem');
+        $('.line-text').css('border-bottom-right-radius','.25rem');
 
 
         line_parent.css('border-left','1px solid #ced4da');
@@ -476,7 +476,6 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
       },
       openCustomPopover:function(e,sel,parent_div){
-        console.log(e)
         var that = this;
          $(".custom-popover").remove();
 

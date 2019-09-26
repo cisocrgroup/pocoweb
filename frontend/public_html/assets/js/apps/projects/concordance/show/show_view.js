@@ -38,6 +38,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           data.selection =  Marionette.getOption(this,"selection");
           data.le =  Marionette.getOption(this,"le");
           data.lineheight =  Marionette.getOption(this,"lineheight");
+          data.linenumbers =  Marionette.getOption(this,"linenumbers");
 
           data.Util = Util;
           data.asModal = asModal;
@@ -425,12 +426,15 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
                    dropdown_content.show();
 
-                     $('#dropdown-content-conc .dropdown-item').on('click',function(e){
-                      // e.stopPropagation();
-                      var split = $(this).text().split(" ");
-                      $(this).parent().parent().parent().prev().text(split[0]);
-                      $(this).parent().hide();
-                     })
+                    if(!_.isEmpty(suggestions)){
+
+                       $('#dropdown-content-conc .dropdown-item').on('click',function(e){
+                        // e.stopPropagation();
+                        var split = $(this).text().split(" ");
+                        $(this).parent().parent().parent().prev().text(split[0]);
+                        // $(this).parent().hide();
+                       })
+                }
      },
 
   setImages : function(max){
@@ -439,6 +443,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
      $('.all_lines_parent').empty(); // remove alle lines and images
      var tokendata =  Marionette.getOption(that,"tokendata");
      var lineheight =  Marionette.getOption(that,"lineheight");
+     var linenumbers =  Marionette.getOption(that,"linenumbers");
 
      let nmatches=0;
 
@@ -452,8 +457,9 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
         var link = "#/projects/"+line['projectId']+"/page/"+line['pageId'];
         var line_container = $('<div class="line-container">');
+        var line_nr = $('<div class="line-nr line-nr-conc" title="page '+line.pageId+ ', line ' + line.lineId+'"> <span>'+line.pageId+":"+line['lineId']+'</span> </div>');
 
-        var text_image_line = $('<div class="text-image-line" title="page '+line.pageId+ ' line ' + line.lineId+'">');
+        var text_image_line = $('<div class="text-image-line" title="page '+line.pageId+ ', line ' + line.lineId+'">');
 
         var left_div = $('<div class="left_div div_inline">');
         var invisible_link = $('<div class="invisible=link" href="'+link+'">');
@@ -467,11 +473,11 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           return;
         }
 
-
         left_div.append(invisible_link);
         invisible_link.append(line_img);
         invisible_link.append(img);
         text_image_line.append(left_div);
+        line_container.append(line_nr);
         line_container.append(text_image_line);
 
         var line_jump =$('<div class="page_jump" pid="'+line['projectId']+'" pageid="'+line['pageId']+'" lineid="'+line['lineId']+'" title="Jump to page '+line['pageId']+', line '+line['lineId']+'"> <span><i class="fas fa-chevron-right"></i></span></div>');
@@ -482,6 +488,10 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
         }
       };
+
+      if(!linenumbers){
+        $('.line-nr').hide();
+      }
 
       var paginated_item = $('.js-paginate').find('.active').val();
 
@@ -586,8 +596,11 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       var delay = 200;
       var prevent = false;
       var after_db_click = false;
+      var linenumbers = Marionette.getOption(this,"linenumbers");
 
-
+      if(!linenumbers){
+        $('.line-nr').hide();
+      }
 
        if(this.options.asModal){
 
@@ -655,13 +668,6 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
              that.setContent(true); // insert Concordance Content
            });
        }
-
-
-
-
-
-
-
 
   }
 
