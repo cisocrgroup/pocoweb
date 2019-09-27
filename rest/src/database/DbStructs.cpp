@@ -133,7 +133,7 @@ void DbSlice::begin_wagner_fischer(size_t b, size_t e) {
     if (i->is_ins()) {  // delete insertions
       line_.line.erase(i);
     }
-    i = j;
+    i = next;
   }
 }
 
@@ -156,6 +156,9 @@ void DbSlice::insert(size_t i, wchar_t c) {
   std::cerr << "left cut: " << left << ", right cut: " << right
             << ", cut: " << cut << "\n";
   line_.line.insert(i_, DbChar{.ocr = 0, .cor = c, .conf = 1, .cut = cut});
+  if (i_ == begin) {  // Fix begin if we have an insertion before start pos.
+    begin = std::prev(i_);
+  }
   // do not increment i_;
 }
 

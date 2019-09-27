@@ -1,20 +1,20 @@
 #ifndef pcw_DbStructs_hpp__
 #define pcw_DbStructs_hpp__
 
-#include "Tables.h"
-#include "core/Box.hpp"
-#include "mysql.hpp"
+#include <sqlpp11/sqlpp11.h>
 #include <boost/optional.hpp>
 #include <functional>
 #include <list>
-#include <sqlpp11/sqlpp11.h>
 #include <vector>
+#include "Tables.h"
+#include "core/Box.hpp"
+#include "mysql.hpp"
 
 namespace crow {
 namespace json {
 class wvalue;
-} // namespace json
-} // namespace crow
+}  // namespace json
+}  // namespace crow
 
 namespace pcw {
 class WagnerFischer;
@@ -37,7 +37,7 @@ struct DbChar {
 };
 
 struct DbSlice {
-  DbSlice(DbLine &line, std::list<DbChar>::iterator b,
+  DbSlice(DbLine& line, std::list<DbChar>::iterator b,
           std::list<DbChar>::iterator e);
   std::string ocr() const;
   std::string cor() const;
@@ -62,21 +62,28 @@ struct DbSlice {
   Box box;
   bool match;
 
-private:
-  DbLine &line_;
+ private:
+  DbLine& line_;
   std::list<DbChar>::iterator i_;
 };
 
-Json &operator<<(Json &j, const DbSlice &line);
+Json& operator<<(Json& j, const DbSlice& line);
 
 struct DbLine {
   DbLine(int pid, int pageid, int lid)
-      : line(), imagepath(), box(), bookid(), projectid(pid), pageid(pageid),
-        lineid(lid), begin_(), end_() {}
-  bool load(MysqlConnection &mysql);
+      : line(),
+        imagepath(),
+        box(),
+        bookid(),
+        projectid(pid),
+        pageid(pageid),
+        lineid(lid),
+        begin_(),
+        end_() {}
+  bool load(MysqlConnection& mysql);
 
   // slices
-  void each_token(std::function<void(DbSlice &)> f);
+  void each_token(std::function<void(DbSlice&)> f);
   DbSlice slice() { return slice(0, line.size()); }
   DbSlice slice(int begin, int len);
   int tokenLength(int begin) const;
@@ -86,26 +93,34 @@ struct DbLine {
   Box box;
   int bookid, projectid, pageid, lineid;
 
-private:
+ private:
   std::list<DbChar>::iterator begin_, end_;
 };
 
-inline bool operator==(const DbLine &lhs, const DbLine &rhs) {
+inline bool operator==(const DbLine& lhs, const DbLine& rhs) {
   return lhs.bookid == rhs.bookid and lhs.projectid == lhs.projectid and
          lhs.pageid == rhs.pageid and lhs.lineid == rhs.lineid;
 }
 
-inline bool operator!=(const DbLine &lhs, const DbLine &rhs) {
+inline bool operator!=(const DbLine& lhs, const DbLine& rhs) {
   return not operator==(lhs, rhs);
 }
 
-Json &operator<<(Json &j, DbLine &line);
+Json& operator<<(Json& j, DbLine& line);
 
 struct DbPage {
   DbPage(int pid, int pageid)
-      : box(), lines(), ocrpath(), imagepath(), bookid(), projectid(pid),
-        pageid(pageid), filetype(), prevpageid(pageid), nextpageid(pageid) {}
-  bool load(MysqlConnection &mysql);
+      : box(),
+        lines(),
+        ocrpath(),
+        imagepath(),
+        bookid(),
+        projectid(pid),
+        pageid(pageid),
+        filetype(),
+        prevpageid(pageid),
+        nextpageid(pageid) {}
+  bool load(MysqlConnection& mysql);
 
   Box box;
   std::vector<DbLine> lines;
@@ -113,14 +128,27 @@ struct DbPage {
   int bookid, projectid, pageid, filetype, prevpageid, nextpageid;
 };
 
-Json &operator<<(Json &j, DbPage &page);
+Json& operator<<(Json& j, DbPage& page);
 
 struct DbPackage {
   DbPackage(int pid)
-      : pageids(), title(), author(), description(), uri(), profilerurl(),
-        histpatterns(), directory(), language(), bookid(pid), projectid(pid),
-        owner(), year(), profiled(), extendedLexicon(), postCorrected() {}
-  bool load(MysqlConnection &mysql);
+      : pageids(),
+        title(),
+        author(),
+        description(),
+        uri(),
+        profilerurl(),
+        histpatterns(),
+        directory(),
+        language(),
+        bookid(pid),
+        projectid(pid),
+        owner(),
+        year(),
+        profiled(),
+        extendedLexicon(),
+        postCorrected() {}
+  bool load(MysqlConnection& mysql);
   bool isBook() const noexcept { return projectid == bookid; }
   std::vector<int> pageids;
   std::string title, author, description, uri, profilerurl, histpatterns,
@@ -129,7 +157,7 @@ struct DbPackage {
   bool profiled, extendedLexicon, postCorrected;
 };
 
-Json &operator<<(Json &j, const DbPackage &package);
+Json& operator<<(Json& j, const DbPackage& package);
 
 ////////////////////////////////////////////////////////////////////////////////
 inline auto project_line_contents_view() {
@@ -182,7 +210,8 @@ inline auto project_books_view() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class Row> void load_from_row(Row &row, DbPage &page) {
+template <class Row>
+void load_from_row(Row& row, DbPage& page) {
   page.box =
       Box{int(row.pleft), int(row.ptop), int(row.pright), int(row.pbottom)};
   page.imagepath = row.imagepath;
@@ -196,7 +225,8 @@ template <class Row> void load_from_row(Row &row, DbPage &page) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class Row> void load_from_row(Row &row, DbPackage &package) {
+template <class Row>
+void load_from_row(Row& row, DbPackage& package) {
   package.bookid = row.bookid;
   package.projectid = row.id;
   package.author = row.author;
@@ -215,7 +245,8 @@ template <class Row> void load_from_row(Row &row, DbPackage &package) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class Row> void load_from_row(Row &row, DbLine &line) {
+template <class Row>
+void load_from_row(Row& row, DbLine& line) {
   line.box =
       Box{int(row.lleft), int(row.ltop), int(row.lright), int(row.lbottom)};
   line.imagepath = row.imagepath;
@@ -226,12 +257,13 @@ template <class Row> void load_from_row(Row &row, DbLine &line) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class Row> void load_from_row(Row &row, DbChar &c) {
+template <class Row>
+void load_from_row(Row& row, DbChar& c) {
   c.ocr = wchar_t(row.ocr);
   c.cor = wchar_t(row.cor);
   c.cut = int(row.cut);
   c.conf = row.conf;
 }
 
-} // namespace pcw
-#endif // pcw_DbStructs_hpp__
+}  // namespace pcw
+#endif  // pcw_DbStructs_hpp__
