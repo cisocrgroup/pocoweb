@@ -20,6 +20,7 @@ CORE_TESTS += rest/src/core/tests/TestQueries.test
 CORE_TESTS += rest/src/core/tests/TestUtils.test
 CORE_TESTS += rest/src/core/tests/TestWagnerFischer.test
 
+DATABASE_TESTS += rest/src/database/tests/TestDbStructs.test
 DATABASE_TESTS += rest/src/database/tests/TestDatabase.test
 DATABASE_TESTS += rest/src/database/tests/TestConnectionPool.test
 DATABASE_TESTS += rest/src/database/tests/TestDatabaseGuard.test

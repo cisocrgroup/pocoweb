@@ -102,7 +102,7 @@ size_t WagnerFischer::operator()() {
 
 ////////////////////////////////////////////////////////////////////////////////
 size_t WagnerFischer::operator()(size_t b, size_t n) {
-  assert(b < ocr_.size());
+  assert(b <= ocr_.size());
   // Since we only want to correct the part from b to n,
   // copy ocr suffix and prefix: (0,b] + gt_ + (b+n,end).
   gt_ = ocr_.substr(0, b) + gt_;

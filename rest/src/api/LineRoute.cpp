@@ -203,12 +203,14 @@ void LineRoute::update(MysqlConnection &mysql, const DbLine &line) {
       contents.cor = parameter(contents.cor),
       contents.cut = parameter(contents.cut),
       contents.conf = parameter(contents.conf)));
-  for (auto i = 0U; i < line.line.size(); i++) {
+  int i = 0;
+  for (const auto &c : line.line) {
     stmnt.params.seq = i;
-    stmnt.params.ocr = int(line.line[i].ocr);
-    stmnt.params.cor = int(line.line[i].cor);
-    stmnt.params.cut = line.line[i].cut;
-    stmnt.params.conf = line.line[i].conf;
+    i++;
+    stmnt.params.ocr = int(c.ocr);
+    stmnt.params.cor = int(c.cor);
+    stmnt.params.cut = c.cut;
+    stmnt.params.conf = c.conf;
     mysql.db()(stmnt);
   }
   committer.commit();

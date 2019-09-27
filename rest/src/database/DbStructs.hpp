@@ -6,7 +6,9 @@
 #include "mysql.hpp"
 #include <boost/optional.hpp>
 #include <functional>
+#include <list>
 #include <sqlpp11/sqlpp11.h>
+#include <vector>
 
 namespace crow {
 namespace json {
@@ -15,6 +17,8 @@ class wvalue;
 } // namespace crow
 
 namespace pcw {
+class WagnerFischer;
+struct DbLine;
 using Json = crow::json::wvalue;
 
 struct DbChar {
@@ -33,6 +37,8 @@ struct DbChar {
 };
 
 struct DbSlice {
+  DbSlice(const DbLine &line, std::list<DbChar>::const_iterator b,
+          std::list<DbChar>::const_iterator e);
   std::string ocr() const;
   std::string cor() const;
   std::wstring wocr() const;
@@ -44,9 +50,12 @@ struct DbSlice {
   bool is_fully_corrected() const;
 
   int bookid, projectid, pageid, lineid, offset;
-  std::vector<DbChar>::const_iterator begin, end;
+  std::list<DbChar>::const_iterator begin, end;
   Box box;
   bool match;
+
+private:
+  const DbLine &line_;
 };
 
 Json &operator<<(Json &j, const DbSlice &line);
@@ -54,7 +63,7 @@ Json &operator<<(Json &j, const DbSlice &line);
 struct DbLine {
   DbLine(int pid, int pageid, int lid)
       : line(), imagepath(), box(), bookid(), projectid(pid), pageid(pageid),
-        lineid(lid), offset_() {}
+        lineid(lid), begin_(), end_() {}
   bool load(MysqlConnection &mysql);
 
   // slices
@@ -62,6 +71,10 @@ struct DbLine {
   DbSlice slice() const { return slice(0, line.size()); }
   DbSlice slice(int begin, int len) const;
   int tokenLength(int begin) const;
+
+  // correction interface (prefer this to correct lines and slices
+  int correct(WagnerFischer &wf, const std::wstring &cor);
+  int correct(WagnerFischer &wf, const std::wstring &cor, size_t b, size_t len);
 
   // wagner-fischer interface
   void begin_wagner_fischer(size_t b, size_t e);
@@ -71,13 +84,13 @@ struct DbLine {
   void noop(size_t i);
   void end_wagner_fischer() const noexcept {}
 
-  std::vector<DbChar> line;
+  std::list<DbChar> line;
   std::string imagepath;
   Box box;
   int bookid, projectid, pageid, lineid;
 
 private:
-  int offset_;
+  std::list<DbChar>::iterator begin_, end_;
 };
 
 inline bool operator==(const DbLine &lhs, const DbLine &rhs) {
