@@ -84,6 +84,25 @@ BOOST_AUTO_TEST_CASE(TestDbLineCorrectEmptyLine)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestDbLineCorrectEmptyLineBox)
+{
+  // cuts are dispersed half the difference to the left and the right
+  std::vector<int> cuts{ 15, 22, 26 };
+  auto line = mline(L"");
+  line.box = Box{ 0, 0, 30, 0 };
+  auto slice = line.slice();
+  WagnerFischer wf;
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"abc");
+  BOOST_CHECK_EQUAL(wf(), 3);
+  wf.correct(slice);
+  int i = 0;
+  std::for_each(slice.begin, slice.end, [&](const auto& c) {
+    BOOST_CHECK_EQUAL(cuts[i++], c.cut);
+  });
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(TestDbLineCorrectDelete)
 {
   auto line = mline(L"abc");
