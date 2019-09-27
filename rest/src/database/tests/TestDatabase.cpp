@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(UpdateBook) {
       "description='new-description',profilerurl='',histpatterns='a:b,c:d',"
       "profiled=0,extendedlexicon=0,postcorrected=0,lang='new-language' "
       "WHERE (books.bookid=0)");
-  update_book(db, *book);
+  update_book(db, book->origin().id(), book->data);
   db.validate();
 }
 

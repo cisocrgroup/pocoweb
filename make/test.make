@@ -17,7 +17,6 @@ CORE_TESTS += rest/src/core/tests/TestPackageBuilder.test
 CORE_TESTS += rest/src/core/tests/TestPageBuilder.test
 CORE_TESTS += rest/src/core/tests/TestProjectBuilder.test
 CORE_TESTS += rest/src/core/tests/TestQueries.test
-CORE_TESTS += rest/src/core/tests/TestSession.test
 CORE_TESTS += rest/src/core/tests/TestUtils.test
 CORE_TESTS += rest/src/core/tests/TestWagnerFischer.test
 
