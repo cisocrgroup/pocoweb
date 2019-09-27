@@ -1,12 +1,13 @@
 #include "DbStructs.hpp"
+#include <crow/json.h>
+#include <utf8.h>
+#include <stdexcept>
 #include "core/jsonify.hpp"
 #include "core/util.hpp"
-#include <crow/json.h>
-#include <stdexcept>
-#include <utf8.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class It, class F> static void each_cor(It b, It e, F f) {
+template <class It, class F>
+static void each_cor(It b, It e, F f) {
   while (b != e) {
     if (b->get_cor() > 0) {
       f(*b);
@@ -16,7 +17,8 @@ template <class It, class F> static void each_cor(It b, It e, F f) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class It, class F> static void each_ocr(It b, It e, F f) {
+template <class It, class F>
+static void each_ocr(It b, It e, F f) {
   while (b != e) {
     if (b->ocr > 0) {
       f(*b);
@@ -28,11 +30,17 @@ template <class It, class F> static void each_ocr(It b, It e, F f) {
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-DbSlice::DbSlice(DbLine &line, std::list<DbChar>::iterator b,
+DbSlice::DbSlice(DbLine& line, std::list<DbChar>::iterator b,
                  std::list<DbChar>::iterator e)
-    : bookid(line.bookid), pageid(line.pageid), lineid(line.lineid),
-      offset(int(std::distance(line.line.begin(), b))), begin(b), end(e), box(),
-      match(), line_(line) {
+    : bookid(line.bookid),
+      pageid(line.pageid),
+      lineid(line.lineid),
+      offset(int(std::distance(line.line.begin(), b))),
+      begin(b),
+      end(e),
+      box(),
+      match(),
+      line_(line) {
   this->box.set_top(line_.box.top());
   this->box.set_bottom(line_.box.bottom());
   if (begin == line_.line.begin()) {
@@ -55,7 +63,7 @@ DbSlice::DbSlice(DbLine &line, std::list<DbChar>::iterator b,
 std::wstring DbSlice::wcor() const {
   std::wstring ret;
   ret.reserve(std::distance(begin, end));
-  each_cor(begin, end, [&](const auto &c) { ret.push_back(c.get_cor()); });
+  each_cor(begin, end, [&](const auto& c) { ret.push_back(c.get_cor()); });
   return ret;
 }
 
@@ -63,7 +71,7 @@ std::wstring DbSlice::wcor() const {
 std::wstring DbSlice::wocr() const {
   std::wstring ret;
   ret.reserve(std::distance(begin, end));
-  each_ocr(begin, end, [&](const auto &c) { ret.push_back(c.ocr); });
+  each_ocr(begin, end, [&](const auto& c) { ret.push_back(c.ocr); });
   return ret;
 }
 
@@ -97,7 +105,7 @@ std::vector<double> DbSlice::confs() const {
 double DbSlice::average_conf() const {
   double sum = 0;
   double n = 0;
-  each_ocr(begin, end, [&sum, &n](const auto &c) {
+  each_ocr(begin, end, [&sum, &n](const auto& c) {
     ++n;
     sum += c.conf;
   });
@@ -106,12 +114,12 @@ double DbSlice::average_conf() const {
 
 ////////////////////////////////////////////////////////////////////////////////
 bool DbSlice::is_partially_corrected() const {
-  return std::any_of(begin, end, [](const auto &c) { return c.is_cor(); });
+  return std::any_of(begin, end, [](const auto& c) { return c.is_cor(); });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 bool DbSlice::is_fully_corrected() const {
-  return std::all_of(begin, end, [](const auto &c) { return c.is_cor(); });
+  return std::all_of(begin, end, [](const auto& c) { return c.is_cor(); });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -120,14 +128,12 @@ void DbSlice::begin_wagner_fischer(size_t b, size_t e) {
   std::cerr << "DbSlice::begin_wagner_fischer(" << b << "," << e << ")\n";
   i_ = begin;
   for (auto i = begin; i != end;) {
-    if (i->ocr == 0) { // delete insertions
-      auto j = std::next(i);
+    auto next = std::next(i);
+    i->cor = 0;         // remove any corrections
+    if (i->is_ins()) {  // delete insertions
       line_.line.erase(i);
-      i = j;
-    } else { // mark as not corrected
-      i->cor = 0;
-      i = std::next(i);
     }
+    i = j;
   }
 }
 
@@ -144,7 +150,6 @@ void DbSlice::set(size_t i, wchar_t c) {
 ////////////////////////////////////////////////////////////////////////////////
 void DbSlice::insert(size_t i, wchar_t c) {
   std::cerr << "DbSlice::insert(" << i << "," << char(c) << ")\n";
-  assert(i_ != end);
   const auto left = i_ != begin ? std::prev(i_)->cut : box.left();
   const auto right = i_ == end ? box.right() : i_->cut;
   const auto cut = left + ((right - left) / 2);
@@ -158,7 +163,7 @@ void DbSlice::insert(size_t i, wchar_t c) {
 void DbSlice::erase(size_t i) {
   std::cerr << "DbSlice::erase(" << i << ")\n";
   assert(i_ != end);
-  i_->cor = DbChar::DEL; // mark as deleted
+  i_->cor = DbChar::DEL;  // mark as deleted
   ++i_;
 }
 
@@ -176,7 +181,7 @@ void DbSlice::noop(size_t i) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool DbLine::load(MysqlConnection &mysql) {
+bool DbLine::load(MysqlConnection& mysql) {
   using namespace sqlpp;
   tables::Contents c;
   tables::Textlines l;
@@ -190,7 +195,7 @@ bool DbLine::load(MysqlConnection &mysql) {
     return false;
   }
   load_from_row(rows.front(), *this);
-  for (const auto &row : rows) {
+  for (const auto& row : rows) {
     line.push_back({});
     load_from_row(row, line.back());
   }
@@ -198,9 +203,9 @@ bool DbLine::load(MysqlConnection &mysql) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void DbLine::each_token(std::function<void(DbSlice &)> f) {
-  auto nospace = [](const auto &c) { return not std::iswspace(c.get_cor()); };
-  auto isspace = [](const auto &c) { return std::iswspace(c.get_cor()); };
+void DbLine::each_token(std::function<void(DbSlice&)> f) {
+  auto nospace = [](const auto& c) { return not std::iswspace(c.get_cor()); };
+  auto isspace = [](const auto& c) { return std::iswspace(c.get_cor()); };
   auto e = line.end();
   auto i = std::find_if(line.begin(), e, nospace);
   while (i != e) {
@@ -237,12 +242,12 @@ int DbLine::tokenLength(int begin) const {
   }
   const auto e =
       std::find_if(std::next(line.begin(), begin), line.end(),
-                   [](const auto &c) { return std::iswspace(c.get_cor()); });
+                   [](const auto& c) { return std::iswspace(c.get_cor()); });
   return int(std::distance(std::next(line.begin(), begin), e));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool DbPage::load(MysqlConnection &mysql) {
+bool DbPage::load(MysqlConnection& mysql) {
   using namespace sqlpp;
   tables::Pages pages;
   tables::Projects p;
@@ -259,7 +264,7 @@ bool DbPage::load(MysqlConnection &mysql) {
   }
   load_from_row(prows.front(), *this);
   int lid = -1;
-  for (auto &row : mysql.db()(lstmnt)) {
+  for (auto& row : mysql.db()(lstmnt)) {
     // append new line
     if (int(row.lineid) != lid) {
       this->lines.push_back(DbLine{projectid, pageid, 0});
@@ -274,7 +279,7 @@ bool DbPage::load(MysqlConnection &mysql) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool DbPackage::load(MysqlConnection &mysql) {
+bool DbPackage::load(MysqlConnection& mysql) {
   using namespace sqlpp;
   tables::Projects p;
   tables::ProjectPages pp;
@@ -283,7 +288,7 @@ bool DbPackage::load(MysqlConnection &mysql) {
                              .order_by(pp.pageid.asc()));
   if (not rows.empty()) {
     load_from_row(rows.front(), *this);
-    for (const auto &row : rows) {
+    for (const auto& row : rows) {
       pageids.push_back(int(row.pageid));
     }
     return true;
@@ -298,7 +303,7 @@ bool DbPackage::load(MysqlConnection &mysql) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json &pcw::operator<<(Json &j, const DbSlice &slice) {
+pcw::Json& pcw::operator<<(Json& j, const DbSlice& slice) {
   j["bookId"] = slice.bookid;
   j["projectId"] = slice.projectid;
   j["pageId"] = slice.pageid;
@@ -318,7 +323,7 @@ pcw::Json &pcw::operator<<(Json &j, const DbSlice &slice) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json &pcw::operator<<(Json &j, DbLine &line) {
+pcw::Json& pcw::operator<<(Json& j, DbLine& line) {
   const auto slice = line.slice();
   j["bookId"] = line.bookid;
   j["projectId"] = line.projectid;
@@ -335,12 +340,12 @@ pcw::Json &pcw::operator<<(Json &j, DbLine &line) {
   j["isPartiallyCorrected"] = slice.is_partially_corrected();
   j["tokens"] = crow::json::rvalue(crow::json::type::List);
   auto i = 0;
-  line.each_token([&](const auto &token) { j["tokens"][i++] << token; });
+  line.each_token([&](const auto& token) { j["tokens"][i++] << token; });
   return j;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json &pcw::operator<<(Json &j, DbPage &page) {
+pcw::Json& pcw::operator<<(Json& j, DbPage& page) {
   j["bookId"] = page.bookid;
   j["projectId"] = page.projectid;
   j["pageId"] = page.pageid;
@@ -351,14 +356,14 @@ pcw::Json &pcw::operator<<(Json &j, DbPage &page) {
   j["ocrFile"] = page.ocrpath;
   j["lines"] = crow::json::rvalue(crow::json::type::List);
   auto i = 0;
-  for (auto &line : page.lines) {
+  for (auto& line : page.lines) {
     j["lines"][i++] << line;
   }
   return j;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json &pcw::operator<<(Json &j, const DbPackage &package) {
+pcw::Json& pcw::operator<<(Json& j, const DbPackage& package) {
   j["bookId"] = package.bookid;
   j["projectId"] = package.projectid;
   j["owner"] = package.owner;
