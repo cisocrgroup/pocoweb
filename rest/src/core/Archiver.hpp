@@ -25,7 +25,7 @@ private:
   Path get_tmp_file(const Path &source, const Path &tmpdir) const;
   Path copy_to_tmp_dir(const Path &source, const Path &tmpdir) const;
   static Path archive_name(const DbPackage &package) noexcept;
-  static void write_line_text_snippets(const DbLine &line, const Path &cor,
+  static void write_line_text_snippets(DbLine &line, const Path &cor,
                                        const Path &ocr);
   static void write_text_snippet(const std::string &line, const Path &to);
   static Path remove_common_base_path(const Path &p, const Path &base);

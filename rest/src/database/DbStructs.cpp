@@ -1,5 +1,4 @@
 #include "DbStructs.hpp"
-#include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
 #include "core/util.hpp"
 #include <crow/json.h>
@@ -29,11 +28,11 @@ template <class It, class F> static void each_ocr(It b, It e, F f) {
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-DbSlice::DbSlice(const DbLine &line, std::list<DbChar>::const_iterator b,
-                 std::list<DbChar>::const_iterator e)
+DbSlice::DbSlice(DbLine &line, std::list<DbChar>::iterator b,
+                 std::list<DbChar>::iterator e)
     : bookid(line.bookid), pageid(line.pageid), lineid(line.lineid),
-      offset(int(std::distance(line.line.cbegin(), b))), begin(b), end(e),
-      box(), match(), line_(line) {
+      offset(int(std::distance(line.line.begin(), b))), begin(b), end(e), box(),
+      match(), line_(line) {
   this->box.set_top(line_.box.top());
   this->box.set_bottom(line_.box.bottom());
   if (begin == line_.line.begin()) {
@@ -116,6 +115,67 @@ bool DbSlice::is_fully_corrected() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+void DbSlice::begin_wagner_fischer(size_t b, size_t e) {
+  // We ignore b, e since we simply can correct the whole (sub) slice.
+  std::cerr << "DbSlice::begin_wagner_fischer(" << b << "," << e << ")\n";
+  i_ = begin;
+  for (auto i = begin; i != end;) {
+    if (i->ocr == 0) { // delete insertions
+      auto j = std::next(i);
+      line_.line.erase(i);
+      i = j;
+    } else { // mark as not corrected
+      i->cor = 0;
+      i = std::next(i);
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void DbSlice::set(size_t i, wchar_t c) {
+  std::cerr << "DbSlice::set(" << i << "," << char(c) << ")\n";
+  assert(i_ != end);
+  i_->cor = c;
+  assert(i_->is_subst());
+  assert(i_->is_cor());
+  ++i_;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void DbSlice::insert(size_t i, wchar_t c) {
+  std::cerr << "DbSlice::insert(" << i << "," << char(c) << ")\n";
+  assert(i_ != end);
+  const auto left = i_ != begin ? std::prev(i_)->cut : box.left();
+  const auto right = i_ == end ? box.right() : i_->cut;
+  const auto cut = left + ((right - left) / 2);
+  std::cerr << "left cut: " << left << ", right cut: " << right
+            << ", cut: " << cut << "\n";
+  line_.line.insert(i_, DbChar{.ocr = 0, .cor = c, .conf = 1, .cut = cut});
+  // do not increment i_;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void DbSlice::erase(size_t i) {
+  std::cerr << "DbSlice::erase(" << i << ")\n";
+  assert(i_ != end);
+  i_->cor = DbChar::DEL; // mark as deleted
+  ++i_;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void DbSlice::noop(size_t i) {
+  std::cerr << "DbSlice::noop(" << i << ")\n";
+  // Noop means that the ocr char is correct.
+  // We still need to mark it as corrected though.
+  i_->cor = i_->ocr;
+  std::cerr << "begin_->ocr      = " << int(i_->ocr) << "\n";
+  std::cerr << "i_->cor      = " << int(i_->cor) << "\n";
+  std::cerr << "i_->is_cor() = " << i_->is_cor() << "\n";
+  assert(i_->is_cor());
+  ++i_;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 bool DbLine::load(MysqlConnection &mysql) {
   using namespace sqlpp;
   tables::Contents c;
@@ -138,7 +198,7 @@ bool DbLine::load(MysqlConnection &mysql) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void DbLine::each_token(std::function<void(DbSlice &)> f) const {
+void DbLine::each_token(std::function<void(DbSlice &)> f) {
   auto nospace = [](const auto &c) { return not std::iswspace(c.get_cor()); };
   auto isspace = [](const auto &c) { return std::iswspace(c.get_cor()); };
   auto e = line.end();
@@ -157,7 +217,7 @@ void DbLine::each_token(std::function<void(DbSlice &)> f) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-DbSlice DbLine::slice(int begin, int len) const {
+DbSlice DbLine::slice(int begin, int len) {
   if (begin < 0 or len < 0 or size_t(begin + len) > line.size() or
       size_t(begin) > line.size()) {
     throw std::logic_error("(DbLine::slice) invalid start or len: " +
@@ -179,87 +239,6 @@ int DbLine::tokenLength(int begin) const {
       std::find_if(std::next(line.begin(), begin), line.end(),
                    [](const auto &c) { return std::iswspace(c.get_cor()); });
   return int(std::distance(std::next(line.begin(), begin), e));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void DbLine::begin_wagner_fischer(size_t b, size_t e) {
-  std::cerr << "DbLine::begin_wagner_fischer(" << b << "," << e << ")\n";
-  begin_ = std::next(line.begin(), b);
-  end_ = std::next(line.begin(), e);
-  for (auto i = begin_; i != end_;) {
-    if (i->ocr == 0) { // delete insertions
-      auto j = std::next(i);
-      line.erase(i);
-      i = j;
-    } else { // mark as not corrected
-      i->cor = 0;
-      i = std::next(i);
-    }
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void DbLine::set(size_t i, wchar_t c) {
-  std::cerr << "DbLine::set(" << i << "," << char(c) << ")\n";
-  assert(begin_ != end_);
-  begin_->cor = c;
-  assert(begin_->is_subst());
-  assert(begin_->is_cor());
-  ++begin_;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void DbLine::insert(size_t i, wchar_t c) {
-  std::cerr << "DbLine::insert(" << i << "," << char(c) << ")\n";
-  const auto left = i > 0 ? std::prev(begin_)->cut : box.left();
-  const auto right = begin_ == end_ ? box.right() : begin_->cut;
-  const auto cut = left + ((right - left) / 2);
-  std::cerr << "left cut: " << left << ", right cut: " << right
-            << ", cut: " << cut << "\n";
-  line.insert(begin_, DbChar{0, c, 1, cut});
-  // do not increment begin_;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void DbLine::erase(size_t i) {
-  std::cerr << "DbLine::erase(" << i << ")\n";
-  auto next = std::next(begin_);
-  line.erase(begin_);
-  begin_ = next;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void DbLine::noop(size_t i) {
-  std::cerr << "DbLine::noop(" << i << ")\n";
-  // Noop means that the ocr char is correct.
-  // We still need to mark it as corrected though.
-  begin_->cor = begin_->ocr;
-  // TODO: must we really set conf to 1?  This way the original ocr confidence
-  // information is lost.
-  begin_->conf = 1;
-  std::cerr << "begin_->ocr      = " << int(begin_->ocr) << "\n";
-  std::cerr << "begin_->cor      = " << int(begin_->cor) << "\n";
-  std::cerr << "begin_->is_cor() = " << begin_->is_cor() << "\n";
-  assert(begin_->ocr == 0 or begin_->is_cor());
-  ++begin_;
-}
-////////////////////////////////////////////////////////////////////////////////
-int DbLine::correct(WagnerFischer &wf, const std::wstring &cor) {
-  // auto slice = this->slice();
-  // wf.set_ocr(slice.wocr());
-  // wf.set_gt(cor);
-  return correct(wf, cor, 0, line.size());
-}
-
-////////////////////////////////////////////////////////////////////////////////
-int DbLine::correct(WagnerFischer &wf, const std::wstring &cor, size_t b,
-                    size_t len) {
-  auto slice = this->slice(b, len);
-  wf.set_ocr(slice.wocr());
-  wf.set_gt(cor);
-  auto ret = wf(b, b + len);
-  wf.correct(*this, b, cor.size());
-  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -339,7 +318,7 @@ pcw::Json &pcw::operator<<(Json &j, const DbSlice &slice) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json &pcw::operator<<(Json &j, const DbLine &line) {
+pcw::Json &pcw::operator<<(Json &j, DbLine &line) {
   const auto slice = line.slice();
   j["bookId"] = line.bookid;
   j["projectId"] = line.projectid;
@@ -361,7 +340,7 @@ pcw::Json &pcw::operator<<(Json &j, const DbLine &line) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-pcw::Json &pcw::operator<<(Json &j, const DbPage &page) {
+pcw::Json &pcw::operator<<(Json &j, DbPage &page) {
   j["bookId"] = page.bookid;
   j["projectId"] = page.projectid;
   j["pageId"] = page.pageid;
@@ -372,7 +351,7 @@ pcw::Json &pcw::operator<<(Json &j, const DbPage &page) {
   j["ocrFile"] = page.ocrpath;
   j["lines"] = crow::json::rvalue(crow::json::type::List);
   auto i = 0;
-  for (const auto &line : page.lines) {
+  for (auto &line : page.lines) {
     j["lines"][i++] << line;
   }
   return j;

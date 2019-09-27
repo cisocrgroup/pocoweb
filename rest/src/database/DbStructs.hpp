@@ -37,8 +37,8 @@ struct DbChar {
 };
 
 struct DbSlice {
-  DbSlice(const DbLine &line, std::list<DbChar>::const_iterator b,
-          std::list<DbChar>::const_iterator e);
+  DbSlice(DbLine &line, std::list<DbChar>::iterator b,
+          std::list<DbChar>::iterator e);
   std::string ocr() const;
   std::string cor() const;
   std::wstring wocr() const;
@@ -49,13 +49,22 @@ struct DbSlice {
   bool is_partially_corrected() const;
   bool is_fully_corrected() const;
 
+  // wagner-fischer interface
+  void begin_wagner_fischer(size_t b, size_t e);
+  void insert(size_t i, wchar_t c);
+  void erase(size_t i);
+  void set(size_t i, wchar_t c);
+  void noop(size_t i);
+  void end_wagner_fischer() const noexcept {}
+
   int bookid, projectid, pageid, lineid, offset;
-  std::list<DbChar>::const_iterator begin, end;
+  std::list<DbChar>::iterator begin, end;
   Box box;
   bool match;
 
 private:
-  const DbLine &line_;
+  DbLine &line_;
+  std::list<DbChar>::iterator i_;
 };
 
 Json &operator<<(Json &j, const DbSlice &line);
@@ -67,22 +76,10 @@ struct DbLine {
   bool load(MysqlConnection &mysql);
 
   // slices
-  void each_token(std::function<void(DbSlice &)> f) const;
-  DbSlice slice() const { return slice(0, line.size()); }
-  DbSlice slice(int begin, int len) const;
+  void each_token(std::function<void(DbSlice &)> f);
+  DbSlice slice() { return slice(0, line.size()); }
+  DbSlice slice(int begin, int len);
   int tokenLength(int begin) const;
-
-  // correction interface (prefer this to correct lines and slices
-  int correct(WagnerFischer &wf, const std::wstring &cor);
-  int correct(WagnerFischer &wf, const std::wstring &cor, size_t b, size_t len);
-
-  // wagner-fischer interface
-  void begin_wagner_fischer(size_t b, size_t e);
-  void insert(size_t i, wchar_t c);
-  void erase(size_t i);
-  void set(size_t i, wchar_t c);
-  void noop(size_t i);
-  void end_wagner_fischer() const noexcept {}
 
   std::list<DbChar> line;
   std::string imagepath;
@@ -102,7 +99,7 @@ inline bool operator!=(const DbLine &lhs, const DbLine &rhs) {
   return not operator==(lhs, rhs);
 }
 
-Json &operator<<(Json &j, const DbLine &line);
+Json &operator<<(Json &j, DbLine &line);
 
 struct DbPage {
   DbPage(int pid, int pageid)
@@ -116,7 +113,7 @@ struct DbPage {
   int bookid, projectid, pageid, filetype, prevpageid, nextpageid;
 };
 
-Json &operator<<(Json &j, const DbPage &page);
+Json &operator<<(Json &j, DbPage &page);
 
 struct DbPackage {
   DbPackage(int pid)

@@ -90,7 +90,7 @@ void Archiver::copy_files(const Path &xdir, const DbPackage &package) const {
     CROW_LOG_INFO << "(Archiver) file path: " << path;
     const auto pp =
         make_page_parser(FileType(page.filetype), base / page.ocrpath)->parse();
-    for (const auto &line : page.lines) {
+    for (auto &line : page.lines) {
       if (line.imagepath.empty()) {
         CROW_LOG_WARNING << "(Archiver) line: " << pid_ << ":" << pageid << ":"
                          << line.lineid << " has no image path";
@@ -164,7 +164,7 @@ Archiver::Path Archiver::copy_to_tmp_dir(const Path &source,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void Archiver::write_line_text_snippets(const DbLine &line, const Path &cor,
+void Archiver::write_line_text_snippets(DbLine &line, const Path &cor,
                                         const Path &ocr) {
   const auto slice = line.slice();
   CROW_LOG_INFO << "writting snippet: " << slice.cor() << " (" << slice.ocr()

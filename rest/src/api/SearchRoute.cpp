@@ -32,17 +32,17 @@ struct match_results {
   int bookid, projectid, total, skip, max;
 };
 
-Json &operator<<(Json &j, const match_results &res) {
+Json &operator<<(Json &j, match_results &res) {
   j["bookId"] = res.bookid;
   j["projectId"] = res.projectid;
   j["skip"] = res.skip;
   j["max"] = res.max;
   j["total"] = res.total;
 
-  for (const auto &m : res.results) {
+  for (auto &m : res.results) {
     j["matches"][m.first]["total"] = m.second.total;
     int i = 0;
-    for (const auto &line_match : m.second.line_matches) {
+    for (auto &line_match : m.second.line_matches) {
       j["matches"][m.first]["lines"][i] = m.second.total;
       j["matches"][m.first]["lines"][i]["bookId"] = line_match.first.bookid;
       j["matches"][m.first]["lines"][i]["projectId"] =
@@ -146,7 +146,7 @@ static match_results search_impl(MysqlConnection &conn, int bid, int skip,
   ret.projectid = bid;
   ret.max = max;
   ret.skip = skip;
-  each_package_line(conn, bid, [&](const auto &line) {
+  each_package_line(conn, bid, [&](auto &line) {
     line.each_token([&](DbSlice &slice) {
       std::string q;         // match key
       if (not f(slice, q)) { // no match
@@ -182,7 +182,7 @@ static match_results search_impl(MysqlConnection &conn, int bid, int skip,
 Route::Response SearchRoute::search(MysqlConnection &mysql, tq q) const {
   const auto ic = q.ic;
   const auto re = make_regex(q.qs, ic);
-  const auto ret =
+  auto ret =
       search_impl(mysql, q.bid, q.skip, q.max, [&](const auto &t, auto &q) {
         std::wsmatch m;
         auto cor = t.wcor();
@@ -233,7 +233,7 @@ Route::Response SearchRoute::search(MysqlConnection &mysql, pq q) const {
   }
   const auto re = make_regex(qs, true); // types and patterns are all lower case
   // search
-  const auto ret =
+  auto ret =
       search_impl(mysql, q.bid, q.skip, q.max, [&](const auto &t, auto &q) {
         const auto cor = t.wcor();
         std::wsmatch m;
@@ -260,7 +260,7 @@ void each_package_line(MysqlConnection &mysql, int pid, F f) {
     if (not page.load(mysql)) {
       continue;
     }
-    for (const auto &line : page.lines) {
+    for (auto &line : page.lines) {
       f(line);
     }
   }

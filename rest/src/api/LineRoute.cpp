@@ -153,14 +153,15 @@ void LineRoute::correct(DbLine &line, const std::string &correction) {
   CROW_LOG_INFO << "(LineRoute::correct) correction: \"" << correction << "\"";
   WagnerFischer wf;
   wf.set_gt(correction);
-  wf.set_ocr(line.slice().wocr());
+  auto slice = line.slice();
+  wf.set_ocr(slice.wocr());
   const auto lev = wf();
   CROW_LOG_INFO << "(LineRoute) correction: " << correction;
   CROW_LOG_INFO << "(LineRoute) line.ocr(): " << line.slice().ocr();
   CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
 
   // correct
-  wf.correct(line);
+  wf.correct(slice);
 
   CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
   CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
@@ -173,14 +174,15 @@ void LineRoute::correct(DbLine &line, const std::string &correction, int b,
                 << "\" (b = " << b << " len = " << len << ")";
   WagnerFischer wf;
   wf.set_gt(correction);
-  wf.set_ocr(line.slice().wocr());
+  auto slice = line.slice(b, len);
+  wf.set_ocr(slice.wocr());
   const auto lev = wf(b, len);
   CROW_LOG_INFO << "(LineRoute) correction: " << correction;
   CROW_LOG_INFO << "(LineRoute) line.ocr(): " << line.slice().ocr();
   CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
 
   // correct
-  wf.correct(line, b, correction.size());
+  wf.correct(slice);
 
   CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
   CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
