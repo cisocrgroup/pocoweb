@@ -158,13 +158,16 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     var fetchinglinenumbers = App.getLineNumbers(id);
                     var fetchingnewpage = ProjectEntities.API.getPage({pid:id, page:page_id});
                   $.when(fetchingnewpage,fetchinglineheight,fetchinglinenumbers).done(function(new_page,lineheight,linenumbers){
-                     new_page.attributes.title = project.get('title');
+                    
+                      new_page.attributes.title = project.get('title');
                       projectShowPage.model=new_page;
 
                       projectShowSidebar.options.lineheight=lineheight;
                       projectShowSidebar.options.linenumbers=linenumbers;
-
-
+                      
+                      projectShowPage.options.lineheight=lineheight;
+                      projectShowPage.options.linenumbers=linenumbers;
+              
                       projectShowPage.render();
                       projectShowSidebar.model = new_page;
                       $('#pageId').text('Page '+new_page.get('pageId'))
