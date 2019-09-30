@@ -51,6 +51,7 @@ App.newPcw = function() {
       pageHits: {},    // id: pageHits
       lineNumbers: {}, // id: lineNumber
       ignoreCase: {},  // id: ignore case
+      hideCorrections: {},  // id: hide corrections
       charMapFilter: "abcdefghijklmnopqrstuvwxyz" +
 	    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 	    "0123456789" +
@@ -123,8 +124,11 @@ App.setLineNumbers = function(id,val){
 };
 
 App.getLineNumbers = function(id){
-  let lineNumbers = App.getPcw().options.lineNumbers[id] || false;
-  return lineNumbers;
+  let lineNumbers = App.getPcw().options.lineNumbers[id];
+  if(lineNumbers!=undefined){
+    return lineNumbers
+  }
+  return true;
 };
 
 App.getIgnoreCase = function(id) {
@@ -135,6 +139,17 @@ App.getIgnoreCase = function(id) {
 App.setIgnoreCase = function(id, ic) {
   let pcw = App.getPcw();
   pcw.options.ignoreCase[id] = ic;
+  App.setPcw(pcw);
+};
+
+App.getHideCorrections = function(id) {
+  let hideCorrections = App.getPcw().options.hideCorrections[id] || false;
+  return hideCorrections;
+};
+
+App.setHideCorrections = function(id, ic) {
+  let pcw = App.getPcw();
+  pcw.options.hideCorrections[id] = ic;
   App.setPcw(pcw);
 };
 
@@ -251,6 +266,11 @@ App.on("start", function(){
      HeaderApp.API.showHeader(function(){
        FooterApp.API.showFooter();
        Backbone.history.start();
+
+       if(App.getCurrentRoute().startsWith("user-content")){
+          App.trigger("docs:show");
+       }
+
 
        if(App.getCurrentRoute() === ""){
 
