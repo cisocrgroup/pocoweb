@@ -291,7 +291,6 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
        var tokendata =  Marionette.getOption(this,"tokendata");
         var value = parseInt($(e.currentTarget).attr('value'));
-        // console.log(value);
 
         if(value==-1) { // value == -1 -> '...' button
           return;
@@ -315,9 +314,12 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         }
 
        var max_pages = Math.ceil(tokendata.total / tokendata.max);
+       //console.log("max "+max_pages)
+       // console.log(value);
 
        // case at the end
-        if(value>=5&&(value+3)>=max_pages){
+        if(value>5&&(value+3)>=max_pages){
+
           $('.js-paginate').empty();
 
           $('.js-paginate').append('<li value="-2" class="page-item"><a class="page-link" href="#">Previous</a></li>');
@@ -337,7 +339,8 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
 
         // in the middle
-        else if(value>=5&&value<(max_pages)-1){
+        else if(value>=5&&value<(max_pages-1)){
+
           $('.js-paginate').empty();
 
           $('.js-paginate').append('<li value="-2" class="page-item"><a class="page-link" href="#">Previous</a></li>');
@@ -358,7 +361,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         }
 
         // at the start
-        else if (value<5&&(max_pages>5)) {
+        else if (value<=5&&(max_pages>5)) {
           $('.js-paginate').empty();
 
           $('.js-paginate').append('<li value="-2" class="page-item"><a class="page-link" href="#">Previous</a></li>');
@@ -367,7 +370,6 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           for(var k=2;k<=5;k++){
               $('.js-paginate').append('<li value="'+k+'"" class="page-item"><a class="page-link" href="#">'+k+'</a></li>');
            }
-
 
 
           $('.js-paginate').append('<li value="-1" class="page-item"><a class="page-link">...</a></li>');

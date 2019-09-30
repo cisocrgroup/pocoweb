@@ -407,6 +407,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
         // remove when clicked somewhere else
 
+
+
           $(document).click(function(e)
           {
 
@@ -436,6 +438,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
       onDomRefresh:function(e){
 
+        var linenumbers = Marionette.getOption(this,'linenumbers');
+
 
            var that = this;
            $('#page-container').imagesLoaded( function() {
@@ -451,6 +455,12 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
          });
 
+          if(linenumbers) {
+                $('.line-nr').show();
+              }
+              else {
+                $('.line-nr').hide();
+              }
 
           /*  sticky sidebar
 
