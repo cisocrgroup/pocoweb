@@ -84,6 +84,26 @@ BOOST_AUTO_TEST_CASE(TestDbLineCorrectEmptyLine)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestDbLineCorrectEmptyLineASecondTime)
+{
+  auto line = mline(L"");
+  auto slice = line.slice();
+  WagnerFischer wf;
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"abc");
+  BOOST_CHECK_EQUAL(wf(), 3);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(slice.ocr(), "");
+  BOOST_CHECK_EQUAL(slice.cor(), "abc");
+  wf.set_ocr(slice.wocr());
+  wf.set_gt("XYZ");
+  BOOST_CHECK_EQUAL(wf(), 3);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(slice.ocr(), "");
+  BOOST_CHECK_EQUAL(slice.cor(), "XYZ");
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(TestDbLineCorrectEmptyLineBox)
 {
   // cuts are dispersed half the difference to the left and the right
@@ -114,4 +134,46 @@ BOOST_AUTO_TEST_CASE(TestDbLineCorrectDelete)
   wf.correct(slice);
   BOOST_CHECK_EQUAL(line.slice().ocr(), "abc");
   BOOST_CHECK_EQUAL(line.slice().cor(), "");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestDbLineCorrectAtStart)
+{
+  auto line = mline(L"abc def ghi");
+  auto slice = line.slice(0, 3);
+  WagnerFischer wf;
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"XYZXYZ");
+  BOOST_CHECK_EQUAL(wf(), 6);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "XYZXYZ def ghi");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestDbLineCorrectInTheMiddle)
+{
+  auto line = mline(L"abc def ghi");
+  auto slice = line.slice(4, 3);
+  WagnerFischer wf;
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"XYZXYZ");
+  BOOST_CHECK_EQUAL(wf(), 6);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "abc XYZXYZ ghi");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestDbLineCorrectAthTheEnd)
+{
+  auto line = mline(L"abc def ghi");
+  auto slice = line.slice(8, 3);
+  WagnerFischer wf;
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"XYZXYZ");
+  BOOST_CHECK_EQUAL(wf(), 6);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "abc def XYZXYZ");
 }
