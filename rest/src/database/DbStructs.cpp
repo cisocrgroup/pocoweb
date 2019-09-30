@@ -117,7 +117,7 @@ bool DbSlice::is_fully_corrected() const {
 ////////////////////////////////////////////////////////////////////////////////
 void DbSlice::begin_wagner_fischer(size_t b, size_t e) {
   // We ignore b, e since we simply can correct the whole (sub) slice.
-  std::cerr << "DbSlice::begin_wagner_fischer(" << b << "," << e << ")\n";
+  // std::cerr << "DbSlice::begin_wagner_fischer(" << b << "," << e << ")\n";
   for (auto i = begin; i != end;) {
     auto next = std::next(i);
     if (i->is_ins()) { // delete insertions
@@ -131,14 +131,11 @@ void DbSlice::begin_wagner_fischer(size_t b, size_t e) {
     i = next;
   }
   i_ = begin;
-  for (auto i = begin; i != end; i++) {
-    std::cerr << "begin wf: " << int(i->ocr) << " " << int(i->cor) << "\n";
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbSlice::set(size_t i, wchar_t c) {
-  std::cerr << "DbSlice::set(" << i << "," << char(c) << ")\n";
+  // std::cerr << "DbSlice::set(" << i << "," << char(c) << ")\n";
   assert(i_ != end);
   i_->cor = c;
   assert(i_->is_subst());
@@ -148,29 +145,22 @@ void DbSlice::set(size_t i, wchar_t c) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbSlice::insert(size_t i, wchar_t c) {
-  std::cerr << "DbSlice::insert(" << i << "," << char(c) << ")\n";
+  // std::cerr << "DbSlice::insert(" << i << "," << char(c) << ")\n";
   const auto left = i_ != begin ? std::prev(i_)->cut : box.left();
   const auto right = i_ == end ? box.right() : i_->cut;
   const auto cut = left + ((right - left) / 2);
-  std::cerr << "left cut: " << left << ", right cut: " << right
-            << ", cut: " << cut << "\n";
+  // std::cerr << "left cut: " << left << ", right cut: " << right
+  //           << ", cut: " << cut << "\n";
   line_->line.insert(i_, DbChar{.ocr = 0, .cor = c, .conf = 1, .cut = cut});
   if (i_ == begin) { // Fix begin if we have an insertion before start pos.
     begin = std::prev(i_);
-  }
-  for (auto i = begin; i != end; i++) {
-    std::cerr << "(begin) insert: " << int(i->ocr) << " " << int(i->cor)
-              << "\n";
-  }
-  for (auto i = i_; i != end; i++) {
-    std::cerr << "(i_) insert: " << int(i->ocr) << " " << int(i->cor) << "\n";
   }
   // do not increment i_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbSlice::erase(size_t i) {
-  std::cerr << "DbSlice::erase(" << i << ")\n";
+  // std::cerr << "DbSlice::erase(" << i << ")\n";
   assert(i_ != end);
   i_->cor = DbChar::DEL; // mark as deleted
   ++i_;
@@ -178,13 +168,10 @@ void DbSlice::erase(size_t i) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbSlice::noop(size_t i) {
-  std::cerr << "DbSlice::noop(" << i << ")\n";
+  // std::cerr << "DbSlice::noop(" << i << ")\n";
   // Noop means that the ocr char is correct.
   // We still need to mark it as corrected though.
   i_->cor = i_->ocr;
-  std::cerr << "begin_->ocr      = " << int(i_->ocr) << "\n";
-  std::cerr << "i_->cor      = " << int(i_->cor) << "\n";
-  std::cerr << "i_->is_cor() = " << i_->is_cor() << "\n";
   assert(i_->is_cor());
   ++i_;
 }
