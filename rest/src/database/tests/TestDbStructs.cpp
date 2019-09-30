@@ -2,9 +2,12 @@
 #define BOOST_TEST_MODULE TestDbStructs
 
 #include "core/WagnerFischer.hpp"
+#include "core/util.hpp"
 #include "database/DbStructs.hpp"
 #include <boost/test/unit_test.hpp>
+#include <chrono>
 #include <iostream>
+#include <random>
 
 using namespace pcw;
 
@@ -305,4 +308,57 @@ BOOST_AUTO_TEST_CASE(TestDbLineCorrectAthTheEndMultipleTimes) {
   wf.correct(slice);
   BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
   BOOST_CHECK_EQUAL(line.slice().cor(), "abc def ghi");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+static std::wstring randomString(int seed) {
+  static const std::vector<wchar_t> chars{
+      L'a', L'b', L'c', L'ä', L'ö', L'ü', L'ß',
+      L'.', L'!', L'/', L'0', L'1', L'2', L'3',
+  };
+  static std::mt19937 gen = std::mt19937(seed);
+  std::uniform_int_distribution<size_t> rlen(1, 100); // lenght of string
+  std::uniform_int_distribution<size_t> rchar(0, chars.size()); // char indices
+  std::wstring ret(rlen(gen), 0);
+  for (auto &c : ret) {
+    c = chars[rchar(gen)];
+  }
+  return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+static DbSlice randomSlice(DbLine &line, int seed) {
+  static std::mt19937 gen = std::mt19937(seed);
+  std::uniform_int_distribution<size_t> rindex(0, line.slice().wocr().size());
+  auto start = rindex(gen);
+  size_t end = rindex(gen);
+  if (start > end) {
+    std::swap(start, end);
+  }
+  assert(start <= end);
+  return line.slice(int(start), int(end - start));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestDbLineCorrectFuzzy) {
+  const auto seed = std::chrono::duration_cast<std::chrono::milliseconds>(
+                        std::chrono::time_point_cast<std::chrono::milliseconds>(
+                            std::chrono::high_resolution_clock::now())
+                            .time_since_epoch())
+                        .count();
+  std::cout << "seed: " << seed << "\n";
+  const auto ocr = randomString(seed);
+  const int N = 100;
+  WagnerFischer wf;
+  auto line = mline(ocr);
+  for (int i = 0; i < N; i++) {
+    auto slice = randomSlice(line, seed);
+    auto cor = randomString(seed);
+    wf.set_ocr(slice.wocr());
+    wf.set_gt(cor);
+    wf();
+    wf.correct(slice);
+    BOOST_CHECK_EQUAL(line.slice().ocr(), utf8(ocr));
+    BOOST_CHECK_EQUAL(slice.cor(), utf8(cor));
+  }
 }
