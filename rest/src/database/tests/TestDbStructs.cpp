@@ -183,3 +183,126 @@ BOOST_AUTO_TEST_CASE(TestDbLineCorrectAthTheEnd) {
   BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
   BOOST_CHECK_EQUAL(line.slice().cor(), "abc def XYZXYZ");
 }
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestDbLineCorrectAtStartMultipleTimes) {
+  auto line = mline(L"abc def ghi");
+  auto slice = line.slice(0, 3);
+  WagnerFischer wf;
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"XYZXYZ");
+  BOOST_CHECK_EQUAL(wf(), 6);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "XYZXYZ def ghi");
+  // correct a second time
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"ABC");
+  BOOST_CHECK_EQUAL(wf(), 3);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "ABC def ghi");
+  // correct a third time
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"");
+  BOOST_CHECK_EQUAL(wf(), 3);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), " def ghi");
+  // correct a fourth time
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"XXXX");
+  BOOST_CHECK_EQUAL(wf(), 4);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "XXXX def ghi");
+  // correct a fifth time
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"abc");
+  BOOST_CHECK_EQUAL(wf(), 0);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "abc def ghi");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestDbLineCorrectInTheMiddleMultipleTimes) {
+  auto line = mline(L"abc def ghi");
+  auto slice = line.slice(4, 3);
+  WagnerFischer wf;
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"XYZXYZ");
+  BOOST_CHECK_EQUAL(wf(), 6);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "abc XYZXYZ ghi");
+  // correct a second time
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"DEF");
+  BOOST_CHECK_EQUAL(wf(), 3);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "abc DEF ghi");
+  // correct a third time
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"");
+  BOOST_CHECK_EQUAL(wf(), 3);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "abc  ghi");
+  // correct a fourth time
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"XXXX");
+  BOOST_CHECK_EQUAL(wf(), 4);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "abc XXXX ghi");
+  // correct a fifth time
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"def");
+  BOOST_CHECK_EQUAL(wf(), 0);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "abc def ghi");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestDbLineCorrectAthTheEndMultipleTimes) {
+  auto line = mline(L"abc def ghi");
+  auto slice = line.slice(8, 3);
+  WagnerFischer wf;
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"XYZXYZ");
+  BOOST_CHECK_EQUAL(wf(), 6);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "abc def XYZXYZ");
+  // correct a second time
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"GHI");
+  BOOST_CHECK_EQUAL(wf(), 3);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "abc def GHI");
+  // correct a third time
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"");
+  BOOST_CHECK_EQUAL(wf(), 3);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "abc def ");
+  // correct a fourth time
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"XXXX");
+  BOOST_CHECK_EQUAL(wf(), 4);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "abc def XXXX");
+  // correct a fifth time
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"ghi");
+  BOOST_CHECK_EQUAL(wf(), 0);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(), "abc def ghi");
+  BOOST_CHECK_EQUAL(line.slice().cor(), "abc def ghi");
+}
