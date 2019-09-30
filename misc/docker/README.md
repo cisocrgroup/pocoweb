@@ -22,6 +22,8 @@
     prints all information about the database docker container
   - from the server connect to the database container with the
     according ip address `mysql -h 172.18.0.2 -u pocoweb -p pocoweb`
+  - get info about mariadb container: `sudo docker inspect $(sudo
+    docker ps | awk -e '/mariadb/{print $1}')`
 ## Frontend development
 - Update frontend data:
 `make -j V="" PCW_FRONTEND_DIR=$PCW_BASE_DIR/www-data install-frontend`
