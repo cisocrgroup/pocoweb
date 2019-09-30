@@ -30,9 +30,11 @@ using Json = crow::json::wvalue;
 struct DbChar {
   static const wchar_t DEL = -1;
   bool is_del() const noexcept { return cor == DEL; }
-  bool is_ins() const noexcept { return cor and not ocr; }
-  bool is_subst() const noexcept { return cor and ocr and cor != ocr; }
-  bool is_cor() const noexcept { return cor; }
+  bool is_ins() const noexcept { return ocr == 0 and cor != DEL; }
+  bool is_subst() const noexcept {
+    return cor != 0 and ocr != 0 and cor != ocr;
+  }
+  bool is_cor() const noexcept { return cor != 0; }
   wchar_t get_cor() const noexcept {
     return is_del() ? 0 : is_cor() ? cor : ocr;
   }
