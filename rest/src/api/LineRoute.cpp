@@ -176,7 +176,7 @@ void LineRoute::correct(DbLine &line, const std::string &correction, int b,
   wf.set_gt(correction);
   auto slice = line.slice(b, len);
   wf.set_ocr(slice.wocr());
-  const auto lev = wf(b, len);
+  const auto lev = wf();
   CROW_LOG_INFO << "(LineRoute) correction: " << correction;
   CROW_LOG_INFO << "(LineRoute) line.ocr(): " << line.slice().ocr();
   CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
