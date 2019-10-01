@@ -31,8 +31,12 @@ docker-compose-pull:
 	cd misc/docker && PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose pull
 
 .PHONY: docker-deploy
-docker-deploy: docker-push services-push docker-compose-pull docker-compose-build
+docker-deploy: install-frontend docker-push services-push docker-compose-pull docker-compose-build
 	cd misc/docker && PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose up -d
+
+.PHONY: install-frontend
+install-frontend:
+	$(MAKE) -C frontend INSTALL_DIR=${PCW_SRV_DIR}/www-data install
 
 .PHONY: docker-stop
 docker-stop:

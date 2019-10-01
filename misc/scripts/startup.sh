@@ -1,13 +1,10 @@
 #/bin/sh
 
 sql=/etc/pcwd.sql
-public_html=/apps/public_html
-
-cp -r $public_html /www-data
-
 ok=false
 n=10
 sleeps=2
+# Wait until database is read (10 tries, sleep 2s between each try).
 while [[ $ok == false ]] && (($n > 0)); do
 	n=$((n-1))
 	sleep $sleeps
