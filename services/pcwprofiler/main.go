@@ -356,3 +356,26 @@ func getAdaptiveTokens() service.HandlerFunc {
 		service.JSONResponse(w, at)
 	}
 }
+
+func trim(chars db.Chars) db.Chars {
+	i, j := 0, len(chars)
+	for ; i < j; i++ {
+		c := chars[i].Cor
+		if c == 0 {
+			c = chars[i].OCR
+		}
+		if !unicode.IsPunct(c) {
+			break
+		}
+	}
+	for ; j > i; j-- {
+		c := chars[j-1].Cor
+		if c == 0 {
+			c = chars[j-1].OCR
+		}
+		if !unicode.IsPunct(c) {
+			break
+		}
+	}
+	return chars[i:j]
+}
