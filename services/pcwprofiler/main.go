@@ -336,14 +336,10 @@ func getAdaptiveTokens() service.HandlerFunc {
 			// set explicitly to return an empty list
 		}
 		seen := make(map[string]bool)
-		var i int
 		eachLine(p.BookID, func(line db.Chars) error {
 			eachWord(line, func(word db.Chars) error {
-				if i < 10 {
-					i++
-				}
 				if word.IsFullyCorrected() {
-					str := strings.ToLower(word.Cor())
+					str := strings.ToLower(trim(word).Cor())
 					if !seen[str] {
 						at.AdaptiveTokens = append(at.AdaptiveTokens, str)
 						seen[str] = true
