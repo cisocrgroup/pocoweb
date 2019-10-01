@@ -311,6 +311,21 @@ BOOST_AUTO_TEST_CASE(TestDbLineCorrectAthTheEndMultipleTimes) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(TestDbLineCorrectWithNoCorrection) {
+  auto line = mline(L"Dz ſolcher dienſt Gut vñ  Bluth gelde.");
+  auto slice = line.slice(11, 6);
+  WagnerFischer wf;
+  wf.set_ocr(slice.wocr());
+  wf.set_gt(L"dienſt");
+  BOOST_CHECK_EQUAL(wf(), 0);
+  wf.correct(slice);
+  BOOST_CHECK_EQUAL(line.slice().ocr(),
+                    "Dz ſolcher dienſt Gut vñ  Bluth gelde.");
+  BOOST_CHECK_EQUAL(line.slice().cor(),
+                    "Dz ſolcher dienſt Gut vñ  Bluth gelde.");
+}
+
+////////////////////////////////////////////////////////////////////////////////
 static std::wstring randomString(int seed) {
   static const std::vector<wchar_t> chars{
       L'a', L'b', L'c', L'ä', L'ö', L'ü', L'ß',
