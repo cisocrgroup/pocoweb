@@ -30,9 +30,9 @@ using namespace pcw;
 ////////////////////////////////////////////////////////////////////////////////
 DbSlice::DbSlice(DbLine &line, std::list<DbChar>::iterator b,
                  std::list<DbChar>::iterator e)
-    : bookid(line.bookid), pageid(line.pageid), lineid(line.lineid),
-      offset(int(std::distance(line.line.begin(), b))), begin(b), end(e), box(),
-      match(), line_(&line) {
+    : bookid(line.bookid), projectid(line.projectid), pageid(line.pageid),
+      lineid(line.lineid), offset(int(std::distance(line.line.begin(), b))),
+      begin(b), end(e), box(), match(), line_(&line) {
   this->box.set_top(line_->box.top());
   this->box.set_bottom(line_->box.bottom());
   if (begin == line_->line.begin()) {
