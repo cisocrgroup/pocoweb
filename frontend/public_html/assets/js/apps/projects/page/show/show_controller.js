@@ -23,6 +23,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
            var lineheight = App.getLineHeight(id);
            var pagehits = App.getPageHits(id);
            var linenumbers = App.getLineNumbers(id);
+           var hidecorrections = App.getHideCorrections(id);
+           var ignore_case = App.getIgnoreCase(id);
 
 			var projectShowLayout = new Show.Layout();
 			var projectShowHeader;
@@ -119,8 +121,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
 			  projectShowHeader = new Show.Header({title:project.get('title')});
-        projectShowPage = new Show.Page({model:page,lineheight:lineheight,linenumbers:linenumbers});
-	    projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,lineheight:lineheight,linenumbers:linenumbers});
+        projectShowPage = new Show.Page({model:page,lineheight:lineheight,linenumbers:linenumbers,hidecorrections:hidecorrections});
+	    projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,hidecorrections:hidecorrections,lineheight:lineheight,linenumbers:linenumbers,ignore_case:ignore_case});
       	projectShowFooterPanel = new Show.FooterPanel();
 
        projectShowSidebar.on("sidebar:error-patterns-clicked",function(pid,pat){
@@ -150,14 +152,18 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         projectShowSidebar.on("sidebar:update_ignore_case", function(value) {
           App.setIgnoreCase(id, value);
         });
-
+        projectShowSidebar.on("sidebar:update_hide_corrections", function(value) {
+          App.setHideCorrections(id, value);
+        });
        projectShowSidebar.on("page:new",function(page_id){
                     line_id=null;
 
                     var fetchinglineheight = App.getLineHeight(id);
                     var fetchinglinenumbers = App.getLineNumbers(id);
+                   var fetchinghidecorrections = App.getHideCorrections(id);
+
                     var fetchingnewpage = ProjectEntities.API.getPage({pid:id, page:page_id});
-                  $.when(fetchingnewpage,fetchinglineheight,fetchinglinenumbers).done(function(new_page,lineheight,linenumbers){
+                  $.when(fetchingnewpage,fetchinglineheight,fetchinglinenumbers,fetchinghidecorrections).done(function(new_page,lineheight,linenumbers,hidecorrections){
                     
                       new_page.attributes.title = project.get('title');
                       projectShowPage.model=new_page;
@@ -167,7 +173,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                       
                       projectShowPage.options.lineheight=lineheight;
                       projectShowPage.options.linenumbers=linenumbers;
-              
+                      projectShowPage.options.hidecorrections=hidecorrections;
+
                       projectShowPage.render();
                       projectShowSidebar.model = new_page;
                       $('#pageId').text('Page '+new_page.get('pageId'))
@@ -285,6 +292,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     App.mainLayout.showChildView("dialogRegion", confirmModal);
                   return;
             }
+
+            console.log(tokens)
 
           var lineheight = App.getLineHeight(id);
           var linenumbers = App.getLineNumbers(id);

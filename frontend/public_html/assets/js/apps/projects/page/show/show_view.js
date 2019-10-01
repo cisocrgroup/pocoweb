@@ -206,8 +206,9 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
             }
              var linenumbers = Backbone.Marionette.getOption(this,'linenumbers');
+
               if(linenumbers){
-                $('#line_nr_toggle').val(this.checked);
+                $('#line_nr_toggle').prop( "checked", true );
                 $('.line-nr').show();
               }
               else{
@@ -229,11 +230,41 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
                   that.trigger("sidebar:update_line_numbers",linenumbers);
 
             });
-        $('#ignore_case_toggle').change(function() {
-          that.trigger("sidebar:update_ignore_case", this.checked);
-        });
-                 $('#cor_toggle').change(function() {
-                   $('.line-text-parent').toggle();
+
+             var ignore_case = Backbone.Marionette.getOption(this,'ignore_case');
+
+
+            if(ignore_case){
+                $('#ignore_case_toggle').prop( "checked", true );
+            }
+
+            $('#ignore_case_toggle').change(function() {
+              that.trigger("sidebar:update_ignore_case", this.checked);
+            });
+
+              var hidecorrections = Backbone.Marionette.getOption(this,'hidecorrections');
+              if(hidecorrections){
+
+                   $('#cor_toggle').prop( "checked", true );
+                   $('.line-text-parent').hide();
+                   $('.line-container').css('border-bottom','none');
+              }
+              else{
+                  $('#cor_toggle').prop( "checked", false );
+                    $('.line-text-parent').show();
+                    $('.line-container').css('border-bottom','2px solid #eee');
+              }
+
+
+             $('#cor_toggle').change(function() {
+               $('.line-text-parent').toggle();
+               if(this.checked){
+                 $('.line-container').css('border-bottom','none');
+               }
+               else{
+                   $('.line-container').css('border-bottom','2px solid #eee');
+               }
+               that.trigger("sidebar:update_hide_corrections", this.checked);
 
             });
 
@@ -461,6 +492,19 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
               else {
                 $('.line-nr').hide();
               }
+
+
+        var hidecorrections = Marionette.getOption(this,'hidecorrections');
+                 
+             if(hidecorrections) {
+                 $('.line-text-parent').hide();
+                 $('.line-container').css('border-bottom','none')
+              }
+              else {
+                 $('.line-text-parent').show();
+                 $('.line-container').css('border-bottom','2px solid #eee')
+              }
+
 
           /*  sticky sidebar
 

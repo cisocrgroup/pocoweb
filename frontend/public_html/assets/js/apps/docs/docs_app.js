@@ -8,9 +8,9 @@ define(["marionette","app"], function(Marionette,App){
 
 	DocsApp.Router = Marionette.AppRouter.extend({
 		appRoutes: {
-			"docs"                          :"docs"
+			"docs"                          :"docs",
+		},
 		
-		}
 	});
 
 	var API = {
@@ -19,6 +19,7 @@ define(["marionette","app"], function(Marionette,App){
    				ShowController.showDocs();
 			});
 		},
+	
 		
 	};
 
