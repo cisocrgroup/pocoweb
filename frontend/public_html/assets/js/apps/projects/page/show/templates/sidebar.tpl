@@ -179,7 +179,7 @@
   <div class="form-group options_row"
   	   title="Ignore case for search results">
 	   <span><input type="checkbox" id="ignore_case_toggle" name="ignore_case_toggle"></span>
-	   <span for="cor_toggle"> Ignore case </span>
+	   <span for="ignore_case_toggle"> Ignore case </span>
   </div>
   <hr>
 </div>
