@@ -232,9 +232,10 @@ func getAllPatterns(ctx context.Context, w http.ResponseWriter, ocr bool) {
 	}
 	defer rows.Close()
 	patterns := api.PatternCounts{
-		BookID: p.BookID,
-		OCR:    ocr,
-		Counts: make(map[string]int),
+		BookID:    p.BookID,
+		ProjectID: p.ProjectID,
+		OCR:       ocr,
+		Counts:    make(map[string]int),
 	}
 	for rows.Next() {
 		var p string
@@ -260,9 +261,10 @@ func queryPatterns(ctx context.Context, w http.ResponseWriter, qs []string, ocr 
 		"WHERE p.bookID=? AND p.pattern=? AND p.ocr=?"
 	p := ctx.Value("project").(*db.Project)
 	res := api.Patterns{
-		BookID:   p.BookID,
-		OCR:      ocr,
-		Patterns: make(map[string][]api.Suggestion),
+		BookID:    p.BookID,
+		ProjectID: p.ProjectID,
+		OCR:       ocr,
+		Patterns:  make(map[string][]api.Suggestion),
 	}
 	for _, q := range qs {
 		rows, err := db.Query(service.Pool(), stmt, p.BookID, q, ocr)
