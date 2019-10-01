@@ -39,7 +39,6 @@ Archiver::Path Archiver::operator()() const {
   ScopeGuard deltmpdir([&dir]() { fs::remove_all(dir); });
   ScopeGuard delarchive([&archive]() { fs::remove(archive); });
   copy_files(dir, package);
-  write_adaptive_token_set(dir);
   zip(dir, archive);
   delarchive.dismiss();
   // do *not* dismiss deltmpdir; it should be removed all the time.
@@ -115,27 +114,6 @@ void Archiver::copy_files(const Path &xdir, const DbPackage &package) const {
       copy_to_tmp_dir(base / page.imagepath, dir);
     }
   }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void Archiver::write_adaptive_token_set(const Path &xdir) const {
-  const auto base = basedir_.parent_path();
-  const auto dir = base / xdir;
-  const auto bookid = pid_;
-  const auto path = dir / "adaptive_tokens.txt";
-  std::ofstream os(path.string());
-  if (not os.good()) {
-    throw std::system_error(errno, std::system_category(), path.string());
-  }
-  tables::Types t;
-  tables::Adaptivetokens a;
-  auto rows = conn_.db()(select(t.typ)
-                             .from(a.join(t).on(a.typid == t.id))
-                             .where(a.bookid == bookid));
-  for (const auto &row : rows) {
-    os << row.typ << "\n";
-  }
-  os.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

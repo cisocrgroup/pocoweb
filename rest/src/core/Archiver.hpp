@@ -21,7 +21,6 @@ public:
 private:
   void zip(const Path &dir, const Path &archive) const;
   void copy_files(const Path &dir, const DbPackage &package) const;
-  void write_adaptive_token_set(const Path &dir) const;
   Path get_tmp_file(const Path &source, const Path &tmpdir) const;
   Path copy_to_tmp_dir(const Path &source, const Path &tmpdir) const;
   static Path archive_name(const DbPackage &package) noexcept;
