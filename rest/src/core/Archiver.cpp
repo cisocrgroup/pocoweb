@@ -130,14 +130,16 @@ Archiver::Path Archiver::copy_to_tmp_dir(const Path &source,
   const auto target = get_tmp_file(source, tmpdir);
   boost::system::error_code ec;
   fs::create_directories(target.parent_path(), ec);
-  if (ec)
+  if (ec) {
     THROW(Error, "(Archiver) cannot create directory: ", target.parent_path(),
           ": ", ec.message());
+  }
   CROW_LOG_DEBUG << "(Archiver) copying " << source << " to " << target;
   hard_link_or_copy(source, target, ec);
-  if (ec)
+  if (ec) {
     THROW(Error, "(Archiver) cannot copy ", source, " to ", target, ": ",
           ec.message());
+  }
   return target;
 }
 
@@ -145,9 +147,6 @@ Archiver::Path Archiver::copy_to_tmp_dir(const Path &source,
 void Archiver::write_line_text_snippets(DbLine &line, const Path &cor,
                                         const Path &ocr) {
   const auto slice = line.slice();
-  CROW_LOG_INFO << "writting snippet: " << slice.cor() << " (" << slice.ocr()
-                << ") -- " << slice.is_fully_corrected() << ", "
-                << slice.is_partially_corrected();
   if (slice.is_fully_corrected()) {
     write_text_snippet(slice.cor(), cor);
   }
