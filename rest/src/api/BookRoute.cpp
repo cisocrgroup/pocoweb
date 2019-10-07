@@ -200,7 +200,7 @@ Route::Response BookRoute::impl(HttpGet, const Request &req, int bid) const {
   if (not package.load(conn)) {
     THROW(NotFound, "cannot find package id: ", bid);
   }
-  const auto s = getStatistics(conn, bid);
+  const auto s = calculateStatistics(conn, bid);
   Json j;
   j << package;
   j["statistics"] << s;
@@ -263,6 +263,41 @@ Route::Response BookRoute::impl(HttpDelete, const Request &req, int bid) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BookRoute::Statistics BookRoute::calculateStatistics(MysqlConnection &conn,
+                                                     int bid) const {
+  DbPackage package(bid);
+  if (not package.load(conn)) {
+    THROW(Error, "cannot load package: ", bid);
+  }
+  Statistics s{}; // zero initialize
+  for (const auto pid : package.pageids) {
+    s.pages++;
+    DbPage page(bid, pid);
+    if (not page.load(conn)) {
+      THROW(Error, "cannot load page: ", bid, ":", pid);
+    }
+    for (auto &line : page.lines) {
+      s.lines++;
+      if (line.slice().is_fully_corrected()) {
+        s.corLines++;
+      }
+      line.each_token([&](auto &token) {
+        s.tokens++;
+        if (token.is_fully_corrected()) {
+          s.corTokens++;
+          // corrected tokens whose ocr was correct
+          if (token.wocr() == token.wcor()) {
+            s.ocrCorTokens++;
+          }
+        }
+      });
+    }
+  }
+  // TODO: add calculation of automatic corrected tokens
+  return s;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BookData as_book_data(const DbPackage &package) {
   BookData ret;
   ret.author = package.author;
@@ -278,21 +313,6 @@ BookData as_book_data(const DbPackage &package) {
   ret.extendedLexicon = package.extendedLexicon;
   ret.postCorrected = package.postCorrected;
   return ret;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-BookRoute::Statistics BookRoute::getStatistics(MysqlConnection &conn,
-                                               int bid) const {
-  return Statistics{
-      .lines = 100,
-      .pages = 10,
-      .corLines = 35,
-      .tokens = 1000,
-      .corTokens = 250,
-      .ocrCorTokens = 40,
-      .acTokens = 10,
-      .acCorTokens = 4,
-  };
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -26,7 +26,7 @@ public:
   };
 
 private:
-  Statistics getStatistics(MysqlConnection &conn, int bid) const;
+  Statistics calculateStatistics(MysqlConnection &conn, int bid) const;
 
   static const char *route_;
   static const char *name_;
