@@ -15,7 +15,7 @@
         <th>Author</th>
         <th>Language</th>
         <th>Pages</th>
-		    <th>Status</th>
+		<th>Status</th>
       </tr>
  </thead>
  <tbody>
@@ -31,6 +31,68 @@
         <i class="post_cor_icon fas fas fa-cogs card_main_icon disabled" title="postcorrection not yet started"></i>
     </td>
     </tr>
+
+    <tr>
+        <td colspan="5">
+            <h4 class="align-self-center"><i class="fas fa-stream green"></i> Statistics</h4>
+            <div class="row">
+
+                <% if(statistics.lines!=0) { %>
+
+                <div class="col-md-4">
+                  <div class="progress_title">Corrected lines</div>
+                </div>
+                <div class="col-md-8 align-self-center" title="<%-statistics.corLines%> of <%-statistics.lines%> lines corrected">
+                  <div class="progress"> 
+                    <% val = statistics.corLines/statistics.lines*100 %>
+                    <div class="progress-bar blue-bg" role="progressbar" style="width: <%-val%>%;" aria-valuenow="<%-val%>" aria-valuemin="0" aria-valuemax="100"><%-val%>%</div>
+                    </div>
+                </div>
+
+                <% } if(statistics.tokens!=0) { %>
+
+                <div class="col-md-4">
+                  <div class="progress_title">Corrected words</div>
+                </div>
+                <div class="col-md-8 align-self-center" title="<%-statistics.corTokens%> of <%-statistics.tokens%> words corrected">
+                  <div class="progress"> 
+                    <% val = statistics.corTokens/statistics.tokens*100 %>
+                    <div class="progress-bar blue-bg" role="progressbar" style="width: <%-val%>%;" aria-valuenow="<%-val%>" aria-valuemin="0" aria-valuemax="100"><%-val%>%</div>
+                    </div>
+                </div>
+
+                <% } if(statistics.corTokens!=0) { %>
+
+                 <div class="col-md-4" >
+                  <div class="progress_title">OCR word accuracy</div>
+                </div>
+                <div class="col-md-8 align-self-center" title="<%-statistics.ocrCorTokens%> of <%-statistics.corTokens%> correct ocr words">
+                  <div class="progress"> 
+                    <% val = statistics.ocrCorTokens/statistics.corTokens*100 %>
+                    <div class="progress-bar blue-bg" role="progressbar" style="width: <%-val%>%;" aria-valuenow="<%-val%>" aria-valuemin="0" aria-valuemax="100"><%-val%>%</div>
+                    </div>
+                </div>
+
+                <% } if(statistics.acTokens!=0) { %>
+
+                <div class="col-md-4" >
+                  <div class="progress_title">Automatically corrected words</div>
+                </div>
+                <div class="col-md-8 align-self-center" title="<%-statistics.acCorTokens%> of <%-statistics.acTokens%> words automatically corrected"> 
+                  <div class="progress"> 
+                    <% val = statistics.acCorTokens/statistics.acTokens*100 %>
+                    <div class="progress-bar blue-bg" role="progressbar" style="width: <%-val%>%;" aria-valuenow="<%-val%>" aria-valuemin="0" aria-valuemax="100"><%-val%>%</div>
+                    </div>
+                </div>
+
+                <% } %>
+
+              </div>  
+
+
+        </td>  
+    </tr>
+
 
  </tbody>
 
