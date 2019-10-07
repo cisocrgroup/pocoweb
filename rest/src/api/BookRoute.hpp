@@ -20,7 +20,14 @@ public:
   Response impl(HttpPut, const Request &req, int bid) const;
   Response impl(HttpDelete, const Request &req, int bid) const;
 
+  struct Statistics {
+    size_t lines, pages, corLines, tokens, corTokens, ocrCorTokens, acTokens,
+        acCorTokens;
+  };
+
 private:
+  Statistics getStatistics(MysqlConnection &conn, int bid) const;
+
   static const char *route_;
   static const char *name_;
 };

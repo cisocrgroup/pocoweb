@@ -25,6 +25,9 @@ template <class D> void update_book_data(DbPackage &package, const D &data);
 template <class D> void update_book_data(BookData &bdata, const D &data);
 template <class Row> Json &set_book(Json &json, const Row &row);
 static BookData as_book_data(const DbPackage &package);
+namespace pcw {
+static pcw::Json &operator<<(pcw::Json &j, const BookRoute::Statistics &s);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 const char *BookRoute::route_ = BOOK_ROUTE_ROUTE_1 "," BOOK_ROUTE_ROUTE_2;
@@ -197,8 +200,11 @@ Route::Response BookRoute::impl(HttpGet, const Request &req, int bid) const {
   if (not package.load(conn)) {
     THROW(NotFound, "cannot find package id: ", bid);
   }
+  const auto s = getStatistics(conn, bid);
   Json j;
-  return j << package;
+  j << package;
+  j["statistics"] << s;
+  return j;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -272,4 +278,32 @@ BookData as_book_data(const DbPackage &package) {
   ret.extendedLexicon = package.extendedLexicon;
   ret.postCorrected = package.postCorrected;
   return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BookRoute::Statistics BookRoute::getStatistics(MysqlConnection &conn,
+                                               int bid) const {
+  return Statistics{
+      .lines = 100,
+      .pages = 10,
+      .corLines = 35,
+      .tokens = 1000,
+      .corTokens = 250,
+      .ocrCorTokens = 40,
+      .acTokens = 10,
+      .acCorTokens = 4,
+  };
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Json &pcw::operator<<(pcw::Json &j, const pcw::BookRoute::Statistics &s) {
+  j["pages"] = s.pages;
+  j["lines"] = s.lines;
+  j["corLines"] = s.corLines;
+  j["tokens"] = s.tokens;
+  j["corTokens"] = s.corTokens;
+  j["ocrCorTokens"] = s.ocrCorTokens;
+  j["acTokens"] = s.acTokens;
+  j["acCorTokens"] = s.acCorTokens;
+  return j;
 }
