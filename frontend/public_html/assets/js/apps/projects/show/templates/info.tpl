@@ -43,8 +43,8 @@
                   <div class="progress_title">Corrected lines</div>
                 </div>
                 <div class="col-md-8 align-self-center" title="<%-statistics.corLines%> of <%-statistics.lines%> lines corrected">
-                  <div class="progress"> 
-                    <% val = statistics.corLines/statistics.lines*100 %>
+                  <div class="progress">
+                    <% val = Math.round(statistics.corLines/statistics.lines*100) %>
                     <div class="progress-bar blue-bg" role="progressbar" style="width: <%-val%>%;" aria-valuenow="<%-val%>" aria-valuemin="0" aria-valuemax="100"><%-val%>%</div>
                     </div>
                 </div>
@@ -55,8 +55,8 @@
                   <div class="progress_title">Corrected words</div>
                 </div>
                 <div class="col-md-8 align-self-center" title="<%-statistics.corTokens%> of <%-statistics.tokens%> words corrected">
-                  <div class="progress"> 
-                    <% val = statistics.corTokens/statistics.tokens*100 %>
+                  <div class="progress">
+                    <% val = Math.round(statistics.corTokens/statistics.tokens*100) %>
                     <div class="progress-bar blue-bg" role="progressbar" style="width: <%-val%>%;" aria-valuenow="<%-val%>" aria-valuemin="0" aria-valuemax="100"><%-val%>%</div>
                     </div>
                 </div>
@@ -67,8 +67,8 @@
                   <div class="progress_title">OCR word accuracy</div>
                 </div>
                 <div class="col-md-8 align-self-center" title="<%-statistics.ocrCorTokens%> of <%-statistics.corTokens%> correct ocr words">
-                  <div class="progress"> 
-                    <% val = statistics.ocrCorTokens/statistics.corTokens*100 %>
+                  <div class="progress">
+                    <% val = Math.round(statistics.ocrCorTokens/statistics.corTokens*100) %>
                     <div class="progress-bar blue-bg" role="progressbar" style="width: <%-val%>%;" aria-valuenow="<%-val%>" aria-valuemin="0" aria-valuemax="100"><%-val%>%</div>
                     </div>
                 </div>
@@ -78,19 +78,19 @@
                 <div class="col-md-4" >
                   <div class="progress_title">Automatically corrected words</div>
                 </div>
-                <div class="col-md-8 align-self-center" title="<%-statistics.acCorTokens%> of <%-statistics.acTokens%> words automatically corrected"> 
-                  <div class="progress"> 
-                    <% val = statistics.acCorTokens/statistics.acTokens*100 %>
+                <div class="col-md-8 align-self-center" title="<%-statistics.acCorTokens%> of <%-statistics.acTokens%> words automatically corrected">
+                  <div class="progress">
+                    <% val = Math.round(statistics.acCorTokens/statistics.acTokens*100) %>
                     <div class="progress-bar blue-bg" role="progressbar" style="width: <%-val%>%;" aria-valuenow="<%-val%>" aria-valuemin="0" aria-valuemax="100"><%-val%>%</div>
                     </div>
                 </div>
 
                 <% } %>
 
-              </div>  
+              </div>
 
 
-        </td>  
+        </td>
     </tr>
 
 
