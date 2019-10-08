@@ -60,7 +60,7 @@
     <a class="nav-link active" id="sp-tab" data-toggle="tab" href="#sp" role="tab" aria-controls="sp" aria-selected="true">Suspicious </br> words</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" id="ep-tab" data-toggle="tab" href="#ep" role="tab" aria-controls="ep" aria-selected="true">Error </br>  patterns</a>
+    <a class="nav-link" id="ep-tab" data-toggle="tab" href="#ep" role="tab" aria-controls="ep" aria-selected="true">OCR error </br>  patterns</a>
   </li>
   <li class="nav-item">
         <a class="nav-link" id="chars-tab" data-toggle="tab" href="#chars" role="tab" aria-controls="chars" aria-selected="true">Special </br>  characters</a>
