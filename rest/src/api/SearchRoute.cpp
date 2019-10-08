@@ -28,10 +28,30 @@ struct matches {
 struct match_results {
   match_results()
       : results{}, bookid{0}, projectid{0}, total{0}, skip{0}, max{0} {}
+  void add(const std::string &q, const DbLine &line, int tid);
   std::unordered_map<std::string, matches> results;
   int bookid, projectid, total, skip, max;
 };
 
+////////////////////////////////////////////////////////////////////////////////
+void match_results::add(const std::string &q, const DbLine &line, int tid) {
+  if (results[q].line_matches.empty()) { // no results yet; just append result
+    results[q].line_matches.push_back(
+        std::make_pair(line, std::unordered_set<int>{tid}));
+    return;
+  }
+  if (results[q].line_matches.back().first.lineid == line.lineid and
+      results[q].line_matches.back().first.pageid == line.pageid and
+      results[q].line_matches.back().first.projectid == line.projectid) {
+    results[q].line_matches.back().second.insert(tid);
+    return;
+  }
+  // match in new line
+  results[q].line_matches.push_back(
+      std::make_pair(line, std::unordered_set<int>{tid}));
+}
+
+////////////////////////////////////////////////////////////////////////////////
 Json &operator<<(Json &j, match_results &res) {
   j["bookId"] = res.bookid;
   j["projectId"] = res.projectid;
@@ -238,7 +258,44 @@ Route::Response SearchRoute::search(MysqlConnection &mysql, pq q) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response SearchRoute::search(MysqlConnection &mysql, ac q) const {
-  THROW(Error, "search type ac: not implemented");
+  using namespace sqlpp;
+  tables::Autocorrections acs;
+  tables::Types tps;
+  match_results ret;
+  ret.projectid = q.bid;
+  ret.bookid = q.bid; // ??
+  ret.max = q.max;
+  ret.skip = q.skip;
+  for (const auto &qstr : q.qs) {
+    auto rows = mysql.db()(select(acs.pageid, acs.lineid, acs.tokenid, tps.typ)
+                               .from(acs.join(tps).on(acs.ocrtypid == tps.id))
+                               .where(tps.typ == qstr));
+    DbLine line(q.bid, -1, -1);
+    for (const auto &row : rows) {
+      ret.total++;
+      ret.results[qstr].total++;
+      if (q.skip > 0) { // skip match
+        --q.skip;
+        continue;
+      }
+      if (q.max <= 0) { // max matches found
+        continue;
+      }
+      --q.max;
+      if (line.pageid != row.pageid or
+          line.lineid != row.lineid) { // load new line
+        line.lineid = row.lineid;
+        line.pageid = row.pageid;
+        if (not line.load(mysql)) {
+          THROW(Error, "cannot load page ", line.projectid, ":", line.pageid,
+                ":", line.lineid);
+        }
+      }
+      ret.add(qstr, line, row.tokenid);
+    }
+  }
+  Json j;
+  return j << ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -284,14 +341,7 @@ static match_results search_impl(MysqlConnection &conn, int bid, int skip,
         return;
       }
       --max;
-      // add line if first match in this line or for this q
-      if (ret.results[q].line_matches.empty() or
-          ret.results[q].line_matches.back().first != line) {
-        ret.results[q].line_matches.emplace_back(line,
-                                                 std::unordered_set<int>{});
-      }
-      // add token match
-      ret.results[q].line_matches.back().second.insert(slice.offset);
+      ret.add(q, line, slice.offset);
       // set bookid from line
       ret.bookid = line.bookid;
     });
