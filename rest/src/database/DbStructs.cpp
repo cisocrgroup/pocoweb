@@ -322,7 +322,21 @@ bool Statistics::load(MysqlConnection &mysql, const DbPackage &pkg) {
       });
     }
   }
-  // TODO: add calculation of automatic corrected tokens
+  // calculate autocorrections
+  using namespace sqlpp;
+  tables::Autocorrections acs;
+  const auto all = mysql.db()(
+      select(count(acs.ocrtypid)).from(acs).where(acs.bookid == pkg.bookid));
+  if (not all.empty()) {
+    acTokens = all.front().count;
+  }
+  const auto cors =
+      mysql.db()(select(count(acs.ocrtypid))
+                     .from(acs)
+                     .where(acs.bookid == pkg.bookid and acs.taken == true));
+  if (not cors.empty()) {
+    acCorTokens = cors.front().count;
+  }
   return true;
 }
 

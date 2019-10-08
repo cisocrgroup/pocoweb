@@ -1634,6 +1634,144 @@ namespace tables
       };
     };
   };
+  namespace Autocorrections_
+  {
+    struct Bookid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "bookid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T bookid;
+            T& operator()() { return bookid; }
+            const T& operator()() const { return bookid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
+    struct Pageid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "pageid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T pageid;
+            T& operator()() { return pageid; }
+            const T& operator()() const { return pageid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
+    struct Lineid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "lineid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T lineid;
+            T& operator()() { return lineid; }
+            const T& operator()() const { return lineid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
+    struct Tokenid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "tokenid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T tokenid;
+            T& operator()() { return tokenid; }
+            const T& operator()() const { return tokenid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
+    };
+    struct Ocrtypid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "ocrtypid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T ocrtypid;
+            T& operator()() { return ocrtypid; }
+            const T& operator()() const { return ocrtypid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
+    struct Cortypid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "cortypid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T cortypid;
+            T& operator()() { return cortypid; }
+            const T& operator()() const { return cortypid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+    };
+    struct Taken
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "taken";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T taken;
+            T& operator()() { return taken; }
+            const T& operator()() const { return taken; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::boolean, sqlpp::tag::require_insert>;
+    };
+  } // namespace Autocorrections_
+
+  struct Autocorrections: sqlpp::table_t<Autocorrections,
+               Autocorrections_::Bookid,
+               Autocorrections_::Pageid,
+               Autocorrections_::Lineid,
+               Autocorrections_::Tokenid,
+               Autocorrections_::Ocrtypid,
+               Autocorrections_::Cortypid,
+               Autocorrections_::Taken>
+  {
+    struct _alias_t
+    {
+      static constexpr const char _literal[] =  "autocorrections";
+      using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+      template<typename T>
+      struct _member_t
+      {
+        T autocorrections;
+        T& operator()() { return autocorrections; }
+        const T& operator()() const { return autocorrections; }
+      };
+    };
+  };
   namespace Status_
   {
     struct Id
