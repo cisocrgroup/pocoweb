@@ -258,12 +258,17 @@ Route::Response SearchRoute::search(MysqlConnection &mysql, pq q) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response SearchRoute::search(MysqlConnection &mysql, ac q) const {
+  DbPackage pkg(q.bid);
+  if (not pkg.load(mysql)) {
+    THROW(Error, "cannot load package ", q.bid);
+  }
+  std::unordered_set<int> pages(pkg.pageids.begin(), pkg.pageids.end());
   using namespace sqlpp;
   tables::Autocorrections acs;
   tables::Types tps;
   match_results ret;
-  ret.projectid = q.bid;
-  ret.bookid = q.bid; // ??
+  ret.projectid = pkg.projectid;
+  ret.bookid = pkg.bookid;
   ret.max = q.max;
   ret.skip = q.skip;
   for (const auto &qstr : q.qs) {
@@ -272,6 +277,9 @@ Route::Response SearchRoute::search(MysqlConnection &mysql, ac q) const {
                                .where(tps.typ == qstr));
     DbLine line(q.bid, -1, -1);
     for (const auto &row : rows) {
+      if (pages.count(row.pageid) == 0) { // check if page is in package
+        continue;
+      }
       ret.total++;
       ret.results[qstr].total++;
       if (q.skip > 0) { // skip match
