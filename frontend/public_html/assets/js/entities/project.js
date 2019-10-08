@@ -358,14 +358,14 @@ profileProject: function(data){
 
 },
 
-searchToken: function(data){
+search: function(data){
     var defer = jQuery.Deferred();
       $.ajax({
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        url: "rest/books/" + data.pid + "/search?auth=" + App.getAuthToken()+"&q="+data.q+"&p="+data.isErrorPattern+"&skip="+data.skip+"&max="+data.max+"&i="+App.getIgnoreCase(data.pid),
+        url: "rest/books/" + data.pid + "/search?auth=" + App.getAuthToken()+"&q="+data.q+"&t="+data.searchType+"&skip="+data.skip+"&max="+data.max+"&i="+App.getIgnoreCase(data.pid),
         type: "GET",
        success: function(data) {
         defer.resolve(data);

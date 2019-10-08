@@ -28,8 +28,13 @@ private:
     std::vector<std::string> qs;
     int bid, skip, max;
   };
+  struct ac { // ac (autocorrection) queries
+    std::vector<std::string> qs;
+    int bid, skip, max;
+  };
   Response search(MysqlConnection &mysql, tq q) const;
   Response search(MysqlConnection &mysql, pq q) const;
+  Response search(MysqlConnection &mysql, ac q) const;
 
   static const char *route_;
   static const char *name_;

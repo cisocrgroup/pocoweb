@@ -126,11 +126,11 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
       	projectShowFooterPanel = new Show.FooterPanel();
 
        projectShowSidebar.on("sidebar:error-patterns-clicked",function(pid,pat){
-          projectShowPage.trigger('page:concordance_clicked',pat,1);
+          projectShowPage.trigger('page:concordance_clicked',pat,"pattern");
        });
 
        projectShowSidebar.on("sidebar:error-tokens-clicked",function(pid,pat){
-         projectShowPage.trigger('page:concordance_clicked',pat,0);
+         projectShowPage.trigger('page:concordance_clicked',pat,"token");
        });
 
        projectShowSidebar.on("sidebar:special-characters-clicked",function(pid,pat){
@@ -164,13 +164,13 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                     var fetchingnewpage = ProjectEntities.API.getPage({pid:id, page:page_id});
                   $.when(fetchingnewpage,fetchinglineheight,fetchinglinenumbers,fetchinghidecorrections).done(function(new_page,lineheight,linenumbers,hidecorrections){
-                    
+
                       new_page.attributes.title = project.get('title');
                       projectShowPage.model=new_page;
 
                       projectShowSidebar.options.lineheight=lineheight;
                       projectShowSidebar.options.linenumbers=linenumbers;
-                      
+
                       projectShowPage.options.lineheight=lineheight;
                       projectShowPage.options.linenumbers=linenumbers;
                       projectShowPage.options.hidecorrections=hidecorrections;
@@ -188,14 +188,14 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     });  // $when fetchingproject
 
               });
-        
+
        projectShowPage.on("page:lines_appended",function(){
                 if(page_id=="first") page_id = project.get('pageIds')[0];
                 if(page_id=="last") page_id = project.get('pageIds')[project.get('pageIds').length-1];
                  if(line_id!=null){
                       var container = $('#page-container');
                       var scrollTo = $('#line-anchor-'+id+"-"+page_id+"-"+line_id);
-                        
+
                     container.animate({
                         scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
                     },2000, function() {
@@ -235,10 +235,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
            projectShowPage.on("page:line_selected",function(selection){
                     var that = this;
                     var gettingCorrectionSuggestions = ProjectEntities.API.getCorrectionSuggestions({q:selection,pid:id});
-                    // var searchingToken = ProjectEntities.API.searchToken({q:selection,p:page_id,pid:id,isErrorPattern:0});
 
                   $.when(gettingCorrectionSuggestions).done(function(suggestions){
-                  
+
 
                     $("#suggestionsDropdown").empty();
 
@@ -277,16 +276,15 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
        })
 
-
-       projectShowPage.on("page:concordance_clicked",function(selection,isErrorPattern){
-        var searchingToken = ProjectEntities.API.searchToken({q:selection,pid:id,isErrorPattern:isErrorPattern,skip:0,max:App.getPageHits(id)});
+       projectShowPage.on("page:concordance_clicked",function(selection,searchType){
+        var searchingToken = ProjectEntities.API.search({q:selection,pid:id,searchType:searchType,skip:0,max:App.getPageHits(id)});
         var that = this;
          $.when(searchingToken).done(function(tokens){
             if(tokens.total==0){
                 var confirmModal = new Show.OkDialog({
                       asModal: true,
                       title: "Empty results",
-                      text: "No matches found for token: '" + selection + "'", 
+                      text: "No matches found for token: '" + selection + "'",
                       id: "emptymodal"
                     });
                     App.mainLayout.showChildView("dialogRegion", confirmModal);
@@ -298,11 +296,11 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
           var lineheight = App.getLineHeight(id);
           var linenumbers = App.getLineNumbers(id);
 
-           var projectConcView = new Show.Concordance({isErrorPattern:isErrorPattern,selection:selection,tokendata:tokens,lineheight:lineheight,linenumbers:linenumbers,asModal:true});
+           var projectConcView = new Show.Concordance({searchType:searchType,selection:selection,tokendata:tokens,lineheight:lineheight,linenumbers:linenumbers,asModal:true});
            $('.custom-popover').remove();
 
             projectConcView.on("concordance:correct_token",function(data,anchor,done){
-             
+
               data.token = Util.escapeAsJSON(data.token);
                     var correctingtoken = ProjectEntities.API.correctToken(data);
                   $.when(correctingtoken).done(function(result){
@@ -354,10 +352,10 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
              projectConcView.on("concordance:pagination",function(page_nr){
                var max = App.getPageHits(id);
-               var searchingToken = ProjectEntities.API.searchToken({
+               var searchingToken = ProjectEntities.API.search({
                  q: selection,
                  pid: id,
-                 isErrorPattern: isErrorPattern,
+                 searchType: searchType,
                  skip: (page_nr-1)*max,
                  max: max
                });
@@ -371,10 +369,10 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
               projectConcView.on("concordance:update_after_correction",function(data){
                var max = App.getPageHits(id);
-               var searchingToken = ProjectEntities.API.searchToken({
+               var searchingToken = ProjectEntities.API.search({
                  q: data.query,
                  pid: data.pid,
-                 isErrorPattern: isErrorPattern,
+                 searchType: searchType,
                  skip:0,
                  max: max
                });

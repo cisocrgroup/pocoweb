@@ -114,28 +114,54 @@ void SearchRoute::Register(App &app) {
   CROW_ROUTE(app, SEARCH_ROUTE_ROUTE).methods("GET"_method)(*this);
 }
 
+enum searchType {
+  stInvalid,
+  stToken,
+  stPattern,
+  stAC,
+};
 ////////////////////////////////////////////////////////////////////////////////
-// GET /books/<bid>search?q=[&p=][&skip=][&max=][&q=]...
+searchType search_type(const std::string &t) {
+  if (t == "token") {
+    return stToken;
+  } else if (t == "pattern") {
+    return stPattern;
+  } else if (t == "ac") {
+    return stAC;
+  }
+  return stInvalid;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// GET /books/<bid>search?q=[&t=][&skip=][&max=][&i=][&q=]...
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
-  const auto p = get<bool>(req.url_params, "p").value_or(false);
+  // "token" || "pattern" || "ac"
+  const auto t = get<std::string>(req.url_params, "t").value_or("token");
   const auto pskip = get<int>(req.url_params, "skip").value_or(0);
   const auto pmax = get<int>(req.url_params, "max").value_or(50);
   const auto pi = get<bool>(req.url_params, "i").value_or(false);
   CROW_LOG_INFO << "(SearchRoute) GET " << bid << ": skip=" << pskip
-                << ", max=" << pmax << ",p=" << p;
+                << ", max=" << pmax << ",t=" << t;
   const auto qs = get<std::vector<std::string>>(req.url_params, "q");
   if (not qs) {
-    THROW(BadRequest, "(SearchRoute) missing query parameters");
+    THROW(BadRequest, "(SearchRoute) missing query parameter(s)");
   }
   auto conn = must_get_connection();
-  if (p) {
+  switch (search_type(t)) {
+  case stToken:
+    return search(
+        conn,
+        tq{.bid = bid, .max = pmax, .skip = pskip, .ic = pi, .qs = qs.value()});
+  case stPattern:
     return search(conn,
                   pq{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
+  case stAC:
+    return search(conn,
+                  ac{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
+  default:
+    THROW(BadRequest, "(SearchRoute) invalid search type: ", t);
   }
-  return search(
-      conn,
-      tq{.bid = bid, .max = pmax, .skip = pskip, .ic = pi, .qs = qs.value()});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -246,6 +272,11 @@ Route::Response SearchRoute::search(MysqlConnection &mysql, pq q) const {
       });
   Json j;
   return j << ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Route::Response SearchRoute::search(MysqlConnection &mysql, ac q) const {
+  THROW(Error, "search type ac: not implemented");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

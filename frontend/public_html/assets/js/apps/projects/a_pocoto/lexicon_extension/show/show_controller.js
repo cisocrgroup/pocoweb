@@ -18,7 +18,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
 
 
-   
+
       $.when(fetchingproject,fetchingjobs).done(function(project,job){
 
 		  loadingCircleView.destroy();
@@ -31,7 +31,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 			// console.log(reviews);
 
 			projectShowLayout.on("attach",function(){
-    
+
     var status = project.get('status');
     if(job.statusName=="running"){
           projectShowLoading = new Views.LoadingView({title:"Job running",message:job.jobName+ " , please wait."});
@@ -57,8 +57,8 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                        projectShowLayout.showChildView('contentRegion',projectShowLex);
 
                         projectShowLex.on("show:word_clicked",function(word){
-            
-                        var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:false,skip:0,max:App.getPageHits(id)});
+
+                        var searchingToken = ProjectEntities.API.search({q:word,pid:id,searchType:"token",skip:0,max:App.getPageHits(id)});
 
                         $.when(searchingToken).done(function(tokens){
                         var lineheight = App.getLineHeight(id);
@@ -68,7 +68,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                                 var confirmModal = new Show.OkDialog({
                                       asModal: true,
                                       title: "Empty results",
-                                      text: "No matches found for token: '" + word + "'", 
+                                      text: "No matches found for token: '" + word + "'",
                                       id: "emptymodal"
                                     });
                                     App.mainLayout.showChildView("dialogRegion", confirmModal);
@@ -79,10 +79,10 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
                          projectConcView.on("concordance:pagination",function(page_nr){
                                  var max = 9;
-                                 var searchingToken = ProjectEntities.API.searchToken({
+                                 var searchingToken = ProjectEntities.API.search({
                                    q: word,
                                    pid: id,
-                                   isErrorPattern: false,
+                                   searchType: "token",
                                    skip: (page_nr-1)*max,
                                    max: max
                                  });
@@ -96,10 +96,10 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
 
                           projectConcView.on("concordance:jump_to_page",function(data){
-                       
+
                               $('#conc-modal').modal('hide');
                               App.trigger("projects:show_page",data.pid,data.pageId,data.lineId);
-                                            
+
                            });
 
                         App.mainLayout.showChildView('dialogRegion',projectConcView);
@@ -126,11 +126,11 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                                               }
 
                                       }).fail(function(response){
-                                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                                      }); 
+                                         App.mainmsg.updateContent(response.responseText,'danger');
+                                      });
                                }).fail(function(response){
-                                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                               });           
+                                         App.mainmsg.updateContent(response.responseText,'danger');
+                               });
 
                       });
 
@@ -149,11 +149,11 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                                       projectShowLayout.trackJobStatus();
                                      }
                             }).fail(function(response){
-                               App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                            }); 
+                               App.mainmsg.updateContent(response.responseText,'danger');
+                            });
                      }).fail(function(response){
-                               App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                     });  
+                               App.mainmsg.updateContent(response.responseText,'danger');
+                     });
 
                   });
 
@@ -167,7 +167,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
             if(data.url=="le"){
               this.trigger("show:start_le_clicked")
             }
-         
+
            });
 
 
@@ -187,35 +187,35 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                                       projectShowLayout.trackJobStatus();
                                      }
                             }).fail(function(response){
-                               App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                            }); 
+                               App.mainmsg.updateContent(response.responseText,'danger');
+                            });
                      }).fail(function(response){
-                               App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                     });  
-                  
+                               App.mainmsg.updateContent(response.responseText,'danger');
+                     });
+
         });
 
 
         projectShowLayout.on("show:checkJobStatus",function(){
                   var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
                    $.when(fetchingjobs).done(function(result){
-                                      
+
                        if(result.statusName=="done"){
                         $('.loading_background3').fadeOut(function(){
                          App.trigger("projects:lexicon_extension",id); //reload a_pocoto
                          clearInterval(projectShowLayout.interval); // clear interval when job done
                         })
-                      
+
                        }
 
                    }).fail(function(response){
-                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                   }); 
+                         App.mainmsg.updateContent(response.responseText,'danger');
+                   });
              });
-                 
+
 			  projectShowHeader = new Show.Header({title:"Lexicon Extension",icon:"far fa-edit",color:"blue"});
       	projectShowFooterPanel = new Show.FooterPanel();
-    
+
 	           projectShowLayout.showChildView('headerRegion',projectShowHeader);
 	          projectShowLayout.showChildView('panelRegion',projectShowFooterPanel);
 
@@ -231,7 +231,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
 
     	}) // require
-    	
+
 		}
 
 	}

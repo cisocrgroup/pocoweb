@@ -345,7 +345,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         var displayed_line = line_parent.find('.line')
         displayed_line.show();
 
-      
+
         var obj = displayed_line.get(0);
 
         // pre-select token:: to do :fix..
@@ -495,7 +495,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
 
         var hidecorrections = Marionette.getOption(this,'hidecorrections');
-                 
+
              if(hidecorrections) {
                  $('.line-text-parent').hide();
                  $('.line-container').css('border-bottom','none')
@@ -571,7 +571,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       }
 
        $('#js-concordance').on('click',function(){
-        that.trigger("page:concordance_clicked",sel,0);
+        that.trigger("page:concordance_clicked",sel,"token");
        });
 
          this.saved_selection = sel;

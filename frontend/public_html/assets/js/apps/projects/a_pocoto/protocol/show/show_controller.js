@@ -16,8 +16,8 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
      			  var fetchingproject = ProjectEntities.API.getProject({pid:id});
             var fetchingprotocol = ProjectEntities.API.getProtocol({pid:id});
             var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
-                            
-   
+
+
       $.when(fetchingproject,fetchingprotocol,fetchingjobs).done(function(project,pr,job){
 
 		  loadingCircleView.destroy();
@@ -31,8 +31,8 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 			// console.log(reviews);
 
 			projectShowLayout.on("attach",function(){
-    
-     
+
+
 			  projectShowHeader = new Show.Header({title:"Postcorrection",icon:"fas fa-play",color:"red"});
       	projectShowFooterPanel = new Show.FooterPanel();
 
@@ -49,7 +49,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
           if (!status['post-corrected']){
           projectShowProtocol = new Show.SingleStep({url:"pr",color:"red",step:"Postcorrection",icon:"fas fa-play",id:"js-start-pc",text:"Start automated postcorrection"});
           projectShowLayout.showChildView('contentRegion',projectShowProtocol);
-          
+
           }
           else {
 
@@ -59,13 +59,13 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                               projectShowProtocol = new Show.Protocol({pr});
                               projectShowLayout.showChildView('contentRegion',projectShowProtocol);
 
-        
+
                       projectShowProtocol.on("show:word_clicked",function(word){
-                      
 
 
 
-                      var searchingToken = ProjectEntities.API.searchToken({q:word,pid:id,isErrorPattern:false,skip:0,max:App.getPageHits(id)});
+
+                      var searchingToken = ProjectEntities.API.search({q:word,pid:id,searchType:"token",skip:0,max:App.getPageHits(id)});
 
                       $.when(searchingToken).done(function(tokens,suggestions){
                       var lineheight = App.getLineHeight(id);
@@ -75,7 +75,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                                 var confirmModal = new Show.OkDialog({
                                       asModal: true,
                                       title: "Empty results",
-                                      text: "No matches found for token: '" + word + "'", 
+                                      text: "No matches found for token: '" + word + "'",
                                       id: "emptymodal"
                                     });
                                     App.mainLayout.showChildView("dialogRegion", confirmModal);
@@ -91,14 +91,14 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
                            var correctingtoken = ProjectEntities.API.correctToken(data);
                             $.when(correctingtoken).done(function(result){
-                              
+
                               console.log(result);
 
 
                             }).fail(function(response){
                                App.mainmsg.updateContent(response.responseText,'danger');
                               });  // $when fetchingproject
-                    
+
                      }) // correct token
 
                     projectConcView.on("concordance:show_suggestions",function(data){
@@ -112,11 +112,11 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                             });
 
                     projectConcView.on("concordance:pagination",function(page_nr){
-                                 var max = 9;
-                                 var searchingToken = ProjectEntities.API.searchToken({
+                      var max = App.getPageHits(id);
+                                 var searchingToken = ProjectEntities.API.search({
                                    q: word,
                                    pid: id,
-                                   isErrorPattern: false,
+                                   searchType: "token",
                                    skip: (page_nr-1)*max,
                                    max: max
                                  });
@@ -130,10 +130,10 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
                            projectConcView.on("concordance:update_after_correction",function(data){
                            var max = App.getPageHits(id);
-                           var searchingToken = ProjectEntities.API.searchToken({
+                           var searchingToken = ProjectEntities.API.search({
                              q: data.query,
                              pid: data.pid,
-                             isErrorPattern: isErrorPattern,
+                             searchType: searchType,
                              skip:0,
                              max: max
                            });
@@ -153,10 +153,10 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                         })
 
                      projectConcView.on("concordance:jump_to_page",function(data){
-                       
+
                               $('#conc-modal').modal('hide');
                               App.trigger("projects:show_page",data.pid,data.pageId,data.lineId);
-                      
+
                            });
 
                       App.mainLayout.showChildView('dialogRegion',projectConcView);
@@ -185,11 +185,11 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                                      }
 
                             }).fail(function(response){
-                               App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                            }); 
+                               App.mainmsg.updateContent(response.responseText,'danger');
+                            });
                      }).fail(function(response){
-                               App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                     });  
+                               App.mainmsg.updateContent(response.responseText,'danger');
+                     });
 
                   });
 
@@ -219,31 +219,31 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                              }
 
                     }).fail(function(response){
-                       App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                    }); 
+                       App.mainmsg.updateContent(response.responseText,'danger');
+                    });
              }).fail(function(response){
-                       App.mainmsg.updateContent(response.responseText,'danger');                                                 
-             });  
-                  
+                       App.mainmsg.updateContent(response.responseText,'danger');
+             });
+
         });
 
        projectShowLayout.on("show:checkJobStatus",function(){
                   var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
                    $.when(fetchingjobs).done(function(result){
-                                      
+
                        if(result.statusName=="done"){
                         $('.loading_background3').fadeOut(function(){
                          App.trigger("projects:postcorrection",id); //reload a_pocoto
                          clearInterval(projectShowLayout.interval); // clear interval when job done
                         })
-                      
+
                        }
 
                    }).fail(function(response){
-                         App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                   }); 
+                         App.mainmsg.updateContent(response.responseText,'danger');
+                   });
              });
-                 
+
 	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
 	          projectShowLayout.showChildView('panelRegion',projectShowFooterPanel);
 
@@ -260,7 +260,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
 
     	}) // require
-    	
+
 		}
 
 	}
