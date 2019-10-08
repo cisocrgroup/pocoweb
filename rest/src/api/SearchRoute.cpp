@@ -76,9 +76,11 @@ Json &operator<<(Json &j, match_results &res) {
   return j;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 template <class F>
 static void each_package_line(MysqlConnection &mysql, int pid, F f);
 
+////////////////////////////////////////////////////////////////////////////////
 template <class F>
 static match_results search_impl(MysqlConnection &conn, int bid, int skip,
                                  int max, F f);
@@ -162,46 +164,6 @@ Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
   default:
     THROW(BadRequest, "(SearchRoute) invalid search type: ", t);
   }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template <class F>
-static match_results search_impl(MysqlConnection &conn, int bid, int skip,
-                                 int max, F f) {
-  match_results ret;
-  ret.projectid = bid;
-  ret.max = max;
-  ret.skip = skip;
-  each_package_line(conn, bid, [&](auto &line) {
-    line.each_token([&](DbSlice &slice) {
-      std::string q;         // match key
-      if (not f(slice, q)) { // no match
-        return;
-      }
-      // we have a search match
-      ret.total++;
-      ret.results[q].total++;
-      if (skip > 0) { // skip match
-        --skip;
-        return;
-      }
-      if (max <= 0) { // max matches found
-        return;
-      }
-      --max;
-      // add line if first match in this line or for this q
-      if (ret.results[q].line_matches.empty() or
-          ret.results[q].line_matches.back().first != line) {
-        ret.results[q].line_matches.emplace_back(line,
-                                                 std::unordered_set<int>{});
-      }
-      // add token match
-      ret.results[q].line_matches.back().second.insert(slice.offset);
-      // set bookid from line
-      ret.bookid = line.bookid;
-    });
-  });
-  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -295,4 +257,44 @@ void each_package_line(MysqlConnection &mysql, int pid, F f) {
       f(line);
     }
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template <class F>
+static match_results search_impl(MysqlConnection &conn, int bid, int skip,
+                                 int max, F f) {
+  match_results ret;
+  ret.projectid = bid;
+  ret.max = max;
+  ret.skip = skip;
+  each_package_line(conn, bid, [&](auto &line) {
+    line.each_token([&](DbSlice &slice) {
+      std::string q;         // match key
+      if (not f(slice, q)) { // no match
+        return;
+      }
+      // we have a search match
+      ret.total++;
+      ret.results[q].total++;
+      if (skip > 0) { // skip match
+        --skip;
+        return;
+      }
+      if (max <= 0) { // max matches found
+        return;
+      }
+      --max;
+      // add line if first match in this line or for this q
+      if (ret.results[q].line_matches.empty() or
+          ret.results[q].line_matches.back().first != line) {
+        ret.results[q].line_matches.emplace_back(line,
+                                                 std::unordered_set<int>{});
+      }
+      // add token match
+      ret.results[q].line_matches.back().second.insert(slice.offset);
+      // set bookid from line
+      ret.bookid = line.bookid;
+    });
+  });
+  return ret;
 }
