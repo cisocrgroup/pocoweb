@@ -173,7 +173,7 @@ create table if not exists autocorrections (
    cortypid int references types(id),
    taken boolean not null,
    primary key (bookid, pageid, lineid, tokenid)
-)
+);
 
 drop table if exists status;
 create table if not exists status (
