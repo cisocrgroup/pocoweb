@@ -140,6 +140,14 @@ struct DbPackage {
 
 Json &operator<<(Json &j, const DbPackage &package);
 
+struct Statistics {
+  bool load(MysqlConnection &mysq, const DbPackage &pkg);
+  size_t lines, corLines, tokens, corTokens, ocrCorTokens, acTokens,
+      acCorTokens;
+};
+
+Json &operator<<(Json &j, const Statistics &stats);
+
 ////////////////////////////////////////////////////////////////////////////////
 inline auto project_line_contents_view() {
   using namespace sqlpp;

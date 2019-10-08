@@ -25,9 +25,6 @@ template <class D> void update_book_data(DbPackage &package, const D &data);
 template <class D> void update_book_data(BookData &bdata, const D &data);
 template <class Row> Json &set_book(Json &json, const Row &row);
 static BookData as_book_data(const DbPackage &package);
-namespace pcw {
-static pcw::Json &operator<<(pcw::Json &j, const BookRoute::Statistics &s);
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 const char *BookRoute::route_ = BOOK_ROUTE_ROUTE_1 "," BOOK_ROUTE_ROUTE_2;
@@ -196,14 +193,17 @@ template <class Rows> size_t append_page_ids(Json &json, Rows &rows) {
 Route::Response BookRoute::impl(HttpGet, const Request &req, int bid) const {
   CROW_LOG_DEBUG << "(BookRoute) GET package: " << bid;
   auto conn = must_get_connection();
-  DbPackage package(bid);
-  if (not package.load(conn)) {
+  DbPackage pkg(bid);
+  if (not pkg.load(conn)) {
     THROW(NotFound, "cannot find package id: ", bid);
   }
-  const auto s = calculateStatistics(conn, bid);
+  Statistics stats{}; // zero initialize
+  if (not stats.load(conn, pkg)) {
+    THROW(NotFound, "cannot load statistics for package: ", bid);
+  }
   Json j;
-  j << package;
-  j["statistics"] << s;
+  j << pkg;
+  j["statistics"] << stats;
   return j;
 }
 
@@ -263,41 +263,6 @@ Route::Response BookRoute::impl(HttpDelete, const Request &req, int bid) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-BookRoute::Statistics BookRoute::calculateStatistics(MysqlConnection &conn,
-                                                     int bid) const {
-  DbPackage package(bid);
-  if (not package.load(conn)) {
-    THROW(Error, "cannot load package: ", bid);
-  }
-  Statistics s{}; // zero initialize
-  for (const auto pid : package.pageids) {
-    s.pages++;
-    DbPage page(bid, pid);
-    if (not page.load(conn)) {
-      THROW(Error, "cannot load page: ", bid, ":", pid);
-    }
-    for (auto &line : page.lines) {
-      s.lines++;
-      if (line.slice().is_fully_corrected()) {
-        s.corLines++;
-      }
-      line.each_token([&](auto &token) {
-        s.tokens++;
-        if (token.is_fully_corrected()) {
-          s.corTokens++;
-          // corrected tokens whose ocr was correct
-          if (token.wocr() == token.wcor()) {
-            s.ocrCorTokens++;
-          }
-        }
-      });
-    }
-  }
-  // TODO: add calculation of automatic corrected tokens
-  return s;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 BookData as_book_data(const DbPackage &package) {
   BookData ret;
   ret.author = package.author;
@@ -313,17 +278,4 @@ BookData as_book_data(const DbPackage &package) {
   ret.extendedLexicon = package.extendedLexicon;
   ret.postCorrected = package.postCorrected;
   return ret;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-pcw::Json &pcw::operator<<(pcw::Json &j, const pcw::BookRoute::Statistics &s) {
-  j["pages"] = s.pages;
-  j["lines"] = s.lines;
-  j["corLines"] = s.corLines;
-  j["tokens"] = s.tokens;
-  j["corTokens"] = s.corTokens;
-  j["ocrCorTokens"] = s.ocrCorTokens;
-  j["acTokens"] = s.acTokens;
-  j["acCorTokens"] = s.acCorTokens;
-  return j;
 }

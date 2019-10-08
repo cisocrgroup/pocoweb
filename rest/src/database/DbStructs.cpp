@@ -299,6 +299,34 @@ bool DbPackage::load(MysqlConnection &mysql) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+bool Statistics::load(MysqlConnection &mysql, const DbPackage &pkg) {
+  for (const auto pid : pkg.pageids) {
+    DbPage page(pkg.bookid, pid);
+    if (not page.load(mysql)) {
+      return false;
+    }
+    for (auto &line : page.lines) {
+      lines++;
+      if (line.slice().is_fully_corrected()) {
+        corLines++;
+      }
+      line.each_token([&](auto &token) {
+        tokens++;
+        if (token.is_fully_corrected()) {
+          corTokens++;
+          // corrected tokens whose ocr was correct
+          if (token.wocr() == token.wcor()) {
+            ocrCorTokens++;
+          }
+        }
+      });
+    }
+  }
+  // TODO: add calculation of automatic corrected tokens
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 pcw::Json &pcw::operator<<(Json &j, const DbSlice &slice) {
   j["bookId"] = slice.bookid;
   j["projectId"] = slice.projectid;
@@ -378,5 +406,17 @@ pcw::Json &pcw::operator<<(Json &j, const DbPackage &package) {
   j["status"]["profiled"] = package.profiled;
   j["status"]["post-corrected"] = package.postCorrected;
   j["status"]["extended-lexicon"] = package.extendedLexicon;
+  return j;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+pcw::Json &pcw::operator<<(pcw::Json &j, const Statistics &s) {
+  j["lines"] = s.lines;
+  j["corLines"] = s.corLines;
+  j["tokens"] = s.tokens;
+  j["corTokens"] = s.corTokens;
+  j["ocrCorTokens"] = s.ocrCorTokens;
+  j["acTokens"] = s.acTokens;
+  j["acCorTokens"] = s.acCorTokens;
   return j;
 }
