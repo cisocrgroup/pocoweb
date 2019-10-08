@@ -65,6 +65,11 @@ struct DbSlice {
   void noop(size_t i);
   void end_wagner_fischer() const noexcept {}
 
+  std::string strID() const {
+    return std::to_string(projectid) + ":" + std::to_string(pageid) + ":" +
+           std::to_string(lineid) + ":" + std::to_string(offset);
+  }
+
   int bookid, projectid, pageid, lineid, offset;
   std::list<DbChar>::iterator begin, end;
   Box box;
@@ -89,6 +94,10 @@ struct DbLine {
   DbSlice slice(int begin, int len);
   int tokenLength(int begin) const;
 
+  std::string strID() const {
+    return std::to_string(projectid) + ":" + std::to_string(pageid) + ":" +
+           std::to_string(lineid);
+  }
   std::list<DbChar> line;
   std::string imagepath;
   Box box;
@@ -115,6 +124,9 @@ struct DbPage {
       : box(), lines(), ocrpath(), imagepath(), bookid(), projectid(pid),
         pageid(pageid), filetype(), prevpageid(pageid), nextpageid(pageid) {}
   bool load(MysqlConnection &mysql);
+  std::string strID() const {
+    return std::to_string(projectid) + ":" + std::to_string(pageid);
+  }
 
   Box box;
   std::vector<DbLine> lines;
@@ -131,6 +143,7 @@ struct DbPackage {
         owner(), year(), profiled(), extendedLexicon(), postCorrected() {}
   bool load(MysqlConnection &mysql);
   bool isBook() const noexcept { return projectid == bookid; }
+  std::string strID() const { return std::to_string(projectid); }
   std::vector<int> pageids;
   std::string title, author, description, uri, profilerurl, histpatterns,
       directory, language;

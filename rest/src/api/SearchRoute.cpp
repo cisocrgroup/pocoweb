@@ -260,7 +260,7 @@ Route::Response SearchRoute::search(MysqlConnection &mysql, pq q) const {
 Route::Response SearchRoute::search(MysqlConnection &mysql, ac q) const {
   DbPackage pkg(q.bid);
   if (not pkg.load(mysql)) {
-    THROW(Error, "cannot load package ", q.bid);
+    THROW(Error, "cannot load package ", pkg.strID());
   }
   std::unordered_set<int> pages(pkg.pageids.begin(), pkg.pageids.end());
   using namespace sqlpp;
@@ -295,8 +295,7 @@ Route::Response SearchRoute::search(MysqlConnection &mysql, ac q) const {
         line.lineid = row.lineid;
         line.pageid = row.pageid;
         if (not line.load(mysql)) {
-          THROW(Error, "cannot load page ", line.projectid, ":", line.pageid,
-                ":", line.lineid);
+          THROW(Error, "cannot line page ", line.strID());
         }
       }
       ret.add(qstr, line, row.tokenid);
