@@ -1,4 +1,4 @@
-PCW_API_VERSION := "0.9.8"
+PCW_API_VERSION := "0.9.9"
 
 V ?= @
 C ?= yes
