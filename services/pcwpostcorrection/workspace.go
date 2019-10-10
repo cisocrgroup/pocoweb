@@ -109,7 +109,7 @@ func (doc *document) loadLines() error {
 }
 
 func (doc *document) loadContents() error {
-	const stmnt = "SELECT pageid,lineid,ocr,cor,cut,conf " +
+	const stmnt = "SELECT pageid,lineid,ocr,cor,cut,conf,seq " +
 		"FROM " + db.ContentsTableName + " " +
 		"WHERE bookid=? ORDER BY pageid,lineid,seq"
 	rows, err := db.Query(service.Pool(), stmnt, doc.project.BookID)
@@ -120,7 +120,7 @@ func (doc *document) loadContents() error {
 	for rows.Next() {
 		var pid, lid int
 		var c db.Char
-		if err := rows.Scan(&pid, &lid, &c.OCR, &c.Cor, &c.Cut, &c.Conf); err != nil {
+		if err := rows.Scan(&pid, &lid, &c.OCR, &c.Cor, &c.Cut, &c.Conf, &c.Seq); err != nil {
 			return fmt.Errorf("cannot load contents: %v", err)
 		}
 		if lid == 0 || doc.pages[pid].lines[lid-1].LineID != lid {
@@ -313,7 +313,7 @@ func (doc document) writePageXML(p *pagex) (err error) {
 	doc.appendMetadata(&pagexml, p)
 	main := page.TextRegion{
 		TextRegionBase: page.TextRegionBase{
-			ID:     fmt.Sprintf("page-%04d", p.PageID),
+			ID:     fmt.Sprintf("%d:%d", doc.project.BookID, p.PageID),
 			Coords: pagexml.Page.PrintSpace.Coords,
 		},
 		Type: "page",
@@ -348,7 +348,7 @@ func (doc document) writePageXML(p *pagex) (err error) {
 func (doc document) appendTextLine(p *page.TextRegion, line db.Line) {
 	xmlline := page.TextLine{
 		TextRegionBase: page.TextRegionBase{
-			ID: fmt.Sprintf("page-%04d-line-%04d", line.PageID, line.LineID),
+			ID: fmt.Sprintf("%d:%d:%d", doc.project.BookID, line.PageID, line.LineID),
 			Coords: page.Coords{
 				Points: []image.Point{
 					image.Pt(line.Left, line.Top),
@@ -376,14 +376,13 @@ func (doc document) appendTextLine(p *page.TextRegion, line db.Line) {
 }
 
 func (doc document) appendWord(l *page.TextLine, line db.Line, w db.Chars) {
-	id := len(l.Word) + 1
-	left := line.Left
-	if id > 1 {
-		left = l.Word[id-2].Coords.Points[1].X
+	id := w[0].Seq - 1 // len(w) > 0 and seq start at 1
+	if len(l.Word) > 0 {
+		left = l.Word[len(l.Word)-1].Coords.Points[1].X
 	}
 	xmlword := page.Word{
 		TextRegionBase: page.TextRegionBase{
-			ID: fmt.Sprintf("%s-word-%04d", l.ID, id),
+			ID: fmt.Sprintf("%s:%d", l.ID, id),
 			Coords: page.Coords{
 				Points: []image.Point{
 					image.Pt(left, line.Top),
