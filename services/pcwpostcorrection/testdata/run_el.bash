@@ -14,10 +14,6 @@ dir=$(dirname "$3")
 ws="$dir/workspace"
 mets="$ws/mets.xml"
 
-# for now
-sleep 15
-exit 0
-
 cat "$config" \
 	| jq ".lexiconExtensionProtocol=\"$out\"" \
 	| jq ".profiler.config=\"$profile\"" \

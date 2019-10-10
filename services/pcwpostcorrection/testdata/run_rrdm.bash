@@ -15,10 +15,6 @@ ws="$dir/workspace"
 mets="$ws/mets.xml"
 alex="$dir/alex.json"
 
-# for now
-sleep 15
-exit 0
-
 cat "$config" \
 	| jq ".decisionMakerProtocol=\"$out\"" \
 	| jq ".profiler.config=\"$profile\"" \
