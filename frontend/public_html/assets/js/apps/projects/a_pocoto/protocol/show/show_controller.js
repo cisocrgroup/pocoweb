@@ -65,7 +65,8 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
 
 
-                      var searchingToken = ProjectEntities.API.search({q:word,pid:id,searchType:"token",skip:0,max:App.getPageHits(id)});
+                      // HERE;
+                        var searchingToken = ProjectEntities.API.search({q:word,pid:id,searchType:"ac",skip:0,max:App.getPageHits(id)});
 
                       $.when(searchingToken).done(function(tokens,suggestions){
                       var lineheight = App.getLineHeight(id);
