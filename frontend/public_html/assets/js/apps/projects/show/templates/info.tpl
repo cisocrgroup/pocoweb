@@ -64,7 +64,7 @@
                 <% } if(statistics.corTokens!=0) { %>
 
                  <div class="col-md-4" >
-                  <div class="progress_title">OCR word accuracy</div>
+                  <div class="progress_title">Estimated OCR word accuracy</div>
                 </div>
                 <div class="col-md-8 align-self-center" title="<%-statistics.ocrCorTokens%> of <%-statistics.corTokens%> correct ocr words">
                   <div class="progress">
