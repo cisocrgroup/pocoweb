@@ -65,7 +65,6 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
 
 
-                      // HERE;
                         var searchingToken = ProjectEntities.API.search({q:word,pid:id,searchType:"ac",skip:0,max:App.getPageHits(id)});
 
                       $.when(searchingToken).done(function(tokens,suggestions){
