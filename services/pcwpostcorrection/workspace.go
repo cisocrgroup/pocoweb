@@ -378,14 +378,14 @@ func (doc document) appendTextLine(p *page.TextRegion, line db.Line) {
 func (doc document) appendWord(l *page.TextLine, line db.Line, w db.Chars) {
 	id := w[0].Seq - 1 // len(w) > 0 and seq start at 1
 	if len(l.Word) > 0 {
-		left = l.Word[len(l.Word)-1].Coords.Points[1].X
+		l.Word[len(l.Word)-1].Coords.Points[1].X = line.Left
 	}
 	xmlword := page.Word{
 		TextRegionBase: page.TextRegionBase{
 			ID: fmt.Sprintf("%s:%d", l.ID, id),
 			Coords: page.Coords{
 				Points: []image.Point{
-					image.Pt(left, line.Top),
+					image.Pt(line.Left, line.Top),
 					image.Pt(w[len(w)-1].Cut, line.Bottom),
 				},
 			},
