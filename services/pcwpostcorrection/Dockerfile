@@ -10,4 +10,5 @@ ENTRYPOINT /go/bin/pcwpostcorrection \
 	-debug \
 	-dsn "${MYSQL_USER}:${MYSQL_PASSWORD}@(db)/${MYSQL_DATABASE}" \
 	-config "${DATA}/config/ocrd-cis-post-correction.json" \
+    -pocoweb "http://pocoweb" \
 	-base /

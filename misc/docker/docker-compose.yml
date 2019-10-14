@@ -99,6 +99,7 @@ services:
     restart: always
     links:
       - db
+      - pocoweb
     depends_on:
       - db
     env_file:

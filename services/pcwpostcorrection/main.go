@@ -2,8 +2,11 @@ package main // import "github.com/finkf/pcwpostcorrection"
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/finkf/pcwgo/api"
 	"github.com/finkf/pcwgo/jobs"
@@ -12,11 +15,12 @@ import (
 )
 
 var (
-	dsn     = "user:pass@proto(host)/dbname"
-	listen  = ":80"
-	baseDir = "/"
-	debug   = false
-	config  = ""
+	dsn        = "user:pass@proto(host)/dbname"
+	listen     = ":80"
+	pocowebURL = "http://pocoweb"
+	baseDir    = "/"
+	debug      = false
+	config     = ""
 )
 
 func init() {
@@ -25,6 +29,7 @@ func init() {
 	flag.StringVar(&dsn, "dsn", dsn, "set mysql connection DSN")
 	flag.StringVar(&baseDir, "base", baseDir, "set project base dir")
 	flag.StringVar(&config, "config", config, "set base config file for post correction")
+	flag.StringVar(&config, "pocoweb", pocowebURL, "set pocoweb url")
 }
 
 func must(err error) {
@@ -69,18 +74,23 @@ func withProfiledProject(f service.HandlerFunc) service.HandlerFunc {
 
 func getExtendedLexicon() service.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		res := api.ExtendedLexicon{
-			Yes: map[string]int{
-				"dÿß":      1,
-				"ordenung": 3,
-				"dieczů":   10,
-			},
-			No: map[string]int{
-				"Sũmer": 1,
-				"welff": 3,
-			},
+		protocol := filepath.Join(baseDir, d.Project.Directory, "postcorrection", "el.json")
+		in, err := os.Open(protocol)
+		if err != nil {
+			service.ErrorResponse(w, http.StatusInternalServerError,
+				"cannot open protocol: %v", err)
+			return
 		}
-		service.JSONResponse(w, res)
+		defer in.Close()
+		var ret api.ExtendedLexicon
+		if err := json.NewDecoder(in).Decode(&ret); err != nil {
+			service.ErrorResponse(w, http.StatusInternalServerError,
+				"cannot decode protocol: %v", err)
+			return
+		}
+		ret.ProjectID = d.Project.ProjectID
+		ret.BookID = d.Project.BookID
+		service.JSONResponse(w, ret)
 	}
 }
 
