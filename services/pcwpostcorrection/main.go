@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/finkf/pcwgo/api"
 	"github.com/finkf/pcwgo/jobs"
@@ -120,11 +121,9 @@ func runDecisionMaker() service.HandlerFunc {
 
 func getDecisionMaker() service.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		res := api.PostCorrection{
-			Always:    map[string]int{"zeÿten": 3},
-			Sometimes: map[string]int{"kallter": 8, "~peis": 9},
-			Never:     map[string]int{"ordenung": 4},
-		}
-		service.JSONResponse(w, res)
+		protocol := filepath.Join(baseDir, d.Project.Directory, "postcorrection", "rrdm.json")
+		protocol = strings.ReplaceAll(protocol, ".json", "-pcw.json")
+		w.Header().Add("Content-Type", "application/json")
+		http.ServeFile(w, r, protocol)
 	}
 }
