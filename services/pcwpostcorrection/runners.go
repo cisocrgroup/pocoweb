@@ -55,10 +55,10 @@ func (r elRunner) setupWorkspace() error {
 func (r elRunner) runEL(ctx context.Context) error {
 	err := jobs.Run(
 		ctx,
-		"/apps/run_el.bash",
-		config,
+		"/apps/run.bash",
+		"el",
+		filepath.Join(baseDir, r.project.Directory, "postcorrection"),
 		filepath.Join(baseDir, r.project.Directory, "profile.json.gz"),
-		filepath.Join(baseDir, r.project.Directory, "postcorrection", "el.json"),
 	)
 	if err != nil {
 		return fmt.Errorf("cannot run /apps/run_el.bash: %v", err)
@@ -85,13 +85,14 @@ func (r rrdmRunner) BookID() int {
 }
 
 func (r rrdmRunner) Run(ctx context.Context) error {
-	protocol := filepath.Join(baseDir, r.project.Directory, "postcorrection", "rrdm.json")
+	dir := filepath.Join(baseDir, r.project.Directory, "postcorrection")
+	protocol := filepath.Join(dir, "dm-protocol.json")
 	err := jobs.Run(
 		ctx,
-		"/apps/run_rrdm.bash",
-		config,
+		"/apps/run.bash",
+		"dm"
+		dir,
 		filepath.Join(baseDir, r.project.Directory, "profile.json.gz"),
-		protocol,
 	)
 	if err != nil {
 		return fmt.Errorf("cannot run /apps/run_rrdm.bash: %v", err)

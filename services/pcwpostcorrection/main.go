@@ -75,7 +75,7 @@ func withProfiledProject(f service.HandlerFunc) service.HandlerFunc {
 
 func getExtendedLexicon() service.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		protocol := filepath.Join(baseDir, d.Project.Directory, "postcorrection", "el.json")
+		protocol := filepath.Join(baseDir, d.Project.Directory, "postcorrection", "le-protocol.json")
 		in, err := os.Open(protocol)
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
@@ -121,7 +121,7 @@ func runDecisionMaker() service.HandlerFunc {
 
 func getDecisionMaker() service.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		protocol := filepath.Join(baseDir, d.Project.Directory, "postcorrection", "rrdm.json")
+		protocol := filepath.Join(baseDir, d.Project.Directory, "postcorrection", "dm-protocol.json")
 		protocol = strings.ReplaceAll(protocol, ".json", "-pcw.json")
 		w.Header().Add("Content-Type", "application/json")
 		http.ServeFile(w, r, protocol)
