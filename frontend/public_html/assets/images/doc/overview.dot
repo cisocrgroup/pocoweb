@@ -31,6 +31,7 @@ digraph ov {
  pcwprofiler -> projectd
  pcwprofiler -> mysql [style=dotted]
  pcwpostcorrection -> projectd
+ pcwpostcorrection -> pocoweb
  pcwpostcorrection -> mysql [style=dotted]
  pcwocr -> projectd
  pcwocr -> mysql [style=dotted]
