@@ -73,10 +73,24 @@ func withProfiledProject(f service.HandlerFunc) service.HandlerFunc {
 	}
 }
 
+func emptyExtendedLexicon(w http.ResponseWriter, d *service.Data) {
+	ret := api.ExtendedLexicon{
+		ProjectID: d.Project.ProjectID,
+		BookID:    d.Project.BookID,
+		Yes:       map[string]int{},
+		No:        map[string]int{},
+	}
+	service.JSONResponse(w, ret)
+}
+
 func getExtendedLexicon() service.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
 		protocol := filepath.Join(baseDir, d.Project.Directory, "postcorrection", "le-protocol.json")
 		in, err := os.Open(protocol)
+		if os.IsNotExist(err) { // just send an empty answer
+			emptyExtendedLexicon(w, d)
+			return
+		}
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot open protocol: %v", err)
@@ -107,6 +121,17 @@ func runExtendedLexicon() service.HandlerFunc {
 	}
 }
 
+func emptyDecisionMaker(w http.ResponseWriter, d *service.Data) {
+	ret := api.PostCorrection{
+		ProjectID: d.Project.ProjectID,
+		BookID:    d.Project.BookID,
+		Always:    map[string]int{},
+		Sometimes: map[string]int{},
+		Never:     map[string]int{},
+	}
+	service.JSONResponse(w, ret)
+}
+
 func runDecisionMaker() service.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
 		jobID, err := jobs.Start(context.Background(), rrdmRunner{project: d.Project})
@@ -122,6 +147,10 @@ func runDecisionMaker() service.HandlerFunc {
 func getDecisionMaker() service.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
 		protocol := filepath.Join(baseDir, d.Project.Directory, "postcorrection", "dm-protocol.json")
+		if _, err := os.Stat(protocol); os.IsNotExist(err) {
+			emptyDecisionMaker(w, d)
+			return
+		}
 		protocol = strings.ReplaceAll(protocol, ".json", "-pcw.json")
 		w.Header().Add("Content-Type", "application/json")
 		http.ServeFile(w, r, protocol)
