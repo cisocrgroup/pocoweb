@@ -90,7 +90,7 @@ func (r rrdmRunner) Run(ctx context.Context) error {
 	err := jobs.Run(
 		ctx,
 		"/apps/run.bash",
-		"dm"
+		"dm",
 		dir,
 		filepath.Join(baseDir, r.project.Directory, "profile.json.gz"),
 	)
