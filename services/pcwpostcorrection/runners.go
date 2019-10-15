@@ -13,6 +13,7 @@ import (
 	"github.com/finkf/pcwgo/db"
 	"github.com/finkf/pcwgo/jobs"
 	"github.com/finkf/pcwgo/service"
+	log "github.com/sirupsen/logrus"
 )
 
 type elRunner struct {
@@ -182,15 +183,18 @@ func (r rrdmRunner) writeProtocol(pc *api.PostCorrection, path string) (err erro
 }
 
 func (r rrdmRunner) correctInBackend(corrections map[string]rrdmPVal) error {
-	client := api.NewClient(pocowebURL)
+	// We should be communicating within docker compose - so skip verify is ok.
+	client := api.NewClient(pocowebURL, true)
 	for k, v := range corrections {
+		log.Debugf("correction: %s %v", k, v)
+		if !v.Taken { // only correct corrections that should be taken
+			continue
+		}
 		var bid, pid, lid, tid int
 		if _, err := fmt.Sscanf(k, "%d:%d:%d:%d", &bid, &pid, &lid, &tid); err != nil {
 			return fmt.Errorf("invalid protocol id: %s", k)
 		}
-		// TODO:
-		// _, err := client.PostToken(bid, pid, lid, tid, len([]rune(v.OCR)), v.Cor)
-		_, err := client.GetTokens(bid, pid, lid)
+		_, err := client.PostTokenLen(bid, pid, lid, tid, len([]rune(v.OCR)), v.Cor)
 		if err != nil {
 			return fmt.Errorf("cannot post correct %s: %v", v.Normalized, err)
 		}
