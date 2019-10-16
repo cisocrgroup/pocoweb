@@ -355,6 +355,10 @@ func (doc document) appendTextLine(p *page.TextRegion, line db.Line) {
 					image.Pt(line.Right, line.Bottom),
 				},
 			},
+			AlternativeImage: &page.AlternativeImage{
+				Filename: filepath.Join(baseDir, line.ImagePath),
+				Comments: "alternative image line path",
+			},
 			Custom: fmt.Sprintf("fully-corrected:%t,partially-corrected:%t,ocr:%s",
 				line.Chars.IsFullyCorrected(), line.Chars.IsPartiallyCorrected(),
 				line.Chars.OCR()),
@@ -376,16 +380,17 @@ func (doc document) appendTextLine(p *page.TextRegion, line db.Line) {
 }
 
 func (doc document) appendWord(l *page.TextLine, line db.Line, w db.Chars) {
-	id := w[0].Seq - 1 // len(w) > 0 and seq start at 1
+	id := w[0].Seq // len(w) > 0
+	left := line.Left
 	if len(l.Word) > 0 {
-		l.Word[len(l.Word)-1].Coords.Points[1].X = line.Left
+		left = l.Word[len(l.Word)-1].Coords.Points[1].X + 1
 	}
 	xmlword := page.Word{
 		TextRegionBase: page.TextRegionBase{
 			ID: fmt.Sprintf("%s:%d", l.ID, id),
 			Coords: page.Coords{
 				Points: []image.Point{
-					image.Pt(line.Left, line.Top),
+					image.Pt(left, line.Top),
 					image.Pt(w[len(w)-1].Cut, line.Bottom),
 				},
 			},
@@ -404,18 +409,21 @@ func (doc document) appendWord(l *page.TextLine, line db.Line, w db.Chars) {
 }
 
 func (doc document) appendGlyph(w *page.Word, line db.Line, c db.Char) {
-	id := len(w.Glyph) + 1
+	id := c.Seq
 	left := line.Left
-	if id > 1 {
-		left = w.Glyph[id-2].Coords.Points[1].X
+	if len(w.Glyph) > 0 {
+		left = w.Glyph[len(w.Glyph)-1].Coords.Points[1].X + 1
 	}
 	char := c.OCR
 	if c.Cor != 0 {
 		char = c.Cor
 	}
+	if c.Cor == -1 { // skip deletions
+		return
+	}
 	xmlglyph := page.Glyph{
 		TextRegionBase: page.TextRegionBase{
-			ID: fmt.Sprintf("%s-glyph-%04d", w.ID, id),
+			ID: fmt.Sprintf("%s:%d", w.ID, id),
 			Coords: page.Coords{
 				Points: []image.Point{
 					image.Pt(left, line.Top),

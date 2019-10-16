@@ -3,7 +3,7 @@ module github.com/finkf/pcwpostcorrection
 go 1.12
 
 require (
-	github.com/finkf/gocrd/xml/page v0.1.0
+	github.com/finkf/gocrd/xml/page v0.1.2
 	github.com/finkf/gofiler v0.2.0 // indirect
 	github.com/finkf/pcwgo/api v0.16.2
 	github.com/finkf/pcwgo/db v0.14.5

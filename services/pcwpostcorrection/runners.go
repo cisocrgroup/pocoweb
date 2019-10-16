@@ -53,20 +53,21 @@ func (r elRunner) setupWorkspace() error {
 }
 
 func (r elRunner) runEL(ctx context.Context) error {
+	const script = "/apps/run.bash"
 	err := jobs.Run(
 		ctx,
-		"/apps/run.bash",
-		"el",
+		script,
+		"le",
 		filepath.Join(baseDir, r.project.Directory, "postcorrection"),
 		filepath.Join(baseDir, r.project.Directory, "profile.json.gz"),
 	)
 	if err != nil {
-		return fmt.Errorf("cannot run /apps/run_el.bash: %v", err)
+		return fmt.Errorf("cannot run %s: %v", script, err)
 	}
 	const stmnt = "UPDATE " + db.BooksTableName + " SET extendedlexicon=? WHERE bookid=?"
 	_, err = db.Exec(service.Pool(), stmnt, true, r.project.BookID)
 	if err != nil {
-		return fmt.Errorf("cannot run /apps/run_le.bash: %v", err)
+		return fmt.Errorf("cannot run %s: %v", script, err)
 	}
 	service.UncacheProject(r.project)
 	return nil

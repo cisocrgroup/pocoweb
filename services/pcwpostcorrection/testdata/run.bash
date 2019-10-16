@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source "ocrd-cis-lib.sh"
+source "ocrd-cis-lib.sh" || exit 1
 
 # set log level
 LOG_LEVEL=DEBUG
@@ -16,24 +16,23 @@ profile=$3
 ws="$dir/workspace"
 mets="$ws/mets.xml"
 config="/etc/skel/pcwpostcorrection.json"
+trigrams=$(ocrd-cis-data -3gs)
 
 # le configuration
 cat "$config" \
 	| jq ".postCorrection.dir=\"$dir\"" \
 	| jq ".postCorrection.profiler.path=\"$profile\"" \
-	| jq ".postCorrection.trigrams=\"$(ocrd-cis-data -3gs)\"" \
+	| jq ".postCorrection.trigrams=\"$trigrams\"" \
 	| jq '.postCorrection.rrFeatures=[]' \
 	| jq '.postCorrection.dmFeatures=[]' \
-	| jq '.postCorrection' \
     > "$dir/le-config.json"
 
 # dm configuration
 cat "$config" \
 	| jq ".postCorrection.dir=\"$dir\"" \
 	| jq ".postCorrection.profiler.path=\"$profile\"" \
-	| jq ".postCorrection.trigrams=\"$(ocrd-cis-data -3gs)\"" \
+	| jq ".postCorrection.trigrams=\"$trigrams\"" \
 	| jq '.postCorrection.leFeatures=[]' \
-	| jq '.postCorrection' \
     > "$dir/dm-config.json"
 
 # remove any old workspace and add image/mocr files to workspace
@@ -46,13 +45,13 @@ done
 
 # run le or dm post correction
 case "$cmd" in
-	"le")
-		ocrd-cis-log-debug ocrd-cis-post-correct.sh \
-						   --log-level "$LOG_LEVEL" \
-						   --output-file-grp "OCR-D-CIS-POCOWEB-POST-CORRECTION-LE" \
-						   --input-file-grp "OCR-D-CIS-POCOWEB-MOCR" \
-						   --mets "$mets" \
-						   --parameter "$dir/le-config.json";
+	le)
+		ocrd-cis-debug ocrd-cis-post-correct.sh \
+					   --log-level "$LOG_LEVEL" \
+					   --output-file-grp "OCR-D-CIS-POCOWEB-POST-CORRECTION-LE" \
+					   --input-file-grp "OCR-D-CIS-POCOWEB-MOCR" \
+					   --mets "$mets" \
+					   --parameter "$dir/le-config.json";
 		ocrd-cis-post-correct.sh \
 			--log-level "$LOG_LEVEL" \
 			--output-file-grp "OCR-D-CIS-POCOWEB-POST-CORRECTION-LE" \
@@ -60,13 +59,13 @@ case "$cmd" in
 			--mets "$mets" \
 			--parameter "$dir/le-config.json"
 		;;
-	"dm")
-		ocrd-cis-log-debug ocrd-cis-post-correct.sh \
-						   --log-level "$LOG_LEVEL" \
-						   --output-file-grp "OCR-D-CIS-POCOWEB-POST-CORRECTION-DM" \
-						   --input-file-grp "OCR-D-CIS-POCOWEB-MOCR" \
-						   --mets "$mets" \
-						   --parameter "$dir/el-config.json"
+	dm)
+		ocrd-cis-debug ocrd-cis-post-correct.sh \
+					   --log-level "$LOG_LEVEL" \
+					   --output-file-grp "OCR-D-CIS-POCOWEB-POST-CORRECTION-DM" \
+					   --input-file-grp "OCR-D-CIS-POCOWEB-MOCR" \
+					   --mets "$mets" \
+					   --parameter "$dir/el-config.json"
 	    ocrd-cis-post-correct.sh \
 			--log-level "$LOG_LEVEL" \
 			--output-file-grp "OCR-D-CIS-POCOWEB-POST-CORRECTION-DM" \

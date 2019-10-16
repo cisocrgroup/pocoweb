@@ -11,6 +11,8 @@ github.com/finkf/gocrd/xml/hocr v0.1.1 h1:lCz2EAYBIlc6kJFn7iXIHNmaFB2c/OU2Lcy4un
 github.com/finkf/gocrd/xml/hocr v0.1.1/go.mod h1:/O/Bd/P++3h7QwdPgU/QAaMzqJl9CvrJUUOYtAuEbi0=
 github.com/finkf/gocrd/xml/page v0.1.0 h1:B4FGfGSGZq9HMzeJckyIgfgqSSX4bEcQ0tOvBRT7/zg=
 github.com/finkf/gocrd/xml/page v0.1.0/go.mod h1:MSu8rDiTqKuR7GRVdfeyuzvDIKcrOdsZXs/LlszTbD8=
+github.com/finkf/gocrd/xml/page v0.1.2 h1:tI1QfJEus6WRtEfH7kd/EVH0RdOiFE5wyYvz06OrwLU=
+github.com/finkf/gocrd/xml/page v0.1.2/go.mod h1:MSu8rDiTqKuR7GRVdfeyuzvDIKcrOdsZXs/LlszTbD8=
 github.com/finkf/gofiler v0.1.2 h1:G3nYjZh3GYiX/uVNGiYpqg/eFn07CBGepvx+H4KmtPA=
 github.com/finkf/gofiler v0.1.2/go.mod h1:mn58Ujgxq/pYa2j6btgXzkY2dFjg8FNDe8rwOqV8Pts=
 github.com/finkf/gofiler v0.2.0 h1:RHdHeTgoHkBa9JVp5l5P+3UMbHvwXXHw3bYont9UTwg=

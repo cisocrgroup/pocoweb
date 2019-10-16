@@ -1,13 +1,14 @@
 {
 	"ocrSteps": [
-	    "ocrd-cis-ocropy-recognize --mets $METS --log-level $LOG_LEVEL --input-file-grp $XML_INPUT_FILE_GRP --output-file-grp $XML_OUTPUT_FILE_GRP --parameter <(jq '.ocr1' $PARAMETER)",
+	    "ocrd-cis-ocropy-recognize --mets $METS --log-level $LOG_LEVEL --input-file-grp $XML_INPUT_FILE_GRP --output-file-grp $XML_OUTPUT_FILE_GRP --parameter <(jq '.ocr1' $PARAMETER)"
 	],
 	"ocr1": {
 	    "textequiv_level": "word",
-		"model": "/models/fraktur2-00062000.pyrnn.gz"
+		"model": "/apps/models/fraktur2-00062000.pyrnn.gz"
 	},
 	"postCorrection": {
 		"dir": "set by the script",
+		"model": "/apps/models/model.zip",
 		"trigrams": "set by the script",
 		"maxCandidate": 10,
 		"nOCR": "set by the script",

@@ -1,4 +1,4 @@
-FROM flobar/ocrd-cis:latest
+FROM flobar/ocrd_cis:latest
 MAINTAINER Florian Fink
 ENV VERSION 'Fri 14 Jun 2019 04:57:21 PM CEST'
 VOLUME "/project-data"
