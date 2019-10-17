@@ -2,8 +2,10 @@ package main // import "github.com/finkf/pcwprofiler"
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"regexp"
@@ -293,10 +295,9 @@ func queryPatterns(ctx context.Context, w http.ResponseWriter, qs []string, ocr 
 
 func getSuspiciousWords() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		const stmt = "SELECT t.typ,tc.counts " +
+		const stmt = "SELECT t.typ " +
 			"FROM suggestions s " +
 			"JOIN types t ON s.tokentypid=t.id " +
-			"JOIN typcounts tc ON s.tokentypid=tc.typid AND s.bookid=tc.bookid " +
 			"WHERE s.bookID=? AND s.topsuggestion=true AND s.distance > 0"
 		p := ctx.Value("project").(*db.Project)
 		rows, err := db.Query(service.Pool(), stmt, p.BookID)
@@ -314,16 +315,116 @@ func getSuspiciousWords() service.HandlerFunc {
 		}
 		for rows.Next() {
 			var p string
-			var c int
-			if err := rows.Scan(&p, &c); err != nil {
+			if err := rows.Scan(&p); err != nil {
 				service.ErrorResponse(w, http.StatusInternalServerError,
 					"cannot get suspicious words: %v", err)
 				return
 			}
-			patterns.Counts[p] = c
+			patterns.Counts[p] = 0
+		}
+		err = eachNonCorrectedToken(p, func(token db.Chars) {
+			str := strings.ToLower(token.Cor())
+			if c, ok := patterns.Counts[str]; ok {
+				patterns.Counts[str] = c + 1
+			}
+		})
+		if err != nil {
+			service.ErrorResponse(w, http.StatusInternalServerError,
+				"cannot count suspicious words: %v", err)
+			return
 		}
 		service.JSONResponse(w, patterns)
 	}
+}
+
+func eachNonCorrectedToken(p *db.Project, f func(db.Chars)) error {
+	pageIDs, err := selectPageIDs(p)
+	if err != nil {
+		return fmt.Errorf("cannot load page ids: %v", err)
+	}
+	stmnt, err := service.Pool().Prepare(`
+SELECT c.lineid,c.cor,c.ocr,c.cut,c.conf,c.seq
+FROM contents c
+WHERE c.bookid=? and c.pageid=?
+ORDER BY c.lineid,c.seq`)
+	if err != nil {
+		return fmt.Errorf("cannot prepare statement: %v", err)
+	}
+	defer stmnt.Close()
+	for _, pageID := range pageIDs {
+		rows, err := stmnt.Query(p.BookID, pageID)
+		if err != nil {
+			return fmt.Errorf("cannot execute statement: %v", err)
+		}
+		defer rows.Close()
+		if err := eachNonCorrectedTokenInRows(rows, f); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func eachNonCorrectedTokenInRows(rows *sql.Rows, f func(db.Chars)) error {
+	var line db.Chars
+	var lineid int
+	for rows.Next() {
+		old := lineid
+		var c db.Char
+		if err := rows.Scan(&lineid, &c.Cor, &c.OCR, &c.Cut, &c.Conf, &c.Seq); err != nil {
+			return fmt.Errorf("cannot scan character: %v", err)
+		}
+		// no new line; append and continue
+		if old == lineid || len(line) == 0 {
+			line = append(line, c)
+			continue
+		}
+		// clear line and skip
+		if line.IsFullyCorrected() {
+			line = line[:0]
+			continue
+		}
+		eachNonCorrectedTokenOnLine(line, f)
+		line = append(line[:0], c)
+	}
+	// last line
+	if len(line) > 0 && !line.IsFullyCorrected() {
+		eachNonCorrectedTokenOnLine(line, f)
+	}
+	return nil
+}
+
+func eachNonCorrectedTokenOnLine(line db.Chars, f func(db.Chars)) {
+	for t, rest := line.NextWord(); len(t) > 0; t, rest = rest.NextWord() {
+		t = t.Trim(func(c db.Char) bool {
+			r := c.OCR
+			if c.Cor != 0 {
+				r = c.Cor
+			}
+			return r == -1 || unicode.IsPunct(r)
+		})
+		if len(t) == 0 || t.IsFullyCorrected() {
+			continue
+		}
+		f(t)
+	}
+}
+
+func selectPageIDs(p *db.Project) ([]int, error) {
+	const stmnt = "SELECT pageid FROM project_pages WHERE projectid=?"
+	var ret []int
+	rows, err := service.Pool().Query(stmnt, p.ProjectID)
+	if err != nil {
+		return nil, fmt.Errorf("cannot execute query: %v", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err != nil {
+			return nil, fmt.Errorf("cannot scan id: %v", err)
+		}
+		ret = append(ret, id)
+	}
+	return ret, nil
 }
 
 func getAdaptiveTokens() service.HandlerFunc {
