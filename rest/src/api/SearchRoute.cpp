@@ -345,7 +345,13 @@ static match_results search_impl(MysqlConnection &conn, int bid, int skip,
   ret.max = max;
   ret.skip = skip;
   each_package_line(conn, bid, [&](auto &line) {
+    if (line.slice().is_fully_corrected()) { // skip fully corrected lines
+      return;
+    }
     line.each_token([&](DbSlice &slice) {
+      if (slice.is_fully_corrected()) { // skip fully corrected tokens
+        return;
+      }
       std::string q;         // match key
       if (not f(slice, q)) { // no match
         return;
