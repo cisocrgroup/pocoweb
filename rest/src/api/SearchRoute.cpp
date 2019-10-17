@@ -114,12 +114,18 @@ static std::wstring regex_escape(const std::wstring &str) {
 ////////////////////////////////////////////////////////////////////////////////
 template <class T> static std::wregex make_regex(const T &qs, bool ic) {
   std::wstring pre = L"[[:punct:]]*((";
+  const std::wstring suf = L"))[[:punct:]]*";
   std::wstring restr;
+  if (qs.empty()) { // handle empty queries
+    restr = pre + suf;
+    CROW_LOG_INFO << "(make_regex) regex: " << utf8(restr) << (ic ? "/i" : "");
+    return std::wregex(restr);
+  }
   for (const auto &q : qs) {
     restr += pre + regex_escape(utf8(q));
     pre = std::wstring(L")|(");
   }
-  restr += L"))[[:punct:]]*";
+  restr += suf;
   CROW_LOG_INFO << "(make_regex) regex: " << utf8(restr) << (ic ? "/i" : "");
   if (ic) {
     return std::wregex(restr, std::regex::icase);
@@ -164,30 +170,31 @@ Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
   const auto pmax = get<int>(req.url_params, "max").value_or(50);
   const auto pi = get<bool>(req.url_params, "i").value_or(false);
   CROW_LOG_INFO << "(SearchRoute) GET " << bid << ": skip=" << pskip
-                << ", max=" << pmax << ",t=" << t;
+                << ", max=" << pmax << ", t=" << t;
   const auto qs = get<std::vector<std::string>>(req.url_params, "q");
   if (not qs) {
     THROW(BadRequest, "(SearchRoute) missing query parameter(s)");
   }
   auto conn = must_get_connection();
+  CROW_LOG_INFO << "(SearchRoute) type: " << search_type(t);
   switch (search_type(t)) {
   case stToken:
-    return search(
+    return search_token(
         conn,
         tq{.bid = bid, .max = pmax, .skip = pskip, .ic = pi, .qs = qs.value()});
   case stPattern:
-    return search(conn,
-                  pq{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
+    return search_pattern(
+        conn, pq{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
   case stAC:
-    return search(conn,
-                  ac{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
+    return search_ac(
+        conn, ac{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
   default:
     THROW(BadRequest, "(SearchRoute) invalid search type: ", t);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response SearchRoute::search(MysqlConnection &mysql, tq q) const {
+Route::Response SearchRoute::search_token(MysqlConnection &mysql, tq q) const {
   const auto ic = q.ic;
   const auto re = make_regex(q.qs, ic);
   auto ret =
@@ -213,21 +220,27 @@ Route::Response SearchRoute::search(MysqlConnection &mysql, tq q) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response SearchRoute::search(MysqlConnection &mysql, pq q) const {
+Route::Response SearchRoute::search_pattern(MysqlConnection &mysql,
+                                            pq q) const {
   std::unordered_map<std::string, std::string> q2p; // map queries to patterns
   std::vector<std::string> qs; // list of queries with the given pattern
+  DbPackage package(q.bid);
+  if (not package.load(mysql)) {
+    THROW(Error, "cannot load package: ", package.strID());
+  }
   // select tokens
   for (const auto &p : q.qs) {
     tables::Errorpatterns e;
     tables::Suggestions s;
     tables::Types t;
-    auto rows = mysql.db()(select(t.typ, e.pattern)
-                               .from(e.join(s)
-                                         .on(e.suggestionid == s.id)
-                                         .join(t)
-                                         .on(t.id == s.tokentypid))
-                               .where(e.pattern == p and s.bookid == q.bid and
-                                      s.topsuggestion == true));
+    auto rows =
+        mysql.db()(select(t.typ, e.pattern)
+                       .from(e.join(s)
+                                 .on(e.suggestionid == s.id)
+                                 .join(t)
+                                 .on(t.id == s.tokentypid))
+                       .where(e.pattern == p and s.bookid == package.bookid and
+                              s.topsuggestion == true));
 
     for (const auto &row : rows) {
       // skip collate artifacts
@@ -257,7 +270,7 @@ Route::Response SearchRoute::search(MysqlConnection &mysql, pq q) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response SearchRoute::search(MysqlConnection &mysql, ac q) const {
+Route::Response SearchRoute::search_ac(MysqlConnection &mysql, ac q) const {
   DbPackage pkg(q.bid);
   if (not pkg.load(mysql)) {
     THROW(Error, "cannot load package ", pkg.strID());

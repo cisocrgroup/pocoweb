@@ -32,9 +32,9 @@ private:
     std::vector<std::string> qs;
     int bid, skip, max;
   };
-  Response search(MysqlConnection &mysql, tq q) const;
-  Response search(MysqlConnection &mysql, pq q) const;
-  Response search(MysqlConnection &mysql, ac q) const;
+  Response search_token(MysqlConnection &mysql, tq q) const;
+  Response search_pattern(MysqlConnection &mysql, pq q) const;
+  Response search_ac(MysqlConnection &mysql, ac q) const;
 
   static const char *route_;
   static const char *name_;
