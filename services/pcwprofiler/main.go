@@ -253,7 +253,7 @@ func getAllPatterns(ctx context.Context, w http.ResponseWriter, ocr bool) {
 		}
 		tokens2patterns[t][p] = true
 	}
-	err = eachNonCorrectedToken(project, func(token db.Chars) {
+	err = eachOCRToken(project, func(token db.Chars) {
 		str := strings.ToLower(token.Cor())
 		if _, ok := tokens2patterns[str]; !ok {
 			return
@@ -340,7 +340,7 @@ func getSuspiciousWords() service.HandlerFunc {
 			}
 			patterns.Counts[p] = 0
 		}
-		err = eachNonCorrectedToken(p, func(token db.Chars) {
+		err = eachOCRToken(p, func(token db.Chars) {
 			str := strings.ToLower(token.Cor())
 			if c, ok := patterns.Counts[str]; ok {
 				patterns.Counts[str] = c + 1
@@ -355,7 +355,7 @@ func getSuspiciousWords() service.HandlerFunc {
 	}
 }
 
-func eachNonCorrectedToken(p *db.Project, f func(db.Chars)) error {
+func eachOCRToken(p *db.Project, f func(db.Chars)) error {
 	pageIDs, err := selectPageIDs(p)
 	if err != nil {
 		return fmt.Errorf("cannot load page ids: %v", err)
@@ -375,14 +375,14 @@ ORDER BY c.lineid,c.seq`)
 			return fmt.Errorf("cannot execute statement: %v", err)
 		}
 		defer rows.Close()
-		if err := eachNonCorrectedTokenInRows(rows, f); err != nil {
+		if err := eachOCRTokenInRows(rows, f); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func eachNonCorrectedTokenInRows(rows *sql.Rows, f func(db.Chars)) error {
+func eachOCRTokenInRows(rows *sql.Rows, f func(db.Chars)) error {
 	var line db.Chars
 	var lineid int
 	for rows.Next() {
@@ -401,17 +401,17 @@ func eachNonCorrectedTokenInRows(rows *sql.Rows, f func(db.Chars)) error {
 			line = line[:0]
 			continue
 		}
-		eachNonCorrectedTokenOnLine(line, f)
+		eachOCRTokenOnLine(line, f)
 		line = append(line[:0], c)
 	}
 	// last line
 	if len(line) > 0 && !line.IsFullyCorrected() {
-		eachNonCorrectedTokenOnLine(line, f)
+		eachOCRTokenOnLine(line, f)
 	}
 	return nil
 }
 
-func eachNonCorrectedTokenOnLine(line db.Chars, f func(db.Chars)) {
+func eachOCRTokenOnLine(line db.Chars, f func(db.Chars)) {
 	for t, rest := line.NextWord(); len(t) > 0; t, rest = rest.NextWord() {
 		t = t.Trim(func(c db.Char) bool {
 			r := c.OCR
