@@ -220,13 +220,13 @@ func getPatterns() service.HandlerFunc {
 }
 
 func getAllPatterns(ctx context.Context, w http.ResponseWriter, ocr bool) {
-	const stmt = "SELECT p.pattern,COUNT(*) " +
+	const stmt = "SELECT p.pattern,t.typ " +
 		"FROM errorpatterns p " +
 		"JOIN suggestions s ON s.id=p.suggestionid " +
-		"WHERE p.bookID=? AND p.ocr=? AND s.topsuggestion=? " +
-		"GROUP BY p.pattern"
-	p := ctx.Value("project").(*db.Project)
-	rows, err := db.Query(service.Pool(), stmt, p.BookID, ocr, true)
+		"JOIN types t ON t.id=s.tokentypid " +
+		"WHERE p.bookID=? AND p.ocr=? AND s.topsuggestion=?"
+	project := ctx.Value("project").(*db.Project)
+	rows, err := db.Query(service.Pool(), stmt, project.BookID, ocr, true)
 	if err != nil {
 		service.ErrorResponse(w, http.StatusInternalServerError,
 			"cannot get patterns: %v", err)
@@ -234,20 +234,38 @@ func getAllPatterns(ctx context.Context, w http.ResponseWriter, ocr bool) {
 	}
 	defer rows.Close()
 	patterns := api.PatternCounts{
-		BookID:    p.BookID,
-		ProjectID: p.ProjectID,
+		BookID:    project.BookID,
+		ProjectID: project.ProjectID,
 		OCR:       ocr,
-		Counts:    make(map[string]int),
+		Counts:    make(map[string]int), // prohibit json nil
 	}
+	// map tokens to patterns
+	tokens2patterns := make(map[string]map[string]bool)
 	for rows.Next() {
-		var p string
-		var c int
-		if err := rows.Scan(&p, &c); err != nil {
+		var p, t string
+		if err := rows.Scan(&p, &t); err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot scan pattern: %v", err)
 			return
 		}
-		patterns.Counts[p] = c
+		if _, ok := tokens2patterns[t]; !ok {
+			tokens2patterns[t] = make(map[string]bool)
+		}
+		tokens2patterns[t][p] = true
+	}
+	err = eachNonCorrectedToken(project, func(token db.Chars) {
+		str := strings.ToLower(token.Cor())
+		if _, ok := tokens2patterns[str]; !ok {
+			return
+		}
+		for p := range tokens2patterns[str] {
+			patterns.Counts[p]++
+		}
+	})
+	if err != nil {
+		service.ErrorResponse(w, http.StatusInternalServerError,
+			"cannot count error patterns: %v", err)
+		return
 	}
 	service.JSONResponse(w, patterns)
 }
