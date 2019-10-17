@@ -342,9 +342,10 @@ func getSuspiciousWords() service.HandlerFunc {
 		}
 		err = eachOCRToken(p, func(token db.Chars) {
 			str := strings.ToLower(token.Cor())
-			if c, ok := patterns.Counts[str]; ok {
-				patterns.Counts[str] = c + 1
+			if _, ok := patterns.Counts[str]; !ok {
+				return
 			}
+			patterns.Counts[str]++
 		})
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
