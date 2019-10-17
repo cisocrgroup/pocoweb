@@ -426,6 +426,22 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::boolean>;
     };
+    struct Pooled
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "pooled";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T pooled;
+            T& operator()() { return pooled; }
+            const T& operator()() const { return pooled; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::boolean>;
+    };
   } // namespace Books_
 
   struct Books: sqlpp::table_t<Books,
@@ -441,7 +457,8 @@ namespace tables
                Books_::Lang,
                Books_::Profiled,
                Books_::Extendedlexicon,
-               Books_::Postcorrected>
+               Books_::Postcorrected,
+               Books_::Pooled>
   {
     struct _alias_t
     {

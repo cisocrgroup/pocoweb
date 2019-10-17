@@ -140,7 +140,8 @@ struct DbPackage {
   DbPackage(int pid)
       : pageids(), title(), author(), description(), uri(), profilerurl(),
         histpatterns(), directory(), language(), bookid(pid), projectid(pid),
-        owner(), year(), profiled(), extendedLexicon(), postCorrected() {}
+        owner(), year(), profiled(), extendedLexicon(), postCorrected(),
+        pooled() {}
   bool load(MysqlConnection &mysql);
   bool isBook() const noexcept { return projectid == bookid; }
   std::string strID() const { return std::to_string(projectid); }
@@ -148,7 +149,7 @@ struct DbPackage {
   std::string title, author, description, uri, profilerurl, histpatterns,
       directory, language;
   int bookid, projectid, owner, year;
-  bool profiled, extendedLexicon, postCorrected;
+  bool profiled, extendedLexicon, postCorrected, pooled;
 };
 
 Json &operator<<(Json &j, const DbPackage &package);
@@ -242,6 +243,7 @@ template <class Row> void load_from_row(Row &row, DbPackage &package) {
   package.postCorrected = row.postcorrected;
   package.owner = row.owner;
   package.year = row.year;
+  package.pooled = row.pooled;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

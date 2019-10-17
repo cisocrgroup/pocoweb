@@ -16,11 +16,11 @@ struct BookData {
   BookData()
       : author(), title(), description(), histPatterns(), uri(), profilerUrl(),
         lang(), dir(), year(), profiled(false), extendedLexicon(false),
-        postCorrected(false) {}
+        postCorrected(false), pooled(false) {}
   std::string author, title, description, histPatterns, uri, profilerUrl, lang;
   Path dir;
   int year;
-  bool profiled, extendedLexicon, postCorrected;
+  bool profiled, extendedLexicon, postCorrected, pooled;
 };
 
 class Book : public Project {

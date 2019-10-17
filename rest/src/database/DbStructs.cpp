@@ -417,6 +417,7 @@ pcw::Json &pcw::operator<<(Json &j, const DbPackage &package) {
   j["language"] = package.language;
   j["year"] = package.year;
   j["isBook"] = bool(package.bookid == package.projectid);
+  j["pooled"] = package.pooled;
   j["status"]["profiled"] = package.profiled;
   j["status"]["post-corrected"] = package.postCorrected;
   j["status"]["extended-lexicon"] = package.extendedLexicon;

@@ -40,7 +40,8 @@ create table if not exists books (
 	lang varchar(50) not null,
 	profiled boolean default(false) not null,
 	extendedlexicon boolean default(false) not null,
-	postcorrected boolean default(false) not null
+	postcorrected boolean default(false) not null,
+	pooled boolean default(false) not null
 );
 alter table books convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 alter table books change title title varchar(100) character set utf8mb4 collate utf8mb4_unicode_ci;

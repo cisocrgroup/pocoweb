@@ -135,6 +135,7 @@ template <class D> void update_book_data(DbPackage &package, const D &data) {
   set_if_set(package.histpatterns, data, "histPatterns");
   set_if_set(package.profilerurl, data, "profilerUrl");
   set_if_set(package.year, data, "year");
+  set_if_set(package.pooled, data, "pooled");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -147,6 +148,7 @@ template <class D> void update_book_data(BookData &bdata, const D &data) {
   set_if_set(bdata.histPatterns, data, "histPatterns");
   set_if_set(bdata.profilerUrl, data, "profilerUrl");
   set_if_set(bdata.year, data, "year");
+  set_if_set(bdata.pooled, data, "pooled");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
