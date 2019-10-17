@@ -842,6 +842,13 @@ Note that if a project is deleted, all associated packages are deleted as well.<
       <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
       <span class="pl-s"><span class="pl-pds">"</span>pages<span class="pl-pds">"</span></span>: <span class="pl-c1">100</span>,
       <span class="pl-s"><span class="pl-pds">"</span>pageIds<span class="pl-pds">"</span></span>: [<span class="pl-c1">15</span>,<span class="pl-c1">18</span>,<span class="pl-c1">20</span>,<span class="pl-c1">27</span>,<span class="pl-ii">...</span>],
+	  <span class="pl-s"><span class="pl-pds">"</span>histPatterns<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>t:th,ei:ey<span class="pl-pds">"</span></span>,
+	  <span class="pl-s"><span class="pl-pds">"</span>pooled<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>,
+	  <span class="pl-s"><span class="pl-pds">"</span>status<span class="pl-pds">"</span></span>: {
+		<span class="pl-s"><span class="pl-pds">"</span>profile<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>,
+		<span class="pl-s"><span class="pl-pds">"</span>extended-lexicon<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>,
+		<span class="pl-s"><span class="pl-pds">"</span>post-corrected<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>
+	  },
       <span class="pl-s"><span class="pl-pds">"</span>isBook<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
     },
     <span class="pl-ii">...</span>
@@ -866,7 +873,7 @@ Note that if a project is deleted, all associated packages are deleted as well.<
 <h4>
 <a id="user-content-query-parameters" class="anchor" href="#query-parameters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
 <p>All query parameters are optional.  Missing parameters are set to the
-empty string <code>""</code> or <code>0</code> respectively.</p>
+empty string <code>""</code>, <code>0</code> or <code>false</code> respectively.</p>
 <ul>
 <li><code>author=book-author</code></li>
 <li><code>title=book-title</code></li>
@@ -875,6 +882,7 @@ empty string <code>""</code> or <code>0</code> respectively.</p>
 <li><code>profilerUrl=url</code></li>
 <li><code>histPatterns=[m1:h1[,m2:h2]...]</code></li>
 <li><code>year=1900</code></li>
+<li><code>pooled=true</code></li>
 </ul>
 <h4>
 <a id="user-content-response-data-8" class="anchor" href="#response-data-8" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
@@ -889,6 +897,8 @@ empty string <code>""</code> or <code>0</code> respectively.</p>
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
   <span class="pl-s"><span class="pl-pds">"</span>pages<span class="pl-pds">"</span></span>: <span class="pl-c1">100</span>,
   <span class="pl-s"><span class="pl-pds">"</span>pageIds<span class="pl-pds">"</span></span>: [<span class="pl-c1">15</span>,<span class="pl-c1">18</span>,<span class="pl-c1">20</span>,<span class="pl-c1">27</span>,<span class="pl-ii">...</span>],
+  <span class="pl-s"><span class="pl-pds">"</span>histPatterns<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>t:th,ei:ey<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>pooled<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>,
   <span class="pl-s"><span class="pl-pds">"</span>status<span class="pl-pds">"</span></span>: {
 	<span class="pl-s"><span class="pl-pds">"</span>profile<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>extended-lexicon<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>,
@@ -926,6 +936,8 @@ package's data.</li>
 	<span class="pl-s"><span class="pl-pds">"</span>extended-lexicon<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>post-corrected<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>
   },
+  <span class="pl-s"><span class="pl-pds">"</span>histPatterns<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>t:th,ei:ey<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>pooled<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>,
   <span class="pl-s"><span class="pl-pds">"</span>isBook<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
 }</pre></div>
 <hr>
@@ -950,7 +962,9 @@ administrator can change a project's metadata.</li>
   <span class="pl-s"><span class="pl-pds">"</span>year<span class="pl-pds">"</span></span>: <span class="pl-c1">1234</span>,
   <span class="pl-s"><span class="pl-pds">"</span>language<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>language<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>histPatterns<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>[m1:h1[,m2:h2]...]<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>profilerUrl<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>profiler-url|local<span class="pl-pds">"</span></span>
+  <span class="pl-s"><span class="pl-pds">"</span>profilerUrl<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>profiler-url|local<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>histPatterns<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>t:th,ei:ey<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>pooled<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>
 }</pre></div>
 <hr>
 <p><a id="user-content-api-delete-books-pid"></a></p>

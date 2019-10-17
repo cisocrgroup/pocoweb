@@ -778,6 +778,13 @@ Get all books of an user account.
       "projectId": 42,
       "pages": 100,
       "pageIds": [15,18,20,27,...],
+	  "histPatterns": "t:th,ei:ey",
+	  "pooled": true,
+	  "status": {
+		"profile": false,
+		"extended-lexicon": false,
+		"post-corrected": false
+	  },
       "isBook": true|false
     },
     ...
@@ -800,7 +807,7 @@ Zipped content of the [project archive](#user-content-project-archives).
 
 #### Query parameters
 All query parameters are optional.  Missing parameters are set to the
-empty string `""` or `0` respectively.
+empty string `""`, `0` or `false` respectively.
 * `author=book-author`
 * `title=book-title`
 * `description=description`
@@ -808,6 +815,7 @@ empty string `""` or `0` respectively.
 * `profilerUrl=url`
 * `histPatterns=[m1:h1[,m2:h2]...]`
 * `year=1900`
+* `pooled=true`
 
 #### Response data
 ```json
@@ -822,6 +830,8 @@ empty string `""` or `0` respectively.
   "projectId": 27,
   "pages": 100,
   "pageIds": [15,18,20,27,...],
+  "histPatterns": "t:th,ei:ey",
+  "pooled": true,
   "status": {
 	"profile": false,
 	"extended-lexicon": false,
@@ -857,6 +867,8 @@ Get the content of a project or package.
 	"extended-lexicon": false,
 	"post-corrected": false
   },
+  "histPatterns": "t:th,ei:ey",
+  "pooled": true,
   "isBook": true|false
 }
 ```
@@ -879,7 +891,9 @@ Update the meta data of a project.
   "year": 1234,
   "language": "language",
   "histPatterns": "[m1:h1[,m2:h2]...]",
-  "profilerUrl": "profiler-url|local"
+  "profilerUrl": "profiler-url|local",
+  "histPatterns": "t:th,ei:ey",
+  "pooled": true
 }
 ```
 
