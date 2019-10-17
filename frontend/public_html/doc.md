@@ -36,6 +36,7 @@ for suspicious words.
 * [Installation](#user-content-installation)
 * [Services](#user-content-overview-services)
 * [REST API](#user-content-rest-api)
+    * [Authentification](#user-content-authorization)
     * [[GET] rest/api-version](#user-content-api-get-version)
     * [[POST] rest/login](#user-content-api-post-login)
     * [[GET] rest/login](#user-content-api-get-login)
@@ -533,11 +534,12 @@ to execute the following command: `curl
 http://localhost/rest/api-version`.
 
 <a id='authorization'></a>
-### Authorization
+### Authentification
 
-You have to be authenticated for most of the API calls.
-If you are not authenticated the API will return `403 Forbidden`
-with no response data.
+You have to be authenticated for most of the API calls.  If you are
+not authenticated the API will return `401 Not Authenticated` with no
+response data.  If you try to access project or package data that you
+are not allowed to access, the API will `403 Forbidden` instead.
 
 In order to authenticate you first have to
 [login](#user-content-api-post-login) with a valid user account at the

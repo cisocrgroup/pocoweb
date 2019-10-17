@@ -45,6 +45,9 @@ for suspicious words.</p>
 <a href="#user-content-rest-api">REST API</a>
 <ul>
 <li>
+<p><a href="#user-content-authorization">Authentification</a></p>
+</li>
+<li>
 <p><a href="#user-content-api-get-version">[GET] rest/api-version</a></p>
 </li>
 <li>
@@ -601,10 +604,11 @@ using <code>http://localhost/rest/...</code>.  E.g. to get the API's version (se
 to execute the following command: <code>curl http://localhost/rest/api-version</code>.</p>
 <p><a id="user-content-authorization"></a></p>
 <h3>
-<a id="user-content-authorization" class="anchor" href="#authorization" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authorization</h3>
-<p>You have to be authenticated for most of the API calls.
-If you are not authenticated the API will return <code>403 Forbidden</code>
-with no response data.</p>
+<a id="user-content-authentification" class="anchor" href="#authentification" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authentification</h3>
+<p>You have to be authenticated for most of the API calls.  If you are
+not authenticated the API will return <code>401 Not Authenticated</code> with no
+response data.  If you try to access project or package data that you
+are not allowed to access, the API will <code>403 Forbidden</code> instead.</p>
 <p>In order to authenticate you first have to
 <a href="#user-content-api-post-login">login</a> with a valid user account at the
 back-end.  The login will return an unique session id token.  You have
