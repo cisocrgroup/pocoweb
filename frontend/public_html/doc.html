@@ -1085,8 +1085,18 @@ only the according ground truth files are updated.</p>
 <a id="user-content-query-parameters-2" class="anchor" href="#query-parameters-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
 <ul>
 <li>The query is given with the <code>q=query</code> parameter. This parameter is mandatory.</li>
-<li>The optional parameter <code>p=1|0</code> specifies if a token search or a error pattern
+<li>The optional parameter <code>t=token|pattern|ac</code> specifies the type of
+the search (default: <code>token</code>):
+<ul>
+<li>
+<code>token</code> specifies a keyword search for the query</li>
+<li>
+<code>pattern</code> specifies a (OCR) pattern query</li>
+<li>
+<code>ac</code> specifies a search for auto corrected tokens
 search should be performed (default: <code>p=0</code>).</li>
+</ul>
+</li>
 <li>The optional parameter <code>max=n</code> sets the maximal number of returned
 hits (default: <code>max=50</code>).</li>
 <li>The optional parameter <code>skip=n</code> sets the number of hits to skip

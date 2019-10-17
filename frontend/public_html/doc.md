@@ -998,7 +998,11 @@ Search for a token or error pattern in a project or package with id `pid`.
 
 #### Query parameters
 * The query is given with the `q=query` parameter. This parameter is mandatory.
-* The optional parameter `p=1|0` specifies if a token search or a error pattern
+* The optional parameter `t=token|pattern|ac` specifies the type of
+  the search (default: `token`):
+  * `token` specifies a keyword search for the query
+  * `pattern` specifies a (OCR) pattern query
+  * `ac` specifies a search for auto corrected tokens
 search should be performed (default: `p=0`).
 * The optional parameter `max=n` sets the maximal number of returned
   hits (default: `max=50`).
