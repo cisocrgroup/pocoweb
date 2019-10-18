@@ -121,7 +121,7 @@ services:
       - ${PCW_BASE_DIR}/project-data:/project-data:rw
       - ${PCW_BASE_DIR}/ocr-data:/data/models:rw
 
-  # pocoweb ocr
+  # pocoweb pkg
   pcwpkg:
     image: flobar/pcwpkg
     restart: always
