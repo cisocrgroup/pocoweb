@@ -38,6 +38,8 @@
           <td>
               <button type="button" class="btn btn-sm btn-outline-dark js-delete-user" id="<%-item[columns[0]['id']]%>"> <i class="fas fa-times"></i></button>
           </td>      
+          <% } else if(column.name == "icon") { %>
+          <td> <%= item[column.name] %> </td>      
           <% } else { %>
           <td> <%- item[column.name] %> </td>      
           <% } %>

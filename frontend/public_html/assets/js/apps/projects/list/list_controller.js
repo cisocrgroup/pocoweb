@@ -30,19 +30,19 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
         // only show projects not packages
         // remember: book = project and project = package :(
-         var filtered_projects=[];
         if(projects.books){
          for(var i=0;i<projects.books.length;i++){
           var book = projects.books[i];
-          if(user.admin&&book.isBook){
-             filtered_projects.push(book);
+          if(book.isBook){
+             book['icon'] = '<i class="green fas fa-book-open"></i>';
+          }
+          else {
+            book['icon'] = '<i class="green fas fa-box-open"></i>';
           }
          }
        }
 
-       if(user.admin){
-         projects.books=filtered_projects;
-       }
+      
 
     	   projectsListLayout.on("attach",function(){
 
