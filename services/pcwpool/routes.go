@@ -2,7 +2,6 @@ package main
 
 import (
 	"archive/zip"
-	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -52,6 +51,10 @@ WHERE p.origin=p.id and p.owner=?
 			return
 		}
 		defer rows.Close()
+		w.Header().Add("Content-Type", "application/zip")
+		// if _, err := io.Copy(w, &buf); err != nil {
+		// 	return fmt.Errorf("cannot send archive: %v", err)
+		// }
 		if err := s.writePool(w, rows); err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot write pool for user id %d: %v", userid, err)
@@ -76,6 +79,7 @@ WHERE b.pooled=true and p.origin=p.id
 			return
 		}
 		defer rows.Close()
+		w.Header().Add("Content-Type", "application/zip")
 		if err := s.writePool(w, rows); err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot write pool: %v", err)
@@ -84,11 +88,10 @@ WHERE b.pooled=true and p.origin=p.id
 	}
 }
 
-func (s *server) writePool(w http.ResponseWriter, rows *sql.Rows) (err error) {
-	buf := bytes.Buffer{}
-	zipw := zip.NewWriter(&buf)
+func (s *server) writePool(out io.Writer, rows *sql.Rows) (err error) {
+	w := zip.NewWriter(out)
 	defer func() {
-		e := zipw.Close()
+		e := w.Close()
 		if err == nil {
 			err = e
 		}
@@ -98,21 +101,17 @@ func (s *server) writePool(w http.ResponseWriter, rows *sql.Rows) (err error) {
 		if err := book.scan(rows); err != nil {
 			return fmt.Errorf("cannot scan book: %v", err)
 		}
-		if err := book.write(zipw); err != nil {
+		if err := book.write(w); err != nil {
 			return fmt.Errorf("cannot write info for book %s: %v", book.String(), err)
 		}
-		if err := s.writeBookToPool(&book, zipw); err != nil {
+		if err := s.writeBookToPool(w, &book); err != nil {
 			return fmt.Errorf("cannot pool book %s: %v", book.String(), err)
 		}
-	}
-	w.Header().Add("Content-Type", "application/zip")
-	if _, err := io.Copy(w, &buf); err != nil {
-		return fmt.Errorf("cannot send archive: %v", err)
 	}
 	return nil
 }
 
-func (s *server) writeBookToPool(book *bookInfo, out *zip.Writer) error {
+func (s *server) writeBookToPool(out *zip.Writer, book *bookInfo) error {
 	const stmnt = `
 SELECT c.pageid,c.lineid,c.cor,c.ocr,l.imagepath
 FROM contents c
@@ -122,15 +121,17 @@ ORDER BY c.pageid,c.lineid,c.seq
 `
 	rows, err := s.pool.Query(stmnt, book.ID)
 	if err != nil {
-		return fmt.Errorf("cannot query text content for book %s: %v", book.String(), err)
+		return fmt.Errorf("cannot query text content for book %s: %v",
+			book.String(), err)
 	}
 	defer rows.Close()
-	var line lineInfo
+	line := lineInfo{base: s.base, book: book}
 	for rows.Next() {
 		var pid, lid, cor, ocr int
 		var path string
 		if err := rows.Scan(&pid, &lid, &cor, &ocr, &path); err != nil {
-			return fmt.Errorf("cannot scan content for book %s: %v", book.String(), err)
+			return fmt.Errorf("cannot scan content for book %s: %v",
+				book.String(), err)
 		}
 		// same line on same page -> append char
 		if pid == line.pageID && lid == line.lineID {
@@ -138,7 +139,7 @@ ORDER BY c.pageid,c.lineid,c.seq
 			continue
 		}
 		// write old line
-		if err := line.write(s.base, book.String(), out); err != nil {
+		if err := line.write(out); err != nil {
 			return fmt.Errorf("cannot write line %d: %v", line.lineID, err)
 		}
 		line.line = line.line[:0] // clear
@@ -152,42 +153,47 @@ ORDER BY c.pageid,c.lineid,c.seq
 
 type lineInfo struct {
 	line           db.Chars
-	path           string
+	path, base     string
+	book           *bookInfo
 	pageID, lineID int
 }
 
-func (line *lineInfo) write(base, book string, out *zip.Writer) error {
+func (line *lineInfo) write(out *zip.Writer) error {
 	// only write fully corrected, not empty lines
 	if len(line.line) == 0 || !line.line.IsFullyCorrected() {
 		return nil
 	}
-	if err := line.writeGT(book, out); err != nil {
+	if err := line.writeGT(out); err != nil {
 		return err
 	}
-	return line.copyImage(base, book, out)
+	return line.copyImage(out)
 }
 
-func (line *lineInfo) writeGT(book string, out *zip.Writer) error {
-	path := filepath.Join("corpus", book, fmt.Sprintf("%4d/%4d.gt.txt", line.pageID, line.lineID))
+func (line *lineInfo) writeGT(out *zip.Writer) error {
+	path := filepath.Join("corpus", line.book.String(),
+		fmt.Sprintf("%04d/%04d.gt.txt", line.pageID, line.lineID))
 	w, err := out.Create(path)
 	if err != nil {
-		return fmt.Errorf("cannot create gt file for line %d: %v", line.lineID, err)
+		return fmt.Errorf("cannot create gt file for line %d: %v",
+			line.lineID, err)
 	}
 	// Note: w is a writer not a WriteCloser
 	if _, err := fmt.Fprintln(w, line.line.Cor()); err != nil {
-		return fmt.Errorf("cannot create write gt for line %d: %v", line.lineID, err)
+		return fmt.Errorf("cannot create write gt for line %d: %v",
+			line.lineID, err)
 	}
 	return nil
 }
 
-func (line *lineInfo) copyImage(base, book string, out *zip.Writer) error {
-	path := filepath.Join("corpus", book, fmt.Sprintf("%4d/%4d.png", line.pageID, line.lineID))
+func (line *lineInfo) copyImage(out *zip.Writer) error {
+	path := filepath.Join("corpus", line.book.String(),
+		fmt.Sprintf("%04d/%04d.png", line.pageID, line.lineID))
 	dest, err := out.Create(path)
 	if err != nil {
 		return fmt.Errorf("cannot create image file: %v", err)
 	}
 	// Note: dest is a writer not a WriteCloser
-	src, err := os.Open(filepath.Join(base, line.path))
+	src, err := os.Open(filepath.Join(line.base, line.path))
 	if err != nil {
 		return fmt.Errorf("cannot open source image file: %v", err)
 	}
@@ -205,7 +211,8 @@ type bookInfo struct {
 }
 
 func (book *bookInfo) scan(rows *sql.Rows) error {
-	return rows.Scan(&book.Author, &book.Title, &book.Description, &book.OwnerEmail,
+	return rows.Scan(&book.Author, &book.Title, &book.Description,
+		&book.OwnerEmail,
 		&book.ID, &book.Year, &book.Pooled)
 }
 
@@ -222,7 +229,7 @@ func (book *bookInfo) write(out *zip.Writer) error {
 }
 
 func (book *bookInfo) String() string {
-	return fmt.Sprintf("%4d-%s_%s",
+	return fmt.Sprintf("%04d-%s_%s",
 		book.Year,
 		strings.ToLower(strings.ReplaceAll(book.Author, " ", "_")),
 		strings.ToLower(strings.ReplaceAll(book.Title, " ", "_")),
