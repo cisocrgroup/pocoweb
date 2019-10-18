@@ -277,9 +277,14 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
        })
 
        projectShowPage.on("page:concordance_clicked",function(selection,searchType){
+
+         var loadingCircleView = new Views.LoadingBackdropOpc();
+        App.mainLayout.showChildView("backdropRegion", loadingCircleView);
+
         var searchingToken = ProjectEntities.API.search({q:selection,pid:id,searchType:searchType,skip:0,max:App.getPageHits(id)});
         var that = this;
          $.when(searchingToken).done(function(tokens){
+          loadingCircleView.destroy();
             if(tokens.total==0){
                 var confirmModal = new Show.OkDialog({
                       asModal: true,

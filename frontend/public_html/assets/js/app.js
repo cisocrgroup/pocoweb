@@ -218,6 +218,8 @@ App.on("start", function(){
                              App.trigger("projects:show",split[1],split[3])
                           }
 
+                          else {
+
                           switch(currentRoute) {
                             case "projects":
                               App.trigger("projects:list")
@@ -234,6 +236,8 @@ App.on("start", function(){
                             default:
                               App.trigger("home:portal")
                           }
+
+                        }
 
 
                 }).fail(function(response){
