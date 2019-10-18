@@ -34,6 +34,7 @@ for suspicious words.
     * [Navigation bar](#user-content-navigation-bar)
     * [Concordance view](#user-content-concordance-view)
 * [Installation](#user-content-installation)
+* [Grond-truth pool](#user-content-pool)
 * [Services](#user-content-overview-services)
 * [REST API](#user-content-rest-api)
     * [Authentification](#user-content-authorization)
@@ -81,7 +82,9 @@ for suspicious words.
 	* [[POST] rest/postcorrect/el/books/`pid`](#user-content-api-post-el)
 	* [[GET] rest/postcorrect/rrdm/books/`pid`](#user-content-api-get-rrdm)
 	* [[POST] rest/postcorrect/rrdm/books/`pid`](#user-content-api-post-rrdm)
-	* [[GET] rest/jobs/`jobid`](#user-content-api-get-jobs)
+	* [[GET] rest/pool/global](#user-content-api-get-global-pool)
+	* [[GET] rest/pool/users/`uid`](#user-content-api-get-user-pool)
+	* [[GET] rest/jobs/`jobid`](#user-content-api-get-user-pool)
 
 - - -
 <a id='users'></a>
@@ -486,6 +489,49 @@ Installation instructions can be found in the project's
 file.
 
 - - -
+<a id='pool'></a>
+## Ground-truth pool
+It is possible to download an archive of all corrected lines with their
+respective image files.  This pool contains line segmentd ground-truth data
+and is suitable to be used as training material for OCR.
+
+Adminstrators can download a pool containing all their
+[owned projects](#user-content-api-get-user-pool)
+or a [global pool](#user-content-api-get-global-pool)
+containing data of all projects in pocoweb.  If for some
+reason a project should not be part of this global pool it is possible
+to set the variable `pooled` to `false` in the projects's settings.
+
+The pool is a zipped archive that contains the line segmented
+correction data in a directory structure that is ordered by
+project, page ids and line ids:
+```
+corpus
+├── year-author_name1_book_title1
+│   ├── pageid1
+│   │   ├── lineid1.gt.txt
+│   │   ├── lineid1.png
+│   │   ├── lineid2.gt.txt
+│   │   └── lineid2.png
+│   └── pageid2
+│       ├── lineid1.gt.txt
+│       ├── lineid1.png
+│       ├── lineid2.gt.txt
+│       └── lineid2.png
+└── year-author_name2_book_title2
+    ├── pageid1
+    │   ├── lineid1.gt.txt
+    │   ├── lineid1.png
+    │   ├── lineid2.gt.txt
+    │   └── lineid2.png
+    └── pageid2
+        ├── lineid1.gt.txt
+        ├── lineid1.png
+        ├── lineid2.gt.txt
+        └── lineid2.png
+```
+
+- - -
 <a id='overview-services'></a>
 ## Services
 Pocoweb is composed with a number of interdependend services:
@@ -502,7 +548,7 @@ Pocoweb is composed with a number of interdependend services:
 * pcwpostcorrection handles the automatic postcorrection
 * pcwocr handles ocr prediction and training
 * pcwpkg handles splitting and assignment of packages
-
+* pcwpool handles download of [pool](#user-content-pool) data
 ![Service Overview](assets/images/doc/overview.svg "Pocoweb service overview")
 
 - - -
@@ -1884,6 +1930,24 @@ correction.
 	"id": 31
 }
 ```
+
+---
+<a id='api-get-global-pool'></a>
+### [GET] rest/pool/global
+Download the global ground-truth [pool](#user-content-pool)
+of corrected lines in all projects.
+* [Authorization](#user-content-authorization) is required.
+* Only adminstrators can download the global pool.
+
+---
+<a id='api-get-user-pool'></a>
+### [GET] rest/pool/users/`uid`
+Download the user's ground-truth [pool](#user-content-pool)
+of corrected lines in all projects of a user.
+* [Authorization](#user-content-authorization) is required.
+* Only adminstrators can download the user's pool.
+* The archive contains data from all projects the user owns;
+  the `pooled` setting in the projects is ignored.
 
 ---
 <a id='api-get-jobs'></a>

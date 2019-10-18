@@ -40,6 +40,7 @@ for suspicious words.</p>
 </ul>
 </li>
 <li><a href="#user-content-installation">Installation</a></li>
+<li><a href="#user-content-pool">Grond-truth pool</a></li>
 <li><a href="#user-content-overview-services">Services</a></li>
 <li>
 <a href="#user-content-rest-api">REST API</a>
@@ -177,7 +178,13 @@ for suspicious words.</p>
 <p><a href="#user-content-api-post-rrdm">[POST] rest/postcorrect/rrdm/books/<code>pid</code></a></p>
 </li>
 <li>
-<p><a href="#user-content-api-get-jobs">[GET] rest/jobs/<code>jobid</code></a></p>
+<p><a href="#user-content-api-get-global-pool">[GET] rest/pool/global</a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-user-pool">[GET] rest/pool/users/<code>uid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-get-user-pool">[GET] rest/jobs/<code>jobid</code></a></p>
 </li>
 </ul>
 </li>
@@ -551,6 +558,46 @@ Installation instructions can be found in the project's
 <a href="https://github.com/cisocrgroup/pocoweb/blob/master/README.md">README</a>
 file.</p>
 <hr>
+<p><a id="user-content-pool"></a></p>
+<h2>
+<a id="user-content-ground-truth-pool" class="anchor" href="#ground-truth-pool" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Ground-truth pool</h2>
+<p>It is possible to download an archive of all corrected lines with their
+respective image files.  This pool contains line segmentd ground-truth data
+and is suitable to be used as training material for OCR.</p>
+<p>Adminstrators can download a pool containing all their
+<a href="#user-content-api-get-user-pool">owned projects</a>
+or a <a href="#user-content-api-get-global-pool">global pool</a>
+containing data of all projects in pocoweb.  If for some
+reason a project should not be part of this global pool it is possible
+to set the variable <code>pooled</code> to <code>false</code> in the projects's settings.</p>
+<p>The pool is a zipped archive that contains the line segmented
+correction data in a directory structure that is ordered by
+project, page ids and line ids:</p>
+<pre><code>corpus
+├── year-author_name1_book_title1
+│   ├── pageid1
+│   │   ├── lineid1.gt.txt
+│   │   ├── lineid1.png
+│   │   ├── lineid2.gt.txt
+│   │   └── lineid2.png
+│   └── pageid2
+│       ├── lineid1.gt.txt
+│       ├── lineid1.png
+│       ├── lineid2.gt.txt
+│       └── lineid2.png
+└── year-author_name2_book_title2
+    ├── pageid1
+    │   ├── lineid1.gt.txt
+    │   ├── lineid1.png
+    │   ├── lineid2.gt.txt
+    │   └── lineid2.png
+    └── pageid2
+        ├── lineid1.gt.txt
+        ├── lineid1.png
+        ├── lineid2.gt.txt
+        └── lineid2.png
+</code></pre>
+<hr>
 <p><a id="user-content-overview-services"></a></p>
 <h2>
 <a id="user-content-services" class="anchor" href="#services" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Services</h2>
@@ -569,8 +616,10 @@ file.</p>
 <li>pcwpostcorrection handles the automatic postcorrection</li>
 <li>pcwocr handles ocr prediction and training</li>
 <li>pcwpkg handles splitting and assignment of packages</li>
+<li>pcwpool handles download of <a href="#user-content-pool">pool</a> data
+<a href="assets/images/doc/overview.svg" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/overview.svg" alt="Service Overview" title="Pocoweb service overview" style="max-width:100%;"></a>
+</li>
 </ul>
-<p><a href="assets/images/doc/overview.svg" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/overview.svg" alt="Service Overview" title="Pocoweb service overview" style="max-width:100%;"></a></p>
 <hr>
 <p><a id="user-content-rest-api"></a></p>
 <h2>
@@ -2016,6 +2065,31 @@ correction.</p>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">31</span>
 }</pre></div>
+<hr>
+<p><a id="user-content-api-get-global-pool"></a></p>
+<h3>
+<a id="user-content-get-restpoolglobal" class="anchor" href="#get-restpoolglobal" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/pool/global</h3>
+<p>Download the global ground-truth <a href="#user-content-pool">pool</a>
+of corrected lines in all projects.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only adminstrators can download the global pool.</li>
+</ul>
+<hr>
+<p><a id="user-content-api-get-user-pool"></a></p>
+<h3>
+<a id="user-content-get-restpoolusersuid" class="anchor" href="#get-restpoolusersuid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/pool/users/<code>uid</code>
+</h3>
+<p>Download the user's ground-truth <a href="#user-content-pool">pool</a>
+of corrected lines in all projects of a user.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only adminstrators can download the user's pool.</li>
+<li>The archive contains data from all projects the user owns;
+the <code>pooled</code> setting in the projects is ignored.</li>
+</ul>
 <hr>
 <p><a id="user-content-api-get-jobs"></a></p>
 <h3>
