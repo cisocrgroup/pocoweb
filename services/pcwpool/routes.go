@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/finkf/pcwgo/db"
 	"github.com/finkf/pcwgo/service"
@@ -170,9 +171,7 @@ func (line *lineInfo) write(out *zip.Writer) error {
 }
 
 func (line *lineInfo) writeGT(out *zip.Writer) error {
-	path := filepath.Join("corpus", line.book.String(),
-		fmt.Sprintf("%04d/%04d.gt.txt", line.pageID, line.lineID))
-	w, err := out.Create(path)
+	w, err := out.CreateHeader(line.gtZIPHeader())
 	if err != nil {
 		return fmt.Errorf("cannot create gt file for line %d: %v",
 			line.lineID, err)
@@ -186,9 +185,7 @@ func (line *lineInfo) writeGT(out *zip.Writer) error {
 }
 
 func (line *lineInfo) copyImage(out *zip.Writer) error {
-	path := filepath.Join("corpus", line.book.String(),
-		fmt.Sprintf("%04d/%04d.png", line.pageID, line.lineID))
-	dest, err := out.Create(path)
+	dest, err := out.CreateHeader(line.pngZIPHeader())
 	if err != nil {
 		return fmt.Errorf("cannot create image file: %v", err)
 	}
@@ -204,6 +201,24 @@ func (line *lineInfo) copyImage(out *zip.Writer) error {
 	return nil
 }
 
+func (line *lineInfo) gtZIPHeader() *zip.FileHeader {
+	return &zip.FileHeader{
+		Method:   zip.Deflate,
+		Modified: time.Now(),
+		Name: filepath.Join("corpus", line.book.String(),
+			fmt.Sprintf("%04d/%04d.gt.txt", line.pageID, line.lineID)),
+	}
+}
+
+func (line *lineInfo) pngZIPHeader() *zip.FileHeader {
+	return &zip.FileHeader{
+		Method:   zip.Deflate,
+		Modified: time.Now(),
+		Name: filepath.Join("corpus", line.book.String(),
+			fmt.Sprintf("%04d/%04d.png", line.pageID, line.lineID)),
+	}
+}
+
 type bookInfo struct {
 	Author, Title, Description, OwnerEmail string
 	ID, Year                               int
@@ -217,7 +232,7 @@ func (book *bookInfo) scan(rows *sql.Rows) error {
 }
 
 func (book *bookInfo) write(out *zip.Writer) error {
-	w, err := out.Create(filepath.Join("corpus", book.String()+".json"))
+	w, err := out.CreateHeader(book.zipHeader())
 	if err != nil {
 		return fmt.Errorf("cannot create file info file: %v", err)
 	}
@@ -226,6 +241,14 @@ func (book *bookInfo) write(out *zip.Writer) error {
 		return fmt.Errorf("cannot encode file info file: %v", err)
 	}
 	return nil
+}
+
+func (book *bookInfo) zipHeader() *zip.FileHeader {
+	return &zip.FileHeader{
+		Method:   zip.Deflate,
+		Modified: time.Now(),
+		Name:     filepath.Join("corpus", book.String()+".json"),
+	}
 }
 
 func (book *bookInfo) String() string {
