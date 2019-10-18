@@ -66,7 +66,7 @@ SELECT b.author,b.title,b.description,u.email,b.bookid,b.year,b.pooled
 FROM books b
 JOIN projects p ON p.origin=b.bookid
 JOIN users u on p.owner=u.id
-WHERE p.pooled=true and p.origin=p.id
+WHERE b.pooled=true and p.origin=p.id
 `
 		rows, err := s.pool.Query(stmnt)
 		if err != nil {
