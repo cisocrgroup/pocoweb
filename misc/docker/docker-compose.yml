@@ -63,6 +63,7 @@ services:
       - pcwpostcorrection
       - pcwocr
       - pcwpkg
+      - pcwpool
     depends_on:
       - db
     restart: always
@@ -131,6 +132,20 @@ services:
       - db
     env_file:
       - env.sh
+
+  # pocoweb pool
+  pcwpool:
+    image: flobar/pcwpool
+    restart: always
+    links:
+      - db
+    depends_on:
+      - db
+    env_file:
+      - env.sh
+    volumes:
+      - ${PCW_BASE_DIR}/project-data:/project-data:ro
+
 # named volumes
 volumes:
   letsencrypt_certs:
