@@ -10,6 +10,7 @@ digraph ov {
  pcwpostcorrection
  pcwocr
  pcwpkg
+ pcwpool
  wwwd [label="www-data" shape=folder fillcolor=gray style=filled]
  projectd [label="project-data" shape=folder fillcolor=gray style=filled]
  ocrd [label="ocr-data" shape=folder fillcolor=gray style=filled]
@@ -27,6 +28,7 @@ digraph ov {
  pcwauth -> pcwprofiler [label="/profile/*"]
  pcwauth -> pcwpostcorrection [label="/postcorrect/*"]
  pcwauth -> pcwpkg [label="/pkg/*"]
+ pcwauth -> pcwpool [label="/pool/*"]
  pcwauth -> mysql [style=dotted]
  pcwprofiler -> projectd
  pcwprofiler -> mysql [style=dotted]
@@ -39,4 +41,5 @@ digraph ov {
  pcwusers -> mysql [style=dotted]
  mysql -> dbd
  pcwpkg -> mysql [style=dotted]
+ pcwpool -> mysql [style=dotted]
 }
