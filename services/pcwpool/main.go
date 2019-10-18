@@ -12,12 +12,14 @@ import (
 var (
 	dsn    string
 	listen string
+	base   string
 	debug  bool
 )
 
 func init() {
 	flag.StringVar(&listen, "listen", ":8080", "set listening host")
 	flag.StringVar(&dsn, "dsn", "", "set mysql connection DSN (user:pass@proto(host)/dbname)")
+	flag.StringVar(&base, "base", "", "set path to base dir")
 	flag.BoolVar(&debug, "debug", false, "enable debug logging")
 }
 
@@ -27,7 +29,10 @@ func main() {
 		log.Fatalf("cannot initialize service: %v", err)
 	}
 	defer service.Close()
-	s := server{pool: service.Pool().(*sql.DB)}
+	s := server{
+		pool: service.Pool().(*sql.DB),
+		base: base,
+	}
 	s.routes()
 	log.Infof("starting to listen on %s", listen)
 	if err := http.ListenAndServe(listen, &s); err != nil {
