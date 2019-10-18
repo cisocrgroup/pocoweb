@@ -2,6 +2,7 @@ package main
 
 import (
 	"archive/zip"
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -28,9 +29,9 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) routes() {
 	s.router = http.DefaultServeMux
-	s.router.HandleFunc("/global", service.WithLog(service.WithMethods(
+	s.router.HandleFunc("/pool/global", service.WithLog(service.WithMethods(
 		http.MethodGet, s.handleGetGlobalPool())))
-	s.router.HandleFunc("/users/", service.WithLog(service.WithMethods(
+	s.router.HandleFunc("/pool/users/", service.WithLog(service.WithMethods(
 		http.MethodGet, service.WithIDs(s.handleGetUserPool(), "users"))))
 }
 
@@ -84,8 +85,8 @@ WHERE b.pooled=true and p.origin=p.id
 }
 
 func (s *server) writePool(w http.ResponseWriter, rows *sql.Rows) (err error) {
-	w.Header().Add("Content-Type", "application/zip")
-	zipw := zip.NewWriter(w)
+	buf := bytes.Buffer{}
+	zipw := zip.NewWriter(&buf)
 	defer func() {
 		e := zipw.Close()
 		if err == nil {
@@ -104,6 +105,10 @@ func (s *server) writePool(w http.ResponseWriter, rows *sql.Rows) (err error) {
 			return fmt.Errorf("cannot pool book %s: %v", book.String(), err)
 		}
 	}
+	w.Header().Add("Content-Type", "application/zip")
+	if _, err := io.Copy(w, &buf); err != nil {
+		return fmt.Errorf("cannot send archive: %v", err)
+	}
 	return nil
 }
 
@@ -111,7 +116,7 @@ func (s *server) writeBookToPool(book *bookInfo, out *zip.Writer) error {
 	const stmnt = `
 SELECT c.pageid,c.lineid,c.cor,c.ocr,l.imagepath
 FROM contents c
-JOIN textlines l ON c.bookid=l.bookid,c.pageid=l.pageid,c.lineid=l.lineid
+JOIN textlines l ON c.bookid=l.bookid AND c.pageid=l.pageid AND c.lineid=l.lineid
 WHERE c.bookid=?
 ORDER BY c.pageid,c.lineid,c.seq
 `
@@ -123,7 +128,8 @@ ORDER BY c.pageid,c.lineid,c.seq
 	var line lineInfo
 	for rows.Next() {
 		var pid, lid, cor, ocr int
-		if err := rows.Scan(&pid, &lid, &cor, &ocr); err != nil {
+		var path string
+		if err := rows.Scan(&pid, &lid, &cor, &ocr, &path); err != nil {
 			return fmt.Errorf("cannot scan content for book %s: %v", book.String(), err)
 		}
 		// same line on same page -> append char
@@ -135,11 +141,8 @@ ORDER BY c.pageid,c.lineid,c.seq
 		if err := line.write(s.base, book.String(), out); err != nil {
 			return fmt.Errorf("cannot write line %d: %v", line.lineID, err)
 		}
-		// scan image path
-		if err := rows.Scan(nil, nil, nil, nil, &line.path); err != nil {
-			return fmt.Errorf("cannot scan content for book %s: %v", book.String(), err)
-		}
 		line.line = line.line[:0] // clear
+		line.path = path
 		line.pageID = pid
 		line.lineID = lid
 		line.line = append(line.line, db.Char{Cor: rune(cor), OCR: rune(ocr)})
