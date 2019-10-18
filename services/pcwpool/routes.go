@@ -13,8 +13,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/finkf/pcwgo/api"
 	"github.com/finkf/pcwgo/db"
 	"github.com/finkf/pcwgo/service"
+	log "github.com/sirupsen/logrus"
 )
 
 type server struct {
@@ -31,8 +33,8 @@ func (s *server) routes() {
 	s.router = http.DefaultServeMux
 	s.router.HandleFunc("/pool/global", service.WithLog(service.WithMethods(
 		http.MethodGet, s.handleGetGlobalPool())))
-	s.router.HandleFunc("/pool/users/", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithIDs(s.handleGetUserPool(), "users"))))
+	s.router.HandleFunc("/pool/my", service.WithLog(service.WithMethods(
+		http.MethodGet, service.WithAuth(s.handleGetUserPool()))))
 }
 
 func (s *server) handleGetUserPool() service.HandlerFunc {
@@ -44,7 +46,7 @@ JOIN projects p ON p.origin=b.bookid
 JOIN users u on p.owner=u.id
 WHERE p.origin=p.id and p.owner=?
 `
-		userid := ctx.Value("users").(int)
+		userid := ctx.Value("auth").(*api.Session).User.ID
 		rows, err := s.pool.Query(stmnt, userid)
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
@@ -82,6 +84,7 @@ WHERE b.pooled=true and p.origin=p.id
 		defer rows.Close()
 		w.Header().Add("Content-Type", "application/zip")
 		if err := s.writePool(w, rows); err != nil {
+			log.Infof("cannot write pool: %v", err)
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot write pool: %v", err)
 			return

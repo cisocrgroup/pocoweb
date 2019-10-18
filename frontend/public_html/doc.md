@@ -83,7 +83,7 @@ for suspicious words.
 	* [[GET] rest/postcorrect/rrdm/books/`pid`](#user-content-api-get-rrdm)
 	* [[POST] rest/postcorrect/rrdm/books/`pid`](#user-content-api-post-rrdm)
 	* [[GET] rest/pool/global](#user-content-api-get-global-pool)
-	* [[GET] rest/pool/users/`uid`](#user-content-api-get-user-pool)
+	* [[GET] rest/pool/my](#user-content-api-get-user-pool)
 	* [[GET] rest/jobs/`jobid`](#user-content-api-get-user-pool)
 
 - - -
@@ -1941,7 +1941,7 @@ of corrected lines in all projects.
 
 ---
 <a id='api-get-user-pool'></a>
-### [GET] rest/pool/users/`uid`
+### [GET] rest/pool/my
 Download the user's ground-truth [pool](#user-content-pool)
 of corrected lines in all projects of a user.
 * [Authorization](#user-content-authorization) is required.

@@ -112,7 +112,7 @@ func main() {
 			service.WithProject(projectOwner(forward(pkg)))))))
 	// pool
 	http.HandleFunc("/pool/", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithAuth(forward(pool)))))
+		http.MethodGet, service.WithAuth(root(forward(pool))))))
 	// user management
 	http.HandleFunc("/users", service.WithLog(service.WithMethods(
 		http.MethodPost, service.WithAuth(root(forward(users))),
