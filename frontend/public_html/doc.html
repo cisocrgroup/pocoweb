@@ -126,10 +126,16 @@ for suspicious words.</p>
 <p><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid">[POST] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></p>
 </li>
 <li>
+<p><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid">[PUT] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></p>
+</li>
+<li>
 <p><a href="#user-content-api-delete-books-pid-pages-pageid-lines-lid">[DELETE] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></p>
 </li>
 <li>
 <p><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid">[POST] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code></a></p>
+</li>
+<li>
+<p><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid">[PUT] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code></a></p>
 </li>
 <li>
 <p><a href="#user-content-api-get-books-pid-pages-pageid-lines-lid-tokens-tid">[GET] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code></a></p>
@@ -1500,7 +1506,7 @@ or package with id <code>pid</code>.</p>
 <hr>
 <p><a id="user-content-api-post-books-pid-pages-pageid-lines-lid"></a></p>
 <h3>
-<a id="user-content-post-restbookspidpagespageidlineslid" class="anchor" href="#post-restbookspidpagespageidlineslid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>
+<a id="user-content-postput-restbookspidpagespageidlineslid" class="anchor" href="#postput-restbookspidpagespageidlineslid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST/PUT] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>
 </h3>
 <p>Correct line <code>lid</code> in page <code>pageid</code> of project or package <code>pid</code>.</p>
 <ul>
@@ -1596,7 +1602,7 @@ after <code>tid</code> or the end of the line) is returned.</p>
 }</pre></div>
 <p>--- <a id="user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid"></a></p>
 <h3>
-<a id="user-content-post-restbookspidpagespageidlineslidtokenstid" class="anchor" href="#post-restbookspidpagespageidlineslidtokenstid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code>
+<a id="user-content-postput-restbookspidpagespageidlineslidtokenstid" class="anchor" href="#postput-restbookspidpagespageidlineslidtokenstid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST/PUT] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code>
 </h3>
 <p>Correct word <code>tid</code> in line <code>lid</code> in page <code>pageid</code> of project or
 package <code>pid</code>.</p>
@@ -1609,9 +1615,10 @@ package <code>pid</code>.</p>
 <a id="user-content-query-parameters-4" class="anchor" href="#query-parameters-4" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
 <p>An optional parameter <code>len=n</code> can be specified to correct a specific
 slice of the line starting at position <code>tid</code> and ending at position
-<code>tid+len-1</code> (counting unicode code-points).  If <code>len</code> is omitted an
-according token (ending at the first encountered whitespace character
-after <code>tid</code> or the end of the line) is corrected.</p>
+<code>tid+len-1</code> (counting unicode code-points and starting at index 0).
+If <code>len</code> is omitted an according token (ending at the first
+encountered whitespace character after <code>tid</code> or the end of the line)
+is corrected.</p>
 <h4>
 <a id="user-content-post-data-7" class="anchor" href="#post-data-7" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
 <div class="highlight highlight-source-json"><pre>{

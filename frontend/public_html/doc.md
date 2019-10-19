@@ -63,8 +63,10 @@ for suspicious words.
 	* [[GET] rest/books/`pid`/pages/`pageid`/prev/`n`](#user-content-api-get-books-pid-pages-pageid-prev-n)
 	* [[GET] rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-get-books-pid-pages-pageid-lines-lid)
 	* [[POST] rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-post-books-pid-pages-pageid-lines-lid)
+	* [[PUT] rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-post-books-pid-pages-pageid-lines-lid)
    * [[DELETE] rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-delete-books-pid-pages-pageid-lines-lid)
 	* [[POST] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid)
+	* [[PUT] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid)
 	* [[GET] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-get-books-pid-pages-pageid-lines-lid-tokens-tid)
 	* [[GET] rest/profile/books/`pid`](#user-content-api-get-books-pid-profile)
 	* [[POST] rest/profile/books/`pid`](#user-content-api-post-books-pid-profile)
@@ -1393,7 +1395,7 @@ or package with id `pid`.
 
 ---
 <a id='api-post-books-pid-pages-pageid-lines-lid'></a>
-### [POST] rest/books/`pid`/pages/`pageid`/lines/`lid`
+### [POST/PUT] rest/books/`pid`/pages/`pageid`/lines/`lid`
 Correct line `lid` in page `pageid` of project or package `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its lines.
@@ -1483,7 +1485,7 @@ after `tid` or the end of the line) is returned.
 ```
 
 --- <a id='api-post-books-pid-pages-pageid-lines-lid-tokens-tid'></a>
-### [POST] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`
+### [POST/PUT] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`
 Correct word `tid` in line `lid` in page `pageid` of project or
 package `pid`.
 * [Authorization](#user-content-authorization) is required.
@@ -1492,9 +1494,10 @@ package `pid`.
 #### Query parameters
 An optional parameter `len=n` can be specified to correct a specific
 slice of the line starting at position `tid` and ending at position
-`tid+len-1` (counting unicode code-points).  If `len` is omitted an
-according token (ending at the first encountered whitespace character
-after `tid` or the end of the line) is corrected.
+`tid+len-1` (counting unicode code-points and starting at index 0).
+If `len` is omitted an according token (ending at the first
+encountered whitespace character after `tid` or the end of the line)
+is corrected.
 
 #### Post data
 ```json
