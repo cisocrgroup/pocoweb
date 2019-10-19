@@ -1008,7 +1008,8 @@ only the according ground truth files are updated.
 ---
 <a id='api-get-books-pid-search'></a>
 ### [GET] rest/books/`pid`/search
-Search for a token or error pattern in a project or package with id `pid`.
+Search for a token, OCR-error pattern or auto corrected token in a
+project or package with id `pid`.  The search excludes corrected tokens.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can search for tokens or error patterns.
 

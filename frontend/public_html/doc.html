@@ -1095,7 +1095,8 @@ only the according ground truth files are updated.</p>
 <p><a id="user-content-api-get-books-pid-search"></a></p>
 <h3>
 <a id="user-content-get-restbookspidsearch" class="anchor" href="#get-restbookspidsearch" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[GET] rest/books/<code>pid</code>/search</h3>
-<p>Search for a token or error pattern in a project or package with id <code>pid</code>.</p>
+<p>Search for a token, OCR-error pattern or auto corrected token in a
+project or package with id <code>pid</code>.  The search excludes corrected tokens.</p>
 <ul>
 <li>
 <a href="#user-content-authorization">Authorization</a> is required.</li>
