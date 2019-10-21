@@ -28,6 +28,7 @@ var (
 	users          string
 	postcorrection string
 	pkg            string
+	pool           string
 	ocr            string
 	debug          bool
 	version        api.Version
@@ -47,6 +48,7 @@ func init() {
 	flag.StringVar(&postcorrection, "postcorrection", "",
 		"set host of pcwpostcorrection")
 	flag.StringVar(&pkg, "pkg", "", "set host of pkg")
+	flag.StringVar(&pool, "pool", "", "set host of pcwpool service")
 	flag.StringVar(&ocr, "ocr", "", "set host of pcwocr")
 	flag.BoolVar(&debug, "debug", false, "enable debug logging")
 	client = &http.Client{Transport: &http.Transport{
@@ -108,6 +110,9 @@ func main() {
 			service.WithProject(projectOwner(forward(pkg)))),
 		http.MethodGet, service.WithAuth(
 			service.WithProject(projectOwner(forward(pkg)))))))
+	// pool
+	http.HandleFunc("/pool/", service.WithLog(service.WithMethods(
+		http.MethodGet, service.WithAuth(root(forward(pool))))))
 	// user management
 	http.HandleFunc("/users", service.WithLog(service.WithMethods(
 		http.MethodPost, service.WithAuth(root(forward(users))),
