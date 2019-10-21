@@ -40,7 +40,7 @@ func (s *server) routes() {
 func (s *server) handleGetUserPool() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		const stmnt = `
-SELECT b.author,b.title,b.description,u.email,b.bookid,b.year,b.pooled
+SELECT b.author,b.title,b.description,u.email,b.lang,b.bookid,b.year,b.pooled
 FROM books b
 JOIN projects p ON p.origin=b.bookid
 JOIN users u on p.owner=u.id
@@ -67,7 +67,7 @@ WHERE p.origin=p.id and p.owner=?
 }
 
 func (s *server) handleGetGlobalPool() service.HandlerFunc {
-	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	return func(ctx context.Context, w http.ResponseWnnriter, r *http.Request) {
 		const stmnt = `
 SELECT b.author,b.title,b.description,u.email,b.bookid,b.year,b.pooled
 FROM books b
@@ -231,14 +231,14 @@ func (line *lineInfo) pngZIPHeader() *zip.FileHeader {
 }
 
 type bookInfo struct {
-	Author, Title, Description, OwnerEmail string
-	ID, Year, NLines                       int
-	Pooled                                 bool
+	Author, Title, Description, Language, OwnerEmail string
+	ID, Year, NLines                                 int
+	Pooled                                           bool
 }
 
 func (book *bookInfo) scan(rows *sql.Rows) error {
 	return rows.Scan(&book.Author, &book.Title, &book.Description,
-		&book.OwnerEmail,
+		&book.OwnerEmail, &book.Language,
 		&book.ID, &book.Year, &book.Pooled)
 }
 
