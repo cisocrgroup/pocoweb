@@ -190,7 +190,7 @@ for suspicious words.</p>
 <p><a href="#user-content-api-get-user-pool">[GET] rest/pool/my</a></p>
 </li>
 <li>
-<p><a href="#user-content-api-get-user-pool">[GET] rest/jobs/<code>jobid</code></a></p>
+<p><a href="#user-content-api-get-jobs">[GET] rest/jobs/<code>jobid</code></a></p>
 </li>
 </ul>
 </li>
@@ -567,15 +567,16 @@ file.</p>
 <p><a id="user-content-pool"></a></p>
 <h2>
 <a id="user-content-ground-truth-pool" class="anchor" href="#ground-truth-pool" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Ground-truth pool</h2>
-<p>It is possible to download an archive of all corrected lines with their
-respective image files.  This pool contains line segmentd ground-truth data
-and is suitable to be used as training material for OCR.</p>
-<p>Adminstrators can download a pool containing all their
-<a href="#user-content-api-get-user-pool">owned projects</a>
-or a <a href="#user-content-api-get-global-pool">global pool</a>
-containing data of all projects in pocoweb.  If for some
-reason a project should not be part of this global pool it is possible
-to set the variable <code>pooled</code> to <code>false</code> in the projects's settings.</p>
+<p>It is possible to download an archive of all corrected lines with
+their respective image files.  This pool contains line segmented
+ground-truth data and is suitable to be used as training material for
+OCR.</p>
+<p>Adminstrators can download a pool containing all their <a href="#user-content-api-get-user-pool">owned
+projects</a> or a <a href="#user-content-api-get-global-pool">global
+pool</a> containing data of all
+projects in pocoweb.  If for some reason a project should not be part
+of this global pool it is possible to set the variable <code>pooled</code> to
+<code>false</code> in the projects's settings.</p>
 <p>The pool is a zipped archive that contains the line segmented
 correction data in a directory structure that is ordered by
 project, page ids and line ids:</p>

@@ -86,7 +86,7 @@ for suspicious words.
 	* [[POST] rest/postcorrect/rrdm/books/`pid`](#user-content-api-post-rrdm)
 	* [[GET] rest/pool/global](#user-content-api-get-global-pool)
 	* [[GET] rest/pool/my](#user-content-api-get-user-pool)
-	* [[GET] rest/jobs/`jobid`](#user-content-api-get-user-pool)
+	* [[GET] rest/jobs/`jobid`](#user-content-api-get-jobs)
 
 - - -
 <a id='users'></a>
@@ -493,16 +493,17 @@ file.
 - - -
 <a id='pool'></a>
 ## Ground-truth pool
-It is possible to download an archive of all corrected lines with their
-respective image files.  This pool contains line segmentd ground-truth data
-and is suitable to be used as training material for OCR.
+It is possible to download an archive of all corrected lines with
+their respective image files.  This pool contains line segmented
+ground-truth data and is suitable to be used as training material for
+OCR.
 
-Adminstrators can download a pool containing all their
-[owned projects](#user-content-api-get-user-pool)
-or a [global pool](#user-content-api-get-global-pool)
-containing data of all projects in pocoweb.  If for some
-reason a project should not be part of this global pool it is possible
-to set the variable `pooled` to `false` in the projects's settings.
+Adminstrators can download a pool containing all their [owned
+projects](#user-content-api-get-user-pool) or a [global
+pool](#user-content-api-get-global-pool) containing data of all
+projects in pocoweb.  If for some reason a project should not be part
+of this global pool it is possible to set the variable `pooled` to
+`false` in the projects's settings.
 
 The pool is a zipped archive that contains the line segmented
 correction data in a directory structure that is ordered by
