@@ -549,7 +549,6 @@ Pocoweb is composed with a number of interdependend services:
 * pcwuser handles user management
 * pcwprofiler handles profiling of projects
 * pcwpostcorrection handles the automatic postcorrection
-* pcwocr handles ocr prediction and training
 * pcwpkg handles splitting and assignment of packages
 * pcwpool handles download of [pool](#user-content-pool) data
 ![Service Overview](assets/images/doc/overview.svg "Pocoweb service overview")
