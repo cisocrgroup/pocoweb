@@ -7,32 +7,36 @@ TAGS := ${addprefix ${TAG}:,${shell git describe --tags HEAD} latest}
 endif
 
 .PHONY: docker-build
-docker-build: Dockerfile
+docker-build: services-build
 	docker build ${addprefix -t,${TAGS}} .
 
-.PHONY: docker-run
-docker-run: docker-build
-	docker run $(TAG) #-p 0:80 ${TAG}
-
 .PHONY: docker-push
-docker-push: docker-build
+docker-push: services-push
 	for t in ${TAGS}; do docker push $$t; done
 
 .PHONY: services-push
 services-push:
 	${MAKE} -C services docker-push
 
+.PHONY: services-build
+services-build:
+	${MAKE} -C services docker-build
+
+# .PHONY: docker-compose-build
+# docker-compose-build:
+# 	cd misc/docker && PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose build
+
+# .PHONY: docker-compose-pull
+# docker-compose-pull:
+# 	cd misc/docker && PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose pull
+
 .PHONY: docker-compose-build
 docker-compose-build:
-	cd misc/docker && PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose build
+	PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose build
 
-.PHONY: docker-compose-pull
-docker-compose-pull:
-	cd misc/docker && PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose pull
-
-.PHONY: docker-deploy
-docker-deploy: install-frontend docker-push services-push docker-compose-pull docker-compose-build
-	cd misc/docker && PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose up -d
+.PHONY: docker-start
+docker-start: install-frontend docker-compose-build
+	PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose up -d
 
 .PHONY: install-frontend
 install-frontend:
@@ -40,4 +44,4 @@ install-frontend:
 
 .PHONY: docker-stop
 docker-stop:
-	cd misc/docker && PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose stop
+	PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose stop
