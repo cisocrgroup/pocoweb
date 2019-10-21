@@ -4,9 +4,10 @@
 
 define(["marionette","app","backbone.syphon","common/views","common/util","apps/projects/concordance/show/show_view",
         "tpl!apps/projects/page/show/templates/page.tpl",
+        "tpl!apps/projects/page/show/templates/header.tpl",
         "tpl!apps/projects/page/show/templates/sidebar.tpl",
         "tpl!apps/projects/page/show/templates/layout.tpl"
-  ], function(Marionette,App,BackboneSyphon,Views,Util,Concordance,pageTpl,sidebarTpl,layoutTpl){
+  ], function(Marionette,App,BackboneSyphon,Views,Util,Concordance,pageTpl,headerTpl,sidebarTpl,layoutTpl){
 
 
     var Show = {};
@@ -23,12 +24,20 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
   });
 
 
-  Show.Header = Views.Header.extend({
+  Show.Header = Marionette.View.extend({
+    template:headerTpl,
     initialize: function(){
         this.title = Marionette.getOption(this,"title"),
         this.icon ="fas fa-book-open"
         this.color ="green"
-      }
+      },
+       serializeData: function(){
+         var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
+          data.title = Backbone.Marionette.getOption(this,'title');
+          data.pageId = Backbone.Marionette.getOption(this,'pageId');
+
+        return data;
+      },
   });
 
 
@@ -283,8 +292,9 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       'click .line-text' : 'line_selected',
       'mouseover .line-tokens' : 'tokens_hovered',
       'mouseleave .line-text-parent' : 'line_left',
-      'keydown .line' : 'line_edited'
-      },
+      'keydown .line' : 'line_edited',
+      'click .js-correctPage' : 'correct_page_clicked'
+       },
 
 
 
@@ -306,7 +316,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
         console.log(text);
 
-        this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor)
+        this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor);
       },
       tokens_hovered:function(e){
          // $('.line-tokens').show();
@@ -431,6 +441,21 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       that.openCustomPopover(e,sel,$(e.target).parent());
 
       }
+      },
+
+      correct_page_clicked:function(){
+        var that = this;
+       $('.line-text').each(function(){
+
+
+        var anchor = $(this).attr('anchor');
+        var ids = Util.getIds(anchor);
+        var text = $('#line-'+anchor).find('.line').text().replace(/\s\s+/g, ' ').trim();
+
+         that.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor);
+
+
+       });
       },
 
       onAttach:function(e){
