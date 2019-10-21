@@ -85,7 +85,7 @@ for suspicious words.
 	* [[GET] rest/postcorrect/rrdm/books/`pid`](#user-content-api-get-rrdm)
 	* [[POST] rest/postcorrect/rrdm/books/`pid`](#user-content-api-post-rrdm)
 	* [[GET] rest/pool/global](#user-content-api-get-global-pool)
-	* [[GET] rest/pool/my](#user-content-api-get-user-pool)
+	* [[GET] rest/pool/user](#user-content-api-get-user-pool)
 	* [[GET] rest/jobs/`jobid`](#user-content-api-get-jobs)
 
 - - -
@@ -1954,16 +1954,16 @@ correction.
 ---
 <a id='api-get-global-pool'></a>
 ### [GET] rest/pool/global
-Download the global ground-truth [pool](#user-content-pool)
-of corrected lines in all projects.
+Download the global ground-truth [pool](#user-content-pool) of
+corrected lines in all projects.
 * [Authorization](#user-content-authorization) is required.
 * Only adminstrators can download the global pool.
 
 ---
 <a id='api-get-user-pool'></a>
-### [GET] rest/pool/my
-Download the user's ground-truth [pool](#user-content-pool)
-of corrected lines in all projects of a user.
+### [GET] rest/pool/user
+Download the user's ground-truth [pool](#user-content-pool) of
+corrected lines in all projects of a user.
 * [Authorization](#user-content-authorization) is required.
 * Only adminstrators can download the user's pool.
 * The archive contains data from all projects the user owns;

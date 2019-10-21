@@ -33,7 +33,7 @@ func (s *server) routes() {
 	s.router = http.DefaultServeMux
 	s.router.HandleFunc("/pool/global", service.WithLog(service.WithMethods(
 		http.MethodGet, s.handleGetGlobalPool())))
-	s.router.HandleFunc("/pool/my", service.WithLog(service.WithMethods(
+	s.router.HandleFunc("/pool/user", service.WithLog(service.WithMethods(
 		http.MethodGet, service.WithAuth(s.handleGetUserPool()))))
 }
 
