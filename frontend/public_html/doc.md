@@ -1020,7 +1020,6 @@ project or package with id `pid`.  The search excludes corrected tokens.
   * `token` specifies a keyword search for the query
   * `pattern` specifies a (OCR) pattern query
   * `ac` specifies a search for auto corrected tokens
-search should be performed (default: `p=0`).
 * The optional parameter `max=n` sets the maximal number of returned
   hits (default: `max=50`).
 * The optional parameter `skip=n` sets the number of hits to skip
