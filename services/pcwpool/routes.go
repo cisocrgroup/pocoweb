@@ -67,7 +67,7 @@ WHERE p.origin=p.id and p.owner=?
 }
 
 func (s *server) handleGetGlobalPool() service.HandlerFunc {
-	return func(ctx context.Context, w http.ResponseWnnriter, r *http.Request) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		const stmnt = `
 SELECT b.author,b.title,b.description,u.email,b.bookid,b.year,b.pooled
 FROM books b
