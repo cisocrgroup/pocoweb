@@ -22,14 +22,6 @@ services-push:
 services-build:
 	${MAKE} -C services docker-build
 
-# .PHONY: docker-compose-build
-# docker-compose-build:
-# 	cd misc/docker && PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose build
-
-# .PHONY: docker-compose-pull
-# docker-compose-pull:
-# 	cd misc/docker && PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose pull
-
 .PHONY: docker-compose-build
 docker-compose-build:
 	PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose build
