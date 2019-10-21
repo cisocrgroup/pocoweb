@@ -105,11 +105,14 @@ func (s *server) writePool(out io.Writer, rows *sql.Rows) (err error) {
 		if err := book.scan(rows); err != nil {
 			return fmt.Errorf("cannot scan book: %v", err)
 		}
-		if err := book.write(w); err != nil {
-			return fmt.Errorf("cannot write info for book %s: %v", book.String(), err)
-		}
 		if err := s.writeBookToPool(w, &book); err != nil {
 			return fmt.Errorf("cannot pool book %s: %v", book.String(), err)
+		}
+		if book.NLines == 0 { // skip books with no corrected lines
+			continue
+		}
+		if err := book.write(w); err != nil {
+			return fmt.Errorf("cannot write info for book %s: %v", book.String(), err)
 		}
 	}
 	return nil
@@ -167,6 +170,7 @@ func (line *lineInfo) write(out *zip.Writer) error {
 	if len(line.line) == 0 || !line.line.IsFullyCorrected() {
 		return nil
 	}
+	line.book.NLines++
 	if err := line.writeGT(out); err != nil {
 		return err
 	}
@@ -224,7 +228,7 @@ func (line *lineInfo) pngZIPHeader() *zip.FileHeader {
 
 type bookInfo struct {
 	Author, Title, Description, OwnerEmail string
-	ID, Year                               int
+	ID, Year, NLines                       int
 	Pooled                                 bool
 }
 
