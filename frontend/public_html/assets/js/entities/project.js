@@ -14,8 +14,7 @@ Entities.Page = Backbone.Model.extend({
   nextPageId:0,
   ocrFile:"",
   prevPageId:0,
-  projectId:""
-
+  projectId:"",
      }
   });
 
@@ -30,7 +29,8 @@ Entities.Project = Backbone.Model.extend({
   title:"",
   user:"",
   histPatterns:"",
-  year:"2018"
+  year:"2018",
+  pooled:false
      }
   });
 

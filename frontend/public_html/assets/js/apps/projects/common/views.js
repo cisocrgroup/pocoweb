@@ -100,14 +100,15 @@ Views.ProjectForm = Marionette.View.extend({
       $('#selected_file').text('Selected file: '+this.files[0].name)
       that.selected_file = this.files[0]
 
-    })
+    });
 
     $("#uploadForm").on('submit',(function(e) {
     e.preventDefault();
+    console.log(Backbone.Syphon.serialize(that));
      $('.loading_background').fadeIn();
      that.trigger("project:submit_clicked", Backbone.Syphon.serialize(that), this);
 
-    }))
+    }));
 
   },
 
