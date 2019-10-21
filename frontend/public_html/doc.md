@@ -659,12 +659,13 @@ After a successfully login you can use the returned session id in the
 ```json
 {
   "auth": "auth-token",
+  "expires": 1571663749,
   "user": {
 	"id": 42,
-    "name": "user-name",
-    "email": "user-email",
-    "insitute": "user-institute",
-    "admin": true|false
+	"name": "user-name",
+	"email": "user-email",
+	"insitute": "user-institute",
+	"admin": true|false
   }
 }
 ```
