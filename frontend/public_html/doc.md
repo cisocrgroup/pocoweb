@@ -534,6 +534,23 @@ corpus
         └── lineid2.png
 ```
 
+For each project directory, a small JSON-formatted info file is
+included. The file has the following layout:
+
+```json
+{
+	"Author":"author's name",
+	"Title":"book's title",
+	"Description":"book's description",
+	"OwnerEmail":"owner's email",
+	"Language": "book's profiler language",
+	"ID":3,
+	"Year":1900,
+	"NLines":3,
+	"Pooled":true
+}
+```
+
 - - -
 <a id='overview-services'></a>
 ## Services
