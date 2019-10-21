@@ -30,7 +30,7 @@ Entities.Project = Backbone.Model.extend({
   user:"",
   histPatterns:"",
   year:"2018",
-  pooled:false
+  pooled:true
      }
   });
 
