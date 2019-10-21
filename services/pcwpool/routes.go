@@ -155,6 +155,10 @@ ORDER BY c.pageid,c.lineid,c.seq
 		line.lineID = lid
 		line.line = append(line.line, db.Char{Cor: rune(cor), OCR: rune(ocr)})
 	}
+	// last line
+	if err := line.write(out); err != nil {
+		return fmt.Errorf("cannot write line %d: %v", line.lineID, err)
+	}
 	return nil
 }
 
