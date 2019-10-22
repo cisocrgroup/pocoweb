@@ -1,6 +1,7 @@
 package main // import "github.com/finkf/pcwauth"
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -78,7 +79,7 @@ func main() {
 			http.MethodGet, service.WithAuth(getLogin()),
 			http.MethodPost, postLogin())))
 	http.HandleFunc(api.LogoutURL, service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithAuth(getLogout()))))
+		http.MethodGet, service.WithIDs(service.WithAuth(getLogout()), "jobs"))))
 	// jobs
 	http.HandleFunc("/jobs/", service.WithLog(service.WithMethods(
 		http.MethodGet, service.WithIDs(service.WithAuth(getJob()), "jobs"))))
@@ -156,21 +157,23 @@ func main() {
 }
 
 func root(f service.HandlerFunc) service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		log.Debugf("root: %s", d.Session.User)
-		if !d.Session.User.Admin {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		s := ctx.Value("auth").(*api.Session)
+		log.Debugf("root: %s", s.User)
+		if !s.User.Admin {
 			service.ErrorResponse(w, http.StatusForbidden,
-				"only root allowed to access: %s", d.Session.User)
+				"only root allowed to access: %s", s.User)
 			return
 		}
-		f(w, r, d)
+		f(ctx, w, r)
 	}
 }
 
 func rootOrSelf(f service.HandlerFunc) service.HandlerFunc {
 	re := regexp.MustCompile(`/users/(\d+)`)
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		log.Debugf("rootOrSelf: %s", d.Session.User)
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		s := ctx.Value("auth").(*api.Session)
+		log.Debugf("rootOrSelf: %s", s.User)
 		var uid int
 		if n := service.ParseIDs(r.URL.String(), re, &uid); n == 0 {
 			service.ErrorResponse(w, http.StatusNotFound,
@@ -178,30 +181,32 @@ func rootOrSelf(f service.HandlerFunc) service.HandlerFunc {
 			return
 		}
 		log.Debugf("user id: %d", uid)
-		if !d.Session.User.Admin && int64(uid) != d.Session.User.ID {
+		if !s.User.Admin && int64(uid) != s.User.ID {
 			service.ErrorResponse(w, http.StatusForbidden,
-				"not allowed to access: %s", d.Session.User)
+				"not allowed to access: %s", s.User)
 			return
 		}
-		f(w, r, d)
+		f(ctx, w, r)
 	}
 }
 
 func projectOwner(f service.HandlerFunc) service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		s := ctx.Value("auth").(*api.Session)
+		p := ctx.Value("project").(*db.Project)
 		log.Debugf("projectOwner: id: %d, user: %s, owner: %s",
-			d.Project.ProjectID, d.Session.User, d.Project.Owner)
-		if d.Session.User.ID != d.Project.Owner.ID {
+			p.ProjectID, s.User, p.Owner)
+		if s.User.ID != p.Owner.ID {
 			service.ErrorResponse(w, http.StatusForbidden,
-				"not allowed to access project: %d", d.Project.ProjectID)
+				"not allowed to access project: %d", p.ProjectID)
 			return
 		}
-		f(w, r, d)
+		f(ctx, w, r)
 	}
 }
 
 func postLogin() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		var data api.LoginRequest
 		if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
 			service.ErrorResponse(w, http.StatusBadRequest,
@@ -245,16 +250,18 @@ func postLogin() service.HandlerFunc {
 }
 
 func getLogin() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		service.JSONResponse(w, d.Session)
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		s := ctx.Value("auth").(*api.Session)
+		service.JSONResponse(w, s)
 	}
 }
 
 func getLogout() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		log.Debugf("logout session: %s", d.Session)
-		db.Exec(service.Pool(), "remove from sessions where auth=?", d.Session.Auth)
-		if err := db.DeleteSessionByUserID(service.Pool(), d.Session.User.ID); err != nil {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		s := ctx.Value("auth").(*api.Session)
+		log.Debugf("logout session: %s", s)
+		db.Exec(service.Pool(), "remove from sessions where auth=?", s.Auth)
+		if err := db.DeleteSessionByUserID(service.Pool(), s.User.ID); err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot logout: cannot delete session: %v", err)
 			return
@@ -264,8 +271,8 @@ func getLogout() service.HandlerFunc {
 }
 
 func getJob() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		jobID := d.IDs["jobs"]
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		jobID := ctx.Value("jobs").(int)
 		status, err := findJob(jobID)
 		// return not running job if the job does not exist
 		// to indicate that it is ok to run a job
@@ -325,8 +332,8 @@ func findJob(jobID int) (*api.JobStatus, error) {
 }
 
 func forward(base string) service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		url := forwardURL(r.URL.String(), base, d)
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		url := forwardURL(ctx, r.URL.String(), base)
 		log.Infof("forwarding [%s] %s -> %s", r.Method, r.URL.String(), url)
 		switch r.Method {
 		case http.MethodGet:
@@ -386,7 +393,7 @@ func forwardRequest(w http.ResponseWriter, url string, res *http.Response, err e
 
 // just handle api-version once
 func getVersion() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		vonce.Do(func() {
 			url := pocoweb + "/api-version"
 			res, err := client.Get(url)
@@ -403,13 +410,14 @@ func getVersion() service.HandlerFunc {
 	}
 }
 
-func forwardURL(url, base string, d *service.Data) string {
-	if d == nil || d.Session == nil {
+func forwardURL(ctx context.Context, url, base string) string {
+	s, ok := ctx.Value("auth").(*api.Session)
+	if !ok || s == nil {
 		return fmt.Sprintf("%s%s", base, url)
 	}
 	i := strings.LastIndex(url, "?")
 	if i == -1 {
-		return fmt.Sprintf("%s%s?userid=%d", base, url, d.Session.User.ID)
+		return fmt.Sprintf("%s%s?userid=%d", base, url, s.User.ID)
 	}
-	return fmt.Sprintf("%s%s&userid=%d", base, url, d.Session.User.ID)
+	return fmt.Sprintf("%s%s&userid=%d", base, url, s.User.ID)
 }
