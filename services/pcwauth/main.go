@@ -311,6 +311,7 @@ func findJob(jobID int) (*api.JobStatus, error) {
 	if err != nil {
 		return nil, fmt.Errorf("cannot query job id %d: %v", jobID, err)
 	}
+	defer rows.Close()
 	if !rows.Next() {
 		return nil, errJobNotFound
 	}
