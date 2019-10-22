@@ -69,7 +69,6 @@ func (r elRunner) runEL(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("cannot run %s: %v", script, err)
 	}
-	service.UncacheProject(r.project)
 	return nil
 }
 
@@ -101,7 +100,6 @@ func (r rrdmRunner) Run(ctx context.Context) error {
 	if err := r.correct(protocol); err != nil {
 		return fmt.Errorf("cannot correct: %v", err)
 	}
-	service.UncacheProject(r.project)
 	return nil
 }
 

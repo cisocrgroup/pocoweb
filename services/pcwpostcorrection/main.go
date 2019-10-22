@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/finkf/pcwgo/api"
+	"github.com/finkf/pcwgo/db"
 	"github.com/finkf/pcwgo/jobs"
 	"github.com/finkf/pcwgo/service"
 	log "github.com/sirupsen/logrus"
@@ -63,20 +64,20 @@ func main() {
 }
 
 func withProfiledProject(f service.HandlerFunc) service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		if !d.Project.Status["profiled"] {
-			service.ErrorResponse(w, http.StatusBadRequest,
-				"project not profiled")
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		p := ctx.Value("project").(*db.Project)
+		if !p.Status["profiled"] {
+			service.ErrorResponse(w, http.StatusBadRequest, "project not profiled")
 			return
 		}
-		f(w, r, d)
+		f(ctx, w, r)
 	}
 }
 
-func emptyExtendedLexicon(w http.ResponseWriter, d *service.Data) {
+func emptyExtendedLexicon(w http.ResponseWriter, p *db.Project) {
 	ret := api.ExtendedLexicon{
-		ProjectID: d.Project.ProjectID,
-		BookID:    d.Project.BookID,
+		ProjectID: p.ProjectID,
+		BookID:    p.BookID,
 		Yes:       map[string]int{},
 		No:        map[string]int{},
 	}
@@ -84,11 +85,12 @@ func emptyExtendedLexicon(w http.ResponseWriter, d *service.Data) {
 }
 
 func getExtendedLexicon() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		protocol := filepath.Join(baseDir, d.Project.Directory, "postcorrection", "le-protocol.json")
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		p := ctx.Value("project").(*db.Project)
+		protocol := filepath.Join(baseDir, p.Directory, "postcorrection", "le-protocol.json")
 		in, err := os.Open(protocol)
 		if os.IsNotExist(err) { // just send an empty answer
-			emptyExtendedLexicon(w, d)
+			emptyExtendedLexicon(w, p)
 			return
 		}
 		if err != nil {
@@ -103,15 +105,16 @@ func getExtendedLexicon() service.HandlerFunc {
 				"cannot decode protocol: %v", err)
 			return
 		}
-		ret.ProjectID = d.Project.ProjectID
-		ret.BookID = d.Project.BookID
+		ret.ProjectID = p.ProjectID
+		ret.BookID = p.BookID
 		service.JSONResponse(w, ret)
 	}
 }
 
 func runExtendedLexicon() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		jobID, err := jobs.Start(context.Background(), elRunner{project: d.Project})
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		p := ctx.Value("project").(*db.Project)
+		jobID, err := jobs.Start(context.Background(), elRunner{project: p})
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot run job: %v", err)
@@ -121,10 +124,10 @@ func runExtendedLexicon() service.HandlerFunc {
 	}
 }
 
-func emptyDecisionMaker(w http.ResponseWriter, d *service.Data) {
+func emptyDecisionMaker(w http.ResponseWriter, p *db.Project) {
 	ret := api.PostCorrection{
-		ProjectID: d.Project.ProjectID,
-		BookID:    d.Project.BookID,
+		ProjectID: p.ProjectID,
+		BookID:    p.BookID,
 		Always:    map[string]int{},
 		Sometimes: map[string]int{},
 		Never:     map[string]int{},
@@ -133,8 +136,9 @@ func emptyDecisionMaker(w http.ResponseWriter, d *service.Data) {
 }
 
 func runDecisionMaker() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		jobID, err := jobs.Start(context.Background(), rrdmRunner{project: d.Project})
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		p := ctx.Value("project").(*db.Project)
+		jobID, err := jobs.Start(context.Background(), rrdmRunner{project: p})
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot run job: %v", err)
@@ -145,10 +149,11 @@ func runDecisionMaker() service.HandlerFunc {
 }
 
 func getDecisionMaker() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, d *service.Data) {
-		protocol := filepath.Join(baseDir, d.Project.Directory, "postcorrection", "dm-protocol.json")
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		p := ctx.Value("project").(*db.Project)
+		protocol := filepath.Join(baseDir, p.Directory, "postcorrection", "dm-protocol.json")
 		if _, err := os.Stat(protocol); os.IsNotExist(err) {
-			emptyDecisionMaker(w, d)
+			emptyDecisionMaker(w, p)
 			return
 		}
 		protocol = strings.ReplaceAll(protocol, ".json", "-pcw.json")
