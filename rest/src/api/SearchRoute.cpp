@@ -305,6 +305,7 @@ Route::Response SearchRoute::search_ac(MysqlConnection &mysql, ac q) const {
       --q.max;
       if (line.pageid != row.pageid or
           line.lineid != row.lineid) { // load new line
+        line.line.clear();
         line.lineid = row.lineid;
         line.pageid = row.pageid;
         if (not line.load(mysql)) {
