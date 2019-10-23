@@ -175,6 +175,9 @@ for suspicious words.</p>
 <p><a href="#user-content-api-get-el">[GET] rest/postcorrect/le/books/<code>pid</code></a></p>
 </li>
 <li>
+<p><a href="#user-content-api-put-el">[PUT] rest/postcorrect/le/books/<code>pid</code></a></p>
+</li>
+<li>
 <p><a href="#user-content-api-post-el">[POST] rest/postcorrect/le/books/<code>pid</code></a></p>
 </li>
 <li>
@@ -2024,6 +2027,44 @@ according <a href="#user-content-api-post-el">post request</a> has finished.</p>
 		<span class="pl-s"><span class="pl-pds">"</span>baz<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>
 	}
 }</pre></div>
+<hr>
+<p><a id="user-content-api-put-el"></a></p>
+<h3>
+<a id="user-content-put-restpostcorrectlebookspid" class="anchor" href="#put-restpostcorrectlebookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[PUT] rest/postcorrect/le/books/<code>pid</code>
+</h3>
+<p>Update extended lexicon for the project.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can access the extended lexicon.</li>
+</ul>
+<h4>
+<a id="user-content-put-data" class="anchor" href="#put-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Put data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>yes<span class="pl-pds">"</span></span>: {
+		<span class="pl-s"><span class="pl-pds">"</span>foo<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+		<span class="pl-s"><span class="pl-pds">"</span>bar<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>
+	},
+	<span class="pl-s"><span class="pl-pds">"</span>no<span class="pl-pds">"</span></span>: {
+		<span class="pl-s"><span class="pl-pds">"</span>baz<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>
+	}
+}</pre></div>
+<h4>
+<a id="user-content-response-data-34" class="anchor" href="#response-data-34" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>yes<span class="pl-pds">"</span></span>: {
+		<span class="pl-s"><span class="pl-pds">"</span>foo<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+		<span class="pl-s"><span class="pl-pds">"</span>bar<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>
+	},
+	<span class="pl-s"><span class="pl-pds">"</span>no<span class="pl-pds">"</span></span>: {
+		<span class="pl-s"><span class="pl-pds">"</span>baz<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>
+	}
+}</pre></div>
+<hr>
 <p><a id="user-content-api-post-el"></a></p>
 <h3>
 <a id="user-content-post-restpostcorrectlebookspid" class="anchor" href="#post-restpostcorrectlebookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST] rest/postcorrect/le/books/<code>pid</code>
@@ -2036,7 +2077,7 @@ lexicon.</p>
 <li>Only the owner of a project or package can start the job.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-34" class="anchor" href="#response-data-34" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-35" class="anchor" href="#response-data-35" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">31</span>
 }</pre></div>
@@ -2054,7 +2095,7 @@ according <a href="#user-content-api-post-rrdm">post request</a> has finished.</
 <li>Only the owner of a project or package can access the post-correction information.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-35" class="anchor" href="#response-data-35" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-36" class="anchor" href="#response-data-36" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
@@ -2082,7 +2123,7 @@ correction.</p>
 <li>Only the owner of a project or package can start the job.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-36" class="anchor" href="#response-data-36" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-37" class="anchor" href="#response-data-37" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">31</span>
 }</pre></div>
@@ -2128,7 +2169,7 @@ the <code>pooled</code> setting in the projects is ignored.</li>
 of a specific running job (such as predict, train, profiler,
 postcorrection) with the according id.</p>
 <h4>
-<a id="user-content-response-data-37" class="anchor" href="#response-data-37" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-38" class="anchor" href="#response-data-38" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>jobId<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,

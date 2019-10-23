@@ -81,6 +81,7 @@ for suspicious words.
 	* [[POST] rest/ocr/books/`pid`/pages/`pageid`](#user-content-api-post-ocr-book-page)
 	* [[POST] rest/ocr/books/`pid`/pages/`pageid`/lines/`lineid`](#user-content-api-post-ocr-book-page-line)
 	* [[GET] rest/postcorrect/le/books/`pid`](#user-content-api-get-el)
+	* [[PUT] rest/postcorrect/le/books/`pid`](#user-content-api-put-el)
 	* [[POST] rest/postcorrect/le/books/`pid`](#user-content-api-post-el)
 	* [[GET] rest/postcorrect/rrdm/books/`pid`](#user-content-api-get-rrdm)
 	* [[POST] rest/postcorrect/rrdm/books/`pid`](#user-content-api-post-rrdm)
@@ -1895,7 +1896,44 @@ according [post request](#user-content-api-post-el) has finished.
 }
 ```
 
+---
+<a id='api-put-el'></a>
+### [PUT] rest/postcorrect/le/books/`pid`
+Update extended lexicon for the project.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access the extended lexicon.
 
+#### Put data
+```json
+{
+	"bookId": 13,
+	"projectId": 42,
+	"yes": {
+		"foo": 3,
+		"bar": 8
+	},
+	"no": {
+		"baz": 8
+	}
+}
+```
+
+#### Response data
+```json
+{
+	"bookId": 13,
+	"projectId": 42,
+	"yes": {
+		"foo": 3,
+		"bar": 8
+	},
+	"no": {
+		"baz": 8
+	}
+}
+```
+
+---
 <a id='api-post-el'></a>
 ### [POST] rest/postcorrect/le/books/`pid`
 Start the [job](#user-content-api-get-jobs) to generate the extended

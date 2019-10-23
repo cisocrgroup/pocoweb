@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -33,6 +31,7 @@ func (s *server) routes() {
 	s.router.HandleFunc("/postcorrect/le/books/",
 		service.WithLog(service.WithMethods(
 			http.MethodGet, service.WithProject(s.handleGetExtendedLexicon()),
+			http.MethodPut, service.WithProject(withPutData(s.handlePutExtendedLexicon())),
 			http.MethodPost, service.WithProject(withProfiledProject(s.handleRunExtendedLexicon())))))
 	s.router.HandleFunc("/postcorrect/rrdm/books/",
 		service.WithLog(service.WithMethods(
@@ -51,6 +50,17 @@ func withProfiledProject(f service.HandlerFunc) service.HandlerFunc {
 	}
 }
 
+func withPutData(f service.HandlerFunc) service.HandlerFunc {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		var put api.ExtendedLexicon
+		if err := json.NewDecoder(r.Body).Decode(&put); err != nil {
+			service.ErrorResponse(w, http.StatusBadRequest, "invalid data: %v", err)
+			return
+		}
+		f(context.WithValue(ctx, "put", put), w, r)
+	}
+}
+
 func writeEmptyExtendedLexicon(w http.ResponseWriter, p *db.Project) {
 	ret := api.ExtendedLexicon{
 		ProjectID: p.ProjectID,
@@ -61,30 +71,11 @@ func writeEmptyExtendedLexicon(w http.ResponseWriter, p *db.Project) {
 	service.JSONResponse(w, ret)
 }
 
-func readLEProtcol(el *api.ExtendedLexicon, in io.Reader) error {
-	var protocol struct {
-		Yes map[string]struct{ Count int }
-		No  map[string]struct{ Count int }
-	}
-	if err := json.NewDecoder(in).Decode(&protocol); err != nil {
-		return fmt.Errorf("cannot decode protocol: %v", err)
-	}
-	el.Yes = make(map[string]int)
-	el.No = make(map[string]int)
-	for k, v := range protocol.Yes {
-		el.Yes[k] = v.Count
-	}
-	for k, v := range protocol.No {
-		el.No[k] = v.Count
-	}
-	return nil
-}
-
 func (s *server) handleGetExtendedLexicon() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := ctx.Value("project").(*db.Project)
-		protocol := filepath.Join(s.baseDir, p.Directory, "postcorrection", "le-protocol.json")
-		in, err := os.Open(protocol)
+		path := filepath.Join(s.baseDir, p.Directory, "postcorrection", "le-protocol.json")
+		in, err := os.Open(path)
 		if os.IsNotExist(err) { // just send an empty answer
 			writeEmptyExtendedLexicon(w, p)
 			return
@@ -95,15 +86,59 @@ func (s *server) handleGetExtendedLexicon() service.HandlerFunc {
 			return
 		}
 		defer in.Close()
-		var ret api.ExtendedLexicon
-		if err := readLEProtcol(&ret, in); err != nil {
+		var protocol leProtocol
+		if err := json.NewDecoder(in).Decode(&protocol); err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
-				"cannot read protocol: %v", err)
+				"cannot decode protocol: %v", err)
 			return
 		}
+		var ret api.ExtendedLexicon
+		protocol.toAPI(&ret)
 		ret.ProjectID = p.ProjectID
 		ret.BookID = p.BookID
 		service.JSONResponse(w, ret)
+	}
+}
+
+func (s *server) handlePutExtendedLexicon() service.HandlerFunc {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		p := ctx.Value("project").(*db.Project)
+		put := ctx.Value("put").(api.ExtendedLexicon)
+		path := filepath.Join(s.baseDir, p.Directory, "postcorrection", "le-protocol.json")
+		in, err := os.Open(path)
+		if os.IsNotExist(err) {
+			service.ErrorResponse(w, http.StatusNotFound, "cannot find protocol: %s", path)
+			return
+		}
+		if err != nil {
+			service.ErrorResponse(w, http.StatusInternalServerError, "cannot open protocol: %v", err)
+			return
+		}
+		defer in.Close()
+		var protocol leProtocol
+		if err := json.NewDecoder(in).Decode(&protocol); err != nil {
+			service.ErrorResponse(w, http.StatusInternalServerError, "cannot decode protocol: %v", err)
+			return
+		}
+		out, err := os.Create(path)
+		if err != nil {
+			service.ErrorResponse(w, http.StatusInternalServerError, "cannot write protocol: %v", err)
+			return
+		}
+		// Handle defer manually
+		protocol.updateFromAPI(&put)
+		if err := json.NewEncoder(out).Encode(put); err != nil {
+			service.ErrorResponse(w, http.StatusInternalServerError, "cannot read protocol: %v", err)
+			out.Close() // ignore error
+			return
+		}
+		if err := out.Close(); err != nil {
+			service.ErrorResponse(w, http.StatusInternalServerError,
+				"cannot close protocol: %v", err)
+		}
+		put.ProjectID = p.ProjectID
+		put.BookID = p.BookID
+		service.JSONResponse(w, put)
 	}
 }
 
@@ -155,5 +190,47 @@ func (s *server) handleGetDecisionMaker() service.HandlerFunc {
 		protocol = strings.ReplaceAll(protocol, ".json", "-pcw.json")
 		w.Header().Add("Content-Type", "application/json")
 		http.ServeFile(w, r, protocol)
+	}
+}
+
+type leProtocolValue struct {
+	Count      int     `json:"count"`
+	Confidence float64 `json:"confidence"`
+}
+
+type leProtocol struct {
+	Yes map[string]leProtocolValue `json:"yes"`
+	No  map[string]leProtocolValue `json:"no"`
+}
+
+func (p *leProtocol) toAPI(el *api.ExtendedLexicon) {
+	el.Yes = make(map[string]int)
+	el.No = make(map[string]int)
+	for k, v := range p.Yes {
+		el.Yes[k] = v.Count
+	}
+	for k, v := range p.No {
+		el.No[k] = v.Count
+	}
+}
+
+func (p *leProtocol) updateFromAPI(el *api.ExtendedLexicon) {
+	if p.Yes == nil {
+		p.Yes = make(map[string]leProtocolValue)
+	}
+	if p.No == nil {
+		p.No = make(map[string]leProtocolValue)
+	}
+	for k, v := range p.Yes {
+		if _, ok := p.No[k]; ok {
+			p.Yes[k] = v
+			delete(p.No, k)
+		}
+	}
+	for k, v := range p.No {
+		if _, ok := p.Yes[k]; ok {
+			p.No[k] = v
+			delete(p.Yes, k)
+		}
 	}
 }

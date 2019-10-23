@@ -468,6 +468,25 @@ getLexiconExtension: function(data){
 
 },
 
+putLexiconExtension: function(data){
+  var defer = jQuery.Deferred();
+      $.ajax({
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      url: "rest/postcorrect/le/books/"+data.pid+"?auth=" + App.getAuthToken(),
+      type: "PUT",
+      success: function(data) {
+        defer.resolve(data);
+      },
+        error: function(data){
+          defer.reject(data);
+        }
+  });
+  return defer.promise();
+},
+
 startLexiconExtension: function(data){
   var defer = jQuery.Deferred();
       $.ajax({

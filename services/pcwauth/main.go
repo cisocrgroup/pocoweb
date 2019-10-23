@@ -99,6 +99,8 @@ func main() {
 		http.MethodPost, service.WithAuth(
 			service.WithProject(projectOwner(forward(postcorrection)))),
 		http.MethodGet, service.WithAuth(
+			service.WithProject(projectOwner(forward(postcorrection)))),
+		http.MethodPut, service.WithAuth(
 			service.WithProject(projectOwner(forward(postcorrection)))))))
 	http.HandleFunc("/postcorrect/rrdm/books/", service.WithLog(service.WithMethods(
 		http.MethodPost, service.WithAuth(
