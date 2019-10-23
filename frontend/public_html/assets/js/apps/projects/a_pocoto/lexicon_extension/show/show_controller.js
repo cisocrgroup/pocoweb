@@ -51,8 +51,6 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
               var fetchingle = ProjectEntities.API.getLexiconExtension({pid:id});
                $.when(fetchingle).done(function(le){
-                        le.yes["vnd"] = 31;
-                        le.no["Preiß"] = 1;
                        projectShowLex = new Show.LexiconExtension({le});
                        projectShowLayout.showChildView('contentRegion',projectShowLex);
 
