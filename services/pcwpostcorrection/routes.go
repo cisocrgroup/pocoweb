@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/finkf/pcwgo/api"
 	"github.com/finkf/pcwgo/db"
@@ -182,12 +181,11 @@ func (s *server) handleRunPostCorrection() service.HandlerFunc {
 func (s *server) handleGetPostCorrection() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := ctx.Value("project").(*db.Project)
-		protocol := filepath.Join(s.baseDir, p.Directory, "postcorrection", "dm-protocol.json")
+		protocol := filepath.Join(s.baseDir, p.Directory, "postcorrection", "dm-protocol-pcw.json")
 		if _, err := os.Stat(protocol); os.IsNotExist(err) {
 			writeEmptyPostCorrection(w, p)
 			return
 		}
-		protocol = strings.ReplaceAll(protocol, ".json", "-pcw.json")
 		w.Header().Add("Content-Type", "application/json")
 		http.ServeFile(w, r, protocol)
 	}

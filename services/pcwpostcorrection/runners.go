@@ -209,7 +209,7 @@ func (r pcRunner) correctInDatabase(corrections map[string]rrdmPVal) (*api.PostC
 	}
 	ins, err := r.pool.Prepare("INSERT INTO autocorrections" +
 		"(bookid,pageid,lineid,tokenid,ocrtypid,cortypid,taken) " +
-		"VALUES(?,?,?,?,?,?,?,?)")
+		"VALUES(?,?,?,?,?,?,?)")
 	if err != nil {
 		return nil, fmt.Errorf("cannot prepare insert statement: %v", err)
 	}
