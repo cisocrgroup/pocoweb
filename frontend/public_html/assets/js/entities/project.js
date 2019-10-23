@@ -453,7 +453,7 @@ getLexiconExtension: function(data){
           'Accept': 'application/json',
           'Content-Type': 'application/json'
       },
-      url: "rest/postcorrect/el/books/"+data.pid+"?auth=" + App.getAuthToken(),
+      url: "rest/postcorrect/le/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "GET",
       success: function(data) {
         defer.resolve(data);
@@ -475,7 +475,7 @@ startLexiconExtension: function(data){
           'Accept': 'application/json',
           'Content-Type': 'application/json'
       },
-      url: "rest/postcorrect/el/books/"+data.pid+"?auth=" + App.getAuthToken(),
+      url: "rest/postcorrect/le/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "POST",
        data:data,
       success: function(data) {

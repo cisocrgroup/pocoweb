@@ -80,8 +80,8 @@ for suspicious words.
 	* [[POST] rest/ocr/books/`pid`](#user-content-api-post-ocr-book)
 	* [[POST] rest/ocr/books/`pid`/pages/`pageid`](#user-content-api-post-ocr-book-page)
 	* [[POST] rest/ocr/books/`pid`/pages/`pageid`/lines/`lineid`](#user-content-api-post-ocr-book-page-line)
-	* [[GET] rest/postcorrect/el/books/`pid`](#user-content-api-get-el)
-	* [[POST] rest/postcorrect/el/books/`pid`](#user-content-api-post-el)
+	* [[GET] rest/postcorrect/le/books/`pid`](#user-content-api-get-el)
+	* [[POST] rest/postcorrect/le/books/`pid`](#user-content-api-post-el)
 	* [[GET] rest/postcorrect/rrdm/books/`pid`](#user-content-api-get-rrdm)
 	* [[POST] rest/postcorrect/rrdm/books/`pid`](#user-content-api-post-rrdm)
 	* [[GET] rest/pool/global](#user-content-api-get-global-pool)
@@ -1873,7 +1873,7 @@ OCR-model for the given book (or package).
 
 ---
 <a id='api-get-el'></a>
-### [GET] rest/postcorrect/el/books/`pid`
+### [GET] rest/postcorrect/le/books/`pid`
 Get the extended lexicon for the project.  The extendend lexicon is
 available after the [job](#user-content-api-get-jobs) for the
 according [post request](#user-content-api-post-el) has finished.
@@ -1897,7 +1897,7 @@ according [post request](#user-content-api-post-el) has finished.
 
 
 <a id='api-post-el'></a>
-### [POST] rest/postcorrect/el/books/`pid`
+### [POST] rest/postcorrect/le/books/`pid`
 Start the [job](#user-content-api-get-jobs) to generate the extended
 lexicon.
 * [Authorization](#user-content-authorization) is required.

@@ -16,19 +16,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type elRunner struct {
+type leRunner struct {
 	project *db.Project
 }
 
-func (r elRunner) Name() string {
+func (r leRunner) Name() string {
 	return "calculating extended lexicon"
 }
 
-func (r elRunner) BookID() int {
+func (r leRunner) BookID() int {
 	return r.project.BookID
 }
 
-func (r elRunner) Run(ctx context.Context) error {
+func (r leRunner) Run(ctx context.Context) error {
 	if err := r.setupWorkspace(); err != nil {
 		return fmt.Errorf(
 			"cannot calculate extended lexicon: %v", err)
@@ -41,7 +41,7 @@ func (r elRunner) Run(ctx context.Context) error {
 
 }
 
-func (r elRunner) setupWorkspace() error {
+func (r leRunner) setupWorkspace() error {
 	doc, err := loadDocument(r.project)
 	if err != nil {
 		return fmt.Errorf("cannot setup workspace: %v", err)
@@ -52,7 +52,7 @@ func (r elRunner) setupWorkspace() error {
 	return nil
 }
 
-func (r elRunner) runEL(ctx context.Context) error {
+func (r leRunner) runEL(ctx context.Context) error {
 	const script = "/apps/run.bash"
 	err := jobs.Run(
 		ctx,

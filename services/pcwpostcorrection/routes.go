@@ -30,7 +30,7 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) routes() {
 	s.router = http.DefaultServeMux
-	s.router.HandleFunc("/postcorrect/el/books/",
+	s.router.HandleFunc("/postcorrect/le/books/",
 		service.WithLog(service.WithMethods(
 			http.MethodGet, service.WithProject(s.handleGetExtendedLexicon()),
 			http.MethodPost, service.WithProject(withProfiledProject(s.handleRunExtendedLexicon())))))
@@ -110,7 +110,7 @@ func (s *server) handleGetExtendedLexicon() service.HandlerFunc {
 func (s *server) handleRunExtendedLexicon() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := ctx.Value("project").(*db.Project)
-		jobID, err := jobs.Start(context.Background(), elRunner{project: p})
+		jobID, err := jobs.Start(context.Background(), leRunner{project: p})
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot run job: %v", err)
