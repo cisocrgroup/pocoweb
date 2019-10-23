@@ -83,8 +83,8 @@ for suspicious words.
 	* [[GET] rest/postcorrect/le/books/`pid`](#user-content-api-get-el)
 	* [[PUT] rest/postcorrect/le/books/`pid`](#user-content-api-put-el)
 	* [[POST] rest/postcorrect/le/books/`pid`](#user-content-api-post-el)
-	* [[GET] rest/postcorrect/rrdm/books/`pid`](#user-content-api-get-rrdm)
-	* [[POST] rest/postcorrect/rrdm/books/`pid`](#user-content-api-post-rrdm)
+	* [[GET] rest/postcorrect/books/`pid`](#user-content-api-get-rrdm)
+	* [[POST] rest/postcorrect/books/`pid`](#user-content-api-post-rrdm)
 	* [[GET] rest/pool/global](#user-content-api-get-global-pool)
 	* [[GET] rest/pool/user](#user-content-api-get-user-pool)
 	* [[GET] rest/jobs/`jobid`](#user-content-api-get-jobs)
@@ -1950,7 +1950,7 @@ lexicon.
 
 ---
 <a id='api-get-rrdm'></a>
-### [GET] rest/postcorrect/rrdm/books/`pid`
+### [GET] rest/postcorrect/books/`pid`
 Get the post-correction information.  The post-correction information
 available after the [job](#user-content-api-get-jobs) for the
 according [post request](#user-content-api-post-rrdm) has finished.
@@ -1977,7 +1977,7 @@ according [post request](#user-content-api-post-rrdm) has finished.
 
 ---
 <a id='api-post-rrdm'></a>
-### [POST] rest/postcorrect/rrdm/books/`pid`
+### [POST] rest/postcorrect/books/`pid`
 Start the [job](#user-content-api-get-jobs) to generate the post
 correction.
 * [Authorization](#user-content-authorization) is required.

@@ -518,7 +518,7 @@ getPostcorrection: function(data){
           'Accept': 'application/json',
           'Content-Type': 'application/json'
       },
-      url: "rest/postcorrect/rrdm/books/"+data.pid+"?auth=" + App.getAuthToken(),
+      url: "rest/postcorrect/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "GET",
       success: function(data) {
         defer.resolve(data);
@@ -541,7 +541,7 @@ startPostcorrection: function(data){
           'Accept': 'application/json',
           'Content-Type': 'application/json'
       },
-      url: "rest/postcorrect/rrdm/books/"+data.pid+"?auth=" + App.getAuthToken(),
+      url: "rest/postcorrect/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "POST",
       data:data,
       success: function(data) {

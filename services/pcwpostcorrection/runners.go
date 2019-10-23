@@ -72,20 +72,20 @@ func (r leRunner) runEL(ctx context.Context) error {
 	return nil
 }
 
-type rrdmRunner struct {
+type pcRunner struct {
 	pool    *sql.DB
 	project *db.Project
 }
 
-func (r rrdmRunner) Name() string {
+func (r pcRunner) Name() string {
 	return "calculating post-correction"
 }
 
-func (r rrdmRunner) BookID() int {
+func (r pcRunner) BookID() int {
 	return r.project.BookID
 }
 
-func (r rrdmRunner) Run(ctx context.Context) error {
+func (r pcRunner) Run(ctx context.Context) error {
 	dir := filepath.Join(baseDir, r.project.Directory, "postcorrection")
 	protocol := filepath.Join(dir, "dm-protocol.json")
 	err := jobs.Run(
@@ -116,7 +116,7 @@ type rrdmP struct {
 	Corrections map[string]rrdmPVal `json:"corrections"`
 }
 
-func (r rrdmRunner) correct(protocol string) (err error) {
+func (r pcRunner) correct(protocol string) (err error) {
 	corrections, err := r.readProtocol(protocol)
 	if err := r.correctInBackend(corrections); err != nil {
 		return fmt.Errorf("cannot correct in backend: %v", err)
@@ -134,7 +134,7 @@ func (r rrdmRunner) correct(protocol string) (err error) {
 	return nil
 }
 
-func (r rrdmRunner) updateStatus() error {
+func (r pcRunner) updateStatus() error {
 	const stmnt = "UPDATE " + db.BooksTableName + " SET postcorrected=? WHERE bookid=?"
 	_, err := db.Exec(r.pool, stmnt, true, r.project.BookID)
 	if err != nil {
@@ -143,7 +143,7 @@ func (r rrdmRunner) updateStatus() error {
 	return nil
 }
 
-func (r rrdmRunner) deleteCorrections() error {
+func (r pcRunner) deleteCorrections() error {
 	const del = "DELETE FROM autocorrections WHERE bookid = ?"
 	_, err := db.Exec(r.pool, del, r.project.BookID)
 	if err != nil {
@@ -152,7 +152,7 @@ func (r rrdmRunner) deleteCorrections() error {
 	return nil
 }
 
-func (r rrdmRunner) readProtocol(path string) (map[string]rrdmPVal, error) {
+func (r pcRunner) readProtocol(path string) (map[string]rrdmPVal, error) {
 	var corrections rrdmP
 	in, err := os.Open(path)
 	if err != nil {
@@ -165,7 +165,7 @@ func (r rrdmRunner) readProtocol(path string) (map[string]rrdmPVal, error) {
 	return corrections.Corrections, nil
 }
 
-func (r rrdmRunner) writeProtocol(pc *api.PostCorrection, path string) (err error) {
+func (r pcRunner) writeProtocol(pc *api.PostCorrection, path string) (err error) {
 	path = strings.Replace(path, ".json", "-pcw.json", 1)
 	out, err := os.Create(path)
 	if err != nil {
@@ -183,7 +183,7 @@ func (r rrdmRunner) writeProtocol(pc *api.PostCorrection, path string) (err erro
 	return nil
 }
 
-func (r rrdmRunner) correctInBackend(corrections map[string]rrdmPVal) error {
+func (r pcRunner) correctInBackend(corrections map[string]rrdmPVal) error {
 	// We should be communicating within docker compose - so skip verify is ok.
 	client := api.NewClient(pocowebURL, true)
 	for k, v := range corrections {
@@ -203,7 +203,7 @@ func (r rrdmRunner) correctInBackend(corrections map[string]rrdmPVal) error {
 	return nil
 }
 
-func (r rrdmRunner) correctInDatabase(corrections map[string]rrdmPVal) (*api.PostCorrection, error) {
+func (r pcRunner) correctInDatabase(corrections map[string]rrdmPVal) (*api.PostCorrection, error) {
 	if err := r.deleteCorrections(); err != nil {
 		return nil, err
 	}
@@ -248,7 +248,7 @@ func (r rrdmRunner) correctInDatabase(corrections map[string]rrdmPVal) (*api.Pos
 	return r.makePostCorrections(tokens), nil
 }
 
-func (r rrdmRunner) makePostCorrections(tokens map[string]struct{ t, r int }) *api.PostCorrection {
+func (r pcRunner) makePostCorrections(tokens map[string]struct{ t, r int }) *api.PostCorrection {
 	pc := api.PostCorrection{
 		BookID:    r.project.BookID,
 		ProjectID: r.project.ProjectID,

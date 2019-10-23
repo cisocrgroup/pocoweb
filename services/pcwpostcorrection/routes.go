@@ -33,10 +33,10 @@ func (s *server) routes() {
 			http.MethodGet, service.WithProject(s.handleGetExtendedLexicon()),
 			http.MethodPut, service.WithProject(withPutData(s.handlePutExtendedLexicon())),
 			http.MethodPost, service.WithProject(withProfiledProject(s.handleRunExtendedLexicon())))))
-	s.router.HandleFunc("/postcorrect/rrdm/books/",
+	s.router.HandleFunc("/postcorrect/books/",
 		service.WithLog(service.WithMethods(
-			http.MethodGet, service.WithProject(s.handleGetDecisionMaker()),
-			http.MethodPost, service.WithProject(withProfiledProject(s.handleRunDecisionMaker())))))
+			http.MethodGet, service.WithProject(s.handleGetPostCorrection()),
+			http.MethodPost, service.WithProject(withProfiledProject(s.handleRunPostCorrection())))))
 }
 
 func withProfiledProject(f service.HandlerFunc) service.HandlerFunc {
@@ -155,7 +155,7 @@ func (s *server) handleRunExtendedLexicon() service.HandlerFunc {
 	}
 }
 
-func writeEmptyDecisionMaker(w http.ResponseWriter, p *db.Project) {
+func writeEmptyPostCorrection(w http.ResponseWriter, p *db.Project) {
 	ret := api.PostCorrection{
 		ProjectID: p.ProjectID,
 		BookID:    p.BookID,
@@ -166,10 +166,10 @@ func writeEmptyDecisionMaker(w http.ResponseWriter, p *db.Project) {
 	service.JSONResponse(w, ret)
 }
 
-func (s *server) handleRunDecisionMaker() service.HandlerFunc {
+func (s *server) handleRunPostCorrection() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := ctx.Value("project").(*db.Project)
-		jobID, err := jobs.Start(context.Background(), rrdmRunner{pool: s.pool, project: p})
+		jobID, err := jobs.Start(context.Background(), pcRunner{pool: s.pool, project: p})
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot run job: %v", err)
@@ -179,12 +179,12 @@ func (s *server) handleRunDecisionMaker() service.HandlerFunc {
 	}
 }
 
-func (s *server) handleGetDecisionMaker() service.HandlerFunc {
+func (s *server) handleGetPostCorrection() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := ctx.Value("project").(*db.Project)
 		protocol := filepath.Join(s.baseDir, p.Directory, "postcorrection", "dm-protocol.json")
 		if _, err := os.Stat(protocol); os.IsNotExist(err) {
-			writeEmptyDecisionMaker(w, p)
+			writeEmptyPostCorrection(w, p)
 			return
 		}
 		protocol = strings.ReplaceAll(protocol, ".json", "-pcw.json")
