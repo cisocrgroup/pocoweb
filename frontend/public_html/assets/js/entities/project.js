@@ -510,7 +510,8 @@ startLexiconExtension: function(data){
   return defer.promise();
 
 },
-getProtocol: function(data){
+
+getPostcorrection: function(data){
   var defer = jQuery.Deferred();
       $.ajax({
      headers: {
@@ -532,6 +533,7 @@ getProtocol: function(data){
   return defer.promise();
 
 },
+
 startPostcorrection: function(data){
   var defer = jQuery.Deferred();
       $.ajax({
