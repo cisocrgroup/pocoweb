@@ -169,7 +169,7 @@ func writeEmptyDecisionMaker(w http.ResponseWriter, p *db.Project) {
 func (s *server) handleRunDecisionMaker() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := ctx.Value("project").(*db.Project)
-		jobID, err := jobs.Start(context.Background(), rrdmRunner{project: p})
+		jobID, err := jobs.Start(context.Background(), rrdmRunner{pool: s.pool, project: p})
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot run job: %v", err)

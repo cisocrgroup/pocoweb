@@ -73,6 +73,7 @@ func (r leRunner) runEL(ctx context.Context) error {
 }
 
 type rrdmRunner struct {
+	pool    *sql.DB
 	project *db.Project
 }
 
@@ -135,7 +136,7 @@ func (r rrdmRunner) correct(protocol string) (err error) {
 
 func (r rrdmRunner) updateStatus() error {
 	const stmnt = "UPDATE " + db.BooksTableName + " SET postcorrected=? WHERE bookid=?"
-	_, err := db.Exec(service.Pool(), stmnt, true, r.project.BookID)
+	_, err := db.Exec(r.pool, stmnt, true, r.project.BookID)
 	if err != nil {
 		return fmt.Errorf("cannot execute database update: %v", err)
 	}
@@ -144,7 +145,7 @@ func (r rrdmRunner) updateStatus() error {
 
 func (r rrdmRunner) deleteCorrections() error {
 	const del = "DELETE FROM autocorrections WHERE bookid = ?"
-	_, err := db.Exec(service.Pool(), del, r.project.BookID)
+	_, err := db.Exec(r.pool, del, r.project.BookID)
 	if err != nil {
 		return fmt.Errorf("cannot delete old corrections from database: %v", err)
 	}
@@ -206,14 +207,14 @@ func (r rrdmRunner) correctInDatabase(corrections map[string]rrdmPVal) (*api.Pos
 	if err := r.deleteCorrections(); err != nil {
 		return nil, err
 	}
-	ins, err := service.Pool().Prepare("INSERT INTO autocrrections" +
+	ins, err := r.pool.Prepare("INSERT INTO autocrrections" +
 		"(bookid,pageid,lineid,tokenid,ocrtypid,cortypid,taken) " +
 		"VALUES(?,?,?,?,?,?,?,?)")
 	if err != nil {
 		return nil, fmt.Errorf("cannot prepare insert statement: %v", err)
 	}
 	defer ins.Close()
-	t, err := newTypeInserter(service.Pool())
+	t, err := newTypeInserter(r.pool)
 	if err != nil {
 		return nil, fmt.Errorf("cannot insert types: %v", err)
 	}
