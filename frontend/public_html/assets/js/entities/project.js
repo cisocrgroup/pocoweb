@@ -477,6 +477,7 @@ putLexiconExtension: function(data){
       },
       url: "rest/postcorrect/le/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "PUT",
+      data: JSON.stringify(data),
       success: function(data) {
         defer.resolve(data);
       },

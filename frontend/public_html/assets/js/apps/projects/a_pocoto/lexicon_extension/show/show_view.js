@@ -15,7 +15,7 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
 
         trackJobStatus : function(){ // regulary check if job is finished
         var that = this;
-        this.interval = setInterval(function(){ 
+        this.interval = setInterval(function(){
            that.trigger("show:checkJobStatus");
           },
           5000);
@@ -40,20 +40,20 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
       'click .js-le-profile' : 'start_le_profile_clicked',
       'click .js-le-redo' : 'le_redo_clicked',
 
-      }, 
+      },
     //   serializeData: function(){
 
     //      var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
     //      console.log(data)
     //     return data;
-    
+
     // },
     serializeData: function(){
       return {
         le: Marionette.getOption(this,"le")
       }
     },
-     
+
 
       row_clicked:function(e){
         e.preventDefault();
@@ -64,17 +64,22 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
 
          start_le_profile_clicked:function(e){
         e.preventDefault();
-        var extensions = [];
+        var data = {yes: {}, no: {}};
         $('#extensions tbody tr').each(function(index) {
+          var word= $($(this).find('td')[0])
+          data.yes[word.text()] = parseInt($($(this).find('td')[1]).text());
+          // extensions.push(word.text());
+        });
+        $('#unknown tbody tr').each(function(index) {
           var word = $($(this).find('td')[0])
-          extensions.push(word.text());
+          data.no[word.text()] = parseInt($($(this).find('td')[1]).text());
         });
 
-        this.trigger("show:start_le_profile_clicked",extensions);
+        this.trigger("show:start_le_profile_clicked",data);
       },
        le_redo_clicked:function(e){
         e.preventDefault();
-   
+
         this.trigger("show:le_redo_clicked");
       },
 
@@ -103,7 +108,7 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
           //   }
           // });
          }
-    
+
   });
 
 
@@ -118,4 +123,3 @@ Show.OkDialog = Views.OkDialog.extend({});
 return Show;
 
 });
-
