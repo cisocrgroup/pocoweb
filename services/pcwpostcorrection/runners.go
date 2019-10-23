@@ -207,7 +207,7 @@ func (r rrdmRunner) correctInDatabase(corrections map[string]rrdmPVal) (*api.Pos
 	if err := r.deleteCorrections(); err != nil {
 		return nil, err
 	}
-	ins, err := r.pool.Prepare("INSERT INTO autocrrections" +
+	ins, err := r.pool.Prepare("INSERT INTO autocorrections" +
 		"(bookid,pageid,lineid,tokenid,ocrtypid,cortypid,taken) " +
 		"VALUES(?,?,?,?,?,?,?,?)")
 	if err != nil {
