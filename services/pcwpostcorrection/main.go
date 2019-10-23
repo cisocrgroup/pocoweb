@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
+	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -84,6 +86,25 @@ func emptyExtendedLexicon(w http.ResponseWriter, p *db.Project) {
 	service.JSONResponse(w, ret)
 }
 
+func readLEProtcol(el *api.ExtendedLexicon, in io.Reader) error {
+	var protocol struct {
+		Yes map[string]struct{ Count int }
+		No  map[string]struct{ Count int }
+	}
+	if err := json.NewDecoder(in).Decode(&protocol); err != nil {
+		return fmt.Errorf("cannot decode protocol: %v", err)
+	}
+	el.Yes = make(map[string]int)
+	el.No = make(map[string]int)
+	for k, v := range protocol.Yes {
+		el.Yes[k] = v.Count
+	}
+	for k, v := range protocol.No {
+		el.No[k] = v.Count
+	}
+	return nil
+}
+
 func getExtendedLexicon() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := ctx.Value("project").(*db.Project)
@@ -100,9 +121,9 @@ func getExtendedLexicon() service.HandlerFunc {
 		}
 		defer in.Close()
 		var ret api.ExtendedLexicon
-		if err := json.NewDecoder(in).Decode(&ret); err != nil {
+		if err := readLEProtcol(&ret, in); err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
-				"cannot decode protocol: %v", err)
+				"cannot read protocol: %v", err)
 			return
 		}
 		ret.ProjectID = p.ProjectID
