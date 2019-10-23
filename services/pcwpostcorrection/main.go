@@ -32,8 +32,7 @@ func init() {
 	flag.BoolVar(&debug, "debug", debug, "enable debugging")
 	flag.StringVar(&dsn, "dsn", dsn, "set mysql connection DSN")
 	flag.StringVar(&baseDir, "base", baseDir, "set project base dir")
-	flag.StringVar(&config, "config", config, "set base config file for post correction")
-	flag.StringVar(&config, "pocoweb", pocowebURL, "set pocoweb url")
+	flag.StringVar(&pocowebURL, "pocoweb", pocowebURL, "set pocoweb url")
 }
 
 func must(err error) {
@@ -44,10 +43,7 @@ func must(err error) {
 
 func main() {
 	flag.Parse()
-	if debug {
-		log.SetLevel(log.DebugLevel)
-	}
-	must(service.Init(dsn))
+	must(service.InitDebug(dsn, debug))
 	defer service.Close()
 	jobs.Init(service.Pool())
 	defer jobs.Close()
