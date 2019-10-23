@@ -95,7 +95,7 @@ func main() {
 		http.MethodPost, service.WithAuth(
 			service.WithProject(projectOwner(forward(ocr)))))))
 	// postcorrection
-	http.HandleFunc("/postcorrect/el/books/", service.WithLog(service.WithMethods(
+	http.HandleFunc("/postcorrect/le/books/", service.WithLog(service.WithMethods(
 		http.MethodPost, service.WithAuth(
 			service.WithProject(projectOwner(forward(postcorrection)))),
 		http.MethodGet, service.WithAuth(
