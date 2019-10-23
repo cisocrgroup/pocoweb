@@ -120,9 +120,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
 
-			  projectShowHeader = new Show.Header({title:project.get('title')});
+			  projectShowHeader = new Show.Header({title:project.get('title'),pageId:page.get('pageId')});
         projectShowPage = new Show.Page({model:page,lineheight:lineheight,linenumbers:linenumbers,hidecorrections:hidecorrections});
-	    projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,hidecorrections:hidecorrections,lineheight:lineheight,linenumbers:linenumbers,ignore_case:ignore_case});
+	      projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,hidecorrections:hidecorrections,lineheight:lineheight,linenumbers:linenumbers,ignore_case:ignore_case});
       	projectShowFooterPanel = new Show.FooterPanel();
 
        projectShowSidebar.on("sidebar:error-patterns-clicked",function(pid,pat){
@@ -181,7 +181,11 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                       $('.js-stepforward > a').attr('title','go to previous page #'+new_page.get('nextPageId'));
                       $('.js-stepbackward > a').attr('title','go to next page #'+new_page.get('prevPageId'));
 
-                     App.navigate("projects/"+id+"/page/"+new_page.get('pageId'));
+                      App.navigate("projects/"+id+"/page/"+new_page.get('pageId'));
+
+                      projectShowHeader.options.pageId=new_page.get('pageId');
+                      projectShowHeader.render();
+
 
                   }).fail(function(response){
                      App.mainmsg.updateContent(response.responseText,'danger');
