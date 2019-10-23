@@ -127,7 +127,7 @@ func (s *server) handlePutExtendedLexicon() service.HandlerFunc {
 		}
 		// Handle defer manually
 		protocol.updateFromAPI(&put)
-		if err := json.NewEncoder(out).Encode(put); err != nil {
+		if err := json.NewEncoder(out).Encode(protocol); err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError, "cannot read protocol: %v", err)
 			out.Close() // ignore error
 			return
@@ -203,33 +203,33 @@ type leProtocol struct {
 	No  map[string]leProtocolValue `json:"no"`
 }
 
-func (p *leProtocol) toAPI(el *api.ExtendedLexicon) {
-	el.Yes = make(map[string]int)
-	el.No = make(map[string]int)
+func (p *leProtocol) toAPI(api *api.ExtendedLexicon) {
+	api.Yes = make(map[string]int)
+	api.No = make(map[string]int)
 	for k, v := range p.Yes {
-		el.Yes[k] = v.Count
+		api.Yes[k] = v.Count
 	}
 	for k, v := range p.No {
-		el.No[k] = v.Count
+		api.No[k] = v.Count
 	}
 }
 
-func (p *leProtocol) updateFromAPI(el *api.ExtendedLexicon) {
+func (p *leProtocol) updateFromAPI(api *api.ExtendedLexicon) {
 	if p.Yes == nil {
 		p.Yes = make(map[string]leProtocolValue)
 	}
 	if p.No == nil {
 		p.No = make(map[string]leProtocolValue)
 	}
-	for k, v := range p.Yes {
+	for k := range api.Yes {
 		if _, ok := p.No[k]; ok {
-			p.Yes[k] = v
+			p.Yes[k] = p.No[k]
 			delete(p.No, k)
 		}
 	}
-	for k, v := range p.No {
+	for k := range api.No {
 		if _, ok := p.Yes[k]; ok {
-			p.No[k] = v
+			p.No[k] = p.Yes[k]
 			delete(p.Yes, k)
 		}
 	}
