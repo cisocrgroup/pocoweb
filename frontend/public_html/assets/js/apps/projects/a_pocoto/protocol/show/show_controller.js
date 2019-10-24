@@ -96,7 +96,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
 
                             }).fail(function(response){
-                               App.mainmsg.updateContent(response.responseText,'danger');
+                                Util.defaultErrorHandling(response,'danger');
                               });  // $when fetchingproject
 
                      }) // correct token
@@ -185,10 +185,10 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                                      }
 
                             }).fail(function(response){
-                               App.mainmsg.updateContent(response.responseText,'danger');
+                              Util.defaultErrorHandling(response,'danger');
                             });
                      }).fail(function(response){
-                               App.mainmsg.updateContent(response.responseText,'danger');
+                              Util.defaultErrorHandling(response,'danger');
                      });
 
                   });
@@ -219,10 +219,10 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                              }
 
                     }).fail(function(response){
-                       App.mainmsg.updateContent(response.responseText,'danger');
+                         Util.defaultErrorHandling(response,'danger');
                     });
              }).fail(function(response){
-                       App.mainmsg.updateContent(response.responseText,'danger');
+                        Util.defaultErrorHandling(response,'danger');
              });
 
         });
@@ -240,7 +240,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                        }
 
                    }).fail(function(response){
-                         App.mainmsg.updateContent(response.responseText,'danger');
+                         Util.defaultErrorHandling(response,'danger');
                    });
              });
 

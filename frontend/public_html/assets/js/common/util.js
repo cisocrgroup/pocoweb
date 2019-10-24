@@ -206,6 +206,9 @@ addAlignedLine : function(line){
          App.mainmsg.updateContent("Error "+ response.status+" ("+response.statusText+") ",mode);
 
          }
+         else if(response.message!=undefined){
+         App.mainmsg.updateContent("Error "+ response.code+" ("+response.message+") ",mode);
+         }
          else{
             App.mainmsg.updateContent(response,mode);
         }

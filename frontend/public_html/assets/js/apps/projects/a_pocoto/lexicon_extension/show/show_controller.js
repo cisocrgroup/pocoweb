@@ -132,7 +132,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                  no: data.no
                });
                $.when(updatingLE).fail(function(response) {
-                 App.mainmsg.updateContent(response.responseText, 'danger');
+               Util.defaultErrorHandling(response,'danger');
                });
                               $.when(profilingleproject).done(function(result){
 
@@ -147,10 +147,10 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                                               }
 
                                       }).fail(function(response){
-                                         App.mainmsg.updateContent(response.responseText,'danger');
+                                      Util.defaultErrorHandling(response,'danger');
                                       });
                                }).fail(function(response){
-                                         App.mainmsg.updateContent(response.responseText,'danger');
+                                     Util.defaultErrorHandling(response,'danger');
                                });
 
                       });
@@ -170,10 +170,10 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                                       projectShowLayout.trackJobStatus();
                                      }
                             }).fail(function(response){
-                               App.mainmsg.updateContent(response.responseText,'danger');
-                            });
+                                Util.defaultErrorHandling(response,'danger');
+                              });
                      }).fail(function(response){
-                               App.mainmsg.updateContent(response.responseText,'danger');
+                            Util.defaultErrorHandling(response,'danger');
                      });
 
                   });
@@ -208,10 +208,10 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                                       projectShowLayout.trackJobStatus();
                                      }
                             }).fail(function(response){
-                               App.mainmsg.updateContent(response.responseText,'danger');
+                               Util.defaultErrorHandling(response,'danger');
                             });
                      }).fail(function(response){
-                               App.mainmsg.updateContent(response.responseText,'danger');
+                             Util.defaultErrorHandling(response,'danger');
                      });
 
         });
