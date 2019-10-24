@@ -292,13 +292,6 @@ func getJob() service.HandlerFunc {
 				"cannot get job status: %v", err)
 			return
 		}
-		// failed job returns 500 so caller just needs to handle
-		// http return codes
-		if status.StatusID == db.StatusIDFailed {
-			service.ErrorResponse(w, http.StatusInternalServerError,
-				"job %s failed", status.JobName)
-			return
-		}
 		service.JSONResponse(w, status)
 	}
 }
