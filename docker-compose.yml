@@ -4,31 +4,22 @@ services:
   nginx:
     env_file:
       - env.sh
-    build: nginx/
+    build: services/nginx/
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ${PCW_BASE_DIR}/www-data:/www-data:ro
       - ${PCW_BASE_DIR}/project-data:/project-data:ro
-      - letsencrypt_certs:/etc/nginx/certs
-      - letsencrypt_www:/var/www/letsencrypt
     links:
-      - pocoweb
+      - pcwauth
     depends_on:
       - pocoweb
       - pcwauth
     restart: always
-  # let's encrypt for https
-  letsencrypt:
-    build: letsencrypt/
-    command: /bin/true
-    volumes:
-      - letsencrypt_certs:/etc/letsencrypt
-      - letsencrypt_www:/var/www/letsencrypt
   # pocoweb rest service
   pocoweb:
-    image: flobar/pocoweb
+    build: .
     links:
       - db
     volumes:
@@ -40,7 +31,6 @@ services:
     restart: always
     env_file:
       - env.sh
-
   # mysql database
   db:
     image: mariadb
@@ -50,28 +40,26 @@ services:
     restart: always
     env_file:
       - env.sh
-
   # pocoweb authentification
   pcwauth:
     # build: pcwauth/
-    image: flobar/pcwauth
+    build: services/pcwauth
     links:
       - db
       - pocoweb
       - pcwprofiler
       - pcwusers
       - pcwpostcorrection
-      - pcwocr
       - pcwpkg
+      - pcwpool
     depends_on:
       - db
     restart: always
     env_file:
       - env.sh
-
   # pocoweb profiling
   pcwprofiler:
-    image: flobar/pcwprofiler
+    build: services/pcwprofiler
     restart: always
     links:
       - db
@@ -81,10 +69,9 @@ services:
       - env.sh
     volumes:
       - ${PCW_BASE_DIR}/project-data:/project-data:rw
-
   # pocoweb user management
   pcwusers:
-    image: flobar/pcwusers
+    build: services/pcwusers
     restart: always
     links:
       - db
@@ -92,10 +79,9 @@ services:
       - db
     env_file:
       - env.sh
-
   # pocoweb post-correction
   pcwpostcorrection:
-    image: flobar/pcwpostcorrection
+    build: services/pcwpostcorrection
     restart: always
     links:
       - db
@@ -106,10 +92,19 @@ services:
       - env.sh
     volumes:
       - ${PCW_BASE_DIR}/project-data:/project-data:rw
-
-  # pocoweb ocr
-  pcwocr:
-    image: flobar/pcwocr
+  # pocoweb pkg
+  pcwpkg:
+    build: services/pcwpkg
+    restart: always
+    links:
+      - db
+    depends_on:
+      - db
+    env_file:
+      - env.sh
+  # pocoweb pool
+  pcwpool:
+    build: services/pcwpool
     restart: always
     links:
       - db
@@ -118,20 +113,4 @@ services:
     env_file:
       - env.sh
     volumes:
-      - ${PCW_BASE_DIR}/project-data:/project-data:rw
-      - ${PCW_BASE_DIR}/ocr-data:/data/models:rw
-
-  # pocoweb ocr
-  pcwpkg:
-    image: flobar/pcwpkg
-    restart: always
-    links:
-      - db
-    depends_on:
-      - db
-    env_file:
-      - env.sh
-# named volumes
-volumes:
-  letsencrypt_certs:
-  letsencrypt_www:
+      - ${PCW_BASE_DIR}/project-data:/project-data:ro

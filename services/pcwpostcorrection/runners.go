@@ -16,19 +16,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type elRunner struct {
+type leRunner struct {
 	project *db.Project
 }
 
-func (r elRunner) Name() string {
+func (r leRunner) Name() string {
 	return "calculating extended lexicon"
 }
 
-func (r elRunner) BookID() int {
+func (r leRunner) BookID() int {
 	return r.project.BookID
 }
 
-func (r elRunner) Run(ctx context.Context) error {
+func (r leRunner) Run(ctx context.Context) error {
 	if err := r.setupWorkspace(); err != nil {
 		return fmt.Errorf(
 			"cannot calculate extended lexicon: %v", err)
@@ -41,7 +41,7 @@ func (r elRunner) Run(ctx context.Context) error {
 
 }
 
-func (r elRunner) setupWorkspace() error {
+func (r leRunner) setupWorkspace() error {
 	doc, err := loadDocument(r.project)
 	if err != nil {
 		return fmt.Errorf("cannot setup workspace: %v", err)
@@ -52,7 +52,7 @@ func (r elRunner) setupWorkspace() error {
 	return nil
 }
 
-func (r elRunner) runEL(ctx context.Context) error {
+func (r leRunner) runEL(ctx context.Context) error {
 	const script = "/apps/run.bash"
 	err := jobs.Run(
 		ctx,
@@ -69,23 +69,23 @@ func (r elRunner) runEL(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("cannot run %s: %v", script, err)
 	}
-	service.UncacheProject(r.project)
 	return nil
 }
 
-type rrdmRunner struct {
+type pcRunner struct {
+	pool    *sql.DB
 	project *db.Project
 }
 
-func (r rrdmRunner) Name() string {
+func (r pcRunner) Name() string {
 	return "calculating post-correction"
 }
 
-func (r rrdmRunner) BookID() int {
+func (r pcRunner) BookID() int {
 	return r.project.BookID
 }
 
-func (r rrdmRunner) Run(ctx context.Context) error {
+func (r pcRunner) Run(ctx context.Context) error {
 	dir := filepath.Join(baseDir, r.project.Directory, "postcorrection")
 	protocol := filepath.Join(dir, "dm-protocol.json")
 	err := jobs.Run(
@@ -101,7 +101,6 @@ func (r rrdmRunner) Run(ctx context.Context) error {
 	if err := r.correct(protocol); err != nil {
 		return fmt.Errorf("cannot correct: %v", err)
 	}
-	service.UncacheProject(r.project)
 	return nil
 }
 
@@ -117,7 +116,7 @@ type rrdmP struct {
 	Corrections map[string]rrdmPVal `json:"corrections"`
 }
 
-func (r rrdmRunner) correct(protocol string) (err error) {
+func (r pcRunner) correct(protocol string) (err error) {
 	corrections, err := r.readProtocol(protocol)
 	if err := r.correctInBackend(corrections); err != nil {
 		return fmt.Errorf("cannot correct in backend: %v", err)
@@ -135,25 +134,25 @@ func (r rrdmRunner) correct(protocol string) (err error) {
 	return nil
 }
 
-func (r rrdmRunner) updateStatus() error {
+func (r pcRunner) updateStatus() error {
 	const stmnt = "UPDATE " + db.BooksTableName + " SET postcorrected=? WHERE bookid=?"
-	_, err := db.Exec(service.Pool(), stmnt, true, r.project.BookID)
+	_, err := db.Exec(r.pool, stmnt, true, r.project.BookID)
 	if err != nil {
 		return fmt.Errorf("cannot execute database update: %v", err)
 	}
 	return nil
 }
 
-func (r rrdmRunner) deleteCorrections() error {
+func (r pcRunner) deleteCorrections() error {
 	const del = "DELETE FROM autocorrections WHERE bookid = ?"
-	_, err := db.Exec(service.Pool(), del, r.project.BookID)
+	_, err := db.Exec(r.pool, del, r.project.BookID)
 	if err != nil {
 		return fmt.Errorf("cannot delete old corrections from database: %v", err)
 	}
 	return nil
 }
 
-func (r rrdmRunner) readProtocol(path string) (map[string]rrdmPVal, error) {
+func (r pcRunner) readProtocol(path string) (map[string]rrdmPVal, error) {
 	var corrections rrdmP
 	in, err := os.Open(path)
 	if err != nil {
@@ -166,7 +165,7 @@ func (r rrdmRunner) readProtocol(path string) (map[string]rrdmPVal, error) {
 	return corrections.Corrections, nil
 }
 
-func (r rrdmRunner) writeProtocol(pc *api.PostCorrection, path string) (err error) {
+func (r pcRunner) writeProtocol(pc *api.PostCorrection, path string) (err error) {
 	path = strings.Replace(path, ".json", "-pcw.json", 1)
 	out, err := os.Create(path)
 	if err != nil {
@@ -184,7 +183,7 @@ func (r rrdmRunner) writeProtocol(pc *api.PostCorrection, path string) (err erro
 	return nil
 }
 
-func (r rrdmRunner) correctInBackend(corrections map[string]rrdmPVal) error {
+func (r pcRunner) correctInBackend(corrections map[string]rrdmPVal) error {
 	// We should be communicating within docker compose - so skip verify is ok.
 	client := api.NewClient(pocowebURL, true)
 	for k, v := range corrections {
@@ -204,18 +203,18 @@ func (r rrdmRunner) correctInBackend(corrections map[string]rrdmPVal) error {
 	return nil
 }
 
-func (r rrdmRunner) correctInDatabase(corrections map[string]rrdmPVal) (*api.PostCorrection, error) {
+func (r pcRunner) correctInDatabase(corrections map[string]rrdmPVal) (*api.PostCorrection, error) {
 	if err := r.deleteCorrections(); err != nil {
 		return nil, err
 	}
-	ins, err := service.Pool().Prepare("INSERT INTO autocrrections" +
+	ins, err := r.pool.Prepare("INSERT INTO autocorrections" +
 		"(bookid,pageid,lineid,tokenid,ocrtypid,cortypid,taken) " +
-		"VALUES(?,?,?,?,?,?,?,?)")
+		"VALUES(?,?,?,?,?,?,?)")
 	if err != nil {
 		return nil, fmt.Errorf("cannot prepare insert statement: %v", err)
 	}
 	defer ins.Close()
-	t, err := newTypeInserter(service.Pool())
+	t, err := newTypeInserter(r.pool)
 	if err != nil {
 		return nil, fmt.Errorf("cannot insert types: %v", err)
 	}
@@ -249,7 +248,7 @@ func (r rrdmRunner) correctInDatabase(corrections map[string]rrdmPVal) (*api.Pos
 	return r.makePostCorrections(tokens), nil
 }
 
-func (r rrdmRunner) makePostCorrections(tokens map[string]struct{ t, r int }) *api.PostCorrection {
+func (r pcRunner) makePostCorrections(tokens map[string]struct{ t, r int }) *api.PostCorrection {
 	pc := api.PostCorrection{
 		BookID:    r.project.BookID,
 		ProjectID: r.project.ProjectID,

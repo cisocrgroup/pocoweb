@@ -16,7 +16,8 @@ CMD pcwauth \
 	-pocoweb http://pocoweb \
 	-profiler http://pcwprofiler \
 	-users http://pcwusers \
-    -pkg http://pcwpkg \
+	-pkg http://pcwpkg \
+    -pool http://pcwpool \
 	-postcorrection http://pcwpostcorrection \
 	-ocr http://pcwocr \
 	-listen ':80' \

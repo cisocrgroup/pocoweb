@@ -30,8 +30,10 @@ const char *LineRoute::name_ = "LineRoute";
 ////////////////////////////////////////////////////////////////////////////////
 void LineRoute::Register(App &app) {
   CROW_ROUTE(app, LINE_ROUTE_ROUTE)
-      .methods("GET"_method, "POST"_method, "DELETE"_method)(*this);
-  CROW_ROUTE(app, WORD_ROUTE_ROUTE).methods("GET"_method, "POST"_method)(*this);
+      .methods("GET"_method, "PUT"_method, "POST"_method,
+               "DELETE"_method)(*this);
+  CROW_ROUTE(app, WORD_ROUTE_ROUTE)
+      .methods("GET"_method, "PUT"_method, "POST"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,6 +50,14 @@ Route::Response LineRoute::impl(HttpGet, const Request &req, int pid,
   }
   Json j;
   return j << line;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// POST /books/<bid>/pages/<pid>/lines/<lid>
+////////////////////////////////////////////////////////////////////////////////
+Route::Response LineRoute::impl(HttpPut, const Request &req, int pid, int p,
+                                int lid) const {
+  return impl(HttpPost{}, req, pid, p, lid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -119,6 +129,14 @@ Route::Response LineRoute::impl(HttpGet, const Request &req, int pid,
     return j << line.slice(tid, len.value());
   }
   return j << line.slice(tid, line.tokenLength(tid));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// PUT /books/<bid>/pages/<pid>/lines/<lid>/tokens/<tid>{?len=}
+////////////////////////////////////////////////////////////////////////////////
+Route::Response LineRoute::impl(HttpPut, const Request &req, int pid, int p,
+                                int lid, int tid) const {
+  return impl(HttpPost{}, req, pid, p, lid, tid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

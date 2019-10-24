@@ -14,8 +14,7 @@ Entities.Page = Backbone.Model.extend({
   nextPageId:0,
   ocrFile:"",
   prevPageId:0,
-  projectId:""
-
+  projectId:"",
      }
   });
 
@@ -30,7 +29,8 @@ Entities.Project = Backbone.Model.extend({
   title:"",
   user:"",
   histPatterns:"",
-  year:"2018"
+  year:"2018",
+  pooled:true
      }
   });
 
@@ -453,7 +453,7 @@ getLexiconExtension: function(data){
           'Accept': 'application/json',
           'Content-Type': 'application/json'
       },
-      url: "rest/postcorrect/el/books/"+data.pid+"?auth=" + App.getAuthToken(),
+      url: "rest/postcorrect/le/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "GET",
       success: function(data) {
         defer.resolve(data);
@@ -468,6 +468,26 @@ getLexiconExtension: function(data){
 
 },
 
+putLexiconExtension: function(data){
+  var defer = jQuery.Deferred();
+      $.ajax({
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      url: "rest/postcorrect/le/books/"+data.pid+"?auth=" + App.getAuthToken(),
+      type: "PUT",
+      data: JSON.stringify(data),
+      success: function(data) {
+        defer.resolve(data);
+      },
+        error: function(data){
+          defer.reject(data);
+        }
+  });
+  return defer.promise();
+},
+
 startLexiconExtension: function(data){
   var defer = jQuery.Deferred();
       $.ajax({
@@ -475,7 +495,7 @@ startLexiconExtension: function(data){
           'Accept': 'application/json',
           'Content-Type': 'application/json'
       },
-      url: "rest/postcorrect/el/books/"+data.pid+"?auth=" + App.getAuthToken(),
+      url: "rest/postcorrect/le/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "POST",
        data:data,
       success: function(data) {
@@ -490,14 +510,15 @@ startLexiconExtension: function(data){
   return defer.promise();
 
 },
-getProtocol: function(data){
+
+getPostcorrection: function(data){
   var defer = jQuery.Deferred();
       $.ajax({
      headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
       },
-      url: "rest/postcorrect/rrdm/books/"+data.pid+"?auth=" + App.getAuthToken(),
+      url: "rest/postcorrect/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "GET",
       success: function(data) {
         defer.resolve(data);
@@ -512,6 +533,7 @@ getProtocol: function(data){
   return defer.promise();
 
 },
+
 startPostcorrection: function(data){
   var defer = jQuery.Deferred();
       $.ajax({
@@ -519,7 +541,7 @@ startPostcorrection: function(data){
           'Accept': 'application/json',
           'Content-Type': 'application/json'
       },
-      url: "rest/postcorrect/rrdm/books/"+data.pid+"?auth=" + App.getAuthToken(),
+      url: "rest/postcorrect/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "POST",
       data:data,
       success: function(data) {

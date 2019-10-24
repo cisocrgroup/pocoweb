@@ -14,7 +14,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 	   	      var loadingCircleView = new  Views.LoadingBackdropOpc();
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
      			  var fetchingproject = ProjectEntities.API.getProject({pid:id});
-            var fetchingprotocol = ProjectEntities.API.getProtocol({pid:id});
+            var fetchingprotocol = ProjectEntities.API.getPostcorrection({pid:id});
             var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
 
 
@@ -53,7 +53,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
           }
           else {
 
-               var fetchingprotocol = ProjectEntities.API.getProtocol({pid:id});
+               var fetchingprotocol = ProjectEntities.API.getPostcorrection({pid:id});
 
                          $.when(fetchingprotocol).done(function(pr){
                               projectShowProtocol = new Show.Protocol({pr});

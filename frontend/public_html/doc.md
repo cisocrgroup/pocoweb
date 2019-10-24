@@ -34,6 +34,7 @@ for suspicious words.
     * [Navigation bar](#user-content-navigation-bar)
     * [Concordance view](#user-content-concordance-view)
 * [Installation](#user-content-installation)
+* [Grond-truth pool](#user-content-pool)
 * [Services](#user-content-overview-services)
 * [REST API](#user-content-rest-api)
     * [Authentification](#user-content-authorization)
@@ -63,8 +64,10 @@ for suspicious words.
 	* [[GET] rest/books/`pid`/pages/`pageid`/prev/`n`](#user-content-api-get-books-pid-pages-pageid-prev-n)
 	* [[GET] rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-get-books-pid-pages-pageid-lines-lid)
 	* [[POST] rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-post-books-pid-pages-pageid-lines-lid)
+	* [[PUT] rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-post-books-pid-pages-pageid-lines-lid)
    * [[DELETE] rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-delete-books-pid-pages-pageid-lines-lid)
 	* [[POST] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid)
+	* [[PUT] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid)
 	* [[GET] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-get-books-pid-pages-pageid-lines-lid-tokens-tid)
 	* [[GET] rest/profile/books/`pid`](#user-content-api-get-books-pid-profile)
 	* [[POST] rest/profile/books/`pid`](#user-content-api-post-books-pid-profile)
@@ -77,10 +80,13 @@ for suspicious words.
 	* [[POST] rest/ocr/books/`pid`](#user-content-api-post-ocr-book)
 	* [[POST] rest/ocr/books/`pid`/pages/`pageid`](#user-content-api-post-ocr-book-page)
 	* [[POST] rest/ocr/books/`pid`/pages/`pageid`/lines/`lineid`](#user-content-api-post-ocr-book-page-line)
-	* [[GET] rest/postcorrect/el/books/`pid`](#user-content-api-get-el)
-	* [[POST] rest/postcorrect/el/books/`pid`](#user-content-api-post-el)
-	* [[GET] rest/postcorrect/rrdm/books/`pid`](#user-content-api-get-rrdm)
-	* [[POST] rest/postcorrect/rrdm/books/`pid`](#user-content-api-post-rrdm)
+	* [[GET] rest/postcorrect/le/books/`pid`](#user-content-api-get-el)
+	* [[PUT] rest/postcorrect/le/books/`pid`](#user-content-api-put-el)
+	* [[POST] rest/postcorrect/le/books/`pid`](#user-content-api-post-el)
+	* [[GET] rest/postcorrect/books/`pid`](#user-content-api-get-rrdm)
+	* [[POST] rest/postcorrect/books/`pid`](#user-content-api-post-rrdm)
+	* [[GET] rest/pool/global](#user-content-api-get-global-pool)
+	* [[GET] rest/pool/user](#user-content-api-get-user-pool)
 	* [[GET] rest/jobs/`jobid`](#user-content-api-get-jobs)
 
 - - -
@@ -486,6 +492,67 @@ Installation instructions can be found in the project's
 file.
 
 - - -
+<a id='pool'></a>
+## Ground-truth pool
+It is possible to download an archive of all corrected lines with
+their respective image files.  This pool contains line segmented
+ground-truth data and is suitable to be used as training material for
+OCR.
+
+Adminstrators can download a pool containing all their [owned
+projects](#user-content-api-get-user-pool) or a [global
+pool](#user-content-api-get-global-pool) containing data of all
+projects in pocoweb.  If for some reason a project should not be part
+of this global pool it is possible to set the variable `pooled` to
+`false` in the projects's settings.
+
+The pool is a zipped archive that contains the line segmented
+correction data in a directory structure that is ordered by
+project, page ids and line ids:
+```
+corpus
+├── year-author_name1_book_title1
+│   ├── pageid1
+│   │   ├── lineid1.gt.txt
+│   │   ├── lineid1.png
+│   │   ├── lineid2.gt.txt
+│   │   └── lineid2.png
+│   └── pageid2
+│       ├── lineid1.gt.txt
+│       ├── lineid1.png
+│       ├── lineid2.gt.txt
+│       └── lineid2.png
+└── year-author_name2_book_title2
+    ├── pageid1
+    │   ├── lineid1.gt.txt
+    │   ├── lineid1.png
+    │   ├── lineid2.gt.txt
+    │   └── lineid2.png
+    └── pageid2
+        ├── lineid1.gt.txt
+        ├── lineid1.png
+        ├── lineid2.gt.txt
+        └── lineid2.png
+```
+
+For each project directory, a small JSON-formatted info file is
+included. The file has the following layout:
+
+```json
+{
+	"Author":"author's name",
+	"Title":"book's title",
+	"Description":"book's description",
+	"OwnerEmail":"owner's email",
+	"Language": "book's profiler language",
+	"ID":3,
+	"Year":1900,
+	"NLines":3,
+	"Pooled":true
+}
+```
+
+- - -
 <a id='overview-services'></a>
 ## Services
 Pocoweb is composed with a number of interdependend services:
@@ -500,9 +567,8 @@ Pocoweb is composed with a number of interdependend services:
 * pcwuser handles user management
 * pcwprofiler handles profiling of projects
 * pcwpostcorrection handles the automatic postcorrection
-* pcwocr handles ocr prediction and training
 * pcwpkg handles splitting and assignment of packages
-
+* pcwpool handles download of [pool](#user-content-pool) data
 ![Service Overview](assets/images/doc/overview.svg "Pocoweb service overview")
 
 - - -
@@ -594,12 +660,13 @@ After a successfully login you can use the returned session id in the
 ```json
 {
   "auth": "auth-token",
+  "expires": 1571663749,
   "user": {
 	"id": 42,
-    "name": "user-name",
-    "email": "user-email",
-    "insitute": "user-institute",
-    "admin": true|false
+	"name": "user-name",
+	"email": "user-email",
+	"insitute": "user-institute",
+	"admin": true|false
   }
 }
 ```
@@ -1006,7 +1073,8 @@ only the according ground truth files are updated.
 ---
 <a id='api-get-books-pid-search'></a>
 ### [GET] rest/books/`pid`/search
-Search for a token or error pattern in a project or package with id `pid`.
+Search for a token, OCR-error pattern or auto corrected token in a
+project or package with id `pid`.  The search excludes corrected tokens.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can search for tokens or error patterns.
 
@@ -1017,7 +1085,6 @@ Search for a token or error pattern in a project or package with id `pid`.
   * `token` specifies a keyword search for the query
   * `pattern` specifies a (OCR) pattern query
   * `ac` specifies a search for auto corrected tokens
-search should be performed (default: `p=0`).
 * The optional parameter `max=n` sets the maximal number of returned
   hits (default: `max=50`).
 * The optional parameter `skip=n` sets the number of hits to skip
@@ -1393,7 +1460,7 @@ or package with id `pid`.
 
 ---
 <a id='api-post-books-pid-pages-pageid-lines-lid'></a>
-### [POST] rest/books/`pid`/pages/`pageid`/lines/`lid`
+### [POST/PUT] rest/books/`pid`/pages/`pageid`/lines/`lid`
 Correct line `lid` in page `pageid` of project or package `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its lines.
@@ -1483,7 +1550,7 @@ after `tid` or the end of the line) is returned.
 ```
 
 --- <a id='api-post-books-pid-pages-pageid-lines-lid-tokens-tid'></a>
-### [POST] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`
+### [POST/PUT] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`
 Correct word `tid` in line `lid` in page `pageid` of project or
 package `pid`.
 * [Authorization](#user-content-authorization) is required.
@@ -1492,9 +1559,10 @@ package `pid`.
 #### Query parameters
 An optional parameter `len=n` can be specified to correct a specific
 slice of the line starting at position `tid` and ending at position
-`tid+len-1` (counting unicode code-points).  If `len` is omitted an
-according token (ending at the first encountered whitespace character
-after `tid` or the end of the line) is corrected.
+`tid+len-1` (counting unicode code-points and starting at index 0).
+If `len` is omitted an according token (ending at the first
+encountered whitespace character after `tid` or the end of the line)
+is corrected.
 
 #### Post data
 ```json
@@ -1806,7 +1874,7 @@ OCR-model for the given book (or package).
 
 ---
 <a id='api-get-el'></a>
-### [GET] rest/postcorrect/el/books/`pid`
+### [GET] rest/postcorrect/le/books/`pid`
 Get the extended lexicon for the project.  The extendend lexicon is
 available after the [job](#user-content-api-get-jobs) for the
 according [post request](#user-content-api-post-el) has finished.
@@ -1828,9 +1896,46 @@ according [post request](#user-content-api-post-el) has finished.
 }
 ```
 
+---
+<a id='api-put-el'></a>
+### [PUT] rest/postcorrect/le/books/`pid`
+Update extended lexicon for the project.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access the extended lexicon.
 
+#### Put data
+```json
+{
+	"bookId": 13,
+	"projectId": 42,
+	"yes": {
+		"foo": 3,
+		"bar": 8
+	},
+	"no": {
+		"baz": 8
+	}
+}
+```
+
+#### Response data
+```json
+{
+	"bookId": 13,
+	"projectId": 42,
+	"yes": {
+		"foo": 3,
+		"bar": 8
+	},
+	"no": {
+		"baz": 8
+	}
+}
+```
+
+---
 <a id='api-post-el'></a>
-### [POST] rest/postcorrect/el/books/`pid`
+### [POST] rest/postcorrect/le/books/`pid`
 Start the [job](#user-content-api-get-jobs) to generate the extended
 lexicon.
 * [Authorization](#user-content-authorization) is required.
@@ -1845,7 +1950,7 @@ lexicon.
 
 ---
 <a id='api-get-rrdm'></a>
-### [GET] rest/postcorrect/rrdm/books/`pid`
+### [GET] rest/postcorrect/books/`pid`
 Get the post-correction information.  The post-correction information
 available after the [job](#user-content-api-get-jobs) for the
 according [post request](#user-content-api-post-rrdm) has finished.
@@ -1872,7 +1977,7 @@ according [post request](#user-content-api-post-rrdm) has finished.
 
 ---
 <a id='api-post-rrdm'></a>
-### [POST] rest/postcorrect/rrdm/books/`pid`
+### [POST] rest/postcorrect/books/`pid`
 Start the [job](#user-content-api-get-jobs) to generate the post
 correction.
 * [Authorization](#user-content-authorization) is required.
@@ -1884,6 +1989,24 @@ correction.
 	"id": 31
 }
 ```
+
+---
+<a id='api-get-global-pool'></a>
+### [GET] rest/pool/global
+Download the global ground-truth [pool](#user-content-pool) of
+corrected lines in all projects.
+* [Authorization](#user-content-authorization) is required.
+* Only adminstrators can download the global pool.
+
+---
+<a id='api-get-user-pool'></a>
+### [GET] rest/pool/user
+Download the user's ground-truth [pool](#user-content-pool) of
+corrected lines in all projects of a user.
+* [Authorization](#user-content-authorization) is required.
+* Only adminstrators can download the user's pool.
+* The archive contains data from all projects the user owns;
+  the `pooled` setting in the projects is ignored.
 
 ---
 <a id='api-get-jobs'></a>

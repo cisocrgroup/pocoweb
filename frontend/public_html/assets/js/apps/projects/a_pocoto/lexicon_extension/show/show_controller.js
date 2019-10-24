@@ -51,14 +51,17 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
               var fetchingle = ProjectEntities.API.getLexiconExtension({pid:id});
                $.when(fetchingle).done(function(le){
-                        le.yes["vnd"] = 31;
-                        le.no["Preiß"] = 1;
                        projectShowLex = new Show.LexiconExtension({le});
                        projectShowLayout.showChildView('contentRegion',projectShowLex);
 
                         projectShowLex.on("show:word_clicked",function(word){
 
-                        var searchingToken = ProjectEntities.API.search({q:word,pid:id,searchType:"token",skip:0,max:App.getPageHits(id)});
+                        var searchingToken = ProjectEntities.API.search({
+                          q:word,pid:id,
+                          searchType:"token",
+                          skip:0,
+                          max:App.getPageHits(id)
+                        });
 
                         $.when(searchingToken).done(function(tokens){
                         var lineheight = App.getLineHeight(id);
@@ -110,9 +113,27 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
 
                // profile with lexicon extensions
-             projectShowLex.on("show:start_le_profile_clicked",function(extensions){
-                          var profilingleproject = ProjectEntities.API.profileProject({pid:project.get('projectId'),bid:project.get('bookId'),tokens:extensions});
-
+             projectShowLex.on("show:start_le_profile_clicked",function(data){
+               console.log(data);
+               extensions = [];
+               for (key in data.yes) {
+                 extensions.push(key);
+               }
+               console.log(extensions);
+               var profilingleproject = ProjectEntities.API.profileProject({
+                 pid:project.get('projectId'),
+                 bid:project.get('bookId'),
+                 tokens:extensions
+               });
+               var updatingLE = ProjectEntities.API.putLexiconExtension({
+                 pid:project.get('projectId'),
+                 bid:project.get('bookId'),
+                 yes: data.yes,
+                 no: data.no
+               });
+               $.when(updatingLE).fail(function(response) {
+                 App.mainmsg.updateContent(response.responseText, 'danger');
+               });
                               $.when(profilingleproject).done(function(result){
 
                                     var fetchingjobs = ProjectEntities.API.getJobs({pid:id});

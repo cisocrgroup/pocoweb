@@ -74,6 +74,18 @@ if(asModal) {
 
 <% } %>
 
+
+<div class="form-group row">
+  <div class="col-4">
+
+<div class="form-check">
+    <input id="pooled" class="form-check-input" type="checkbox" name="pooled" value="<%-pooled%>" <% if(pooled){ %> checked <%}%> >
+    <label class="form-check-label" for="pooled">Add to project pool</label>
+  </div>
+</div>
+  </div>
+
+
 <% if(!edit_project) { %>
 
 

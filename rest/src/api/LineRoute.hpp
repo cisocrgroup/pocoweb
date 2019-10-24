@@ -24,9 +24,12 @@ public:
   pcw_crtp_route_def_impl__(int, int, int);
   pcw_crtp_route_def_impl__(int, int, int, int);
   Response impl(HttpGet, const Request &req, int bid, int pid, int lid) const;
+  Response impl(HttpPut, const Request &req, int bid, int pid, int lid) const;
   Response impl(HttpPost, const Request &req, int bid, int pid, int lid) const;
   Response impl(HttpDelete, const Request &req, int pid, int p, int lid) const;
   Response impl(HttpGet, const Request &req, int pid, int p, int lid,
+                int tid) const;
+  Response impl(HttpPut, const Request &req, int pid, int p, int lid,
                 int tid) const;
   Response impl(HttpPost, const Request &req, int pid, int p, int lid,
                 int tid) const;
