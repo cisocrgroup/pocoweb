@@ -542,6 +542,23 @@ border-bottom-right-radius: .25rem;
 
 }
 
+.token-text{
+  display: inline-block;
+  flex-grow: 1;
+  min-height: 30px;
+  padding: 2px;
+  border-top: 1px solid transparent;
+  border-left: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+
+border-top-left-radius: .25rem;
+border-bottom-left-radius: .25rem;
+border-top-right-radius: .25rem;
+border-bottom-right-radius: .25rem;
+
+
+}
+
 .line{
   display: none;
   margin-right: 10px;
@@ -552,12 +569,7 @@ border-bottom-right-radius: .25rem;
   margin-right: 10px;
 }
 
-.line_partially_corrected{
-  background-color: #fff3cd;
-  border-color: #ffeeba !important;
-}
-
-.line_fully_corrected{
+.fully_corrected{
   background-color: #d4edda;
   border-color: #c3e6cb !important;
 }

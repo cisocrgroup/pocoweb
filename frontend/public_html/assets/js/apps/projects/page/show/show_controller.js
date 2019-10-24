@@ -211,13 +211,16 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
        projectShowPage.on("page:correct_line",function(data,anchor){
          data.text = Util.escapeAsJSON(data.text);
-         console.log(data);
                     var correctingline = ProjectEntities.API.correctLine(data);
                   $.when(correctingline).done(function(result){
 
                     console.log(result);
+                    console.log(page.get('lines')[result.lineId-1]);
+                    page.get('lines')[result.lineId-1] = result; // update line array in page.lines
+                      console.log(page.get('lines')[result.lineId-1]);
+
                     var lineanchor = $('#line-'+anchor);
-                    lineanchor.addClass('line_fully_corrected');
+                    lineanchor.addClass('fully_corrected');
 
                           lineanchor.fadeOut(200,function(){
                           lineanchor.fadeIn(200,function(){
