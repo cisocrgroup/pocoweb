@@ -54,19 +54,37 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                        projectShowLex = new Show.LexiconExtension({le});
                        projectShowLayout.showChildView('contentRegion',projectShowLex);
 
-                       projectShowLex.on("show:move_token",function(word){
-                        console.log(word);
-                        let data = {};
-                         data[word]=0;
+                       projectShowLex.on("show:move_token",function(yes,no){
+                      
                          var updatingLE = ProjectEntities.API.putLexiconExtension({
                              pid:project.get('projectId'),
                              bid:project.get('bookId'),
-                             yes:data,
-                             no: {}
+                             yes:yes,
+                             no: no
                            });
 
                              $.when(updatingLE).done(function(le){
                               console.log(le);
+
+                                    // update extension and unknown tables
+                                   var extensions_array = [];
+                                    for (word in le['yes']) {
+                                       extensions_array.push([word,le['yes'][word]+'<div class="table_chevron unknown" style="display:inline-block; float: right; margin-right: 2px;" title="Move to unknown"> <span style="float: right;"><i class="fas fa-chevron-right"></i></span></div>']);
+                                    }
+                                 
+                                      projectShowLex.extensions_table.clear();
+                                      projectShowLex.extensions_table.rows.add(extensions_array);
+                                      projectShowLex.extensions_table.draw();
+
+                                    var unknown_array = [];
+                                    for (word in le['no']) {
+                                       unknown_array.push(['<div class="table_chevron" style="display:inline-block;" title="Move to extensions"> <span ><i class="fas fa-chevron-left"></i></span></div>'+word,le['no'][word]]);
+                                    }
+                                 
+                                      projectShowLex.unknown_table.clear();
+                                      projectShowLex.unknown_table.rows.add(unknown_array);
+                                      projectShowLex.unknown_table.draw();
+
                              });
 
                        });

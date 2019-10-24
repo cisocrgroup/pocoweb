@@ -32,7 +32,7 @@ tbody,thead{
     height: 100%;
     background-color: white;
     background: white;
-    opacity: 0.96;
+    opacity: 0.98;
     z-index: -1;
 }
 
@@ -482,6 +482,25 @@ opacity: 0.8;
 }
 
 .page_jump:hover{
+  cursor: pointer;
+  color: #926fa8;
+}
+
+.table_chevron{
+  min-width: 31px; */
+    display: flex;
+    font-size: 1.3em;
+    color: #1857e6;
+    opacity: .9;
+    font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  
+    justify-content: center;
+}
+.table_chevron > span {
+    align-self: center;
+}
+
+.table_chevron:hover{
   cursor: pointer;
   color: #926fa8;
 }
