@@ -6,11 +6,12 @@
 <div class="row">
 <div class="col-lg-5">
 <h4>Extensions</h4> 
-<table id="extensions" class="table table-bordered sortable table-hover" style='margin-bottom: 30px;'> 
+<table id="extensions" class="table table-hover table-bordered table-sm" style='margin-bottom: 30px;'> 
 <thead class="thead-light">
       <tr>
         <th>Word</th>
         <th>Frequency</th>
+        <th>Move</th>
       </tr>
  </thead>
  <tbody>
@@ -18,7 +19,7 @@
        <tr>  
         <td><%-key%></td>
         <td><%-le.yes[key]%></td>
-
+        <td><div class="page_jump" style="display:inline-block;" title="Move to unknown"> <span><i class="fas fa-chevron-right"></i></span></div></td>
         </tr>
        <% } %> 
 
@@ -37,7 +38,7 @@
 
 <div class="col-lg-5">
 
-<table id="unknown" class="table table-bordered sortable table-hover" style='margin-bottom: 30px;'>
+<table id="unknown" class="table table-hover table-bordered table-sm" style='margin-bottom: 30px;'>
 <h4>Unknown</h4> 
 <thead class="thead-light">
       <tr>
@@ -48,7 +49,7 @@
  <tbody>
    <% for (key in le.no) { %>
        <tr>  
-        <td><%-key%></td>
+        <td><div class="page_jump" style="display:inline-block;" title="Move to extensions"> <span><i class="fas fa-chevron-left"></i></span></div><%-key%></td>
         <td><%-le.no[key]%></td>
 
         </tr>

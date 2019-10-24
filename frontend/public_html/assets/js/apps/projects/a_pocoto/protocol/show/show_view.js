@@ -35,7 +35,7 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
   Show.Protocol = Marionette.View.extend({
       template: infoTpl,
       events:{
-      'click tr' : 'row_clicked',
+      'click tbody tr' : 'row_clicked',
       'click .js-pr-redo' : 'pr_redo_clicked',
 
       }, 

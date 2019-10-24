@@ -54,6 +54,23 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                        projectShowLex = new Show.LexiconExtension({le});
                        projectShowLayout.showChildView('contentRegion',projectShowLex);
 
+                       projectShowLex.on("show:move_token",function(word){
+                        console.log(word);
+                        let data = {};
+                         data[word]=0;
+                         var updatingLE = ProjectEntities.API.putLexiconExtension({
+                             pid:project.get('projectId'),
+                             bid:project.get('bookId'),
+                             yes:data,
+                             no: {}
+                           });
+
+                             $.when(updatingLE).done(function(le){
+                              console.log(le);
+                             });
+
+                       });
+
                         projectShowLex.on("show:word_clicked",function(word){
 
                         var searchingToken = ProjectEntities.API.search({
