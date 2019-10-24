@@ -17,12 +17,8 @@
   	   var correction_class="";
   	   var setlinehightlighting=false;
   	   if(line['isFullyCorrected']){
-  	  	 correction_class = "line_fully_corrected";
+  	  	 correction_class = "fully_corrected";
   	   }
-  	   else if(line['isPartiallyCorrected']){
-  	  	 correction_class = "line_partially_corrected";
-  	   }
-
 
       %>
       <div class="line-container">
@@ -37,7 +33,6 @@
 		<div id="line-<%-anchor%>" class="<%-correction_class%> line-text" anchor="<%-anchor%>"
 	    class="<%-inputclass%> line-text">
        <div class="line" contenteditable="true">
-
         <%-line['cor']%>
       	</div>
       	<div class="line-tokens">

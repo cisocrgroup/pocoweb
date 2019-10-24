@@ -93,7 +93,6 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                   token_id:offset,
                   token:token}, anchor, function(){
                     checked_length--;
-                    console.log(checked_length);
                     if (checked_length == 0){
                        that.trigger("concordance:update_after_correction",
                         {pid:pid,query:Marionette.getOption(that,"selection"),current_input:current_input});
@@ -181,7 +180,6 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         e.stopPropagation(); 
 
         var current_input = $(".js-global-correction-suggestion").val();
-        // console.log($(e.currentTarget));
         var concLine = $(e.currentTarget).parent().parent();
         var tokendiv = $(e.currentTarget).parent();
             var that = this;
@@ -189,8 +187,9 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
             var lineid =  tokendiv.attr('lineId');
             var pageid =  tokendiv.attr('pageId');
             var offset =  tokendiv.attr('offset');
-            var token  = tokendiv.text();
+            var token  = tokendiv.find('.cordiv').text();
             var anchor = concLine.attr('anchor');
+
             this.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:offset,token:token}
               ,anchor
               ,function(){
@@ -215,6 +214,8 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
             var tokenid =  tokendiv.attr('tokenId');
             var token  = tokendiv.text();
             var anchor = concLine.attr('anchor');
+
+         
             this.trigger("concordance:show_suggestions",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token,dropdowndiv:$(e.currentTarget)});
           }
 

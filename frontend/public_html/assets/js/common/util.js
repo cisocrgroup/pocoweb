@@ -145,14 +145,15 @@ addAlignedLine : function(line){
               return;
               }
 
-              let addDiv = function(text, width, box, offset) {
+              let addDiv = function(text, width, box, offset,corrected) {
                   let textdiv = $('<div>' + text + "</div>");
- 				  let boxstr = "(" + box.left + "," + box.top + "," +
+ 				      let boxstr = "(" + box.left + "," + box.top + "," +
 				      box.right + "," + box.bottom + ")";
                   textdiv.css('width', width * scalefactor);
                   textdiv.attr('boundingbox', boxstr);
                   textdiv.attr('title', 'token ' + offset + ', ' + text);
                   let div = $('<div class="tokendiv noselect"></div>').append(textdiv);
+                  if(corrected) div.addClass("fully_corrected token-text"); // mark token green when corrected
                   line_text.find('.line-tokens').append(div);
               };
               for(var i=0;i<linetokens.length;i++) {
@@ -168,9 +169,11 @@ addAlignedLine : function(line){
                       bottom: token.box.bottom
                   };
                   let offset = prev.offset + prev.cor.trim().length + 1;
-                  addDiv("", width, box, offset);
+                  addDiv("", width, box, offset,false);
                 }
-                addDiv(token.cor.trim(), token.box.width, token.box, token.offset);
+                let corrected = false;
+                if (!line.isFullyCorrected) corrected = token.isFullyCorrected;
+                addDiv(token.cor.trim(), token.box.width, token.box, token.offset,corrected);
                }
 },
   copyStringToClipboard :function(str) {
@@ -205,6 +208,9 @@ addAlignedLine : function(line){
          else if(response.responseText!=undefined){
          App.mainmsg.updateContent("Error "+ response.status+" ("+response.statusText+") ",mode);
 
+         }
+         else if(response.message!=undefined){
+         App.mainmsg.updateContent("Error "+ response.code+" ("+response.message+") ",mode);
          }
          else{
             App.mainmsg.updateContent(response,mode);
