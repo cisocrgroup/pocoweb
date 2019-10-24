@@ -214,10 +214,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     var correctingline = ProjectEntities.API.correctLine(data);
                   $.when(correctingline).done(function(result){
 
-                    console.log(result);
-                    console.log(page.get('lines')[result.lineId-1]);
                     page.get('lines')[result.lineId-1] = result; // update line array in page.lines
-                      console.log(page.get('lines')[result.lineId-1]);
 
                     var lineanchor = $('#line-'+anchor);
                     lineanchor.addClass('fully_corrected');
@@ -323,17 +320,17 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                        var gettingLine = ProjectEntities.API.getLine(data);
                       $.when(gettingLine).done(function(line_result){
 
+                        console.log(line_result);
+
                         var lineanchor = $('#line-'+anchor);
                             if(lineanchor.length>0) {
-                                lineanchor.removeClass('line_fully_corrected');
-                                lineanchor.removeClass('line_partially_corrected');
+                              
 
                               if(line_result.isFullyCorrected) {
-                                lineanchor.addClass('line_fully_corrected');
+                                lineanchor.addClass('fully_corrected');
                               }
-                              else if(line_result.isPartiallyCorrected){
-                                lineanchor.addClass('line_partially_corrected');
-                              }
+                             page.get('lines')[line_result.lineId-1] = line_result; // update line array in page.lines
+
 
                             console.log("lineanchor")
                             console.log(lineanchor);
