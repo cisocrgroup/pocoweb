@@ -12,6 +12,8 @@ dir=$2
 profile=$3
 ws="$dir/workspace"
 config="/etc/skel/pcwpostcorrection.json"
+alignfg="OCR-D-CIS-POCOWEB-ALIGN"
+outputfg="OCR-D-CIS-POCOWEB-POST-CORRECTION"
 METS="$ws/mets.xml"
 LOG_LEVEL=DEBUG
 
@@ -49,8 +51,10 @@ esac
 doOCR=true
 if [[ -d "$ws" ]]; then
 	doOCR=false
-	ocrd workspace remove-group  --recursive --force \
-		 "OCR-D-CIS-POCOWEB-MOCR" "OCR-D-CIS-POCOWEB-IMG"
+	pushd "$ws"
+	ocrd workspace remove-group --recursive --force \
+		 "OCR-D-CIS-POCOWEB-MOCR" "OCR-D-CIS-POCOWEB-IMG" "$alignfg"
+	popd
 else
 	ocrd workspace init "$ws"
 fi
@@ -87,7 +91,6 @@ for run in $(cat "$PARAMETER" | jq -r '.ocrSteps[] | @base64'); do
 done
 
 # Align master OCR with slave OCRs.
-alignfg="OCR-D-CIS-POCOWEB-ALIGN"
 ocrd-cis-debug ocrd-cis-align --mets "$METS" \
 			   --input-file-grp "$alignfgs" \
 			   --output-file-grp "$alignfg"
@@ -105,10 +108,12 @@ ocrd-cis-debug java -Dfile.encoding=UTF-8 -Xmx3g -cp "$jar" "$main" \
 	 -c post-correct \
 	 --mets "$METS" \
 	 --parameter <(jq ".postCorrection.nOCR = \"$nocr\" | .postCorrection" "$PARAMETER") \
-	 --input-file-grp "$alignfg"
+	 --input-file-grp "$alignfg" \
+	 --output-file-grp "outputfg"
 java -Dfile.encoding=UTF-8 -Xmx3g -cp "$jar" "$main" \
 	 --log-level "$LOG_LEVEL" \
 	 -c post-correct \
 	 --mets "$METS" \
 	 --parameter <(jq ".postCorrection.nOCR = \"$nocr\" | .postCorrection" "$PARAMETER") \
-	 --input-file-grp "$alignfg"
+	 --input-file-grp "$alignfg" \
+	 --output-file-grp "$outputfg"
