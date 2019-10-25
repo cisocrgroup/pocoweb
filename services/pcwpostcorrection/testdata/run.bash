@@ -61,7 +61,7 @@ fi
 # files.
 for xml in $dir/src/xmls/*.xml; do
 	img=$(ocrd-cis-find-image-for-xml "$dir/src/imgs" "$xml")
-	ocrd-cis-add-xml-image-pair "$mets" "$xml" "OCR-D-CIS-POCOWEB-MOCR" "$img" "OCR-D-CIS-POCOWEB-IMG"
+	ocrd-cis-add-xml-image-pair "$METS" "$xml" "OCR-D-CIS-POCOWEB-MOCR" "$img" "OCR-D-CIS-POCOWEB-IMG"
 done
 
 # Run slave OCRs (if $doOCR=true) and build up file group list for
@@ -88,10 +88,10 @@ done
 
 # Align master OCR with slave OCRs.
 alignfg="OCR-D-CIS-POCOWEB-ALIGN"
-ocrd-cis-debug ocrd-cis-align --mets "$mets" \
+ocrd-cis-debug ocrd-cis-align --mets "$METS" \
 			   --input-file-grp "$alignfgs" \
 			   --output-file-grp "$alignfg"
-ocrd-cis-align --mets "$mets" \
+ocrd-cis-align --mets "$METS" \
 			   --input-file-grp "$alignfgs" \
 			   --output-file-grp "$alignfg"
 
@@ -103,12 +103,12 @@ nocr=$(jq ".ocrSteps | length+1" "$PARAMETER")
 ocrd-cis-debug java -Dfile.encoding=UTF-8 -Xmx3g -cp "$jar" "$main" \
 	 --log-level "$LOG_LEVEL" \
 	 -c post-correct \
-	 --mets "$mets" \
+	 --mets "$METS" \
 	 --parameter <(jq ".postCorrection.nOCR = \"$nocr\" | .postCorrection" "$PARAMETER") \
 	 --input-file-grp "$alignfg"
 java -Dfile.encoding=UTF-8 -Xmx3g -cp "$jar" "$main" \
 	 --log-level "$LOG_LEVEL" \
 	 -c post-correct \
-	 --mets "$mets" \
+	 --mets "$METS" \
 	 --parameter <(jq ".postCorrection.nOCR = \"$nocr\" | .postCorrection" "$PARAMETER") \
 	 --input-file-grp "$alignfg"
