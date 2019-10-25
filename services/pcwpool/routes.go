@@ -178,18 +178,35 @@ func (line *lineInfo) write(out *zip.Writer) error {
 	if err := line.writeGT(out); err != nil {
 		return err
 	}
+	if err := line.writeOCR(out); err != nil {
+		return err
+	}
 	return line.copyImage(out)
 }
 
 func (line *lineInfo) writeGT(out *zip.Writer) error {
-	w, err := out.CreateHeader(line.gtZIPHeader())
+	if err := line.writeText(out, line.gtZIPHeader(), line.line.Cor()); err != nil {
+		return fmt.Errorf("cannot write gt file: %v", err)
+	}
+	return nil
+}
+
+func (line *lineInfo) writeOCR(out *zip.Writer) error {
+	if err := line.writeText(out, line.ocrZIPHeader(), line.line.OCR()); err != nil {
+		return fmt.Errorf("cannot write ocr file: %v", err)
+	}
+	return nil
+}
+
+func (line *lineInfo) writeText(out *zip.Writer, header *zip.FileHeader, text string) error {
+	w, err := out.CreateHeader(header)
 	if err != nil {
-		return fmt.Errorf("cannot create gt file for line %d: %v",
+		return fmt.Errorf("cannot create text file for line %d: %v",
 			line.lineID, err)
 	}
 	// Note: w is a writer not a WriteCloser
-	if _, err := fmt.Fprintln(w, line.line.Cor()); err != nil {
-		return fmt.Errorf("cannot create write gt for line %d: %v",
+	if _, err := fmt.Fprintln(w, text); err != nil {
+		return fmt.Errorf("cannot write text file for line %d: %v",
 			line.lineID, err)
 	}
 	return nil
@@ -218,6 +235,15 @@ func (line *lineInfo) gtZIPHeader() *zip.FileHeader {
 		Modified: time.Now(),
 		Name: filepath.Join("corpus", line.book.String(),
 			fmt.Sprintf("%04d/%04d.gt.txt", line.pageID, line.lineID)),
+	}
+}
+
+func (line *lineInfo) ocrZIPHeader() *zip.FileHeader {
+	return &zip.FileHeader{
+		Method:   zip.Deflate,
+		Modified: time.Now(),
+		Name: filepath.Join("corpus", line.book.String(),
+			fmt.Sprintf("%04d/%04d.txt", line.pageID, line.lineID)),
 	}
 }
 
