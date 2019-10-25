@@ -36,10 +36,10 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
   Show.LexiconExtension = Marionette.View.extend({
       template: infoTpl,
       events:{
-      'click tr' : 'row_clicked',
+      'click tbody tr' : 'row_clicked',
       'click .js-le-profile' : 'start_le_profile_clicked',
       'click .js-le-redo' : 'le_redo_clicked',
-
+      'click .table_chevron' : 'move_to_table_clicked'
       },
     //   serializeData: function(){
 
@@ -59,7 +59,28 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
         e.preventDefault();
         var word = $($(e.currentTarget).find("td")[0]).text();
 
-        this.trigger("show:word_clicked",word);
+         this.trigger("show:word_clicked",word.trim());
+      },
+      move_to_table_clicked:function(e){
+        e.preventDefault();
+        e.stopPropagation();
+
+        let yes = {};
+        let no = {};
+        let word = ""
+        let table= "";
+
+        if($(e.currentTarget).hasClass("unknown")){
+           tds = $(e.currentTarget).parent().parent().find("td");
+           word = $(tds[0]).text().trim();
+           no[word]=0;
+        }
+        else{
+         word = $(e.currentTarget).parent().text().trim();
+         yes[word]=0;
+        }
+         this.trigger("show:move_token",yes,no);
+
       },
 
          start_le_profile_clicked:function(e){
@@ -85,29 +106,56 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
 
      onAttach: function(){
        // var table = $('#book_table').DataTable();
-        $(".sortable").sortable({
-            items: 'tbody > tr',
-            connectWith: ".sortable",
 
-            placeholder: "placeholder",
-            delay: 150
-          })
-          .disableSelection()
-          // .dblclick( function(e){
-          //   var item = e.target;
-          //   if (e.currentTarget.id === 'extensions') {
-          //     //move from all to user
-          //     $(item).fadeOut('fast', function() {
-          //       $(item).appendTo($('#unknown')).fadeIn('slow');
-          //     });
-          //   } else {
-          //     //move from user to all
-          //     $(item).fadeOut('fast', function() {
-          //       $(item).appendTo($('#extensions')).fadeIn('slow');
-          //     });
-          //   }
-          // });
-         }
+          var that = this;
+
+          var extensions_table = $('#extensions').DataTable({
+                "scrollY": '556px',
+                "info":false,
+                "paging": false,
+                "lengthChange": false,
+                "order": [[ 0, "asc" ]]
+
+           });
+
+          this.extensions_table = extensions_table;
+
+       
+             var unknown_table = $('#unknown').DataTable({
+                "scrollY": '556px',
+                "info":false,
+                "paging": false,
+                "lengthChange": false,
+                "order": [[ 0, "asc" ]]
+
+           });
+
+           this.unknown_table = unknown_table;
+
+          
+
+
+             // $('.dataTables_scrollBody > table').addClass('sortable');
+
+
+        // $("#unknown").sortable({
+        //     items: 'tbody > tr',
+        //     connectWith: ".connectUnknown",
+
+        //     placeholder: "placeholder",
+        //     delay: 150,
+        //      update: function( ) 
+        //      {
+        //     console.log("do stuff");
+        //      // extensions_table.rows().invalidate().draw();
+        //      }
+        //   })
+        //   .disableSelection()
+
+    
+  
+        
+       }
 
   });
 

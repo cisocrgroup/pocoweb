@@ -35,7 +35,7 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
   Show.Protocol = Marionette.View.extend({
       template: infoTpl,
       events:{
-      'click tr' : 'row_clicked',
+      'click tbody tr' : 'row_clicked',
       'click .js-pr-redo' : 'pr_redo_clicked',
 
       }, 
@@ -66,29 +66,39 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
 
    
      onAttach: function(){
-       // var table = $('#book_table').DataTable();
-        // $(".sortable").sortable({
-        //     items: 'tbody > tr',
-        //     connectWith: ".sortable",
+      var always_table = $('#always').DataTable({
+                "scrollY": '556px',
+                "info":false,
+                "paging": false,
+                "lengthChange": false,
+                "order": [[ 0, "asc" ]]
 
-        //     placeholder: "placeholder",
-        //     delay: 150
-        //   })
-        //   .disableSelection()
-          // .dblclick( function(e){
-          //   var item = e.target;
-          //   if (e.currentTarget.id === 'extensions') {
-          //     //move from all to user
-          //     $(item).fadeOut('fast', function() {
-          //       $(item).appendTo($('#unknown')).fadeIn('slow');
-          //     });
-          //   } else {
-          //     //move from user to all
-          //     $(item).fadeOut('fast', function() {
-          //       $(item).appendTo($('#extensions')).fadeIn('slow');
-          //     });
-          //   }
-          // });
+           });
+
+           this.always_table = always_table;
+
+             var never_table = $('#never').DataTable({
+                "scrollY": '556px',
+                "info":false,
+                "paging": false,
+                "lengthChange": false,
+                "order": [[ 0, "asc" ]]
+
+           });
+
+           this.never_table = never_table;
+
+             var sometimes_table = $('#sometimes').DataTable({
+                "scrollY": '556px',
+                "info":false,
+                "paging": false,
+                "lengthChange": false,
+                "order": [[ 0, "asc" ]]
+
+           });
+
+           this.sometimes_table = sometimes_table;
+
          }
     
   });

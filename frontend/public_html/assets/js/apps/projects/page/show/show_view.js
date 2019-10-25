@@ -479,8 +479,11 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
               $('.line').hide();
               $('.line-tokens').show();
               $('.correct-btn').hide();
-              $('.line-text').css('border','')
-
+              $('.line-text').css('border-bottom','1px solid transparent');
+              $('.line-text').css('border-left','1px solid transparent');
+              $('.line-text').css('border-top','1px solid transparent');
+              $('.line-text').css('border-top-right-radius','.25rem');
+              $('.line-text').css('border-bottom-right-radius','.25rem');
           });
 
 
