@@ -214,7 +214,7 @@ func (r pcRunner) correctInDatabase(corrections map[string]rrdmPVal) (*api.PostC
 		return nil, fmt.Errorf("cannot prepare insert statement: %v", err)
 	}
 	defer ins.Close()
-	t, err := newTypeInserter(r.pool)
+	t, err := db.NewTypeInserter(r.pool)
 	if err != nil {
 		return nil, fmt.Errorf("cannot insert types: %v", err)
 	}
@@ -227,11 +227,11 @@ func (r pcRunner) correctInDatabase(corrections map[string]rrdmPVal) (*api.PostC
 		if _, err := fmt.Sscanf(k, "%d:%d:%d:%d", &bid, &pid, &lid, &tid); err != nil {
 			return nil, fmt.Errorf("invalid protocol id: %s", k)
 		}
-		ocrtypid, err := t.id(v.Normalized)
+		ocrtypid, err := t.ID(v.Normalized)
 		if err != nil {
 			return nil, fmt.Errorf("cannot insert ocr type: %v", err)
 		}
-		cortypid, err := t.id(v.Cor)
+		cortypid, err := t.ID(v.Cor)
 		if err != nil {
 			return nil, fmt.Errorf("cannot insert cor type: %v", err)
 		}
@@ -267,71 +267,4 @@ func (r pcRunner) makePostCorrections(tokens map[string]struct{ t, r int }) *api
 		}
 	}
 	return &pc
-}
-
-type typeInserter struct {
-	sel, ins *sql.Stmt
-	ids      map[string]int
-}
-
-func newTypeInserter(dtb db.DB) (*typeInserter, error) {
-	sel, err := dtb.Prepare("SELECT id FROM types WHERE  typ=?")
-	if err != nil {
-		return nil, fmt.Errorf("cannot prepare type select statement: %v", err)
-	}
-	ins, err := dtb.Prepare("INSERT into types (typ) VALUES (?)")
-	if err != nil {
-		sel.Close() // sel must be closed
-		return nil, fmt.Errorf("cannot prepare type insert statment: %v", err)
-	}
-	return &typeInserter{
-		sel: sel,
-		ins: ins,
-		ids: make(map[string]int),
-	}, nil
-}
-
-func (t *typeInserter) id(typ string) (int, error) {
-	if id, ok := t.ids[typ]; ok {
-		return int(id), nil
-	}
-	rows, err := t.sel.Query(typ)
-	if err != nil {
-		return 0, fmt.Errorf("cannot query type %s: %v", typ, err)
-	}
-	defer rows.Close()
-	if rows.Next() {
-		var id int
-		if err := rows.Scan(&id); err != nil {
-			return 0, fmt.Errorf("cannot scan id for type %s: %v", typ, err)
-		}
-		t.ids[typ] = id
-		return id, nil
-	}
-	res, err := t.ins.Exec(typ)
-	if err != nil {
-		return 0, fmt.Errorf("cannot insert type %s: %v", typ, err)
-	}
-	id, err := res.LastInsertId()
-	if err != nil {
-		return 0, fmt.Errorf("cannot insert type %s: %v", typ, err)
-	}
-	t.ids[typ] = int(id)
-	return int(id), nil
-}
-
-func (t *typeInserter) Close() (err error) {
-	defer func() {
-		e := t.ins.Close()
-		if err == nil {
-			err = e
-		}
-	}()
-	defer func() {
-		e := t.sel.Close()
-		if err == nil {
-			err = e
-		}
-	}()
-	return nil
 }

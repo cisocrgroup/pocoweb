@@ -6,7 +6,7 @@ require (
 	github.com/finkf/gocrd/xml/page v0.1.2
 	github.com/finkf/gofiler v0.2.0 // indirect
 	github.com/finkf/pcwgo/api v0.16.3
-	github.com/finkf/pcwgo/db v0.14.8
+	github.com/finkf/pcwgo/db v0.14.11
 	github.com/finkf/pcwgo/jobs v0.5.3
 	github.com/finkf/pcwgo/service v0.5.0
 	github.com/kr/pretty v0.1.0 // indirect
