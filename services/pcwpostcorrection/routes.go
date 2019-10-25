@@ -135,8 +135,12 @@ func (s *server) handlePutExtendedLexicon() service.HandlerFunc {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot close protocol: %v", err)
 		}
+		// Reload updated protocol and rewrite it into the api.
 		put.ProjectID = p.ProjectID
 		put.BookID = p.BookID
+		put.Yes = nil
+		put.No = nil
+		protocol.toAPI(&put)
 		service.JSONResponse(w, put)
 	}
 }
