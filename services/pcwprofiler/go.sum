@@ -20,6 +20,8 @@ github.com/finkf/pcwgo/db v0.13.0 h1:bMsCdspYP8n/J2rnkegbU1Om8TqvZeiAD9XyvxxrPTo
 github.com/finkf/pcwgo/db v0.13.0/go.mod h1:Td6xXOuO37LGJR4Xon9nNwp6RtxylqOfuR+ipekT8zo=
 github.com/finkf/pcwgo/db v0.14.8 h1:UXKCTFYF0GqHX6DvaXMVa4Ms2yiwRwplJHE7nbxcGsA=
 github.com/finkf/pcwgo/db v0.14.8/go.mod h1:Td6xXOuO37LGJR4Xon9nNwp6RtxylqOfuR+ipekT8zo=
+github.com/finkf/pcwgo/db v0.15.0 h1:Y/jsnW/qv96g5SGmeds/u/eaH82vS5grHTLztilKlr4=
+github.com/finkf/pcwgo/db v0.15.0/go.mod h1:Td6xXOuO37LGJR4Xon9nNwp6RtxylqOfuR+ipekT8zo=
 github.com/finkf/pcwgo/jobs v0.5.3 h1:uvSEIVeEfVkSxjWX0cFpi/epy/z5hvT9NgjRw2vEI1A=
 github.com/finkf/pcwgo/jobs v0.5.3/go.mod h1:ZfZRO+Ua6xihsCsLXNHSE9YvfhiIKv0SwKfkLQytQx8=
 github.com/finkf/pcwgo/service v0.5.0 h1:XJAUxwWzBOMoN1abl4pbqGyNrnrbPuktZShhP6HGmQ4=
