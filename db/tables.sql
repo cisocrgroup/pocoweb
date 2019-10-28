@@ -112,7 +112,7 @@ alter table contents convert to character set utf8mb4 collate utf8mb4_unicode_ci
 
 create table if not exists types (
 	id int not null unique primary key auto_increment,
-	typ varchar(50) unique not null
+	typ varchar(100) unique not null
 );
 alter table types convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 alter table types change typ typ varchar(50) character set utf8mb4 collate utf8mb4_unicode_ci;
