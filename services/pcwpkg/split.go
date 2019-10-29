@@ -118,7 +118,7 @@ func distribute(pageIDs []int, r splitProjectRequest) []pkg {
 	for i := 0; i < n; i++ {
 		m := d
 		if x > 0 {
-			m += 1
+			m++
 			x--
 		}
 		ret[i].Owner = r.UserIDs[i]

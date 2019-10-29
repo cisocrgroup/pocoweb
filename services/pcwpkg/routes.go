@@ -1,12 +1,17 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/finkf/pcwgo/service"
 )
+
+type key int
+
+var postKey key
 
 func routes() {
 	http.HandleFunc("/pkg/split/books/", service.WithLog(service.WithMethods(
@@ -21,24 +26,26 @@ func routes() {
 }
 
 func onlyProjects(f service.HandlerFunc) service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, c *service.Data) {
-		if c.Project.BookID != c.Project.ProjectID { // project is a package
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		p := service.ProjectFromCtx(ctx)
+		if p.BookID != p.ProjectID { // project is a package
 			service.ErrorResponse(w, http.StatusBadRequest,
 				"bad request: package id given")
 			return
 		}
-		f(w, r, c)
+		f(ctx, w, r)
 	}
 }
 
 func onlyPackages(f service.HandlerFunc) service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, c *service.Data) {
-		if c.Project.BookID == c.Project.ProjectID { // project is a book
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		p := service.ProjectFromCtx(ctx)
+		if p.BookID == p.ProjectID { // project is a book
 			service.ErrorResponse(w, http.StatusBadRequest,
 				"bad request: project id given")
 			return
 		}
-		f(w, r, c)
+		f(ctx, w, r)
 	}
 }
 
@@ -48,7 +55,7 @@ type splitProjectRequest struct {
 }
 
 func withPostSplit(f service.HandlerFunc) service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, c *service.Data) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		var post splitProjectRequest
 		if err := json.NewDecoder(r.Body).Decode(&post); err != nil {
 			service.ErrorResponse(w, http.StatusBadRequest,
@@ -60,14 +67,15 @@ func withPostSplit(f service.HandlerFunc) service.HandlerFunc {
 				"bad request: missing user ids")
 			return
 		}
-		c.Post = post
-		f(w, r, c)
+		f(context.WithValue(ctx, postKey, postKey), w, r)
 	}
 }
 
 func splitHandler() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, c *service.Data) {
-		pkgs, err := split(c.Project.BookID, c.Post.(splitProjectRequest))
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		post := ctx.Value(postKey).(splitProjectRequest)
+		p := service.ProjectFromCtx(ctx)
+		pkgs, err := split(p.BookID, post)
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"internal server error: cannot handle split: %v", err)
@@ -78,11 +86,12 @@ func splitHandler() service.HandlerFunc {
 }
 
 func assignHandler() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, c *service.Data) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		str := r.URL.Query().Get("assignto")
+		p := service.ProjectFromCtx(ctx)
 		// no assignto -> assign package to original owner
 		if str == "" {
-			if err := assignToOriginalOwner(c.Project.ProjectID); err != nil {
+			if err := assignToOriginalOwner(p.ProjectID); err != nil {
 				service.ErrorResponse(w, http.StatusInternalServerError,
 					"internal server error: cannot handle assignment: %v", err)
 				return
@@ -90,8 +99,9 @@ func assignHandler() service.HandlerFunc {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
+		auth := service.AuthFromCtx(ctx)
 		// assignto -> user must be root
-		if !c.Session.User.Admin {
+		if !auth.User.Admin {
 			service.ErrorResponse(w, http.StatusForbidden,
 				"forbidden: not an administrator account")
 			return
@@ -103,7 +113,7 @@ func assignHandler() service.HandlerFunc {
 				"bad request: invalid user id: %s", str)
 			return
 		}
-		if err := assignToUser(c.Project.ProjectID, assignto); err != nil {
+		if err := assignToUser(p.ProjectID, assignto); err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"internal server error: cannot handle assignment: %v", err)
 			return
@@ -113,8 +123,10 @@ func assignHandler() service.HandlerFunc {
 }
 
 func takeBackHandler() service.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, c *service.Data) {
-		if err := takeBack(c.Project.ProjectID, int(c.Session.User.ID)); err != nil {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		auth := service.AuthFromCtx(ctx)
+		p := service.ProjectFromCtx(ctx)
+		if err := takeBack(p.ProjectID, int(auth.User.ID)); err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"internal server error: cannot handle take back: %v", err)
 			return
