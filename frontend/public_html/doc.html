@@ -86,11 +86,6 @@ for suspicious words.</p>
 <li><a href="#user-content-api-get-books-pid-suspicious">POST rest/profile/suspicious/books/<code>pid</code></a></li>
 <li><a href="#user-content-api-get-profiler-languages">GET rest/profile/languages</a></li>
 <li><a href="#user-content-api-post-books-pid-adaptive-tokens">GET rest/profile/adaptive/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-get-global-ocr-models">GET rest/ocr</a></li>
-<li><a href="#user-content-api-get-ocr-models">GET rest/ocr/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-post-ocr-book">POST rest/ocr/books/<code>pid</code></a></li>
-<li><a href="#user-content-api-post-ocr-book-page">POST rest/ocr/books/<code>pid</code>/pages/<code>pageid</code></a></li>
-<li><a href="#user-content-api-post-ocr-book-page-line">POST rest/ocr/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lineid</code></a></li>
 <li><a href="#user-content-api-get-el">GET rest/postcorrect/le/books/<code>pid</code></a></li>
 <li><a href="#user-content-api-put-el">PUT rest/postcorrect/le/books/<code>pid</code></a></li>
 <li><a href="#user-content-api-post-el">POST rest/postcorrect/le/books/<code>pid</code></a></li>
@@ -1771,141 +1766,6 @@ project/package.  They are used as hints for the profiler.</p>
   <span class="pl-s"><span class="pl-pds">"</span>adaptiveTokens<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>token1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>token2<span class="pl-pds">"</span></span>, <span class="pl-ii">...</span>] <span class="pl-ii">//</span> <span class="pl-ii">list</span> <span class="pl-ii">of</span> <span class="pl-ii">adaptive</span> <span class="pl-ii">tokens</span>
 }</pre></div>
 <hr>
-<p><a id="user-content-api-get-global-ocr-models"></a></p>
-<h3>
-<a id="user-content-get-restocr" class="anchor" href="#get-restocr" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GET rest/ocr</h3>
-<p>Get the list of available global ocr models.</p>
-<ul>
-<li>
-<a href="#user-content-authorization">Authorization</a> is required.</li>
-</ul>
-<h4>
-<a id="user-content-response-data-27" class="anchor" href="#response-data-27" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
-<div class="highlight highlight-source-json"><pre>{
-	<span class="pl-s"><span class="pl-pds">"</span>models<span class="pl-pds">"</span></span>: [
-		{
-			<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of model<span class="pl-pds">"</span></span>,
-			<span class="pl-s"><span class="pl-pds">"</span>description<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>description for model<span class="pl-pds">"</span></span>
-		},
-		<span class="pl-ii">...</span>
-	]
-}
-</pre></div>
-<hr>
-<p><a id="user-content-api-get-ocr-models"></a></p>
-<h3>
-<a id="user-content-get-restocrbookspid" class="anchor" href="#get-restocrbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GET rest/ocr/books/<code>pid</code>
-</h3>
-<p>Get the list of available global ocr models and specific trained
-models for the project.</p>
-<ul>
-<li>
-<a href="#user-content-authorization">Authorization</a> is required.</li>
-<li>Only the owner of a project or package can access the project's models.</li>
-</ul>
-<h4>
-<a id="user-content-response-data-28" class="anchor" href="#response-data-28" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
-<div class="highlight highlight-source-json"><pre>{
-	<span class="pl-s"><span class="pl-pds">"</span>models<span class="pl-pds">"</span></span>: [
-		{
-			<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of model<span class="pl-pds">"</span></span>,
-			<span class="pl-s"><span class="pl-pds">"</span>description<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>description for model<span class="pl-pds">"</span></span>
-		},
-		<span class="pl-ii">...</span>
-	]
-}
-</pre></div>
-<hr>
-<p><a id="user-content-api-post-ocr-book"></a></p>
-<h3>
-<a id="user-content-post-restocrbookspid" class="anchor" href="#post-restocrbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST rest/ocr/books/<code>pid</code>
-</h3>
-<p>Starts an OCR <a href="#user-content-api-get-jobs">job</a> on the given project
-(or on the given package's project).</p>
-<ul>
-<li>
-<a href="#user-content-authorization">Authorization</a> is required.</li>
-<li>Only the owner of a project or package can start an OCR-job.</li>
-<li>Only lines that are neither fully nor partially corrected are predicted.</li>
-</ul>
-<h4>
-<a id="user-content-post-data-9" class="anchor" href="#post-data-9" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
-<div class="highlight highlight-source-json"><pre>{
-	<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of the  model<span class="pl-pds">"</span></span>
-}</pre></div>
-<h4>
-<a id="user-content-response-data-29" class="anchor" href="#response-data-29" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
-<div class="highlight highlight-source-json"><pre>{
-	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>
-}</pre></div>
-<hr>
-<p><a id="user-content-api-post-ocr-book-page"></a></p>
-<h3>
-<a id="user-content-post-restocrbookspidpagespageid" class="anchor" href="#post-restocrbookspidpagespageid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST rest/ocr/books/<code>pid</code>/pages/<code>pageid</code>
-</h3>
-<p>Starts an OCR <a href="#user-content-api-get-jobs">job</a> on the given page.</p>
-<ul>
-<li>
-<a href="#user-content-authorization">Authorization</a> is required.</li>
-<li>Only the owner of a project or package can start an OCR-job.</li>
-<li>Only lines that are neither fully nor partially corrected are predicted.</li>
-</ul>
-<h4>
-<a id="user-content-post-data-10" class="anchor" href="#post-data-10" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
-<div class="highlight highlight-source-json"><pre>{
-	<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of the  model<span class="pl-pds">"</span></span>
-}</pre></div>
-<h4>
-<a id="user-content-response-data-30" class="anchor" href="#response-data-30" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
-<div class="highlight highlight-source-json"><pre>{
-	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>
-}</pre></div>
-<hr>
-<p><a id="user-content-api-post-ocr-book-page-line"></a></p>
-<h3>
-<a id="user-content-post-restocrbookspidpagespageidlineslid" class="anchor" href="#post-restocrbookspidpagespageidlineslid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST rest/ocr/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>
-</h3>
-<p>Starts an OCR <a href="#user-content-api-get-jobs">job</a> on the given line.</p>
-<ul>
-<li>
-<a href="#user-content-authorization">Authorization</a> is required.</li>
-<li>Only the owner of a project or package can start an OCR-job.</li>
-<li>Only lines that are neither fully nor partially corrected are predicted.</li>
-</ul>
-<h4>
-<a id="user-content-post-data-11" class="anchor" href="#post-data-11" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
-<div class="highlight highlight-source-json"><pre>{
-	<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of the  model<span class="pl-pds">"</span></span>
-}</pre></div>
-<h4>
-<a id="user-content-response-data-31" class="anchor" href="#response-data-31" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
-<div class="highlight highlight-source-json"><pre>{
-	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>
-}</pre></div>
-<hr>
-<p><a id="user-content-api-post-train-book"></a></p>
-<h3>
-<a id="user-content-post-restocrtrainbookspid" class="anchor" href="#post-restocrtrainbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST rest/ocr/train/books/<code>pid</code>
-</h3>
-<p>Starts the training <a href="#user-content-api-get-jobs">job</a> of an individual
-OCR-model for the given book (or package).</p>
-<ul>
-<li>
-<a href="#user-content-authorization">Authorization</a> is required.</li>
-<li>Only the owner of a project or package can start an OCR-job.</li>
-<li>Only fully corrected lines are used for the training.</li>
-</ul>
-<h4>
-<a id="user-content-post-data-12" class="anchor" href="#post-data-12" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
-<div class="highlight highlight-source-json"><pre>{
-	<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name for the base model<span class="pl-pds">"</span></span>
-}</pre></div>
-<h4>
-<a id="user-content-response-data-32" class="anchor" href="#response-data-32" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
-<div class="highlight highlight-source-json"><pre>{
-	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>
-}</pre></div>
-<hr>
 <p><a id="user-content-api-get-el"></a></p>
 <h3>
 <a id="user-content-get-restpostcorrectlebookspid" class="anchor" href="#get-restpostcorrectlebookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GET rest/postcorrect/le/books/<code>pid</code>
@@ -1919,7 +1779,7 @@ according <a href="#user-content-api-post-el">post request</a> has finished.</p>
 <li>Only the owner of a project or package can access the extended lexicon.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-33" class="anchor" href="#response-data-33" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-27" class="anchor" href="#response-data-27" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
@@ -1956,7 +1816,7 @@ according <a href="#user-content-api-post-el">post request</a> has finished.</p>
 	}
 }</pre></div>
 <h4>
-<a id="user-content-response-data-34" class="anchor" href="#response-data-34" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-28" class="anchor" href="#response-data-28" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
@@ -1981,7 +1841,7 @@ lexicon.</p>
 <li>Only the owner of a project or package can start the job.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-35" class="anchor" href="#response-data-35" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-29" class="anchor" href="#response-data-29" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">31</span>
 }</pre></div>
@@ -1999,7 +1859,7 @@ according <a href="#user-content-api-post-rrdm">post request</a> has finished.</
 <li>Only the owner of a project or package can access the post-correction information.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-36" class="anchor" href="#response-data-36" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-30" class="anchor" href="#response-data-30" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
@@ -2027,7 +1887,7 @@ correction.</p>
 <li>Only the owner of a project or package can start the job.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-37" class="anchor" href="#response-data-37" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-31" class="anchor" href="#response-data-31" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">31</span>
 }</pre></div>
@@ -2073,7 +1933,7 @@ the <code>pooled</code> setting in the projects is ignored.</li>
 of a specific running job (such as predict, train, profiler,
 postcorrection) with the according id.</p>
 <h4>
-<a id="user-content-response-data-38" class="anchor" href="#response-data-38" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-32" class="anchor" href="#response-data-32" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>jobId<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
