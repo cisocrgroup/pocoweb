@@ -19,8 +19,10 @@ If you encounter any problems, make sure to check the [misc notes]()
 section on the bottom of this page.
 
 ## Docker
-Pocoweb can be used and deployed using containers with [docker-compose](https://docs.docker.com/compose/).
-Its main configuration can be found in the [docker-compose.yml](misc/docker/docker-compose.yml) file.
+Pocoweb can be used and deployed using containers with
+[docker-compose](https://docs.docker.com/compose/).  Its main
+configuration can be found in the
+[docker-compose.yml](docker-compose.yml) file.
 
 ### Setup
 There are five external directories, that the different container need to access.
@@ -115,16 +117,6 @@ This will clone the submodules and download the internal dependencies of
 Pocoweb. You must download all internal dependencies before you can
 proceed to build Pocoweb.
 
-#### Profiler
-Pocoweb can optionally be used with a local (in respect to the rest-service)
-profiler.
-In order to use a local profiler, the profiler must be installed and
-according language backends should have been created. Refer to
-[the profiler manual](https://github.com/cisocrgroup/Resources/blob/master/manuals/profiler-manual.pdf)
-for more information or read the Profilers [Dockerfile](misc/docker/profiler/Dockerfile).
-
-http://localhost/project-data/udsvhhrbqzrswlcp/ocropus-book/0042/010001.bin.png
-
 #### Compilation
 After all dependencies have been installed (see above),
 build the back-end using the command `make` (use `-jN` to speed up the
@@ -207,10 +199,10 @@ This updates all needed files and installs them under the given directory.
  * `rest/src` contains the back-end c++ implementation
  * `db` contains the database table definitions
  * `frontend` contains the web frontend files
- * `frontend/resources` contains the php templates and library functions
  * `frontend/public_html` contains images, html, php and javascript front-end files
  * `make` contains various helper makefiles
  * `modules` contains the git submodules
+ * `services` contains helper services (profiler, http-server, ...) need to run pocoweb
 
 ## Documentation
 The basic usage and API Documentation is part of Pocoweb.
