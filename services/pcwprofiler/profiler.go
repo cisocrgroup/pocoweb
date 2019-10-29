@@ -73,19 +73,24 @@ func (p *profiler) runProfiler(ctx context.Context) error {
 		tokens = append(tokens, gofiler.Token{LE: token})
 	}
 	err := eachLine(p.project.BookID, func(line db.Chars) error {
-		return eachWord(line, func(word db.Chars) error {
-			tokens = append(tokens, gofiler.Token{OCR: word.OCR()})
-			if word.IsFullyCorrected() {
-				tokens[len(tokens)-1].COR = word.Cor()
+		for w, r := line.NextWord(); len(w) > 0; w, r = r.NextWord() {
+			tokens = append(tokens, gofiler.Token{OCR: w.OCR()})
+			if w.IsFullyCorrected() {
+				tokens[len(tokens)-1].COR = w.Cor()
 			}
-			return nil
-		})
+		}
+		return nil
 	})
 	if err != nil {
 		return fmt.Errorf("cannot run profiler: %v", err)
 	}
 	log.Debugf("profiler: profiling %d tokens", len(tokens))
-	x := gofiler.Profiler{Exe: profbin, Log: logger{}, Adaptive: true, Types: true}
+	x := gofiler.Profiler{
+		Exe:      profbin,
+		Log:      logger{},
+		Adaptive: true,
+		Types:    true,
+	}
 	profile, err := x.Run(ctx, p.config.Path, tokens)
 	if err != nil {
 		return fmt.Errorf("cannot run profiler: %v", err)
