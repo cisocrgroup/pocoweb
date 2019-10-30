@@ -14,6 +14,10 @@ import (
 	"github.com/finkf/pcwgo/service"
 )
 
+type key int
+
+var extendedLexiconKey key
+
 type server struct {
 	baseDir    string
 	pocowebURL string
@@ -40,7 +44,7 @@ func (s *server) routes() {
 
 func withProfiledProject(f service.HandlerFunc) service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		p := ctx.Value("project").(*db.Project)
+		p := service.ProjectFromCtx(ctx)
 		if !p.Status["profiled"] {
 			service.ErrorResponse(w, http.StatusBadRequest, "project not profiled")
 			return
@@ -51,12 +55,12 @@ func withProfiledProject(f service.HandlerFunc) service.HandlerFunc {
 
 func withPutData(f service.HandlerFunc) service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		var put api.ExtendedLexicon
-		if err := json.NewDecoder(r.Body).Decode(&put); err != nil {
+		var el api.ExtendedLexicon
+		if err := json.NewDecoder(r.Body).Decode(&el); err != nil {
 			service.ErrorResponse(w, http.StatusBadRequest, "invalid data: %v", err)
 			return
 		}
-		f(context.WithValue(ctx, "put", put), w, r)
+		f(context.WithValue(ctx, extendedLexiconKey, el), w, r)
 	}
 }
 
@@ -72,7 +76,7 @@ func writeEmptyExtendedLexicon(w http.ResponseWriter, p *db.Project) {
 
 func (s *server) handleGetExtendedLexicon() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		p := ctx.Value("project").(*db.Project)
+		p := service.ProjectFromCtx(ctx)
 		path := filepath.Join(s.baseDir, p.Directory, "postcorrection", "le-protocol.json")
 		in, err := os.Open(path)
 		if os.IsNotExist(err) { // just send an empty answer
@@ -101,8 +105,8 @@ func (s *server) handleGetExtendedLexicon() service.HandlerFunc {
 
 func (s *server) handlePutExtendedLexicon() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		p := ctx.Value("project").(*db.Project)
-		put := ctx.Value("put").(api.ExtendedLexicon)
+		p := service.ProjectFromCtx(ctx)
+		put := ctx.Value(extendedLexiconKey).(api.ExtendedLexicon)
 		path := filepath.Join(s.baseDir, p.Directory, "postcorrection", "le-protocol.json")
 		in, err := os.Open(path)
 		if os.IsNotExist(err) {
@@ -147,7 +151,7 @@ func (s *server) handlePutExtendedLexicon() service.HandlerFunc {
 
 func (s *server) handleRunExtendedLexicon() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		p := ctx.Value("project").(*db.Project)
+		p := service.ProjectFromCtx(ctx)
 		jobID, err := jobs.Start(context.Background(), leRunner{project: p})
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
@@ -171,7 +175,7 @@ func writeEmptyPostCorrection(w http.ResponseWriter, p *db.Project) {
 
 func (s *server) handleRunPostCorrection() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		p := ctx.Value("project").(*db.Project)
+		p := service.ProjectFromCtx(ctx)
 		jobID, err := jobs.Start(context.Background(), pcRunner{pool: s.pool, project: p})
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
@@ -184,7 +188,7 @@ func (s *server) handleRunPostCorrection() service.HandlerFunc {
 
 func (s *server) handleGetPostCorrection() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		p := ctx.Value("project").(*db.Project)
+		p := service.ProjectFromCtx(ctx)
 		protocol := filepath.Join(s.baseDir, p.Directory, "postcorrection", "dm-protocol-pcw.json")
 		if _, err := os.Stat(protocol); os.IsNotExist(err) {
 			writeEmptyPostCorrection(w, p)

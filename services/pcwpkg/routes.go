@@ -11,7 +11,7 @@ import (
 
 type key int
 
-var postKey key
+var splitProjectKey key
 
 func routes() {
 	http.HandleFunc("/pkg/split/books/", service.WithLog(service.WithMethods(
@@ -67,13 +67,13 @@ func withPostSplit(f service.HandlerFunc) service.HandlerFunc {
 				"bad request: missing user ids")
 			return
 		}
-		f(context.WithValue(ctx, postKey, postKey), w, r)
+		f(context.WithValue(ctx, splitProjectKey, post), w, r)
 	}
 }
 
 func splitHandler() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		post := ctx.Value(postKey).(splitProjectRequest)
+		post := ctx.Value(splitProjectKey).(splitProjectRequest)
 		p := service.ProjectFromCtx(ctx)
 		pkgs, err := split(p.BookID, post)
 		if err != nil {

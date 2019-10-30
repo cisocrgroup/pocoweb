@@ -19,6 +19,5 @@ CMD pcwauth \
 	-pkg http://pcwpkg \
     -pool http://pcwpool \
 	-postcorrection http://pcwpostcorrection \
-	-ocr http://pcwocr \
 	-listen ':80' \
 	-debug

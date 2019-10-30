@@ -30,7 +30,6 @@ var (
 	postcorrection string
 	pkg            string
 	pool           string
-	ocr            string
 	debug          bool
 	version        api.Version
 	vonce          sync.Once
@@ -50,7 +49,6 @@ func init() {
 		"set host of pcwpostcorrection")
 	flag.StringVar(&pkg, "pkg", "", "set host of pkg")
 	flag.StringVar(&pool, "pool", "", "set host of pcwpool service")
-	flag.StringVar(&ocr, "ocr", "", "set host of pcwocr")
 	flag.BoolVar(&debug, "debug", false, "enable debug logging")
 	client = &http.Client{Transport: &http.Transport{
 		MaxIdleConnsPerHost: 1024,
@@ -67,11 +65,8 @@ func must(err error) {
 func main() {
 	// flags
 	flag.Parse()
-	if debug {
-		log.SetLevel(log.DebugLevel)
-	}
 	// database
-	must(service.Init(dsn))
+	must(service.InitDebug(dsn, debug))
 	defer service.Close()
 	// login
 	http.HandleFunc(api.LoginURL,
@@ -79,21 +74,10 @@ func main() {
 			http.MethodGet, service.WithAuth(getLogin()),
 			http.MethodPost, postLogin())))
 	http.HandleFunc(api.LogoutURL, service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithIDs(service.WithAuth(getLogout()), "jobs"))))
+		http.MethodGet, service.WithAuth(service.WithJobID(getLogout())))))
 	// jobs
 	http.HandleFunc("/jobs/", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithIDs(service.WithAuth(getJob()), "jobs"))))
-	// ocr
-	http.HandleFunc("/ocr/", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithAuth(forward(ocr)))))
-	http.HandleFunc("/ocr/predict/", service.WithLog(service.WithMethods(
-		http.MethodPost, service.WithAuth(
-			service.WithProject(projectOwner(forward(ocr)))),
-		http.MethodGet, service.WithAuth(
-			service.WithProject(projectOwner(forward(ocr)))))))
-	http.HandleFunc("/ocr/train/", service.WithLog(service.WithMethods(
-		http.MethodPost, service.WithAuth(
-			service.WithProject(projectOwner(forward(ocr)))))))
+		http.MethodGet, service.WithAuth(service.WithJobID(getJob())))))
 	// postcorrection
 	http.HandleFunc("/postcorrect/le/books/", service.WithLog(service.WithMethods(
 		http.MethodPost, service.WithAuth(
@@ -139,7 +123,7 @@ func main() {
 			service.WithProject(projectOwner(forward(pocoweb)))))))
 	// profiling
 	http.HandleFunc("/profile/languages", service.WithLog(service.WithMethods(
-		http.MethodGet, forward(profiler))))
+		http.MethodGet, service.WithAuth(forward(profiler)))))
 	http.HandleFunc("/profile/jobs/", service.WithLog(service.WithMethods(
 		http.MethodGet, service.WithAuth(forward(profiler)))))
 	http.HandleFunc("/profile/", service.WithLog(service.WithMethods(
@@ -160,11 +144,11 @@ func main() {
 
 func root(f service.HandlerFunc) service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		s := ctx.Value("auth").(*api.Session)
-		log.Debugf("root: %s", s.User)
-		if !s.User.Admin {
+		auth := service.AuthFromCtx(ctx)
+		log.Debugf("root: %s", auth.User)
+		if !auth.User.Admin {
 			service.ErrorResponse(w, http.StatusForbidden,
-				"only root allowed to access: %s", s.User)
+				"only root allowed to access: %s", auth.User)
 			return
 		}
 		f(ctx, w, r)
@@ -174,8 +158,8 @@ func root(f service.HandlerFunc) service.HandlerFunc {
 func rootOrSelf(f service.HandlerFunc) service.HandlerFunc {
 	re := regexp.MustCompile(`/users/(\d+)`)
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		s := ctx.Value("auth").(*api.Session)
-		log.Debugf("rootOrSelf: %s", s.User)
+		auth := service.AuthFromCtx(ctx)
+		log.Debugf("rootOrSelf: %s", auth.User)
 		var uid int
 		if n := service.ParseIDs(r.URL.String(), re, &uid); n == 0 {
 			service.ErrorResponse(w, http.StatusNotFound,
@@ -183,9 +167,9 @@ func rootOrSelf(f service.HandlerFunc) service.HandlerFunc {
 			return
 		}
 		log.Debugf("user id: %d", uid)
-		if !s.User.Admin && int64(uid) != s.User.ID {
+		if !auth.User.Admin && int64(uid) != auth.User.ID {
 			service.ErrorResponse(w, http.StatusForbidden,
-				"not allowed to access: %s", s.User)
+				"not allowed to access: %s", auth.User)
 			return
 		}
 		f(ctx, w, r)
@@ -194,11 +178,11 @@ func rootOrSelf(f service.HandlerFunc) service.HandlerFunc {
 
 func projectOwner(f service.HandlerFunc) service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		s := ctx.Value("auth").(*api.Session)
-		p := ctx.Value("project").(*db.Project)
+		auth := service.AuthFromCtx(ctx)
+		p := service.ProjectFromCtx(ctx)
 		log.Debugf("projectOwner: id: %d, user: %s, owner: %s",
-			p.ProjectID, s.User, p.Owner)
-		if s.User.ID != p.Owner.ID {
+			p.ProjectID, auth.User, p.Owner)
+		if auth.User.ID != p.Owner.ID {
 			service.ErrorResponse(w, http.StatusForbidden,
 				"not allowed to access project: %d", p.ProjectID)
 			return
@@ -253,17 +237,17 @@ func postLogin() service.HandlerFunc {
 
 func getLogin() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		s := ctx.Value("auth").(*api.Session)
-		service.JSONResponse(w, s)
+		auth := service.AuthFromCtx(ctx)
+		service.JSONResponse(w, auth)
 	}
 }
 
 func getLogout() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		s := ctx.Value("auth").(*api.Session)
-		log.Debugf("logout session: %s", s)
-		db.Exec(service.Pool(), "remove from sessions where auth=?", s.Auth)
-		if err := db.DeleteSessionByUserID(service.Pool(), s.User.ID); err != nil {
+		auth := service.AuthFromCtx(ctx)
+		log.Debugf("logout session: %s", auth)
+		db.Exec(service.Pool(), "remove from sessions where auth=?", auth.Auth)
+		if err := db.DeleteSessionByUserID(service.Pool(), auth.User.ID); err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot logout: cannot delete session: %v", err)
 			return
@@ -274,7 +258,7 @@ func getLogout() service.HandlerFunc {
 
 func getJob() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		jobID := ctx.Value("jobs").(int)
+		jobID := service.JobIDFromCtx(ctx)
 		status, err := findJob(jobID)
 		// return not running job if the job does not exist
 		// to indicate that it is ok to run a job
@@ -329,7 +313,8 @@ func findJob(jobID int) (*api.JobStatus, error) {
 
 func forward(base string) service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		url := forwardURL(ctx, r.URL.String(), base)
+		auth := service.AuthFromCtx(ctx)
+		url := forwardURL(auth, r.URL.String(), base)
 		log.Infof("forwarding [%s] %s -> %s", r.Method, r.URL.String(), url)
 		switch r.Method {
 		case http.MethodGet:
@@ -406,14 +391,10 @@ func getVersion() service.HandlerFunc {
 	}
 }
 
-func forwardURL(ctx context.Context, url, base string) string {
-	s, ok := ctx.Value("auth").(*api.Session)
-	if !ok || s == nil {
-		return fmt.Sprintf("%s%s", base, url)
-	}
+func forwardURL(auth *api.Session, url, base string) string {
 	i := strings.LastIndex(url, "?")
 	if i == -1 {
-		return fmt.Sprintf("%s%s?userid=%d", base, url, s.User.ID)
+		return fmt.Sprintf("%s%s?userid=%d", base, url, auth.User.ID)
 	}
-	return fmt.Sprintf("%s%s&userid=%d", base, url, s.User.ID)
+	return fmt.Sprintf("%s%s&userid=%d", base, url, auth.User.ID)
 }

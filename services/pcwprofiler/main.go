@@ -20,14 +20,17 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type key int
+
 var (
-	listen      = ":80"
-	baseDir     = "/"
-	languageDir = "/language-data"
-	profbin     = "/apps/profiler"
-	dsn         = ""
-	debug       = false
-	cutoff      = 1e-4
+	listen                   = ":80"
+	baseDir                  = "/"
+	languageDir              = "/language-data"
+	profbin                  = "/apps/profiler"
+	dsn                      = ""
+	debug                    = false
+	cutoff                   = 1e-4
+	additionalLexiconKey key = 0
 )
 
 func init() {
@@ -95,7 +98,7 @@ func getLanguages() service.HandlerFunc {
 func getProfile() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()["q"]
-		p := ctx.Value("project").(*db.Project)
+		p := service.ProjectFromCtx(ctx)
 		if len(q) == 0 { // return the whole profile
 			getWholeProfile(w, r, p)
 			return
@@ -183,15 +186,15 @@ func withAdditionalLexicon(f service.HandlerFunc) service.HandlerFunc {
 			return
 		}
 		// d.Post = alex
-		f(context.WithValue(ctx, "data", alex), w, r)
+		f(context.WithValue(ctx, additionalLexiconKey, alex), w, r)
 	}
 }
 
 func run() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := profiler{
-			project: ctx.Value("project").(*db.Project),
-			alex:    ctx.Value("data").(api.AdditionalLexicon),
+			project: service.ProjectFromCtx(ctx),
+			alex:    ctx.Value(additionalLexiconKey).(api.AdditionalLexicon),
 		}
 		jobID, err := jobs.Start(context.Background(), &p)
 		if err != nil {
@@ -225,7 +228,7 @@ func getAllPatterns(ctx context.Context, w http.ResponseWriter, ocr bool) {
 		"JOIN suggestions s ON s.id=p.suggestionid " +
 		"JOIN types t ON t.id=s.tokentypid " +
 		"WHERE p.bookID=? AND p.ocr=? AND s.topsuggestion=?"
-	project := ctx.Value("project").(*db.Project)
+	project := service.ProjectFromCtx(ctx)
 	rows, err := db.Query(service.Pool(), stmt, project.BookID, ocr, true)
 	if err != nil {
 		service.ErrorResponse(w, http.StatusInternalServerError,
@@ -279,7 +282,7 @@ func queryPatterns(ctx context.Context, w http.ResponseWriter, qs []string, ocr 
 		"JOIN types t2 on s.suggestiontypid=t2.id " +
 		"JOIN types t3 on s.moderntypid=t3.id " +
 		"WHERE p.bookID=? AND p.pattern=? AND p.ocr=?"
-	p := ctx.Value("project").(*db.Project)
+	p := service.ProjectFromCtx(ctx)
 	res := api.Patterns{
 		BookID:    p.BookID,
 		ProjectID: p.ProjectID,
@@ -317,7 +320,7 @@ func getSuspiciousWords() service.HandlerFunc {
 			"FROM suggestions s " +
 			"JOIN types t ON s.tokentypid=t.id " +
 			"WHERE s.bookID=? AND s.topsuggestion=true AND s.distance > 0"
-		p := ctx.Value("project").(*db.Project)
+		p := service.ProjectFromCtx(ctx)
 		rows, err := db.Query(service.Pool(), stmt, p.BookID)
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
@@ -448,7 +451,7 @@ func selectPageIDs(p *db.Project) ([]int, error) {
 
 func getAdaptiveTokens() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		p := ctx.Value("project").(*db.Project)
+		p := service.ProjectFromCtx(ctx)
 		at := api.AdaptiveTokens{
 			BookID:         p.BookID,
 			ProjectID:      p.ProjectID,

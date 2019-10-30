@@ -1,7 +1,6 @@
 package main // import "github.com/cisocrgroup/pocoweb/services/pcwpool"
 
 import (
-	"database/sql"
 	"flag"
 	"net/http"
 
@@ -30,7 +29,7 @@ func main() {
 	}
 	defer service.Close()
 	s := server{
-		pool: service.Pool().(*sql.DB),
+		pool: service.Pool(),
 		base: base,
 	}
 	s.routes()

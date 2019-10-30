@@ -13,6 +13,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type key int
+
+var userKey key
+
 type server struct {
 	router *http.ServeMux
 	pool   *sql.DB
@@ -28,9 +32,9 @@ func (s *server) routes() {
 		http.MethodPost, s.withPostUser(s.handlePostUser()),
 		http.MethodGet, s.handleGetAllUsers())))
 	s.router.HandleFunc("/users/", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithIDs(s.handleGetUser(), "users"),
-		http.MethodPut, s.withPostUser(service.WithIDs(s.handlePutUser(), "users")),
-		http.MethodDelete, service.WithIDs(s.handleDeleteUser(), "users"))))
+		http.MethodGet, service.WithUserID(s.handleGetUser()),
+		http.MethodPut, s.withPostUser(service.WithUserID(s.handlePutUser())),
+		http.MethodDelete, service.WithUserID(s.handleDeleteUser()))))
 }
 
 func (s *server) withPostUser(f service.HandlerFunc) service.HandlerFunc {
@@ -42,14 +46,14 @@ func (s *server) withPostUser(f service.HandlerFunc) service.HandlerFunc {
 			return
 		}
 		log.Debugf("withPostUser: %s", data.User)
-		f(context.WithValue(ctx, "post", data), w, r)
+		f(context.WithValue(ctx, userKey, data), w, r)
 	}
 }
 
 func (s *server) handlePostUser() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		t := db.NewTransaction(s.pool.Begin())
-		u := ctx.Value("post").(api.CreateUserRequest)
+		u := ctx.Value(userKey).(api.CreateUserRequest)
 		t.Do(func(dtb db.DB) error {
 			if err := db.InsertUser(dtb, &u.User); err != nil {
 				return fmt.Errorf("cannot insert user into database: %v", err)
@@ -82,7 +86,7 @@ func (s *server) handleGetAllUsers() service.HandlerFunc {
 
 func (s *server) handleGetUser() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		u, found, err := db.FindUserByID(s.pool, int64(ctx.Value("users").(int)))
+		u, found, err := db.FindUserByID(s.pool, int64(service.UserIDFromCtx(ctx)))
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot get user: %v", err)
@@ -101,7 +105,7 @@ func (s *server) handleGetUser() service.HandlerFunc {
 func (s *server) handlePutUser() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		// this must not fail
-		u := ctx.Value("post").(api.CreateUserRequest)
+		u := ctx.Value(userKey).(api.CreateUserRequest)
 		t := db.NewTransaction(s.pool.Begin())
 		t.Do(func(dtb db.DB) error {
 			if err := db.UpdateUser(dtb, u.User); err != nil {
@@ -133,7 +137,7 @@ func (s *server) handlePutUser() service.HandlerFunc {
 
 func (s *server) handleDeleteUser() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		uid := ctx.Value("users").(int)
+		uid := service.UserIDFromCtx(ctx)
 		// you cannot delete users that still own books
 		if s.ownsBooks(uid) {
 			service.ErrorResponse(w, http.StatusBadRequest,

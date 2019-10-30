@@ -195,7 +195,7 @@ func (r pcRunner) correctInBackend(corrections map[string]rrdmPVal) error {
 		if _, err := fmt.Sscanf(k, "%d:%d:%d:%d", &bid, &pid, &lid, &tid); err != nil {
 			return fmt.Errorf("invalid protocol id: %s", k)
 		}
-		_, err := client.PostTokenLen(bid, pid, lid, tid, len([]rune(v.OCR)), v.Cor)
+		_, err := client.PutTokenLen(bid, pid, lid, tid, len([]rune(v.OCR)), v.Cor)
 		if err != nil {
 			return fmt.Errorf("cannot post correct %s: %v", v.Normalized, err)
 		}

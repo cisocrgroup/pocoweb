@@ -266,11 +266,10 @@ func (doc document) hardLinkOrCopyImage(p *pagex) (err error) {
 	src := p.srcImgPath()
 	dest := p.destImgPath(&doc)
 	log.Debugf("linking %s to %s", src, dest)
-	if err := os.Link(src, dest); err == nil || os.IsExist(err) {
+	if err = os.Link(src, dest); err == nil || os.IsExist(err) {
 		return nil
-	} else {
-		log.Debugf("cannot link: %v", err)
 	}
+	log.Debugf("cannot link: %v", err)
 	in, err := os.Open(src)
 	if err != nil {
 		return fmt.Errorf("cannot copy file: %v", err)

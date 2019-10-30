@@ -13,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/finkf/pcwgo/api"
 	"github.com/finkf/pcwgo/db"
 	"github.com/finkf/pcwgo/service"
 	log "github.com/sirupsen/logrus"
@@ -46,7 +45,7 @@ JOIN projects p ON p.origin=b.bookid
 JOIN users u on p.owner=u.id
 WHERE p.origin=p.id and p.owner=?
 `
-		userid := ctx.Value("auth").(*api.Session).User.ID
+		userid := service.AuthFromCtx(ctx).User.ID
 		rows, err := s.pool.Query(stmnt, userid)
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,

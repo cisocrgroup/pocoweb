@@ -3,7 +3,7 @@ module github.com/cisocrgroup/services/pcwpkg
 go 1.12
 
 require (
-	github.com/finkf/pcwgo v0.4.1
+	github.com/finkf/pcwgo v0.4.5
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/sirupsen/logrus v1.4.2

@@ -57,7 +57,7 @@ Entities.API = {
          headers: {
            'Accept': 'application/json'
          },
-         url: "rest/profile/languages",
+         url: "rest/profile/languages?auth="+App.getAuthToken(),
          type: "GET",
          success: function(data) {
           defer.resolve(data);

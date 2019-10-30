@@ -1,7 +1,6 @@
 package main // import "github.com/finkf/pcwusers"
 
 import (
-	"database/sql"
 	"flag"
 	"net/http"
 
@@ -40,7 +39,7 @@ func main() {
 	// database
 	must(service.InitDebug(dsn, debug))
 	defer service.Close()
-	s := server{pool: service.Pool().(*sql.DB)}
+	s := server{pool: service.Pool()}
 	// root
 	if root.Name != "" && root.Email != "" && pass != "" {
 		must(s.insertRoot(root, pass))

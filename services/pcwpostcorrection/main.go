@@ -1,7 +1,6 @@
 package main // import "github.com/finkf/pcwpostcorrection"
 
 import (
-	"database/sql"
 	"flag"
 	"net/http"
 
@@ -40,7 +39,7 @@ func main() {
 	jobs.Init(service.Pool())
 	defer jobs.Close()
 	s := server{
-		pool:       service.Pool().(*sql.DB),
+		pool:       service.Pool(),
 		baseDir:    baseDir,
 		pocowebURL: pocowebURL,
 	}
