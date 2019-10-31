@@ -599,9 +599,50 @@ getJobs: function(data){
       }
     });
     return defer.promise();
+  },
+
+getGlobalPool: function(data){
+    var defer = jQuery.Deferred();
+    let url = "rest/pool/global?auth=" + App.getAuthToken();
+    $.ajax({
+      headers: {
+        'Accept': 'application/json'
+      },
+      url: url,
+      type: "GET",
+      success: function(data) {
+        defer.resolve(data);
+      },
+      error: function(data){
+        defer.reject(data);
+      }
+    });
+    return defer.promise();
+  },
+
+  getOwnPool: function(data){
+    var defer = jQuery.Deferred();
+    let url = "rest/pool/user?auth=" + App.getAuthToken();
+    $.ajax({
+      headers: {
+        'Accept': 'application/json'
+      },
+      url: url,
+      type: "GET",
+      success: function(data) {
+        defer.resolve(data);
+      },
+      error: function(data){
+        defer.reject(data);
+      }
+    });
+    return defer.promise();
   }
+
+
 };
 
+  
 
 
 return Entities;

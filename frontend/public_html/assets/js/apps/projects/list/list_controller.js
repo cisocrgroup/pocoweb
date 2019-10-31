@@ -46,10 +46,9 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
     	   projectsListLayout.on("attach",function(){
 
-
       var projectsListHeader = new List.Header();
 			var projectsListView = new List.ProjectsList({collection: projects.books,hover:true});
-      var projectsListPanel = new List.Panel({user: App.getCurrentUser()});
+      var projectsListPanel = new List.Panel({user: App.getCurrentUser(),auth:App.getAuthToken()});
       var projectsListFooterPanel = new List.FooterPanel();
 
           projectsListLayout.showChildView('headerRegion',projectsListHeader);
@@ -114,9 +113,25 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
           App.mainLayout.showChildView('dialogRegion',projectsListAddProject);
 
 
-          })
+          });
+
+          projectsListPanel.on("list:pool_clicked",function(){
+            console.log("pool_clicked")
+            window.open("https://pocoweb.cis.lmu.de/rest/pool/global?auth=XqrhVtKmyr");
+     // var fetchingpool = ProjectEntities.API.getGlobalPool();
+   
+     // var projectsListLayout = new List.Layout();
+
+     //   $.when(fetchingpool).done(function(pool){
+     //    console.log(pool);
+     //   });
+
+          });
 
 
+          projectsListPanel.on("list:own_clicked",function(){
+            console.log("own_clicked")
+          });
 
           projectsListFooterPanel.on("go:back",function(){
             App.trigger("home:portal");

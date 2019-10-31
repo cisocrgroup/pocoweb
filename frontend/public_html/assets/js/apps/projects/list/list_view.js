@@ -37,14 +37,25 @@ define(["marionette","app","common/views","apps/projects/common/views",
   List.Panel = Marionette.View.extend({
     template: panelTpl,
       events:{
-      'click .js-create' : 'create_clicked'
+      'click .js-create' : 'create_clicked',
+      'click .js-pool' : 'pool_clicked',
+      'click .js-own' : 'own_clicked'
+
       },
       create_clicked: function(){
         this.trigger("list:create_clicked");
       },
+      pool_clicked: function(){
+        this.trigger("list:pool_clicked");
+      },
+      own_clicked: function(){
+        this.trigger("list:own_clicked");
+      },
 	serializeData: function(){
 		return {
-			user: Marionette.getOption(this,"user")
+			user: Marionette.getOption(this,"user"), 
+      auth: Marionette.getOption(this,"auth")
+
 		}
 	}
     });
