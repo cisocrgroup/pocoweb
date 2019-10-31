@@ -152,14 +152,21 @@ func selectSuggestions(pre, q, suf string, ss *api.Suggestions) error {
 			&s.Top, &s.Token, &s.Suggestion, &s.Modern); err != nil {
 			return err
 		}
-		s.HistPatterns = strings.Split(h, ",")
-		s.OCRPatterns = strings.Split(o, ",")
+		s.HistPatterns = splitPatterns(h)
+		s.OCRPatterns = splitPatterns(o)
 		s.Token = pre + applyCasing(q, s.Token) + suf
 		s.Suggestion = pre + applyCasing(q, s.Suggestion) + suf
 		s.Modern = pre + applyCasing(q, s.Modern) + suf
 		ss.Suggestions[q] = append(ss.Suggestions[q], s)
 	}
 	return nil
+}
+
+func splitPatterns(patterns string) []string {
+	if patterns == "" {
+		return []string{}
+	}
+	return strings.Split(patterns, ",")
 }
 
 // Apply the casing of model to string.
