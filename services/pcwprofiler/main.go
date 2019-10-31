@@ -117,6 +117,7 @@ func queryProfile(w http.ResponseWriter, p *db.Project, qs []string) {
 	var splitRe = regexp.MustCompile(`^(\p{P}*)(.*?)(\p{P}*)$`)
 	ss := api.Suggestions{
 		BookID:      p.BookID,
+		ProjectID:   p.ProjectID,
 		Suggestions: make(map[string][]api.Suggestion),
 	}
 	for _, q := range qs {
