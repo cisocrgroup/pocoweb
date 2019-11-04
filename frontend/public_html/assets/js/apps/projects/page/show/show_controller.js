@@ -217,7 +217,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     page.get('lines')[result.lineId-1] = result; // update line array in page.lines
 
                     var lineanchor = $('#line-'+anchor);
-                    lineanchor.addClass('fully_corrected');
+                    lineanchor.addClass('manually_corrected');
 
                           lineanchor.fadeOut(200,function(){
                           lineanchor.fadeIn(200,function(){
