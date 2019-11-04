@@ -6,8 +6,10 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         "tpl!apps/projects/page/show/templates/page.tpl",
         "tpl!apps/projects/page/show/templates/header.tpl",
         "tpl!apps/projects/page/show/templates/sidebar.tpl",
-        "tpl!apps/projects/page/show/templates/layout.tpl"
-  ], function(Marionette,App,BackboneSyphon,Views,Util,Concordance,pageTpl,headerTpl,sidebarTpl,layoutTpl){
+        "tpl!apps/projects/page/show/templates/layout.tpl",
+        "tpl!apps/projects/page/show/templates/search.tpl"
+
+  ], function(Marionette,App,BackboneSyphon,Views,Util,Concordance,pageTpl,headerTpl,sidebarTpl,layoutTpl,searchTpl){
 
 
     var Show = {};
@@ -26,6 +28,10 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
   Show.Header = Marionette.View.extend({
     template:headerTpl,
+    events:{
+      'click .js-show-image': 'show_image_clicked',
+      'click .js-search' : 'search_clicked'
+    },
     initialize: function(){
         this.title = Marionette.getOption(this,"title"),
         this.icon ="fas fa-book-open"
@@ -38,8 +44,42 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
         return data;
       },
+      show_image_clicked : function(e){
+          e.preventDefault();
+          this.trigger("header:show-image-clicked");
+      },
+      search_clicked : function(e){
+        e.preventDefault();
+        this.trigger("header:search-clicked");
+      }
   });
 
+  Show.Search = Marionette.View.extend({
+    template:searchTpl,
+    events: {
+      "click .js-search-token": "searchClicked"
+    },
+    serializeData: function() {
+      return {
+        users: Marionette.getOption(this, "users"),
+        id: Marionette.getOption(this, "id")
+      };
+    },
+    searchClicked: function() {
+      var token = this.$el.find(".form-control").val();
+      this.trigger("search:confirmed", {
+        token: token
+      });
+    },
+    onAttach: function() {
+      this.$el.addClass("modal fade");
+      this.$el.attr("tabindex", "-1");
+      this.$el.attr("role", "dialog");
+      this.$el.attr("id", "searchModal");
+      $("#searchModal").modal();
+      var that = this;
+    }
+  });
 
   Show.Sidebar = Marionette.View.extend({
       template:sidebarTpl,

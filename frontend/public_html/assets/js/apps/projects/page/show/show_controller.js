@@ -125,6 +125,58 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 	      projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,hidecorrections:hidecorrections,lineheight:lineheight,linenumbers:linenumbers,ignore_case:ignore_case});
       	projectShowFooterPanel = new Show.FooterPanel();
 
+        projectShowHeader.on("header:show-image-clicked",function(){
+
+
+                var getUrl = window.location;
+                var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+                var url = baseUrl + "/" + page.get('imgFile');
+
+                var fullbg = $('<div class="modal fullscreen_modal fade"></div>');
+                var cont = $('  <div class="modal-dialog" role="document"></div>');
+
+                fullbg.append(cont);
+                $('body').append(fullbg);
+                var close = $('<span class="full_screen_close">&times;</span>');
+                      var full_img = $('<img src='+url+' class="full_screen_img">');
+
+                cont.on('click',function(){
+                  fullbg.modal('hide');
+                });
+
+                fullbg.append(close);
+                cont.append(full_img);
+
+                Util.fit_to_screen(full_img[0]);
+
+                fullbg.modal();
+
+                $('.modal-backdrop.show').css('opacity','0.85');
+                close.on('click',function(){
+                  fullbg.modal('hide');
+                });
+
+                fullbg.on('hidden.bs.modal', function (e) {
+                  $(this).remove();
+                });
+
+        });
+
+        projectShowHeader.on("header:search-clicked",function(){
+
+            let projectShowSearch = new Show.Search();
+                    App.mainLayout.showChildView("dialogRegion",projectShowSearch);
+                    projectShowSearch.on("search:confirmed", function(data) {
+                    console.log(data);
+                    $('#searchModal').modal('hide');
+                    projectShowPage.trigger("page:concordance_clicked",data.token,"token");
+                 
+
+                  });
+
+        });
+
+
        projectShowSidebar.on("sidebar:error-patterns-clicked",function(pid,pat){
           projectShowPage.trigger('page:concordance_clicked',pat,"pattern");
        });
@@ -158,15 +210,19 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
        projectShowSidebar.on("page:new",function(page_id){
                     line_id=null;
 
+                    var loadingCircleView = new Views.LoadingBackdropOpc();
+                    App.mainLayout.showChildView("backdropRegion", loadingCircleView);
+
                     var fetchinglineheight = App.getLineHeight(id);
                     var fetchinglinenumbers = App.getLineNumbers(id);
-                   var fetchinghidecorrections = App.getHideCorrections(id);
+                    var fetchinghidecorrections = App.getHideCorrections(id);
 
                     var fetchingnewpage = ProjectEntities.API.getPage({pid:id, page:page_id});
-                  $.when(fetchingnewpage,fetchinglineheight,fetchinglinenumbers,fetchinghidecorrections).done(function(new_page,lineheight,linenumbers,hidecorrections){
 
+                     $.when(fetchingnewpage,fetchinglineheight,fetchinglinenumbers,fetchinghidecorrections).done(function(new_page,lineheight,linenumbers,hidecorrections){
+                      loadingCircleView.destroy();
                       new_page.attributes.title = project.get('title');
-                      projectShowPage.model=new_page;
+                      projectShowPage.model.set(new_page.toJSON());
 
                       projectShowSidebar.options.lineheight=lineheight;
                       projectShowSidebar.options.linenumbers=linenumbers;
@@ -176,6 +232,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                       projectShowPage.options.hidecorrections=hidecorrections;
 
                       projectShowPage.render();
+                         projectShowLayout.showChildView('pageRegion',projectShowPage);
+
                       projectShowSidebar.model = new_page;
                       $('#pageId').text('Page '+new_page.get('pageId'))
                       $('.js-stepforward > a').attr('title','go to previous page #'+new_page.get('nextPageId'));
@@ -282,7 +340,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
        })
 
        projectShowPage.on("page:concordance_clicked",function(selection,searchType){
-
          var loadingCircleView = new Views.LoadingBackdropOpc();
         App.mainLayout.showChildView("backdropRegion", loadingCircleView);
 
@@ -290,18 +347,18 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         var that = this;
          $.when(searchingToken).done(function(tokens){
           loadingCircleView.destroy();
+          $('.custom-popover').hide();
             if(tokens.total==0){
                 var confirmModal = new Show.OkDialog({
                       asModal: true,
                       title: "Empty results",
-                      text: "No matches found for token: '" + selection + "'",
+                      text: "No matches or uncorrected instances found for token: '" + selection + "'",
                       id: "emptymodal"
                     });
                     App.mainLayout.showChildView("dialogRegion", confirmModal);
                   return;
             }
 
-            console.log(tokens)
 
           var lineheight = App.getLineHeight(id);
           var linenumbers = App.getLineNumbers(id);

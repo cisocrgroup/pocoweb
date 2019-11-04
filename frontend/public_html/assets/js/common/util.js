@@ -225,6 +225,41 @@ addAlignedLine : function(line){
       elem.removeClass('green');
       elem.removeClass('yellow');
       elem.removeClass('red');
+    },
+
+    fit_to_screen:function(img) {
+      
+    img.removeAttribute("style");
+    var winX = window.innerWidth -15 + "px";
+    var winY = window.innerHeight-15 + "px";
+    var vbar = false;
+    if (document.body.scrollHeight > document.body.clientHeight) // vertical scrollbar
+    {
+            img.style.height = winY;
+            vbar = true;
     }
+    if (document.body.scrollWidth > document.body.clientWidth) // horizontal scrollbar
+    {
+            if (vbar) // both scrollbars
+            {
+                    if ((document.body.scrollHeight - document.body.clientHeight) > (document.body.scrollWidth - document.body.clientWidth)) // let's see which one is bigger
+                    {
+                            img.removeAttribute("style");
+                            img.style.height = winY;
+                    }
+                    else
+                    {
+                            img.removeAttribute("style");
+                            img.style.width = winX;
+                    }
+            }
+            else
+            {
+                    img.removeAttribute("style");
+                    img.style.width = winX;
+            }
+    }
+}
+
 
 });
