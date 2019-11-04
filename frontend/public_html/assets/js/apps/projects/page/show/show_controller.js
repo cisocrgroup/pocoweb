@@ -168,7 +168,11 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     App.mainLayout.showChildView("dialogRegion",projectShowSearch);
                     projectShowSearch.on("search:confirmed", function(data) {
                     $('#searchModal').modal('hide');
-                    projectShowPage.trigger("page:concordance_clicked",data.token,"token");
+
+                    $('#searchModal').on('hidden.bs.modal', function () {
+                          projectShowPage.trigger("page:concordance_clicked",data.token,"token");
+                    });
+
                  
 
                   });
