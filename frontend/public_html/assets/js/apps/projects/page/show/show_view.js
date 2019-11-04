@@ -65,7 +65,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         id: Marionette.getOption(this, "id")
       };
     },
-    searchClicked: function() {
+    searchClicked: function(e) {
+      e.preventDefault();
       var token = this.$el.find(".form-control").val();
       this.trigger("search:confirmed", {
         token: token
