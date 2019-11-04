@@ -147,7 +147,7 @@ Archiver::Path Archiver::copy_to_tmp_dir(const Path &source,
 void Archiver::write_line_text_snippets(DbLine &line, const Path &cor,
                                         const Path &ocr) {
   const auto slice = line.slice();
-  if (slice.is_fully_corrected()) {
+  if (slice.is_manually_corrected()) {
     write_text_snippet(slice.cor(), cor);
   }
   write_text_snippet(slice.ocr(), ocr);

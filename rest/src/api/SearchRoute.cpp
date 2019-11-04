@@ -78,10 +78,10 @@ Json &operator<<(Json &j, match_results &res) {
       j["matches"][m.first]["lines"][i]["confidences"] = slice.confs();
       j["matches"][m.first]["lines"][i]["averageConfidence"] =
           fix_double(slice.average_conf());
-      j["matches"][m.first]["lines"][i]["isFullyCorrected"] =
-          slice.is_fully_corrected();
-      j["matches"][m.first]["lines"][i]["isPartiallyCorrected"] =
-          slice.is_partially_corrected();
+      j["matches"][m.first]["lines"][i]["isManuallyCorrected"] =
+          slice.is_manually_corrected();
+      j["matches"][m.first]["lines"][i]["isAutomaticallyCorrected"] =
+          slice.is_automatically_corrected();
       j["matches"][m.first]["lines"][i]["tokens"] =
           crow::json::rvalue(crow::json::type::List);
       int k = 0;
@@ -346,11 +346,11 @@ static match_results search_impl(MysqlConnection &conn, int bid, int skip,
   ret.max = max;
   ret.skip = skip;
   each_package_line(conn, bid, [&](auto &line) {
-    if (line.slice().is_fully_corrected()) { // skip fully corrected lines
+    if (line.slice().is_manually_corrected()) { // skip manually corrected lines
       return;
     }
     line.each_token([&](DbSlice &slice) {
-      if (slice.is_fully_corrected()) { // skip fully corrected tokens
+      if (slice.is_manually_corrected()) { // skip manually corrected tokens
         return;
       }
       std::string q;         // match key

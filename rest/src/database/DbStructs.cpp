@@ -105,13 +105,15 @@ double DbSlice::average_conf() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool DbSlice::is_partially_corrected() const {
-  return std::any_of(begin, end, [](const auto &c) { return c.is_cor(); });
+bool DbSlice::is_automatically_corrected() const {
+  return std::all_of(
+      begin, end, [](const auto &c) { return c.is_cor() and not c.manually; });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool DbSlice::is_fully_corrected() const {
-  return std::all_of(begin, end, [](const auto &c) { return c.is_cor(); });
+bool DbSlice::is_manually_corrected() const {
+  return std::all_of(begin, end,
+                     [](const auto &c) { return c.is_cor() and c.manually; });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -307,12 +309,15 @@ bool Statistics::load(MysqlConnection &mysql, const DbPackage &pkg) {
     }
     for (auto &line : page.lines) {
       lines++;
-      if (line.slice().is_fully_corrected()) {
+      if (line.slice().is_manually_corrected()) {
         corLines++;
       }
       line.each_token([&](auto &token) {
         tokens++;
-        if (token.is_fully_corrected()) {
+        // if (token.is_automatically_corrected()) {
+        //   autoTokens++;
+        // }
+        if (token.is_manually_corrected()) {
           corTokens++;
           // corrected tokens whose ocr was correct
           if (token.wocr() == token.wcor()) {
@@ -354,8 +359,8 @@ pcw::Json &pcw::operator<<(Json &j, const DbSlice &slice) {
   j["cuts"] = slice.cuts();
   j["confidences"] = slice.confs();
   j["averageConfidence"] = fix_double(slice.average_conf());
-  j["isFullyCorrected"] = slice.is_fully_corrected();
-  j["isPartiallyCorrected"] = slice.is_partially_corrected();
+  j["isAutomaticallyCorrected"] = slice.is_automatically_corrected();
+  j["isManuallyCorrected"] = slice.is_manually_corrected();
   j["match"] = slice.match;
   return j;
 }
@@ -374,8 +379,8 @@ pcw::Json &pcw::operator<<(Json &j, DbLine &line) {
   j["cuts"] = slice.cuts();
   j["confidences"] = slice.confs();
   j["averageConfidence"] = fix_double(slice.average_conf());
-  j["isFullyCorrected"] = slice.is_fully_corrected();
-  j["isPartiallyCorrected"] = slice.is_partially_corrected();
+  j["isAutomaticallyCorrected"] = slice.is_automatically_corrected();
+  j["isManuallyCorrected"] = slice.is_manually_corrected();
   j["tokens"] = crow::json::rvalue(crow::json::type::List);
   auto i = 0;
   line.each_token([&](const auto &token) { j["tokens"][i++] << token; });

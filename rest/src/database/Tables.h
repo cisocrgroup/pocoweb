@@ -1104,6 +1104,22 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::floating_point, sqlpp::tag::require_insert>;
     };
+    struct Manually
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "manually";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T manually;
+            T& operator()() { return manually; }
+            const T& operator()() const { return manually; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::boolean>;
+    };
   } // namespace Contents_
 
   struct Contents: sqlpp::table_t<Contents,
@@ -1114,7 +1130,8 @@ namespace tables
                Contents_::Ocr,
                Contents_::Cor,
                Contents_::Cut,
-               Contents_::Conf>
+               Contents_::Conf,
+               Contents_::Manually>
   {
     struct _alias_t
     {

@@ -493,7 +493,7 @@ opacity: 0.8;
     color: #1857e6;
     opacity: .9;
     font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-  
+
     justify-content: center;
 }
 .table_chevron > span {
@@ -588,9 +588,14 @@ border-bottom-right-radius: .25rem;
   margin-right: 10px;
 }
 
-.fully_corrected{
+.manually_corrected{
   background-color: #d4edda;
   border-color: #c3e6cb !important;
+}
+
+.automatically_corrected{
+  background-color: #ff6600;
+  border-color: ##ff6600 !important;
 }
 
 .line-text:focus {

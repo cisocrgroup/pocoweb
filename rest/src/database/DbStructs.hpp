@@ -42,6 +42,7 @@ struct DbChar {
   wchar_t ocr, cor;
   double conf;
   int cut;
+  bool manually;
 };
 
 struct DbSlice {
@@ -54,8 +55,8 @@ struct DbSlice {
   std::vector<int> cuts() const;
   std::vector<double> confs() const;
   double average_conf() const;
-  bool is_partially_corrected() const;
-  bool is_fully_corrected() const;
+  bool is_automatically_corrected() const;
+  bool is_manually_corrected() const;
 
   // wagner-fischer interface
   void begin_wagner_fischer(size_t b, size_t e);
@@ -169,7 +170,7 @@ inline auto project_line_contents_view() {
   tables::Textlines l;
   tables::Projects p;
   tables::ProjectPages pp;
-  return select(p.id, all_of(l), c.cut, c.conf, c.ocr, c.cor)
+  return select(p.id, all_of(l), c.cut, c.conf, c.ocr, c.cor, c.manually)
       .from(p.join(l)
                 .on(p.origin == l.bookid)
                 .join(pp)
@@ -263,6 +264,7 @@ template <class Row> void load_from_row(Row &row, DbChar &c) {
   c.cor = wchar_t(row.cor);
   c.cut = int(row.cut);
   c.conf = row.conf;
+  c.manually = row.manually;
 }
 
 } // namespace pcw

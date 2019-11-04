@@ -324,12 +324,16 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                         var lineanchor = $('#line-'+anchor);
                             if(lineanchor.length>0) {
-                              
 
-                              if(line_result.isFullyCorrected) {
-                                lineanchor.addClass('fully_corrected');
+
+                              if(line_result.isManuallyCorrected) {
+                                lineanchor.addClass('manually_corrected');
                               }
+                              console.log(page.get('lines')[line_result.lineId-1]);
+                              console.log(page.get('lines')[line_result.lineId]);
                              page.get('lines')[line_result.lineId-1] = line_result; // update line array in page.lines
+                              console.log(page.get('lines')[line_result.lineId-1]);
+                              console.log(page.get('lines')[line_result.lineId]);
 
 
                             console.log("lineanchor")
@@ -356,7 +360,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             for (word in suspicious_words['counts']) {
                suspicious_words_array.push([word,suspicious_words['counts'][word]]);
             }
-         
+
                   projectShowSidebar.sp_table.clear();
                   projectShowSidebar.sp_table.rows.add(suspicious_words_array);
                   projectShowSidebar.sp_table.draw();

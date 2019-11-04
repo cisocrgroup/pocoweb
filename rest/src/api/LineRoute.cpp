@@ -67,6 +67,7 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
                                 int lid) const {
   CROW_LOG_INFO << "(LineRoute) POST line: " << pid << ":" << p << ":" << lid;
   const auto json = crow::json::load(req.body);
+  const auto manually = get<bool>(json, "manually");
   const auto correction = get<std::string>(json, "correction");
   if (not correction) {
     THROW(BadRequest, "(LineRoute) missing correction data");
@@ -78,7 +79,7 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   if (not line.load(conn)) {
     THROW(NotFound, "(LineRoute) cannot find ", pid, ":", p, ":", lid);
   }
-  correct(line, correction.value());
+  correct(line, correction.value(), manually.value_or(false));
   update(conn, line);
   Json j;
   return j << line;
@@ -148,6 +149,7 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
                 << ":" << tid;
   const auto len = get<int>(req.url_params, "len");
   const auto json = crow::json::load(req.body);
+  const auto manually = get<bool>(json, "manually");
   const auto correction = get<std::string>(json, "correction");
   if (not correction) {
     THROW(BadRequest, "(LineRoute) missing correction data");
@@ -160,14 +162,15 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
     THROW(NotFound, "(LineRoute) cannot find ", pid, ":", p, ":", lid);
   }
   const auto l = len ? len.value() : line.tokenLength(tid);
-  correct(line, correction.value(), tid, l);
+  correct(line, correction.value(), tid, l, manually.value_or(false));
   update(conn, line);
   Json j;
   return j << line.slice(tid, l);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void LineRoute::correct(DbLine &line, const std::string &correction) {
+void LineRoute::correct(DbLine &line, const std::string &correction,
+                        bool manually) {
   CROW_LOG_INFO << "(LineRoute::correct) correction: \"" << correction << "\"";
   WagnerFischer wf;
   wf.set_gt(correction);
@@ -180,6 +183,9 @@ void LineRoute::correct(DbLine &line, const std::string &correction) {
 
   // correct
   wf.correct(slice);
+  for (auto i = slice.begin; i != slice.end; i++) {
+    i->manually = manually;
+  }
 
   CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
   CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
@@ -187,9 +193,10 @@ void LineRoute::correct(DbLine &line, const std::string &correction) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void LineRoute::correct(DbLine &line, const std::string &correction, int b,
-                        int len) {
+                        int len, bool manually) {
   CROW_LOG_INFO << "(LineRoute::correct) correction: \"" << correction
-                << "\" (b = " << b << " len = " << len << ")";
+                << "\" (b = " << b << " len = " << len << " man = " << manually
+                << ")";
   WagnerFischer wf;
   wf.set_gt(correction);
   auto slice = line.slice(b, len);
@@ -201,6 +208,9 @@ void LineRoute::correct(DbLine &line, const std::string &correction, int b,
 
   // correct
   wf.correct(slice);
+  for (auto i = slice.begin; i != slice.end; i++) {
+    i->manually = manually;
+  }
 
   CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
   CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
@@ -222,6 +232,7 @@ void LineRoute::update(MysqlConnection &mysql, const DbLine &line) {
       contents.ocr = parameter(contents.ocr),
       contents.cor = parameter(contents.cor),
       contents.cut = parameter(contents.cut),
+      contents.manually = parameter(contents.manually),
       contents.conf = parameter(contents.conf)));
   int i = 0;
   for (const auto &c : line.line) {
@@ -230,6 +241,7 @@ void LineRoute::update(MysqlConnection &mysql, const DbLine &line) {
     stmnt.params.ocr = int(c.ocr);
     stmnt.params.cor = int(c.cor);
     stmnt.params.cut = c.cut;
+    stmnt.params.manually = c.manually;
     stmnt.params.conf = c.conf;
     mysql.db()(stmnt);
   }

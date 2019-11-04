@@ -11,13 +11,12 @@
        var split_img = line["imgFile"].split("/");
   	   var imgbasename = split_img[4];
   	   var text = "line " + line['lineId'] + ", img" + imgbasename;
-	             
+
   	   var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
-  	   var inputclass = Util.get_correction_class(line);
   	   var correction_class="";
   	   var setlinehightlighting=false;
-  	   if(line['isFullyCorrected']){
-  	  	 correction_class = "fully_corrected";
+  	   if(line['isManuallyCorrected']){
+  	  	 correction_class = "manually_corrected";
   	   }
 
       %>
@@ -30,8 +29,7 @@
     	<img id="line-img-<%-anchor%>" src='<%-line["imgFile"]%>' alt='<%-text%>' title='<%-text%>' width="auto" height="<%-lineheight%>"></div>
 
 		<div class="line-text-parent">
-		<div id="line-<%-anchor%>" class="<%-correction_class%> line-text" anchor="<%-anchor%>"
-	    class="<%-inputclass%> line-text">
+		<div id="line-<%-anchor%>" class="<%-correction_class%> line-text" anchor="<%-anchor%>">
        <div class="line" contenteditable="true">
         <%-line['cor']%>
       	</div>
@@ -63,4 +61,3 @@
     <button style="float: right;" id="correctPage" type="button" class="js-correctPage btn btn-primary blue-bg right"><i class="fas fa-tasks"></i> Set whole page as corrected</button>
     </div>
     </div>
-    

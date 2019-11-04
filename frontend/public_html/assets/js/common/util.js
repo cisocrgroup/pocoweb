@@ -34,15 +34,6 @@ escapeAsJSON: function(text) {
   return JSON.parse("\"" + text + "\"");
 },
 
-get_correction_class: function(obj) {
-  if (obj["isFullyCorrected"]) {
-    return " fully-corrected";
-  } else if (obj["isPartiallyCorrected"]) {
-    return " partially-corrected";
-  }
-  return "";
-},
-
  getBase64: function(file,callback) {
    var reader = new FileReader();
    reader.readAsDataURL(file);
@@ -145,7 +136,7 @@ addAlignedLine : function(line){
               return;
               }
 
-              let addDiv = function(text, width, box, offset,corrected) {
+              let addDiv = function(text, width, box, offset, klass) {
                   let textdiv = $('<div>' + text + "</div>");
  				      let boxstr = "(" + box.left + "," + box.top + "," +
 				      box.right + "," + box.bottom + ")";
@@ -153,7 +144,9 @@ addAlignedLine : function(line){
                   textdiv.attr('boundingbox', boxstr);
                   textdiv.attr('title', 'token ' + offset + ', ' + text);
                   let div = $('<div class="tokendiv noselect"></div>').append(textdiv);
-                  if(corrected) div.addClass("fully_corrected token-text"); // mark token green when corrected
+                  if (klass !== "") {
+                    div.addClass(klass);
+                  }
                   line_text.find('.line-tokens').append(div);
               };
               for(var i=0;i<linetokens.length;i++) {
@@ -169,10 +162,17 @@ addAlignedLine : function(line){
                       bottom: token.box.bottom
                   };
                   let offset = prev.offset + prev.cor.trim().length + 1;
-                  addDiv("", width, box, offset,false);
+                  addDiv("", width, box, offset,"");
                 }
-                let corrected = false;
-                if (!line.isFullyCorrected) corrected = token.isFullyCorrected;
+                let corrected = "";
+                if (!line.isManuallyCorrected) {
+                  corrected = token.isManuallyCorrected;
+                  if (token.isManuallyCorrected) {
+                    corrected = "manually_corrected token-text";
+                  } else if (token.isAutomaticallyCorrected) {
+                    corrected = "automatically_corrected token-text";
+                  }
+                }
                 addDiv(token.cor.trim(), token.box.width, token.box, token.offset,corrected);
                }
 },
