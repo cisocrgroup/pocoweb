@@ -183,7 +183,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                                       projectShowLayout.showChildView('contentRegion',loadingView);
                                       projectShowLayout.trackJobStatus();
                                      }
-
+                            
                             }).fail(function(response){
                               Util.defaultErrorHandling(response,'danger');
                             });
@@ -217,6 +217,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                               projectShowLayout.showChildView('contentRegion',loadingView);
                               projectShowLayout.trackJobStatus();
                              }
+                      
 
                     }).fail(function(response){
                          Util.defaultErrorHandling(response,'danger');
@@ -230,6 +231,10 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
        projectShowLayout.on("show:checkJobStatus",function(){
                   var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
                    $.when(fetchingjobs).done(function(result){
+
+                      if(result.statusName!="running"){ // stop job tracking if job is not running
+                          projectShowLayout.stopJobTracking();
+                        }
 
                        if(result.statusName=="done"){
                         $('.loading_background3').fadeOut(function(){

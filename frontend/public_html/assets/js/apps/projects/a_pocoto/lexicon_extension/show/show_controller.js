@@ -204,6 +204,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                                       projectShowLayout.showChildView('contentRegion',loadingView);
                                       projectShowLayout.trackJobStatus();
                                      }
+                            
                             }).fail(function(response){
                                 Util.defaultErrorHandling(response,'danger');
                               });
@@ -242,6 +243,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                                       projectShowLayout.showChildView('contentRegion',loadingView);
                                       projectShowLayout.trackJobStatus();
                                      }
+                                  
                             }).fail(function(response){
                                Util.defaultErrorHandling(response,'danger');
                             });
@@ -263,6 +265,10 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                         })
 
                        }
+
+                        if(result.statusName!="running"){ // stop job tracking if job is not running
+                          projectShowLayout.stopJobTracking();
+                        }
 
                    }).fail(function(response){
                          App.mainmsg.updateContent(response.responseText,'danger');

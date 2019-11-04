@@ -594,8 +594,9 @@ border-bottom-right-radius: .25rem;
 }
 
 .automatically_corrected{
-  background-color: #ff6600;
-  border-color: ##ff6600 !important;
+  background-color: #ffe3a8;
+  border-color: #dddbd7 !important;
+  border-right: 1px solid transparent;
 }
 
 .line-text:focus {

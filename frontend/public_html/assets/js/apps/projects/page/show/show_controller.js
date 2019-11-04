@@ -214,7 +214,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     var correctingline = ProjectEntities.API.correctLine(data);
                   $.when(correctingline).done(function(result){
 
-                    page.get('lines')[result.lineId-1] = result; // update line array in page.lines
+                    // page.get('lines')[result.lineId-1] = result; // update line array in page.lines
+                    page.attributes.lines[result.lineId-1] = result; // update line array in page.lines
 
                     var lineanchor = $('#line-'+anchor);
                     lineanchor.addClass('manually_corrected');
@@ -315,6 +316,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                   $.when(correctingtoken).done(function(result){
 
                       done();
+                      console.log(page)
+
                        // update lines in background with corrections
 
                        var gettingLine = ProjectEntities.API.getLine(data);
@@ -329,12 +332,10 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                               if(line_result.isManuallyCorrected) {
                                 lineanchor.addClass('manually_corrected');
                               }
-                              console.log(page.get('lines')[line_result.lineId-1]);
-                              console.log(page.get('lines')[line_result.lineId]);
-                             page.get('lines')[line_result.lineId-1] = line_result; // update line array in page.lines
-                              console.log(page.get('lines')[line_result.lineId-1]);
-                              console.log(page.get('lines')[line_result.lineId]);
 
+
+                             page.attributes.lines[line_result.lineId-1] = line_result; // update line array in page.lines
+                             console.log(page);
 
                             console.log("lineanchor")
                             console.log(lineanchor);
