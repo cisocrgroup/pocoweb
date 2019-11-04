@@ -167,7 +167,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             let projectShowSearch = new Show.Search();
                     App.mainLayout.showChildView("dialogRegion",projectShowSearch);
                     projectShowSearch.on("search:confirmed", function(data) {
-                    console.log(data);
                     $('#searchModal').modal('hide');
                     projectShowPage.trigger("page:concordance_clicked",data.token,"token");
                  
