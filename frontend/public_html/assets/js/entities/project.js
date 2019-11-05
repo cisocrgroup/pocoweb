@@ -522,16 +522,53 @@ getPostcorrection: function(data){
       type: "GET",
       success: function(data) {
         defer.resolve(data);
-
-          },
+      },
           error: function(data){
             defer.reject(data);
           }
   });
-
-
   return defer.promise();
+},
 
+addPostCorrectionClassification: function(data) {
+  // add never, always and sometimes
+  let types = {}; // {'normalized': [vals...]}
+  for (let key in data.corrections) {
+    let val = data.corrections[key];
+    let norm = val.normalized;
+    if (!(norm in types)) {
+      types[norm] = [];
+    }
+    types[norm].push(val);
+  }
+
+  // split types into sometimes, always and never
+  let classify = function(vals) {
+                    let all = true;
+                    let none = true;
+                    vals.forEach(function(val){
+                      if (val.taken) {
+                        none = false;
+                      } else {
+                        all = false;
+                      }
+                    });
+                    if (all) {
+                      return 'always';
+                    }
+                    if (none) {
+                      return 'never';
+                    }
+                    return 'sometimes';
+                  };
+  data.never = {};
+  data.always = {};
+  data.sometimes = {};
+  for (let key in types) {
+    let klass = classify(types[key]);
+    data[klass][key] = types[key];
+  }
+  return data;
 },
 
 startPostcorrection: function(data){
@@ -642,7 +679,7 @@ getGlobalPool: function(data){
 
 };
 
-  
+
 
 
 return Entities;
