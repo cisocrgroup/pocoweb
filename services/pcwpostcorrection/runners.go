@@ -215,8 +215,7 @@ func (r pcRunner) correctInBackend(corrections *api.PostCorrection) error {
 		if !v.Taken { // only correct corrections that should be taken
 			continue
 		}
-		_, err := client.PutTokenLen(v.BookID, v.PageID, v.LineID, v.TokenID,
-			len([]rune(v.OCR)),
+		_, err := client.PutToken(v.BookID, v.PageID, v.LineID, v.TokenID,
 			api.CorrectionRequest{Correction: v.Cor, Manually: false})
 		if err != nil {
 			return fmt.Errorf("cannot post correct %s: %v", v.Normalized, err)
