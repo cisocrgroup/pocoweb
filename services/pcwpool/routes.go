@@ -169,8 +169,8 @@ type lineInfo struct {
 }
 
 func (line *lineInfo) write(out *zip.Writer) error {
-	// only write fully corrected, not empty lines
-	if len(line.line) == 0 || !line.line.IsFullyCorrected() {
+	// only write manually corrected, not empty lines
+	if len(line.line) == 0 || !line.line.IsManuallyCorrected() {
 		return nil
 	}
 	line.book.NLines++
