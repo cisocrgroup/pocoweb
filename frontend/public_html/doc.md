@@ -1464,7 +1464,7 @@ Correct line `lid` in page `pageid` of project or package `pid`.
 * Only the owner of a project or package can read its lines.
 * It is not possible to overwrite manually confirmed corrections with
   automatically (not manually) generated corrections.  In this case
-  `409 Conflict` is returned.
+  `403 Forbidden` is returned.
 * It is possible to overwrite manual or automatical corrections with
   newer manual correction.
 
@@ -1565,7 +1565,7 @@ or package `pid`.
 * Only the owner of a project or package can correct its tokens.
 * It is not possible to overwrite manually confirmed corrections with
   automatically (not manually) generated corrections.  In this case
-  `409 Conflict` is returned.
+  `403 Forbidden` is returned.
 * It is possible to overwrite manual or automatical corrections with
   newer manual correction.
 

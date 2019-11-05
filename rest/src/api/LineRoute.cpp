@@ -80,7 +80,7 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
     THROW(NotFound, "(LineRoute) cannot find ", pid, ":", p, ":", lid);
   }
   if (not correct(line, correction.value(), manually.value_or(false))) {
-    return conflict();
+    return forbidden();
   }
   update(conn, line);
   Json j;
@@ -165,7 +165,7 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   }
   const auto l = len ? len.value() : line.tokenLength(tid);
   if (not correct(line, correction.value(), tid, l, manually.value_or(false))) {
-    return conflict();
+    return forbidden();
   }
   update(conn, line);
   Json j;
