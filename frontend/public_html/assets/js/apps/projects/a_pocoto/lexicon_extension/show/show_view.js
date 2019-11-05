@@ -20,6 +20,9 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
           },
           5000);
       },
+      stopJobTracking : function(){
+         clearInterval(this.interval);
+      },
       onDestroy : function(){
          clearInterval(this.interval);
       }
