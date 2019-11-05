@@ -1462,11 +1462,21 @@ or package with id `pid`.
 Correct line `lid` in page `pageid` of project or package `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its lines.
+* It is not possible to overwrite manually confirmed corrections with
+  automatically (not manually) generated corrections.  In this case
+  `409 Conflict` is returned.
+* It is possible to overwrite manual or automatical corrections with
+  newer manual correction.
 
 #### Post data
+The correction for the line is set using the mandatory `correction`
+parameter in the post data for the request.  The optional `manually`
+parameter can be used to mark the correction as manually confirmed by
+a human operator (see above).
 ```json
 {
-  "correction": "corrected line"
+  "correction": "corrected line",
+  "manually": true
 }
 ```
 
@@ -1549,10 +1559,15 @@ after `tid` or the end of the line) is returned.
 
 --- <a id='api-post-books-pid-pages-pageid-lines-lid-tokens-tid'></a>
 ### [POST/PUT] rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`
-Correct word `tid` in line `lid` in page `pageid` of project or
-package `pid`.
+Correct words/slices `tid` in line `lid` in page `pageid` of project
+or package `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can correct its tokens.
+* It is not possible to overwrite manually confirmed corrections with
+  automatically (not manually) generated corrections.  In this case
+  `409 Conflict` is returned.
+* It is possible to overwrite manual or automatical corrections with
+  newer manual correction.
 
 #### Query parameters
 An optional parameter `len=n` can be specified to correct a specific
@@ -1563,9 +1578,14 @@ encountered whitespace character after `tid` or the end of the line)
 is corrected.
 
 #### Post data
+The correction for the word/slice is set using the mandatory `correction`
+parameter in the post data for the request.  The optional `manually`
+parameter can be used to mark the correction as manually confirmed by
+a human operator (see above).
 ```json
 {
-  "correction": "corrected token"
+  "correction": "corrected line",
+  "manually": true
 }
 ```
 
@@ -1596,8 +1616,7 @@ is corrected.
 }
 ```
 
----
-<a id='api-get-books-pid-profile'></a>
+--- <a id='api-get-books-pid-profile'></a>
 ### GET rest/profile/books/`pid`
 Get profiler suggestions after the according profiling
 [job](#user-content-api-get-jobs) has finished.
@@ -1747,7 +1766,8 @@ Get the extended lexicon for the project.  The extendend lexicon is
 available after the [job](#user-content-api-get-jobs) for the
 according [post request](#user-content-api-post-el) has finished.
 * [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can access the extended lexicon.
+* Only the owner of a project or package can access the extended
+  lexicon.
 
 #### Response data
 ```json
@@ -1769,7 +1789,8 @@ according [post request](#user-content-api-post-el) has finished.
 ### PUT rest/postcorrect/le/books/`pid`
 Update extended lexicon for the project.
 * [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can access the extended lexicon.
+* Only the owner of a project or package can access the extended
+  lexicon.
 
 #### Put data
 ```json
@@ -1823,22 +1844,26 @@ Get the post-correction information.  The post-correction information
 available after the [job](#user-content-api-get-jobs) for the
 according [post request](#user-content-api-post-rrdm) has finished.
 * [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can access the post-correction information.
+* Only the owner of a project or package can access the
+  post-correction information.
 
 #### Response data
 ```json
 {
 	"bookId": 13,
 	"projectId": 42,
-	"always": {
-		"foo": 3,
-		"bar": 8
-	},
-	"sometimes": {
-		"baz": 8
-	},
-	"never": {
-		"abc": 7
+	"corrections": {
+		"idstr": {
+			"bookID": 3,
+			"projectID": 5,
+			"pageID": 15,
+			"lineID": 8,
+			"tokenID": 0,
+			"normalized": "normalized token",
+			"cor": "correction (unnormalized)",
+			"ocr": "original (unnormalized) ocr",
+			"taken": true
+		}
 	}
 }
 ```

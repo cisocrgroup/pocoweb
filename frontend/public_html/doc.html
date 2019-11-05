@@ -1481,11 +1481,21 @@ or package with id <code>pid</code>.</p>
 <li>
 <a href="#user-content-authorization">Authorization</a> is required.</li>
 <li>Only the owner of a project or package can read its lines.</li>
+<li>It is not possible to overwrite manually confirmed corrections with
+automatically (not manually) generated corrections.  In this case
+<code>409 Conflict</code> is returned.</li>
+<li>It is possible to overwrite manual or automatical corrections with
+newer manual correction.</li>
 </ul>
 <h4>
 <a id="user-content-post-data-6" class="anchor" href="#post-data-6" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
+<p>The correction for the line is set using the mandatory <code>correction</code>
+parameter in the post data for the request.  The optional <code>manually</code>
+parameter can be used to mark the correction as manually confirmed by
+a human operator (see above).</p>
 <div class="highlight highlight-source-json"><pre>{
-  <span class="pl-s"><span class="pl-pds">"</span>correction<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected line<span class="pl-pds">"</span></span>
+  <span class="pl-s"><span class="pl-pds">"</span>correction<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected line<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>manually<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>
 }</pre></div>
 <h4>
 <a id="user-content-response-data-19" class="anchor" href="#response-data-19" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
@@ -1572,12 +1582,17 @@ after <code>tid</code> or the end of the line) is returned.</p>
 <h3>
 <a id="user-content-postput-restbookspidpagespageidlineslidtokenstid" class="anchor" href="#postput-restbookspidpagespageidlineslidtokenstid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST/PUT] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code>
 </h3>
-<p>Correct word <code>tid</code> in line <code>lid</code> in page <code>pageid</code> of project or
-package <code>pid</code>.</p>
+<p>Correct words/slices <code>tid</code> in line <code>lid</code> in page <code>pageid</code> of project
+or package <code>pid</code>.</p>
 <ul>
 <li>
 <a href="#user-content-authorization">Authorization</a> is required.</li>
 <li>Only the owner of a project or package can correct its tokens.</li>
+<li>It is not possible to overwrite manually confirmed corrections with
+automatically (not manually) generated corrections.  In this case
+<code>409 Conflict</code> is returned.</li>
+<li>It is possible to overwrite manual or automatical corrections with
+newer manual correction.</li>
 </ul>
 <h4>
 <a id="user-content-query-parameters-4" class="anchor" href="#query-parameters-4" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
@@ -1589,8 +1604,13 @@ encountered whitespace character after <code>tid</code> or the end of the line)
 is corrected.</p>
 <h4>
 <a id="user-content-post-data-7" class="anchor" href="#post-data-7" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
+<p>The correction for the word/slice is set using the mandatory <code>correction</code>
+parameter in the post data for the request.  The optional <code>manually</code>
+parameter can be used to mark the correction as manually confirmed by
+a human operator (see above).</p>
 <div class="highlight highlight-source-json"><pre>{
-  <span class="pl-s"><span class="pl-pds">"</span>correction<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected token<span class="pl-pds">"</span></span>
+  <span class="pl-s"><span class="pl-pds">"</span>correction<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected line<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>manually<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>
 }</pre></div>
 <h4>
 <a id="user-content-response-data-21" class="anchor" href="#response-data-21" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
@@ -1617,8 +1637,7 @@ is corrected.</p>
     <span class="pl-s"><span class="pl-pds">"</span>height<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
   }
 }</pre></div>
-<hr>
-<p><a id="user-content-api-get-books-pid-profile"></a></p>
+<p>--- <a id="user-content-api-get-books-pid-profile"></a></p>
 <h3>
 <a id="user-content-get-restprofilebookspid" class="anchor" href="#get-restprofilebookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GET rest/profile/books/<code>pid</code>
 </h3>
@@ -1779,7 +1798,8 @@ according <a href="#user-content-api-post-el">post request</a> has finished.</p>
 <ul>
 <li>
 <a href="#user-content-authorization">Authorization</a> is required.</li>
-<li>Only the owner of a project or package can access the extended lexicon.</li>
+<li>Only the owner of a project or package can access the extended
+lexicon.</li>
 </ul>
 <h4>
 <a id="user-content-response-data-27" class="anchor" href="#response-data-27" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
@@ -1803,7 +1823,8 @@ according <a href="#user-content-api-post-el">post request</a> has finished.</p>
 <ul>
 <li>
 <a href="#user-content-authorization">Authorization</a> is required.</li>
-<li>Only the owner of a project or package can access the extended lexicon.</li>
+<li>Only the owner of a project or package can access the extended
+lexicon.</li>
 </ul>
 <h4>
 <a id="user-content-put-data" class="anchor" href="#put-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Put data</h4>
@@ -1859,22 +1880,26 @@ according <a href="#user-content-api-post-rrdm">post request</a> has finished.</
 <ul>
 <li>
 <a href="#user-content-authorization">Authorization</a> is required.</li>
-<li>Only the owner of a project or package can access the post-correction information.</li>
+<li>Only the owner of a project or package can access the
+post-correction information.</li>
 </ul>
 <h4>
 <a id="user-content-response-data-30" class="anchor" href="#response-data-30" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
-	<span class="pl-s"><span class="pl-pds">"</span>always<span class="pl-pds">"</span></span>: {
-		<span class="pl-s"><span class="pl-pds">"</span>foo<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
-		<span class="pl-s"><span class="pl-pds">"</span>bar<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>
-	},
-	<span class="pl-s"><span class="pl-pds">"</span>sometimes<span class="pl-pds">"</span></span>: {
-		<span class="pl-s"><span class="pl-pds">"</span>baz<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>
-	},
-	<span class="pl-s"><span class="pl-pds">"</span>never<span class="pl-pds">"</span></span>: {
-		<span class="pl-s"><span class="pl-pds">"</span>abc<span class="pl-pds">"</span></span>: <span class="pl-c1">7</span>
+	<span class="pl-s"><span class="pl-pds">"</span>corrections<span class="pl-pds">"</span></span>: {
+		<span class="pl-s"><span class="pl-pds">"</span>idstr<span class="pl-pds">"</span></span>: {
+			<span class="pl-s"><span class="pl-pds">"</span>bookID<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>projectID<span class="pl-pds">"</span></span>: <span class="pl-c1">5</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>pageID<span class="pl-pds">"</span></span>: <span class="pl-c1">15</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>lineID<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>tokenID<span class="pl-pds">"</span></span>: <span class="pl-c1">0</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>normalized<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>normalized token<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>correction (unnormalized)<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>original (unnormalized) ocr<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>taken<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>
+		}
 	}
 }</pre></div>
 <hr>
