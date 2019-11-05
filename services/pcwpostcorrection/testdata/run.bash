@@ -17,10 +17,8 @@ outputfg="OCR-D-CIS-POCOWEB-POST-CORRECTION"
 METS="$ws/mets.xml"
 LOG_LEVEL=DEBUG
 
-# link model file into dir
-if [[ ! -f "$dir/model.zip" ]]; then
-	ln -s "/apps/models/model.zip" "$dir/model.zip"
-fi
+# make the directory with all children
+mkdir -p "$dir"
 
 # le configuration
 cat "$config" \
@@ -52,10 +50,12 @@ doOCR=true
 if [[ -d "$ws" ]]; then
 	doOCR=false
 	pushd "$ws"
+	ocrd-cis-debug "cleaning up workspace $ws"
 	ocrd workspace remove-group --recursive --force \
 		 "OCR-D-CIS-POCOWEB-MOCR" "OCR-D-CIS-POCOWEB-IMG" "$alignfg"
 	popd
 else
+	ocrd-cis-debug "intializing workspace $ws"
 	ocrd workspace init "$ws"
 fi
 
@@ -65,6 +65,7 @@ fi
 # files.
 for xml in $dir/src/xmls/*.xml; do
 	img=$(ocrd-cis-find-image-for-xml "$dir/src/imgs" "$xml")
+	ocrd-cis-debug "adding $xml $img"
 	ocrd-cis-add-xml-image-pair "$METS" "$xml" "OCR-D-CIS-POCOWEB-MOCR" "$img" "OCR-D-CIS-POCOWEB-IMG"
 done
 
