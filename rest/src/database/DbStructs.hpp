@@ -57,6 +57,7 @@ struct DbSlice {
   double average_conf() const;
   bool is_automatically_corrected() const;
   bool is_manually_corrected() const;
+  bool contains_manual_corrections() const;
 
   // wagner-fischer interface
   void begin_wagner_fischer(size_t b, size_t e);

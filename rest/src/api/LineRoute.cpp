@@ -79,7 +79,9 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   if (not line.load(conn)) {
     THROW(NotFound, "(LineRoute) cannot find ", pid, ":", p, ":", lid);
   }
-  correct(line, correction.value(), manually.value_or(false));
+  if (not correct(line, correction.value(), manually.value_or(false))) {
+    return conflict();
+  }
   update(conn, line);
   Json j;
   return j << line;
@@ -162,19 +164,25 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
     THROW(NotFound, "(LineRoute) cannot find ", pid, ":", p, ":", lid);
   }
   const auto l = len ? len.value() : line.tokenLength(tid);
-  correct(line, correction.value(), tid, l, manually.value_or(false));
+  if (not correct(line, correction.value(), tid, l, manually.value_or(false))) {
+    return conflict();
+  }
   update(conn, line);
   Json j;
   return j << line.slice(tid, l);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void LineRoute::correct(DbLine &line, const std::string &correction,
+bool LineRoute::correct(DbLine &line, const std::string &correction,
                         bool manually) {
   CROW_LOG_INFO << "(LineRoute::correct) correction: \"" << correction << "\"";
   WagnerFischer wf;
   wf.set_gt(correction);
   auto slice = line.slice();
+  // cannot overwrite manual corrections with automatic ones
+  if (not manually and slice.contains_manual_corrections()) {
+    return false;
+  }
   wf.set_ocr(slice.wocr());
   const auto lev = wf();
   CROW_LOG_INFO << "(LineRoute) correction: " << correction;
@@ -189,10 +197,11 @@ void LineRoute::correct(DbLine &line, const std::string &correction,
 
   CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
   CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
+  return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void LineRoute::correct(DbLine &line, const std::string &correction, int b,
+bool LineRoute::correct(DbLine &line, const std::string &correction, int b,
                         int len, bool manually) {
   CROW_LOG_INFO << "(LineRoute::correct) correction: \"" << correction
                 << "\" (b = " << b << " len = " << len << " man = " << manually
@@ -200,6 +209,10 @@ void LineRoute::correct(DbLine &line, const std::string &correction, int b,
   WagnerFischer wf;
   wf.set_gt(correction);
   auto slice = line.slice(b, len);
+  // cannot overwrite manual corrections with automatic ones
+  if (not manually and slice.contains_manual_corrections()) {
+    return false;
+  }
   wf.set_ocr(slice.wocr());
   const auto lev = wf();
   CROW_LOG_INFO << "(LineRoute) correction: " << correction;
@@ -214,6 +227,7 @@ void LineRoute::correct(DbLine &line, const std::string &correction, int b,
 
   CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
   CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
+  return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

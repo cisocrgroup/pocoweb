@@ -35,9 +35,9 @@ public:
                 int tid) const;
 
 private:
-  static void correct(DbLine &line, const std::string &correction,
+  static bool correct(DbLine &line, const std::string &correction,
                       bool manually);
-  static void correct(DbLine &line, const std::string &correction, int begin,
+  static bool correct(DbLine &line, const std::string &correction, int begin,
                       int len, bool manually);
   static void update(MysqlConnection &conn, const DbLine &line);
   static const char *route_;

@@ -43,6 +43,7 @@ public:
   static Response bad_request() noexcept { return Response(400); }
   static Response forbidden() noexcept { return Response(403); }
   static Response not_found() noexcept { return Response(404); }
+  static Response conflict() noexcept { return Response(409); }
   static Response internal_server_error() noexcept { return Response(500); }
   static Response not_implemented() noexcept { return Response(501); }
   static Response service_not_available() { return Response(503); }

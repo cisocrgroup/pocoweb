@@ -117,6 +117,11 @@ bool DbSlice::is_manually_corrected() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+bool DbSlice::contains_manual_corrections() const {
+  return std::any_of(begin, end, [](const auto &c) { return c.manually; });
+}
+
+////////////////////////////////////////////////////////////////////////////////
 void DbSlice::begin_wagner_fischer(size_t b, size_t e) {
   // We ignore b, e since we simply can correct the whole (sub) slice.
   // std::cerr << "DbSlice::begin_wagner_fischer(" << b << "," << e << ")\n";
