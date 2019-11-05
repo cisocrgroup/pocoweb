@@ -45,7 +45,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
                 "name": "Lexicon Extension",
                 "seq": 1,
                 "text": "Generate and modify the extended lexicon.",
-                "url": "lexicon_extension",
+                "url": "lexicon_extension"
             }, {
                 "color": "red",
                 "icon": "fa-play",
@@ -53,7 +53,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
                 "name": "Postcorrection",
                 "seq": 2,
                 "text": "Run the automated post correction process.",
-                "url": "postcorrection",
+                "url": "postcorrection"
             }
             ]
 

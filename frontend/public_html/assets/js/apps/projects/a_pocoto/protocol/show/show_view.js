@@ -3,9 +3,7 @@
 // ================================
 
 define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/projects/page/show/show_view","apps/projects/concordance/show/show_view",
-        "tpl!apps/projects/a_pocoto/protocol/show/templates/info.tpl",
-
-
+        "tpl!apps/projects/a_pocoto/protocol/show/templates/info.tpl"
   ], function(Marionette,App,jquery_ui,BackboneSyphon,Views,Page,Concordance,infoTpl){
 
 
@@ -14,7 +12,7 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
   Show.Layout = Views.Layout.extend({
        trackJobStatus : function(){ // regulary check if job is finished
         var that = this;
-        this.interval = setInterval(function(){ 
+        this.interval = setInterval(function(){
            that.trigger("show:checkJobStatus");
           },
           5000);
@@ -39,25 +37,24 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
       template: infoTpl,
       events:{
       'click tbody tr' : 'row_clicked',
-      'click .js-pr-redo' : 'pr_redo_clicked',
-
-      }, 
+      'click .js-pr-redo' : 'pr_redo_clicked'
+      },
     //   serializeData: function(){
 
     //      var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
     //      console.log(data)
     //     return data;
-    
+
     // },
     serializeData: function(){
       return {
         pr: Marionette.getOption(this,"pr")
       }
     },
-     
+
     pr_redo_clicked:function(e){
         e.preventDefault();
-   
+
         this.trigger("show:pr_redo_clicked");
       },
       row_clicked:function(e){
@@ -67,7 +64,7 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
         this.trigger("show:word_clicked",word);
       },
 
-   
+
      onAttach: function(){
       var always_table = $('#always').DataTable({
                 "scrollY": '556px',
@@ -103,7 +100,7 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
            this.sometimes_table = sometimes_table;
 
          }
-    
+
   });
 
 
@@ -117,4 +114,3 @@ Show.OkDialog = Views.OkDialog.extend({});
 return Show;
 
 });
-
