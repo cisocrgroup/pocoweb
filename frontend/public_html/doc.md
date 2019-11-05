@@ -842,7 +842,7 @@ Get all books of an user account.
       "bookId": 27,
       "projectId": 42,
       "pages": 100,
-      "pageIds": [15,18,20,27 /*,...*/],
+      "pageIds": [15,18,20,27,...],
 	  "histPatterns": "t:th,ei:ey",
 	  "pooled": true,
 	  "status": {
