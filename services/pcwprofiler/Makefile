@@ -10,7 +10,7 @@ ${TARGET}: ${SRCS}
 	go build .
 
 .PHONY: docker-build
-docker-build:
+docker-build: ${TARGET}
 	docker build ${addprefix -t,${TAGS}} .
 
 .PHONY: docker-run
