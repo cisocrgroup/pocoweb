@@ -5,9 +5,11 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/finkf/pcwgo/api"
 	"github.com/finkf/pcwgo/db"
@@ -86,6 +88,10 @@ func (r pcRunner) BookID() int {
 }
 
 func (r pcRunner) Run(ctx context.Context) error {
+	if err := r.setupWorkspace(); err != nil {
+		return fmt.Errorf(
+			"cannot calculate post correction: %v", err)
+	}
 	dir := filepath.Join(baseDir, r.project.Directory, "postcorrection")
 	protocol := filepath.Join(dir, "dm-protocol.json")
 	err := jobs.Run(
@@ -104,31 +110,50 @@ func (r pcRunner) Run(ctx context.Context) error {
 	return nil
 }
 
-type rrdmPVal struct {
-	Normalized string  `json:"normalized"`
-	OCR        string  `json:"ocr"`
-	Cor        string  `json:"cor"`
-	Confidence float64 `json:"confidence"`
-	Taken      bool    `json:"taken"`
+func (r pcRunner) setupWorkspace() error {
+	doc, err := loadDocument(r.project)
+	if err != nil {
+		return fmt.Errorf("cannot setup workspace: %v", err)
+	}
+	if err := doc.write(); err != nil {
+		return fmt.Errorf("cannot setup workspace: %v", err)
+	}
+	return nil
 }
 
-type rrdmP struct {
-	Corrections map[string]rrdmPVal `json:"corrections"`
-}
+func (r pcRunner) correct(path string) (err error) {
+	var corrections api.PostCorrection
+	if err := r.readProtocol(&corrections, path); err != nil {
+		return fmt.Errorf("cannot read protocol %s: %v", path, err)
+	}
+	rnd := rand.New(rand.NewSource(time.Now().Unix()))
+	// preprocess protocol
+	for k, v := range corrections.Corrections {
+		var bid, pid, lid, tid int
+		if _, err := fmt.Sscanf(k, "%d:%d:%d:%d", &bid, &pid, &lid, &tid); err != nil {
+			return fmt.Errorf("invalid protocol id: %s", k)
+		}
+		v.BookID = r.project.BookID
+		v.ProjectID = r.project.ProjectID
+		v.PageID = pid
+		v.LineID = lid
+		v.TokenID = tid
+		if rnd.Int31n(10) < 3 { // 0, 1, 2
+			v.Taken = true
+		}
+		corrections.Corrections[k] = v
+	}
 
-func (r pcRunner) correct(protocol string) (err error) {
-	corrections, err := r.readProtocol(protocol)
-	if err := r.correctInBackend(corrections); err != nil {
+	if err := r.correctInBackend(&corrections); err != nil {
 		return fmt.Errorf("cannot correct in backend: %v", err)
 	}
-	pc, err := r.correctInDatabase(corrections)
-	if err != nil {
+	if err := r.correctInDatabase(&corrections); err != nil {
 		return fmt.Errorf("cannot correct in database: %v", err)
 	}
 	if err := r.updateStatus(); err != nil {
 		return fmt.Errorf("cannot update project status: %v", err)
 	}
-	if err := r.writeProtocol(pc, protocol); err != nil {
+	if err := r.writeProtocol(&corrections, path); err != nil {
 		return fmt.Errorf("cannot write protocol: %v", err)
 	}
 	return nil
@@ -152,17 +177,16 @@ func (r pcRunner) deleteCorrections() error {
 	return nil
 }
 
-func (r pcRunner) readProtocol(path string) (map[string]rrdmPVal, error) {
-	var corrections rrdmP
+func (r pcRunner) readProtocol(pc *api.PostCorrection, path string) error {
 	in, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("cannot open protocol: %v", err)
+		return fmt.Errorf("cannot open protocol: %v", err)
 	}
 	defer in.Close()
-	if err := json.NewDecoder(in).Decode(&corrections); err != nil {
-		return nil, fmt.Errorf("cannot decode protocol: %v", err)
+	if err := json.NewDecoder(in).Decode(pc); err != nil {
+		return fmt.Errorf("cannot decode protocol: %v", err)
 	}
-	return corrections.Corrections, nil
+	return nil
 }
 
 func (r pcRunner) writeProtocol(pc *api.PostCorrection, path string) (err error) {
@@ -183,19 +207,17 @@ func (r pcRunner) writeProtocol(pc *api.PostCorrection, path string) (err error)
 	return nil
 }
 
-func (r pcRunner) correctInBackend(corrections map[string]rrdmPVal) error {
+func (r pcRunner) correctInBackend(corrections *api.PostCorrection) error {
 	// We should be communicating within docker compose - so skip verify is ok.
 	client := api.NewClient(pocowebURL, true)
-	for k, v := range corrections {
+	for k, v := range corrections.Corrections {
 		log.Debugf("correction: %s %v", k, v)
 		if !v.Taken { // only correct corrections that should be taken
 			continue
 		}
-		var bid, pid, lid, tid int
-		if _, err := fmt.Sscanf(k, "%d:%d:%d:%d", &bid, &pid, &lid, &tid); err != nil {
-			return fmt.Errorf("invalid protocol id: %s", k)
-		}
-		_, err := client.PutTokenLen(bid, pid, lid, tid, len([]rune(v.OCR)), v.Cor)
+		_, err := client.PutTokenLen(v.BookID, v.PageID, v.LineID, v.TokenID,
+			len([]rune(v.OCR)),
+			api.CorrectionRequest{Correction: v.Cor, Manually: false})
 		if err != nil {
 			return fmt.Errorf("cannot post correct %s: %v", v.Normalized, err)
 		}
@@ -203,68 +225,37 @@ func (r pcRunner) correctInBackend(corrections map[string]rrdmPVal) error {
 	return nil
 }
 
-func (r pcRunner) correctInDatabase(corrections map[string]rrdmPVal) (*api.PostCorrection, error) {
+func (r pcRunner) correctInDatabase(corrections *api.PostCorrection) error {
 	if err := r.deleteCorrections(); err != nil {
-		return nil, err
+		return err
 	}
 	ins, err := r.pool.Prepare("INSERT INTO autocorrections" +
 		"(bookid,pageid,lineid,tokenid,ocrtypid,cortypid,taken) " +
 		"VALUES(?,?,?,?,?,?,?)")
 	if err != nil {
-		return nil, fmt.Errorf("cannot prepare insert statement: %v", err)
+		return fmt.Errorf("cannot prepare insert statement: %v", err)
 	}
 	defer ins.Close()
 	t, err := db.NewTypeInserter(r.pool)
 	if err != nil {
-		return nil, fmt.Errorf("cannot insert types: %v", err)
+		return fmt.Errorf("cannot insert types: %v", err)
 	}
 	defer t.Close()
 
 	// insert corrections
-	tokens := make(map[string]struct{ t, r int })
-	for k, v := range corrections {
-		var bid, pid, lid, tid int
-		if _, err := fmt.Sscanf(k, "%d:%d:%d:%d", &bid, &pid, &lid, &tid); err != nil {
-			return nil, fmt.Errorf("invalid protocol id: %s", k)
-		}
+	for _, v := range corrections.Corrections {
 		ocrtypid, err := t.ID(v.Normalized)
 		if err != nil {
-			return nil, fmt.Errorf("cannot insert ocr type: %v", err)
+			return fmt.Errorf("cannot insert ocr type: %v", err)
 		}
 		cortypid, err := t.ID(v.Cor)
 		if err != nil {
-			return nil, fmt.Errorf("cannot insert cor type: %v", err)
+			return fmt.Errorf("cannot insert cor type: %v", err)
 		}
-		if _, err := ins.Exec(bid, pid, lid, tid, ocrtypid, cortypid, v.Taken); err != nil {
-			return nil, fmt.Errorf("cannot insert correction: %v", err)
-		}
-		x := tokens[v.Normalized]
-		if v.Taken {
-			tokens[v.Normalized] = struct{ t, r int }{x.t + 1, x.r}
-		} else {
-			tokens[v.Normalized] = struct{ t, r int }{x.t, x.r + 1}
+		if _, err := ins.Exec(v.BookID, v.PageID, v.LineID, v.TokenID,
+			ocrtypid, cortypid, v.Taken); err != nil {
+			return fmt.Errorf("cannot insert correction: %v", err)
 		}
 	}
-	return r.makePostCorrections(tokens), nil
-}
-
-func (r pcRunner) makePostCorrections(tokens map[string]struct{ t, r int }) *api.PostCorrection {
-	pc := api.PostCorrection{
-		BookID:    r.project.BookID,
-		ProjectID: r.project.ProjectID,
-		Always:    make(map[string]int),
-		Never:     make(map[string]int),
-		Sometimes: make(map[string]int),
-	}
-	// build protocol
-	for k, v := range tokens {
-		if v.t > 0 && v.r > 0 {
-			pc.Sometimes[k] = v.t + v.r
-		} else if v.t > 0 {
-			pc.Always[k] = v.t
-		} else {
-			pc.Never[k] = v.r
-		}
-	}
-	return &pc
+	return nil
 }

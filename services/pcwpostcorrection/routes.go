@@ -164,11 +164,9 @@ func (s *server) handleRunExtendedLexicon() service.HandlerFunc {
 
 func writeEmptyPostCorrection(w http.ResponseWriter, p *db.Project) {
 	ret := api.PostCorrection{
-		ProjectID: p.ProjectID,
-		BookID:    p.BookID,
-		Always:    map[string]int{},
-		Sometimes: map[string]int{},
-		Never:     map[string]int{},
+		ProjectID:   p.ProjectID,
+		BookID:      p.BookID,
+		Corrections: map[string]api.PostCorrectionToken{},
 	}
 	service.JSONResponse(w, ret)
 }
