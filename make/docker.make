@@ -23,7 +23,7 @@ services-build:
 	${MAKE} -C services docker-build
 
 .PHONY: docker-compose-build
-docker-compose-build:
+docker-compose-build: env.sh services/nginx/cert.pem
 	PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose build
 
 .PHONY: docker-start
@@ -35,5 +35,10 @@ install-frontend:
 	$(MAKE) -C frontend INSTALL_DIR=${PCW_SRV_DIR}/www-data install
 
 .PHONY: docker-stop
-docker-stop:
+docker-stop: env.sh
 	PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose stop
+
+env.sh: misc/config/env.sh
+	cp $< $@
+services/nginx/cert.pem:
+	sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout services/nginx/key.pem -out $@

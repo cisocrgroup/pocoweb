@@ -15,6 +15,7 @@ vendor/*
 tmp/*
 ext/*
 lib/*
+env.sh
 *.built.js
 frontend/public_html/js/config.js
 db/tables.sql.tmp
