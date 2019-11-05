@@ -485,6 +485,10 @@ Installation instructions can be found in the project's
 [README](https://github.com/cisocrgroup/pocoweb/blob/master/README.md)
 file.
 
+Pocoweb can be deployed using
+[docker-compose](https://docs.docker.com/compose/).  The according
+Docker files can be found in the projects's source directory.
+
 - - -
 <a id='pool'></a>
 ## Ground-truth pool
