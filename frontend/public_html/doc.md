@@ -509,30 +509,32 @@ correction data in a directory structure that is ordered by
 project, page ids and line ids:
 ```
 corpus
+├── year-author_name1_book_title1.json
 ├── year-author_name1_book_title1
-│   ├── pageid1
+│   ├── pageid1
 │   │   ├── lineid1.gt.txt
 │   │   ├── lineid1.txt
 │   │   ├── lineid1.png
 │   │   ├── lineid2.gt.txt
 │   │   ├── lineid2.txt
 │   │   └── lineid2.png
-│   └── pageid2
+│   └── pageid2
 │       ├── lineid1.gt.txt
 │       ├── lineid1.txt
 │       ├── lineid1.png
 │       ├── lineid2.gt.txt
 │       ├── lineid2.txt
 │       └── lineid2.png
+├── year-author_name2_book_title2.json
 └── year-author_name2_book_title2
-    ├── pageid1
+    ├── pageid1
     │   ├── lineid1.gt.txt
     │   ├── lineid1.txt
     │   ├── lineid1.png
     │   ├── lineid2.gt.txt
     │   ├── lineid2.txt
     │   └── lineid2.png
-    └── pageid2
+    └── pageid2
         ├── lineid1.gt.txt
         ├── lineid1.txt
         ├── lineid1.png
