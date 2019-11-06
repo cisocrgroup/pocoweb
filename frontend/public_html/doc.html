@@ -489,24 +489,32 @@ project, page ids and line ids:</p>
 ├── year-author_name1_book_title1
 │   ├── pageid1
 │   │   ├── lineid1.gt.txt
+│   │   ├── lineid1.txt
 │   │   ├── lineid1.png
 │   │   ├── lineid2.gt.txt
+│   │   ├── lineid2.txt
 │   │   └── lineid2.png
 │   └── pageid2
 │       ├── lineid1.gt.txt
+│       ├── lineid1.txt
 │       ├── lineid1.png
 │       ├── lineid2.gt.txt
+│       ├── lineid2.txt
 │       └── lineid2.png
 └── year-author_name2_book_title2
     ├── pageid1
     │   ├── lineid1.gt.txt
+    │   ├── lineid1.txt
     │   ├── lineid1.png
     │   ├── lineid2.gt.txt
+    │   ├── lineid2.txt
     │   └── lineid2.png
     └── pageid2
         ├── lineid1.gt.txt
+        ├── lineid1.txt
         ├── lineid1.png
         ├── lineid2.gt.txt
+        ├── lineid2.txt
         └── lineid2.png
 </code></pre>
 <p>For each project directory, a small JSON-formatted info file is
@@ -519,7 +527,15 @@ included. The file has the following layout:</p>
 	<span class="pl-s"><span class="pl-pds">"</span>Language<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book's profiler language<span class="pl-pds">"</span></span>,
 	<span class="pl-s"><span class="pl-pds">"</span>ID<span class="pl-pds">"</span></span>:<span class="pl-c1">3</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>Year<span class="pl-pds">"</span></span>:<span class="pl-c1">1900</span>,
-	<span class="pl-s"><span class="pl-pds">"</span>NLines<span class="pl-pds">"</span></span>:<span class="pl-c1">3</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>OCRTXTFiles<span class="pl-pds">"</span></span>: [
+		<span class="pl-s"><span class="pl-pds">"</span>...<span class="pl-pds">"</span></span>
+	],
+	<span class="pl-s"><span class="pl-pds">"</span>GTIMGFiles<span class="pl-pds">"</span></span>: [
+		<span class="pl-s"><span class="pl-pds">"</span>...<span class="pl-pds">"</span></span>
+	],
+	<span class="pl-s"><span class="pl-pds">"</span>GTTXTFiles<span class="pl-pds">"</span></span>: [
+		<span class="pl-s"><span class="pl-pds">"</span>...<span class="pl-pds">"</span></span>
+	],
 	<span class="pl-s"><span class="pl-pds">"</span>Pooled<span class="pl-pds">"</span></span>:<span class="pl-bl">true</span>
 }</pre></div>
 <hr>

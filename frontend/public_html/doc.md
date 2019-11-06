@@ -512,24 +512,32 @@ corpus
 ├── year-author_name1_book_title1
 │   ├── pageid1
 │   │   ├── lineid1.gt.txt
+│   │   ├── lineid1.txt
 │   │   ├── lineid1.png
 │   │   ├── lineid2.gt.txt
+│   │   ├── lineid2.txt
 │   │   └── lineid2.png
 │   └── pageid2
 │       ├── lineid1.gt.txt
+│       ├── lineid1.txt
 │       ├── lineid1.png
 │       ├── lineid2.gt.txt
+│       ├── lineid2.txt
 │       └── lineid2.png
 └── year-author_name2_book_title2
     ├── pageid1
     │   ├── lineid1.gt.txt
+    │   ├── lineid1.txt
     │   ├── lineid1.png
     │   ├── lineid2.gt.txt
+    │   ├── lineid2.txt
     │   └── lineid2.png
     └── pageid2
         ├── lineid1.gt.txt
+        ├── lineid1.txt
         ├── lineid1.png
         ├── lineid2.gt.txt
+        ├── lineid2.txt
         └── lineid2.png
 ```
 
@@ -545,7 +553,15 @@ included. The file has the following layout:
 	"Language": "book's profiler language",
 	"ID":3,
 	"Year":1900,
-	"NLines":3,
+	"OCRTXTFiles": [
+		"..."
+	],
+	"GTIMGFiles": [
+		"..."
+	],
+	"GTTXTFiles": [
+		"..."
+	],
 	"Pooled":true
 }
 ```
