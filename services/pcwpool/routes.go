@@ -193,7 +193,7 @@ func (line *lineInfo) writeGT(out *zip.Writer) error {
 	if err := line.writeText(out, header, line.line.Cor()); err != nil {
 		return fmt.Errorf("cannot write gt file: %v", err)
 	}
-	line.book.OCRTXTFiles = append(line.book.OCRTXTFiles, header.Name)
+	line.book.GTTXTFiles = append(line.book.GTTXTFiles, header.Name)
 	return nil
 }
 
@@ -202,7 +202,7 @@ func (line *lineInfo) writeOCR(out *zip.Writer) error {
 	if err := line.writeText(out, header, line.line.OCR()); err != nil {
 		return fmt.Errorf("cannot write ocr file: %v", err)
 	}
-	line.book.OCRTXTFiles = append(line.book.OCRIMGFiles, header.Name)
+	line.book.OCRTXTFiles = append(line.book.OCRTXTFiles, header.Name)
 	return nil
 }
 
