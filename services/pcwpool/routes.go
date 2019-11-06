@@ -124,7 +124,7 @@ func (s *server) writePool(out io.Writer, rows *sql.Rows) (err error) {
 
 func (s *server) writeBookToPool(out *zip.Writer, book *bookInfo) error {
 	const stmnt = `
-SELECT c.pageid,c.lineid,c.cor,c.ocr,l.imagepath
+SELECT c.pageid,c.lineid,c.cor,c.ocr,c.manually,l.imagepath
 FROM contents c
 JOIN textlines l ON c.bookid=l.bookid AND c.pageid=l.pageid AND c.lineid=l.lineid
 WHERE c.bookid=?
@@ -140,7 +140,8 @@ ORDER BY c.pageid,c.lineid,c.seq
 	for rows.Next() {
 		var pid, lid, cor, ocr int
 		var path string
-		if err := rows.Scan(&pid, &lid, &cor, &ocr, &path); err != nil {
+		var manually bool
+		if err := rows.Scan(&pid, &lid, &cor, &ocr, &manually, &path); err != nil {
 			return fmt.Errorf("cannot scan content for book %s: %v",
 				book.String(), err)
 		}
@@ -157,7 +158,7 @@ ORDER BY c.pageid,c.lineid,c.seq
 		line.path = path
 		line.pageID = pid
 		line.lineID = lid
-		line.line = append(line.line, db.Char{Cor: rune(cor), OCR: rune(ocr)})
+		line.line = append(line.line, db.Char{Cor: rune(cor), OCR: rune(ocr), Manually: manually})
 	}
 	// last line
 	if err := line.write(out); err != nil {
