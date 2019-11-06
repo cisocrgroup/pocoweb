@@ -2,6 +2,7 @@ package main
 
 import (
 	"archive/zip"
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -81,12 +82,16 @@ WHERE b.pooled=true and p.origin=p.id
 			return
 		}
 		defer rows.Close()
-		w.Header().Add("Content-Type", "application/zip")
-		if err := s.writePool(w, rows); err != nil {
+		var buf bytes.Buffer
+		if err := s.writePool(&buf, rows); err != nil {
 			log.Infof("cannot write pool: %v", err)
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot write pool: %v", err)
 			return
+		}
+		w.Header().Add("Content-Type", "application/zip")
+		if _, err := io.Copy(w, &buf); err != nil {
+			log.Errorf("cannot write pool: %v", err)
 		}
 	}
 }
