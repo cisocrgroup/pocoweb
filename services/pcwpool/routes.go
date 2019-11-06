@@ -249,7 +249,7 @@ func (line *lineInfo) copyImage(out *zip.Writer) error {
 
 func (line *lineInfo) gtZIPHeader() *zip.FileHeader {
 	return &zip.FileHeader{
-		Method:   zip.Deflate,
+		Method:   zip.Store, // most likely very small
 		Modified: time.Now(),
 		Name: filepath.Join("corpus", line.book.String(),
 			fmt.Sprintf("%04d/%04d.gt.txt", line.pageID, line.lineID)),
@@ -258,7 +258,7 @@ func (line *lineInfo) gtZIPHeader() *zip.FileHeader {
 
 func (line *lineInfo) ocrZIPHeader() *zip.FileHeader {
 	return &zip.FileHeader{
-		Method:   zip.Deflate,
+		Method:   zip.Store, // most likely very small
 		Modified: time.Now(),
 		Name: filepath.Join("corpus", line.book.String(),
 			fmt.Sprintf("%04d/%04d.txt", line.pageID, line.lineID)),
@@ -267,7 +267,7 @@ func (line *lineInfo) ocrZIPHeader() *zip.FileHeader {
 
 func (line *lineInfo) pngZIPHeader() *zip.FileHeader {
 	return &zip.FileHeader{
-		Method:   zip.Deflate,
+		Method:   zip.Store, // most likely very small
 		Modified: time.Now(),
 		Name: filepath.Join("corpus", line.book.String(),
 			fmt.Sprintf("%04d/%04d.png", line.pageID, line.lineID)),
