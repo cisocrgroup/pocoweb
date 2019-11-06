@@ -147,7 +147,11 @@ ORDER BY c.pageid,c.lineid,c.seq
 		}
 		// same line on same page -> append char
 		if pid == line.pageID && lid == line.lineID {
-			line.line = append(line.line, db.Char{Cor: rune(cor), OCR: rune(ocr)})
+			line.line = append(line.line, db.Char{
+				Cor:      rune(cor),
+				OCR:      rune(ocr),
+				Manually: manually,
+			})
 			continue
 		}
 		// write old line
@@ -158,7 +162,11 @@ ORDER BY c.pageid,c.lineid,c.seq
 		line.path = path
 		line.pageID = pid
 		line.lineID = lid
-		line.line = append(line.line, db.Char{Cor: rune(cor), OCR: rune(ocr), Manually: manually})
+		line.line = append(line.line, db.Char{
+			Cor:      rune(cor),
+			OCR:      rune(ocr),
+			Manually: manually,
+		})
 	}
 	// last line
 	if err := line.write(out); err != nil {
