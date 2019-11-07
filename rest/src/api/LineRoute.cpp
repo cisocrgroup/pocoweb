@@ -68,7 +68,7 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
                                 int lid) const {
   CROW_LOG_INFO << "(LineRoute) POST line: " << pid << ":" << p << ":" << lid;
   const auto json = crow::json::load(req.body);
-  const auto manually = get<bool>(json, "manually");
+  const auto type = getCorType(json);
   const auto correction = get<std::string>(json, "correction");
   if (not correction) {
     THROW(BadRequest, "(LineRoute) missing correction data");
@@ -80,9 +80,7 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   if (not line.load(conn)) {
     THROW(NotFound, "(LineRoute) cannot find ", pid, ":", p, ":", lid);
   }
-  if (not correct(line, correction.value(), manually.value_or(false))) {
-    return conflict();
-  }
+  correct(line, correction.value(), type);
   update(conn, line);
   Json j;
   return j << line;
@@ -154,7 +152,7 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
                 << ":" << tid;
   const auto len = get<int>(req.url_params, "len");
   const auto json = crow::json::load(req.body);
-  const auto manually = get<bool>(json, "manually");
+  const auto type = getCorType(json);
   const auto correction = get<std::string>(json, "correction");
   if (not correction) {
     THROW(BadRequest, "(LineRoute) missing correction data");
@@ -167,24 +165,22 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
     THROW(NotFound, "(LineRoute) cannot find ", pid, ":", p, ":", lid);
   }
   const auto l = len ? len.value() : line.tokenLength(tid);
-  if (not correct(line, correction.value(), tid, l, manually.value_or(false))) {
-    return conflict();
-  }
+  correct(line, correction.value(), tid, l, type);
   update(conn, line);
   Json j;
   return j << line.slice(tid, l);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool LineRoute::correct(DbLine &line, const std::string &correction,
-                        bool manually) {
+void LineRoute::correct(DbLine &line, const std::string &correction,
+                        CorType type) {
   CROW_LOG_INFO << "(LineRoute::correct) correction: \"" << correction << "\"";
   WagnerFischer wf;
   wf.set_gt(correction);
   auto slice = line.slice();
-  // cannot overwrite manual corrections with automatic ones
-  if (not manually and slice.contains_manual_corrections()) {
-    return false;
+  // cannot overwrite manual corrections with non manual ones
+  if (type != Manual and slice.contains_manual_corrections()) {
+    THROW(Conflict, "(LineRoute) cannot overwrite manual corrections");
   }
   wf.set_ocr(slice.wocr());
   const auto lev = wf();
@@ -194,27 +190,24 @@ bool LineRoute::correct(DbLine &line, const std::string &correction,
 
   // correct
   wf.correct(slice);
-  for (auto i = slice.begin; i != slice.end; i++) {
-    i->manually = manually;
-  }
+  slice.set_correction_type(type);
 
   CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
   CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
-  return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool LineRoute::correct(DbLine &line, const std::string &correction, int b,
-                        int len, bool manually) {
+void LineRoute::correct(DbLine &line, const std::string &correction, int b,
+                        int len, CorType type) {
   CROW_LOG_INFO << "(LineRoute::correct) correction: \"" << correction
-                << "\" (b = " << b << " len = " << len << " man = " << manually
+                << "\" (b = " << b << " len = " << len << " type = " << type
                 << ")";
   WagnerFischer wf;
   wf.set_gt(correction);
   auto slice = line.slice(b, len);
   // cannot overwrite manual corrections with automatic ones
-  if (not manually and slice.contains_manual_corrections()) {
-    return false;
+  if (type != Manual and slice.contains_manual_corrections()) {
+    THROW(Conflict, "(LineRoute) cannot overwrite manual corrections");
   }
   wf.set_ocr(slice.wocr());
   const auto lev = wf();
@@ -224,13 +217,10 @@ bool LineRoute::correct(DbLine &line, const std::string &correction, int b,
 
   // correct
   wf.correct(slice);
-  for (auto i = slice.begin; i != slice.end; i++) {
-    i->manually = manually;
-  }
+  slice.set_correction_type(type);
 
   CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
   CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
-  return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -263,6 +253,21 @@ void LineRoute::update(MysqlConnection &mysql, const DbLine &line) {
     mysql.db()(stmnt);
   }
   committer.commit();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+CorType LineRoute::getCorType(const RJson &json) {
+  const auto typestr = get<std::string>(json, "type").value_or("automatic");
+  if (typestr == "manual") {
+    return Manual;
+  }
+  if (typestr == "automatic") {
+    return Automatic;
+  }
+  if (typestr == "ocr") {
+    return OCR;
+  }
+  THROW(BadRequest, "(LineRoute) invalid correction type: ", typestr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

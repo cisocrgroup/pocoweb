@@ -2,10 +2,12 @@
 #define pcw_LineRoute_hpp__
 
 #include "core/CrtpRoute.hpp"
+#include "database/CorType.hpp"
 
 namespace crow {
 namespace json {
 class wvalue;
+class rvalue;
 } // namespace json
 } // namespace crow
 namespace pcw {
@@ -13,7 +15,7 @@ struct Token;
 struct DbLine;
 class Line;
 using Json = crow::json::wvalue;
-
+using RJson = crow::json::rvalue;
 class LineRoute : public CrtpRoute<LineRoute> {
 public:
   virtual ~LineRoute() noexcept override = default;
@@ -35,10 +37,11 @@ public:
                 int tid) const;
 
 private:
-  static bool correct(DbLine &line, const std::string &correction,
-                      bool manually);
-  static bool correct(DbLine &line, const std::string &correction, int begin,
-                      int len, bool manually);
+  static CorType getCorType(const RJson &json);
+  static void correct(DbLine &line, const std::string &correction,
+                      CorType type);
+  static void correct(DbLine &line, const std::string &correction, int begin,
+                      int len, CorType type);
   static void update(MysqlConnection &conn, const DbLine &line);
   static const char *route_;
   static const char *name_;

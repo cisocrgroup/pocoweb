@@ -1,6 +1,7 @@
 #ifndef pcw_DbStructs_hpp__
 #define pcw_DbStructs_hpp__
 
+#include "CorType.hpp"
 #include "Tables.h"
 #include "core/Box.hpp"
 #include "mysql.hpp"
@@ -66,6 +67,7 @@ struct DbSlice {
   void set(size_t i, wchar_t c);
   void noop(size_t i);
   void end_wagner_fischer() const noexcept {}
+  void set_correction_type(CorType type);
 
   std::string strID() const {
     return std::to_string(projectid) + ":" + std::to_string(pageid) + ":" +

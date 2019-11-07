@@ -40,6 +40,16 @@ public:
   }
 };
 
+class Conflict : public Error {
+public:
+  Conflict(const char *f, int l) : Error(f, l, "Conflict") {}
+  virtual ~Conflict() noexcept override = default;
+  virtual int code() const noexcept override {
+    // Conflict
+    return 409;
+  }
+};
+
 class NotImplemented : public Error {
 public:
   NotImplemented(const char *f, int l) : Error(f, l, "NotImplemented") {}
