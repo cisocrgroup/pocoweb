@@ -300,7 +300,7 @@ takeBackPackages: function(data){
           'Content-Type': 'application/json'
         },
         url: "rest/books/"+data.pid+"/pages/"+data.page_id+"/lines/"+data.line_id+"?auth=" + App.getAuthToken(),
-        type: "POST",
+        type: "PUT",
         data:JSON.stringify({correction:data.text, type:"manual"}),
         success: function(data) {
               defer.resolve(data);
@@ -321,7 +321,7 @@ takeBackPackages: function(data){
           'Content-Type': 'application/json'
         },
         url: "rest/books/"+data.pid+"/pages/"+data.page_id+"/lines/"+data.line_id+"/tokens/"+data.token_id+"?auth=" + App.getAuthToken(),
-        type: "POST",
+        type: "PUT",
         data:JSON.stringify({correction:data.token, type:"manual"}),
         success: function(data) {
               defer.resolve(data);
