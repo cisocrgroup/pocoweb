@@ -19,7 +19,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
 
       $.when(fetchingproject,fetchingprotocol,fetchingjobs).done(function(project,pr,job){
-        pr = ProjectEntities.API.addPostCorrectionClassification(pr);
+        pr = Util.addPostCorrectionClassification(pr);
 		  loadingCircleView.destroy();
       console.log(project);
       console.log(pr);
@@ -56,7 +56,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                var fetchingprotocol = ProjectEntities.API.getPostcorrection({pid:id});
 
                          $.when(fetchingprotocol).done(function(pr){
-                           pr = ProjectEntities.API.addPostCorrectionClassification(pr);
+                           pr = Util.addPostCorrectionClassification(pr);
                               projectShowProtocol = new Show.Protocol({pr});
                               projectShowLayout.showChildView('contentRegion',projectShowProtocol);
 
