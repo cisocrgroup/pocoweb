@@ -57,6 +57,7 @@ Route::Response LineRoute::impl(HttpGet, const Request &req, int pid,
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response LineRoute::impl(HttpPut, const Request &req, int pid, int p,
                                 int lid) const {
+  CROW_LOG_INFO << "(LineRoute) PUT line: " << pid << ":" << p << ":" << lid;
   return impl(HttpPost{}, req, pid, p, lid);
 }
 
@@ -139,6 +140,8 @@ Route::Response LineRoute::impl(HttpGet, const Request &req, int pid,
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response LineRoute::impl(HttpPut, const Request &req, int pid, int p,
                                 int lid, int tid) const {
+  CROW_LOG_INFO << "(LineRoute) PUT token: " << pid << ":" << p << ":" << lid
+                << ":" << tid;
   return impl(HttpPost{}, req, pid, p, lid, tid);
 }
 
