@@ -1500,20 +1500,20 @@ or package with id <code>pid</code>.</p>
 <a href="#user-content-authorization">Authorization</a> is required.</li>
 <li>Only the owner of a project or package can read its lines.</li>
 <li>It is not possible to overwrite manually confirmed corrections with
-automatically (not manually) generated corrections.  In this case
-<code>409 Conflict</code> is returned.</li>
-<li>It is possible to overwrite manual or automatical corrections with
-newer manual correction.</li>
+not manually generated corrections.  In this case <code>409 Conflict</code> is
+returned.</li>
+<li>If an invalid <code>type</code> parameter is posted <code>400 Bad Request</code> is
+returned.</li>
 </ul>
 <h4>
 <a id="user-content-post-data-6" class="anchor" href="#post-data-6" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
 <p>The correction for the line is set using the mandatory <code>correction</code>
-parameter in the post data for the request.  The optional <code>manually</code>
-parameter can be used to mark the correction as manually confirmed by
-a human operator (see above).</p>
+parameter in the post data for the request.  The optional <code>type</code>
+parameter can be used to set the type of the correction.  If missing,
+<code>"automatic"</code> is assumed.</p>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>correction<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected line<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>manually<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>manual|automatic|ocr<span class="pl-pds">"</span></span>
 }</pre></div>
 <h4>
 <a id="user-content-response-data-19" class="anchor" href="#response-data-19" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
@@ -1607,10 +1607,10 @@ or package <code>pid</code>.</p>
 <a href="#user-content-authorization">Authorization</a> is required.</li>
 <li>Only the owner of a project or package can correct its tokens.</li>
 <li>It is not possible to overwrite manually confirmed corrections with
-automatically (not manually) generated corrections.  In this case
-<code>409 Conflict</code> is returned.</li>
-<li>It is possible to overwrite manual or automatical corrections with
-newer manual correction.</li>
+not manually generated corrections.  In this case <code>409 Conflict</code> is
+returned.</li>
+<li>If an invalid <code>type</code> parameter is posted <code>400 Bad Request</code> is
+returned.</li>
 </ul>
 <h4>
 <a id="user-content-query-parameters-4" class="anchor" href="#query-parameters-4" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
@@ -1622,13 +1622,13 @@ encountered whitespace character after <code>tid</code> or the end of the line)
 is corrected.</p>
 <h4>
 <a id="user-content-post-data-7" class="anchor" href="#post-data-7" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
-<p>The correction for the word/slice is set using the mandatory <code>correction</code>
-parameter in the post data for the request.  The optional <code>manually</code>
-parameter can be used to mark the correction as manually confirmed by
-a human operator (see above).</p>
+<p>The correction for the word/slice is set using the mandatory
+<code>correction</code> parameter in the post data for the request.  The optional
+<code>type</code> parameter can be used to mark the correction type.  If missing
+<code>"automatic"</code> is assumed.</p>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>correction<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected line<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>manually<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>
+  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>manual|automatic|ocr<span class="pl-pds">"</span></span>
 }</pre></div>
 <h4>
 <a id="user-content-response-data-21" class="anchor" href="#response-data-21" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>

@@ -1481,20 +1481,21 @@ Correct line `lid` in page `pageid` of project or package `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its lines.
 * It is not possible to overwrite manually confirmed corrections with
-  automatically (not manually) generated corrections.  In this case
-  `409 Conflict` is returned.
-* It is possible to overwrite manual or automatical corrections with
-  newer manual correction.
+  not manually generated corrections.  In this case `409 Conflict` is
+  returned.
+* If an invalid `type` parameter is posted `400 Bad Request` is
+  returned.
 
 #### Post data
 The correction for the line is set using the mandatory `correction`
-parameter in the post data for the request.  The optional `manually`
-parameter can be used to mark the correction as manually confirmed by
-a human operator (see above).
+parameter in the post data for the request.  The optional `type`
+parameter can be used to set the type of the correction.  If missing,
+`"automatic"` is assumed.
+
 ```json
 {
   "correction": "corrected line",
-  "manually": true
+  "type": "manual|automatic|ocr"
 }
 ```
 
@@ -1582,10 +1583,10 @@ or package `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can correct its tokens.
 * It is not possible to overwrite manually confirmed corrections with
-  automatically (not manually) generated corrections.  In this case
-  `409 Conflict` is returned.
-* It is possible to overwrite manual or automatical corrections with
-  newer manual correction.
+  not manually generated corrections.  In this case `409 Conflict` is
+  returned.
+* If an invalid `type` parameter is posted `400 Bad Request` is
+  returned.
 
 #### Query parameters
 An optional parameter `len=n` can be specified to correct a specific
@@ -1596,14 +1597,15 @@ encountered whitespace character after `tid` or the end of the line)
 is corrected.
 
 #### Post data
-The correction for the word/slice is set using the mandatory `correction`
-parameter in the post data for the request.  The optional `manually`
-parameter can be used to mark the correction as manually confirmed by
-a human operator (see above).
+The correction for the word/slice is set using the mandatory
+`correction` parameter in the post data for the request.  The optional
+`type` parameter can be used to mark the correction type.  If missing
+`"automatic"` is assumed.
+
 ```json
 {
   "correction": "corrected line",
-  "manually": true
+  "type": "manual|automatic|ocr"
 }
 ```
 
