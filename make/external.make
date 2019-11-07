@@ -23,3 +23,6 @@ ext/pugixml/pugixml.o: modules/pugixml/src/pugixml.cpp | mkdir-ext-pugixml
 .PHONY: modules-clean
 modules-clean:
 	cd ext/mysqlpp11 && $(MAKE) clean
+
+# Add https://github.com/azawadzki/base-n
+CXXFLAGS += -isystem modules/base-n/include
