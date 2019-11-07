@@ -301,7 +301,7 @@ takeBackPackages: function(data){
         },
         url: "rest/books/"+data.pid+"/pages/"+data.page_id+"/lines/"+data.line_id+"?auth=" + App.getAuthToken(),
         type: "POST",
-        data:JSON.stringify({correction:data.text, manually:true}),
+        data:JSON.stringify({correction:data.text, type:"manual"}),
         success: function(data) {
               defer.resolve(data);
             },
@@ -322,7 +322,7 @@ takeBackPackages: function(data){
         },
         url: "rest/books/"+data.pid+"/pages/"+data.page_id+"/lines/"+data.line_id+"/tokens/"+data.token_id+"?auth=" + App.getAuthToken(),
         type: "POST",
-        data:JSON.stringify({correction:data.token, manually:true}),
+        data:JSON.stringify({correction:data.token, type:"manual"}),
         success: function(data) {
               defer.resolve(data);
             },
