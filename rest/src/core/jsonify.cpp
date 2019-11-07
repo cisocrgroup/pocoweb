@@ -403,6 +403,24 @@ bool pcw::get(const RJson &j, const char *key, std::vector<int> &res) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+bool pcw::get(const RJson &j, const char *key, std::vector<double> &res) {
+  // j = object
+  // j.key = list
+  if (j.t() != crow::json::type::Object or not j.has(key) or
+      j[key].t() != crow::json::type::List) {
+    return false;
+  }
+  res.clear();
+  for (const auto &val : j[key]) {
+    if (val.t() != crow::json::type::Number) {
+      return false;
+    }
+    res.push_back(val.d());
+  }
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 double pcw::fix_double(double val) {
   if (std::isnan(val)) {
     return 0;

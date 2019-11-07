@@ -58,6 +58,7 @@ bool get(const Query &q, const char *key, std::vector<std::string> &out);
 template <class T> boost::optional<T> get(const RJson &j, const char *key);
 template <class T, class F> void ifset(const RJson &j, const char *key, F f);
 bool get(const RJson &j, const char *key, std::vector<int> &res);
+bool get(const RJson &j, const char *key, std::vector<double> &res);
 bool get(const RJson &j, const char *key, bool &res);
 bool get(const RJson &j, const char *key, int &res);
 bool get(const RJson &j, const char *key, double &res);
