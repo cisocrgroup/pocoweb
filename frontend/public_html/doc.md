@@ -51,6 +51,7 @@ for suspicious words.
   * [GET rest/books/`pid`](#user-content-api-get-books-pid)
   * [PUT rest/books/`pid`](#user-content-api-put-books-pid)
   * [DELETE rest/books/`pid`](#user-content-api-delete-books-pid)
+  * [GET rest/books/`pid`/statistics](#user-content-api-get-books-pid-statistics)
   * [POST rest/pkg/split/books/`pid`](#user-content-api-post-books-pid-split)
   * [GET rest/pkg/assign/books/`pid`](#api-get-books-pid-assign)
   * [GET rest/pkg/takeback/books/`pid`](#api-get-books-pid-takeback)
@@ -993,6 +994,29 @@ The deletion remove all database entries of the projects and all
 associated packages.
 In addition to this the page and line images and all remaining project
 archives are removed from the server.
+
+---
+<a id='api-get-books-pid-statistics'></a>
+### GET rest/books/`pid`/statistics
+Get correction statistics for a project or package.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can access the project's or
+  package's statistics.
+
+#### Response data
+```json
+{
+	"bookId":50,
+	"projectId":50,
+	"lines":1211,
+	"corLines":1,
+	"tokens":12045,
+	"corTokens":1,
+	"ocrCorTokens":0,
+	"acTokens":0,
+	"acCorTokens":0
+}
+```
 
 ---
 <a id='api-post-books-pid-split'></a>

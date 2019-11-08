@@ -63,6 +63,7 @@ for suspicious words.</p>
 <li><a href="#user-content-api-get-books-pid">GET rest/books/<code>pid</code></a></li>
 <li><a href="#user-content-api-put-books-pid">PUT rest/books/<code>pid</code></a></li>
 <li><a href="#user-content-api-delete-books-pid">DELETE rest/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-get-books-pid-statistics">GET rest/books/<code>pid</code>/statistics</a></li>
 <li><a href="#user-content-api-post-books-pid-split">POST rest/pkg/split/books/<code>pid</code></a></li>
 <li><a href="#api-get-books-pid-assign">GET rest/pkg/assign/books/<code>pid</code></a></li>
 <li><a href="#api-get-books-pid-takeback">GET rest/pkg/takeback/books/<code>pid</code></a></li>
@@ -976,6 +977,30 @@ associated packages.
 In addition to this the page and line images and all remaining project
 archives are removed from the server.</p>
 <hr>
+<p><a id="user-content-api-get-books-pid-statistics"></a></p>
+<h3>
+<a id="user-content-get-restbookspidstatistics" class="anchor" href="#get-restbookspidstatistics" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GET rest/books/<code>pid</code>/statistics</h3>
+<p>Get correction statistics for a project or package.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can access the project's or
+package's statistics.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-10" class="anchor" href="#response-data-10" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>:<span class="pl-c1">50</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>:<span class="pl-c1">50</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>lines<span class="pl-pds">"</span></span>:<span class="pl-c1">1211</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>corLines<span class="pl-pds">"</span></span>:<span class="pl-c1">1</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>tokens<span class="pl-pds">"</span></span>:<span class="pl-c1">12045</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>corTokens<span class="pl-pds">"</span></span>:<span class="pl-c1">1</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>ocrCorTokens<span class="pl-pds">"</span></span>:<span class="pl-c1">0</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>acTokens<span class="pl-pds">"</span></span>:<span class="pl-c1">0</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>acCorTokens<span class="pl-pds">"</span></span>:<span class="pl-c1">0</span>
+}</pre></div>
+<hr>
 <p><a id="user-content-api-post-books-pid-split"></a></p>
 <h3>
 <a id="user-content-post-restpkgsplitbookspid" class="anchor" href="#post-restpkgsplitbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST rest/pkg/split/books/<code>pid</code>
@@ -1001,7 +1026,7 @@ packages should be generated at random or sequential.  If omitted
 <code>random=false</code> is assumed.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-10" class="anchor" href="#response-data-10" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-11" class="anchor" href="#response-data-11" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">19</span>
   <span class="pl-s"><span class="pl-pds">"</span>projects<span class="pl-pds">"</span></span><span class="pl-ii">:</span> [
@@ -1073,7 +1098,7 @@ that can directly be used for model training with ocropy.
 If the project archive was already a ocropy directory structure,
 only the according ground truth files are updated.</p>
 <h4>
-<a id="user-content-response-data-11" class="anchor" href="#response-data-11" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-12" class="anchor" href="#response-data-12" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>archive<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>relative download url of project archive<span class="pl-pds">"</span></span>,
 }</pre></div>
@@ -1109,7 +1134,7 @@ hits (default: <code>max=50</code>).</li>
 (default: <code>skip=0</code>).</li>
 </ul>
 <h4>
-<a id="user-content-response-data-12" class="anchor" href="#response-data-12" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-13" class="anchor" href="#response-data-13" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
   <span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">17</span>,
@@ -1177,7 +1202,7 @@ hits (default: <code>max=50</code>).</li>
 <li>Only the owner of a project or package can read its pages.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-13" class="anchor" href="#response-data-13" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-14" class="anchor" href="#response-data-14" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
@@ -1263,7 +1288,7 @@ from packages.</li>
 <li>Only the owner of a project or package can read its pages.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-14" class="anchor" href="#response-data-14" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-15" class="anchor" href="#response-data-15" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
@@ -1313,7 +1338,7 @@ from packages.</li>
 <li>Only the owner of a project or package can read its pages.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-15" class="anchor" href="#response-data-15" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-16" class="anchor" href="#response-data-16" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
@@ -1364,7 +1389,7 @@ from packages.</li>
 <li>Only the owner of a project or package can read its pages.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-16" class="anchor" href="#response-data-16" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-17" class="anchor" href="#response-data-17" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
@@ -1415,7 +1440,7 @@ from packages.</li>
 <li>Only the owner of a project or package can read its pages.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-17" class="anchor" href="#response-data-17" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-18" class="anchor" href="#response-data-18" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
@@ -1467,7 +1492,7 @@ or package with id <code>pid</code>.</p>
 <li>Only the owner of a project or package can read its lines.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-18" class="anchor" href="#response-data-18" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-19" class="anchor" href="#response-data-19" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
@@ -1516,7 +1541,7 @@ parameter can be used to set the type of the correction.  If missing,
   <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>manual|automatic|ocr<span class="pl-pds">"</span></span>
 }</pre></div>
 <h4>
-<a id="user-content-response-data-19" class="anchor" href="#response-data-19" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-20" class="anchor" href="#response-data-20" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
@@ -1572,7 +1597,7 @@ of the line starting at position <code>tid</code> and ending at position
 according token (ending at the first encountered whitespace character
 after <code>tid</code> or the end of the line) is returned.</p>
 <h4>
-<a id="user-content-response-data-20" class="anchor" href="#response-data-20" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-21" class="anchor" href="#response-data-21" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
@@ -1631,7 +1656,7 @@ is corrected.</p>
   <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>manual|automatic|ocr<span class="pl-pds">"</span></span>
 }</pre></div>
 <h4>
-<a id="user-content-response-data-21" class="anchor" href="#response-data-21" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-22" class="anchor" href="#response-data-22" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
   <span class="pl-s"><span class="pl-pds">"</span>pageId<span class="pl-pds">"</span></span>: <span class="pl-c1">38</span>,
@@ -1675,7 +1700,7 @@ been profiled.</li>
 suggestions to the given queries.  If no query parameters are set, the
 whole profile for each type in the document is returned.</p>
 <h4>
-<a id="user-content-response-data-22" class="anchor" href="#response-data-22" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-23" class="anchor" href="#response-data-23" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">37</span>,
@@ -1734,7 +1759,7 @@ used for the profiling.</p>
 	<span class="pl-s"><span class="pl-pds">"</span>tokens<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>additional lexicon token 1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>additional lexicon token 2<span class="pl-pds">"</span></span>]
 }</pre></div>
 <h4>
-<a id="user-content-response-data-23" class="anchor" href="#response-data-23" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-24" class="anchor" href="#response-data-24" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>
 }</pre></div>
@@ -1755,7 +1780,7 @@ information.</li>
 profiled.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-24" class="anchor" href="#response-data-24" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-25" class="anchor" href="#response-data-25" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">19</span>,
   <span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">19</span>,
@@ -1780,7 +1805,7 @@ profiled.</li>
 Use <code>local</code> to use the local profiler. If omitted, <code>url=local</code> is assumed.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-25" class="anchor" href="#response-data-25" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-26" class="anchor" href="#response-data-26" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>url<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>profiler-url|local<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>languages<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>language1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>language2<span class="pl-pds">"</span></span>, <span class="pl-ii">...</span>]
@@ -1799,7 +1824,7 @@ project/package.  They are used as hints for the profiler.</p>
 <li>Only the owner of a project can access the adaptive token set of the project.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-26" class="anchor" href="#response-data-26" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-27" class="anchor" href="#response-data-27" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>, <span class="pl-ii">//</span> <span class="pl-ii">package</span> <span class="pl-ii">id</span>
   <span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>, <span class="pl-ii">//</span> <span class="pl-ii">project</span> <span class="pl-ii">id</span>
@@ -1820,7 +1845,7 @@ according <a href="#user-content-api-post-el">post request</a> has finished.</p>
 lexicon.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-27" class="anchor" href="#response-data-27" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-28" class="anchor" href="#response-data-28" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
@@ -1858,7 +1883,7 @@ lexicon.</li>
 	}
 }</pre></div>
 <h4>
-<a id="user-content-response-data-28" class="anchor" href="#response-data-28" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-29" class="anchor" href="#response-data-29" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
@@ -1883,7 +1908,7 @@ lexicon.</p>
 <li>Only the owner of a project or package can start the job.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-29" class="anchor" href="#response-data-29" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-30" class="anchor" href="#response-data-30" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">31</span>
 }</pre></div>
@@ -1902,7 +1927,7 @@ according <a href="#user-content-api-post-rrdm">post request</a> has finished.</
 post-correction information.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-30" class="anchor" href="#response-data-30" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-31" class="anchor" href="#response-data-31" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
@@ -1933,7 +1958,7 @@ correction.</p>
 <li>Only the owner of a project or package can start the job.</li>
 </ul>
 <h4>
-<a id="user-content-response-data-31" class="anchor" href="#response-data-31" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-32" class="anchor" href="#response-data-32" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">31</span>
 }</pre></div>
@@ -1979,7 +2004,7 @@ the <code>pooled</code> setting in the projects is ignored.</li>
 of a specific running job (such as predict, train, profiler,
 postcorrection) with the according id.</p>
 <h4>
-<a id="user-content-response-data-32" class="anchor" href="#response-data-32" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-33" class="anchor" href="#response-data-33" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>jobId<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
