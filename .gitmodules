@@ -19,3 +19,6 @@
 [submodule "modules/base-n"]
 	path = modules/base-n
 	url = http://github.com/azawadzki/base-n
+[submodule "modules/rapidjson"]
+	path = modules/rapidjson
+	url = https://github.com/Tencent/rapidjson
