@@ -72,13 +72,19 @@ Route::Response BookRoute::impl(HttpGet, const Request &req) const {
     packages.back().pageids.push_back(row.pageid);
   }
   // build json response
-  Json j;
-  j["books"] = crow::json::rvalue(crow::json::type::List);
-  auto i = 0;
+  rapidjson::StringBuffer buf;
+  rapidjson::Writer<rapidjson::StringBuffer> writer(buf);
+  writer.StartObject();
+  writer.String("books");
+  writer.StartArray();
   for (const auto &package : packages) {
-    j["books"][i++] << package;
+    package.serialize(writer);
   }
-  return j;
+  writer.EndArray();
+  writer.EndObject();
+  Response res(200, std::string(buf.GetString(), buf.GetSize()));
+  res.set_header("Content-Type", "application/json");
+  return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -193,20 +199,18 @@ template <class Rows> size_t append_page_ids(Json &json, Rows &rows) {
 // GET /books/<bid>
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response BookRoute::impl(HttpGet, const Request &req, int bid) const {
-  CROW_LOG_DEBUG << "(BookRoute) GET package: " << bid;
+  CROW_LOG_INFO << "(BookRoute) GET package: " << bid;
   auto conn = must_get_connection();
   DbPackage pkg(bid);
   if (not pkg.load(conn)) {
     THROW(NotFound, "cannot find package id: ", bid);
   }
-  Statistics stats{}; // zero initialize
-  if (not stats.load(conn, pkg)) {
-    THROW(NotFound, "cannot load statistics for package: ", bid);
-  }
-  Json j;
-  j << pkg;
-  j["statistics"] << stats;
-  return j;
+  rapidjson::StringBuffer buf;
+  rapidjson::Writer<rapidjson::StringBuffer> writer(buf);
+  pkg.serialize(writer);
+  Response res(200, std::string(buf.GetString(), buf.GetSize()));
+  res.set_header("Content-Type", "application/json");
+  return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

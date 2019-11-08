@@ -29,6 +29,7 @@ struct match_results {
   match_results()
       : results{}, bookid{0}, projectid{0}, total{0}, skip{0}, max{0} {}
   void add(const std::string &q, const DbLine &line, int tid);
+  template <class OS> void serialize(rapidjson::Writer<OS> &w);
   std::unordered_map<std::string, matches> results;
   int bookid, projectid, total, skip, max;
 };
@@ -52,48 +53,84 @@ void match_results::add(const std::string &q, const DbLine &line, int tid) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Json &operator<<(Json &j, match_results &res) {
-  j["bookId"] = res.bookid;
-  j["projectId"] = res.projectid;
-  j["skip"] = res.skip;
-  j["max"] = res.max;
-  j["total"] = res.total;
+template <class OS> void match_results::serialize(rapidjson::Writer<OS> &w) {
+  w.StartObject();
+  w.String("bookId");
+  w.Int(bookid);
+  w.String("projectId");
+  w.Int(projectid);
+  w.String("skip");
+  w.Int(skip);
+  w.String("max");
+  w.Int(max);
+  w.String("total");
+  w.Int(total);
 
-  for (auto &m : res.results) {
-    j["matches"][m.first]["total"] = m.second.total;
-    int i = 0;
+  w.String("matches");
+  w.StartObject();
+  for (auto &m : results) {
+    w.String(m.first);
+    w.StartObject();
+    w.String("total");
+    w.Int(m.second.total);
+    w.String("lines");
+    w.StartArray();
     for (auto &line_match : m.second.line_matches) {
-      j["matches"][m.first]["lines"][i] = m.second.total;
-      j["matches"][m.first]["lines"][i]["bookId"] = line_match.first.bookid;
-      j["matches"][m.first]["lines"][i]["projectId"] =
-          line_match.first.projectid;
-      j["matches"][m.first]["lines"][i]["pageId"] = line_match.first.pageid;
-      j["matches"][m.first]["lines"][i]["lineId"] = line_match.first.lineid;
-      j["matches"][m.first]["lines"][i]["box"] << line_match.first.box;
-      j["matches"][m.first]["lines"][i]["imgFile"] = line_match.first.imagepath;
+      w.StartObject();
+      // ??
+      w.String("total");
+      w.Int(m.second.total);
+      // ??
+
+      w.String("bookId");
+      w.Int(line_match.first.bookid);
+      w.String("projectId");
+      w.Int(line_match.first.projectid);
+      w.String("pageId");
+      w.Int(line_match.first.pageid);
+      w.String("lineId");
+      w.Int(line_match.first.lineid);
+      w.String("box");
+      line_match.first.box.serialize(w);
+      w.String("imgFile");
+      w.String(line_match.first.imagepath);
+
       auto slice = line_match.first.slice();
-      j["matches"][m.first]["lines"][i]["cor"] = slice.cor();
-      j["matches"][m.first]["lines"][i]["ocr"] = slice.ocr();
-      j["matches"][m.first]["lines"][i]["cuts"] = slice.cuts();
-      j["matches"][m.first]["lines"][i]["confidences"] = slice.confs();
-      j["matches"][m.first]["lines"][i]["averageConfidence"] =
-          fix_double(slice.average_conf());
-      j["matches"][m.first]["lines"][i]["isManuallyCorrected"] =
-          slice.is_manually_corrected();
-      j["matches"][m.first]["lines"][i]["isAutomaticallyCorrected"] =
-          slice.is_automatically_corrected();
-      j["matches"][m.first]["lines"][i]["tokens"] =
-          crow::json::rvalue(crow::json::type::List);
-      int k = 0;
+      w.String("cor");
+      w.String(slice.cor());
+      w.String("ocr");
+      w.String(slice.ocr());
+      w.String("cuts");
+      w.StartArray();
+      std::for_each(slice.begin, slice.end,
+                    [&](const auto &c) { w.Int(c.cut); });
+      w.EndArray();
+      w.String("confidences");
+      w.StartArray();
+      std::for_each(slice.begin, slice.end,
+                    [&](const auto &c) { w.Double(c.conf); });
+      w.EndArray();
+      w.String("averageConfidence");
+      fixed_double(w, slice.average_conf());
+      w.String("isManuallyCorrected");
+      w.Bool(slice.is_manually_corrected());
+      w.String("isAutomaticallyCorrected");
+      w.Bool(slice.is_automatically_corrected());
+
+      w.String("tokens");
+      w.StartArray();
       line_match.first.each_token([&](auto &slice) {
         slice.match = line_match.second.count(slice.offset);
-        j["matches"][m.first]["lines"][i]["tokens"][k] << slice;
-        k++;
+        slice.serialize(w);
       });
-      i++;
+      w.EndArray();
+      w.EndObject();
     }
+    w.EndArray();
+    w.EndObject();
   }
-  return j;
+  w.EndObject();
+  w.EndObject();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -215,8 +252,12 @@ Route::Response SearchRoute::search_token(MysqlConnection &mysql, tq q) const {
         // });
         return true;
       });
-  Json j;
-  return j << ret;
+  rapidjson::StringBuffer buf;
+  rapidjson::Writer<rapidjson::StringBuffer> writer(buf);
+  ret.serialize(writer);
+  Response res(200, std::string(buf.GetString(), buf.GetSize()));
+  res.set_header("Content-Type", "application/json");
+  return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -265,8 +306,12 @@ Route::Response SearchRoute::search_pattern(MysqlConnection &mysql,
             std::wstring(m[1])))]; // give pattern (not matched type) as key
         return true;
       });
-  Json j;
-  return j << ret;
+  rapidjson::StringBuffer buf;
+  rapidjson::Writer<rapidjson::StringBuffer> writer(buf);
+  ret.serialize(writer);
+  Response res(200, std::string(buf.GetString(), buf.GetSize()));
+  res.set_header("Content-Type", "application/json");
+  return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -315,8 +360,12 @@ Route::Response SearchRoute::search_ac(MysqlConnection &mysql, ac q) const {
       ret.add(qstr, line, row.tokenid);
     }
   }
-  Json j;
-  return j << ret;
+  rapidjson::StringBuffer buf;
+  rapidjson::Writer<rapidjson::StringBuffer> writer(buf);
+  ret.serialize(writer);
+  Response res(200, std::string(buf.GetString(), buf.GetSize()));
+  res.set_header("Content-Type", "application/json");
+  return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -342,10 +391,12 @@ template <class F>
 static match_results search_impl(MysqlConnection &conn, int bid, int skip,
                                  int max, F f) {
   match_results ret;
-  ret.projectid = bid;
   ret.max = max;
   ret.skip = skip;
   each_package_line(conn, bid, [&](auto &line) {
+    // set bookid from line
+    ret.bookid = line.bookid;
+    ret.projectid = bid;
     if (line.slice().is_manually_corrected()) { // skip manually corrected lines
       return;
     }

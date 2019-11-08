@@ -10,7 +10,6 @@
 #include "utils/Error.hpp"
 #include "utils/ScopeGuard.hpp"
 #include <crow.h>
-#include <ctime>
 #include <regex>
 
 #define PAGE_ROUTE_ROUTE_1 "/books/<int>/pages/<int>"
@@ -45,15 +44,15 @@ Route::Response PageRoute::impl(HttpGet, const Request &req, int bid,
   CROW_LOG_INFO << "(PageRoute) GET page " << bid << ":" << pid;
   DbPage page(bid, pid);
   auto conn = must_get_connection();
-  const auto begin = std::clock();
   if (not page.load(conn)) {
     THROW(NotFound, "(PageRoute) cannot find page ", bid, ":", pid);
   }
-  const auto end = std::clock();
-  CROW_LOG_INFO << "(PageRoute) GET page took: "
-                << double(end - begin) / CLOCKS_PER_SEC << " seconds";
-  Json j;
-  return j << page;
+  rapidjson::StringBuffer buf;
+  rapidjson::Writer<rapidjson::StringBuffer> writer(buf);
+  page.serialize(writer);
+  Response res(200, std::string(buf.GetString(), buf.GetSize()));
+  res.set_header("Content-Type", "application/json");
+  return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
