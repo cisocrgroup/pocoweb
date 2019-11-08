@@ -4,6 +4,7 @@
 #include "CorType.hpp"
 #include "Tables.h"
 #include "core/Box.hpp"
+#include "core/rapidjson.hpp"
 #include "mysql.hpp"
 #include <boost/optional.hpp>
 #include <functional>
@@ -21,7 +22,6 @@ class wvalue;
 class rvalue;
 } // namespace json
 } // namespace crow
-
 namespace pcw {
 class WagnerFischer;
 struct DbLine;
@@ -76,6 +76,7 @@ struct DbSlice {
   void end_wagner_fischer() const noexcept {}
   void set_correction_type(CorType type);
 
+  template <class OS> void serialize(rapidjson::Writer<OS> &w) const;
   std::string strID() const {
     return std::to_string(projectid) + ":" + std::to_string(pageid) + ":" +
            std::to_string(lineid) + ":" + std::to_string(offset);
@@ -91,6 +92,45 @@ private:
   std::list<DbChar>::iterator i_;
 };
 
+template <class OS> void DbSlice::serialize(rapidjson::Writer<OS> &w) const {
+  w.StartObject();
+  w.String("bookId");
+  w.Int(bookid);
+  w.String("projectId");
+  w.Int(projectid);
+  w.String("pageId");
+  w.Int(pageid);
+  w.String("lineId");
+  w.Int(lineid);
+  w.String("tokenId");
+  w.Int(offset);
+  w.String("offset");
+  w.Int(offset);
+  w.String("box");
+  box.serialize(w);
+  w.String("cor");
+  w.String(cor());
+  w.String("ocr");
+  w.String(ocr());
+  w.String("cuts");
+  w.StartArray();
+  std::for_each(begin, end, [&](const auto &c) { w.Int(c.cut); });
+  w.EndArray();
+  w.String("confidences");
+  w.StartArray();
+  std::for_each(begin, end, [&](const auto &c) { w.Double(c.conf); });
+  w.EndArray();
+  w.String("averageConfidence");
+  fixed_double(w, average_conf());
+  w.String("isAutomaticallyCorrected");
+  w.Bool(is_automatically_corrected());
+  w.String("isManuallyCorrected");
+  w.Bool(is_manually_corrected());
+  w.String("match");
+  w.Bool(match);
+  w.EndObject();
+}
+
 Json &operator<<(Json &j, const DbSlice &line);
 
 struct DbLine {
@@ -105,6 +145,7 @@ struct DbLine {
   DbSlice slice(int begin, int len);
   int tokenLength(int begin) const;
 
+  template <class OS> void serialize(rapidjson::Writer<OS> &w);
   std::string strID() const {
     return std::to_string(projectid) + ":" + std::to_string(pageid) + ":" +
            std::to_string(lineid);
@@ -118,6 +159,47 @@ private:
   void clear_insertions();
   std::list<DbChar>::iterator begin_, end_;
 };
+
+template <class OS> void DbLine::serialize(rapidjson::Writer<OS> &w) {
+  const auto slice = this->slice();
+  w.StartObject();
+  w.String("bookId");
+  w.Int(bookid);
+  w.String("projectId");
+  w.Int(projectid);
+  w.String("pageId");
+  w.Int(pageid);
+  w.String("lineId");
+  w.Int(lineid);
+  w.String("box");
+  box.serialize(w);
+  w.String("cor");
+  w.String(slice.cor());
+  w.String("ocr");
+  w.String(slice.ocr());
+  w.String("imgFile");
+  w.String(imagepath);
+  w.String("cuts");
+  w.StartArray();
+  std::for_each(slice.begin, slice.end, [&](const auto &c) { w.Int(c.cut); });
+  w.EndArray();
+  w.String("confidences");
+  w.StartArray();
+  std::for_each(slice.begin, slice.end,
+                [&](const auto &c) { fixed_double(w, c.conf); });
+  w.EndArray();
+  w.String("averageConfidence");
+  fixed_double(w, slice.average_conf());
+  w.String("isAutomaticallyCorrected");
+  w.Bool(slice.is_automatically_corrected());
+  w.String("isManuallyCorrected");
+  w.Bool(slice.is_manually_corrected());
+  w.String("tokens");
+  w.StartArray();
+  each_token([&](const auto &token) { token.serialize(w); });
+  w.EndArray();
+  w.EndObject();
+}
 
 inline bool operator==(const DbLine &lhs, const DbLine &rhs) {
   return lhs.bookid == rhs.bookid and lhs.projectid == lhs.projectid and
@@ -135,6 +217,7 @@ struct DbPage {
       : box(), lines(), ocrpath(), imagepath(), bookid(), projectid(pid),
         pageid(pageid), filetype(), prevpageid(pageid), nextpageid(pageid) {}
   bool load(MysqlConnection &mysql);
+  template <class OS> void serialize(rapidjson::Writer<OS> &w);
   std::string strID() const {
     return std::to_string(projectid) + ":" + std::to_string(pageid);
   }
@@ -145,7 +228,67 @@ struct DbPage {
   int bookid, projectid, pageid, filetype, prevpageid, nextpageid;
 };
 
+template <class OS> void DbPage::serialize(rapidjson::Writer<OS> &w) {
+  w.StartObject();
+  w.String("bookId");
+  w.Int(bookid);
+  w.String("projectId");
+  w.Int(projectid);
+  w.String("pageId");
+  w.Int(pageid);
+  w.String("prevPageId");
+  w.Int(prevpageid);
+  w.String("nextPageId");
+  w.Int(nextpageid);
+  w.String("imgFile");
+  w.String(imagepath);
+  w.String("ocrFile");
+  w.String(ocrpath);
+  w.String("box");
+  box.serialize(w);
+  w.String("lines");
+  w.StartArray();
+  std::for_each(lines.begin(), lines.end(),
+                [&](auto &line) { line.serialize(w); });
+  w.EndArray();
+  w.EndObject();
+}
+
 Json &operator<<(Json &j, DbPage &page);
+struct DbPackage;
+
+struct Statistics {
+  bool load(MysqlConnection &mysq, const DbPackage &pkg);
+  template <class OS> void serialize(rapidjson::Writer<OS> &w) const;
+  size_t lines, corLines, tokens, corTokens, ocrCorTokens, acTokens,
+      acCorTokens;
+  int bookid, projectid;
+};
+
+template <class OS> void Statistics::serialize(rapidjson::Writer<OS> &w) const {
+  w.StartObject();
+  w.String("bookId");
+  w.Int(bookid);
+  w.String("projectId");
+  w.Int(projectid);
+  w.String("lines");
+  w.Uint(lines);
+  w.String("corLines");
+  w.Uint(corLines);
+  w.String("tokens");
+  w.Uint(tokens);
+  w.String("corTokens");
+  w.Uint(corTokens);
+  w.String("ocrCorTokens");
+  w.Uint(ocrCorTokens);
+  w.String("acTokens");
+  w.Uint(acTokens);
+  w.String("acCorTokens");
+  w.Uint(acCorTokens);
+  w.EndObject();
+}
+
+Json &operator<<(Json &j, const Statistics &stats);
 
 struct DbPackage {
   DbPackage(int pid)
@@ -155,6 +298,7 @@ struct DbPackage {
         pooled() {}
   bool load(MysqlConnection &mysql);
   bool isBook() const noexcept { return projectid == bookid; }
+  template <class OS> void serialize(rapidjson::Writer<OS> &w) const;
   std::string strID() const { return std::to_string(projectid); }
   std::vector<int> pageids;
   std::string title, author, description, uri, profilerurl, histpatterns,
@@ -163,15 +307,55 @@ struct DbPackage {
   bool profiled, extendedLexicon, postCorrected, pooled;
 };
 
+template <class OS> void DbPackage::serialize(rapidjson::Writer<OS> &w) const {
+  w.StartObject();
+  w.String("bookId");
+  w.Int(bookid);
+  w.String("projectId");
+  w.Int(projectid);
+  w.String("owner");
+  w.Int(owner);
+  w.String("title");
+  w.String(title);
+  w.String("author");
+  w.String(author);
+  w.String("description");
+  w.String(description);
+  w.String("profilerUrl");
+  w.String(profilerurl);
+  w.String("histpatterns");
+  w.String(histpatterns);
+  w.String("uri");
+  w.String(uri);
+  w.String("directory");
+  w.String(directory);
+  w.String("language");
+  w.String(language);
+  w.String("year");
+  w.Int(year);
+  w.String("isBook");
+  w.Bool(bookid == projectid);
+  w.String("pooled");
+  w.Bool(pooled);
+  w.String("status");
+  w.StartObject();
+  w.String("profiled");
+  w.Bool(profiled);
+  w.String("post-corrected");
+  w.Bool(postCorrected);
+  w.String("extended-lexicon");
+  w.Bool(extendedLexicon);
+  w.EndObject();
+  w.String("pages");
+  w.Int(int(pageids.size()));
+  w.String("pageIds");
+  w.StartArray();
+  std::for_each(pageids.begin(), pageids.end(), [&](int id) { w.Int(id); });
+  w.EndArray();
+  w.EndObject();
+}
+
 Json &operator<<(Json &j, const DbPackage &package);
-
-struct Statistics {
-  bool load(MysqlConnection &mysq, const DbPackage &pkg);
-  size_t lines, corLines, tokens, corTokens, ocrCorTokens, acTokens,
-      acCorTokens;
-};
-
-Json &operator<<(Json &j, const Statistics &stats);
 
 struct PostLine {
   PostLine(int bid, int pid, int lid)

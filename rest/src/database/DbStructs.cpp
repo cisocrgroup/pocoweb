@@ -7,6 +7,7 @@
 #include <crow/json.h>
 #include <fstream>
 #include <iostream>
+#include <rapidjson/writer.h>
 #include <stdexcept>
 #include <utf8.h>
 
@@ -334,6 +335,8 @@ bool DbPackage::load(MysqlConnection &mysql) {
 
 ////////////////////////////////////////////////////////////////////////////////
 bool Statistics::load(MysqlConnection &mysql, const DbPackage &pkg) {
+  bookid = pkg.bookid;
+  projectid = pkg.projectid;
   for (const auto pid : pkg.pageids) {
     DbPage page(pkg.bookid, pid);
     if (not page.load(mysql)) {
