@@ -1,7 +1,12 @@
 #include "DbStructs.hpp"
 #include "core/jsonify.hpp"
 #include "core/util.hpp"
+#include "utils/Error.hpp"
+#include <basen.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <crow/json.h>
+#include <fstream>
+#include <iostream>
 #include <stdexcept>
 #include <utf8.h>
 
@@ -370,6 +375,83 @@ bool Statistics::load(MysqlConnection &mysql, const DbPackage &pkg) {
     acCorTokens = cors.front().count;
   }
   return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+DbLine PostLine::dbLine() const {
+  DbLine line(bookid, pageid, lineid);
+  line.projectid = projectid;
+  line.box = box;
+  line.imagepath = imagepath;
+  for (int i = 0; size_t(i) < ocr.size(); i++) {
+    DbChar c{ocr[0], 0, 0, 0, false};
+    if (size_t(i) >= cuts.size()) {
+      THROW(Error, "ocr and cuts do not have the same length");
+    }
+    c.cut = cuts[i];
+    if (size_t(i) < confs.size()) {
+      c.conf = confs[i];
+    }
+    line.line.push_back(c);
+  }
+  return line;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PostLine::saveImage(const Path &path) {
+  namespace fs = boost::filesystem;
+  if (imagedata.empty()) {
+    return;
+  }
+  fs::create_directories(path.parent_path());
+  std::ofstream out(path.string());
+  if (not out.good()) {
+    THROW(Error, "(PostLine) cannot write imagefile: ", path.string());
+  }
+  bn::decode_b64(imagedata.begin(), imagedata.end(),
+                 std::ostream_iterator<char>(out, ""));
+  imagepath = path.filename().string();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void PostLine::saveDB(MysqlConnection &mysql) const {
+  using namespace sqlpp;
+  tables::Textlines l;
+  tables::Contents c;
+  mysql.db()(insert_into(l).set(l.lineid = lineid, l.bookid = bookid,
+                                l.pageid = pageid, l.imagepath = imagepath,
+                                l.lleft = box.left(), l.lright = box.right(),
+                                l.ltop = box.top(), l.lbottom = box.bottom()));
+  auto prep = mysql.db().prepare(insert_into(c).set(
+      c.bookid = bookid, c.pageid = pageid, c.lineid = lineid, c.cor = 0,
+      c.manually = false, c.seq = parameter(c.seq), c.ocr = parameter(c.ocr),
+      c.cut = parameter(c.cut), c.conf = parameter(c.conf)));
+  for (int i = 0; size_t(i) < ocr.size(); i++) {
+    prep.params.seq = i;
+    prep.params.ocr = int(ocr[i]);
+    prep.params.cut = cuts[i];
+    prep.params.conf = 0;
+    if (size_t(i) < confs.size()) {
+      prep.params.conf = confs[i];
+    }
+    mysql.db()(prep);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool PostLine::load(const RJson &j) {
+  const auto left = get<int>(j, "left").value_or(0);
+  const auto right = get<int>(j, "right").value_or(0);
+  const auto top = get<int>(j, "top").value_or(0);
+  const auto bottom = get<int>(j, "bottom").value_or(0);
+  this->box = Box(left, top, right, bottom);
+  std::string ocr;
+  get(j, "ocr", ocr);
+  this->ocr = utf8(ocr);
+  get(j, "cuts", this->cuts);
+  get(j, "confidences", this->confs);
+  this->imagedata = get<std::string>(j, "imageBase64").value_or("");
+  return this->ocr.size() == this->cuts.size();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

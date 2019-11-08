@@ -10,10 +10,15 @@
 #include <list>
 #include <sqlpp11/sqlpp11.h>
 #include <vector>
-
+namespace boost {
+namespace filesystem {
+class path;
+}
+} // namespace boost
 namespace crow {
 namespace json {
 class wvalue;
+class rvalue;
 } // namespace json
 } // namespace crow
 
@@ -21,6 +26,8 @@ namespace pcw {
 class WagnerFischer;
 struct DbLine;
 using Json = crow::json::wvalue;
+using RJson = crow::json::rvalue;
+using Path = boost::filesystem::path;
 
 // DbChar represents an ocr char in a line.  The member cut
 // represents the offset of the right side of the char and conf give
@@ -165,6 +172,23 @@ struct Statistics {
 };
 
 Json &operator<<(Json &j, const Statistics &stats);
+
+struct PostLine {
+  PostLine(int bid, int pid, int lid)
+      : ocr(), cuts(), confs(), box(), imagepath(), imagedata(), bookid(bid),
+        projectid(bid), pageid(pid), lineid(lid) {}
+  DbLine dbLine() const;
+  void saveImage(const Path &path);
+  void saveDB(MysqlConnection &mysql) const;
+  bool load(const RJson &j);
+
+  std::wstring ocr;
+  std::vector<int> cuts;
+  std::vector<double> confs;
+  Box box;
+  std::string imagepath, imagedata;
+  int bookid, projectid, pageid, lineid;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 inline auto project_line_contents_view() {
