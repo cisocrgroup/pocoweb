@@ -31,8 +31,6 @@ private:
   Response last(const Request &req, int bid) const;
   Response next(const Request &req, int bid, int pid, int n) const;
   Response prev(const Request &req, int bid, int pid, int n) const;
-  static Response print(Json &json, int pid, const Page &page,
-                        const Project &project);
 
   static const char *route_;
   static const char *name_;

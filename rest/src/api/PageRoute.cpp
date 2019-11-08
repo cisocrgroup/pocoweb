@@ -164,18 +164,3 @@ Route::Response PageRoute::prev(const Request &req, int bid, int pid,
   }
   return impl(HttpGet{}, req, bid, ppid);
 }
-
-////////////////////////////////////////////////////////////////////////////////
-Route::Response PageRoute::print(Json &json, int pid, const Page &page,
-                                 const Project &project) {
-  wj(json, page, pid);
-  const auto nextpage = project.next(page.id(), 1);
-  const auto prevpage = project.next(page.id(), -1);
-  const auto nextpageid = nextpage ? nextpage->id() : 0;
-  const auto prevpageid = prevpage ? prevpage->id() : 0;
-  json["nextPageId"] = nextpageid;
-  json["prevPageId"] = prevpageid;
-  json["projectId"] = pid;
-  json["bookId"] = project.origin().id();
-  return json;
-}
