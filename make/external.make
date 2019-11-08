@@ -26,3 +26,6 @@ modules-clean:
 
 # Add https://github.com/azawadzki/base-n
 CXXFLAGS += -isystem modules/base-n/include
+
+# Add https://github.com/Tencent/rapidjson
+CXXFLAGS += -isystem modules/rapidjson/include
