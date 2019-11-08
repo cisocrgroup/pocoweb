@@ -4,6 +4,7 @@
 #include "api/LineRoute.hpp"
 #include "api/PageRoute.hpp"
 #include "api/SearchRoute.hpp"
+#include "api/StatisticsRoute.hpp"
 #include "api/VersionRoute.hpp"
 #include "core/App.hpp"
 #include "core/Config.hpp"
@@ -52,6 +53,7 @@ void run(App &app) {
   app.Register(std::make_unique<pcw::LineRoute>());
   app.Register(std::make_unique<pcw::PageRoute>());
   app.Register(std::make_unique<pcw::SearchRoute>());
+  app.Register(std::make_unique<pcw::StatisticsRoute>());
   app.Register(std::make_unique<pcw::VersionRoute>());
   app.run();
 }

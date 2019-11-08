@@ -1,3 +1,4 @@
+
 CORE_OBJS += rest/src/core/App.o
 CORE_OBJS += rest/src/core/Archiver.o
 CORE_OBJS += rest/src/core/Book.o
@@ -30,6 +31,7 @@ API_OBJS += rest/src/api/DownloadRoute.o
 API_OBJS += rest/src/api/LineRoute.o
 API_OBJS += rest/src/api/PageRoute.o
 API_OBJS += rest/src/api/SearchRoute.o
+API_OBJS += rest/src/api/StatisticsRoute.o
 API_OBJS += rest/src/api/VersionRoute.o
 
 PARSER_OBJS += rest/src/parser/AbbyyXmlPageParser.o
