@@ -89,6 +89,24 @@ getProject: function(data){
   return defer.promise();
 },
 
+getProjectStatistics: function(data){
+  var defer = jQuery.Deferred();
+      $.ajax({
+        headers: {
+          'Accept': 'application/json'
+        },
+        url: "rest/books/" + data.pid + "/statistics?auth=" + App.getAuthToken(),
+        type: "GET",
+        success: function(data) {
+          defer.resolve(data);
+        },
+        error: function(data){
+          defer.reject(data);
+        }
+  });
+  return defer.promise();
+},
+
 	uploadProjectData: function(data){
 		let defer = jQuery.Deferred();
         let formData = new FormData(data);

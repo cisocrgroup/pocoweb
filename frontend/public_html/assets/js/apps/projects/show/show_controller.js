@@ -18,6 +18,7 @@ define([
         var loadingCircleView = new Views.LoadingBackdropOpc();
         App.mainLayout.showChildView("backdropRegion", loadingCircleView);
         var fetchingproject = ProjectEntities.API.getProject({ pid: id });
+        var fetchingstats = ProjectEntities.API.getProjectStatistics({ pid: id });
         var fetchinglanguages = UtilEntities.API.getLanguages();
         var fetchingprojects = ProjectEntities.API.getProjects();
         var fetchinguser = UserEntities.API.loginCheck();
@@ -25,14 +26,15 @@ define([
 
         $.when(
           fetchingproject,
+          fetchingstats,
           fetchinglanguages,
           fetchingprojects,
           fetchinguser,
           fetchingjobs
         )
-        .done(function(project, languages, projects, user,jobs) {
-
-
+        .done(function(project, stats, languages, projects, user,jobs) {
+          // separate loaded statistics in the project entity
+          project.attributes.statistics = stats;
 
           let isProject = project.attributes.bookId == project.attributes.projectId;
           let projectId = project.get('bookId');
@@ -552,11 +554,11 @@ define([
                 });
               });
 
-              
+
             projectShowLayout.on("show:checkJobStatus",function(){
                       var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
                        $.when(fetchingjobs).done(function(jobs){
-                                           
+
                             projectShowInfo.setJobSymbol(jobs);
                             console.log(jobs);
                            if(jobs.statusName!="running"){ // stop job tracking if job is not running
@@ -564,10 +566,10 @@ define([
                             }
 
                        }).fail(function(response){
-                             App.mainmsg.updateContent(response.responseText,'danger');                                                 
-                       }); 
+                             App.mainmsg.updateContent(response.responseText,'danger');
+                       });
                  });
-                 
+
 
               // projectPanel = new Show.FooterPanel();
 
