@@ -383,11 +383,11 @@ bool Statistics::load(MysqlConnection &mysql, const DbPackage &pkg) {
 ////////////////////////////////////////////////////////////////////////////////
 DbLine PostLine::dbLine() const {
   DbLine line(bookid, pageid, lineid);
-  line.projectid = projectid;
+  line.bookid = bookid;
   line.box = box;
   line.imagepath = imagepath;
   for (int i = 0; size_t(i) < ocr.size(); i++) {
-    DbChar c{ocr[0], 0, 0, 0, false};
+    DbChar c{ocr[i], 0, 0, 0, false};
     if (size_t(i) >= cuts.size()) {
       THROW(Error, "ocr and cuts do not have the same length");
     }
