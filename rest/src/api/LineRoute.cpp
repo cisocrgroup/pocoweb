@@ -3,7 +3,6 @@
 #include "core/jsonify.hpp"
 #include "database/DbStructs.hpp"
 #include "utils/Error.hpp"
-#include <boost/filesystem/path.hpp>
 #include <crow.h>
 
 #define LINE_ROUTE_ROUTE "/books/<int>/pages/<int>/lines/<int>"
@@ -59,6 +58,15 @@ Route::Response LineRoute::impl(HttpGet, const Request &req, int pid,
 Route::Response LineRoute::impl(HttpPut, const Request &req, int pid, int p,
                                 int lid) const {
   CROW_LOG_INFO << "(LineRoute) PUT line: " << pid << ":" << p << ":" << lid;
+  return impl(HttpPost{}, req, pid, p, lid);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// POST /books/<bid>/pages/<pid>/lines/<lid>
+////////////////////////////////////////////////////////////////////////////////
+Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
+                                int lid) const {
+  CROW_LOG_INFO << "(LineRoute) POST line: " << pid << ":" << p << ":" << lid;
   const auto json = crow::json::load(req.body);
   const auto type = getCorType(json);
   const auto correction = get<std::string>(json, "correction");
@@ -76,49 +84,6 @@ Route::Response LineRoute::impl(HttpPut, const Request &req, int pid, int p,
   update(conn, line);
   Json j;
   return j << line;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// POST /books/<bid>/pages/<pid>/lines/<lid>
-////////////////////////////////////////////////////////////////////////////////
-Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
-                                int lid) const {
-  CROW_LOG_INFO << "(LineRoute) POST line: " << pid << ":" << p << ":" << lid;
-  auto conn = must_get_connection();
-  tables::Books b;
-  auto brows = conn.db()(select(b.directory).from(b).where(b.bookid == pid));
-  if (brows.empty()) {
-    THROW(NotFound, "(LineRoute) cannot post: book ", pid, ": does not exist");
-  }
-  const auto dir = boost::filesystem::path(brows.front().directory);
-  tables::Textlines l;
-  auto rows = conn.db()(select(l.lineid).from(l).where(
-      l.lineid == lid and l.pageid == p and l.bookid == pid));
-  if (rows.empty()) {
-    THROW(BadRequest, "(LineRoute) cannot post: line ", pid, ":", p, ":", lid,
-          ": already exists");
-  }
-  const auto json = crow::json::load(req.body);
-  PostLine pLine(pid, p, lid);
-  pLine.load(json);
-  pLine.imagepath = (dir / std::to_string(pid) / std::to_string(p) /
-                     (std::to_string(lid) + std::string(".png")))
-                        .string();
-  if (pLine.ocr.size() != pLine.cuts.size()) {
-    THROW(BadRequest, "(LineRoute) cannot post: line ", pid, ":", p, ":", lid,
-          ": bad ocr/cuts size");
-  }
-
-  const auto file = Path(get_config().daemon.projectdir) / dir /
-                    std::to_string(pid) / std::to_string(p) /
-                    (std::to_string(lid) + std::string(".png"));
-
-  MysqlCommitter committer(conn);
-  pLine.saveImage(file);
-  pLine.saveDB(conn);
-  committer.commit();
-  Json j;
-  return j << pLine.dbLine().slice();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
