@@ -37,6 +37,7 @@ public:
                 int tid) const;
 
 private:
+  Response updateOCR(const RJson &json, int bid, int pid, int lid) const;
   static CorType getCorType(const RJson &json);
   static void correct(DbLine &line, const std::string &correction,
                       CorType type);

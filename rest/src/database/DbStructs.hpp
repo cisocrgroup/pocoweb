@@ -145,6 +145,12 @@ struct DbLine {
   DbSlice slice(int begin, int len);
   int tokenLength(int begin) const;
 
+  // update
+  void updateOCR(const std::wstring &ocr, const std::vector<int> &cuts,
+                 const std::vector<double> &confs);
+  void updateImage(const std::string &base, const std::string &imagedata) const;
+  void updateContents(MysqlConnection &mysql) const;
+
   template <class OS> void serialize(rapidjson::Writer<OS> &w);
   std::string strID() const {
     return std::to_string(projectid) + ":" + std::to_string(pageid) + ":" +
@@ -356,23 +362,6 @@ template <class OS> void DbPackage::serialize(rapidjson::Writer<OS> &w) const {
 }
 
 Json &operator<<(Json &j, const DbPackage &package);
-
-struct PostLine {
-  PostLine(int bid, int pid, int lid)
-      : ocr(), cuts(), confs(), box(), imagepath(), imagedata(), bookid(bid),
-        projectid(bid), pageid(pid), lineid(lid) {}
-  DbLine dbLine() const;
-  void saveImage(const Path &path);
-  void saveDB(MysqlConnection &mysql) const;
-  bool load(const RJson &j);
-
-  std::wstring ocr;
-  std::vector<int> cuts;
-  std::vector<double> confs;
-  Box box;
-  std::string imagepath, imagedata;
-  int bookid, projectid, pageid, lineid;
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 inline auto project_line_contents_view() {

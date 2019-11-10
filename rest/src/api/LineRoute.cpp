@@ -1,6 +1,8 @@
 #include "LineRoute.hpp"
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
+#include "core/util.hpp"
+#include "database/CorType.hpp"
 #include "database/DbStructs.hpp"
 #include "utils/Error.hpp"
 #include <crow.h>
@@ -70,6 +72,9 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   const auto json = crow::json::load(req.body);
   const auto type = getCorType(json);
   const auto correction = get<std::string>(json, "correction");
+  if (type == OCR and not correction) { // update ocr data
+    return updateOCR(json, pid, p, lid);
+  }
   if (not correction) {
     THROW(BadRequest, "(LineRoute) missing correction data");
   }
@@ -82,6 +87,40 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   }
   correct(line, correction.value(), type);
   update(conn, line);
+  Json j;
+  return j << line;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// PUTOCR /books/<bid>/pages/<pid>/lines/<lid>
+////////////////////////////////////////////////////////////////////////////////
+Route::Response LineRoute::updateOCR(const RJson &json, int pid, int p,
+                                     int lid) const {
+  CROW_LOG_INFO << "(LineRoute) UPDATE line: " << pid << ":" << p << ":" << lid;
+  const auto imagedata = get<std::string>(json, "imgData").value_or("");
+  const auto ocr = utf8(get<std::string>(json, "ocr").value_or(""));
+  const auto cuts =
+      get<std::vector<int>>(json, "cuts").value_or(std::vector<int>{});
+  const auto confs = get<std::vector<double>>(json, "confidences")
+                         .value_or(std::vector<double>{});
+  if (ocr.size() != cuts.size()) {
+    THROW(BadRequest, "cuts and ocr does not coincide");
+  }
+  line_lock_guard lock(pid, p, lid, LOCK, ID_SET);
+  // make shure that the line exists
+  DbLine line(pid, p, lid);
+  auto conn = must_get_connection();
+  if (not line.load(conn)) {
+    THROW(NotFound, "(LineRoute) cannot find ", pid, ":", p, ":", lid);
+  }
+  // udpate line
+  line.updateOCR(ocr, cuts, confs);
+  MysqlCommitter committer(conn);
+  line.updateContents(conn);
+  if (imagedata != "") {
+    line.updateImage(get_config().daemon.projectdir, imagedata);
+  }
+  committer.commit();
   Json j;
   return j << line;
 }
