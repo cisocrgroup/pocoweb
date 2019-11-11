@@ -696,8 +696,8 @@ outline: 0;
 .cordiv_container{
   border: 2px solid;
   border-radius: 0.25rem;
-  background-color: #cce5ff;
-  border-color: #b8daff;
+  background-color: #dedede;
+  border-color: #bec1c3;
   cursor: pointer;
   /*padding:1px 6px 1px 6px;*/
   padding-right: 4px;

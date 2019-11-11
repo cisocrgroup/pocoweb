@@ -153,11 +153,9 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                            });
                         })
 
-                     projectConcView.on("concordance:jump_to_page",function(data){
-
+                       projectConcView.on("concordance:jump_to_page",function(data){
                               $('#conc-modal').modal('hide');
                               App.trigger("projects:show_page",data.pid,data.pageId,data.lineId);
-
                            });
 
                       App.mainLayout.showChildView('dialogRegion',projectConcView);
@@ -232,7 +230,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
        projectShowLayout.on("show:checkJobStatus",function(){
                   var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
                    $.when(fetchingjobs).done(function(result){
-
+                      console.log(result);
                       if(result.statusName!="running"){ // stop job tracking if job is not running
                           projectShowLayout.stopJobTracking();
                         }
@@ -240,9 +238,16 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                        if(result.statusName=="done"){
                         $('.loading_background3').fadeOut(function(){
                          App.trigger("projects:postcorrection",id); //reload a_pocoto
-                         clearInterval(projectShowLayout.interval); // clear interval when job done
+                          projectShowLayout.stopJobTracking(); // clear interval when job done
                         })
 
+                       }
+                       else if(result.statusName=="failed"){
+                         $('.loading_background3').fadeOut(function(){
+                          Util.defaultErrorHandling("Job failed",'danger');
+                          App.trigger("projects:postcorrection",id); //reload a_pocoto
+                          projectShowLayout.stopJobTracking(); // clear interval when job done
+                        })
                        }
 
                    }).fail(function(response){
