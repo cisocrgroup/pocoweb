@@ -76,8 +76,8 @@ for suspicious words.</p>
 <li><a href="#user-content-api-get-books-pid-pages-pageid-next-n">GET rest/books/<code>pid</code>/pages/<code>pageid</code>/next/<code>n</code></a></li>
 <li><a href="#user-content-api-get-books-pid-pages-pageid-prev-n">GET rest/books/<code>pid</code>/pages/<code>pageid</code>/prev/<code>n</code></a></li>
 <li><a href="#user-content-api-get-books-pid-pages-pageid-lines-lid">GET rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></li>
-<li><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid">POST rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></li>
-<li><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid">PUT rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></li>
+<li><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid">POST/PUT rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></li>
+<li><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid-ocr">POST/PUT rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>?t=ocr</a></li>
 <li><a href="#user-content-api-delete-books-pid-pages-pageid-lines-lid">DELETE rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code></a></li>
 <li><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid">POST rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code></a></li>
 <li><a href="#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid">PUT rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>/tokens/<code>tid</code></a></li>
@@ -1523,13 +1523,19 @@ or package with id <code>pid</code>.</p>
 <ul>
 <li>
 <a href="#user-content-authorization">Authorization</a> is required.</li>
-<li>Only the owner of a project or package can read its lines.</li>
+<li>Only the owner of a project or package can correct lines.</li>
 <li>It is not possible to overwrite manually confirmed corrections with
 not manually generated corrections.  In this case <code>409 Conflict</code> is
 returned.</li>
-<li>If an invalid <code>type</code> parameter is posted <code>400 Bad Request</code> is
+<li>If an invalid <code>t</code> parameter is posted <code>400 Bad Request</code> is
 returned.</li>
 </ul>
+<h4>
+<a id="user-content-query-parameters-3" class="anchor" href="#query-parameters-3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<p>You can set the type of the correction using <code>t=manual|automatic</code> as
+query paramter in the url.  It is also possible to use <code>t=ocr</code> (see
+<a href="#user-content-api-post-books-pid-pages-pageid-lines-lid-ocr">below</a>). If
+<code>t</code> is missing, <code>"t=automatic"</code> is assumed.</p>
 <h4>
 <a id="user-content-post-data-6" class="anchor" href="#post-data-6" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
 <p>The correction for the line is set using the mandatory <code>correction</code>
@@ -1538,7 +1544,33 @@ parameter can be used to set the type of the correction.  If missing,
 <code>"automatic"</code> is assumed.</p>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>correction<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected line<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>manual|automatic|ocr<span class="pl-pds">"</span></span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-post-books-pid-pages-pageid-lines-lid-ocr"></a></p>
+<h3>
+<a id="user-content-postput-restbookspidpagespageidlineslidtocr" class="anchor" href="#postput-restbookspidpagespageidlineslidtocr" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[POST/PUT] rest/books/<code>pid</code>/pages/<code>pageid</code>/lines/<code>lid</code>?t=ocr</h3>
+<p>Update the underlying ocr information of a line.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can update lines.</li>
+<li>Be aware that all corrections for the given line are lost.</li>
+<li>If an invalid <code>t</code> parameter is posted <code>400 Bad Request</code> is
+returned.</li>
+</ul>
+<h4>
+<a id="user-content-query-parameters-4" class="anchor" href="#query-parameters-4" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<p>Set the query parameter <code>t=ocr</code>.</p>
+<h4>
+<a id="user-content-post-data-7" class="anchor" href="#post-data-7" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
+<p>The data to update the line.  The number of elements in <code>cuts</code> must be
+the same as the number of unicode points in <code>ocr</code>.  Otherwise a <code>400 Bad Request</code> is returned.  Both parameters <code>confidences</code> and
+<code>imageData</code> can be omitted.</p>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr for line<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">10</span>, <span class="pl-c1">20</span>, <span class="pl-c1">30</span>],
+  <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.9</span>, <span class="pl-c1">0.8</span>, <span class="pl-c1">1.0</span>],
+  <span class="pl-s"><span class="pl-pds">"</span>imageData<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>base 64 encoded image data<span class="pl-pds">"</span></span>
 }</pre></div>
 <h4>
 <a id="user-content-response-data-20" class="anchor" href="#response-data-20" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
@@ -1590,7 +1622,7 @@ from packages.</li>
 <li>Only the owner of a project or package can access its tokens.</li>
 </ul>
 <h4>
-<a id="user-content-query-parameters-3" class="anchor" href="#query-parameters-3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<a id="user-content-query-parameters-5" class="anchor" href="#query-parameters-5" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
 <p>An optional parameter <code>len=n</code> can be specified to get a specific slice
 of the line starting at position <code>tid</code> and ending at position
 <code>tid+len-1</code> (counting unicode code-points).  If <code>len</code> is omitted an
@@ -1638,22 +1670,21 @@ returned.</li>
 returned.</li>
 </ul>
 <h4>
-<a id="user-content-query-parameters-4" class="anchor" href="#query-parameters-4" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
-<p>An optional parameter <code>len=n</code> can be specified to correct a specific
-slice of the line starting at position <code>tid</code> and ending at position
-<code>tid+len-1</code> (counting unicode code-points and starting at index 0).
-If <code>len</code> is omitted an according token (ending at the first
+<a id="user-content-query-parameters-6" class="anchor" href="#query-parameters-6" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<p>You can set the type of the correction using <code>t=manual|automatic</code> as
+query paramter in the url.  If <code>t</code> is missing, <code>"t=automatic"</code> is
+assumed.  An optional parameter <code>len=n</code> can be specified to correct a
+specific slice of the line starting at position <code>tid</code> and ending at
+position <code>tid+len-1</code> (counting unicode code-points and starting at
+index 0).  If <code>len</code> is omitted an according token (ending at the first
 encountered whitespace character after <code>tid</code> or the end of the line)
 is corrected.</p>
 <h4>
-<a id="user-content-post-data-7" class="anchor" href="#post-data-7" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
+<a id="user-content-post-data-8" class="anchor" href="#post-data-8" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
 <p>The correction for the word/slice is set using the mandatory
-<code>correction</code> parameter in the post data for the request.  The optional
-<code>type</code> parameter can be used to mark the correction type.  If missing
-<code>"automatic"</code> is assumed.</p>
+<code>correction</code> parameter in the post data for the request.</p>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>correction<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected line<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>type<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>manual|automatic|ocr<span class="pl-pds">"</span></span>
 }</pre></div>
 <h4>
 <a id="user-content-response-data-22" class="anchor" href="#response-data-22" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
@@ -1695,7 +1726,7 @@ information.</li>
 been profiled.</li>
 </ul>
 <h4>
-<a id="user-content-query-parameters-5" class="anchor" href="#query-parameters-5" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<a id="user-content-query-parameters-7" class="anchor" href="#query-parameters-7" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
 <p>Optionally you can add <code>q=q1&amp;q=q2&amp;...</code> parameters to limit the
 suggestions to the given queries.  If no query parameters are set, the
 whole profile for each type in the document is returned.</p>
@@ -1750,7 +1781,7 @@ the (package's base-) project.</li>
 profiling job.</li>
 </ul>
 <h4>
-<a id="user-content-post-data-8" class="anchor" href="#post-data-8" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
+<a id="user-content-post-data-9" class="anchor" href="#post-data-9" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
 <p>The profiling endpoint expects a list of tokens that are used as
 additional lexicon entries for the profiling.  It is possible to just
 send an empty tokens list if no additional lexicon entries should be
@@ -1799,7 +1830,7 @@ profiled.</li>
 <li>No <a href="#user-content-authorization">Authorization</a> is required.</li>
 </ul>
 <h4>
-<a id="user-content-query-parameters-6" class="anchor" href="#query-parameters-6" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<a id="user-content-query-parameters-8" class="anchor" href="#query-parameters-8" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
 <ul>
 <li>The optional parameter <code>url=profiler-url</code> specifies the URL of the profiler.
 Use <code>local</code> to use the local profiler. If omitted, <code>url=local</code> is assumed.</li>
@@ -1999,7 +2030,7 @@ the <code>pooled</code> setting in the projects is ignored.</li>
 <li>If the job failed <code>500 Internal Server Error</code> is returned.</li>
 </ul>
 <h4>
-<a id="user-content-query-parameters-7" class="anchor" href="#query-parameters-7" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
+<a id="user-content-query-parameters-9" class="anchor" href="#query-parameters-9" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
 <p>You can specify an optional <code>q=job-name</code> parameter to check the status
 of a specific running job (such as predict, train, profiler,
 postcorrection) with the according id.</p>

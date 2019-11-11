@@ -2,7 +2,6 @@
 #define pcw_LineRoute_hpp__
 
 #include "core/CrtpRoute.hpp"
-#include "database/CorType.hpp"
 
 namespace crow {
 namespace json {
@@ -37,12 +36,10 @@ public:
                 int tid) const;
 
 private:
-  Response updateOCR(const RJson &json, int bid, int pid, int lid) const;
-  static CorType getCorType(const RJson &json);
-  static void correct(DbLine &line, const std::string &correction,
-                      CorType type);
+  Response updateOCR(const Request &req, int bid, int pid, int lid) const;
+  static void correct(DbLine &line, const std::string &correction, bool manual);
   static void correct(DbLine &line, const std::string &correction, int begin,
-                      int len, CorType type);
+                      int len, bool manual);
   static void update(MysqlConnection &conn, const DbLine &line);
   static const char *route_;
   static const char *name_;

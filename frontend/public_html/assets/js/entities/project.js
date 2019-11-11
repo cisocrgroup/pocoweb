@@ -317,9 +317,9 @@ takeBackPackages: function(data){
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        url: "rest/books/"+data.pid+"/pages/"+data.page_id+"/lines/"+data.line_id+"?auth=" + App.getAuthToken(),
+        url: "rest/books/"+data.pid+"/pages/"+data.page_id+"/lines/"+data.line_id+"?auth=" + App.getAuthToken()+"&t=manual",
         type: "PUT",
-        data:JSON.stringify({correction:data.text, type:"manual"}),
+        data:JSON.stringify({correction:data.text}),
         success: function(data) {
               defer.resolve(data);
             },
@@ -338,9 +338,9 @@ takeBackPackages: function(data){
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        url: "rest/books/"+data.pid+"/pages/"+data.page_id+"/lines/"+data.line_id+"/tokens/"+data.token_id+"?auth=" + App.getAuthToken(),
+        url: "rest/books/"+data.pid+"/pages/"+data.page_id+"/lines/"+data.line_id+"/tokens/"+data.token_id+"?auth=" + App.getAuthToken()+"&t=manual",
         type: "PUT",
-        data:JSON.stringify({correction:data.token, type:"manual"}),
+        data:JSON.stringify({correction:data.token}),
         success: function(data) {
               defer.resolve(data);
             },

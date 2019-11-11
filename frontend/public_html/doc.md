@@ -64,8 +64,8 @@ for suspicious words.
   * [GET rest/books/`pid`/pages/`pageid`/next/`n`](#user-content-api-get-books-pid-pages-pageid-next-n)
   * [GET rest/books/`pid`/pages/`pageid`/prev/`n`](#user-content-api-get-books-pid-pages-pageid-prev-n)
   * [GET rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-get-books-pid-pages-pageid-lines-lid)
-  * [POST rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-post-books-pid-pages-pageid-lines-lid)
-  * [PUT rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-post-books-pid-pages-pageid-lines-lid)
+  * [POST/PUT rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-post-books-pid-pages-pageid-lines-lid)
+  * [POST/PUT rest/books/`pid`/pages/`pageid`/lines/`lid`?t=ocr](#user-content-api-post-books-pid-pages-pageid-lines-lid-ocr)
   * [DELETE rest/books/`pid`/pages/`pageid`/lines/`lid`](#user-content-api-delete-books-pid-pages-pageid-lines-lid)
   * [POST rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid)
   * [PUT rest/books/`pid`/pages/`pageid`/lines/`lid`/tokens/`tid`](#user-content-api-post-books-pid-pages-pageid-lines-lid-tokens-tid)
@@ -1503,12 +1503,18 @@ or package with id `pid`.
 ### [POST/PUT] rest/books/`pid`/pages/`pageid`/lines/`lid`
 Correct line `lid` in page `pageid` of project or package `pid`.
 * [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can read its lines.
+* Only the owner of a project or package can correct lines.
 * It is not possible to overwrite manually confirmed corrections with
   not manually generated corrections.  In this case `409 Conflict` is
   returned.
-* If an invalid `type` parameter is posted `400 Bad Request` is
+* If an invalid `t` parameter is posted `400 Bad Request` is
   returned.
+
+#### Query parameters
+You can set the type of the correction using `t=manual|automatic` as
+query paramter in the url.  It is also possible to use `t=ocr` (see
+[below](#user-content-api-post-books-pid-pages-pageid-lines-lid-ocr)). If
+`t` is missing, `"t=automatic"` is assumed.
 
 #### Post data
 The correction for the line is set using the mandatory `correction`
@@ -1519,7 +1525,34 @@ parameter can be used to set the type of the correction.  If missing,
 ```json
 {
   "correction": "corrected line",
-  "type": "manual|automatic|ocr"
+}
+```
+
+---
+<a id='api-post-books-pid-pages-pageid-lines-lid-ocr'></a>
+### [POST/PUT] rest/books/`pid`/pages/`pageid`/lines/`lid`?t=ocr
+Update the underlying ocr information of a line.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can update lines.
+* Be aware that all corrections for the given line are lost.
+* If an invalid `t` parameter is posted `400 Bad Request` is
+  returned.
+
+#### Query parameters
+Set the query parameter `t=ocr`.
+
+#### Post data
+The data to update the line.  The number of elements in `cuts` must be
+the same as the number of unicode points in `ocr`.  Otherwise a `400
+Bad Request` is returned.  Both parameters `confidences` and
+`imageData` can be omitted.
+
+```json
+{
+  "ocr": "ocr for line",
+  "cuts": [10, 20, 30],
+  "confidences": [0.9, 0.8, 1.0],
+  "imageData": "base 64 encoded image data"
 }
 ```
 
@@ -1613,23 +1646,22 @@ or package `pid`.
   returned.
 
 #### Query parameters
-An optional parameter `len=n` can be specified to correct a specific
-slice of the line starting at position `tid` and ending at position
-`tid+len-1` (counting unicode code-points and starting at index 0).
-If `len` is omitted an according token (ending at the first
+You can set the type of the correction using `t=manual|automatic` as
+query paramter in the url.  If `t` is missing, `"t=automatic"` is
+assumed.  An optional parameter `len=n` can be specified to correct a
+specific slice of the line starting at position `tid` and ending at
+position `tid+len-1` (counting unicode code-points and starting at
+index 0).  If `len` is omitted an according token (ending at the first
 encountered whitespace character after `tid` or the end of the line)
 is corrected.
 
 #### Post data
 The correction for the word/slice is set using the mandatory
-`correction` parameter in the post data for the request.  The optional
-`type` parameter can be used to mark the correction type.  If missing
-`"automatic"` is assumed.
+`correction` parameter in the post data for the request.
 
 ```json
 {
   "correction": "corrected line",
-  "type": "manual|automatic|ocr"
 }
 ```
 

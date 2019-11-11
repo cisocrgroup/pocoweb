@@ -190,24 +190,9 @@ void DbSlice::noop(size_t i) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void DbSlice::set_correction_type(CorType type) {
-  if (type != OCR) { // just set the "manually" flag accordingly
-    for (auto i = begin; i != end; i++) {
-      i->manually = bool(type == Manual);
-    }
-    return;
-  }
-  // reset corrections as ocr;
-  for (auto i = begin; i != end;) {
-    if (i->is_del()) {
-      auto j = std::next(i);
-      line_->line.erase(i);
-      i = j;
-    } else {
-      i->ocr = i->cor;
-      i->cor = 0;
-      i = std::next(i);
-    }
+void DbSlice::set_correction_type(bool manual) {
+  for (auto i = begin; i != end; i++) {
+    i->manually = manual;
   }
 }
 

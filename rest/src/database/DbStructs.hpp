@@ -1,7 +1,6 @@
 #ifndef pcw_DbStructs_hpp__
 #define pcw_DbStructs_hpp__
 
-#include "CorType.hpp"
 #include "Tables.h"
 #include "core/Box.hpp"
 #include "core/rapidjson.hpp"
@@ -74,7 +73,7 @@ struct DbSlice {
   void set(size_t i, wchar_t c);
   void noop(size_t i);
   void end_wagner_fischer() const noexcept {}
-  void set_correction_type(CorType type);
+  void set_correction_type(bool manual);
 
   template <class OS> void serialize(rapidjson::Writer<OS> &w) const;
   std::string strID() const {
