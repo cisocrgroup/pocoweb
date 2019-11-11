@@ -74,7 +74,7 @@ func main() {
 			http.MethodGet, service.WithAuth(getLogin()),
 			http.MethodPost, postLogin())))
 	http.HandleFunc(api.LogoutURL, service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithAuth(service.WithJobID(getLogout())))))
+		http.MethodGet, service.WithAuth(getLogout()))))
 	// jobs
 	http.HandleFunc("/jobs/", service.WithLog(service.WithMethods(
 		http.MethodGet, service.WithAuth(service.WithJobID(getJob())))))
