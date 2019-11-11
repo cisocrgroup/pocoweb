@@ -89,6 +89,15 @@ App.getAuthToken = function() {
   return App.getPcw().auth;
 };
 
+App.clearAuthToken = function() {
+  App.setAuthToken("");
+};
+
+App.logout = function() {
+  App.clearCurrentUser();
+  App.clearAuthToken();
+};
+
 App.clearCurrentUser = function() {
   let pcw = App.getPcw();
   pcw.user = {id:-1};

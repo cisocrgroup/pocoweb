@@ -42,7 +42,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
 
                  $.when(loggingOutUser).done(function(result){
-                   App.clearCurrentUser();
+                   App.logout();
                    App.mainmsg.updateContent("Logout successful",'success');
                    headerShowTopbar.options.user = App.getCurrentUser();
                    headerShowTopbar.render();
@@ -50,7 +50,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
                    App.trigger('home:portal');
 
                 }).fail(function(response){
-                   App.clearCurrentUser();
+                   App.logout();
                    headerShowTopbar.options.user = App.getCurrentUser();
                    headerShowTopbar.render();
                    Util.defaultErrorHandling(response,'danger');
