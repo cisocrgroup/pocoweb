@@ -114,16 +114,16 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         if($(this).hasClass('cor_selected')){
           cordiv_left.empty();
           cordiv_left.append($('<i class="far fa-check-square"></i>'));
-          cordiv_left.parent().css('background-color','#d4edda');
-          cordiv_left.parent().css('border-color','#c3e6cb');
+          cordiv_left.parent().css('background-color','#cce5ff');
+          cordiv_left.parent().css('border-color','#b8daff');
           $('.js-toggle-selection').empty().html('<i class="fas fa-toggle-on"></i> Toggle selection');
 
          }
         else{
           cordiv_left.empty();
           cordiv_left.append($('<i class="far fa-square"></i>'));
-          cordiv_left.parent().css('background-color','#cce5ff');
-          cordiv_left.parent().css('border-color','#b8daff');
+          cordiv_left.parent().css('background-color','#dedede');
+          cordiv_left.parent().css('border-color','#bec1c3');
           $('.js-toggle-selection').empty().html('<i class="fas fa-toggle-off"></i> Toggle selection');
 
         }
@@ -161,15 +161,15 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         if(currentTarget.find('i').hasClass('fa-square')){
           currentTarget.empty();
           currentTarget.append($('<i class="far fa-check-square"></i>'));
-          currentTarget.parent().css('background-color','#d4edda');
-          currentTarget.parent().css('border-color','#c3e6cb');
+          currentTarget.parent().css('background-color','#cce5ff');
+          currentTarget.parent().css('border-color','#b8daff');
 
          }
         else{
           currentTarget.empty();
           currentTarget.append($('<i class="far fa-square"></i>'));
-          currentTarget.parent().css('background-color','#cce5ff');
-          currentTarget.parent().css('border-color','#b8daff');
+          currentTarget.parent().css('background-color','#dedede');
+          currentTarget.parent().css('border-color','#bec1c3');
 
         }
 
