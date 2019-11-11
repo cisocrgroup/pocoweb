@@ -412,32 +412,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                    // update suspicious words and error patterns in background with corrections
 
-                var fetchingsuspiciouswords = ProjectEntities.API.getSuspiciousWords({pid:id});
-                var fetchingerrorpatterns = ProjectEntities.API.getErrorPatterns({pid:id});
-
-            $.when(fetchingsuspiciouswords,fetchingerrorpatterns).done(function(suspicious_words,error_patterns){
-
-            var suspicious_words_array = [];
-            for (word in suspicious_words['counts']) {
-               suspicious_words_array.push([word,suspicious_words['counts'][word]]);
-            }
-
-                  projectShowSidebar.sp_table.clear();
-                  projectShowSidebar.sp_table.rows.add(suspicious_words_array);
-                  projectShowSidebar.sp_table.draw();
-
-              var error_patterns_array = [];
-              for (word in error_patterns['counts']) {
-               error_patterns_array.push([word,error_patterns['counts'][word]]);
-              }
-
-                  projectShowSidebar.ep_table.clear();
-                  projectShowSidebar.ep_table.rows.add(error_patterns_array);
-                  projectShowSidebar.ep_table.draw();
-
-           });
-
-
+          
 
 
                   }).fail(function(response){
@@ -493,6 +468,33 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                  that.setContent(false);
                }
                });
+
+               var fetchingsuspiciouswords = ProjectEntities.API.getSuspiciousWords({pid:id});
+               var fetchingerrorpatterns = ProjectEntities.API.getErrorPatterns({pid:id});
+
+                $.when(fetchingsuspiciouswords,fetchingerrorpatterns).done(function(suspicious_words,error_patterns){
+
+                var suspicious_words_array = [];
+                for (word in suspicious_words['counts']) {
+                   suspicious_words_array.push([word,suspicious_words['counts'][word]]);
+                }
+
+                      projectShowSidebar.sp_table.clear();
+                      projectShowSidebar.sp_table.rows.add(suspicious_words_array);
+                      projectShowSidebar.sp_table.draw();
+
+                  var error_patterns_array = [];
+                  for (word in error_patterns['counts']) {
+                   error_patterns_array.push([word,error_patterns['counts'][word]]);
+                  }
+
+                      projectShowSidebar.ep_table.clear();
+                      projectShowSidebar.ep_table.rows.add(error_patterns_array);
+                      projectShowSidebar.ep_table.draw();
+
+               });
+
+
             })
 
          projectConcView.on("concordance:jump_to_page",function(data){

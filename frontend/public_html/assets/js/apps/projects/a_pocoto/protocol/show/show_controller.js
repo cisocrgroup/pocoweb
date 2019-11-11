@@ -153,11 +153,9 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                            });
                         })
 
-                     projectConcView.on("concordance:jump_to_page",function(data){
-
+                       projectConcView.on("concordance:jump_to_page",function(data){
                               $('#conc-modal').modal('hide');
                               App.trigger("projects:show_page",data.pid,data.pageId,data.lineId);
-
                            });
 
                       App.mainLayout.showChildView('dialogRegion',projectConcView);
