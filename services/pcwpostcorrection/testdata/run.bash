@@ -110,7 +110,7 @@ ocrd-cis-debug java -Dfile.encoding=UTF-8 -Xmx3g -cp "$jar" "$main" \
 	 --mets "$METS" \
 	 --parameter <(jq ".postCorrection.nOCR = \"$nocr\" | .postCorrection" "$PARAMETER") \
 	 --input-file-grp "$alignfg" \
-	 --output-file-grp "outputfg"
+	 --output-file-grp "$outputfg"
 java -Dfile.encoding=UTF-8 -Xmx3g -cp "$jar" "$main" \
 	 --log-level "$LOG_LEVEL" \
 	 -c post-correct \
