@@ -69,8 +69,28 @@ Entities.API = {
 
 
   loginCheck: function(){
-    let user = App.getPcw().user || -1;
-    return user;
+
+
+     var defer = jQuery.Deferred();
+       $.ajax({
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+         },
+         url: "rest/login?auth=" + App.getAuthToken(),
+         type: "GET",
+         success: function(data) {
+          console.log(data);
+           let user = App.getPcw().user;
+           defer.resolve(user);
+         },
+         error: function(data){
+           App.logout();
+           defer.resolve(App.getPcw().user);
+         }
+    });
+    return defer.promise();
+
   },
     logout: function(data){
       var defer = jQuery.Deferred();

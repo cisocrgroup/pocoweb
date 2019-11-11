@@ -24,7 +24,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
       var headerShowTopbar = new Show.Topbar({
         version:api_version.version,
-        user: App.getCurrentUser()
+        user: login_check
       });
       App.Navbar = headerShowTopbar;
 
@@ -61,32 +61,6 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
 
 
-
-
-
-       headerShowTopbar.on("nav:help",function(){
-
-        //     require(["entities/util"], function(UtilEntities){
-
-        //           var fetchingHelpTexts= UtilEntities.API.getHelpText(App.getCurrentRoute(),currentUser.get('userRole'));
-
-
-        //           $.when(fetchingHelpTexts).done(function(helptexts){
-
-
-        //           var helpModal = new Show.Help({
-        //             helpitems:helptexts.helpItems,
-        //             asModal:true
-        //           });
-
-        //        App.mainLayout.showChildView('dialogRegion',helpModal);
-
-        //     }); // when fetchingHelp
-
-        // }); // require
-
-       });
-
   headerShowTopbar.on("attach",function(){
        if(login_check.id!=-1){
              var user = login_check;
@@ -98,7 +72,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
         headerShowLayout.showChildView('msgRegion',App.mainmsg)
       }
     });
-      headerShowTopbar.on("nav:exit",function(){
+    headerShowTopbar.on("nav:exit",function(){
      App.trigger("home:portal");
     });
 
@@ -108,9 +82,8 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
       App.mainLayout.showChildView('headerRegion',headerShowLayout);
 
-    }); //fetching user,util
-
-    });
+    })
+    })
 
     } // showHeader
 

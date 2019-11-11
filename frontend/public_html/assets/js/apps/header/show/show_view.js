@@ -37,10 +37,12 @@ define(["marionette","app","common/views","common/util",
       'click .logo_area_left' : 'nav_item_clicked'
 
     },
+   
 
     login_clicked:function(){
       App.trigger("nav:login",true);
     },
+
 
 
       serializeData: function(){
