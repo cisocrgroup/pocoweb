@@ -210,14 +210,20 @@ func (r pcRunner) writeProtocol(pc *api.PostCorrection, path string) (err error)
 func (r pcRunner) correctInBackend(corrections *api.PostCorrection) error {
 	// We should be communicating within docker compose - so skip verify is ok.
 	client := api.NewClient(pocowebURL, true)
+	var token api.Token
 	for k, v := range corrections.Corrections {
 		log.Debugf("correction: %s %v", k, v)
 		if !v.Taken { // only correct corrections that should be taken
 			continue
 		}
-		_, err := client.PutToken(v.BookID, v.PageID, v.LineID, v.TokenID,
-			api.CorrectionRequest{Correction: v.Cor, Manually: false})
-		if err != nil {
+		token = api.Token{
+			BookID:    v.BookID,
+			ProjectID: v.ProjectID,
+			PageID:    v.PageID,
+			LineID:    v.LineID,
+			TokenID:   v.TokenID,
+		}
+		if err := client.PutTokenX(&token, api.CorAutomatic, v.Cor); err != nil {
 			return fmt.Errorf("cannot post correct %s: %v", v.Normalized, err)
 		}
 	}
