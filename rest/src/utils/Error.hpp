@@ -18,6 +18,9 @@ public:
     // InternalServerError
     return 500;
   }
+  virtual const char *status() const noexcept {
+    return "Internal Server Error";
+  }
 
   template <class T> Error &append(const T &t) {
     std::stringstream os;
@@ -38,6 +41,7 @@ public:
     // BadRequest
     return 400;
   }
+  virtual const char *status() const noexcept override { return "Bad Request"; }
 };
 
 class Conflict : public Error {
@@ -48,6 +52,7 @@ public:
     // Conflict
     return 409;
   }
+  virtual const char *status() const noexcept override { return "Conflict"; }
 };
 
 class NotImplemented : public Error {
@@ -57,6 +62,9 @@ public:
   virtual int code() const noexcept override {
     // NotImplemented
     return 501;
+  }
+  virtual const char *status() const noexcept override {
+    return "Not Implemented";
   }
 };
 
@@ -69,6 +77,9 @@ public:
     // ServiceNotAvailable
     return 503;
   }
+  virtual const char *status() const noexcept override {
+    return "Service Not Available";
+  }
 };
 
 class Forbidden : public Error {
@@ -79,6 +90,7 @@ public:
     // Forbidden
     return 403;
   }
+  virtual const char *status() const noexcept override { return "Forbidden"; }
 };
 
 class NotFound : public Error {
@@ -89,6 +101,7 @@ public:
     // NotFound
     return 404;
   }
+  virtual const char *status() const noexcept override { return "Not Found"; }
 };
 
 class ParseError : public Error {
@@ -99,6 +112,7 @@ public:
     // ParseError (BadRequest)
     return 400;
   }
+  virtual const char *status() const noexcept override { return "Parse Error"; }
 };
 
 template <class E> void do_append(E &e) {}
