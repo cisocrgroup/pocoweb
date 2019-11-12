@@ -53,8 +53,9 @@ struct DbChar {
 };
 
 struct DbSlice {
-  DbSlice(DbLine &line, std::list<DbChar>::iterator b,
-          std::list<DbChar>::iterator e);
+  using iterator = std::list<DbChar>::iterator;
+  DbSlice(DbLine &line, iterator b, iterator e);
+
   std::string ocr() const;
   std::string cor() const;
   std::wstring wocr() const;
@@ -133,6 +134,7 @@ template <class OS> void DbSlice::serialize(rapidjson::Writer<OS> &w) const {
 Json &operator<<(Json &j, const DbSlice &line);
 
 struct DbLine {
+  using iterator = std::list<DbChar>::iterator;
   DbLine(int pid, int pageid, int lid)
       : line(), imagepath(), box(), bookid(), projectid(pid), pageid(pageid),
         lineid(lid), begin_(), end_() {}

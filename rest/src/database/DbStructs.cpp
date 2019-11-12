@@ -34,8 +34,7 @@ template <class It, class F> static void each_ocr(It b, It e, F f) {
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-DbSlice::DbSlice(DbLine &line, std::list<DbChar>::iterator b,
-                 std::list<DbChar>::iterator e)
+DbSlice::DbSlice(DbLine &line, iterator b, iterator e)
     : bookid(line.bookid), projectid(line.projectid), pageid(line.pageid),
       lineid(line.lineid), offset(int(std::distance(line.line.begin(), b))),
       begin(b), end(e), box(), match(), line_(&line) {
