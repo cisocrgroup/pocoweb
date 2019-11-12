@@ -6,12 +6,11 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"regexp"
-	"strings"
-	"sync"
-	"time"
+	"strconv"
 
 	"github.com/finkf/pcwgo/api"
 	"github.com/finkf/pcwgo/db"
@@ -31,9 +30,6 @@ var (
 	pkg            string
 	pool           string
 	debug          bool
-	version        api.Version
-	vonce          sync.Once
-	client         *http.Client
 )
 
 func init() {
@@ -50,10 +46,6 @@ func init() {
 	flag.StringVar(&pkg, "pkg", "", "set host of pkg")
 	flag.StringVar(&pool, "pool", "", "set host of pcwpool service")
 	flag.BoolVar(&debug, "debug", false, "enable debug logging")
-	client = &http.Client{Transport: &http.Transport{
-		MaxIdleConnsPerHost: 1024,
-		TLSHandshakeTimeout: 0 * time.Second,
-	}}
 }
 
 func must(err error) {
@@ -68,6 +60,26 @@ func main() {
 	// database
 	must(service.InitDebug(dsn, debug))
 	defer service.Close()
+	// proxies
+	url, err := url.Parse(pocoweb)
+	must(err)
+	pocowebProxy := httputil.NewSingleHostReverseProxy(url)
+	url, err = url.Parse(profiler)
+	must(err)
+	profilerProxy := httputil.NewSingleHostReverseProxy(url)
+	url, err = url.Parse(users)
+	must(err)
+	usersProxy := httputil.NewSingleHostReverseProxy(url)
+	url, err = url.Parse(pkg)
+	must(err)
+	pkgProxy := httputil.NewSingleHostReverseProxy(url)
+	url, err = url.Parse(postcorrection)
+	must(err)
+	pcProxy := httputil.NewSingleHostReverseProxy(url)
+	url, err = url.Parse(pool)
+	must(err)
+	poolProxy := httputil.NewSingleHostReverseProxy(url)
+
 	// login
 	http.HandleFunc(api.LoginURL,
 		service.WithLog(service.WithMethods(
@@ -81,59 +93,59 @@ func main() {
 	// postcorrection
 	http.HandleFunc("/postcorrect/le/books/", service.WithLog(service.WithMethods(
 		http.MethodPost, service.WithAuth(
-			service.WithProject(projectOwner(forward(postcorrection)))),
+			service.WithProject(projectOwner(proxy(pcProxy)))),
 		http.MethodGet, service.WithAuth(
-			service.WithProject(projectOwner(forward(postcorrection)))),
+			service.WithProject(projectOwner(proxy(pcProxy)))),
 		http.MethodPut, service.WithAuth(
-			service.WithProject(projectOwner(forward(postcorrection)))))))
+			service.WithProject(projectOwner(proxy(pcProxy)))))))
 	http.HandleFunc("/postcorrect/books/", service.WithLog(service.WithMethods(
 		http.MethodPost, service.WithAuth(
-			service.WithProject(projectOwner(forward(postcorrection)))),
+			service.WithProject(projectOwner(proxy(pcProxy)))),
 		http.MethodGet, service.WithAuth(
-			service.WithProject(projectOwner(forward(postcorrection)))))))
+			service.WithProject(projectOwner(proxy(pcProxy)))))))
 	// pkg
 	http.HandleFunc("/pkg/", service.WithLog(service.WithMethods(
 		http.MethodPost, service.WithAuth(
-			service.WithProject(projectOwner(forward(pkg)))),
+			service.WithProject(projectOwner(proxy(pkgProxy)))),
 		http.MethodGet, service.WithAuth(
-			service.WithProject(projectOwner(forward(pkg)))))))
+			service.WithProject(projectOwner(proxy(pkgProxy)))))))
 	// pool
 	http.HandleFunc("/pool/", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithAuth(root(forward(pool))))))
+		http.MethodGet, service.WithAuth(root(proxy(poolProxy))))))
 	// user management
 	http.HandleFunc("/users", service.WithLog(service.WithMethods(
-		http.MethodPost, service.WithAuth(root(forward(users))),
-		http.MethodGet, service.WithAuth(root(forward(users))))))
+		http.MethodPost, service.WithAuth(root(proxy(usersProxy))),
+		http.MethodGet, service.WithAuth(root(proxy(usersProxy))))))
 	http.HandleFunc("/users/", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithAuth(rootOrSelf(forward(users))),
-		http.MethodPut, service.WithAuth(rootOrSelf(forward(users))),
-		http.MethodDelete, service.WithAuth(rootOrSelf(forward(users))))))
+		http.MethodGet, service.WithAuth(rootOrSelf(proxy(usersProxy))),
+		http.MethodPut, service.WithAuth(rootOrSelf(proxy(usersProxy))),
+		http.MethodDelete, service.WithAuth(rootOrSelf(proxy(usersProxy))))))
 	// book management
 	http.HandleFunc("/books", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithAuth(forward(pocoweb)),
-		http.MethodPost, service.WithAuth(forward(pocoweb)))))
+		http.MethodGet, service.WithAuth(withUserid(proxy(pocowebProxy))),
+		http.MethodPost, service.WithAuth(withUserid(proxy(pocowebProxy))))))
 	http.HandleFunc("/books/", service.WithLog(service.WithMethods(
 		http.MethodGet, service.WithAuth(
-			service.WithProject(projectOwner(forward(pocoweb)))),
+			service.WithProject(projectOwner(proxy(pocowebProxy)))),
 		http.MethodPut, service.WithAuth(
-			service.WithProject(projectOwner(forward(pocoweb)))),
+			service.WithProject(projectOwner(proxy(pocowebProxy)))),
 		http.MethodPost, service.WithAuth(
-			service.WithProject(projectOwner(forward(pocoweb)))),
+			service.WithProject(projectOwner(proxy(pocowebProxy)))),
 		http.MethodDelete, service.WithAuth(
-			service.WithProject(projectOwner(forward(pocoweb)))))))
+			service.WithProject(projectOwner(proxy(pocowebProxy)))))))
+	// version
+	http.HandleFunc("/api-version",
+		service.WithMethods(http.MethodGet, proxy(pocowebProxy)))
 	// profiling
 	http.HandleFunc("/profile/languages", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithAuth(forward(profiler)))))
+		http.MethodGet, service.WithAuth(proxy(profilerProxy)))))
 	http.HandleFunc("/profile/jobs/", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithAuth(forward(profiler)))))
+		http.MethodGet, service.WithAuth(proxy(profilerProxy)))))
 	http.HandleFunc("/profile/", service.WithLog(service.WithMethods(
 		http.MethodGet, service.WithAuth(
-			service.WithProject(projectOwner(forward(profiler)))),
+			service.WithProject(projectOwner(proxy(profilerProxy)))),
 		http.MethodPost, service.WithAuth(
-			service.WithProject(projectOwner(forward(profiler)))))))
-	// version
-	http.HandleFunc(api.VersionURL, service.WithMethods(
-		http.MethodGet, getVersion()))
+			service.WithProject(projectOwner(proxy(profilerProxy)))))))
 	log.Infof("listening on %s", listen)
 	if cert != "" && key != "" {
 		must(http.ListenAndServeTLS(listen, cert, key, nil))
@@ -311,90 +323,19 @@ func findJob(jobID int) (*api.JobStatus, error) {
 	}, nil
 }
 
-func forward(base string) service.HandlerFunc {
+func withUserid(f service.HandlerFunc) service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
 		auth := service.AuthFromCtx(ctx)
-		url := forwardURL(auth, r.URL.String(), base)
-		log.Infof("forwarding [%s] %s -> %s", r.Method, r.URL.String(), url)
-		switch r.Method {
-		case http.MethodGet:
-			res, err := client.Get(url)
-			forwardRequest(w, url, res, err)
-		case http.MethodPost:
-			res, err := client.Post(url, r.Header.Get("Content-Type"), r.Body)
-			forwardRequest(w, url, res, err)
-		case http.MethodPut:
-			req, err := http.NewRequest(http.MethodPut, url, r.Body)
-			if err != nil {
-				service.ErrorResponse(w, http.StatusInternalServerError,
-					"cannot forward: %v", err)
-				return
-			}
-			res, err := client.Do(req)
-			forwardRequest(w, url, res, err)
-		case http.MethodDelete:
-			req, err := http.NewRequest(http.MethodDelete, url, nil)
-			if err != nil {
-				service.ErrorResponse(w, http.StatusInternalServerError,
-					"cannot forward: %v", err)
-				return
-			}
-			res, err := client.Do(req)
-			forwardRequest(w, url, res, err)
-		default:
-			service.ErrorResponse(w, http.StatusBadRequest,
-				"cannot forward: invalid method: %s", r.Method)
-		}
+		q.Set("userid", strconv.Itoa(int(auth.User.ID)))
+		r.URL.RawQuery = q.Encode()
+		f(ctx, w, r)
 	}
 }
 
-func forwardRequest(w http.ResponseWriter, url string, res *http.Response, err error) {
-	if err != nil {
-		service.ErrorResponse(w, http.StatusInternalServerError,
-			"cannot forward request: %s", err)
-		return
-	}
-	defer res.Body.Close()
-	log.Debugf("forwarding: %s (Content-Length: %d)", res.Status, res.ContentLength)
-	for k, v := range res.Header {
-		for i := range v {
-			w.Header().Add(k, v[i])
-		}
-	}
-	w.WriteHeader(res.StatusCode)
-	// copy content
-	n, err := io.Copy(w, res.Body)
-	if err != nil {
-		service.ErrorResponse(w, http.StatusInternalServerError,
-			"cannot forward request: %v", err)
-		return
-	}
-	log.Infof("forwarded %d bytes", n)
-}
-
-// just handle api-version once
-func getVersion() service.HandlerFunc {
+func proxy(p *httputil.ReverseProxy) service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		vonce.Do(func() {
-			url := pocoweb + "/api-version"
-			res, err := client.Get(url)
-			if err != nil {
-				log.Errorf("cannot get api version: %s", err)
-				return
-			}
-			defer res.Body.Close()
-			if err := json.NewDecoder(res.Body).Decode(&version); err != nil {
-				log.Errorf("cannot get api version: cannot decode json: %s", err)
-			}
-		})
-		service.JSONResponse(w, version)
+		log.Infof("proxy: %s %s", r.Method, r.URL.String())
+		p.ServeHTTP(w, r)
 	}
-}
-
-func forwardURL(auth *api.Session, url, base string) string {
-	i := strings.LastIndex(url, "?")
-	if i == -1 {
-		return fmt.Sprintf("%s%s?userid=%d", base, url, auth.User.ID)
-	}
-	return fmt.Sprintf("%s%s&userid=%d", base, url, auth.User.ID)
 }
