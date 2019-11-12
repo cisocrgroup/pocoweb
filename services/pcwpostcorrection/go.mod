@@ -1,6 +1,6 @@
 module github.com/finkf/pcwpostcorrection
 
-go 1.12
+go 1.13
 
 require (
 	github.com/finkf/gocrd/xml/page v0.1.2

@@ -4,8 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math/rand"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -223,8 +225,17 @@ func (r pcRunner) correctInBackend(corrections *api.PostCorrection) error {
 			LineID:    v.LineID,
 			TokenID:   v.TokenID,
 		}
-		if err := client.PutTokenX(&token, api.CorAutomatic, v.Cor); err != nil {
-			return fmt.Errorf("cannot post correct %s: %v", v.Normalized, err)
+		err := client.PutTokenX(&token, api.CorAutomatic, v.Cor)
+		if err != nil {
+			var ex api.ErrInvalidResponseCode
+			if !errors.As(err, &ex) {
+				return fmt.Errorf("cannot post correct %s: %v", v.Normalized, err)
+			}
+			if ex.Code != http.StatusConflict {
+				return fmt.Errorf("cannot post correct %s: %v", v.Normalized, err)
+			}
+			log.Debugf("cannot autocorrect: %s", k)
+			delete(corrections.Corrections, k)
 		}
 	}
 	return nil

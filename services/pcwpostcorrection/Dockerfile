@@ -1,4 +1,4 @@
-FROM golang:alpine AS build_base
+FROM golang:1.13-alpine AS build_base
 RUN apk add git
 WORKDIR /build
 COPY go.mod .
