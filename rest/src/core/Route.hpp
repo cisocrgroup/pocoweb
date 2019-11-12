@@ -71,7 +71,6 @@ protected:
   static std::string extract_content(const crow::request &request);
 
 private:
-  std::pair<int, std::string> get_userid(const Request &request) const noexcept;
   static std::string extract_multipart(const Request &req,
                                        const std::string &boundary);
   static std::string extract_raw(const Request &req);

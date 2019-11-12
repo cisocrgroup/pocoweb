@@ -14,22 +14,6 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-std::pair<int, std::string> Route::get_userid(const Request &request) const
-    noexcept {
-  static const std::string userid("userid");
-  const auto idstr = request.url_params.get(userid);
-  if (idstr == nullptr) {
-    return std::make_pair(0, "0");
-  }
-  CROW_LOG_DEBUG << "(Route::get_userid) userid: " << idstr;
-  const auto id = atoi(idstr);
-  if (id == 0) {
-    return std::make_pair(0, "0");
-  }
-  return std::make_pair(id, std::string(idstr));
-}
-
-////////////////////////////////////////////////////////////////////////////////
 MysqlConnection Route::must_get_connection() const {
   auto connection = get_connection();
   if (not connection)
