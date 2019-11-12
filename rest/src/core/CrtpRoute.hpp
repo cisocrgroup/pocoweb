@@ -61,17 +61,17 @@ pcw::Route::Response pcw::CrtpRoute<T>::operator()(const Request &req,
     // crow::json::dump(res.json_value);
     return res;
   } catch (const Error &e) {
-    CROW_LOG_ERROR << e.what();
+    CROW_LOG_ERROR << "error: " << e.what();
     crow::json::wvalue j;
     j["code"] = e.code();
     j["status"] = e.status();
     j["message"] = e.what();
     return Response(e.code(), j);
   } catch (const std::system_error &e) {
-    CROW_LOG_ERROR << e.what();
+    CROW_LOG_ERROR << "system_error: " << e.what();
     return internal_server_error();
   } catch (const std::exception &e) {
-    CROW_LOG_ERROR << e.what();
+    CROW_LOG_ERROR << "exception: " << e.what();
     return internal_server_error();
   } catch (...) {
     CROW_LOG_ERROR << "catch (...)";
