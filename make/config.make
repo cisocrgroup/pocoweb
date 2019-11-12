@@ -20,12 +20,6 @@ CXXFLAGS += -Wundef
 # CXXFLAGS += -Wsuggest-attribute=pure
 # CXXFLAGS += -Wsuggest-attribute=const
 # CXXFLAGS += -Wsuggest-attribute=noreturn
-CXXFLAGS += -isystem modules/sqlpp11/include
-CXXFLAGS += -isystem modules/sqlpp11-connector-mysql/include
-CXXFLAGS += -isystem modules/date/include
-CXXFLAGS += -isystem modules/crow/include
-CXXFLAGS += -isystem modules/utfcpp/source
-CXXFLAGS += -isystem modules/pugixml/src
 CXXFLAGS += -DPCW_API_VERSION=$(PCW_API_VERSION)
 CXXFLAGS += -DPCW_DESTDIR=$(DESTDIR)
 
