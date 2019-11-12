@@ -22,7 +22,7 @@
         <td>
           <% for (var i =0;i<pr.always[key].length;i++){%>
            <div>
-          <%-pr.always[key][i].cor%> <i class="fas fa-long-arrow-alt-right"></i> <%-pr.always[key][i].cor%> <i class="green far fa-check-circle"></i>
+          <%-pr.always[key][i].ocr%> <i class="fas fa-long-arrow-alt-right"></i> <%-pr.always[key][i].cor%> <i class="green far fa-check-circle"></i>
           </div>
           <% } %>
         </td>
@@ -56,7 +56,7 @@
         <td><%-key%></td>
         <td><% for (var i =0;i<pr.sometimes[key].length;i++){%>
             <div>
-              <%-pr.sometimes[key][i].cor%> <i class="fas fa-long-arrow-alt-right"></i> <%-pr.sometimes[key][i].cor%>
+              <%-pr.sometimes[key][i].ocr%> <i class="fas fa-long-arrow-alt-right"></i> <%-pr.sometimes[key][i].cor%>
               <%if(pr.sometimes[key][i].cor.taken) { %> <i class="green far fa-check-circle"></i> 
               <% } else { %>
               <i class="red far fa-times-circle"></i> 
@@ -95,7 +95,7 @@
         <td>
           <% for (var i =0;i<pr.never[key].length;i++){%>
            <div>
-          <%-pr.never[key][i].cor%> <i class="fas fa-long-arrow-alt-right"></i> <%-pr.never[key][i].cor%> <i class="red far fa-times-circle"></i> 
+          <%-pr.never[key][i].ocr%> <i class="fas fa-long-arrow-alt-right"></i> <%-pr.never[key][i].cor%> <i class="red far fa-times-circle"></i> 
           </div>
           <% } %>
         </td>

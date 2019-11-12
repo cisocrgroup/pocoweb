@@ -4,9 +4,9 @@
 
 define(["marionette","app"], function(Marionette,App){
 
-	var projectsdApp = {};
+	var projectsApp = {};
 
-	projectsdApp.Router = Marionette.AppRouter.extend({
+	projectsApp.Router = Marionette.AppRouter.extend({
 		appRoutes: {
 		   "projects"    :"listProjects",
   		   "projects/:id"    :"showProject",
@@ -95,7 +95,7 @@ define(["marionette","app"], function(Marionette,App){
 
 
 
-	var router = new projectsdApp.Router({
+	var router = new projectsApp.Router({
 			controller: API
 	});
 	
@@ -105,6 +105,6 @@ define(["marionette","app"], function(Marionette,App){
 	// });
 
 
- return projectsdApp; 	
+ return projectsApp; 	
 
 });

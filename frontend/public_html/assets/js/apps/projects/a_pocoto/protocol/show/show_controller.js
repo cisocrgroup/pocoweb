@@ -66,9 +66,9 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
 
 
-                        var searchingToken = ProjectEntities.API.search({q:word,pid:id,searchType:"ac",skip:0,max:App.getPageHits(id)});
+                     var searchingToken = ProjectEntities.API.search({q:word,pid:id,searchType:"ac",skip:0,max:App.getPageHits(id)});
 
-                      $.when(searchingToken).done(function(tokens,suggestions){
+                    $.when(searchingToken).done(function(tokens,suggestions){
                       var lineheight = App.getLineHeight(id);
                       var linenumbers = App.getLineNumbers(id);
 
@@ -160,6 +160,8 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
                       App.mainLayout.showChildView('dialogRegion',projectConcView);
 
+                     }).fail(function(response){
+                              Util.defaultErrorHandling(response,'danger');
                      });
 
                   });

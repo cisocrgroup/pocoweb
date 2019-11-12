@@ -142,7 +142,9 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
                         App.mainLayout.showChildView('dialogRegion',projectConcView);
 
-                       });
+                       }).fail(function(response){
+                              Util.defaultErrorHandling(response,'danger');
+                     });
 
                     });
 

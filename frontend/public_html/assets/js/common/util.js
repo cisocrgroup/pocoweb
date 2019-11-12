@@ -201,6 +201,15 @@ addAlignedLine : function(line){
            if(response.status==401){
              var mainRegion = App.mainLayout.getRegion('mainRegion');
              mainRegion.empty();
+
+             // re-render navbar on every 401
+
+             App.logout(); // automatically logout user when 401?
+             var headerRegion = App.mainLayout.getRegion('headerRegion');
+             headerRegion.currentView.getRegion('navbarRegion').currentView.options.user={id:-1}; 
+             headerRegion.currentView.getRegion('navbarRegion').currentView.render(); 
+             
+             // display login screen
              App.trigger("nav:login",false);
          }
          App.mainmsg.updateContent("Error "+ response.responseJSON.code +" ("+response.responseJSON.status+") "+response.responseJSON.message,mode);

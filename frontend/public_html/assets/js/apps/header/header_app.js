@@ -1,8 +1,11 @@
 
-define(["marionette","app"], function(Marionette,IPS_App){
+define(["marionette","app"], function(Marionette,App){
 
 	var HeaderApp={};
-
+		HeaderApp.Router = Marionette.AppRouter.extend({
+		appRoutes: {
+		}
+	});
 		HeaderApp.API = {
 			showHeader: function(callback){
 				require(["apps/header/show/show_controller"], function(ShowController){
@@ -12,12 +15,7 @@ define(["marionette","app"], function(Marionette,IPS_App){
 				});
 			}
 		};
-
-	// HeaderApp.on("start", function(){
-	// 	API.showHeader();
-	// });	
-
-
+	
   return HeaderApp; 	
 
 });
