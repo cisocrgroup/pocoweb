@@ -34,10 +34,10 @@ template <class It, class F> static void each_ocr(It b, It e, F f) {
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-DbSlice::DbSlice(DbLine &line, iterator b, iterator e)
+DbSlice::DbSlice(DbLine &line, iterator b, iterator e, int tid, int ofs)
     : bookid(line.bookid), projectid(line.projectid), pageid(line.pageid),
-      lineid(line.lineid), offset(int(std::distance(line.line.begin(), b))),
-      begin(b), end(e), box(), match(), line_(&line) {
+      lineid(line.lineid), tokenid(tid), offset(ofs), begin(b), end(e), box(),
+      match(), line_(&line) {
   this->box.set_top(line_->box.top());
   this->box.set_bottom(line_->box.bottom());
   if (begin == line_->line.begin()) {
@@ -219,46 +219,88 @@ bool DbLine::load(MysqlConnection &mysql) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbLine::each_token(std::function<void(DbSlice &)> f) {
-  auto nospace = [](const auto &c) { return not std::iswspace(c.get_cor()); };
-  auto isspace = [](const auto &c) { return std::iswspace(c.get_cor()); };
-  auto e = line.end();
-  auto i = std::find_if(line.begin(), e, nospace);
-  while (i != e) {
-    // i is not space
-    auto tmp = std::find_if(std::next(i), e, isspace);
-    // i != tmp and tmp == e or tmp is space
-    DbSlice slice(*this, i, tmp);
+  auto isboundary = [](const auto &c) { return std::iswspace(c.get_cor()); };
+  enum { start, bound, rune } state = start;
+  const auto end = line.end();
+  pos begin;
+  iterate(line.begin(), end, [&](iterator i, int id, int offset) {
+    switch (state) {
+    case start:
+      if (isboundary(*i)) {
+        state = bound;
+      } else {
+        begin = {i, id, offset};
+        state = rune;
+      }
+      return ++i;
+    case rune:
+      if (isboundary(*i)) {
+        DbSlice slice(*this, begin.it, i, begin.id, begin.offset);
+        f(slice);
+        state = bound;
+      }
+      return ++i;
+    case bound:
+      if (not isboundary(*i)) {
+        begin = {i, id, offset};
+        state = rune;
+      }
+      return ++i;
+    }
+  });
+  if (state == rune) {
+    DbSlice slice(*this, begin.it, end, begin.id, begin.offset);
     f(slice);
-    // next begin;
-    i = std::find_if(tmp, e, nospace);
-    // i == e or is not space
-    slice.box.set_left(int(std::prev(i)->cut));
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+DbLine::pos DbLine::find(int pos) {
+  auto end = line.end();
+  auto ret = DbLine::pos{end, 0, 0};
+  iterate(line.begin(), end, [&](iterator i, int id, int offset) {
+    if (id == pos) {
+      ret = {i, id, offset};
+      return end;
+    }
+    return ++i;
+  });
+  return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+DbLine::pos DbLine::next(pos begin, int len) {
+  auto end = line.end();
+  auto ret = DbLine::pos{end, 0, 0};
+  iterate(++begin.it, end, [&](iterator i, int id, int offset) {
+    if (len < 0 and std::iswspace(i->get_cor())) {
+      ret = {i, id, offset};
+      return end;
+    }
+    if (len == 0) {
+      ret = {i, id, offset};
+      return end;
+    }
+    --len;
+    return ++i;
+  });
+  return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+DbSlice DbLine::slice() {
+  if (line.empty()) {
+    return DbSlice(*this, line.end(), line.end(), 0, 0);
+  }
+  return DbSlice(*this, line.begin(), line.end(),
+                 line.begin()->is_ins() ? MAX_LINE_LENGTH : 0, 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 DbSlice DbLine::slice(int begin, int len) {
-  if (begin < 0 or len < 0 or size_t(begin + len) > line.size() or
-      size_t(begin) > line.size()) {
-    throw std::logic_error("(DbLine::slice) invalid start or len: " +
-                           std::to_string(begin) + ", " + std::to_string(len) +
-                           " [size = " + std::to_string(line.size()) + "]");
-  }
-  return DbSlice(*this, std::next(line.begin(), begin),
-                 std::next(line.begin(), begin + len));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-int DbLine::tokenLength(int begin) const {
-  if (begin < 0 or size_t(begin) >= line.size()) {
-    throw std::logic_error(
-        "(DbLine::endOfToken) invalid start index: " + std::to_string(begin) +
-        " [size = " + std::to_string(line.size()) + "]");
-  }
-  const auto e =
-      std::find_if(std::next(line.begin(), begin), line.end(),
-                   [](const auto &c) { return std::iswspace(c.get_cor()); });
-  return int(std::distance(std::next(line.begin(), begin), e));
+  auto b = find(begin);
+  auto e = next(b, len);
+  return DbSlice(*this, b.it, e.it, b.id, b.offset);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

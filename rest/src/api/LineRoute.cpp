@@ -167,10 +167,7 @@ Route::Response LineRoute::impl(HttpGet, const Request &req, int pid,
     THROW(NotFound, "(LineRoute) cannot find ", pid, ":", pageid, ":", lid);
   }
   Json j;
-  if (len) {
-    return j << line.slice(tid, len.value());
-  }
-  return j << line.slice(tid, line.tokenLength(tid));
+  return j << line.slice(tid, len.value_or(-1));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -204,19 +201,18 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   if (not line.load(conn)) {
     THROW(NotFound, "(LineRoute) cannot find ", pid, ":", p, ":", lid);
   }
-  const auto l = len ? len.value() : line.tokenLength(tid);
-  correct(line, correction.value(), tid, l, t == "manual");
+  auto slice = line.slice(tid, len.value_or(-1));
+  correct(slice, correction.value(), t == "manual");
   update(conn, line);
   Json j;
-  return j << line.slice(tid, l);
+  return j << slice;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void LineRoute::correct(DbLine &line, const std::string &correction,
-                        bool manual) {
-  CROW_LOG_INFO << "(LineRoute::correct) correction: \"" << correction << "\"";
+void LineRoute::correct(DbLine &line, const std::string &cor, bool manual) {
+  CROW_LOG_INFO << "(LineRoute::correct) correction: \"" << cor << "\"";
   WagnerFischer wf;
-  wf.set_gt(correction);
+  wf.set_gt(cor);
   auto slice = line.slice();
   // can only overwrite manual correctinos with other manual corrections
   if (not manual and slice.contains_manual_corrections()) {
@@ -224,7 +220,7 @@ void LineRoute::correct(DbLine &line, const std::string &correction,
   }
   wf.set_ocr(slice.wocr());
   const auto lev = wf();
-  CROW_LOG_INFO << "(LineRoute) correction: " << correction;
+  CROW_LOG_INFO << "(LineRoute) correction: " << cor;
   CROW_LOG_INFO << "(LineRoute) line.ocr(): " << line.slice().ocr();
   CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
 
@@ -232,35 +228,33 @@ void LineRoute::correct(DbLine &line, const std::string &correction,
   wf.correct(slice);
   slice.set_correction_type(manual);
 
+  CROW_LOG_INFO << "(LineRoute) line.ocr(): " << line.slice().ocr();
   CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
   CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void LineRoute::correct(DbLine &line, const std::string &correction, int b,
-                        int len, bool manual) {
-  CROW_LOG_INFO << "(LineRoute::correct) correction: \"" << correction
-                << "\" (b = " << b << " len = " << len << " manual = " << manual
-                << ")";
+void LineRoute::correct(DbSlice &slice, const std::string &cor, bool manual) {
+  CROW_LOG_INFO << "(LineRoute::correct) correction: \"" << cor << "\"";
   WagnerFischer wf;
-  wf.set_gt(correction);
-  auto slice = line.slice(b, len);
+  wf.set_gt(cor);
   // can only overwrite manual correctinos with other manual corrections
   if (not manual and slice.contains_manual_corrections()) {
     THROW(Conflict, "(LineRoute) cannot overwrite manual corrections");
   }
   wf.set_ocr(slice.wocr());
   const auto lev = wf();
-  CROW_LOG_INFO << "(LineRoute) correction: " << correction;
-  CROW_LOG_INFO << "(LineRoute) line.ocr(): " << line.slice().ocr();
-  CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
+  CROW_LOG_INFO << "(LineRoute)  correction: " << cor;
+  CROW_LOG_INFO << "(LineRoute) slice.ocr(): " << slice.ocr();
+  CROW_LOG_INFO << "(LineRoute) slice.cor(): " << slice.cor();
 
   // correct
   wf.correct(slice);
   slice.set_correction_type(manual);
 
-  CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
-  CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
+  CROW_LOG_INFO << "(LineRoute) slice.ocr(): " << slice.ocr();
+  CROW_LOG_INFO << "(LineRoute) slice.cor(): " << slice.cor();
+  CROW_LOG_INFO << "(LineRoute)         lev: " << lev;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

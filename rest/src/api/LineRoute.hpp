@@ -12,6 +12,7 @@ class rvalue;
 namespace pcw {
 struct Token;
 struct DbLine;
+struct DbSlice;
 class Line;
 using Json = crow::json::wvalue;
 using RJson = crow::json::rvalue;
@@ -37,9 +38,8 @@ public:
 
 private:
   Response updateOCR(const Request &req, int bid, int pid, int lid) const;
-  static void correct(DbLine &line, const std::string &correction, bool manual);
-  static void correct(DbLine &line, const std::string &correction, int begin,
-                      int len, bool manual);
+  static void correct(DbLine &line, const std::string &cor, bool manual);
+  static void correct(DbSlice &slice, const std::string &cor, bool manual);
   static void update(MysqlConnection &conn, const DbLine &line);
   static const char *route_;
   static const char *name_;

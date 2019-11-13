@@ -2,6 +2,7 @@
 #define pcw_DbStructs_hpp__
 
 #include "Tables.h"
+#include "common.hpp"
 #include "core/Box.hpp"
 #include "core/rapidjson.hpp"
 #include "mysql.hpp"
@@ -45,6 +46,7 @@ struct DbChar {
   wchar_t get_cor() const noexcept {
     return is_del() ? 0 : is_cor() ? cor : ocr;
   }
+  int id(int offset) { return is_ins() ? offset + MAX_LINE_LENGTH : offset; }
 
   wchar_t ocr, cor;
   double conf;
@@ -54,7 +56,7 @@ struct DbChar {
 
 struct DbSlice {
   using iterator = std::list<DbChar>::iterator;
-  DbSlice(DbLine &line, iterator b, iterator e);
+  DbSlice(DbLine &line, iterator b, iterator e, int tid, int offset);
 
   std::string ocr() const;
   std::string cor() const;
@@ -66,6 +68,7 @@ struct DbSlice {
   bool is_automatically_corrected() const;
   bool is_manually_corrected() const;
   bool contains_manual_corrections() const;
+  DbLine &line() { return *line_; }
 
   // wagner-fischer interface
   void begin_wagner_fischer(size_t b, size_t e);
@@ -82,7 +85,7 @@ struct DbSlice {
            std::to_string(lineid) + ":" + std::to_string(offset);
   }
 
-  int bookid, projectid, pageid, lineid, offset;
+  int bookid, projectid, pageid, lineid, tokenid, offset;
   std::list<DbChar>::iterator begin, end;
   Box box;
   bool match;
@@ -103,7 +106,7 @@ template <class OS> void DbSlice::serialize(rapidjson::Writer<OS> &w) const {
   w.String("lineId");
   w.Int(lineid);
   w.String("tokenId");
-  w.Int(offset);
+  w.Int(tokenid);
   w.String("offset");
   w.Int(offset);
   w.String("box");
@@ -135,16 +138,23 @@ Json &operator<<(Json &j, const DbSlice &line);
 
 struct DbLine {
   using iterator = std::list<DbChar>::iterator;
+  using pos = struct {
+    iterator it;
+    int id, offset;
+  };
   DbLine(int pid, int pageid, int lid)
       : line(), imagepath(), box(), bookid(), projectid(pid), pageid(pageid),
         lineid(lid), begin_(), end_() {}
   bool load(MysqlConnection &mysql);
 
   // slices
+  pos find(int pos);
+  // len = -1 means until first encountered whitespace.
+  pos next(pos begin, int len);
   void each_token(std::function<void(DbSlice &)> f);
-  DbSlice slice() { return slice(0, line.size()); }
+  DbSlice slice();
+  // len = -1 means slice from begin to next whitespace.
   DbSlice slice(int begin, int len);
-  int tokenLength(int begin) const;
 
   // update
   void updateOCR(const std::wstring &ocr, const std::vector<int> &cuts,
@@ -152,6 +162,7 @@ struct DbLine {
   void updateImage(const std::string &base, const std::string &imagedata) const;
   void updateContents(MysqlConnection &mysql) const;
 
+  template <class It, class F> void iterate(It b, It e, F f);
   template <class OS> void serialize(rapidjson::Writer<OS> &w);
   std::string strID() const {
     return std::to_string(projectid) + ":" + std::to_string(pageid) + ":" +
@@ -166,6 +177,21 @@ private:
   void clear_insertions();
   std::list<DbChar>::iterator begin_, end_;
 };
+
+template <class It, class F> void DbLine::iterate(It b, It e, F f) {
+  int offset = 0;
+  int ocrid = 0;
+  int insid = MAX_LINE_LENGTH;
+  while (b != e) {
+    int id;
+    if (b->is_ins()) {
+      id = insid++;
+    } else {
+      id = ocrid++;
+    }
+    b = f(b, id, offset++);
+  }
+}
 
 template <class OS> void DbLine::serialize(rapidjson::Writer<OS> &w) {
   const auto slice = this->slice();
