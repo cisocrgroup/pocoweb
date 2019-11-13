@@ -174,7 +174,6 @@ struct DbLine {
   int bookid, projectid, pageid, lineid;
 
 private:
-  void clear_insertions();
   std::list<DbChar>::iterator begin_, end_;
 };
 
