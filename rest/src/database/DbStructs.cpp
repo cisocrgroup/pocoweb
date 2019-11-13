@@ -460,7 +460,7 @@ pcw::Json &pcw::operator<<(Json &j, const DbSlice &slice) {
   j["projectId"] = slice.projectid;
   j["pageId"] = slice.pageid;
   j["lineId"] = slice.lineid;
-  j["tokenId"] = slice.offset;
+  j["tokenId"] = slice.tokenid;
   j["offset"] = slice.offset;
   j["box"] << slice.box;
   j["cor"] = slice.cor();
