@@ -354,7 +354,7 @@ Route::Response SearchRoute::search_ac(MysqlConnection &mysql, ac q) const {
         line.lineid = row.lineid;
         line.pageid = row.pageid;
         if (not line.load(mysql)) {
-          THROW(Error, "cannot line page ", line.strID());
+          THROW(Error, "cannot load page ", line.strID());
         }
       }
       ret.add(qstr, line, row.tokenid);
