@@ -84,7 +84,7 @@ for run in $(cat "$PARAMETER" | jq -r '.ocrSteps[] | @base64'); do
 	alignfgs="$alignfgs,$XML_OUTPUT_FILE_GRP"
 
 	# run OCR only if it not yet exists
-	if [[ doOCR = true ]]; then
+	if [[ "$doOCR" == true ]]; then
 		run=$(echo $run | base64 -d)
 		eval ocrd-cis-debug "$run"
 		eval $run || exit 1
