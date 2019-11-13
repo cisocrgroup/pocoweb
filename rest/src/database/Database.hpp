@@ -214,6 +214,7 @@ template <class Db> pcw::BookSptr pcw::insert_book(Db &db, Book &book) {
                                 contents.pageid = parameter(contents.pageid),
                                 contents.lineid = parameter(contents.lineid),
                                 contents.seq = parameter(contents.seq),
+                                contents.cid = parameter(contents.cid),
                                 contents.ocr = parameter(contents.ocr),
                                 contents.cor = parameter(contents.cor),
                                 contents.cut = parameter(contents.cut),
@@ -284,6 +285,7 @@ void pcw::detail::insert_content(Db &db, R &r, const Line &line) {
   r.params.lineid = line.id();
   for (auto i = 0U; i < line.size(); ++i) {
     r.params.seq = i;
+    r.params.cid = i;
     r.params.ocr = line[i].ocr;
     r.params.cor = line[i].cor;
     r.params.cut = line[i].cut;

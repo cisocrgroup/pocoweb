@@ -46,17 +46,16 @@ struct DbChar {
   wchar_t get_cor() const noexcept {
     return is_del() ? 0 : is_cor() ? cor : ocr;
   }
-  int id(int offset) { return is_ins() ? offset + MAX_LINE_LENGTH : offset; }
 
   wchar_t ocr, cor;
   double conf;
-  int cut;
+  int cut, id;
   bool manually;
 };
 
 struct DbSlice {
   using iterator = std::list<DbChar>::iterator;
-  DbSlice(DbLine &line, iterator b, iterator e, int tid, int offset);
+  DbSlice(DbLine &line, iterator b, iterator e, int offset);
 
   std::string ocr() const;
   std::string cor() const;
@@ -141,7 +140,7 @@ struct DbLine {
   using iterator = std::list<DbChar>::iterator;
   using pos = struct {
     iterator it;
-    int id, offset;
+    int offset;
   };
   DbLine(int pid, int pageid, int lid)
       : line(), imagepath(), box(), bookid(), projectid(pid), pageid(pageid),
@@ -161,9 +160,7 @@ struct DbLine {
   void updateOCR(const std::wstring &ocr, const std::vector<int> &cuts,
                  const std::vector<double> &confs);
   void updateImage(const std::string &base, const std::string &imagedata) const;
-  void updateContents(MysqlConnection &mysql) const;
 
-  template <class It, class F> void iterate(It b, It e, F f);
   template <class OS> void serialize(rapidjson::Writer<OS> &w);
   std::string strID() const {
     return std::to_string(projectid) + ":" + std::to_string(pageid) + ":" +
@@ -177,21 +174,6 @@ struct DbLine {
 private:
   std::list<DbChar>::iterator begin_, end_;
 };
-
-template <class It, class F> void DbLine::iterate(It b, It e, F f) {
-  int offset = 0;
-  int ocrid = 0;
-  int insid = MAX_LINE_LENGTH;
-  while (b != e) {
-    int id;
-    if (b->is_ins()) {
-      id = insid++;
-    } else {
-      id = ocrid++;
-    }
-    b = f(b, id, offset++);
-  }
-}
 
 template <class OS> void DbLine::serialize(rapidjson::Writer<OS> &w) {
   const auto slice = this->slice();
@@ -397,7 +379,7 @@ inline auto project_line_contents_view() {
   tables::Textlines l;
   tables::Projects p;
   tables::ProjectPages pp;
-  return select(p.id, all_of(l), c.cut, c.conf, c.ocr, c.cor, c.manually)
+  return select(p.id, all_of(l), c.cut, c.conf, c.ocr, c.cor, c.cid, c.manually)
       .from(p.join(l)
                 .on(p.origin == l.bookid)
                 .join(pp)
@@ -490,6 +472,7 @@ template <class Row> void load_from_row(Row &row, DbChar &c) {
   c.ocr = wchar_t(row.ocr);
   c.cor = wchar_t(row.cor);
   c.cut = int(row.cut);
+  c.id = int(row.cid);
   c.conf = row.conf;
   c.manually = row.manually;
 }

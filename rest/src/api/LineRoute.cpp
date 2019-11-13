@@ -122,7 +122,7 @@ Route::Response LineRoute::updateOCR(const Request &req, int pid, int p,
   // udpate line
   line.updateOCR(ocr, cuts, confs);
   MysqlCommitter committer(conn);
-  line.updateContents(conn);
+  update(conn, line);
   if (imagedata != "") {
     line.updateImage(get_config().daemon.projectdir, imagedata);
   }
@@ -288,6 +288,7 @@ void LineRoute::update(MysqlConnection &mysql, const DbLine &line) {
   auto stmnt = mysql.db().prepare(insert_into(contents).set(
       contents.bookid = line.bookid, contents.pageid = line.pageid,
       contents.lineid = line.lineid, contents.seq = parameter(contents.seq),
+      contents.cid = parameter(contents.cid),
       contents.ocr = parameter(contents.ocr),
       contents.cor = parameter(contents.cor),
       contents.cut = parameter(contents.cut),
@@ -295,13 +296,13 @@ void LineRoute::update(MysqlConnection &mysql, const DbLine &line) {
       contents.conf = parameter(contents.conf)));
   int i = 0;
   for (const auto &c : line.line) {
-    stmnt.params.seq = i;
-    i++;
+    stmnt.params.seq = i++;
     stmnt.params.ocr = int(c.ocr);
     stmnt.params.cor = int(c.cor);
     stmnt.params.cut = c.cut;
     stmnt.params.manually = c.manually;
     stmnt.params.conf = c.conf;
+    stmnt.params.cid = c.id;
     mysql.db()(stmnt);
   }
   committer.commit();

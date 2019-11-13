@@ -106,6 +106,7 @@ create table if not exists contents (
 	cor int not null,
 	cut int not null,
 	conf double not null,
+	cid int not null,
 	manually boolean not null default(false),
 	primary key (bookid, pageid, lineid, seq)
 );

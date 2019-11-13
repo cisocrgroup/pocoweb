@@ -34,10 +34,10 @@ template <class It, class F> static void each_ocr(It b, It e, F f) {
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-DbSlice::DbSlice(DbLine &line, iterator b, iterator e, int tid, int ofs)
+DbSlice::DbSlice(DbLine &line, iterator b, iterator e, int ofs)
     : bookid(line.bookid), projectid(line.projectid), pageid(line.pageid),
-      lineid(line.lineid), tokenid(tid), offset(ofs), begin(b), end(e), box(),
-      match(), line_(&line) {
+      lineid(line.lineid), tokenid(b == e ? ofs : b->id), offset(ofs), begin(b),
+      end(e), box(), match(), line_(&line) {
   this->box.set_top(line_->box.top());
   this->box.set_bottom(line_->box.bottom());
   if (begin == line_->line.begin()) {
@@ -167,7 +167,9 @@ void DbSlice::insert(size_t i, wchar_t c) {
   const auto cut = left + ((right - left) / 2);
   // std::cerr << "left cut: " << left << ", right cut: " << right
   //           << ", cut: " << cut << "\n";
-  line_->line.insert(i_, DbChar{.ocr = 0, .cor = c, .conf = 1, .cut = cut});
+  const auto id = int(line_->line.size());
+  line_->line.insert(
+      i_, DbChar{.ocr = 0, .cor = c, .conf = 1, .cut = cut, .id = id});
   if (i_ == begin) { // Fix begin if we have an insertion before start pos.
     begin = std::prev(i_);
   }
@@ -227,33 +229,35 @@ void DbLine::each_token(std::function<void(DbSlice &)> f) {
   enum { start, bound, rune } state = start;
   const auto end = line.end();
   pos begin;
-  iterate(line.begin(), end, [&](iterator i, int id, int offset) {
+  int offset = 0;
+  for (auto i = line.begin(); i != end; i++) {
     switch (state) {
     case start:
       if (isboundary(*i)) {
         state = bound;
       } else {
-        begin = {i, id, offset};
+        begin = {i, offset};
         state = rune;
       }
-      return ++i;
+      break;
     case rune:
       if (isboundary(*i)) {
-        DbSlice slice(*this, begin.it, i, begin.id, begin.offset);
+        DbSlice slice(*this, begin.it, i, begin.offset);
         f(slice);
         state = bound;
       }
-      return ++i;
+      break;
     case bound:
       if (not isboundary(*i)) {
-        begin = {i, id, offset};
+        begin = {i, offset};
         state = rune;
       }
-      return ++i;
+      break;
     }
-  });
+    offset++;
+  }
   if (state == rune) {
-    DbSlice slice(*this, begin.it, end, begin.id, begin.offset);
+    DbSlice slice(*this, begin.it, end, begin.offset);
     f(slice);
   }
 }
@@ -261,15 +265,14 @@ void DbLine::each_token(std::function<void(DbSlice &)> f) {
 ////////////////////////////////////////////////////////////////////////////////
 DbLine::pos DbLine::find(int pos) {
   auto end = line.end();
-  auto ret = DbLine::pos{end, 0, 0};
-  iterate(line.begin(), end, [&](iterator i, int id, int offset) {
-    if (id == pos) {
-      ret = {i, id, offset};
-      return end;
+  int offset = 0;
+  for (auto i = line.begin(); i != end; i++) {
+    if (i->id == pos) {
+      return {i, offset};
     }
-    return ++i;
-  });
-  return ret;
+    offset++;
+  }
+  return {end, offset};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -290,16 +293,15 @@ DbLine::iterator DbLine::next(pos begin, int len) {
 ////////////////////////////////////////////////////////////////////////////////
 DbSlice DbLine::slice() {
   if (line.empty()) {
-    return DbSlice(*this, line.end(), line.end(), 0, 0);
+    return DbSlice(*this, line.end(), line.end(), 0);
   }
-  return DbSlice(*this, line.begin(), line.end(),
-                 line.begin()->is_ins() ? MAX_LINE_LENGTH : 0, 0);
+  return DbSlice(*this, line.begin(), line.end(), 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 DbSlice DbLine::slice(int begin, int len) {
   auto b = find(begin);
-  return DbSlice(*this, b.it, next(b, len), b.id, b.offset);
+  return DbSlice(*this, b.it, next(b, len), b.offset);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -328,26 +330,6 @@ void DbLine::updateImage(const std::string &base,
   bn::decode_b64(imagedata.begin(), imagedata.end(),
                  std::ostream_iterator<char>(out, ""));
   out.close();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void DbLine::updateContents(MysqlConnection &mysql) const {
-  using namespace sqlpp;
-  tables::Contents c;
-  mysql.db()(remove_from(c).where(c.bookid == bookid and c.pageid == pageid and
-                                  c.lineid == lineid));
-  auto prep = mysql.db().prepare(insert_into(c).set(
-      c.bookid = bookid, c.pageid = pageid, c.lineid = lineid, c.cor = 0,
-      c.manually = false, c.seq = parameter(c.seq), c.ocr = parameter(c.ocr),
-      c.cut = parameter(c.cut), c.conf = parameter(c.conf)));
-  int i = 0;
-  for (const auto &c : line) {
-    prep.params.seq = i++;
-    prep.params.ocr = int(c.ocr);
-    prep.params.cut = c.cut;
-    prep.params.conf = c.conf;
-    mysql.db()(prep);
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

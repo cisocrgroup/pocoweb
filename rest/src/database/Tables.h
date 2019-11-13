@@ -1104,6 +1104,22 @@ namespace tables
       };
       using _traits = sqlpp::make_traits<sqlpp::floating_point, sqlpp::tag::require_insert>;
     };
+    struct Cid
+    {
+      struct _alias_t
+      {
+        static constexpr const char _literal[] =  "cid";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template<typename T>
+        struct _member_t
+          {
+            T cid;
+            T& operator()() { return cid; }
+            const T& operator()() const { return cid; }
+          };
+      };
+      using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::require_insert>;
+    };
     struct Manually
     {
       struct _alias_t
@@ -1131,6 +1147,7 @@ namespace tables
                Contents_::Cor,
                Contents_::Cut,
                Contents_::Conf,
+               Contents_::Cid,
                Contents_::Manually>
   {
     struct _alias_t
