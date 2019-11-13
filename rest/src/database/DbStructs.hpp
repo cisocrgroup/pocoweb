@@ -150,7 +150,7 @@ struct DbLine {
   // slices
   pos find(int pos);
   // len = -1 means until first encountered whitespace.
-  pos next(pos begin, int len);
+  iterator next(pos begin, int len);
   void each_token(std::function<void(DbSlice &)> f);
   DbSlice slice();
   // len = -1 means slice from begin to next whitespace.

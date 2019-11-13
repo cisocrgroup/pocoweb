@@ -269,22 +269,18 @@ DbLine::pos DbLine::find(int pos) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-DbLine::pos DbLine::next(pos begin, int len) {
-  auto end = line.end();
-  auto ret = DbLine::pos{end, 0, 0};
-  iterate(++begin.it, end, [&](iterator i, int id, int offset) {
+DbLine::iterator DbLine::next(pos begin, int len) {
+  const auto end = line.end();
+  for (auto i = begin.it; i != end; i++) {
     if (len < 0 and std::iswspace(i->get_cor())) {
-      ret = {i, id, offset};
-      return end;
+      return i;
     }
     if (len == 0) {
-      ret = {i, id, offset};
-      return end;
+      return i;
     }
     --len;
-    return ++i;
-  });
-  return ret;
+  }
+  return end;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -299,8 +295,7 @@ DbSlice DbLine::slice() {
 ////////////////////////////////////////////////////////////////////////////////
 DbSlice DbLine::slice(int begin, int len) {
   auto b = find(begin);
-  auto e = next(b, len);
-  return DbSlice(*this, b.it, e.it, b.id, b.offset);
+  return DbSlice(*this, b.it, next(b, len), b.id, b.offset);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
