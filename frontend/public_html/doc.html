@@ -1533,7 +1533,9 @@ returned.</li>
 <h4>
 <a id="user-content-query-parameters-3" class="anchor" href="#query-parameters-3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
 <p>You can set the type of the correction using <code>t=manual|automatic</code> as
-query paramter in the url.  It is also possible to use <code>t=ocr</code> (see
+query paramter in the url.  Setting <code>t=reset</code>, resets the line to its
+original ocr data. This deletes any automatic and/or manual
+corrections.  It is also possible to use <code>t=ocr</code> (see
 <a href="#user-content-api-post-books-pid-pages-pageid-lines-lid-ocr">below</a>). If
 <code>t</code> is missing, <code>"t=automatic"</code> is assumed.</p>
 <h4>
@@ -1672,7 +1674,9 @@ returned.</li>
 <h4>
 <a id="user-content-query-parameters-6" class="anchor" href="#query-parameters-6" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
 <p>You can set the type of the correction using <code>t=manual|automatic</code> as
-query paramter in the url.  If <code>t</code> is missing, <code>"t=automatic"</code> is
+query paramter in the url.  Setting <code>t=reset</code> resets the token to its
+original OCR data.  This removes any automatic and/or manual
+corrections for the token.  If <code>t</code> is missing, <code>"t=automatic"</code> is
 assumed.  An optional parameter <code>len=n</code> can be specified to correct a
 specific slice of the line starting at position <code>tid</code> and ending at
 position <code>tid+len-1</code> (counting unicode code-points and starting at
@@ -1694,7 +1698,6 @@ is corrected.</p>
   <span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">27</span>,
   <span class="pl-s"><span class="pl-pds">"</span>tokenId<span class="pl-pds">"</span></span>: <span class="pl-c1">77</span>,
   <span class="pl-s"><span class="pl-pds">"</span>offset<span class="pl-pds">"</span></span>: <span class="pl-c1">10</span>,
-  <span class="pl-s"><span class="pl-pds">"</span>imgFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path/to/line/image/file<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected content<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr content<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],

@@ -1512,7 +1512,9 @@ Correct line `lid` in page `pageid` of project or package `pid`.
 
 #### Query parameters
 You can set the type of the correction using `t=manual|automatic` as
-query paramter in the url.  It is also possible to use `t=ocr` (see
+query paramter in the url.  Setting `t=reset`, resets the line to its
+original ocr data. This deletes any automatic and/or manual
+corrections.  It is also possible to use `t=ocr` (see
 [below](#user-content-api-post-books-pid-pages-pageid-lines-lid-ocr)). If
 `t` is missing, `"t=automatic"` is assumed.
 
@@ -1647,7 +1649,9 @@ or package `pid`.
 
 #### Query parameters
 You can set the type of the correction using `t=manual|automatic` as
-query paramter in the url.  If `t` is missing, `"t=automatic"` is
+query paramter in the url.  Setting `t=reset` resets the token to its
+original OCR data.  This removes any automatic and/or manual
+corrections for the token.  If `t` is missing, `"t=automatic"` is
 assumed.  An optional parameter `len=n` can be specified to correct a
 specific slice of the line starting at position `tid` and ending at
 position `tid+len-1` (counting unicode code-points and starting at
@@ -1673,7 +1677,6 @@ The correction for the word/slice is set using the mandatory
   "projectId": 27,
   "tokenId": 77,
   "offset": 10,
-  "imgFile": "path/to/line/image/file",
   "cor": "corrected content",
   "ocr": "ocr content",
   "cuts": [1, 3, 5, 7, 9, 11, ...],
