@@ -71,6 +71,7 @@ struct DbSlice {
   DbLine &line() { return *line_; }
 
   // wagner-fischer interface
+  void reset();
   void begin_wagner_fischer(size_t b, size_t e);
   void insert(size_t i, wchar_t c);
   void erase(size_t i);

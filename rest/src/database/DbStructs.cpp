@@ -127,21 +127,25 @@ bool DbSlice::contains_manual_corrections() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void DbSlice::begin_wagner_fischer(size_t b, size_t e) {
-  // We ignore b, e since we simply can correct the whole (sub) slice.
-  // std::cerr << "DbSlice::begin_wagner_fischer(" << b << "," << e << ")\n";
+void DbSlice::reset() {
   for (auto i = begin; i != end;) {
     auto next = std::next(i);
-    if (i->is_ins()) { // delete insertions
+    if (i->is_ins()) {
       line_->line.erase(i);
-      if (i == begin) { // Skip if begin is deleted
+      if (i == begin) {
         begin = next;
       }
-    } else { // clear any corrections
+    } else {
       i->cor = 0;
     }
     i = next;
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void DbSlice::begin_wagner_fischer(size_t b, size_t e) {
+  // We ignore b and e since we simply can correct the whole (sub) slice.
+  reset();
   i_ = begin;
 }
 

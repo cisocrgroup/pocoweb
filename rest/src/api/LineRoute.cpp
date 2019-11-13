@@ -74,7 +74,7 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   }
   const auto json = crow::json::load(req.body);
   const auto correction = get<std::string>(json, "correction");
-  if (not correction) {
+  if (not correction and t != "reset") {
     THROW(BadRequest, "(LineRoute) missing correction data");
   }
   // make sure that we can uniquely edit this line
@@ -84,7 +84,12 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   if (not line.load(conn)) {
     THROW(NotFound, "(LineRoute) cannot find ", pid, ":", p, ":", lid);
   }
-  correct(line, correction.value(), t == "manual");
+  if (t == "reset") {
+    auto slice = line.slice();
+    reset(slice);
+  } else {
+    correct(line, correction.value(), t == "manual");
+  }
   update(conn, line);
   Json j;
   return j << line;
@@ -191,7 +196,7 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
   const auto t = get<std::string>(req.url_params, "t").value_or("automatic");
   const auto json = crow::json::load(req.body);
   const auto correction = get<std::string>(json, "correction");
-  if (not correction) {
+  if (not correction and t != "reset") {
     THROW(BadRequest, "(LineRoute) missing correction data");
   }
   // make shure that we can uniquely edit this line
@@ -202,7 +207,11 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
     THROW(NotFound, "(LineRoute) cannot find ", pid, ":", p, ":", lid);
   }
   auto slice = line.slice(tid, len.value_or(-1));
-  correct(slice, correction.value(), t == "manual");
+  if (t == "reset") {
+    reset(slice);
+  } else {
+    correct(slice, correction.value(), t == "manual");
+  }
   update(conn, line);
   Json j;
   return j << slice;
@@ -255,6 +264,15 @@ void LineRoute::correct(DbSlice &slice, const std::string &cor, bool manual) {
   CROW_LOG_INFO << "(LineRoute) slice.ocr(): " << slice.ocr();
   CROW_LOG_INFO << "(LineRoute) slice.cor(): " << slice.cor();
   CROW_LOG_INFO << "(LineRoute)         lev: " << lev;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void LineRoute::reset(DbSlice &slice) {
+  CROW_LOG_INFO << "(LineRoute::reset) cor: " << slice.cor();
+  CROW_LOG_INFO << "(LineRoute::reset) ocr: " << slice.ocr();
+  slice.reset();
+  slice.set_correction_type(false);
+  CROW_LOG_INFO << "(LineRoute::reset) cor: " << slice.cor();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
