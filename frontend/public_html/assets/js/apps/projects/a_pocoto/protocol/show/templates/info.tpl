@@ -1,6 +1,6 @@
 
 
-<div class="container-fluid">
+<div class="container">
 
 
 <div class="row">
@@ -57,7 +57,7 @@
         <td><% for (var i =0;i<pr.sometimes[key].length;i++){%>
             <div>
               <%-pr.sometimes[key][i].ocr%> <i class="fas fa-long-arrow-alt-right"></i> <%-pr.sometimes[key][i].cor%>
-              <%if(pr.sometimes[key][i].cor.taken) { %> <i class="green far fa-check-circle"></i> 
+              <%if(pr.sometimes[key][i].taken) { %> <i class="green far fa-check-circle"></i> 
               <% } else { %>
               <i class="red far fa-times-circle"></i> 
               <% } %>
@@ -115,7 +115,7 @@
 </div>
 </div>
 
-<div class="container-fluid">
+<div class="container">
 <div class="row"> 
 
 

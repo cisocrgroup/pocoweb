@@ -64,8 +64,6 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                       projectShowProtocol.on("show:word_clicked",function(word){
 
 
-
-
                      var searchingToken = ProjectEntities.API.search({q:word,pid:id,searchType:"ac",skip:0,max:App.getPageHits(id)});
 
                     $.when(searchingToken).done(function(tokens,suggestions){
@@ -85,13 +83,14 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
                       var projectConcView = new Show.Concordance({selection:word,tokendata:tokens,asModal:true,lineheight:lineheight,linenumbers:linenumbers});
 
-                      projectConcView.on("concordance:correct_token",function(data,anchor){
+                      projectConcView.on("concordance:correct_token",function(data,anchor,done){
 
                          console.log(anchor);
                          console.log(data);
 
                            var correctingtoken = ProjectEntities.API.correctToken(data);
                             $.when(correctingtoken).done(function(result){
+                            done();
 
                               console.log(result);
 
@@ -117,7 +116,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                                  var searchingToken = ProjectEntities.API.search({
                                    q: word,
                                    pid: id,
-                                   searchType: "token",
+                                   searchType: "ac",
                                    skip: (page_nr-1)*max,
                                    max: max
                                  });
@@ -130,11 +129,12 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                       });
 
                            projectConcView.on("concordance:update_after_correction",function(data){
+                            console.log(data);
                            var max = App.getPageHits(id);
                            var searchingToken = ProjectEntities.API.search({
                              q: data.query,
                              pid: data.pid,
-                             searchType: searchType,
+                             searchType: "ac",
                              skip:0,
                              max: max
                            });
