@@ -67,66 +67,26 @@ Route::Response LineRoute::impl(HttpPut, const Request &req, int pid, int p,
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
                                 int lid) const {
-  CROW_LOG_INFO << "(LineRoute) POST line: " << pid << ":" << p << ":" << lid;
   const auto t = get<std::string>(req.url_params, "t").value_or("automatic");
-  if (t == "ocr") { // handle t=ocr
-    return updateOCR(req, pid, p, lid);
-  }
-  const auto json = crow::json::load(req.body);
-  const auto correction = get<std::string>(json, "correction");
-  if (not correction and t != "reset") {
-    THROW(BadRequest, "(LineRoute) missing correction data");
-  }
-  // make sure that we can uniquely edit this line
+  CROW_LOG_INFO << "(LineRoute) POST line: " << pid << ":" << p << ":" << lid
+                << " t = " << t;
+  auto conn = must_get_connection();
   line_lock_guard lock(pid, p, lid, LOCK, ID_SET);
   DbLine line(pid, p, lid);
-  auto conn = must_get_connection();
   if (not line.load(conn)) {
     THROW(NotFound, "(LineRoute) cannot find ", pid, ":", p, ":", lid);
   }
-  if (t == "reset") {
-    auto slice = line.slice();
-    reset(slice);
+  auto slice = line.slice();
+  if (t == "ocr") {
+    updateOCR(req, line);
+  } else if (t == "manual" or t == "automatic") {
+    correct(req, slice, t == "manual");
+  } else if (t == "reset") {
+    reset(req, slice);
   } else {
-    correct(line, correction.value(), t == "manual");
+    THROW(BadRequest, "(LineRoute) invalid type: ", t);
   }
   update(conn, line);
-  Json j;
-  return j << line;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// POST /books/<bid>/pages/<pid>/lines/<lid>?t=ocr
-////////////////////////////////////////////////////////////////////////////////
-Route::Response LineRoute::updateOCR(const Request &req, int pid, int p,
-                                     int lid) const {
-  CROW_LOG_INFO << "(LineRoute) UPDATE OCR line: " << pid << ":" << p << ":"
-                << lid;
-  const auto json = crow::json::load(req.body);
-  const auto imagedata = get<std::string>(json, "imgData").value_or("");
-  const auto ocr = utf8(get<std::string>(json, "ocr").value_or(""));
-  const auto cuts =
-      get<std::vector<int>>(json, "cuts").value_or(std::vector<int>{});
-  const auto confs = get<std::vector<double>>(json, "confidences")
-                         .value_or(std::vector<double>{});
-  if (ocr.size() != cuts.size()) {
-    THROW(BadRequest, "len of cuts and ocr do not coincide");
-  }
-  line_lock_guard lock(pid, p, lid, LOCK, ID_SET);
-  // load line
-  DbLine line(pid, p, lid);
-  auto conn = must_get_connection();
-  if (not line.load(conn)) {
-    THROW(NotFound, "(LineRoute) cannot find ", pid, ":", p, ":", lid);
-  }
-  // udpate line
-  line.updateOCR(ocr, cuts, confs);
-  MysqlCommitter committer(conn);
-  update(conn, line);
-  if (imagedata != "") {
-    line.updateImage(get_config().daemon.projectdir, imagedata);
-  }
-  committer.commit();
   Json j;
   return j << line;
 }
@@ -190,27 +150,23 @@ Route::Response LineRoute::impl(HttpPut, const Request &req, int pid, int p,
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
                                 int lid, int tid) const {
-  CROW_LOG_INFO << "(LineRoute) POST token: " << pid << ":" << p << ":" << lid
-                << ":" << tid;
-  const auto len = get<int>(req.url_params, "len");
   const auto t = get<std::string>(req.url_params, "t").value_or("automatic");
-  const auto json = crow::json::load(req.body);
-  const auto correction = get<std::string>(json, "correction");
-  if (not correction and t != "reset") {
-    THROW(BadRequest, "(LineRoute) missing correction data");
-  }
-  // make shure that we can uniquely edit this line
-  line_lock_guard lock(pid, p, lid, LOCK, ID_SET);
+  const auto len = get<int>(req.url_params, "len").value_or(-1);
+  CROW_LOG_INFO << "(LineRoute) POST token: " << pid << ":" << p << ":" << lid
+                << ":" << tid << " t = " << t << " len = " << len;
   auto conn = must_get_connection();
-  DbLine line{pid, p, lid};
+  line_lock_guard lock(pid, p, lid, LOCK, ID_SET);
+  DbLine line(pid, p, lid);
   if (not line.load(conn)) {
     THROW(NotFound, "(LineRoute) cannot find ", pid, ":", p, ":", lid);
   }
-  auto slice = line.slice(tid, len.value_or(-1));
-  if (t == "reset") {
-    reset(slice);
+  auto slice = line.slice(tid, len);
+  if (t == "manual" or t == "automatic") {
+    correct(req, slice, t == "manual");
+  } else if (t == "reset") {
+    reset(req, slice);
   } else {
-    correct(slice, correction.value(), t == "manual");
+    THROW(BadRequest, "(LineRoute) invalid type: ", t);
   }
   update(conn, line);
   Json j;
@@ -218,56 +174,54 @@ Route::Response LineRoute::impl(HttpPost, const Request &req, int pid, int p,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void LineRoute::correct(DbLine &line, const std::string &cor, bool manual) {
-  CROW_LOG_INFO << "(LineRoute::correct) correction: \"" << cor << "\"";
+void LineRoute::updateOCR(const Request &req, DbLine &line) const {
+  CROW_LOG_INFO << "(LineRoute::updateOCR) line: " << line.strID();
+  const auto json = crow::json::load(req.body);
+  const auto imagedata = get<std::string>(json, "imgData").value_or("");
+  const auto ocr = utf8(get<std::string>(json, "ocr").value_or(""));
+  const auto cuts =
+      get<std::vector<int>>(json, "cuts").value_or(std::vector<int>{});
+  const auto confs = get<std::vector<double>>(json, "confidences")
+                         .value_or(std::vector<double>{});
+  if (ocr.size() != cuts.size()) {
+    THROW(BadRequest,
+          "(LineRoute::updateOCR) len of cuts and ocr do not coincide");
+  }
+  line.updateOCR(ocr, cuts, confs);
+  if (imagedata != "") {
+    line.updateImage(get_config().daemon.projectdir, imagedata);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void LineRoute::correct(const Request &req, DbSlice &slice, bool manual) {
+  auto cor = get<std::string>(crow::json::load(req.body), "correction");
+  if (not cor) {
+    THROW(BadRequest, "(LineRoute::correct) missing correction data");
+  }
   WagnerFischer wf;
-  wf.set_gt(cor);
-  auto slice = line.slice();
+  wf.set_gt(cor.value());
   // can only overwrite manual correctinos with other manual corrections
   if (not manual and slice.contains_manual_corrections()) {
-    THROW(Conflict, "(LineRoute) cannot overwrite manual corrections");
+    THROW(Conflict, "(LineRoute::correct) cannot overwrite manual corrections");
   }
   wf.set_ocr(slice.wocr());
   const auto lev = wf();
-  CROW_LOG_INFO << "(LineRoute) correction: " << cor;
-  CROW_LOG_INFO << "(LineRoute) line.ocr(): " << line.slice().ocr();
-  CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
+  CROW_LOG_INFO << "(LineRoute::correct) correction: " << cor.value();
+  CROW_LOG_INFO << "(LineRoute::correct) line.ocr(): " << slice.ocr();
+  CROW_LOG_INFO << "(LineRoute::correct) line.cor(): " << slice.cor();
 
   // correct
   wf.correct(slice);
   slice.set_correction_type(manual);
 
-  CROW_LOG_INFO << "(LineRoute) line.ocr(): " << line.slice().ocr();
-  CROW_LOG_INFO << "(LineRoute) line.cor(): " << line.slice().cor();
-  CROW_LOG_INFO << "(LineRoute)        lev: " << lev;
+  CROW_LOG_INFO << "(LineRoute::correct) line.ocr(): " << slice.ocr();
+  CROW_LOG_INFO << "(LineRoute::correct) line.cor(): " << slice.cor();
+  CROW_LOG_INFO << "(LineRoute::correct)        lev: " << lev;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void LineRoute::correct(DbSlice &slice, const std::string &cor, bool manual) {
-  CROW_LOG_INFO << "(LineRoute::correct) correction: \"" << cor << "\"";
-  WagnerFischer wf;
-  wf.set_gt(cor);
-  // can only overwrite manual correctinos with other manual corrections
-  if (not manual and slice.contains_manual_corrections()) {
-    THROW(Conflict, "(LineRoute) cannot overwrite manual corrections");
-  }
-  wf.set_ocr(slice.wocr());
-  const auto lev = wf();
-  CROW_LOG_INFO << "(LineRoute)  correction: " << cor;
-  CROW_LOG_INFO << "(LineRoute) slice.ocr(): " << slice.ocr();
-  CROW_LOG_INFO << "(LineRoute) slice.cor(): " << slice.cor();
-
-  // correct
-  wf.correct(slice);
-  slice.set_correction_type(manual);
-
-  CROW_LOG_INFO << "(LineRoute) slice.ocr(): " << slice.ocr();
-  CROW_LOG_INFO << "(LineRoute) slice.cor(): " << slice.cor();
-  CROW_LOG_INFO << "(LineRoute)         lev: " << lev;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void LineRoute::reset(DbSlice &slice) {
+void LineRoute::reset(const Request &req, DbSlice &slice) {
   CROW_LOG_INFO << "(LineRoute::reset) cor: " << slice.cor();
   CROW_LOG_INFO << "(LineRoute::reset) ocr: " << slice.ocr();
   slice.reset();

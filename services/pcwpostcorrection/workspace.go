@@ -369,8 +369,8 @@ func (doc document) appendTextLine(p *page.TextRegion, line db.Line) {
 			},
 		},
 	}
-	line.Chars.EachWord(func(word db.Chars, id int) {
-		doc.appendWord(&xmlline, line, word, id)
+	line.Chars.EachWord(func(word db.Chars) {
+		doc.appendWord(&xmlline, line, word)
 	})
 	if len(p.TextEquiv.Unicode) == 0 {
 		p.TextEquiv.Unicode = append(p.TextEquiv.Unicode, line.Chars.Cor()+"\n")
@@ -380,14 +380,14 @@ func (doc document) appendTextLine(p *page.TextRegion, line db.Line) {
 	p.TextLine = append(p.TextLine, xmlline)
 }
 
-func (doc document) appendWord(l *page.TextLine, line db.Line, w db.Chars, id int) {
+func (doc document) appendWord(l *page.TextLine, line db.Line, w db.Chars) {
 	left := line.Left
 	if len(l.Word) > 0 {
 		left = l.Word[len(l.Word)-1].Coords.Points[1].X + 1
 	}
 	xmlword := page.Word{
 		TextRegionBase: page.TextRegionBase{
-			ID: fmt.Sprintf("%s:%d", l.ID, id),
+			ID: fmt.Sprintf("%s:%d", l.ID, w.ID()),
 			Coords: page.Coords{
 				Points: []image.Point{
 					image.Pt(left, line.Top),

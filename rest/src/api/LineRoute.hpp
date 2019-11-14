@@ -37,10 +37,9 @@ public:
                 int tid) const;
 
 private:
-  Response updateOCR(const Request &req, int bid, int pid, int lid) const;
-  static void correct(DbLine &line, const std::string &cor, bool manual);
-  static void correct(DbSlice &slice, const std::string &cor, bool manual);
-  static void reset(DbSlice &slice);
+  void updateOCR(const Request &req, DbLine &line) const;
+  static void correct(const Request &req, DbSlice &slice, bool manual);
+  static void reset(const Request &req, DbSlice &slice);
   static void update(MysqlConnection &conn, const DbLine &line);
   static const char *route_;
   static const char *name_;

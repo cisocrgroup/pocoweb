@@ -55,7 +55,7 @@ struct DbChar {
 
 struct DbSlice {
   using iterator = std::list<DbChar>::iterator;
-  DbSlice(DbLine &line, iterator b, iterator e, int offset);
+  DbSlice(DbLine &line, iterator b, iterator e);
 
   std::string ocr() const;
   std::string cor() const;
@@ -63,6 +63,8 @@ struct DbSlice {
   std::wstring wcor() const;
   std::vector<int> cuts() const;
   std::vector<double> confs() const;
+  int tokenid() const;
+  int offset() const;
   double average_conf() const;
   bool is_automatically_corrected() const;
   bool is_manually_corrected() const;
@@ -82,10 +84,10 @@ struct DbSlice {
   template <class OS> void serialize(rapidjson::Writer<OS> &w) const;
   std::string strID() const {
     return std::to_string(projectid) + ":" + std::to_string(pageid) + ":" +
-           std::to_string(lineid) + ":" + std::to_string(offset);
+           std::to_string(lineid) + ":" + std::to_string(tokenid());
   }
 
-  int bookid, projectid, pageid, lineid, tokenid, offset;
+  int bookid, projectid, pageid, lineid;
   std::list<DbChar>::iterator begin, end;
   Box box;
   bool match;
@@ -106,9 +108,9 @@ template <class OS> void DbSlice::serialize(rapidjson::Writer<OS> &w) const {
   w.String("lineId");
   w.Int(lineid);
   w.String("tokenId");
-  w.Int(tokenid);
+  w.Int(tokenid());
   w.String("offset");
-  w.Int(offset);
+  w.Int(offset());
   w.String("box");
   box.serialize(w);
   w.String("cor");
@@ -138,19 +140,15 @@ Json &operator<<(Json &j, const DbSlice &line);
 
 struct DbLine {
   using iterator = std::list<DbChar>::iterator;
-  using pos = struct {
-    iterator it;
-    int offset;
-  };
   DbLine(int pid, int pageid, int lid)
       : line(), imagepath(), box(), bookid(), projectid(pid), pageid(pageid),
         lineid(lid), begin_(), end_() {}
   bool load(MysqlConnection &mysql);
 
   // slices
-  pos find(int pos);
+  iterator find(int pos);
   // len = -1 means until first encountered whitespace.
-  iterator next(pos begin, int len);
+  iterator next(iterator b, int len);
   void each_token(std::function<void(DbSlice &)> f);
   DbSlice slice();
   // len = -1 means slice from begin to next whitespace.

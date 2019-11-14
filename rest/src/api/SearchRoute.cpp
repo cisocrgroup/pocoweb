@@ -120,7 +120,7 @@ template <class OS> void match_results::serialize(rapidjson::Writer<OS> &w) {
       w.String("tokens");
       w.StartArray();
       line_match.first.each_token([&](auto &slice) {
-        slice.match = line_match.second.count(slice.offset);
+        slice.match = line_match.second.count(slice.tokenid());
         slice.serialize(w);
       });
       w.EndArray();
@@ -419,7 +419,7 @@ static match_results search_impl(MysqlConnection &conn, int bid, int skip,
         return;
       }
       --max;
-      ret.add(q, line, slice.offset);
+      ret.add(q, line, slice.tokenid());
       // set bookid from line
       ret.bookid = line.bookid;
     });
