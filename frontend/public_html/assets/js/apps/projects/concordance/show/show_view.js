@@ -16,8 +16,6 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
   le : false,
   events:{
       'click .js-correct-conc' : 'correct_clicked',
-      'click .line-text' : 'line_clicked',
-      'mouseup .line-text' : 'line_selected',
       'click .js-select-cor' : 'cor_checked',
       'click .js-suggestions-cor' : 'cor_suggestions',
       'click .js-correct-cor' : 'cor_correct',
@@ -75,6 +73,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
         var that = this;
         var checked_length  =   $('.concLine').find('.fa-check-square').length;
         var current_input = $(".js-global-correction-suggestion").val();
+
           $('.concLine').each(function(){
              var cordiv_left = $(this).find('.cordiv_left');
             if(cordiv_left.find('i').hasClass('fa-check-square')){
@@ -231,62 +230,19 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
       $("#conc-modal").find('.cordiv_left').hide();
       $("#conc-modal").find('.cordiv_right').hide();
+      var o_width =  $(e.currentTarget).css('width');
 
       $(e.currentTarget).find('.cordiv_left').show();
       $(e.currentTarget).find('.cordiv_right').show();
+      $(e.currentTarget).attr('original_width',o_width);
+
+      $(e.currentTarget).css('width','auto');
+      $(e.currentTarget).addClass('cor_active');
 
 
-      if($(e.currentTarget).hasClass('cordiv')){
-       // $(".custom-popover").remove();
-
-      var checkbox = $('<span class="correction_box"><i class="far fa-square"></i></span>');
-    //  $(e.currentTarget).find('span').append(checkbox);
-
-      // btn_group.append($('<div class="input-group-prepend"><div class="input-group-text"><input type="checkbox" id="js-select"></div></div>'))
-      // btn_group.append($('<input type="text" class="form-control" id="corinput">'))
-      // btn_group.append($('<div class="input-group-append" style="background:white;"><button type="button" class="btn btn-outline-secondary dropdown-toggle"></button><button type="button" class="btn btn-outline-secondary"><i class="far fa-arrow-alt-circle-up"></i></button></div>'))
-
-      // var div = $('<div class="custom-popover">')
-      // .css({
-      //   "left": e.pageX + 'px',
-      //   "top": (e.pageY+35) + 'px'
-      // })
-      //  .append($('<div><i class="fas fa-caret-up custom-popover-arrow"></i></div>'))
-      //  .append(btn_group)
-      //  .appendTo(document.body);
-
-      //  $('#js-concordance').on('click',function(){
-      //   that.trigger("page:concordance_clicked",sel);
-      //  });
-
-
-      }
       },
 
 
-      line_clicked:function(e){
-        e.preventDefault();
-        $('.correct-btn').hide();
-        $('.line-text').css('border-bottom','1px solid transparent');
-        $('.line-text').css('border-left','1px solid transparent');
-        $('.line-text').css('border-top','1px solid transparent');
-        $('.line-text').css('border-top-left-radius','0rem');
-        $('.line-text').css('border-bottom-left-radius','0rem');
-
-
-        $(e.currentTarget).css('border-left','1px solid #ced4da');
-        $(e.currentTarget).css('border-bottom','1px solid #ced4da');
-        $(e.currentTarget).css('border-top','1px solid #ced4da');
-        $(e.currentTarget).css('border-top-left-radius','.25rem');
-        $(e.currentTarget).css('border-bottom-left-radius','.25rem');
-
-        $(e.currentTarget).next().find('.correct-btn').show();
-
-      },
-      line_selected:function(e){
-        var selection = window.getSelection().toString();
-        this.trigger("concordance:line_selected",selection)
-      },
       paginate_clicked: function(e){
         e.preventDefault();
 
@@ -517,6 +473,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           var selection =  Marionette.getOption(that,"selection");
           var le =  Marionette.getOption(that,"le");
 
+          console.log(tokendata);
 
            for (key in tokendata['matches']) {
 
@@ -552,15 +509,27 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                 }
                 var tokendiv;
                 var cordiv = $("<div>"+token.cor.trim()+"</div>");
+
+                 if(token.isAutomaticallyCorrected){
+                  cordiv.addClass('automatically_corrected').addClass('token-text');
+                 }
+                  if(token.isManuallyCorrected){
+                  cordiv.addClass('manually_corrected').addClass('token-text');
+                 }
+
                 if (token.match) {
                   var contenteditable = 'true';
                   if(le){
                     contenteditable = 'false'
                   }
                     cordiv = $("<div class='cordiv' contenteditable='"+contenteditable+"'>"+token.cor.trim()+"</div>");
-                    tokendiv = $('<div class="tokendiv cordiv_container"></div>')
-                    tokendiv.append($("<span class='cordiv_left js-select-cor'><i class='cor_item far fa-square'></i></span>")).append(cordiv);;
-                    tokendiv.append($("<span class='cordiv_right js-suggestions-cor'><i class='far fa-caret-square-down cor_item'></i></span><span class='cordiv_right js-correct-cor'><i class='cor_item far fa-arrow-alt-circle-up'></i></span>"));
+                    tokendiv = $('<div class="tokendiv cordiv_container token-text"></div>')
+                    tokendiv.append($("<span title='mark token' class='cordiv_left js-select-cor'><i class='cor_item far fa-square'></i></span>")).append(cordiv);;
+                    tokendiv.append($("<span title='show suggestions' class='cordiv_right js-suggestions-cor'><i class='far fa-caret-square-down cor_item'></i></span><span title='correct token' class='cordiv_right js-correct-cor'><i class='cor_item far fa-arrow-alt-circle-up'></i></span>"));
+
+                        if(token.isAutomaticallyCorrected){
+                          cordiv.addClass('automatically_corrected').css('border','1px solid #fdd380').css('border-radius','.25rem');
+                         }
 
                     }
 
@@ -574,7 +543,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                 .attr('tokenId',token.tokenId)
                 .attr('offset', token.offset);
                  $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().find('.concLine').append(tokendiv);
-                cordiv.css('width',token.box.width * scalefactor);
+                 tokendiv.css('width',token.box.width * scalefactor);
 
 
                }
@@ -661,6 +630,11 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                 {
                     container.parent().find('.cordiv_left').hide();
                     container.parent().find('.cordiv_right').hide();
+                    var o_width = $('.cor_active').attr('original_width');
+                    $('.cor_active').css('width',o_width);
+                    $('.cor_active').removeClass('cor_active');
+                    $('.cor_active').removeAttr('original_width');
+
                 }
           });
 

@@ -552,6 +552,7 @@ position: relative;
   border-top: 1px solid transparent;
   border-left: 1px solid transparent;
   border-bottom: 1px solid transparent;
+  border-right: 1px solid transparent;
 
 border-top-left-radius: .25rem;
 border-bottom-left-radius: .25rem;
@@ -562,13 +563,14 @@ border-bottom-right-radius: .25rem;
 }
 
 .token-text{
-  display: inline-block;
+  /*display: inline-block;*/
   flex-grow: 1;
   min-height: 30px;
   padding: 2px;
   border-top: 1px solid transparent;
   border-left: 1px solid transparent;
   border-bottom: 1px solid transparent;
+  border-right: 1px solid transparent;
 
 border-top-left-radius: .25rem;
 border-bottom-left-radius: .25rem;
@@ -595,7 +597,7 @@ border-bottom-right-radius: .25rem;
 
 .automatically_corrected{
   background-color: #ffe3a8;
-  border-color: #dddbd7 !important;
+  border-color: #fdd380 !important;
   border-right: 1px solid transparent;
 }
 
@@ -694,15 +696,15 @@ outline: 0;
 }
 
 .cordiv_container{
-  border: 2px solid;
-  border-radius: 0.25rem;
+/*  border: 2px solid;
+  border-radius: 0.25rem;*/
   background-color: #dedede;
   border-color: #bec1c3;
   cursor: pointer;
   /*padding:1px 6px 1px 6px;*/
-  padding-right: 4px;
+/*  padding-right: 4px;
   padding-left: 4px;
-  font-size: 14px;
+  font-size: 14px;*/
 }
 
 
@@ -711,15 +713,13 @@ outline: 0;
 }
 
 .cordiv{
-  display: inline;
+display: inline-block;
 }
 .cordiv:focus{
   outline: none;
 }
 
-.cor_selected{
-  background-color: #d4edda;
-}
+
 
  .dropdown-menu{
           max-height:200px;
