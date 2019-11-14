@@ -7,7 +7,7 @@ if(asModal) {
   <div class="modal-content">
 
 <div class="modal-header">
-        <h3 class="modal-title">Concordance view for "<%-selection%>"</h3>
+        <h3 class="modal-title">Concordance for "<%-selection%>"</h3>
 
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>

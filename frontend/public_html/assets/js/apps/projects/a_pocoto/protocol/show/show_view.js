@@ -77,6 +77,9 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
 
            this.always_table = always_table;
 
+          $('#always_filter').parent().prev().remove();
+          $('#always_filter').parent().removeClass('col-md-6').addClass('col-md-12');
+
              var never_table = $('#never').DataTable({
                 "scrollY": '556px',
                 "info":false,
@@ -87,6 +90,8 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
            });
 
            this.never_table = never_table;
+          $('#never_filter').parent().prev().remove();
+          $('#never_filter').parent().removeClass('col-md-6').addClass('col-md-12');
 
              var sometimes_table = $('#sometimes').DataTable({
                 "scrollY": '556px',
@@ -98,7 +103,8 @@ define(["marionette","app","jquery-ui","backbone.syphon","common/views","apps/pr
            });
 
            this.sometimes_table = sometimes_table;
-
+          $('#sometimes_filter').parent().prev().remove();
+          $('#sometimes_filter').parent().removeClass('col-md-6').addClass('col-md-12');
          }
 
   });
