@@ -109,7 +109,7 @@ func (doc *document) loadLines() error {
 }
 
 func (doc *document) loadContents() error {
-	const stmnt = "SELECT pageid,lineid,ocr,cor,cut,conf,seq " +
+	const stmnt = "SELECT pageid,lineid,ocr,cor,cut,conf,seq,cid " +
 		"FROM " + db.ContentsTableName + " " +
 		"WHERE bookid=? ORDER BY pageid,lineid,seq"
 	rows, err := db.Query(service.Pool(), stmnt, doc.project.BookID)
@@ -120,7 +120,7 @@ func (doc *document) loadContents() error {
 	for rows.Next() {
 		var pid, lid int
 		var c db.Char
-		if err := rows.Scan(&pid, &lid, &c.OCR, &c.Cor, &c.Cut, &c.Conf, &c.Seq); err != nil {
+		if err := rows.Scan(&pid, &lid, &c.OCR, &c.Cor, &c.Cut, &c.Conf, &c.Seq, &c.ID); err != nil {
 			return fmt.Errorf("cannot load contents: %v", err)
 		}
 		if lid == 0 || doc.pages[pid].lines[lid-1].LineID != lid {
