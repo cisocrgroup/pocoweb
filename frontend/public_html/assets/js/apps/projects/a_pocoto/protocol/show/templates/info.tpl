@@ -115,13 +115,8 @@
 </div>
 </div>
 
-<<<<<<< HEAD
-<div class="container-fluid">
-<div class="row">
-=======
 <div class="container">
 <div class="row">
->>>>>>> devel
 
 
 <div class="col col-sm-12">

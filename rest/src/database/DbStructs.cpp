@@ -137,6 +137,7 @@ bool DbSlice::contains_manual_corrections() const {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbSlice::reset() {
+  int id = 0;
   for (auto i = begin; i != end;) {
     auto next = std::next(i);
     if (i->is_ins()) {
@@ -146,6 +147,7 @@ void DbSlice::reset() {
       }
     } else {
       i->cor = 0;
+      i->id = id++;
     }
     i = next;
   }
