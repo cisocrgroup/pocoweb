@@ -137,10 +137,14 @@ bool DbSlice::contains_manual_corrections() const {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbSlice::reset() {
-  int id = 0;
+  // ID represents both the seq (offset) and the id of the original
+  // ocr chars.
+  int id = offset();
   for (auto i = begin; i != end;) {
     auto next = std::next(i);
     if (i->is_ins()) {
+      // There is no need to update the id since we remain on the same
+      // offset after the deletion.
       line_->line.erase(i);
       if (i == begin) {
         begin = next;
@@ -155,7 +159,7 @@ void DbSlice::reset() {
 
 ////////////////////////////////////////////////////////////////////////////////
 void DbSlice::begin_wagner_fischer(size_t b, size_t e) {
-  // We ignore b and e since we simply can correct the whole (sub) slice.
+  // We ignore b and e since we simply can correct whole (sub) slice.
   reset();
   i_ = begin;
 }
