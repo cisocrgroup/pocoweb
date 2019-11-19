@@ -106,9 +106,101 @@ PCW_BASE_DIR=/my/custom/path docker-start`.
 If you encouter any issues deploying Pocoweb feel free to open an
 issue on [github](https://github.com/issues).
 
+### Disable https
+It is possible to use pocoweb without https.  You should not do it,
+since the pocoweb frontend has to send emails, password and
+authentification tokens in order to do its work.  If you still want to
+disable https for pocoweb, you have to edit the nginx configuration
+and Dockerfile manually and then start the server normally (see
+above).
+
+[Nginx's configuration file](services/nginx/nginx.conf):
+```
+user nginx;
+worker_processes auto;
+pid /run/nginx.pid;
+
+events {
+	worker_connections 768;
+	# multi_accept on;
+}
+
+http {
+	##
+	# Basic Settings
+	##
+	sendfile on;
+	tcp_nopush on;
+	tcp_nodelay on;
+	keepalive_timeout 65;
+	types_hash_max_size 2048;
+	server_tokens off;
+
+	# server_names_hash_bucket_size 64;
+	# server_name_in_redirect off;
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+
+	##
+	# SSL Settings
+	##
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+	ssl_prefer_server_ciphers on;
+
+	##
+	# Logging Settings
+	##
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
+
+	##
+	# Gzip Settings
+	##
+	gzip on;
+	gzip_disable "msie6";
+
+    server { # redirect http -> https
+        listen 80;
+        server_name pocoweb.cis.lmu.de;
+	    client_max_body_size 2000M;
+	    root /www-data/public_html;
+	    index index.html;
+
+	    location / {
+	        try_files $uri $uri/ =404;
+	    }
+	    location /rest/ {
+	        rewrite            ^/rest/(.*)$ /$1 break;
+	        proxy_pass         http://pcwauth;
+	        proxy_redirect     off;
+	        proxy_set_header   Host $host;
+	        proxy_set_header   X-Real-IP $remote_addr;
+	        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+	        proxy_set_header   X-Forwarded-Host $server_name;
+	    }
+	    location /project-data {
+	        alias /project-data;
+	    }
+	}
+}
+```
+
+[Nginx's Dockerfile](services/nginx/Dockerfile):
+```Dockerfile
+FROM nginx:alpine
+MAINTAINER Florian Fink <fink@cis.lmu.de>
+
+VOLUME /www-data /project-data
+COPY nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80
+EXPOSE 443
+CMD ["nginx-debug", "-g", "daemon off;"]
+```
+
 ## Documentation
-The basic usage and API Documentation is part of Pocoweb.
-It can be found [here](frontend/public_html/doc.md).
+The basic usage and API Documentation is part of Pocoweb.  It can be
+found [here](frontend/public_html/doc.md).
 
 ## Development
 ### Internal dependencies
