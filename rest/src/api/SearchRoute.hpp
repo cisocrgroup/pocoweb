@@ -22,7 +22,7 @@ private:
   struct tq { // token queries
     std::vector<std::string> qs;
     int bid, skip, max;
-    bool ic;
+    bool ic, escape;
   };
   struct pq { // pattern queries
     std::vector<std::string> qs;

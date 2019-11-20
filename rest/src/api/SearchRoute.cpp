@@ -142,14 +142,18 @@ template <class F>
 static match_results search_impl(MysqlConnection &conn, int bid, int skip,
                                  int max, F f);
 ////////////////////////////////////////////////////////////////////////////////
-static std::wstring regex_escape(const std::wstring &str) {
+static std::wstring regex_escape(const std::wstring &str, bool escape) {
+  if (not escape) {
+    return str;
+  }
   static const auto re =
       std::wregex(L"[-[\\]{}()*+?.\\^$|#\\\\]", std::regex::optimize);
   return std::regex_replace(str, re, L"\\$&");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template <class T> static std::wregex make_regex(const T &qs, bool ic) {
+template <class T>
+static std::wregex make_regex(const T &qs, bool ic, bool escape) {
   std::wstring pre = L"[[:punct:]]*((";
   const std::wstring suf = L"))[[:punct:]]*";
   std::wstring restr;
@@ -159,15 +163,16 @@ template <class T> static std::wregex make_regex(const T &qs, bool ic) {
     return std::wregex(restr);
   }
   for (const auto &q : qs) {
-    restr += pre + regex_escape(utf8(q));
+    restr += pre + regex_escape(utf8(q), escape);
     pre = std::wstring(L")|(");
   }
   restr += suf;
   CROW_LOG_INFO << "(make_regex) regex: " << utf8(restr) << (ic ? "/i" : "");
+  auto flags = std::regex::optimize;
   if (ic) {
-    return std::wregex(restr, std::regex::icase);
+    flags |= std::regex::icase;
   }
-  return std::wregex(restr);
+  return std::wregex(restr, flags);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -184,6 +189,7 @@ enum searchType {
   stToken,
   stPattern,
   stAC,
+  stRE,
 };
 ////////////////////////////////////////////////////////////////////////////////
 searchType search_type(const std::string &t) {
@@ -193,6 +199,8 @@ searchType search_type(const std::string &t) {
     return stPattern;
   } else if (t == "ac") {
     return stAC;
+  } else if (t == "regex") {
+    return stRE;
   }
   return stInvalid;
 }
@@ -216,9 +224,18 @@ Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
   CROW_LOG_INFO << "(SearchRoute) type: " << search_type(t);
   switch (search_type(t)) {
   case stToken:
-    return search_token(
-        conn,
-        tq{.bid = bid, .max = pmax, .skip = pskip, .ic = pi, .qs = qs.value()});
+    return search_token(conn, tq{.bid = bid,
+                                 .max = pmax,
+                                 .skip = pskip,
+                                 .ic = pi,
+                                 .qs = qs.value(),
+                                 .escape = true});
+  case stRE:
+    return search_token(conn, tq{.bid = bid,
+                                 .max = pmax,
+                                 .skip = pskip,
+                                 .qs = qs.value(),
+                                 .escape = false});
   case stPattern:
     return search_pattern(
         conn, pq{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
@@ -232,19 +249,18 @@ Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response SearchRoute::search_token(MysqlConnection &mysql, tq q) const {
-  const auto ic = q.ic;
-  const auto re = make_regex(q.qs, ic);
+  const auto re = make_regex(q.qs, q.ic, q.escape);
   auto ret =
-      search_impl(mysql, q.bid, q.skip, q.max, [&](const auto &t, auto &q) {
+      search_impl(mysql, q.bid, q.skip, q.max, [&](const auto &t, auto &out) {
         std::wsmatch m;
         auto cor = t.wcor();
         if (not std::regex_match(cor, m, re)) {
           return false;
         }
-        if (ic) {
-          q = utf8(boost::algorithm::to_lower_copy(std::wstring(m[1])));
+        if (q.ic) {
+          out = utf8(boost::algorithm::to_lower_copy(std::wstring(m[1])));
         } else {
-          q = utf8(m[1]);
+          out = utf8(m[1]);
         }
         // CROW_LOG_INFO << "matched: " << t.cor() << " (" << t.ocr() << ")";
         // std::for_each(t.begin, t.end, [](const auto &c) {
@@ -293,7 +309,8 @@ Route::Response SearchRoute::search_pattern(MysqlConnection &mysql,
       qs.push_back(row.typ);
     }
   }
-  const auto re = make_regex(qs, true); // types and patterns are all lower case
+  // types and patterns are all lower case and must be escaped
+  const auto re = make_regex(qs, true, true);
   // search
   auto ret =
       search_impl(mysql, q.bid, q.skip, q.max, [&](const auto &t, auto &q) {

@@ -1120,11 +1120,12 @@ project or package with id `pid`.  The search excludes corrected tokens.
 
 #### Query parameters
 * The query is given with the `q=query` parameter. This parameter is mandatory.
-* The optional parameter `t=token|pattern|ac` specifies the type of
-  the search (default: `token`):
+* The optional parameter `t=token|pattern|ac|regex` specifies the type
+  of the search (default: `token`):
   * `token` specifies a keyword search for the query
   * `pattern` specifies a (OCR) pattern query
   * `ac` specifies a search for auto corrected tokens
+  * `regex` specifies that the queries are regular expressions
 * The optional parameter `max=n` sets the maximal number of returned
   hits (default: `max=50`).
 * The optional parameter `skip=n` sets the number of hits to skip
