@@ -1,21 +1,25 @@
-# Pocoweb
+# Pocoweb documentation
 
-Pocoweb is a web based post-correction system for OCRed historical documents.
-It is loosely based on [PoCoTo](https://github.com/cisocrgroup/PoCoTo).
+Pocoweb is a web based post-correction system for OCRed historical
+documents.  It is loosely based on
+[PoCoTo](https://github.com/cisocrgroup/PoCoTo).
 
-Users can upload their OCRed documents and correct them in the web front end.
-The corrected documents can then be downloaded and further processed.
-Pocoweb understands various OCR formats that can be used.
-Any corrections are written back into the original format of the documents.
-This makes it possible to integrate the manual post-correction of OCRed documents
-into other digitalisation workflows.
+Users can upload their OCRed documents and correct them in the web
+front end.  The corrected documents can then be downloaded and further
+processed.  Pocoweb understands various OCR formats that can be used.
+Any corrections are written back into the original format of the
+documents.  This makes it possible to integrate the manual
+post-correction of OCRed documents into other digitalisation
+workflows.
 
 As PoCoTo, Pocoweb is connected with a language
-[profiler](https://github.com/cisocrgroup/Profiler)
-that enables semi-automatic correction of historical documents.
-The profiler is able to differentiate between historical spelling variation
-and real OCR errors in the documents and generates correction suggestions
-for suspicious words.
+[profiler](https://github.com/cisocrgroup/Profiler) that enables
+semi-automatic correction of historical documents.  The profiler is
+able to differentiate between historical spelling variation and real
+OCR errors in the documents and generates correction suggestions for
+suspicious words.
+
+<img src="assets/images/doc/welcome.png" alt="Main page"/>
 
 - - -
 ## Table of contents
@@ -88,17 +92,17 @@ for suspicious words.
 <a id='login'></a>
 ## Login
 In order to use Pocoweb, each user has to login with an appropriate
-user account using login link at the right top of the wellcome screen.
+user account using the login link at the right top of the page.  Users
+can logout again using the logout link at the same position.
 
-<img src="assets/images/doc/welcome.png" alt="Welcome screen"/>
-<figcaption>Pocoweb's welcome screen</figcaption>
+<img src="assets/images/doc/login.png" alt="Pocoweb login"/>
 
 - - -
 <a id='users'></a>
 ## Users
 
-There are two kinds of user accounts in Pocoweb, that have
-different permissions in the system:
+In general there are two kinds of user accounts in Pocoweb.  The two
+types have differen permissings in the system:
 
 1. Administrator accounts
     * Create new administrator and normal users accounts
@@ -109,7 +113,8 @@ different permissions in the system:
     * Profile projects.
     * Post correct projects and packages.
     * Delete documents and packages.
-    * Download corrected projects
+    * Download corrected projects.
+	* Download a pool of corrected projects.
 
 2. Normal user accounts
     * Post correct packages that where assigned to them
@@ -120,50 +125,59 @@ different permissions in the system:
 <a id='account-settings'></a>
 ### Account settings
 
-Users can manage their account settings using the [Account](/account.php) tab.
-They can only manage their own user's settings. It is not possible to change
+Users can manage their account settings using the Account tab on the page.
+Each user can only manage their own user's settings.  It is not possible to change
 the settings of another user account even if you are logged in with an
 administrator account.
 
-In order to update user settings or to change the user's password, fill in
-or change the appropriate fields and click on the
-![update account settings](assets/images/doc/button-update-account-settings.png) button.
+<img src="assets/images/doc/user_account.png" alt="Account settings"/>
 
-If you want to delete your account click on the
-![delete account](assets/images/doc/button-delete-account.png) button.
-This will delete the user and all its projects and packages.
-Use with caution.
+In order to update user settings or to change the user's password,
+fill in or change the appropriate fields and click on the ![update
+account
+settings](assets/images/doc/button-update-account-settings.png)
+button.
 
-Note that using the account settings is the only way to delete
-an administrator account (see
-[User management](#user-content-user-management) below).
+If you want to delete your account click on the ![delete
+account](assets/images/doc/button-delete-account.png) button.  This
+will delete the user and all its projects and packages.  Use with
+caution.
+
+Note: Using the account settings is the only way to delete an
+administrator account (see [User
+management](#user-content-user-management) below).  So in order to
+delete an administrator account one has to login with the account and
+delete it using the account settings page.
 
 - - -
 <a id='user-management'></a>
 ### User management
 
-User management is done via the [Users](/users.php) tab.
-You have to be logged in with an administrator account in order
-to access and use the user management page.
+User management is done via the User tab.  You have to be logged in
+with an administrator account in order to access and use the user
+management page.
 
-The user management page consist of a mask to create new users and
-a user table that lists all existing users. To create a new user,
-fill out the input fields accordingly and then click to the
-![create user](assets/images/doc/button-create-user.png) button.
-If the account should be an administrator account, do not forget to
-check the ![administrator check box](assets/images/doc/checkbox-admin.png) check box.
+<img src="assets/images/doc/users_list.png" alt="User management"/>
 
-After the mask follows the user table.
-In order to remove an user account click on the
-![remove](assets/images/doc/glyphicon-remove.png) button in the according user entry
-in the user table.
-It is not possible at the moment to delete an existing administrator account;
-only regular user accounts can be deleted.
+The user management page consist of an overview list of all users in
+the system.  In order to remove a user account (the user cannot be an
+administrator), click on the
+![remove](assets/images/doc/glyphicon-remove.png) button in the
+according user entry in the user table.
 
 To delete an administrator account log in with this account, go to the
-[Account](/account.php) tab and click to the
-![delete account](assets/images/doc/button-delete-account.png)
-button (see [Account settings](#user-content-account-settings) above).
+[Account](/account.php) tab and click to the ![delete
+account](assets/images/doc/button-delete-account.png) button (see
+[Account settings](#user-content-account-settings) above).
+
+
+To create new user accounts Click to the ![create
+user](assets/images/doc/button-create-new-user.png) button and fill
+out the input fields accordingly.  If the account should be an
+administrator account, do not forget to check the ![administrator
+check box](assets/images/doc/checkbox-admin.png) check box.
+
+<img src="assets/images/doc/user_new_modal.png" alt="Create a user"/>
 
 - - -
 <a id='projects'></a>

@@ -1,19 +1,22 @@
 <h1>
-<a id="user-content-pocoweb" class="anchor" href="#pocoweb" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Pocoweb</h1>
-<p>Pocoweb is a web based post-correction system for OCRed historical documents.
-It is loosely based on <a href="https://github.com/cisocrgroup/PoCoTo">PoCoTo</a>.</p>
-<p>Users can upload their OCRed documents and correct them in the web front end.
-The corrected documents can then be downloaded and further processed.
-Pocoweb understands various OCR formats that can be used.
-Any corrections are written back into the original format of the documents.
-This makes it possible to integrate the manual post-correction of OCRed documents
-into other digitalisation workflows.</p>
+<a id="user-content-pocoweb-documentation" class="anchor" href="#pocoweb-documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Pocoweb documentation</h1>
+<p>Pocoweb is a web based post-correction system for OCRed historical
+documents.  It is loosely based on
+<a href="https://github.com/cisocrgroup/PoCoTo">PoCoTo</a>.</p>
+<p>Users can upload their OCRed documents and correct them in the web
+front end.  The corrected documents can then be downloaded and further
+processed.  Pocoweb understands various OCR formats that can be used.
+Any corrections are written back into the original format of the
+documents.  This makes it possible to integrate the manual
+post-correction of OCRed documents into other digitalisation
+workflows.</p>
 <p>As PoCoTo, Pocoweb is connected with a language
-<a href="https://github.com/cisocrgroup/Profiler">profiler</a>
-that enables semi-automatic correction of historical documents.
-The profiler is able to differentiate between historical spelling variation
-and real OCR errors in the documents and generates correction suggestions
-for suspicious words.</p>
+<a href="https://github.com/cisocrgroup/Profiler">profiler</a> that enables
+semi-automatic correction of historical documents.  The profiler is
+able to differentiate between historical spelling variation and real
+OCR errors in the documents and generates correction suggestions for
+suspicious words.</p>
+<p><a href="assets/images/doc/welcome.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/welcome.png" alt="Main page" style="max-width:100%;"></a></p>
 <hr>
 <h2>
 <a id="user-content-table-of-contents" class="anchor" href="#table-of-contents" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Table of contents</h2>
@@ -104,15 +107,15 @@ for suspicious words.</p>
 <h2>
 <a id="user-content-login" class="anchor" href="#login" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Login</h2>
 <p>In order to use Pocoweb, each user has to login with an appropriate
-user account using login link at the right top of the wellcome screen.</p>
-<p><a href="assets/images/doc/welcome.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/welcome.png" alt="Welcome screen" style="max-width:100%;"></a></p>
-Pocoweb's welcome screen
+user account using the login link at the right top of the page.  Users
+can logout again using the logout link at the same position.</p>
+<p><a href="assets/images/doc/login.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/login.png" alt="Pocoweb login" style="max-width:100%;"></a></p>
 <hr>
 <p><a id="user-content-users"></a></p>
 <h2>
 <a id="user-content-users" class="anchor" href="#users" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Users</h2>
-<p>There are two kinds of user accounts in Pocoweb, that have
-different permissions in the system:</p>
+<p>In general there are two kinds of user accounts in Pocoweb.  The two
+types have differen permissings in the system:</p>
 <ol>
 <li>
 <p>Administrator accounts</p>
@@ -127,7 +130,8 @@ different permissions in the system:</p>
 <li>Profile projects.</li>
 <li>Post correct projects and packages.</li>
 <li>Delete documents and packages.</li>
-<li>Download corrected projects</li>
+<li>Download corrected projects.</li>
+<li>Download a pool of corrected projects.</li>
 </ul>
 </li>
 <li>
@@ -143,43 +147,42 @@ different permissions in the system:</p>
 <p><a id="user-content-account-settings"></a></p>
 <h3>
 <a id="user-content-account-settings" class="anchor" href="#account-settings" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Account settings</h3>
-<p>Users can manage their account settings using the <a href="/account.php">Account</a> tab.
-They can only manage their own user's settings. It is not possible to change
+<p>Users can manage their account settings using the Account tab on the page.
+Each user can only manage their own user's settings.  It is not possible to change
 the settings of another user account even if you are logged in with an
 administrator account.</p>
-<p>In order to update user settings or to change the user's password, fill in
-or change the appropriate fields and click on the
-<a href="assets/images/doc/button-update-account-settings.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-update-account-settings.png" alt="update account settings" style="max-width:100%;"></a> button.</p>
-<p>If you want to delete your account click on the
-<a href="assets/images/doc/button-delete-account.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-delete-account.png" alt="delete account" style="max-width:100%;"></a> button.
-This will delete the user and all its projects and packages.
-Use with caution.</p>
-<p>Note that using the account settings is the only way to delete
-an administrator account (see
-<a href="#user-content-user-management">User management</a> below).</p>
+<p><a href="assets/images/doc/user_account.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/user_account.png" alt="Account settings" style="max-width:100%;"></a></p>
+<p>In order to update user settings or to change the user's password,
+fill in or change the appropriate fields and click on the <a href="assets/images/doc/button-update-account-settings.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-update-account-settings.png" alt="update account settings" style="max-width:100%;"></a>
+button.</p>
+<p>If you want to delete your account click on the <a href="assets/images/doc/button-delete-account.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-delete-account.png" alt="delete account" style="max-width:100%;"></a> button.  This
+will delete the user and all its projects and packages.  Use with
+caution.</p>
+<p>Note: Using the account settings is the only way to delete an
+administrator account (see <a href="#user-content-user-management">User
+management</a> below).  So in order to
+delete an administrator account one has to login with the account and
+delete it using the account settings page.</p>
 <hr>
 <p><a id="user-content-user-management"></a></p>
 <h3>
 <a id="user-content-user-management" class="anchor" href="#user-management" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>User management</h3>
-<p>User management is done via the <a href="/users.php">Users</a> tab.
-You have to be logged in with an administrator account in order
-to access and use the user management page.</p>
-<p>The user management page consist of a mask to create new users and
-a user table that lists all existing users. To create a new user,
-fill out the input fields accordingly and then click to the
-<a href="assets/images/doc/button-create-user.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-create-user.png" alt="create user" style="max-width:100%;"></a> button.
-If the account should be an administrator account, do not forget to
-check the <a href="assets/images/doc/checkbox-admin.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/checkbox-admin.png" alt="administrator check box" style="max-width:100%;"></a> check box.</p>
-<p>After the mask follows the user table.
-In order to remove an user account click on the
-<a href="assets/images/doc/glyphicon-remove.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/glyphicon-remove.png" alt="remove" style="max-width:100%;"></a> button in the according user entry
-in the user table.
-It is not possible at the moment to delete an existing administrator account;
-only regular user accounts can be deleted.</p>
+<p>User management is done via the User tab.  You have to be logged in
+with an administrator account in order to access and use the user
+management page.</p>
+<p><a href="assets/images/doc/users_list.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/users_list.png" alt="User management" style="max-width:100%;"></a></p>
+<p>The user management page consist of an overview list of all users in
+the system.  In order to remove a user account (the user cannot be an
+administrator), click on the
+<a href="assets/images/doc/glyphicon-remove.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/glyphicon-remove.png" alt="remove" style="max-width:100%;"></a> button in the
+according user entry in the user table.</p>
 <p>To delete an administrator account log in with this account, go to the
-<a href="/account.php">Account</a> tab and click to the
-<a href="assets/images/doc/button-delete-account.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-delete-account.png" alt="delete account" style="max-width:100%;"></a>
-button (see <a href="#user-content-account-settings">Account settings</a> above).</p>
+<a href="/account.php">Account</a> tab and click to the <a href="assets/images/doc/button-delete-account.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-delete-account.png" alt="delete account" style="max-width:100%;"></a> button (see
+<a href="#user-content-account-settings">Account settings</a> above).</p>
+<p>To create new user accounts Click to the <a href="assets/images/doc/button-create-new-user.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-create-new-user.png" alt="create user" style="max-width:100%;"></a> button and fill
+out the input fields accordingly.  If the account should be an
+administrator account, do not forget to check the <a href="assets/images/doc/checkbox-admin.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/checkbox-admin.png" alt="administrator check box" style="max-width:100%;"></a> check box.</p>
+<p><a href="assets/images/doc/user_new_modal.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/user_new_modal.png" alt="Create a user" style="max-width:100%;"></a></p>
 <hr>
 <p><a id="user-content-projects"></a></p>
 <h2>
