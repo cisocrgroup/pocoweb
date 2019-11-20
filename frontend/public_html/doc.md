@@ -19,8 +19,8 @@ for suspicious words.
 
 - - -
 ## Table of contents
-
-* [Users](#users-content-users)
+* [Login](#user-content-login)
+* [Users](#user-content-users)
   * [Account settings](#user-content-account-settings)
   * [User management](#user-content-user-management)
 * [Projects](#user-content-projects)
@@ -85,11 +85,17 @@ for suspicious words.
   * [GET rest/jobs/`jobid`](#user-content-api-get-jobs)
 
 - - -
+<a id='login'></a>
+## Login
+In order to use Pocoweb, each user has to login with an appropriate
+user account using login link at the right top of the wellcome screen.
+
+<img src="assets/images/doc/welcome.png" alt="Welcome screen"/>
+<figcaption>Pocoweb's welcome screen</figcaption>
+
+- - -
 <a id='users'></a>
 ## Users
-
-In order to use Pocoweb, each user has to login in the
-[login page](/login.php) using her user name and password.
 
 There are two kinds of user accounts in Pocoweb, that have
 different permissions in the system:
@@ -112,7 +118,7 @@ different permissions in the system:
 
 - - -
 <a id='account-settings'></a>
-## Account settings
+### Account settings
 
 Users can manage their account settings using the [Account](/account.php) tab.
 They can only manage their own user's settings. It is not possible to change
@@ -121,10 +127,10 @@ administrator account.
 
 In order to update user settings or to change the user's password, fill in
 or change the appropriate fields and click on the
-![update account settings](img/doc/button-update-account-settings.png) button.
+![update account settings](assets/images/doc/button-update-account-settings.png) button.
 
 If you want to delete your account click on the
-![delete account](img/doc/button-delete-account.png) button.
+![delete account](assets/images/doc/button-delete-account.png) button.
 This will delete the user and all its projects and packages.
 Use with caution.
 
@@ -134,7 +140,7 @@ an administrator account (see
 
 - - -
 <a id='user-management'></a>
-## User management
+### User management
 
 User management is done via the [Users](/users.php) tab.
 You have to be logged in with an administrator account in order
@@ -143,20 +149,20 @@ to access and use the user management page.
 The user management page consist of a mask to create new users and
 a user table that lists all existing users. To create a new user,
 fill out the input fields accordingly and then click to the
-![create user](img/doc/button-create-user.png) button.
+![create user](assets/images/doc/button-create-user.png) button.
 If the account should be an administrator account, do not forget to
-check the ![administrator check box](img/doc/checkbox-admin.png) check box.
+check the ![administrator check box](assets/images/doc/checkbox-admin.png) check box.
 
 After the mask follows the user table.
 In order to remove an user account click on the
-![remove](img/doc/glyphicon-remove.png) button in the according user entry
+![remove](assets/images/doc/glyphicon-remove.png) button in the according user entry
 in the user table.
 It is not possible at the moment to delete an existing administrator account;
 only regular user accounts can be deleted.
 
 To delete an administrator account log in with this account, go to the
 [Account](/account.php) tab and click to the
-![delete account](img/doc/button-delete-account.png)
+![delete account](assets/images/doc/button-delete-account.png)
 button (see [Account settings](#user-content-account-settings) above).
 
 - - -
@@ -196,7 +202,7 @@ to the id of a project.  Hopefully this issue can be solved soon.*
 If you are logged in with an administrator account, you can create a new project.
 Fill in the meta data fields in the mask, select the according
 [project archive](#user-content-project-archives) on your computer and click
-on the ![upload](img/doc/button-upload.png) button.
+on the ![upload](assets/images/doc/button-upload.png) button.
 Depending on the size of the project archive,
 the uploading of the project can take a while.
 
