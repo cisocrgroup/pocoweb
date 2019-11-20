@@ -19,7 +19,7 @@ able to differentiate between historical spelling variation and real
 OCR errors in the documents and generates correction suggestions for
 suspicious words.
 
-<img src="assets/images/doc/welcome.png" alt="Main page"/>
+<img width="50%" src="assets/images/doc/welcome.png" alt="Main page"/>
 
 - - -
 ## Table of contents
@@ -95,7 +95,7 @@ In order to use Pocoweb, each user has to login with an appropriate
 user account using the login link at the right top of the page.  Users
 can logout again using the logout link at the same position.
 
-<img src="assets/images/doc/login.png" alt="Pocoweb login"/>
+<img width="50%" src="assets/images/doc/login.png" alt="Pocoweb login"/>
 
 - - -
 <a id='users'></a>
@@ -130,7 +130,7 @@ Each user can only manage their own user's settings.  It is not possible to chan
 the settings of another user account even if you are logged in with an
 administrator account.
 
-<img src="assets/images/doc/user_account.png" alt="Account settings"/>
+<img width="50%" src="assets/images/doc/user_account.png" alt="Account settings"/>
 
 In order to update user settings or to change the user's password,
 fill in or change the appropriate fields and click on the ![update
@@ -157,7 +157,7 @@ User management is done via the User tab.  You have to be logged in
 with an administrator account in order to access and use the user
 management page.
 
-<img src="assets/images/doc/users_list.png" alt="User management"/>
+<img width="50%" src="assets/images/doc/users_list.png" alt="User management"/>
 
 The user management page consist of an overview list of all users in
 the system.  In order to remove a user account (the user cannot be an
@@ -177,7 +177,7 @@ out the input fields accordingly.  If the account should be an
 administrator account, do not forget to check the ![administrator
 check box](assets/images/doc/checkbox-admin.png) check box.
 
-<img src="assets/images/doc/user_new_modal.png" alt="Create a user"/>
+<img width="50%" src="assets/images/doc/user_new_modal.png" alt="Create a user"/>
 
 - - -
 <a id='projects'></a>
