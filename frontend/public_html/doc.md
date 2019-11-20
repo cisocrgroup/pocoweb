@@ -1136,7 +1136,7 @@ project or package with id `pid`.  The search excludes corrected tokens.
 {
   "projectId": 27,
   "bookId": 17,
-  "isErrorPattern": true|false,
+  "type": "search type: token|pattern|ac|regex",
   "skip": 8,
   "max": 14,
   "totalCount": 1000,

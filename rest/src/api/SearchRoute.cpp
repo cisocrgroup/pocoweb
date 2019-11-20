@@ -27,13 +27,13 @@ struct matches {
 
 struct match_results {
   match_results()
-      : results{}, bookid{0}, projectid{0}, total{0}, skip{0}, max{0},
-        is_pattern() {}
+      : results{}, type{}, bookid{0}, projectid{0}, total{0}, skip{0}, max{0} {}
+
   void add(const std::string &q, const DbLine &line, int tid);
   template <class OS> void serialize(rapidjson::Writer<OS> &w);
   std::unordered_map<std::string, matches> results;
+  std::string type;
   int bookid, projectid, total, skip, max;
-  bool is_pattern;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -67,8 +67,8 @@ template <class OS> void match_results::serialize(rapidjson::Writer<OS> &w) {
   w.Int(max);
   w.String("total");
   w.Int(total);
-  w.String("isPattern");
-  w.Int(is_pattern);
+  w.String("type");
+  w.String(type);
 
   w.String("matches");
   w.StartObject();
@@ -272,6 +272,7 @@ Route::Response SearchRoute::search_token(MysqlConnection &mysql, tq q) const {
         // });
         return true;
       });
+  ret.type = q.escape ? "token" : "regex";
   rapidjson::StringBuffer buf;
   rapidjson::Writer<rapidjson::StringBuffer> writer(buf);
   ret.serialize(writer);
@@ -327,7 +328,7 @@ Route::Response SearchRoute::search_pattern(MysqlConnection &mysql,
             std::wstring(m[1])))]; // give pattern (not matched type) as key
         return true;
       });
-  ret.is_pattern = true;
+  ret.type = "pattern";
   rapidjson::StringBuffer buf;
   rapidjson::Writer<rapidjson::StringBuffer> writer(buf);
   ret.serialize(writer);
@@ -382,6 +383,7 @@ Route::Response SearchRoute::search_ac(MysqlConnection &mysql, ac q) const {
       ret.add(qstr, line, row.tokenid);
     }
   }
+  ret.type = "ac";
   rapidjson::StringBuffer buf;
   rapidjson::Writer<rapidjson::StringBuffer> writer(buf);
   ret.serialize(writer);
