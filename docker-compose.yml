@@ -35,7 +35,7 @@ services:
   db:
     image: mariadb
     volumes:
-      - ${PCW_BASE_DIR}/db-data:/var/lib/mysql
+      - ${PCW_BASE_DIR}/db-data:/var/lib/mysql:rw
       - ./db:/etc/mysql/conf.d:ro
     restart: always
     env_file:
