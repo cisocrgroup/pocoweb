@@ -27,11 +27,13 @@ struct matches {
 
 struct match_results {
   match_results()
-      : results{}, bookid{0}, projectid{0}, total{0}, skip{0}, max{0} {}
+      : results{}, bookid{0}, projectid{0}, total{0}, skip{0}, max{0},
+        is_pattern() {}
   void add(const std::string &q, const DbLine &line, int tid);
   template <class OS> void serialize(rapidjson::Writer<OS> &w);
   std::unordered_map<std::string, matches> results;
   int bookid, projectid, total, skip, max;
+  bool is_pattern;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -65,6 +67,8 @@ template <class OS> void match_results::serialize(rapidjson::Writer<OS> &w) {
   w.Int(max);
   w.String("total");
   w.Int(total);
+  w.String("isPattern");
+  w.Int(is_pattern);
 
   w.String("matches");
   w.StartObject();
@@ -209,7 +213,7 @@ searchType search_type(const std::string &t) {
 // GET /books/<bid>search?q=[&t=][&skip=][&max=][&i=][&q=]...
 ////////////////////////////////////////////////////////////////////////////////
 Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
-  // "token" || "pattern" || "ac"
+  // "token" || "pattern" || "ac" || "regex"
   const auto t = get<std::string>(req.url_params, "t").value_or("token");
   const auto pskip = get<int>(req.url_params, "skip").value_or(0);
   const auto pmax = get<int>(req.url_params, "max").value_or(50);
@@ -323,6 +327,7 @@ Route::Response SearchRoute::search_pattern(MysqlConnection &mysql,
             std::wstring(m[1])))]; // give pattern (not matched type) as key
         return true;
       });
+  ret.is_pattern = true;
   rapidjson::StringBuffer buf;
   rapidjson::Writer<rapidjson::StringBuffer> writer(buf);
   ret.serialize(writer);
