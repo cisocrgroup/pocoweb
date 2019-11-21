@@ -141,7 +141,7 @@ App.getLineNumbers = function(id){
 };
 
 App.getIgnoreCase = function(id) {
-  let ignoreCase = App.getPcw().options.ignoreCase[id] || false;
+  let ignoreCase = App.getPcw().options.ignoreCase[id] || true;
   return ignoreCase;
 };
 
