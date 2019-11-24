@@ -3,10 +3,7 @@
 #include "core/jsonify.hpp"
 #include "core/util.hpp"
 #include "utils/Error.hpp"
-#include <basen.hpp>
 #include <crow/json.h>
-#include <fstream>
-#include <iostream>
 #include <rapidjson/writer.h>
 #include <stdexcept>
 #include <utf8.h>
@@ -328,19 +325,6 @@ void DbLine::updateOCR(const std::wstring &ocr, const std::vector<int> &cuts,
     }
     line.push_back(c);
   }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void DbLine::updateImage(const std::string &base,
-                         const std::string &imagedata) const {
-  const auto path = fs::path(base) / imagepath;
-  std::ofstream out(path.string());
-  if (not out.is_open()) {
-    THROW(Error, "(DbLine) cannot open file: ", path.string());
-  }
-  bn::decode_b64(imagedata.begin(), imagedata.end(),
-                 std::ostream_iterator<char>(out, ""));
-  out.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

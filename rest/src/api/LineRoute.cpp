@@ -4,6 +4,7 @@
 #include "core/util.hpp"
 #include "database/DbStructs.hpp"
 #include "utils/Error.hpp"
+#include <basen.hpp>
 #include <crow.h>
 
 #define LINE_ROUTE_ROUTE "/books/<int>/pages/<int>/lines/<int>"
@@ -189,8 +190,25 @@ void LineRoute::updateOCR(const Request &req, DbLine &line) const {
   }
   line.updateOCR(ocr, cuts, confs);
   if (imagedata != "") {
-    line.updateImage(get_config().daemon.projectdir, imagedata);
+    CROW_LOG_INFO << "(LineRoute::updateOCR) updating image data for line: "
+                  << line.strID();
+    updateImage(imagedata, line);
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void LineRoute::updateImage(const std::string &data, const DbLine &line) const {
+  const auto path =
+      fs::path(get_config().daemon.projectdir).parent_path() / line.imagepath;
+  CROW_LOG_INFO << "(LineRoute::updateImage) updating image data for line: "
+                << line.strID() << ": " << path;
+  std::ofstream out(path.string());
+  if (not out.is_open()) {
+    THROW(Error, "(DbLine) cannot open file: ", path.string());
+  }
+  bn::decode_b64(data.begin(), data.end(),
+                 std::ostream_iterator<char>(out, ""));
+  out.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

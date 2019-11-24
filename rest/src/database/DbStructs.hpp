@@ -157,7 +157,6 @@ struct DbLine {
   // update
   void updateOCR(const std::wstring &ocr, const std::vector<int> &cuts,
                  const std::vector<double> &confs);
-  void updateImage(const std::string &base, const std::string &imagedata) const;
 
   template <class OS> void serialize(rapidjson::Writer<OS> &w);
   std::string strID() const {
