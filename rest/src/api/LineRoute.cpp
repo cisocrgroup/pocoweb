@@ -1,4 +1,5 @@
 #include "LineRoute.hpp"
+#include "core/Pix.hpp"
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
 #include "core/util.hpp"
@@ -197,18 +198,33 @@ void LineRoute::updateOCR(const Request &req, DbLine &line) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void LineRoute::updateImage(const std::string &data, const DbLine &line) const {
+void LineRoute::updateImage(const std::string &data, DbLine &line) const {
   const auto path =
       fs::path(get_config().daemon.projectdir).parent_path() / line.imagepath;
   CROW_LOG_INFO << "(LineRoute::updateImage) updating image data for line: "
                 << line.strID() << ": " << path;
   std::ofstream out(path.string());
   if (not out.is_open()) {
-    THROW(Error, "(DbLine) cannot open file: ", path.string());
+    THROW(Error, "(LineRoute::updateImage) cannot open file: ", path.string());
   }
   bn::decode_b64(data.begin(), data.end(),
                  std::ostream_iterator<char>(out, ""));
   out.close();
+  // get image dimensions
+  PixPtr pix;
+  pix.reset(pixRead(path.string().data()));
+  if (not pix) {
+    THROW(Error, "(LineRoute::udpateImage) cannot read image: ", path.string());
+  }
+  int ec, w, h;
+  if ((ec = pixGetDimensions(pix.get(), &w, &h, nullptr))) {
+    THROW(Error, "(LineRoute::udpateImage) cannot get image dims: %d", ec);
+  }
+  // update image bounding box
+  line.box.set_left(0);
+  line.box.set_right(w);
+  line.box.set_top(0);
+  line.box.set_bottom(h);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -251,7 +267,15 @@ void LineRoute::reset(const Request &req, DbSlice &slice) {
 void LineRoute::update(MysqlConnection &mysql, const DbLine &line) {
   using namespace sqlpp;
   tables::Contents contents;
+  tables::Textlines lines;
   MysqlCommitter committer(mysql);
+  // update image
+  mysql.db()(
+      sqlpp::update(lines)
+          .set(lines.lleft = line.box.left(), lines.lright = line.box.right(),
+               lines.ltop = line.box.top(), lines.lbottom = line.box.bottom())
+          .where(lines.bookid == line.bookid and lines.pageid == line.pageid and
+                 lines.lineid == line.lineid));
   // delete old contents
   mysql.db()(remove_from(contents).where(contents.bookid == line.bookid and
                                          contents.pageid == line.pageid and

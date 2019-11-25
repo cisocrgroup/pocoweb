@@ -38,7 +38,7 @@ public:
 
 private:
   void updateOCR(const Request &req, DbLine &line) const;
-  void updateImage(const std::string &data, const DbLine &line) const;
+  void updateImage(const std::string &data, DbLine &line) const;
   static void correct(const Request &req, DbSlice &slice, bool manual);
   static void reset(const Request &req, DbSlice &slice);
   static void update(MysqlConnection &conn, const DbLine &line);
