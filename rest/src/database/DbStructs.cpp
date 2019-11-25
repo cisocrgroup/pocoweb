@@ -317,9 +317,8 @@ void DbLine::updateOCR(const std::wstring &ocr, const std::vector<int> &cuts,
                        const std::vector<double> &confs) {
   line.clear();
   for (size_t i = 0; i < ocr.size(); i++) {
-    DbChar c{ocr[i], 0, 0, 0, false};
     assert(i < cuts.size());
-    c.cut = cuts[i];
+    DbChar c{ocr[i], 0, 0.0, cuts[i], int(i), false};
     if (i < confs.size()) {
       c.conf = confs[i];
     }
