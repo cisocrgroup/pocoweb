@@ -1,8 +1,11 @@
 # Pocoweb documentation
 
 Pocoweb is a web based post-correction system for OCRed historical
-documents.  It is loosely based on
-[PoCoTo](https://github.com/cisocrgroup/PoCoTo).
+documents.  It is based on
+[PoCoTo](https://github.com/cisocrgroup/PoCoTo).  Pocoweb consists of
+a backend that offers a REST API for the post-correction and a
+frontend that faciliates the post-correction of historical documents
+using a web-browser.
 
 Users can upload their OCRed documents and correct them in the web
 front end.  The corrected documents can then be downloaded and further
@@ -20,6 +23,22 @@ OCR errors in the documents and generates correction suggestions for
 suspicious words.
 
 <img width="50%" src="assets/images/doc/welcome.png" alt="Main page"/>
+
+Pocoweb offers:
+* Simple user management to enable paralell correction of documents
+  packages.
+* The possibility to split documents into packages to parallel the
+  manual post-correction.
+* A connection to the language profiler that:
+  * generates correction suggestions.
+  * lists suspicious words and error patterns.
+  * adapts to the manual correction on the document.
+* An interface to an automatic correction system, whose corrections
+  can be manually verified.
+* The possibility to download a global pool of corrected lines in the
+  whole corpus to be used for OCR-training etc.
+* An extensive REST API to enable the automation of different aspects
+  of the post-correction.
 
 - - -
 ## Table of contents
