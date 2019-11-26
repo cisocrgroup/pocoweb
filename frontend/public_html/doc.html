@@ -57,7 +57,9 @@ of the post-correction.</li>
 <ul>
 <li><a href="#user-content-upload-new-project">Creating new projects</a></li>
 <li><a href="#user-content-project-archives">Project archives</a></li>
-<li><a href="#user-content-project-table">Project table</a></li>
+<li><a href="#user-content-project-table">Project overview</a></li>
+<li><a href="#user-content-delete-projects">Deleting of projects and packages</a></li>
+<li><a href="#user-content-split-projects">Splitting and reclaiming of projects and packages</a></li>
 <li><a href="#user-content-download-project">Downloading projects</a></li>
 <li><a href="#user-content-profile-project">Profiling projects</a></li>
 </ul>
@@ -234,15 +236,15 @@ packages of the same project in parallel.</p>
 <p>Only administrators can upload new projects, split them into a number
 of packages and assign those packages to different users.  It is not
 possible to assign an existing project to a different user.</p>
-<div> *Note: Since it is possible to correct a whole
+<div> Note: Since it is possible to correct a whole
 project as well, one should never correct a project while other users
 could be correcting an associated package.  This could lead to cases
-where one user accidentally overrides an other users work.* </div>
-<div> *Note: For historical reasons the api uses the
+where one user accidentally overrides an other users work. </div>
+<div> Note: For historical reasons the api uses the
 term «books» to refer to projects and the term «projects» to refer to
 packages.  So for example in the REST API `projectId` refers to the id
 of a package and `bookId` refers to the id of a project.  Hopefully
-this issue can be solved soon.* </div>
+this issue can be solved soon. </div>
 <p><a id="user-content-upload-new-project"></a></p>
 <h3>
 <a id="user-content-creating-new-projects" class="anchor" href="#creating-new-projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Creating new projects</h3>
@@ -273,24 +275,19 @@ or if you want to use another profiler, you have to specify its URL.</p>
 <p><a id="user-content-project-archives"></a></p>
 <h3>
 <a id="user-content-project-archives" class="anchor" href="#project-archives" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Project archives</h3>
-<p>A project archive is a zipped directory structure that contains the OCR and
-image files for the pages of a document.
-Image files should be encoded as PNG files if possible, but specify or TIFF
-encoded images are fine, too.
-The OCR files should be either
-<a href="">ABBYY-XML</a>,
-<a href="">ALTO-XML</a> or
-<a href="">hOCR</a>
-encoded files.</p>
-<p>The back-end tries its best to automatically search and order the pages
-in project archives.
-Therefore the matching OCR and image files should have the same name
-(without the extension).
-It does not matter in which directory structure the different image and OCR
-files reside.
-If the matching OCR and image files do have the same filenames for any reason,
-you can add a <a href="">METS/MOTS</a> meta data file to the archive, in which the
-page ordering and the association between image and OCR files is specified.</p>
+<p>A project archive is a zipped directory structure that contains the
+OCR and image files for the pages of a document.  Image files should
+be encoded as PNG files if possible, but specify or TIFF encoded
+images are fine, too.  The OCR files should be either <a href="">ABBYY-XML</a>,
+<a href="">ALTO-XML</a>, <a href="">PAGE-XML</a> or <a href="">hOCR</a> encoded files.</p>
+<p>The back-end tries its best to automatically search and order the
+pages in project archives.  Therefore the matching OCR and image files
+should have the same name (without the extension).  It does not matter
+in which directory structure the different image and OCR files reside.
+If the matching OCR and image files do have the same filenames for any
+reason, you can add a <a href="">METS/MOTS</a> meta data file to the archive, in
+which the page ordering and the association between image and OCR
+files is specified.</p>
 <p>Example structure of a project archive:</p>
 <pre><code>archive
 ├── img
@@ -346,52 +343,71 @@ you can also use its project structure directly to upload a project archive:</p>
 </code></pre>
 <p><a id="user-content-project-table"></a></p>
 <h3>
-<a id="user-content-project-table" class="anchor" href="#project-table" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Project table</h3>
-<p>After the create project mask, a table with all the projects
-and packages that you own is shown.
-If you are logged in with an administrator account you see all your uploaded
-projects and all packages that you have not yet assigned to another user.
-If you are logged in with a normal user account, you only see the packages
-that have been assigned to you.</p>
-<p>You can manage the projects by clicking on the according buttons
-in the rows of the table:</p>
+<a id="user-content-project-overview" class="anchor" href="#project-overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Project overview</h3>
+<p>If you select a project or package the system opens the project
+overview.  Depending if you are handling a project or package and if
+you are logged as normal user or as administrator you will see a
+different page with different edit options.</p>
+<p><a href="assets/images/doc/project_overview.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/project_overview.png" alt="Project overview" style="max-width:100%;"></a></p>
+<p>On the top the system presents you some basic information about the
+project.  Below you see the correction status of the project, listing
+the percentage of corrected lines and tokens and the (estimated) word
+error rate of the project.</p>
+<div> Note: The word error rate is based only on the
+manually corrected tokens.  As long as not all tokens are manually
+corrected, the number is only a rough estimate.</div>
+<p>Below is a list of tiles that offer access to different edit options
+(the actual list may be missing some of the tiles):</p>
 <ol>
-<li>
-<p>Click on the <a href="assets/images/doc/glyphicon-open-project.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/glyphicon-open-project.png" alt="open" style="max-width:100%;"></a> button to open
-the project and start <a href="#user-content-post-correction">correcting</a> it.</p>
-</li>
-<li>
-<p>Click on the <a href="assets/images/doc/glyphicon-download-project.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/glyphicon-download-project.png" alt="download" style="max-width:100%;"></a> button
-to <a href="#user-content-download-project">download</a> the project.</p>
-</li>
-<li>
-<p>Click on the <a href="assets/images/doc/glyphicon-remove-project.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/glyphicon-remove-project.png" alt="remove" style="max-width:100%;"></a> button
-to remove the project.</p>
-</li>
-<li>
-<p>Click on the <a href="assets/images/doc/glyphicon-order-profile.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/glyphicon-order-profile.png" alt="order" style="max-width:100%;"></a> button to
-order a <a href="#user-content-profile-project">document profile</a>.</p>
-</li>
-<li>
-<p>Click on the <a href="assets/images/doc/glyphicon-list-adaptive-tokens.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/glyphicon-list-adaptive-tokens.png" alt="adaptive" style="max-width:100%;"></a> button
-to open a list of all <a href="#user-content-profile-project">adptive tokens</a>.</p>
-</li>
-<li>
-<p>Click on the <a href="assets/images/doc/glyphicon-split-project.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/glyphicon-split-project.png" alt="split" style="max-width:100%;"></a> button
-to split the project into multiple packages.</p>
-</li>
-<li>
-<p>Click on the <a href="assets/images/doc/glyphicon-assign-to-user.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/glyphicon-assign-to-user.png" alt="assign" style="max-width:100%;"></a>
-button to assign a package to an user.</p>
-</li>
+<li>Click on the <strong>Order Profile</strong> tile to
+<a href="#user-content-profile-project">profile</a> the project.</li>
+<li>Click on the <strong>Automatic Postcorrection</strong> tile to start the
+automatic post-correction.</li>
+<li>Click on the <strong>Manual Postcorrection</strong> tile to start to <a href="#user-content-post-correction">manually
+correct</a> the document.</li>
+<li>Click on the <strong>Adaptive tokens</strong> tile to get a list of the
+adaptive tokens (manually corrected tokens) in the project.</li>
+<li>Click on the <strong>Split</strong> tile to
+<a href="#user-content-split-projects">split</a> a project into packages.</li>
+<li>Click on the <strong>Edit</strong> tile to edit the meta information about
+the project.</li>
+<li>Click on the <strong>Download</strong> tile to
+<a href="#user-content-download-project">download</a> the project.</li>
+<li>Click on the <strong>Delete</strong> tile to
+<a href="#user-content-delete-projects">delete</a> this project.</li>
+<li>Click on the <strong>Reclaim package</strong> tile to
+<a href="#user-content-split-projects">reclaim</a> all packages for the
+project.</li>
 </ol>
+<p><a id="user-content-delete-projects"></a></p>
+<h3>
+<a id="user-content-deleting-projects-and-packages" class="anchor" href="#deleting-projects-and-packages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Deleting projects and packages</h3>
+<p>Both projects and packages can be deleted.  If you delete a package
+only the according package is deleted.  No content of the parent
+project is touched.  On the other hand, if you delete a project all
+content is deleted and is irretrievable lost.</p>
+<p>You cannot no delete a project that contains packages.  So in order to
+delete a project one has to <a href="#user-content-split-projects">reclaim</a>
+all packages and delete them beforehand.</p>
+<p><a id="user-content-split-projects"></a></p>
+<h3>
+<a id="user-content-splitting-and-reclaiming-of-projects-and-packages" class="anchor" href="#splitting-and-reclaiming-of-projects-and-packages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Splitting and reclaiming of projects and packages</h3>
+<p>You can split a project into different packages and assign each
+package to a different user (both normal and administrators).
+Packages are generated by distributing the pages of the project as
+evenly as possible among the packages.  You can select to randomly
+distribute the pages instead of sequentially assigning them.</p>
+<p><a href="assets/images/doc/split_project_modal.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/split_project_modal.png" alt="Split project" style="max-width:100%;"></a></p>
+<p>If you are the owner of a project, you can forcefully reclaim all
+packages.  If you are assigned a package you can reassign it to the
+project's owner.</p>
 <p><a id="user-content-download-project"></a></p>
 <h3>
 <a id="user-content-downloading-projects" class="anchor" href="#downloading-projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Downloading projects</h3>
-<p>You can click on the <a href="assets/images/doc/glyphicon-download-project.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/glyphicon-download-project.png" alt="download button" style="max-width:100%;"></a>
-button in the project table to download a project.
-The pocoweb back-end will then generate a project archive and give
-you a link from where you can download it.</p>
+<p>You can download an archive of a project.  It is not possible to
+download archives of packages.  The pocoweb back-end will then
+generate a project archive and you will be asked a location to store
+the archive.</p>
 <p>The project archive will retain the same structure as the project archive,
 that was used to create the project. All corrections are written back into
 the original OCR files.</p>
@@ -401,22 +417,26 @@ that can directly be used with ocropy.</p>
 <p><a id="user-content-profile-project"></a></p>
 <h3>
 <a id="user-content-profiling-projects" class="anchor" href="#profiling-projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Profiling projects</h3>
-<p>You can order a document profile by clicking on the
-<a href="assets/images/doc/glyphicon-order-profile.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/glyphicon-order-profile.png" alt="order profile" style="max-width:100%;"></a> button in the project
-table. This will start a profiler that profiles the document. The profiler
-uses the language settings that where given when the profject was created.</p>
+<p>You can order a document profile for packages and projects.  If you
+order a profile for a sub package, the profiler will be run over the
+package's parent project.  There can always be only on profiling
+process for a document.  More generally there can always be only one
+background job (profiling, lexicon extension or automatic post
+correction) for any project.</p>
 <p>The profiling is done in the background. If the profiling is done,
 various helpers are available for the post correction of the profiled project
-and its associated packages.</p>
-<p>After the profiling is done, you can inspect the list of <em>adaptive tokens</em>.
-Just click to the
-<a href="assets/images/doc/glyphicon-list-adaptive-tokens.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/glyphicon-list-adaptive-tokens.png" alt="adaptive token list" style="max-width:100%;"></a>
-button on the project table.</p>
-<p>Adaptive tokens are generated by the profiler.
-Whenever a corrected token is found during the profiling,
-the profiler tries to match the correction to a known dictionary entry.
-If no such match can be generated, a new adaptive token is generated and
-inserted into a temporary dictionary for this document. For this reason
+and its associated packages:</p>
+<ul>
+<li>You will see a list of suspicious words in the manual correction.</li>
+<li>You will see a list of frequent error patterns in the manual correction.</li>
+<li>You will be able to inspect the list of adaptive tokens.</li>
+</ul>
+<p>After the profiling is done, you can inspect the list of <em>adaptive
+tokens</em>.  Adaptive tokens are generated by the profiler.  Whenever a
+manually corrected token is found during the profiling, the profiler
+tries to match the correction to a known dictionary entry.  If no such
+match can be generated, a new adaptive token is generated and inserted
+into a temporary dictionary for this document. For this reason
 Adaptive tokens are possible candidates for new dictionary entries.</p>
 <p>For more information about the profiling and adaptive tokens
 see the <a href="">profiler paper</a> and <a href="">profiler paper 2</a></p>
@@ -424,13 +444,13 @@ see the <a href="">profiler paper</a> and <a href="">profiler paper 2</a></p>
 <p><a id="user-content-post-correction"></a></p>
 <h2>
 <a id="user-content-post-correction" class="anchor" href="#post-correction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post correction</h2>
-<p>In order to correct a project or package click to the
-<a href="assets/images/doc/glyphicon-open-project.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/glyphicon-open-project.png" alt="open" style="max-width:100%;"></a> button.
-Pocoweb opens the first page of the project or package
-and presents the page correction view.
-In generally the post correction is the same for projects an packages.
-Every statement about the correction of projects also applies to the
-correction of packages.</p>
+<p>After clicking on the <strong>Manual Postcorrection</strong> tile you will be
+directed to the project's or package's first page and you can start to
+manually post-correct the first page.  In generally the post
+correction is the same for projects an packages.  Every statement
+about the correction of projects also applies to the correction of
+packages.</p>
+<p><a href="assets/images/doc/post_correct_project.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/post_correct_project.png" alt="Page view" style="max-width:100%;"></a></p>
 <p>Other than PoCoTo the post correction with Pocoweb is line based.
 Generally you correct whole lines of the document and not single tokens.
 The page correction view presents the lines of the document and lets
@@ -439,68 +459,82 @@ you correct each line individually.</p>
 <h3>
 <a id="user-content-page-correction" class="anchor" href="#page-correction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Page correction</h3>
 <p>The page correction view shows the lines of a page of the project.
-You can use the forward and backward buttons of the navigation bar
-to go to the next, previous first and last pages of the project.</p>
-<p>For each line the image of the line and the according OCR text are shown.
-If the project has been profiled, <em>suspicious tokens</em> (tokens that the profiler
-thinks are real OCR errors) are marked red in the text.
-The suspicious tokens are meant to give you a visual clue about errors on
-the page.</p>
-<p>You can click on the line image to see an overview over the whole line's page image.
-If you click in the text you can edit the text.
-It is also possible to select single tokens in a line, by marking them with
-the mouse. If a token is selected, you can choose a correction candidate for
-it or list all occurrences of the token in the
-<a href="#user-content-navigation-bar">navigation bar</a>.</p>
-<p>After you have corrected a line you can click on the
-<a href="assets/images/doc/button-correct.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-correct.png" alt="correct" style="max-width:100%;"></a> button to correct the line and
-send the correction to the back-end (you can also click on the button on the
-button of the page to correct all lines of a page).
-After the line is corrected it is shown with a green background.</p>
-<p>In general if a line was corrected it is shown with a green background.
-If a line was partially corrected (see
-<a href="#user-content-concordance-view">concordance view</a> below)
-the background is yellow and
-if the line was not yet touched it has a white background.</p>
+You can use the forward and backward buttons of the navigation bar to
+go to the next, previous first and last pages of the project.  It is
+also possible to directly select specific pages of the project.</p>
+<p><a href="assets/images/doc/page_navigation.png" target="_blank" rel="noopener noreferrer"><img width="25%" src="assets/images/doc/page_navigation.png" alt="Page navigation" style="max-width:100%;"></a></p>
+<p>For each line the image of the line and the according OCR text are
+shown.  Lines and tokens are marked with green if they have been
+manually corrected or in orange if the according lines or tokens have
+been automatically corrected (either by a script or by the automatic
+post-correction system).</p>
+<p>If you click in the text you can edit the whole line.  After you have
+corrected a line you can click on the
+<a href="assets/images/doc/button-correct.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-correct.png" alt="correct" style="max-width:100%;"></a> button to correct the
+line and send the correction to the back-end After the whole line has
+been corrected, the line it is shown with a green background to mark
+it as manually corrected.</p>
+<p><a href="assets/images/doc/select_token.png" target="_blank" rel="noopener noreferrer"><img width="75%" src="assets/images/doc/select_token.png" alt="Token selection" style="max-width:100%;"></a></p>
+<p>In general you can insert every character into the text field.  There
+are no special characters or escape sequences that get by the input
+field interpreted.  The only exception are the special escape
+sequences of the form <code>\u017f</code> or <code>\u{10FFFF}</code> that can be used to
+enter arbitrary Unicode points into the text field. E.g
+<code>Wa\u017f\u017fer</code> gets interpreted as <code>Waſſer</code>.  In the unlikely
+case that you have to literally insert something like <code>\u017f</code>, you
+can use an additional leading <code>\</code> to escape the special
+interpretation of the sequence: <code>\\u017f</code>.</p>
+<p>You can click on the <strong>Show line image</strong> button to see an overview
+over the whole line's page image.  On the bottom of the view there is
+a button <strong>Set whole page as corrected</strong> to correct all lines on the
+page in on go.</p>
+<p>It is also possible to select single tokens in a line, by marking them
+with the mouse. If a token is selected, you can choose a correction
+candidate for it or list all occurrences of the token in the
+<a href="#user-content-concordance-view">concordance view</a>.</p>
 <p><a id="user-content-navigation-bar"></a></p>
 <h3>
 <a id="user-content-navigation-bar" class="anchor" href="#navigation-bar" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Navigation bar</h3>
-<p>The navigation bar lets you navigate the pages of you project.
-It stays on top of your browser's screen even while you navigate down the
-browser page.</p>
+<p>The navigation bar lets you navigate the pages of you project.  It
+stays on the left side of your browser's screen even while you
+navigate down the browser page.</p>
 <p>Besides the navigation buttons, the navigation bar shows a tab to list
-the assumed error patterns and error tokens of the project.
-If the project was profiled these list assumed errors in the document
-by the number of their occurrence or by their common error patterns.
-Click one of the entries to open the
-<a href="#user-content-concordance-view">concordance view</a> of the according token
-or error patterns.</p>
-<p>If a token is selected it shows the concordance count of the token.
-If the document was profiled you can use the correction suggestion tab to
-select a correction candidate for the selected token.
-The selected token with one of the listed correction suggestions.</p>
+the assumed error patterns (<em>OCR error patterns</em>) and error tokens
+(<em>Suspicious words</em>) of the project.  If the project was profiled
+these list assumed errors in the document by the number of their
+occurrence or by their common error patterns.  Click one of the
+entries to open the <a href="#user-content-concordance-view">concordance view</a>
+of the according token or error patterns.</p>
+<p><a href="assets/images/doc/navigation_bar.png" target="_blank" rel="noopener noreferrer"><img width="25%" src="assets/images/doc/navigation_bar.png" alt="Navigation bar" style="max-width:100%;"></a></p>
+<p>There is also a list of <em>special characters</em> available.  If you click
+on one of the special characters the according Unicode point is
+inserted into your clip board (you can use CTRL+v to paste the
+character into a text field).  Special characters are all non ASCII
+characters encountered in the document.</p>
+<p>In the <em>display settings</em> tab you can set options for the displaying
+of pages.  These settings are user specific and are only saved in your
+browser's local storage and not in the back end.</p>
 <p><a id="user-content-concordance-view"></a></p>
 <h3>
 <a id="user-content-concordance-view" class="anchor" href="#concordance-view" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Concordance view</h3>
-<p>The concordance view lists similar tokens of the whole project and
-shows them in their respective line context. With the concordance
-view you can correct a series of tokens at once.
-If you do this each token of the concordance view is corrected
-in the lines.
-In this way the corrected lines become <em>partially corrected</em>,
-since not the whole line was corrected but just a token in the line.</p>
-<p>You can correct each token individually.
-Just edit the token and then click to the
-<a href="assets/images/doc/button-correct.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-correct.png" alt="correct" style="max-width:100%;"></a> button.
-If you want to correct multiple occurrences of the tokens in
-the concordance view you can either set a global correction
-in the concordance bar
-<a href="assets/images/doc/button-concordance-correction.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-concordance-correction.png" alt="concordance-bar" style="max-width:100%;"></a>
-or select a correction suggestion using the
-<a href="assets/images/doc/button-select-correction-suggestion.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-select-correction-suggestion.png" alt="select correction suggestion" style="max-width:100%;"></a>
-selection for each individual token.</p>
-<p>Before you correct all tokens in a series make sure, that only the
-tokens you want to correct are checked.</p>
+<p>The concordance view lists tokens in their line context.  These tokens
+can be corrected individually or all at once.  The concordance view
+never shows manual corrected tokens, since its purpose is the manual
+correction of tokens in the project.  If a token gets manually
+corrected, it can never be found in the concordance view.</p>
+<p>Depending on how you opened the concordance view, you will see a list
+of similar words (using suspicious words or the concordance button for
+a selected token) or words where the profiler assumes a similar OCR
+error pattern for its best interpretation.</p>
+<p><a href="assets/images/doc/concordance_view.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/concordance_view.png" alt="Concordance view" style="max-width:100%;"></a></p>
+<p>Each matching token is shown in a blue outline. All matched tokens can
+be individually corrected using profiler suggestions or manual
+editing.  It is also possible to globally batch-correct the shown
+tokens using the correction bar at the top of the concordance view.
+After one or more tokens have been corrected, a new batch of tokens is
+shown (if there are more to show).  It is possible to set the number
+of tokens per page in the <em>display settings</em> tab of the <a href="#user-content-page-correction">page
+correction</a>.</p>
 <hr>
 <p><a id="user-content-installation"></a></p>
 <h2>
@@ -591,7 +625,7 @@ included. The file has the following layout:</p>
 <p><a id="user-content-overview-services"></a></p>
 <h2>
 <a id="user-content-services" class="anchor" href="#services" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Services</h2>
-<p>Pocoweb is composed with a number of interdependend services:</p>
+<p>Pocoweb is composed from a number of interdependend services:</p>
 <ul>
 <li>nginx serves images, web-content and redirectes API calls</li>
 <li>pcwauth authentificates API requests and forwards them to the various other services</li>
@@ -613,12 +647,15 @@ included. The file has the following layout:</p>
 <p><a id="user-content-rest-api"></a></p>
 <h2>
 <a id="user-content-rest-api" class="anchor" href="#rest-api" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>REST API</h2>
-<p>The REST API documentation lists the available URLs of Pocoweb's REST API.
-Each entry gives the request method (GET, POST or DELETE) in square brackets,
-the request path and the layout of the response data is listed.
-Additionally for POST requests the expected layout of the POST data is listed.
-You have to replace the parameters in the request path
-by valid ids (otherwise the API returns <code>404 Not Found</code>):</p>
+<p>The REST API documentation lists the available URLs of Pocoweb's REST
+API.  This API is used by the front-end to implement the
+post-correction.  It can also be used to automate some aspects of
+Pocoweb (creation of users, splitting of packages etc).</p>
+<p>Each entry gives the request method (GET, POST or DELETE) in square
+brackets, the request path and the layout of the response data is
+listed.  Additionally for POST requests the expected layout of the
+POST data is listed.  You have to replace the parameters in the
+request path by valid ids (otherwise the API returns <code>404 Not Found</code>):</p>
 <ul>
 <li>
 <code>uid</code> references a valid user id.</li>

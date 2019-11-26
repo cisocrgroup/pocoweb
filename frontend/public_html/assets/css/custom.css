@@ -925,6 +925,11 @@ span.pl-bl {
 	font-weight: 600;
 }
 
+/* documentation notes */
+div.doc-note {
+	font-style: italic;
+}
+
 /* slider */
 .slider {
   -webkit-appearance: none;
