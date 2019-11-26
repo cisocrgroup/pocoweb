@@ -47,7 +47,7 @@ Pocoweb offers:
   * [Account settings](#user-content-account-settings)
   * [User management](#user-content-user-management)
 * [Projects](#user-content-projects)
-  * [Uploading new projects](#user-content-upload-new-project)
+  * [Creating new projects](#user-content-upload-new-project)
   * [Project archives](#user-content-project-archives)
   * [Project table](#user-content-project-table)
   * [Downloading projects](#user-content-download-project)
@@ -202,61 +202,80 @@ check box](assets/images/doc/checkbox-admin.png) check box.
 <a id='projects'></a>
 ## Projects
 
-Project management is done via the [Projects](/index.php) tab.
-On this page you can manage the projects and packages (see below) that your
-user owns.
-n
-Pocoweb uses two different kinds of correctable documents.
-*Projects* on the one hand represent whole documents that should be corrected.
-*Packages* on the other hand are smaller subsets of projects that contain
-a smaller subset of the pages of their parent project.
+Project management is done via the project tile or the project tab.
+This page lists all available projects and packages (see below) that
+your user owns.  On this page you can upload new project archives (see
+below). In order to process a project or package simply select the
+appropriate entry in the project table.
+
+<img width="50%" src="assets/images/doc/project_list.png" alt="Project list"/>
+
+In the list you can see some basic information about the available
+projects and packages.  Projects and packages are marked with either
+the project symbol ![project
+symbol](assets/images/doc/project_image.png) or the package symbol
+![package symbol](assets/images/doc/package_image.png).
+
+From this page you can also [create new
+projects](#user-content-upload-new-project) and download a
+[pool](#user-content-pool) of all you user's projects or all globally
+pooled projects.
+
+Pocoweb uses two different kinds of correctable documents.  *Projects*
+on the one hand represent whole documents or books that should be
+corrected.  *Packages* on the other hand are smaller subsets of
+projects that contain a subset of the pages of their parent project.
 Two packages with the same parent never contain overlapping pages.
-This makes it possible for two different users to correct different packages
-of the same project in parallel.
+This makes it possible for two different users to correct different
+packages of the same project in parallel.
 
-Only administrators can upload new projects, split them into a number of
-packages and assign those packages to different users.
-It is not possible to assign a project to a different user.
+Only administrators can upload new projects, split them into a number
+of packages and assign those packages to different users.  It is not
+possible to assign an existing project to a different user.
 
-*Note: Since is possible to correct a whole project as well,
-one should never correct a project while other users could be correcting
-an associated package.
-This could lead to cases where one user accidentally
-overrides an other users work.*
+<div class='doc-note'> *Note: Since it is possible to correct a whole
+project as well, one should never correct a project while other users
+could be correcting an associated package.  This could lead to cases
+where one user accidentally overrides an other users work.* </div>
 
-*Note: For historical reasons the api uses the term «books» to refer
-to projects and the term «projects» to refer to packages.  So for
-example `projectId` refers to the id of a package and `bookId` refers
-to the id of a project.  Hopefully this issue can be solved soon.*
+<div class='doc-note'> *Note: For historical reasons the api uses the
+term «books» to refer to projects and the term «projects» to refer to
+packages.  So for example in the REST API `projectId` refers to the id
+of a package and `bookId` refers to the id of a project.  Hopefully
+this issue can be solved soon.* </div>
 
 <a id='upload-new-project'></a>
-### Uploading new projects
+### Creating new projects
 
-If you are logged in with an administrator account, you can create a new project.
-Fill in the meta data fields in the mask, select the according
-[project archive](#user-content-project-archives) on your computer and click
-on the ![upload](assets/images/doc/button-upload.png) button.
-Depending on the size of the project archive,
-the uploading of the project can take a while.
+If you are logged in with an administrator account, you can create a
+new project.  Fill in the meta data fields in the mask, select the
+according [project archive](#user-content-project-archives) on your
+computer and click on the
+![upload](assets/images/doc/button-upload.png) button.  Depending on
+the size of the project archive, the uploading of the project can take
+a while.
+
+Do not forget to set the right language for the new project if you are
+planning to use the profiler.  The language field lists all available
+languages for the chosen profiler.
+
+<img width="50%" src="assets/images/doc/create_new_project.png" alt="Project list"/>
 
 The [Pocoweb back-end](#user-content-pocoweb-backend) analyzes the project archive,
 processes its OCR and image files and publishes the project.
 If the uploading was successfully, you should see the new project in the
 project table.
 
-The project's author, title and year can be filled out as it seems fit.
-Theses values are not used internally and are there for an easy reference.
+The project's author, title and year can be filled out as it seems
+fit.  Theses values are not used internally and are there for an easy
+reference.
 
-A project's profiler and its language are settings specific for the language
-profiler.
-If you plan to use a profiler for the post correction of your project, you
-have to set them accordingly.
-If the installation of Pocoweb comes with a local configured profiler,
-you can use `default` or `local` as value for your profiler.
-If not or if you want to use another profiler, you have to specify its URL.
-
-Do not forget to set the right language for the new project.
-The language field lists all available languages for your chosen profiler.
+A project's profiler and its language are settings specific for the
+language profiler.  If you plan to use a profiler for the post
+correction of your project, you have to set them accordingly.  The
+normal installation of Pocoweb comes with a local configured profiler,
+you can use `default` or `local` as value for your profiler.  If not
+or if you want to use another profiler, you have to specify its URL.
 
 <a id='project-archives'></a>
 ### Project archives
@@ -2044,3 +2063,6 @@ postcorrection) with the according id.
 	"Timestamp": 0
 }
 ```
+
+<!--  LocalWords:  Pocoweb
+ -->

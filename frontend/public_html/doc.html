@@ -1,8 +1,11 @@
 <h1>
 <a id="user-content-pocoweb-documentation" class="anchor" href="#pocoweb-documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Pocoweb documentation</h1>
 <p>Pocoweb is a web based post-correction system for OCRed historical
-documents.  It is loosely based on
-<a href="https://github.com/cisocrgroup/PoCoTo">PoCoTo</a>.</p>
+documents.  It is based on
+<a href="https://github.com/cisocrgroup/PoCoTo">PoCoTo</a>.  Pocoweb consists of
+a backend that offers a REST API for the post-correction and a
+frontend that faciliates the post-correction of historical documents
+using a web-browser.</p>
 <p>Users can upload their OCRed documents and correct them in the web
 front end.  The corrected documents can then be downloaded and further
 processed.  Pocoweb understands various OCR formats that can be used.
@@ -17,6 +20,26 @@ able to differentiate between historical spelling variation and real
 OCR errors in the documents and generates correction suggestions for
 suspicious words.</p>
 <p><a href="assets/images/doc/welcome.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/welcome.png" alt="Main page" style="max-width:100%;"></a></p>
+<p>Pocoweb offers:</p>
+<ul>
+<li>Simple user management to enable paralell correction of documents
+packages.</li>
+<li>The possibility to split documents into packages to parallel the
+manual post-correction.</li>
+<li>A connection to the language profiler that:
+<ul>
+<li>generates correction suggestions.</li>
+<li>lists suspicious words and error patterns.</li>
+<li>adapts to the manual correction on the document.</li>
+</ul>
+</li>
+<li>An interface to an automatic correction system, whose corrections
+can be manually verified.</li>
+<li>The possibility to download a global pool of corrected lines in the
+whole corpus to be used for OCR-training etc.</li>
+<li>An extensive REST API to enable the automation of different aspects
+of the post-correction.</li>
+</ul>
 <hr>
 <h2>
 <a id="user-content-table-of-contents" class="anchor" href="#table-of-contents" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Table of contents</h2>
@@ -32,7 +55,7 @@ suspicious words.</p>
 <li>
 <a href="#user-content-projects">Projects</a>
 <ul>
-<li><a href="#user-content-upload-new-project">Uploading new projects</a></li>
+<li><a href="#user-content-upload-new-project">Creating new projects</a></li>
 <li><a href="#user-content-project-archives">Project archives</a></li>
 <li><a href="#user-content-project-table">Project table</a></li>
 <li><a href="#user-content-download-project">Downloading projects</a></li>
@@ -187,53 +210,66 @@ administrator account, do not forget to check the <a href="assets/images/doc/che
 <p><a id="user-content-projects"></a></p>
 <h2>
 <a id="user-content-projects" class="anchor" href="#projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Projects</h2>
-<p>Project management is done via the <a href="/index.php">Projects</a> tab.
-On this page you can manage the projects and packages (see below) that your
-user owns.
-n
-Pocoweb uses two different kinds of correctable documents.
-<em>Projects</em> on the one hand represent whole documents that should be corrected.
-<em>Packages</em> on the other hand are smaller subsets of projects that contain
-a smaller subset of the pages of their parent project.
+<p>Project management is done via the project tile or the project tab.
+This page lists all available projects and packages (see below) that
+your user owns.  On this page you can upload new project archives (see
+below). In order to process a project or package simply select the
+appropriate entry in the project table.</p>
+<p><a href="assets/images/doc/project_list.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/project_list.png" alt="Project list" style="max-width:100%;"></a></p>
+<p>In the list you can see some basic information about the available
+projects and packages.  Projects and packages are marked with either
+the project symbol <a href="assets/images/doc/project_image.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/project_image.png" alt="project symbol" style="max-width:100%;"></a> or the package symbol
+<a href="assets/images/doc/package_image.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/package_image.png" alt="package symbol" style="max-width:100%;"></a>.</p>
+<p>From this page you can also <a href="#user-content-upload-new-project">create new
+projects</a> and download a
+<a href="#user-content-pool">pool</a> of all you user's projects or all globally
+pooled projects.</p>
+<p>Pocoweb uses two different kinds of correctable documents.  <em>Projects</em>
+on the one hand represent whole documents or books that should be
+corrected.  <em>Packages</em> on the other hand are smaller subsets of
+projects that contain a subset of the pages of their parent project.
 Two packages with the same parent never contain overlapping pages.
-This makes it possible for two different users to correct different packages
-of the same project in parallel.</p>
-<p>Only administrators can upload new projects, split them into a number of
-packages and assign those packages to different users.
-It is not possible to assign a project to a different user.</p>
-<p><em>Note: Since is possible to correct a whole project as well,
-one should never correct a project while other users could be correcting
-an associated package.
-This could lead to cases where one user accidentally
-overrides an other users work.</em></p>
-<p><em>Note: For historical reasons the api uses the term «books» to refer
-to projects and the term «projects» to refer to packages.  So for
-example <code>projectId</code> refers to the id of a package and <code>bookId</code> refers
-to the id of a project.  Hopefully this issue can be solved soon.</em></p>
+This makes it possible for two different users to correct different
+packages of the same project in parallel.</p>
+<p>Only administrators can upload new projects, split them into a number
+of packages and assign those packages to different users.  It is not
+possible to assign an existing project to a different user.</p>
+<div> *Note: Since it is possible to correct a whole
+project as well, one should never correct a project while other users
+could be correcting an associated package.  This could lead to cases
+where one user accidentally overrides an other users work.* </div>
+<div> *Note: For historical reasons the api uses the
+term «books» to refer to projects and the term «projects» to refer to
+packages.  So for example in the REST API `projectId` refers to the id
+of a package and `bookId` refers to the id of a project.  Hopefully
+this issue can be solved soon.* </div>
 <p><a id="user-content-upload-new-project"></a></p>
 <h3>
-<a id="user-content-uploading-new-projects" class="anchor" href="#uploading-new-projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Uploading new projects</h3>
-<p>If you are logged in with an administrator account, you can create a new project.
-Fill in the meta data fields in the mask, select the according
-<a href="#user-content-project-archives">project archive</a> on your computer and click
-on the <a href="assets/images/doc/button-upload.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-upload.png" alt="upload" style="max-width:100%;"></a> button.
-Depending on the size of the project archive,
-the uploading of the project can take a while.</p>
+<a id="user-content-creating-new-projects" class="anchor" href="#creating-new-projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Creating new projects</h3>
+<p>If you are logged in with an administrator account, you can create a
+new project.  Fill in the meta data fields in the mask, select the
+according <a href="#user-content-project-archives">project archive</a> on your
+computer and click on the
+<a href="assets/images/doc/button-upload.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-upload.png" alt="upload" style="max-width:100%;"></a> button.  Depending on
+the size of the project archive, the uploading of the project can take
+a while.</p>
+<p>Do not forget to set the right language for the new project if you are
+planning to use the profiler.  The language field lists all available
+languages for the chosen profiler.</p>
+<p><a href="assets/images/doc/create_new_project.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/create_new_project.png" alt="Project list" style="max-width:100%;"></a></p>
 <p>The <a href="#user-content-pocoweb-backend">Pocoweb back-end</a> analyzes the project archive,
 processes its OCR and image files and publishes the project.
 If the uploading was successfully, you should see the new project in the
 project table.</p>
-<p>The project's author, title and year can be filled out as it seems fit.
-Theses values are not used internally and are there for an easy reference.</p>
-<p>A project's profiler and its language are settings specific for the language
-profiler.
-If you plan to use a profiler for the post correction of your project, you
-have to set them accordingly.
-If the installation of Pocoweb comes with a local configured profiler,
-you can use <code>default</code> or <code>local</code> as value for your profiler.
-If not or if you want to use another profiler, you have to specify its URL.</p>
-<p>Do not forget to set the right language for the new project.
-The language field lists all available languages for your chosen profiler.</p>
+<p>The project's author, title and year can be filled out as it seems
+fit.  Theses values are not used internally and are there for an easy
+reference.</p>
+<p>A project's profiler and its language are settings specific for the
+language profiler.  If you plan to use a profiler for the post
+correction of your project, you have to set them accordingly.  The
+normal installation of Pocoweb comes with a local configured profiler,
+you can use <code>default</code> or <code>local</code> as value for your profiler.  If not
+or if you want to use another profiler, you have to specify its URL.</p>
 <p><a id="user-content-project-archives"></a></p>
 <h3>
 <a id="user-content-project-archives" class="anchor" href="#project-archives" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Project archives</h3>
@@ -2059,4 +2095,5 @@ postcorrection) with the according id.</p>
 	<span class="pl-s"><span class="pl-pds">"</span>jobName<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>name of job<span class="pl-pds">"</span></span>,
 	<span class="pl-s"><span class="pl-pds">"</span>Timestamp<span class="pl-pds">"</span></span>: <span class="pl-c1">0</span>
 }</pre></div>
+
 
