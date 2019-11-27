@@ -4,7 +4,7 @@ Pocoweb is a web based post-correction system for OCRed historical
 documents.  It is based on
 [PoCoTo](https://github.com/cisocrgroup/PoCoTo).  Pocoweb consists of
 a backend that offers a REST API for the post-correction and a
-frontend that faciliates the post-correction of historical documents
+frontend that facilitates the post-correction of historical documents
 using a web-browser.
 
 Users can upload their OCRed documents and correct them in the web
@@ -13,7 +13,7 @@ processed.  Pocoweb understands various OCR formats that can be used.
 Any corrections are written back into the original format of the
 documents.  This makes it possible to integrate the manual
 post-correction of OCRed documents into other digitalisation
-workflows.
+work flows.
 
 As PoCoTo, Pocoweb is connected with a language
 [profiler](https://github.com/cisocrgroup/Profiler) that enables
