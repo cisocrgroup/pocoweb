@@ -586,7 +586,9 @@ error pattern for its best interpretation.
 Each matching token is shown in a blue outline. All matched tokens can
 be individually corrected using profiler suggestions or manual
 editing.  It is also possible to globally batch-correct the shown
-tokens using the correction bar at the top of the concordance view.
+tokens using the correction bar at the top of the concordance
+view. All inputs allow the insertion of Unicode escape codes.
+
 After one or more tokens have been corrected, a new batch of tokens is
 shown (if there are more to show).  It is possible to set the number
 of tokens per page in the _display settings_ tab of the [page
