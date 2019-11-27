@@ -83,13 +83,13 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                 var pid = tokendiv.attributes.projectid.value;
                 var pageid = tokendiv.attributes.pageid.value;
                 var lineid = tokendiv.attributes.lineid.value;
-                var offset = tokendiv.attributes.offset.value;
+                var tokenid = tokendiv.attributes.tokenid.value;
                 var token = $(tokendiv).find('.cordiv').text().trim();
                 that.trigger("concordance:correct_token",{
                   pid:pid,
                   page_id:pageid,
                   line_id:lineid,
-                  token_id:offset,
+                  token_id:tokenid,
                   token:token}, anchor, function(){
                     checked_length--;
                     if (checked_length == 0){
@@ -185,11 +185,11 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
             var pid = tokendiv.attr('projectId');
             var lineid =  tokendiv.attr('lineId');
             var pageid =  tokendiv.attr('pageId');
-            var offset =  tokendiv.attr('offset');
+            var tokenid =  tokendiv.attr('tokenid');
             var token  = tokendiv.find('.cordiv').text();
             var anchor = concLine.attr('anchor');
 
-            this.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:offset,token:token}
+            this.trigger("concordance:correct_token",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token}
               ,anchor
               ,function(){
                        that.trigger("concordance:update_after_correction",
