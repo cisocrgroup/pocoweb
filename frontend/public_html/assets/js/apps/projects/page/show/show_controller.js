@@ -189,10 +189,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
        });
 
        projectShowSidebar.on("sidebar:special-characters-clicked",function(pid,pat){
-         console.log(pat)
           Util.copyStringToClipboard(pat);
-
-
        });
        projectShowSidebar.on("sidebar:update_page_hits", function(value) {
          App.setPageHits(id, value);
@@ -396,8 +393,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                              page.attributes.lines[line_result.lineId-1] = line_result; // update line array in page.lines
                              console.log(page);
-
-                            console.log("lineanchor")
                             console.log(lineanchor);
                              lineanchor.find('.line').empty().text(line_result['cor']);
                              lineanchor.find('.line-tokens').empty();

@@ -355,7 +355,6 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         var ids = Util.getIds(anchor);
         var text = $('#line-'+anchor).find('.line').text().replace(/\s\s+/g, ' ').trim();
 
-        console.log(text);
 
         this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor);
       },
