@@ -4,7 +4,7 @@
 documents.  It is based on
 <a href="https://github.com/cisocrgroup/PoCoTo">PoCoTo</a>.  Pocoweb consists of
 a backend that offers a REST API for the post-correction and a
-frontend that faciliates the post-correction of historical documents
+frontend that facilitates the post-correction of historical documents
 using a web-browser.</p>
 <p>Users can upload their OCRed documents and correct them in the web
 front end.  The corrected documents can then be downloaded and further
@@ -12,7 +12,7 @@ processed.  Pocoweb understands various OCR formats that can be used.
 Any corrections are written back into the original format of the
 documents.  This makes it possible to integrate the manual
 post-correction of OCRed documents into other digitalisation
-workflows.</p>
+work flows.</p>
 <p>As PoCoTo, Pocoweb is connected with a language
 <a href="https://github.com/cisocrgroup/Profiler">profiler</a> that enables
 semi-automatic correction of historical documents.  The profiler is
@@ -33,8 +33,14 @@ manual post-correction.</li>
 <li>adapts to the manual correction on the document.</li>
 </ul>
 </li>
-<li>An interface to an automatic correction system, whose corrections
-can be manually verified.</li>
+<li>An interface to an automatic correction system that:
+<ul>
+<li>uses the language profiler.</li>
+<li>automatically generates lexicon extensions for the profiler.</li>
+<li>corrects the document</li>
+<li>allows for interactive manual inspection of the correction.</li>
+</ul>
+</li>
 <li>The possibility to download a global pool of corrected lines in the
 whole corpus to be used for OCR-training etc.</li>
 <li>An extensive REST API to enable the automation of different aspects
@@ -142,29 +148,39 @@ can logout again using the logout link at the same position.</p>
 <p>In general there are two kinds of user accounts in Pocoweb.  The two
 types have differen permissings in the system:</p>
 <ol>
-<li>
-<p>Administrator accounts</p>
+<li>Administrator accounts
 <ul>
 <li>Create new administrator and normal users accounts</li>
 <li>Delete user accounts</li>
-<li>Upload new documents and create new <a href="#user-content-project-management">projects</a>
+<li>Upload new documents and create new
+<a href="#user-content-project-management">projects</a>
 </li>
 <li>Split projects into <a href="#user-content-project-management">packages</a>
 </li>
-<li>Assign packages to different user accounts</li>
-<li>Profile projects.</li>
-<li>Post correct projects and packages.</li>
-<li>Delete documents and packages.</li>
-<li>Download corrected projects.</li>
-<li>Download a pool of corrected projects.</li>
+<li>
+<a href="#user-content-split-projects">Assign</a> packages to different user
+accounts</li>
+<li>
+<a href="#user-content-profile-project">Profile</a> projects.</li>
+<li>
+<a href="#user-content-post-correction">Post correct</a> projects and
+packages.</li>
+<li>
+<a href="#user-content-delete-projects">Delete</a> documents and packages.</li>
+<li>
+<a href="#user-content-download-project">Download</a> corrected projects.</li>
+<li>Download a <a href="#user-content-pool">pool</a> of corrected projects.</li>
 </ul>
 </li>
-<li>
-<p>Normal user accounts</p>
+<li>Normal user accounts
 <ul>
-<li>Post correct packages that where assigned to them</li>
-<li>Profile projects.</li>
-<li>Reassign packages back to their original owner.</li>
+<li>Post correct <a href="#user-content-project-management">packages</a> that
+where assigned to them</li>
+<li>
+<a href="#user-content-profile-project">Profile</a> projects.</li>
+<li>
+<a href="#user-content-split-projects">Reassign</a> packages back to their
+original owner.</li>
 </ul>
 </li>
 </ol>

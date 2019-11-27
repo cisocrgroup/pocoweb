@@ -129,21 +129,25 @@ In general there are two kinds of user accounts in Pocoweb.  The two
 types have differen permissings in the system:
 
 1. Administrator accounts
-    * Create new administrator and normal users accounts
-    * Delete user accounts
-    * Upload new documents and create new [projects](#user-content-project-management)
-    * Split projects into [packages](#user-content-project-management)
-    * Assign packages to different user accounts
-    * Profile projects.
-    * Post correct projects and packages.
-    * Delete documents and packages.
-    * Download corrected projects.
-	* Download a pool of corrected projects.
-
+   * Create new administrator and normal users accounts
+   * Delete user accounts
+   * Upload new documents and create new
+     [projects](#user-content-project-management)
+   * Split projects into [packages](#user-content-project-management)
+   * [Assign](#user-content-split-projects) packages to different user
+     accounts
+   * [Profile](#user-content-profile-project) projects.
+   * [Post correct](#user-content-post-correction) projects and
+     packages.
+   * [Delete](#user-content-delete-projects) documents and packages.
+   * [Download](#user-content-download-project) corrected projects.
+   * Download a [pool](#user-content-pool) of corrected projects.
 2. Normal user accounts
-    * Post correct packages that where assigned to them
-    * Profile projects.
-    * Reassign packages back to their original owner.
+   * Post correct [packages](#user-content-project-management) that
+     where assigned to them
+   * [Profile](#user-content-profile-project) projects.
+   * [Reassign](#user-content-split-projects) packages back to their
+     original owner.
 
 - - -
 <a id='account-settings'></a>
