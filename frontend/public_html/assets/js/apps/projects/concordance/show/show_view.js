@@ -84,7 +84,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                 var pageid = tokendiv.attributes.pageid.value;
                 var lineid = tokendiv.attributes.lineid.value;
                 var offset = tokendiv.attributes.offset.value;
-                var token  = tokendiv.textContent.trim();
+                var token = $(tokendiv).find('.cordiv').text().trim();
                 that.trigger("concordance:correct_token",{
                   pid:pid,
                   page_id:pageid,
