@@ -33,8 +33,11 @@ Pocoweb offers:
   * generates correction suggestions.
   * lists suspicious words and error patterns.
   * adapts to the manual correction on the document.
-* An interface to an automatic correction system, whose corrections
-  can be manually verified.
+* An interface to an automatic correction system that:
+  * uses the language profiler.
+  * automatically generates lexicon extensions for the profiler.
+  * corrects the document
+  * allows for interactive manual inspection of the correction.
 * The possibility to download a global pool of corrected lines in the
   whole corpus to be used for OCR-training etc.
 * An extensive REST API to enable the automation of different aspects
