@@ -9,7 +9,7 @@ var App = Marionette.Application.extend({
     region: "#app-region",
 });
 
-var App = new App();
+App = new App();
 
  const MainView = Marionette.View.extend({
     regions:{
