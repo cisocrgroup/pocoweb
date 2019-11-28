@@ -194,10 +194,8 @@ administrator), click on the
 according user entry in the user table.
 
 To delete an administrator account log in with this account, go to the
-[Account](/account.php) tab and click to the ![delete
-account](assets/images/doc/button-delete-account.png) button (see
-[Account settings](#user-content-account-settings) above).
-
+[Account tab](#user-content-account-settings) and click to the ![delete
+account](assets/images/doc/button-delete-account.png) button.
 
 To create new user accounts Click to the ![create
 user](assets/images/doc/button-create-new-user.png) button and fill
