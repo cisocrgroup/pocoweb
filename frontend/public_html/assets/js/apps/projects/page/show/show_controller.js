@@ -19,7 +19,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         	 $.when(fetchingpage,fetchingproject).done(function(page,project){
 
 		     	loadingCircleView.destroy();
-            console.log(project);
+            console.log(page);
            var lineheight = App.getLineHeight(id);
            var pagehits = App.getPageHits(id);
            var linenumbers = App.getLineNumbers(id);

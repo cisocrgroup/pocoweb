@@ -370,7 +370,51 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       },
 
        line_edited:function(e){
+      
+        var keyCode = e.keyCode || e.which;
+        if(keyCode == 13)
+        {
         e.stopPropagation();
+        e.preventDefault();
+        var anchor = $(e.currentTarget).parent().attr('anchor');
+        var ids = Util.getIds(anchor);
+        var text = $('#line-'+anchor).find('.line').text().replace(/\s\s+/g, ' ').trim();
+
+
+        this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor);
+
+          return false; // returning false will prevent the event from bubbling up.
+         }
+
+         else if (keyCode == 38){
+           e.stopPropagation();
+           e.preventDefault();
+
+           var prev_line_container = $(e.currentTarget).parent().parent().parent().parent().prev();
+
+           if(prev_line_container.hasClass('line-container')){
+            prev_line_container.find('.line-tokens').click();
+            prev_line_container.find('.line').click().focus();
+          
+            }
+
+           }
+
+        else if (keyCode == 40){
+           e.stopPropagation();
+           e.preventDefault();
+
+           var prev_line_container = $(e.currentTarget).parent().parent().parent().parent().next();
+
+           if(prev_line_container.hasClass('line-container')){
+            prev_line_container.find('.line-tokens').click();
+            prev_line_container.find('.line').click().focus();
+          
+            }
+
+           }
+
+
         $('.custom-popover').remove();
       },
 
@@ -385,81 +429,10 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
          clicked_token = $(e.target).text();
          }
 
+         this.display_selected_line($(e.currentTarget));
         $(".custom-popover").remove();
 
-        $('.line').hide();
-        $('.line-tokens').show();
-        var line_parent = $(e.currentTarget).parent();
-
-
-        var displayed_line = line_parent.find('.line')
-        displayed_line.show();
-
-
-        var obj = displayed_line.get(0);
-
-        // pre-select token:: to do :fix..
-
-        // if(clicked_token!= " "||clicked_token!=""){
-        //     var start = displayed_line.text().trim().indexOf(clicked_token);
-
-        //     if (start != -1){
-
-        //       var end = start + clicked_token.length-1;
-
-        //       console.log("start "+start+" end "+end);
-        //         var endNode, startNode = endNode = obj.firstChild
-
-        //       startNode.nodeValue = startNode.nodeValue.trim();
-
-        //       var range = document.createRange();
-        //       range.setStart(startNode, start);
-        //       range.setEnd(endNode, end + 1);
-
-        //       var sel = window.getSelection();
-        //       sel.removeAllRanges();
-        //       sel.addRange(range);
-
-        //        this.openCustomPopover(e,clicked_token,line_parent);
-        //     }
-        // }
-
-        $(e.currentTarget).hide();
-
-        $('.correct-btn').hide();
-        $('.line-text').css('border-bottom','1px solid transparent');
-        $('.line-text').css('border-left','1px solid transparent');
-        $('.line-text').css('border-top','1px solid transparent');
-        $('.line-text').css('border-top-right-radius','.25rem');
-        $('.line-text').css('border-bottom-right-radius','.25rem');
-
-
-        line_parent.css('border-left','1px solid #ced4da');
-        line_parent.css('border-bottom','1px solid #ced4da');
-        line_parent.css('border-top','1px solid #ced4da');
-        line_parent.css('border-top-right-radius','.0rem');
-        line_parent.css('border-bottom-right-radius','.0rem');
-
-        line_parent.next().find('.correct-btn').show();
-
-
-        //  $(e.currentTarget).find('.line').focusout(function() {
-
-        // $(e.currentTarget).find('.line-tokens').show();
-        // $(e.currentTarget).find('.line').hide();
-
-        // // $(e.currentTarget).next().find('.correct-btn').hide();
-        // $(e.currentTarget).css('border-bottom','1px solid transparent');
-        // $(e.currentTarget).css('border-left','1px solid transparent');
-        // $(e.currentTarget).css('border-top','1px solid transparent');
-        // $(e.currentTarget).css('border-top-left-radius','0rem');
-        // $(e.currentTarget).css('border-bottom-left-radius','0rem');
-        // $(e.currentTarget).find('.line-tokens').css('display','flex');
-
-
-        //  });
-
-
+        
 
 
       },
@@ -496,6 +469,83 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
 
        });
+      },
+      display_selected_line:function(line){
+
+        $('.line').hide();
+        $('.line-tokens').show();
+        var line_parent = line.parent();
+
+
+        var displayed_line = line_parent.find('.line')
+        displayed_line.show().focus();
+
+
+        var obj = displayed_line.get(0);
+
+        // pre-select token:: to do :fix..
+
+        // if(clicked_token!= " "||clicked_token!=""){
+        //     var start = displayed_line.text().trim().indexOf(clicked_token);
+
+        //     if (start != -1){
+
+        //       var end = start + clicked_token.length-1;
+
+        //       console.log("start "+start+" end "+end);
+        //         var endNode, startNode = endNode = obj.firstChild
+
+        //       startNode.nodeValue = startNode.nodeValue.trim();
+
+        //       var range = document.createRange();
+        //       range.setStart(startNode, start);
+        //       range.setEnd(endNode, end + 1);
+
+        //       var sel = window.getSelection();
+        //       sel.removeAllRanges();
+        //       sel.addRange(range);
+
+        //        this.openCustomPopover(e,clicked_token,line_parent);
+        //     }
+        // }
+
+        line.hide();
+
+        $('.correct-btn').hide();
+        $('.line-text').css('border-bottom','1px solid transparent');
+        $('.line-text').css('border-left','1px solid transparent');
+        $('.line-text').css('border-top','1px solid transparent');
+        $('.line-text').css('border-top-right-radius','.25rem');
+        $('.line-text').css('border-bottom-right-radius','.25rem');
+
+
+        line_parent.css('border-left','1px solid #ced4da');
+        line_parent.css('border-bottom','1px solid #ced4da');
+        line_parent.css('border-top','1px solid #ced4da');
+        line_parent.css('border-top-right-radius','.0rem');
+        line_parent.css('border-bottom-right-radius','.0rem');
+
+        line_parent.next().find('.correct-btn').show();
+
+
+        //  $(e.currentTarget).find('.line').focusout(function() {
+
+        // $(e.currentTarget).find('.line-tokens').show();
+        // $(e.currentTarget).find('.line').hide();
+
+        // // $(e.currentTarget).next().find('.correct-btn').hide();
+        // $(e.currentTarget).css('border-bottom','1px solid transparent');
+        // $(e.currentTarget).css('border-left','1px solid transparent');
+        // $(e.currentTarget).css('border-top','1px solid transparent');
+        // $(e.currentTarget).css('border-top-left-radius','0rem');
+        // $(e.currentTarget).css('border-bottom-left-radius','0rem');
+        // $(e.currentTarget).find('.line-tokens').css('display','flex');
+
+
+        //  });
+
+
+
       },
 
       onAttach:function(e){
