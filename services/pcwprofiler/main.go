@@ -463,8 +463,7 @@ func getAdaptiveTokens() service.HandlerFunc {
 		at := api.AdaptiveTokens{
 			BookID:         p.BookID,
 			ProjectID:      p.ProjectID,
-			AdaptiveTokens: []string{},
-			// set explicitly to return an empty list
+			AdaptiveTokens: []string{}, // set explicitly to return an empty list
 		}
 		seen := make(map[string]bool)
 		eachLine(p.BookID, func(line db.Chars) error {
