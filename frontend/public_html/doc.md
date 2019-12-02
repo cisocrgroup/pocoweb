@@ -268,10 +268,10 @@ languages for the chosen profiler.
 
 <img width="50%" src="assets/images/doc/create_new_project.png" alt="Project list"/>
 
-The [PoCoWeb back-end](#user-content-PoCoWeb-backend) analyzes the project archive,
-processes its OCR and image files and publishes the project.
-If the uploading was successfully, you should see the new project in the
-project table.
+The [PoCoWeb back-end](#user-content-PoCoWeb-backend) analyzes the
+project archive, processes its OCR and image files and publishes the
+project.  If the uploading was successfully, you should see the new
+project in the project table.
 
 The project's author, title and year can be filled out as it seems
 fit.  Theses values are not used internally and are there for an easy
@@ -969,12 +969,12 @@ Delete the user account of the user with an id of `uid`.
 * Administrators can delete any user account.
 * Every user can delete her own user account.
 
-If an user account is deleted, any projects and or packages,
-that the user owned are deleted.
-Since packages just define a subset of a project, the deletion of packages
-deletes the package information, but not the project information.
-It is save to delete a user that still owns a package.
-Note that if a project is deleted, all associated packages are deleted as well.
+If an user account is deleted, any projects and or packages, that the
+user owned are deleted.  Since packages just define a subset of a
+project, the deletion of packages deletes the package information, but
+not the project information.  It is save to delete a user that still
+owns a package.  Note that if a project is deleted, all associated
+packages are deleted as well.
 
 ---
 <a id='api-get-books'></a>
@@ -1123,10 +1123,9 @@ Delete a project.
 * Only the owner of a project can delete a project.
 
 If a project is deleted, all associated packages are deleted as well.
-It is not possible to delete a package.
-The deletion remove all database entries of the projects and all
-associated packages.
-In addition to this the page and line images and all remaining project
+It is not possible to delete a package.  The deletion remove all
+database entries of the projects and all associated packages.  In
+addition to this the page and line images and all remaining project
 archives are removed from the server.
 
 ---
@@ -1219,23 +1218,22 @@ Download a project.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project can delete a project.
 
-This API call generates a new project archive and returns
-the relative URL of the new archive.
-The new project contains all original OCR and image files with
-all corrections.
-Additionally the archive contains a file called `adaptive_tokens.txt` as well
-as a `ocropus-book` directory structure.
+This API call generates a new project archive and returns the relative
+URL of the new archive.  The new project contains all original OCR and
+image files with all corrections.  Additionally the archive contains a
+file called `adaptive_tokens.txt` as well as a `ocropus-book`
+directory structure.
 
-The file `adaptive_tokens.txt` contains the
-[adaptive token set](#user-content-profile-project) of the various
-profiler runs (if any). This file can be empty, if no profiling was used or
-if the profiler could not find any adaptive tokens.
+The file `adaptive_tokens.txt` contains the [adaptive token
+set](#user-content-profile-project) of the various profiler runs (if
+any). This file can be empty, if no profiling was used or if the
+profiler could not find any adaptive tokens.
 
-The `ocorpus-book` directory contains an
-[ocropy directory structure](#user-content-project-archives)
-that can directly be used for model training with ocropy.
-If the project archive was already a ocropy directory structure,
-only the according ground truth files are updated.
+The `ocorpus-book` directory contains an [ocropy directory
+structure](#user-content-project-archives) that can directly be used
+for model training with ocropy.  If the project archive was already a
+ocropy directory structure, only the according ground truth files are
+updated.
 
 #### Response data
 ```json
@@ -1248,12 +1246,15 @@ only the according ground truth files are updated.
 <a id='api-get-books-pid-search'></a>
 ### GET rest/books/`pid`/search
 Search for a token, OCR-error pattern or auto corrected token in a
-project or package with id `pid`.  The search excludes corrected tokens.
+project or package with id `pid`.  The search excludes corrected
+tokens.
 * [Authorization](#user-content-authorization) is required.
-* Only the owner of a project or package can search for tokens or error patterns.
+* Only the owner of a project or package can search for tokens or
+  error patterns.
 
 #### Query parameters
-* The query is given with the `q=query` parameter. This parameter is mandatory.
+* The query is given with the `q=query` parameter. This parameter is
+  mandatory.
 * The optional parameter `t=token|pattern|ac|regex` specifies the type
   of the search (default: `token`):
   * `token` specifies a keyword search for the query
@@ -1327,7 +1328,8 @@ project or package with id `pid`.  The search excludes corrected tokens.
 ---
 <a id='api-get-books-pid-pages-pageid'></a>
 ### GET rest/books/`pid`/pages/`pageid`
-Get the content of a page with id `pageid` of a package or project with id `pid`.
+Get the content of a page with id `pageid` of a package or project
+with id `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its pages.
 
@@ -1554,7 +1556,8 @@ Get the `n`-th next page of a page with id `pageid` of a project or package with
 ---
 <a id='api-get-books-pid-pages-pageid-prev-n'></a>
 ### GET rest/books/`pid`/pages/`pageid`/prev/`n`
-Get the `n`-th previous page of a page with id `pageid` of a project or package with id `pid`.
+Get the `n`-th previous page of a page with id `pageid` of a project
+or package with id `pid`.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can read its pages.
 

@@ -274,10 +274,10 @@ a while.</p>
 planning to use the profiler.  The language field lists all available
 languages for the chosen profiler.</p>
 <p><a href="assets/images/doc/create_new_project.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/create_new_project.png" alt="Project list" style="max-width:100%;"></a></p>
-<p>The <a href="#user-content-PoCoWeb-backend">PoCoWeb back-end</a> analyzes the project archive,
-processes its OCR and image files and publishes the project.
-If the uploading was successfully, you should see the new project in the
-project table.</p>
+<p>The <a href="#user-content-PoCoWeb-backend">PoCoWeb back-end</a> analyzes the
+project archive, processes its OCR and image files and publishes the
+project.  If the uploading was successfully, you should see the new
+project in the project table.</p>
 <p>The project's author, title and year can be filled out as it seems
 fit.  Theses values are not used internally and are there for an easy
 reference.</p>
@@ -915,12 +915,12 @@ not possible to change a user's id.</p>
 <li>Administrators can delete any user account.</li>
 <li>Every user can delete her own user account.</li>
 </ul>
-<p>If an user account is deleted, any projects and or packages,
-that the user owned are deleted.
-Since packages just define a subset of a project, the deletion of packages
-deletes the package information, but not the project information.
-It is save to delete a user that still owns a package.
-Note that if a project is deleted, all associated packages are deleted as well.</p>
+<p>If an user account is deleted, any projects and or packages, that the
+user owned are deleted.  Since packages just define a subset of a
+project, the deletion of packages deletes the package information, but
+not the project information.  It is save to delete a user that still
+owns a package.  Note that if a project is deleted, all associated
+packages are deleted as well.</p>
 <hr>
 <p><a id="user-content-api-get-books"></a></p>
 <h3>
@@ -1080,10 +1080,9 @@ administrator can change a project's metadata.</li>
 <li>Only the owner of a project can delete a project.</li>
 </ul>
 <p>If a project is deleted, all associated packages are deleted as well.
-It is not possible to delete a package.
-The deletion remove all database entries of the projects and all
-associated packages.
-In addition to this the page and line images and all remaining project
+It is not possible to delete a package.  The deletion remove all
+database entries of the projects and all associated packages.  In
+addition to this the page and line images and all remaining project
 archives are removed from the server.</p>
 <hr>
 <p><a id="user-content-api-get-books-pid-statistics"></a></p>
@@ -1191,21 +1190,20 @@ project are reasigned to the project's owner.</p>
 <a href="#user-content-authorization">Authorization</a> is required.</li>
 <li>Only the owner of a project can delete a project.</li>
 </ul>
-<p>This API call generates a new project archive and returns
-the relative URL of the new archive.
-The new project contains all original OCR and image files with
-all corrections.
-Additionally the archive contains a file called <code>adaptive_tokens.txt</code> as well
-as a <code>ocropus-book</code> directory structure.</p>
-<p>The file <code>adaptive_tokens.txt</code> contains the
-<a href="#user-content-profile-project">adaptive token set</a> of the various
-profiler runs (if any). This file can be empty, if no profiling was used or
-if the profiler could not find any adaptive tokens.</p>
-<p>The <code>ocorpus-book</code> directory contains an
-<a href="#user-content-project-archives">ocropy directory structure</a>
-that can directly be used for model training with ocropy.
-If the project archive was already a ocropy directory structure,
-only the according ground truth files are updated.</p>
+<p>This API call generates a new project archive and returns the relative
+URL of the new archive.  The new project contains all original OCR and
+image files with all corrections.  Additionally the archive contains a
+file called <code>adaptive_tokens.txt</code> as well as a <code>ocropus-book</code>
+directory structure.</p>
+<p>The file <code>adaptive_tokens.txt</code> contains the <a href="#user-content-profile-project">adaptive token
+set</a> of the various profiler runs (if
+any). This file can be empty, if no profiling was used or if the
+profiler could not find any adaptive tokens.</p>
+<p>The <code>ocorpus-book</code> directory contains an <a href="#user-content-project-archives">ocropy directory
+structure</a> that can directly be used
+for model training with ocropy.  If the project archive was already a
+ocropy directory structure, only the according ground truth files are
+updated.</p>
 <h4>
 <a id="user-content-response-data-12" class="anchor" href="#response-data-12" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
@@ -1216,16 +1214,19 @@ only the according ground truth files are updated.</p>
 <h3>
 <a id="user-content-get-restbookspidsearch" class="anchor" href="#get-restbookspidsearch" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GET rest/books/<code>pid</code>/search</h3>
 <p>Search for a token, OCR-error pattern or auto corrected token in a
-project or package with id <code>pid</code>.  The search excludes corrected tokens.</p>
+project or package with id <code>pid</code>.  The search excludes corrected
+tokens.</p>
 <ul>
 <li>
 <a href="#user-content-authorization">Authorization</a> is required.</li>
-<li>Only the owner of a project or package can search for tokens or error patterns.</li>
+<li>Only the owner of a project or package can search for tokens or
+error patterns.</li>
 </ul>
 <h4>
 <a id="user-content-query-parameters-2" class="anchor" href="#query-parameters-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query parameters</h4>
 <ul>
-<li>The query is given with the <code>q=query</code> parameter. This parameter is mandatory.</li>
+<li>The query is given with the <code>q=query</code> parameter. This parameter is
+mandatory.</li>
 <li>The optional parameter <code>t=token|pattern|ac|regex</code> specifies the type
 of the search (default: <code>token</code>):
 <ul>
@@ -1306,7 +1307,8 @@ hits (default: <code>max=50</code>).</li>
 <h3>
 <a id="user-content-get-restbookspidpagespageid" class="anchor" href="#get-restbookspidpagespageid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GET rest/books/<code>pid</code>/pages/<code>pageid</code>
 </h3>
-<p>Get the content of a page with id <code>pageid</code> of a package or project with id <code>pid</code>.</p>
+<p>Get the content of a page with id <code>pageid</code> of a package or project
+with id <code>pid</code>.</p>
 <ul>
 <li>
 <a href="#user-content-authorization">Authorization</a> is required.</li>
@@ -1544,7 +1546,8 @@ from packages.</li>
 <h3>
 <a id="user-content-get-restbookspidpagespageidprevn" class="anchor" href="#get-restbookspidpagespageidprevn" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GET rest/books/<code>pid</code>/pages/<code>pageid</code>/prev/<code>n</code>
 </h3>
-<p>Get the <code>n</code>-th previous page of a page with id <code>pageid</code> of a project or package with id <code>pid</code>.</p>
+<p>Get the <code>n</code>-th previous page of a page with id <code>pageid</code> of a project
+or package with id <code>pid</code>.</p>
 <ul>
 <li>
 <a href="#user-content-authorization">Authorization</a> is required.</li>
