@@ -1,26 +1,26 @@
 <h1>
-<a id="user-content-pocoweb-documentation" class="anchor" href="#pocoweb-documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Pocoweb documentation</h1>
-<p>Pocoweb is a web based post-correction system for OCRed historical
+<a id="user-content-pocoweb-documentation" class="anchor" href="#pocoweb-documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PoCoWeb documentation</h1>
+<p>PoCoWeb is a web based post-correction system for OCRed historical
 documents.  It is based on
-<a href="https://github.com/cisocrgroup/PoCoTo">PoCoTo</a>.  Pocoweb consists of
+<a href="https://github.com/cisocrgroup/PoCoTo">PoCoTo</a>.  PoCoWeb consists of
 a backend that offers a REST API for the post-correction and a
 frontend that facilitates the post-correction of historical documents
 using a web-browser.</p>
 <p>Users can upload their OCRed documents and correct them in the web
 front end.  The corrected documents can then be downloaded and further
-processed.  Pocoweb understands various OCR formats that can be used.
+processed.  PoCoWeb understands various OCR formats that can be used.
 Any corrections are written back into the original format of the
 documents.  This makes it possible to integrate the manual
 post-correction of OCRed documents into other digitalisation
 work flows.</p>
-<p>As PoCoTo, Pocoweb is connected with a language
+<p>As PoCoTo, PoCoWeb is connected with a language
 <a href="https://github.com/cisocrgroup/Profiler">profiler</a> that enables
 semi-automatic correction of historical documents.  The profiler is
 able to differentiate between historical spelling variation and real
 OCR errors in the documents and generates correction suggestions for
 suspicious words.</p>
 <p><a href="assets/images/doc/welcome.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/welcome.png" alt="Main page" style="max-width:100%;"></a></p>
-<p>Pocoweb offers:</p>
+<p>PoCoWeb offers:</p>
 <ul>
 <li>Simple user management to enable paralell correction of documents
 packages.</li>
@@ -137,15 +137,15 @@ of the post-correction.</li>
 <p><a id="user-content-login"></a></p>
 <h2>
 <a id="user-content-login" class="anchor" href="#login" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Login</h2>
-<p>In order to use Pocoweb, each user has to login with an appropriate
+<p>In order to use PoCoWeb, each user has to login with an appropriate
 user account using the login link at the right top of the page.  Users
 can logout again using the logout link at the same position.</p>
-<p><a href="assets/images/doc/login.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/login.png" alt="Pocoweb login" style="max-width:100%;"></a></p>
+<p><a href="assets/images/doc/login.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/login.png" alt="PoCoWeb login" style="max-width:100%;"></a></p>
 <hr>
 <p><a id="user-content-users"></a></p>
 <h2>
 <a id="user-content-users" class="anchor" href="#users" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Users</h2>
-<p>In general there are two kinds of user accounts in Pocoweb.  The two
+<p>In general there are two kinds of user accounts in PoCoWeb.  The two
 types have differen permissings in the system:</p>
 <ol>
 <li>Administrator accounts
@@ -241,7 +241,7 @@ the project symbol <a href="assets/images/doc/project_image.png" target="_blank"
 projects</a> and download a
 <a href="#user-content-pool">pool</a> of all you user's projects or all globally
 pooled projects.</p>
-<p>Pocoweb uses two different kinds of correctable documents.  <em>Projects</em>
+<p>PoCoWeb uses two different kinds of correctable documents.  <em>Projects</em>
 on the one hand represent whole documents or books that should be
 corrected.  <em>Packages</em> on the other hand are smaller subsets of
 projects that contain a subset of the pages of their parent project.
@@ -274,7 +274,7 @@ a while.</p>
 planning to use the profiler.  The language field lists all available
 languages for the chosen profiler.</p>
 <p><a href="assets/images/doc/create_new_project.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/create_new_project.png" alt="Project list" style="max-width:100%;"></a></p>
-<p>The <a href="#user-content-pocoweb-backend">Pocoweb back-end</a> analyzes the project archive,
+<p>The <a href="#user-content-PoCoWeb-backend">PoCoWeb back-end</a> analyzes the project archive,
 processes its OCR and image files and publishes the project.
 If the uploading was successfully, you should see the new project in the
 project table.</p>
@@ -284,7 +284,7 @@ reference.</p>
 <p>A project's profiler and its language are settings specific for the
 language profiler.  If you plan to use a profiler for the post
 correction of your project, you have to set them accordingly.  The
-normal installation of Pocoweb comes with a local configured profiler,
+normal installation of PoCoWeb comes with a local configured profiler,
 you can use <code>default</code> or <code>local</code> as value for your profiler.  If not
 or if you want to use another profiler, you have to specify its URL.</p>
 <p><a id="user-content-project-archives"></a></p>
@@ -420,7 +420,7 @@ project's owner.</p>
 <h3>
 <a id="user-content-downloading-projects" class="anchor" href="#downloading-projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Downloading projects</h3>
 <p>You can download an archive of a project.  It is not possible to
-download archives of packages.  The pocoweb back-end will then
+download archives of packages.  The PoCoWeb back-end will then
 generate a project archive and you will be asked a location to store
 the archive.</p>
 <p>The project archive will retain the same structure as the project archive,
@@ -466,7 +466,7 @@ correction is the same for projects an packages.  Every statement
 about the correction of projects also applies to the correction of
 packages.</p>
 <p><a href="assets/images/doc/post_correct_project.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/post_correct_project.png" alt="Page view" style="max-width:100%;"></a></p>
-<p>Other than PoCoTo the post correction with Pocoweb is line based.
+<p>Other than PoCoTo the post correction with PoCoWeb is line based.
 Generally you correct whole lines of the document and not single tokens.
 The page correction view presents the lines of the document and lets
 you correct each line individually.</p>
@@ -558,14 +558,14 @@ correction</a>.</p>
 <p><a id="user-content-installation"></a></p>
 <h2>
 <a id="user-content-installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
-<p>Pocoweb is open source software and is distributed under the
+<p>PoCoWeb is open source software and is distributed under the
 <a href="LICENSE">Apache 2.0</a> license.
 You can download the source code from its
 <a href="http://github.com/cisocrgroup/pocoweb">github repository</a>.
 Installation instructions can be found in the project's
 <a href="https://github.com/cisocrgroup/pocoweb/blob/master/README.md">README</a>
 file.</p>
-<p>Pocoweb can be deployed using
+<p>PoCoWeb can be deployed using
 <a href="https://docs.docker.com/compose/" rel="nofollow">docker-compose</a>.  The according
 Docker files can be found in the projects's source directory.</p>
 <hr>
@@ -579,7 +579,7 @@ OCR.</p>
 <p>Adminstrators can download a pool containing all their <a href="#user-content-api-get-user-pool">owned
 projects</a> or a <a href="#user-content-api-get-global-pool">global
 pool</a> containing data of all
-projects in pocoweb.  If for some reason a project should not be part
+projects in PoCoWeb.  If for some reason a project should not be part
 of this global pool it is possible to set the variable <code>pooled</code> to
 <code>false</code> in the projects's settings.</p>
 <p>The pool is a zipped archive that contains the line segmented
@@ -644,12 +644,12 @@ included. The file has the following layout:</p>
 <p><a id="user-content-overview-services"></a></p>
 <h2>
 <a id="user-content-services" class="anchor" href="#services" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Services</h2>
-<p>Pocoweb is composed from a number of interdependend services:</p>
+<p>PoCoWeb is composed from a number of interdependend services:</p>
 <ul>
 <li>nginx serves images, web-content and redirectes API calls</li>
 <li>pcwauth authentificates API requests and forwards them to the various other services</li>
 <li>mysql holds all database tables</li>
-<li>pocoweb manages project, packages and the up- and download</li>
+<li>PoCoWeb manages project, packages and the up- and download</li>
 <li>www-data is a directory (volume) that holds the frontend</li>
 <li>project-data is a directory (volume) that holds the project files</li>
 <li>db-data is a directory (volume) that holds the database files</li>
@@ -659,17 +659,17 @@ included. The file has the following layout:</p>
 <li>pcwpostcorrection handles the automatic postcorrection</li>
 <li>pcwpkg handles splitting and assignment of packages</li>
 <li>pcwpool handles download of <a href="#user-content-pool">pool</a> data
-<a href="assets/images/doc/overview.svg" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/overview.svg" alt="Service Overview" title="Pocoweb service overview" style="max-width:100%;"></a>
+<a href="assets/images/doc/overview.svg" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/overview.svg" alt="Service Overview" title="PoCoWeb service overview" style="max-width:100%;"></a>
 </li>
 </ul>
 <hr>
 <p><a id="user-content-rest-api"></a></p>
 <h2>
 <a id="user-content-rest-api" class="anchor" href="#rest-api" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>REST API</h2>
-<p>The REST API documentation lists the available URLs of Pocoweb's REST
+<p>The REST API documentation lists the available URLs of PoCoWeb's REST
 API.  This API is used by the front-end to implement the
 post-correction.  It can also be used to automate some aspects of
-Pocoweb (creation of users, splitting of packages etc).</p>
+PoCoWeb (creation of users, splitting of packages etc).</p>
 <p>Each entry gives the request method (GET, POST or DELETE) in square
 brackets, the request path and the layout of the response data is
 listed.  Additionally for POST requests the expected layout of the
@@ -692,7 +692,7 @@ request path by valid ids (otherwise the API returns <code>404 Not Found</code>)
 <p>All URLs in the API documentation reference a relative path starting
 with <code>rest/...</code>.  If you want to use external tools such as <code>curl</code> to
 access the API, you have to use the according absolute URL.  So for
-example if <code>pocoweb</code> runs on your local host you can access the API
+example if PoCoWeb runs on your local host you can access the API
 using <code>http://localhost/rest/...</code>.  E.g. to get the API's version (see
 <a href="#user-content-api-get-version">Version</a> below) using <code>curl</code> you have
 to execute the following command: <code>curl http://localhost/rest/api-version</code>.</p>
@@ -733,7 +733,7 @@ $ curl -s <span class="pl-s"><span class="pl-pds">"</span>https://localhost/rest
 <h4>
 <a id="user-content-response-data" class="anchor" href="#response-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
-  <span class="pl-s"><span class="pl-pds">"</span>version<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>1.2.3<span class="pl-pds">"</span></span> <span class="pl-ii">//</span> <span class="pl-ii">pocoweb</span> <span class="pl-ii">API</span> <span class="pl-ii">version</span>
+  <span class="pl-s"><span class="pl-pds">"</span>version<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>1.2.3<span class="pl-pds">"</span></span> <span class="pl-ii">//</span> <span class="pl-ii">PoCoWeb</span> <span class="pl-ii">API</span> <span class="pl-ii">version</span>
 }</pre></div>
 <hr>
 <p><a id="user-content-api-post-login"></a></p>

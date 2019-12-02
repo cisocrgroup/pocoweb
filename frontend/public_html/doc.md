@@ -1,21 +1,21 @@
-# Pocoweb documentation
+# PoCoWeb documentation
 
-Pocoweb is a web based post-correction system for OCRed historical
+PoCoWeb is a web based post-correction system for OCRed historical
 documents.  It is based on
-[PoCoTo](https://github.com/cisocrgroup/PoCoTo).  Pocoweb consists of
+[PoCoTo](https://github.com/cisocrgroup/PoCoTo).  PoCoWeb consists of
 a backend that offers a REST API for the post-correction and a
 frontend that facilitates the post-correction of historical documents
 using a web-browser.
 
 Users can upload their OCRed documents and correct them in the web
 front end.  The corrected documents can then be downloaded and further
-processed.  Pocoweb understands various OCR formats that can be used.
+processed.  PoCoWeb understands various OCR formats that can be used.
 Any corrections are written back into the original format of the
 documents.  This makes it possible to integrate the manual
 post-correction of OCRed documents into other digitalisation
 work flows.
 
-As PoCoTo, Pocoweb is connected with a language
+As PoCoTo, PoCoWeb is connected with a language
 [profiler](https://github.com/cisocrgroup/Profiler) that enables
 semi-automatic correction of historical documents.  The profiler is
 able to differentiate between historical spelling variation and real
@@ -24,7 +24,7 @@ suspicious words.
 
 <img width="50%" src="assets/images/doc/welcome.png" alt="Main page"/>
 
-Pocoweb offers:
+PoCoWeb offers:
 * Simple user management to enable paralell correction of documents
   packages.
 * The possibility to split documents into packages to parallel the
@@ -115,17 +115,17 @@ Pocoweb offers:
 - - -
 <a id='login'></a>
 ## Login
-In order to use Pocoweb, each user has to login with an appropriate
+In order to use PoCoWeb, each user has to login with an appropriate
 user account using the login link at the right top of the page.  Users
 can logout again using the logout link at the same position.
 
-<img width="50%" src="assets/images/doc/login.png" alt="Pocoweb login"/>
+<img width="50%" src="assets/images/doc/login.png" alt="PoCoWeb login"/>
 
 - - -
 <a id='users'></a>
 ## Users
 
-In general there are two kinds of user accounts in Pocoweb.  The two
+In general there are two kinds of user accounts in PoCoWeb.  The two
 types have differen permissings in the system:
 
 1. Administrator accounts
@@ -228,7 +228,7 @@ projects](#user-content-upload-new-project) and download a
 [pool](#user-content-pool) of all you user's projects or all globally
 pooled projects.
 
-Pocoweb uses two different kinds of correctable documents.  *Projects*
+PoCoWeb uses two different kinds of correctable documents.  *Projects*
 on the one hand represent whole documents or books that should be
 corrected.  *Packages* on the other hand are smaller subsets of
 projects that contain a subset of the pages of their parent project.
@@ -268,7 +268,7 @@ languages for the chosen profiler.
 
 <img width="50%" src="assets/images/doc/create_new_project.png" alt="Project list"/>
 
-The [Pocoweb back-end](#user-content-pocoweb-backend) analyzes the project archive,
+The [PoCoWeb back-end](#user-content-PoCoWeb-backend) analyzes the project archive,
 processes its OCR and image files and publishes the project.
 If the uploading was successfully, you should see the new project in the
 project table.
@@ -280,7 +280,7 @@ reference.
 A project's profiler and its language are settings specific for the
 language profiler.  If you plan to use a profiler for the post
 correction of your project, you have to set them accordingly.  The
-normal installation of Pocoweb comes with a local configured profiler,
+normal installation of PoCoWeb comes with a local configured profiler,
 you can use `default` or `local` as value for your profiler.  If not
 or if you want to use another profiler, you have to specify its URL.
 
@@ -435,7 +435,7 @@ project's owner.
 ### Downloading projects
 
 You can download an archive of a project.  It is not possible to
-download archives of packages.  The pocoweb back-end will then
+download archives of packages.  The PoCoWeb back-end will then
 generate a project archive and you will be asked a location to store
 the archive.
 
@@ -488,7 +488,7 @@ packages.
 
 <img width="50%" src="assets/images/doc/post_correct_project.png" alt="Page view"/>
 
-Other than PoCoTo the post correction with Pocoweb is line based.
+Other than PoCoTo the post correction with PoCoWeb is line based.
 Generally you correct whole lines of the document and not single tokens.
 The page correction view presents the lines of the document and lets
 you correct each line individually.
@@ -599,7 +599,7 @@ correction](#user-content-page-correction).
 - - -
 <a id='installation'></a>
 ## Installation
-Pocoweb is open source software and is distributed under the
+PoCoWeb is open source software and is distributed under the
 [Apache 2.0](LICENSE) license.
 You can download the source code from its
 [github repository](http://github.com/cisocrgroup/pocoweb).
@@ -607,7 +607,7 @@ Installation instructions can be found in the project's
 [README](https://github.com/cisocrgroup/pocoweb/blob/master/README.md)
 file.
 
-Pocoweb can be deployed using
+PoCoWeb can be deployed using
 [docker-compose](https://docs.docker.com/compose/).  The according
 Docker files can be found in the projects's source directory.
 
@@ -622,7 +622,7 @@ OCR.
 Adminstrators can download a pool containing all their [owned
 projects](#user-content-api-get-user-pool) or a [global
 pool](#user-content-api-get-global-pool) containing data of all
-projects in pocoweb.  If for some reason a project should not be part
+projects in PoCoWeb.  If for some reason a project should not be part
 of this global pool it is possible to set the variable `pooled` to
 `false` in the projects's settings.
 
@@ -693,11 +693,11 @@ included. The file has the following layout:
 - - -
 <a id='overview-services'></a>
 ## Services
-Pocoweb is composed from a number of interdependend services:
+PoCoWeb is composed from a number of interdependend services:
 * nginx serves images, web-content and redirectes API calls
 * pcwauth authentificates API requests and forwards them to the various other services
 * mysql holds all database tables
-* pocoweb manages project, packages and the up- and download
+* PoCoWeb manages project, packages and the up- and download
 * www-data is a directory (volume) that holds the frontend
 * project-data is a directory (volume) that holds the project files
 * db-data is a directory (volume) that holds the database files
@@ -707,16 +707,16 @@ Pocoweb is composed from a number of interdependend services:
 * pcwpostcorrection handles the automatic postcorrection
 * pcwpkg handles splitting and assignment of packages
 * pcwpool handles download of [pool](#user-content-pool) data
-![Service Overview](assets/images/doc/overview.svg "Pocoweb service overview")
+![Service Overview](assets/images/doc/overview.svg "PoCoWeb service overview")
 
 - - -
 <a id='rest-api'></a>
 ## REST API
 
-The REST API documentation lists the available URLs of Pocoweb's REST
+The REST API documentation lists the available URLs of PoCoWeb's REST
 API.  This API is used by the front-end to implement the
 post-correction.  It can also be used to automate some aspects of
-Pocoweb (creation of users, splitting of packages etc).
+PoCoWeb (creation of users, splitting of packages etc).
 
 Each entry gives the request method (GET, POST or DELETE) in square
 brackets, the request path and the layout of the response data is
@@ -735,7 +735,7 @@ You have to be logged in with a valid user account
 All URLs in the API documentation reference a relative path starting
 with `rest/...`.  If you want to use external tools such as `curl` to
 access the API, you have to use the according absolute URL.  So for
-example if `pocoweb` runs on your local host you can access the API
+example if PoCoWeb runs on your local host you can access the API
 using `http://localhost/rest/...`.  E.g. to get the API's version (see
 [Version](#user-content-api-get-version) below) using `curl` you have
 to execute the following command: `curl
@@ -785,7 +785,7 @@ Get the semantic version of the back-end instance.
 #### Response data
 ```json
 {
-  "version": "1.2.3" // pocoweb API version
+  "version": "1.2.3" // PoCoWeb API version
 }
 ```
 
@@ -2140,5 +2140,5 @@ postcorrection) with the according id.
 }
 ```
 
-<!--  LocalWords:  Pocoweb
+<!--  LocalWords:  PoCoWeb
  -->
