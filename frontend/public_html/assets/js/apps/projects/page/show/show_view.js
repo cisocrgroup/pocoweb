@@ -383,7 +383,17 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
         this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor);
 
-          return false; // returning false will prevent the event from bubbling up.
+        
+           var prev_line_container = $(e.currentTarget).parent().parent().parent().parent().next();
+
+           if(prev_line_container.hasClass('line-container')){
+            prev_line_container.find('.line-tokens').click();
+            prev_line_container.find('.line').click().focus();
+          
+            }
+
+
+          return false; 
          }
 
          else if (keyCode == 38){
