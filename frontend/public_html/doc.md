@@ -132,8 +132,8 @@ types have differen permissings in the system:
    * Create new administrator and normal users accounts
    * Delete user accounts
    * Upload new documents and create new
-     [projects](#user-content-project-management)
-   * Split projects into [packages](#user-content-project-management)
+     [projects](#user-content-projects)
+   * Split projects into [packages](#user-content-projects)
    * [Assign](#user-content-split-projects) packages to different user
      accounts
    * [Profile](#user-content-profile-project) projects.
@@ -143,7 +143,7 @@ types have differen permissings in the system:
    * [Download](#user-content-download-project) corrected projects.
    * Download a [pool](#user-content-pool) of corrected projects.
 2. Normal user accounts
-   * Post correct [packages](#user-content-project-management) that
+   * Post correct [packages](#user-content-projects) that
      where assigned to them
    * [Profile](#user-content-profile-project) projects.
    * [Reassign](#user-content-split-projects) packages back to their
