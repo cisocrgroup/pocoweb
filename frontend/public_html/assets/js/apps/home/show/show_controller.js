@@ -30,7 +30,7 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
                 "id": "doc_button",
                 "name": "Documentation",
                 "seq": 5,
-                "text": "Documentation of API-routes.",
+                "text": "Documentation of PoCoWeb.",
                 "url": "docs:show"
             }, {
                 "color": "blue",
