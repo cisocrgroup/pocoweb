@@ -252,6 +252,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
                });
                 $('#lineheight_value').text(this.value+"px");
+                  // $('.line-tokens').css('font-size',(this.value/2)+"px"); // to scale line tokens 
+
                 that.trigger("sidebar:update_line_height",this.value);
 
             }
@@ -383,7 +385,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
         this.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor);
 
-        
+
            var prev_line_container = $(e.currentTarget).parent().parent().parent().parent().next();
 
            if(prev_line_container.hasClass('line-container')){
