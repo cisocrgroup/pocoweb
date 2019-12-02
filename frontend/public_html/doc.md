@@ -528,6 +528,10 @@ case that you have to literally insert something like `\\u017f`, you
 can use an additional leading `\\` to escape the special
 interpretation of the sequence: `\\\\u017f`.
 
+If you are editing a line, you can hit the _Enter_ key to correct the
+current line.  You can use the _Up_ and _Down_ arrow keys to navigate
+to the previous or next line.
+
 You can click on the __Show line image__ button to see an overview
 over the whole line's page image.  On the bottom of the view there is
 a button __Set whole page as corrected__ to correct all lines on the
