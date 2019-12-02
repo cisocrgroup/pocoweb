@@ -741,6 +741,7 @@ using `http://localhost/rest/...`.  E.g. to get the API's version (see
 to execute the following command: `curl
 http://localhost/rest/api-version`.
 
+---
 <a id='authorization'></a>
 ### Authentification
 
@@ -756,15 +757,23 @@ to send this session token using an additional `auth=id` parameter for
 each API call.
 
 For example if your session id is `my-session-id` you have to append
-the `auth=my-session-id` to any URL. So for example using `curl`, you
-would need to call `curl
+the `auth=my-session-id` to any URL. So for example using
+[curl](https://curl.haxx.se/), you would need to call `curl
 http://localhost/rest/books/pid/pages/pageid?auth=my-session-id`.
 
-In order to get the 13-th line of the 38-th page of a project with an id of 27
-from this Pocoweb back-end using curl you would have to run:
+You can use curl together with [jq](https://stedolan.github.io/jq/) to
+automate the PoCoWeb backend.  So if you want to list all projects and
+package ids of a particular user, you could issue the following
+commands (see the [login](#user-content-api-post-login) and [list
+projects](#user-content-api-get-books) documentation for more
+information):
 
-<code>curl <?php global $config; echo
-$config['backend']['externalURL'];?>/books/27/pages/38/lines/13?auth=my-session-id</code>
+```sh
+# login and extract the auth token
+$ export AUTH=$(curl -s -d '{"password":"pass","email":"user@example.com"}' "https://localhost/rest/login" | jq -r '.auth')
+# list project and package ids
+$ curl -s "https://localhost/rest/books?auth=$AUTH" | jq '.books[] | .projectId'
+```
 
 ---
 <a id='api-get-version'></a>

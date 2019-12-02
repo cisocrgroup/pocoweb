@@ -696,6 +696,7 @@ example if <code>pocoweb</code> runs on your local host you can access the API
 using <code>http://localhost/rest/...</code>.  E.g. to get the API's version (see
 <a href="#user-content-api-get-version">Version</a> below) using <code>curl</code> you have
 to execute the following command: <code>curl http://localhost/rest/api-version</code>.</p>
+<hr>
 <p><a id="user-content-authorization"></a></p>
 <h3>
 <a id="user-content-authentification" class="anchor" href="#authentification" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authentification</h3>
@@ -709,12 +710,18 @@ back-end.  The login will return an unique session id token.  You have
 to send this session token using an additional <code>auth=id</code> parameter for
 each API call.</p>
 <p>For example if your session id is <code>my-session-id</code> you have to append
-the <code>auth=my-session-id</code> to any URL. So for example using <code>curl</code>, you
-would need to call <code>curl http://localhost/rest/books/pid/pages/pageid?auth=my-session-id</code>.</p>
-<p>In order to get the 13-th line of the 38-th page of a project with an id of 27
-from this Pocoweb back-end using curl you would have to run:</p>
-<p><code>curl <?php global $config; echo
-$config['backend']['externalURL'];?>/books/27/pages/38/lines/13?auth=my-session-id</code></p>
+the <code>auth=my-session-id</code> to any URL. So for example using
+<a href="https://curl.haxx.se/" rel="nofollow">curl</a>, you would need to call <code>curl http://localhost/rest/books/pid/pages/pageid?auth=my-session-id</code>.</p>
+<p>You can use curl together with <a href="https://stedolan.github.io/jq/" rel="nofollow">jq</a> to
+automate the PoCoWeb backend.  So if you want to list all projects and
+package ids of a particular user, you could issue the following
+commands (see the <a href="#user-content-api-post-login">login</a> and <a href="#user-content-api-get-books">list
+projects</a> documentation for more
+information):</p>
+<div class="highlight highlight-source-shell"><pre><span class="pl-c"><span class="pl-c">#</span> login and extract the auth token</span>
+$ <span class="pl-k">export</span> AUTH=<span class="pl-s"><span class="pl-pds">$(</span>curl -s -d <span class="pl-s"><span class="pl-pds">'</span>{"password":"pass","email":"user@example.com"}<span class="pl-pds">'</span></span> <span class="pl-s"><span class="pl-pds">"</span>https://localhost/rest/login<span class="pl-pds">"</span></span> <span class="pl-k">|</span> jq -r <span class="pl-s"><span class="pl-pds">'</span>.auth<span class="pl-pds">'</span></span><span class="pl-pds">)</span></span>
+<span class="pl-c"><span class="pl-c">#</span> list project and package ids</span>
+$ curl -s <span class="pl-s"><span class="pl-pds">"</span>https://localhost/rest/books?auth=<span class="pl-smi">$AUTH</span><span class="pl-pds">"</span></span> <span class="pl-k">|</span> jq <span class="pl-s"><span class="pl-pds">'</span>.books[] | .projectId<span class="pl-pds">'</span></span></pre></div>
 <hr>
 <p><a id="user-content-api-get-version"></a></p>
 <h3>
