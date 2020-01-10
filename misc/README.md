@@ -1,5 +1,5 @@
 # Misc
-```$ apt-get install g++-5 libbost-dev libmysqlcppconn-dev make libssl-dev```
+```$ apt-get install g++-5 libboost-dev libmysqlcppconn-dev make libssl-dev```
 
 ## Settings for file upload
 

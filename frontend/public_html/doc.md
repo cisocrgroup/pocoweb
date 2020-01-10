@@ -25,7 +25,7 @@ suspicious words.
 <img width="50%" src="assets/images/doc/welcome.png" alt="Main page"/>
 
 PoCoWeb offers:
-* Simple user management to enable paralell correction of documents
+* Simple user management to enable parallel correction of documents
   packages.
 * The possibility to split documents into packages to parallel the
   manual post-correction.
