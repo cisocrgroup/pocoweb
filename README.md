@@ -9,7 +9,7 @@
 ..............................................
 ```
 
-[![Build Status](https://travis-ci.org/cisocrgroup/pocoweb.svg?branch=devel)](https://travis-ci.org/cisocrgroup/pocoweb)
+[![Build Status](https://travis-ci.org/cisocrgroup/pocoweb.svg?branch=master)](https://travis-ci.org/cisocrgroup/pocoweb)
 
 # Pocoweb
 Pocoweb is a postcorrection tool for (historical) OCR data for the web.
