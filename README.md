@@ -74,7 +74,7 @@ provided.
 
 #### Last steps
 Last but not least checkout some external
-dependencies using `git submodule init --update`.
+dependencies using `git submodule update --init`.
 
 ### Starting pocoweb
 After having gone through all the above steps, one can build and start
