@@ -3,4 +3,4 @@ language: bash
 services:
   - docker
 install:
-  - cd misc/docker && docker-compose build
+  - docker build
