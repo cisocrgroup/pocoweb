@@ -3,4 +3,4 @@ language: bash
 services:
   - docker
 install:
-  - docker build
+  - docker build .
