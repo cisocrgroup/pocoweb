@@ -40,29 +40,33 @@
 #ifndef SQLPP_MOCK_DB_H
 #define SQLPP_MOCK_DB_H
 
+#include "MockPreparedStatement.h"
+#include <boost/test/unit_test.hpp>
+#include <boost/variant.hpp>
+#include <iostream>
+#include <regex>
 #include <sqlpp11/connection.h>
 #include <sqlpp11/data_types/no_value.h>
 #include <sqlpp11/schema.h>
 #include <sqlpp11/serialize.h>
 #include <sqlpp11/serializer_context.h>
-#include <boost/variant.hpp>
-#include <iostream>
-#include <regex>
 #include <sstream>
-#include "MockPreparedStatement.h"
 
-template <bool enforceNullResultTreatment>
-struct MockDbT : public sqlpp::connection {
+template<bool enforceNullResultTreatment>
+struct MockDbT : public sqlpp::connection
+{
   using _traits = ::sqlpp::make_traits<
-      ::sqlpp::no_value_t,
-      ::sqlpp::tag_if<::sqlpp::tag::enforce_null_result_treatment,
-		      enforceNullResultTreatment>>;
+    ::sqlpp::no_value_t,
+    ::sqlpp::tag_if<::sqlpp::tag::enforce_null_result_treatment,
+                    enforceNullResultTreatment>>;
 
-  struct _serializer_context_t {
+  struct _serializer_context_t
+  {
     std::ostringstream _os;
 
     _serializer_context_t() = default;
-    _serializer_context_t(const _serializer_context_t& rhs) {
+    _serializer_context_t(const _serializer_context_t& rhs)
+    {
       _os << rhs._os.str();
     }
 
@@ -70,12 +74,14 @@ struct MockDbT : public sqlpp::connection {
 
     void reset() { _os.str(""); }
 
-    template <typename T>
-    std::ostream& operator<<(T t) {
+    template<typename T>
+    std::ostream& operator<<(T t)
+    {
       return _os << t;
     }
 
-    static std::string escape(std::string arg) {
+    static std::string escape(std::string arg)
+    {
       return sqlpp::serializer_context_t::escape(arg);
     }
   };
@@ -84,87 +90,99 @@ struct MockDbT : public sqlpp::connection {
 
   _serializer_context_t get_serializer_context() { return {}; }
 
-  template <typename T>
+  template<typename T>
   static _serializer_context_t& _serialize_interpretable(
-      const T& t, _serializer_context_t& context) {
+    const T& t,
+    _serializer_context_t& context)
+  {
     sqlpp::serialize(t, context);
     return context;
   }
 
-  template <typename T>
+  template<typename T>
   static _serializer_context_t& _interpret_interpretable(
-      const T& t, _interpreter_context_t& context) {
+    const T& t,
+    _interpreter_context_t& context)
+  {
     sqlpp::serialize(t, context);
     return context;
   }
 
-  class result_t {
-   public:
+  class result_t
+  {
+  public:
     constexpr bool operator==(const result_t&) const { return true; }
 
-    template <typename ResultRow>
-    void next(ResultRow& result_row) {
+    template<typename ResultRow>
+    void next(ResultRow& result_row)
+    {
       result_row._invalidate();
     }
   };
 
   // Directly executed statements start here
-  template <typename T>
-  auto _run(const T& t, ::sqlpp::consistent_t) -> decltype(t._run(*this)) {
+  template<typename T>
+  auto _run(const T& t, ::sqlpp::consistent_t) -> decltype(t._run(*this))
+  {
     // std::cerr << "_run(t): " << typeid(t).name() << "\n";
     return t._run(*this);
   }
 
-  template <typename Check, typename T>
+  template<typename Check, typename T>
   auto _run(const T& t, Check) -> Check;
 
-  template <typename T>
+  template<typename T>
   auto operator()(const T& t)
-      -> decltype(this->_run(t,
-			     sqlpp::run_check_t<_serializer_context_t, T>{})) {
+    -> decltype(this->_run(t, sqlpp::run_check_t<_serializer_context_t, T>{}))
+  {
     // std::cerr << "operator()(t)\n";
     return _run(t, sqlpp::run_check_t<_serializer_context_t, T>{});
   }
 
   size_t execute(const std::string&) { return 0; }
 
-  template <
-      typename Statement,
-      typename Enable = typename std::enable_if<
-	  not std::is_convertible<Statement, std::string>::value, void>::type>
-  size_t execute(const Statement& x) {
+  template<typename Statement,
+           typename Enable = typename std::enable_if<
+             not std::is_convertible<Statement, std::string>::value,
+             void>::type>
+  size_t execute(const Statement& x)
+  {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
     push_statement(context);
     return execute(context.str());
   }
 
-  template <typename Insert>
-  size_t insert(const Insert& x) {
+  template<typename Insert>
+  size_t insert(const Insert& x)
+  {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
     push_statement(context);
     return 0;
   }
 
-  template <typename Update>
-  size_t update(const Update& x) {
+  template<typename Update>
+  size_t update(const Update& x)
+  {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
     push_statement(context);
     return 0;
   }
 
-  template <typename Remove>
-  size_t remove(const Remove& x) {
+  template<typename Remove>
+  size_t remove(const Remove& x)
+  {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
     push_statement(context);
     return 0;
   }
 
-  template <typename Select>
-  result_t select(const Select& x) {
+  template<typename Select>
+  result_t select(const Select& x)
+  {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
     push_statement(context);
@@ -175,24 +193,27 @@ struct MockDbT : public sqlpp::connection {
   // using _prepared_statement_t = std::nullptr_t;
   using _prepared_statement_t = MockPreparedStatement;
 
-  template <typename T>
+  template<typename T>
   auto _prepare(const T& t, ::sqlpp::consistent_t)
-      -> decltype(t._prepare(*this)) {
+    -> decltype(t._prepare(*this))
+  {
     // std::cerr << "_prepare(t, consistent_t)\n";
     return t._prepare(*this);
   }
 
-  template <typename Check, typename T>
+  template<typename Check, typename T>
   auto _prepare(const T& t, Check) -> Check;
 
-  template <typename T>
+  template<typename T>
   auto prepare(const T& t) -> decltype(
-      this->_prepare(t, sqlpp::prepare_check_t<_serializer_context_t, T>{})) {
+    this->_prepare(t, sqlpp::prepare_check_t<_serializer_context_t, T>{}))
+  {
     return _prepare(t, sqlpp::prepare_check_t<_serializer_context_t, T>{});
   }
 
-  template <typename Statement>
-  _prepared_statement_t prepare_execute(Statement& x) {
+  template<typename Statement>
+  _prepared_statement_t prepare_execute(Statement& x)
+  {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
     // std::cerr << "prepare_execute: " << context.str() << "\n";
@@ -201,8 +222,9 @@ struct MockDbT : public sqlpp::connection {
     return MockPreparedStatement(context);
   }
 
-  template <typename Insert>
-  _prepared_statement_t prepare_insert(Insert& x) {
+  template<typename Insert>
+  _prepared_statement_t prepare_insert(Insert& x)
+  {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
     // std::cerr << "prepare_insert: " << context.str() << "\n";
@@ -211,23 +233,26 @@ struct MockDbT : public sqlpp::connection {
     return MockPreparedStatement(context);
   }
 
-  template <typename PreparedExecute>
-  size_t run_prepared_execute(const PreparedExecute& e) {
+  template<typename PreparedExecute>
+  size_t run_prepared_execute(const PreparedExecute& e)
+  {
     e._bind_params();
     push_statement(e._prepared_statement.str());
     return 0;
   }
 
-  template <typename PreparedInsert>
-  size_t run_prepared_insert(const PreparedInsert& i) {
+  template<typename PreparedInsert>
+  size_t run_prepared_insert(const PreparedInsert& i)
+  {
     i._bind_params();
     push_statement(i._prepared_statement.str());
     // std::cerr << "run_prepared_insert: " <<  typeid(pi).name() << "\n";
     return 0;
   }
 
-  template <typename Select>
-  _prepared_statement_t prepare_select(Select& x) {
+  template<typename Select>
+  _prepared_statement_t prepare_select(Select& x)
+  {
     _serializer_context_t context;
     ::sqlpp::serialize(x, context);
     // std::cerr << "prepare_select: " << context.str() << "\n";
@@ -236,49 +261,55 @@ struct MockDbT : public sqlpp::connection {
     return MockPreparedStatement(context);
   }
 
-  template <typename PreparedSelect>
-  result_t run_prepared_select(PreparedSelect& s) {
+  template<typename PreparedSelect>
+  result_t run_prepared_select(PreparedSelect& s)
+  {
     s._bind_params();
     push_statement(s._prepared_statement.str());
     return {};
   }
 
-  auto attach(std::string name) -> ::sqlpp::schema_t { return {name}; }
+  auto attach(std::string name) -> ::sqlpp::schema_t { return { name }; }
 
   //
   // Validation
   //
-  void push_statement(const _serializer_context_t& context) {
+  void push_statement(const _serializer_context_t& context)
+  {
     push_statement(context.str());
   }
-  void push_statement(const std::string& str) {
+  void push_statement(const std::string& str)
+  {
     // std::cerr << "pushing statement: " << str << "\n";
     statements_.push(std::move(str));
   }
-  template <class T>
-  void expect(T expectation) {
+  template<class T>
+  void expect(T expectation)
+  {
     expectations_.push(std::move(expectation));
   }
-  void validate() {
+  void validate()
+  {
     while (not expectations_.empty() and not statements_.empty()) {
       validate_top();
       expectations_.pop();
       statements_.pop();
     }
   }
-  void validate_top() {
+  void validate_top()
+  {
     if (boost::get<std::string>(&expectations_.top())) {
       BOOST_CHECK_EQUAL(boost::get<std::string>(expectations_.top()),
-			statements_.top());
+                        statements_.top());
     } else {
       BOOST_CHECK_MESSAGE(
-	  std::regex_match(statements_.top(),
-			   boost::get<std::regex>(expectations_.top())),
-	  "`" << statements_.top() << "` does not match expectation");
+        std::regex_match(statements_.top(),
+                         boost::get<std::regex>(expectations_.top())),
+        "`" << statements_.top() << "` does not match expectation");
     }
   }
 
- private:
+private:
   std::stack<boost::variant<std::string, std::regex>> expectations_;
   std::stack<std::string> statements_;
 };

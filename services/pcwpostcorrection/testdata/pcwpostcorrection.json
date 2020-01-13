@@ -1,0 +1,19 @@
+{
+  "ocrSteps": [
+    "ocrd-cis-ocropy-recognize --mets $METS --log-level $LOG_LEVEL --input-file-grp $XML_INPUT_FILE_GRP --output-file-grp $XML_OUTPUT_FILE_GRP --parameter <(jq '.ocr1' $PARAMETER)"
+  ],
+  "ocr1": {
+    "textequiv_level": "word",
+    "model": "/apps/models/fraktur2-00062000.pyrnn.gz"
+  },
+  "postCorrection": {
+    "model": "/apps/models/model.zip",
+    "maxCandidates": 10,
+    "nOCR": "set by the script",
+    "profiler": {
+      "path": "set by the script"
+    },
+    "runLE": false,
+    "runDM": false
+  }
+}

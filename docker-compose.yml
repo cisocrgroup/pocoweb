@@ -1,0 +1,116 @@
+version: '3'
+services:
+  # web server
+  nginx:
+    env_file:
+      - env.sh
+    build: services/nginx/
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ${PCW_BASE_DIR}/www-data:/www-data:ro
+      - ${PCW_BASE_DIR}/project-data:/project-data:ro
+    links:
+      - pcwauth
+    depends_on:
+      - pocoweb
+      - pcwauth
+    restart: always
+  # pocoweb rest service
+  pocoweb:
+    build: .
+    links:
+      - db
+    volumes:
+      - ${PCW_BASE_DIR}/project-data:/project-data:rw
+      - ${PCW_BASE_DIR}/tmp-data:/tmp:rw
+      - ${PCW_BASE_DIR}/www-data:/www-data:rw
+    depends_on:
+      - db
+    restart: always
+    env_file:
+      - env.sh
+  # mysql database
+  db:
+    image: mariadb
+    volumes:
+      - ${PCW_BASE_DIR}/db-data:/var/lib/mysql:rw
+      - ./db:/etc/mysql/conf.d:ro
+    restart: always
+    env_file:
+      - env.sh
+  # pocoweb authentification
+  pcwauth:
+    # build: pcwauth/
+    build: services/pcwauth
+    links:
+      - db
+      - pocoweb
+      - pcwprofiler
+      - pcwusers
+      - pcwpostcorrection
+      - pcwpkg
+      - pcwpool
+    depends_on:
+      - db
+    restart: always
+    env_file:
+      - env.sh
+  # pocoweb profiling
+  pcwprofiler:
+    build: services/pcwprofiler
+    restart: always
+    links:
+      - db
+    depends_on:
+      - db
+    env_file:
+      - env.sh
+    volumes:
+      - ${PCW_BASE_DIR}/project-data:/project-data:rw
+  # pocoweb user management
+  pcwusers:
+    build: services/pcwusers
+    restart: always
+    links:
+      - db
+    depends_on:
+      - db
+    env_file:
+      - env.sh
+  # pocoweb post-correction
+  pcwpostcorrection:
+    build: services/pcwpostcorrection
+    restart: always
+    links:
+      - db
+      - pocoweb
+    depends_on:
+      - db
+    env_file:
+      - env.sh
+    volumes:
+      - ${PCW_BASE_DIR}/project-data:/project-data:rw
+  # pocoweb pkg
+  pcwpkg:
+    build: services/pcwpkg
+    restart: always
+    links:
+      - db
+    depends_on:
+      - db
+    env_file:
+      - env.sh
+  # pocoweb pool
+  pcwpool:
+    build: services/pcwpool
+    restart: always
+    links:
+      - db
+    depends_on:
+      - db
+    env_file:
+      - env.sh
+    volumes:
+      - ${PCW_BASE_DIR}/project-data:/project-data:ro

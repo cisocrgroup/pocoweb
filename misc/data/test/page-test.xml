@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pc:PcGts xmlns:pc="http://schema.primaresearch.org/PAGE/gts/pagecontent/2017-07-15">
+  <pc:Page imageFilename="path/to/img.png" imageWidth="1756" imageHeight="2440" type="content">
+    <ReadingOrder>
+      <OrderedGroup id="ro_1" caption="Regions reading order">
+        <RegionRefIndexed index="0" regionRef="region_1"/>
+        <RegionRefIndexed index="1" regionRef="region_2"/>
+      </OrderedGroup>
+    </ReadingOrder>
+    <TextRegion type="page-number" id="region_2" custom="custom">
+      <Coords points="1,2 3,4 5,6 7,8"/>
+      <TextLine id="line_2_1" custom="cutsom">
+        <Coords points="1,2 3,4 5,6 7,8 9,10 11,12"/>
+        <Baseline points="1382,500 1763,500"/>
+        <Word id="word_2_1_1" custom="readingOrder {index:0;}">
+          <Coords points="1382,460 1483,460 1483,508 1382,508"/>
+          <TextEquiv>
+            <Unicode>ab</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="word_2_1_2" custom="readingOrder {index:0;}">
+          <Coords points="1382,460 1483,460 1483,508 1382,508"/>
+          <TextEquiv>
+            <Unicode>cd</Unicode>
+          </TextEquiv>
+        </Word>
+        <TextEquiv>
+          <Unicode>ab cd</Unicode>
+        </TextEquiv>
+      </TextLine>
+      <TextEquiv>
+        <Unicode>ab cd</Unicode>
+      </TextEquiv>
+    </TextRegion>
+    <TextRegion type="some-type" id="region_1" custom="custom">
+      <Coords points="1,2 3,4 5,6 7,8"/>
+      <TextLine id="line_1_1" custom="cutsom">
+        <Coords points="1,2 3,4 5,6 7,8 9,10 11,12"/>
+        <Baseline points="1382,500 1763,500"/>
+        <Word id="word_2_1_1" custom="readingOrder {index:0;}">
+          <Coords points="1382,460 1483,460 1483,508 1382,508"/>
+		  <Glyph id="glyph_2_1_2_1">
+			<Coords points="1382,460 1483,460 1483,508 1382,508"/>
+            <TextEquiv conf=".1">
+              <Unicode>x</Unicode>
+            </TextEquiv>
+		  </Glyph>
+          <TextEquiv conf=".2">
+            <Unicode>x</Unicode>
+          </TextEquiv>
+        </Word>
+        <Word id="word_2_1_2" custom="readingOrder {index:0;}">
+          <Coords points="1382,460 1483,460 1483,508 1382,508"/>
+		  <Glyph id="glyph_2_1_2_1">
+			<Coords points="1382,460 1483,460 1483,508 1382,508"/>
+            <TextEquiv>
+              <Unicode>y</Unicode>
+            </TextEquiv>
+		  </Glyph>
+          <TextEquiv>
+            <Unicode>y</Unicode>
+          </TextEquiv>
+        </Word>
+        <TextEquiv>
+          <Unicode>x y</Unicode>
+        </TextEquiv>
+      </TextLine>
+      <TextEquiv>
+        <Unicode>x y</Unicode>
+      </TextEquiv>
+    </TextRegion>
+  </pc:Page>
+</pc:PcGts>

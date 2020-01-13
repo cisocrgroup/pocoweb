@@ -1,6 +1,6 @@
 [submodule "modules/crow"]
 	path = modules/crow
-	url = https://github.com/ipkn/crow
+	url = https://github.com/finkf/crow
 [submodule "modules/pugixml"]
 	path = modules/pugixml
 	url = https://github.com/zeux/pugixml
@@ -16,3 +16,9 @@
 [submodule "modules/date"]
 	path = modules/date
 	url = https://github.com/HowardHinnant/date.git
+[submodule "modules/base-n"]
+	path = modules/base-n
+	url = http://github.com/azawadzki/base-n
+[submodule "modules/rapidjson"]
+	path = modules/rapidjson
+	url = https://github.com/Tencent/rapidjson

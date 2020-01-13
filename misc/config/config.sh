@@ -32,8 +32,8 @@ pidfile = ${PCW_DAEMON_PIDFILE}
 level = ${PCW_LOG_LEVEL}
 
 [profiler]
-base = ${PCW_PROFILER_BASE}
-backend = ${PCW_PROFILER_BACKEND}
+exe = ${PCW_PROFILER_EXE}
+langdir = ${PCW_PROFILER_LANGDIR}
 jobs = ${PCW_PROFILER_JOBS}
 minweight = ${PCW_PROFILER_MINWEIGHT}
 debug = ${PCW_PROFILER_DEBUG}

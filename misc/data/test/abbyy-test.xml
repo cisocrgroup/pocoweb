@@ -8,7 +8,7 @@
 <formatting lang="EnglishUnitedStates">
 <charParams l="258" t="130" r="362" b="270" charConfidence="100">a</charParams>
 <charParams l="434" t="130" r="542" b="266" suspicious="1" charConfidence="100">b</charParams>
-<charParams l="614" t="130" r="746" b="278" suspicious="1" charConfidence="44"> </charParams>
+<charParams l="614" t="130" r="746" b="278" suspicious="-1" charConfidence="44"> </charParams>
 <charParams l="802" t="130" r="866" b="274" charConfidence="100">c</charParams>
 <charParams l="926" t="126" r="1058" b="270" charConfidence="35">d</charParams>
 <charParams l="1130" t="126" r="1270" b="270" charConfidence="97"> </charParams>

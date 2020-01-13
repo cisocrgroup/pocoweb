@@ -1,21 +1,19 @@
 #include "BookRoute.hpp"
-#include <crow.h>
-#include <boost/filesystem.hpp>
-#include <random>
-#include <regex>
-#include "core/Archiver.hpp"
 #include "core/Book.hpp"
 #include "core/BookDirectoryBuilder.hpp"
 #include "core/Package.hpp"
 #include "core/Page.hpp"
-#include "core/Searcher.hpp"
-#include "core/Session.hpp"
-#include "core/User.hpp"
 #include "core/WagnerFischer.hpp"
 #include "core/jsonify.hpp"
 #include "core/util.hpp"
+#include "database/Database.hpp"
+#include "database/DbStructs.hpp"
 #include "utils/Error.hpp"
 #include "utils/ScopeGuard.hpp"
+#include <boost/filesystem.hpp>
+#include <crow.h>
+#include <random>
+#include <regex>
 
 #define BOOK_ROUTE_ROUTE_1 "/books"
 #define BOOK_ROUTE_ROUTE_2 "/books/<int>"
@@ -23,231 +21,267 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-const char* BookRoute::route_ = BOOK_ROUTE_ROUTE_1 "," BOOK_ROUTE_ROUTE_2;
-const char* BookRoute::name_ = "BookRoute";
+template <class D> void update_book_data(DbPackage &package, const D &data);
+template <class D> void update_book_data(BookData &bdata, const D &data);
+template <class Row> Json &set_book(Json &json, const Row &row);
+static BookData as_book_data(const DbPackage &package);
 
 ////////////////////////////////////////////////////////////////////////////////
-void BookRoute::Register(App& app) {
-	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_1)
-	    .methods("GET"_method, "POST"_method)(*this);
-	CROW_ROUTE(app, BOOK_ROUTE_ROUTE_2)
-	    .methods("GET"_method, "POST"_method, "DELETE"_method)(*this);
+const char *BookRoute::route_ = BOOK_ROUTE_ROUTE_1 "," BOOK_ROUTE_ROUTE_2;
+const char *BookRoute::name_ = "BookRoute";
+
+////////////////////////////////////////////////////////////////////////////////
+void BookRoute::Register(App &app) {
+  CROW_ROUTE(app, BOOK_ROUTE_ROUTE_1)
+      .methods("GET"_method, "POST"_method)(*this);
+  CROW_ROUTE(app, BOOK_ROUTE_ROUTE_2)
+      .methods("GET"_method, "POST"_method, "PUT"_method,
+               "DELETE"_method)(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response BookRoute::impl(HttpGet, const Request& req) const {
-	LockedSession session(must_find_session(req));
-	auto conn = must_get_connection();
-	// no permissions check since all loaded projectes are owned by the user
-	const auto projects = select_all_projects(conn.db(), session->user());
-	CROW_LOG_DEBUG << "(BookRoute) Loaded " << projects.size()
-		       << " projects";
-	Json j;
-	size_t i = 0;
-	for (const auto& p : projects) {
-		j["books"][i] << p.first;
-		j["books"][i]["bookId"] = p.second.origin;
-		j["books"][i]["projectId"] = p.second.projectid;
-		j["books"][i]["pages"] = p.second.pages;
-		j["books"][i]["isBook"] = p.second.is_book();
-		i++;
-	}
-	return j;
+// GET /books
+////////////////////////////////////////////////////////////////////////////////
+Route::Response BookRoute::impl(HttpGet, const Request &req) const {
+  const auto uid = get<int>(req.url_params, "userid");
+  if (not uid) {
+    THROW(BadRequest, "(BookRoute) Missing userid");
+  }
+  CROW_LOG_INFO << "(BookRoute) GET packages for user: " << uid.value();
+  auto conn = must_get_connection();
+  using namespace sqlpp;
+  tables::Projects projects;
+  tables::ProjectPages pp;
+  tables::Books books;
+  auto rows = conn.db()(select(all_of(projects), all_of(books), pp.pageid)
+                            .from(projects.join(books)
+                                      .on(projects.origin == books.bookid)
+                                      .join(pp)
+                                      .on(pp.projectid == projects.id))
+                            .where(projects.owner == uid.value())
+                            .order_by(projects.id.asc(), pp.pageid.asc()));
+  // build packages with their page ids
+  std::vector<DbPackage> packages;
+  auto pid = -1;
+  for (const auto &row : rows) {
+    if (pid != row.id) {
+      packages.emplace_back(int(row.id));
+      load_from_row(row, packages.back());
+      pid = row.id;
+    }
+    packages.back().pageids.push_back(row.pageid);
+  }
+  // build json response
+  rapidjson::StringBuffer buf;
+  rapidjson::Writer<rapidjson::StringBuffer> writer(buf);
+  writer.StartObject();
+  writer.String("books");
+  writer.StartArray();
+  for (const auto &package : packages) {
+    package.serialize(writer);
+  }
+  writer.EndArray();
+  writer.EndObject();
+  Response res(200, std::string(buf.GetString(), buf.GetSize()));
+  res.set_header("Content-Type", "application/json");
+  return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response BookRoute::impl(HttpPost, const Request& req) const {
-	LockedSession session(must_find_session(req));
-	auto conn = must_get_connection();
-	session->assert_permission(conn, 0, Permissions::Create);
-	// create new bookdir
-	BookDirectoryBuilder dir(get_config());
-	ScopeGuard sg([&dir]() { dir.remove(); });
-	CROW_LOG_INFO << "(BookRoute) BookDirectoryBuilder: " << dir.dir();
-	BookSptr book;
-	if (crow::get_header_value(req.headers, "Content-Type") ==
-	    "application/json") {
-		// CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
-		const auto json = crow::json::load(req.body);
-		const auto file = get<std::string>(json, "file");
-		if (not file)
-			THROW(BadRequest, "(BookRoute) missing file parameter");
-		dir.add_zip_file_path(*file);
-		book = dir.build();
-		if (not book)
-			THROW(BadRequest, "(BookRoute) could not build book");
-		book->set_owner(session->user());
-		// book->data.profilerUrl = "local";
-		// update book data
-		update_book_data(*book, json);
-	} else {
-		dir.add_zip_file_content(extract_content(req));
-		book = dir.build();
-		if (not book)
-			THROW(BadRequest, "(BookRoute) could not build book");
-		// book->data.profilerUrl = "local";
-		book->set_owner(session->user());
-	}
-	// insert book into database
-	CROW_LOG_INFO << "(BookRoute) Inserting a new book into database";
-	MysqlCommiter commiter(conn);
-	insert_book(conn.db(), *book);
-	CROW_LOG_INFO << "(BookRoute) Created a new book id: " << book->id();
-	// update and clean up
-	commiter.commit();
-	sg.dismiss();
-	Json j;
-	Response response(j << *book);
-	response.code = created().code;
-	return response;
+// POST /books
+////////////////////////////////////////////////////////////////////////////////
+Route::Response BookRoute::impl(HttpPost, const Request &req) const {
+  CROW_LOG_INFO << "(BookRoute) POST book";
+  auto uid = get<int>(req.url_params, "userid");
+  if (not uid) {
+    THROW(BadRequest, "(BookRoute) missing userid");
+  }
+  if (crow::get_header_value(req.headers, "Content-Type") !=
+      "application/zip") {
+    THROW(BadRequest, "(BookRoute) invalid Content-Type: ",
+          crow::get_header_value(req.headers, "Content-Type"));
+  }
+  auto conn = must_get_connection();
+  // create new bookdir
+  BookDirectoryBuilder dir(get_config());
+  ScopeGuard sg([&dir]() { dir.remove(); });
+  dir.add_zip_file_content(extract_content(req));
+  CROW_LOG_INFO << "(BookRoute) BookDirectoryBuilder: " << dir.dir();
+  auto book = dir.build();
+  if (not book) {
+    THROW(BadRequest, "(BookRoute) could not build book");
+  }
+  update_book_data(book->data, req.url_params);
+  book->set_owner(uid.value());
+  // insert book into database
+  CROW_LOG_INFO << "(BookRoute) Inserting a new book into the database";
+  MysqlCommitter committer(conn);
+  insert_book(conn.db(), *book);
+  CROW_LOG_INFO << "(BookRoute) Created a new book id: " << book->id();
+  // update and clean up
+  committer.commit();
+  sg.dismiss();
+  Json j;
+  return j << *book;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void BookRoute::update_book_data(Book& book,
-				 const crow::json::rvalue& data) const {
-	if (get<std::string>(data, "author"))
-		book.data.author = *get<std::string>(data, "author");
-	if (get<std::string>(data, "title"))
-		book.data.title = *get<std::string>(data, "title");
-	if (get<std::string>(data, "language"))
-		book.data.lang = *get<std::string>(data, "language");
-	if (get<std::string>(data, "uri"))
-		book.data.uri = *get<std::string>(data, "uri");
-	if (get<std::string>(data, "description"))
-		book.data.description = *get<std::string>(data, "description");
-	if (get<std::string>(data, "profilerUrl"))
-		book.data.profilerUrl = *get<std::string>(data, "profilerUrl");
-	else
-		book.data.profilerUrl = "local";
-	if (get<int>(data, "year")) book.data.year = *get<int>(data, "year");
+template <class T, class D>
+void set_if_set(T &t, const D &data, const char *key) {
+  t = get<T>(data, key).value_or(t);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response BookRoute::impl(HttpGet, const Request& req, int bid) const {
-	LockedSession session(must_find_session(req));
-	auto conn = must_get_connection();
-	auto book = session->must_find(conn, bid);
-	session->assert_permission(conn, bid, Permissions::Read);
-	Json j;
-	return j << *book;
+template <class D> void update_book_data(DbPackage &package, const D &data) {
+  set_if_set(package.author, data, "author");
+  set_if_set(package.title, data, "title");
+  set_if_set(package.language, data, "language");
+  set_if_set(package.uri, data, "uri");
+  set_if_set(package.description, data, "description");
+  set_if_set(package.histpatterns, data, "histPatterns");
+  set_if_set(package.profilerurl, data, "profilerUrl");
+  set_if_set(package.year, data, "year");
+  set_if_set(package.pooled, data, "pooled");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response BookRoute::impl(HttpPost, const Request& req, int bid) const {
-	// CROW_LOG_DEBUG << "(BookRoute) body: " << req.body;
-	auto data = crow::json::load(req.body);
-	LockedSession session(must_find_session(req));
-	auto conn = must_get_connection();
-	const auto view = session->must_find(conn, bid);
-	session->assert_permission(conn, bid, Permissions::Write);
-	if (not view->is_book())
-		THROW(BadRequest, "cannot set parameters of project id: ", bid);
-	const auto book = std::dynamic_pointer_cast<Book>(view);
-	update_book_data(*book, data);
-	MysqlCommiter commiter(conn);
-	update_book(conn.db(), *book);
-	commiter.commit();
-	Json json;
-	return json << *book;
+template <class D> void update_book_data(BookData &bdata, const D &data) {
+  set_if_set(bdata.author, data, "author");
+  set_if_set(bdata.title, data, "title");
+  set_if_set(bdata.lang, data, "language");
+  set_if_set(bdata.uri, data, "uri");
+  set_if_set(bdata.description, data, "description");
+  set_if_set(bdata.histPatterns, data, "histPatterns");
+  set_if_set(bdata.profilerUrl, data, "profilerUrl");
+  set_if_set(bdata.year, data, "year");
+  set_if_set(bdata.pooled, data, "pooled");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-Route::Response BookRoute::impl(HttpDelete, const Request& req, int bid) const {
-	const LockedSession session(must_find_session(req));
-	auto conn = must_get_connection();
-	session->assert_permission(conn, bid, Permissions::Remove);
-	const auto project = session->must_find(conn, bid);
-	MysqlCommiter commiter(conn);
-	delete_project(conn.db(), project->id());
-	if (project->is_book()) {
-		const auto dir = project->origin().data.dir;
-		CROW_LOG_INFO << "(BookRoute) removing directory: " << dir;
-		boost::system::error_code ec;
-		boost::filesystem::remove_all(dir, ec);
-		if (ec)
-			CROW_LOG_WARNING
-			    << "(BookRoute) cannot remove directory: " << dir
-			    << ": " << ec.message();
-	}
-	session->uncache_project(project->id());
-	commiter.commit();
-	return ok();
+template <class T> typename T::_cpp_value_type empty_if_null(const T &t) {
+  if (not t.is_null()) {
+    return t;
+  } else {
+    return typename T::_cpp_value_type();
+  }
 }
-
-#ifdef foo
 ////////////////////////////////////////////////////////////////////////////////
-void BookRoute::remove_project(MysqlConnection& conn, const Session& session,
-			       const Project& project) const {
-	assert(not project.is_book());
-	CROW_LOG_DEBUG << "(BookRoute) removing project id: " << project.id();
-	MysqlCommiter commiter(conn);
-	remove_project_impl(conn, project.id());
-	session.uncache_project(project.id());
-	commiter.commit();
+template <class Row> Json &set_book(Json &json, const Row &row) {
+  json["bookId"] = empty_if_null(row.bookid);
+  json["projectId"] = empty_if_null(row.id);
+  json["isBook"] = static_cast<bool>(row.bookid == row.id);
+  json["year"] = empty_if_null(row.year);
+  json["author"] = empty_if_null(row.author);
+  json["title"] = empty_if_null(row.title);
+  json["language"] = empty_if_null(row.lang);
+  json["uri"] = empty_if_null(row.uri);
+  json["description"] = empty_if_null(row.description);
+  json["histPatterns"] = empty_if_null(row.histpatterns);
+  json["profilerUrl"] = empty_if_null(row.profilerurl);
+  json["status"]["profiled"] = empty_if_null(row.profiled);
+  json["status"]["extended-lexicon"] = empty_if_null(row.extendedlexicon);
+  json["status"]["post-corrected"] = empty_if_null(row.postcorrected);
+  return json;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void BookRoute::remove_project_impl(MysqlConnection& conn, int pid) const {
-	using namespace sqlpp;
-	tables::Projects p;
-	tables::ProjectPages pp;
-	tables::Profiles ppp;
-	tables::Suggestions s;
-	tables::Errorpatterns e;
-	tables::Adaptivetokens a;
-	tables::Types t;
-	conn.db()(remove_from(pp).where(pp.projectid == pid));
-	conn.db()(remove_from(p).where(p.projectid == pid));
-	conn.db()(remove_from(ppp).where(ppp.bookid == pid));
-	conn.db()(remove_from(s).where(s.bookid == pid));
-	conn.db()(remove_from(e).where(e.bookid == pid));
-	conn.db()(remove_from(t).where(t.bookid == pid));
-	conn.db()(remove_from(a).where(a.bookid == pid));
+template <class Rows> size_t append_page_ids(Json &json, Rows &rows) {
+  json["pageIds"] = std::vector<int>();
+  size_t i = 0;
+  for (const auto &row : rows) {
+    json["pageIds"][i] = row.pageid;
+    i++;
+  }
+  return i;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void BookRoute::remove_book(MysqlConnection& conn, const Session& session,
-			    const Book& book) const {
-	assert(book.is_book());
-	CROW_LOG_DEBUG << "(BookRoute) removing book id: " << book.id();
-	using namespace sqlpp;
-	tables::Projects p;
-	tables::Textlines l;
-	tables::Contents c;
-	tables::Pages pgs;
-	tables::Profiles ppp;
-	tables::Suggestions s;
-	tables::Errorpatterns e;
-	tables::Types t;
-	tables::Books b;
-	MysqlCommiter commiter(conn);
-	auto pids = conn.db()(
-	    select(p.projectid, p.owner).from(p).where(p.origin == book.id()));
-	for (const auto& pid : pids) {
-		if (static_cast<int>(pid.owner) != session.user().id()) {
-			THROW(Forbidden, "cannot delete book: project id: ",
-			      pid.projectid, " is not finished");
-		}
-		remove_project_impl(conn, pid.projectid);
-		session.uncache_project(pid.projectid);
-	}
-	conn.db()(remove_from(c).where(c.bookid == book.id()));
-	conn.db()(remove_from(l).where(l.bookid == book.id()));
-	conn.db()(remove_from(pgs).where(pgs.bookid == book.id()));
-	conn.db()(remove_from(ppp).where(ppp.bookid == book.id()));
-	conn.db()(remove_from(s).where(s.bookid == book.id()));
-	conn.db()(remove_from(e).where(e.bookid == book.id()));
-	conn.db()(remove_from(t).where(t.bookid == book.id()));
-	conn.db()(remove_from(b).where(b.bookid == book.id()));
-	const auto dir = book.data.dir;
-	CROW_LOG_INFO << "(BookRoute) removing directory: " << dir;
-	boost::system::error_code ec;
-	boost::filesystem::remove_all(dir, ec);
-	if (ec)
-		CROW_LOG_WARNING
-		    << "(BookRoute) cannot remove directory: " << dir << ": "
-		    << ec.message();
-	session.uncache_project(book.id());
-	commiter.commit();
+// GET /books/<bid>
+////////////////////////////////////////////////////////////////////////////////
+Route::Response BookRoute::impl(HttpGet, const Request &req, int bid) const {
+  CROW_LOG_INFO << "(BookRoute) GET package: " << bid;
+  auto conn = must_get_connection();
+  DbPackage pkg(bid);
+  if (not pkg.load(conn)) {
+    THROW(NotFound, "cannot find package id: ", bid);
+  }
+  rapidjson::StringBuffer buf;
+  rapidjson::Writer<rapidjson::StringBuffer> writer(buf);
+  pkg.serialize(writer);
+  Response res(200, std::string(buf.GetString(), buf.GetSize()));
+  res.set_header("Content-Type", "application/json");
+  return res;
 }
-#endif
+
+////////////////////////////////////////////////////////////////////////////////
+// PUT /books/<bid>
+////////////////////////////////////////////////////////////////////////////////
+Route::Response BookRoute::impl(HttpPut, const Request &req, int bid) const {
+  CROW_LOG_DEBUG << "(BookRoute) PUT package: " << bid;
+  return impl(HttpPost{}, req, bid);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// POST /books/<bid>
+////////////////////////////////////////////////////////////////////////////////
+Route::Response BookRoute::impl(HttpPost, const Request &req, int bid) const {
+  CROW_LOG_DEBUG << "(BookRoute) POST package: " << bid;
+  auto conn = must_get_connection();
+  DbPackage package(bid);
+  if (!package.load(conn)) {
+    THROW(Error, "cannot load package: ", bid);
+  }
+  // projects but not packages cannot be updated
+  if (not package.isBook()) {
+    THROW(BadRequest, "cannot set parameters of a package");
+  }
+  update_book_data(package, crow::json::load(req.body));
+  MysqlCommitter committer(conn);
+  update_book(conn.db(), package.bookid, as_book_data(package));
+  committer.commit();
+  Json json;
+  return json << package;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// DELETE /books/bid
+////////////////////////////////////////////////////////////////////////////////
+Route::Response BookRoute::impl(HttpDelete, const Request &req, int bid) const {
+  CROW_LOG_DEBUG << "(BookRoute) DELETE package: " << bid;
+  auto conn = must_get_connection();
+  DbPackage package(bid);
+  if (!package.load(conn)) {
+    THROW(Error, "cannot load package: ", bid);
+  }
+  MysqlCommitter committer(conn);
+  delete_project(conn.db(), package.projectid);
+  if (package.isBook()) {
+    CROW_LOG_INFO << "(BookRoute) removing directory: " << package.directory;
+    boost::system::error_code ec;
+    boost::filesystem::remove_all(package.directory, ec);
+    if (ec) {
+      CROW_LOG_WARNING << "(BookRoute) cannot remove directory: "
+                       << package.directory << ": " << ec.message();
+    }
+  }
+  committer.commit();
+  return ok();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BookData as_book_data(const DbPackage &package) {
+  BookData ret;
+  ret.author = package.author;
+  ret.title = package.title;
+  ret.description = package.description;
+  ret.histPatterns = package.histpatterns;
+  ret.uri = package.uri;
+  ret.profilerUrl = package.profilerurl;
+  ret.lang = package.language;
+  ret.dir = package.directory;
+  ret.year = package.year;
+  ret.profiled = package.profiled;
+  ret.extendedLexicon = package.extendedLexicon;
+  ret.postCorrected = package.postCorrected;
+  return ret;
+}

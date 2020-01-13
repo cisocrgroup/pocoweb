@@ -2,7 +2,6 @@
 *.d
 *.a
 *~
-.*
 *.log
 *.gitmodule
 *.so
@@ -11,14 +10,22 @@ tags
 pcwd
 pcwc
 config.ini
-make/cache.mak
+make/cache.make
 vendor/*
 tmp/*
 ext/*
 lib/*
+env.sh
+*.built.js
 frontend/public_html/js/config.js
 db/tables.sql.tmp
 misc/systemd/pocoweb.service
 env
-
+tests.log
 profile-tmp.xml
+TAGS
+cover.out
+# ignore executable microservice files
+services/pcw*/pcw*
+/services/nginx/cert.pem
+/services/nginx/key.pem
