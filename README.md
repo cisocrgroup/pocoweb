@@ -40,7 +40,7 @@ location of the base directory.  In this case change all instances of
 `/srv/pocoweb` to the desired location for Pocoweb's base directory.
 
 Create all required directories using `mkdir -p
-/srv/pocoweb{ww,project,db,tmp,language}-data`.
+/srv/pocoweb{www,project,db,tmp,language}-data`.
 
 #### Configuration file
 Copy the default configuration file to the source directory using `cp
