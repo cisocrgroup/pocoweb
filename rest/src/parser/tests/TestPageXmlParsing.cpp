@@ -3,6 +3,7 @@
 
 #include "core/Line.hpp"
 #include "core/WagnerFischer.hpp"
+#include "core/util.hpp"
 #include "parser/PageXmlPageParser.hpp"
 #include "parser/ParserPage.hpp"
 #include "parser/XmlParserPage.hpp"
@@ -15,18 +16,23 @@
 using namespace pcw;
 
 struct Fixture {
-  Fixture() : page() {
-    PageXmlPageParser parser("misc/data/test/page-test.xml");
+  Fixture() : page(), parser("misc/data/test/page-test.xml") {
     BOOST_REQUIRE(parser.has_next());
     page = parser.parse();
     BOOST_REQUIRE(not parser.has_next());
     BOOST_REQUIRE(page);
   }
   ParserPagePtr page;
+  PageXmlPageParser parser;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_FIXTURE_TEST_SUITE(PageXmlTest, Fixture)
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(CheckFileTypePageXml) {
+  BOOST_CHECK_EQUAL(get_file_type(parser.get_path()), FileType::PageXml);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(PageXmlParserParsesPageBox) {
@@ -154,6 +160,52 @@ BOOST_AUTO_TEST_CASE(HerrnhutereyCheckThirdLine) {
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(HerrnhutereyCheckFourthLine) {
   BOOST_CHECK_EQUAL(std::string("in ihrer Schalkheit."), page->get(3).string());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_SUITE_END()
+
+struct Fixture179392 {
+  Fixture179392() : page(), parser("misc/data/test/179392.xml") {
+    BOOST_REQUIRE(parser.has_next());
+    page = parser.parse();
+    BOOST_REQUIRE(not parser.has_next());
+    BOOST_REQUIRE(page);
+  }
+  ParserPagePtr page;
+  PageXmlPageParser parser;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_FIXTURE_TEST_SUITE(PageXml179392Test, Fixture179392)
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(CheckFileTypePageXml) {
+  BOOST_CHECK_EQUAL(get_file_type(parser.get_path()), FileType::PageXml);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(CheckLineNumber) { BOOST_CHECK_EQUAL(page->size(), 30); }
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(CheckFirstPage) {
+  BOOST_CHECK_EQUAL(page->size(), 30);
+  BOOST_CHECK_EQUAL(page->get(0).line(1)->ocr(), "Deutſchland und Velgien.");
+  BOOST_CHECK_EQUAL(page->get(0).string(), "Deutſchland und Velgien.");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(CheckSecondPage) {
+  BOOST_CHECK_EQUAL(page->size(), 30);
+  BOOST_CHECK_EQUAL(page->get(1).line(1)->ocr(), "Was wir wollen.");
+  BOOST_CHECK_EQUAL(page->get(1).string(), "Was wir wollen.");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(CheckLastPage) {
+  BOOST_CHECK_EQUAL(page->size(), 30);
+  BOOST_CHECK_EQUAL(page->get(29).line(1)->ocr(), "1");
+  BOOST_CHECK_EQUAL(page->get(29).string(), "1");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
