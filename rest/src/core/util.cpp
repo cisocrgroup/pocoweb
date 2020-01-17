@@ -142,6 +142,7 @@ pcw::FileType pcw::get_xml_file_type(const Path &path) {
   static const std::string hocr{"<html"};
   static const std::string mets{"METS"};
   static const std::string page{"<PcGts"};
+  static const std::string pagens{"<pc:PcGts"};
 
   std::ifstream is(path.string());
   if (not is.good())
@@ -158,6 +159,8 @@ pcw::FileType pcw::get_xml_file_type(const Path &path) {
   if (std::search(buf, buf + n, begin(mets), end(mets)) != buf + n)
     return FileType::Mets;
   if (std::search(buf, buf + n, begin(page), end(page)) != buf + n)
+    return FileType::PageXml;
+  if (std::search(buf, buf + n, begin(pagens), end(pagens)) != buf + n)
     return FileType::PageXml;
   return FileType::Other;
 }
@@ -179,6 +182,8 @@ std::string pcw::file_type_to_string(FileType type) {
     return "llocs";
   case FileType::Mets:
     return "METS/MOTS";
+  case FileType::PageXml:
+    return "PageXML";
   default:
     assert(false);
     throw std::logic_error("Unreacheable code was reached!");
@@ -199,6 +204,8 @@ pcw::FileType pcw::file_type_from_string(const std::string &type) {
     return FileType::Hocr;
   } else if (type == "llocs") {
     return FileType::Llocs;
+  } else if (type == "PageXML") {
+    return FileType::PageXml;
   } else if (type == "METS/MOTS") {
     return FileType::Mets;
   }
