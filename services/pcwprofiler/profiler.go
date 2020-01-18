@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"unicode"
 
 	"github.com/finkf/gofiler"
 	"github.com/finkf/pcwgo/api"
@@ -74,6 +75,7 @@ func (p *profiler) runProfiler(ctx context.Context) error {
 	}
 	err := eachLine(p.project.BookID, func(line db.Chars) error {
 		for w, r := line.NextWord(); len(w) > 0; w, r = r.NextWord() {
+			w = trim(w);
 			tokens = append(tokens, gofiler.Token{OCR: w.OCR()})
 			if w.IsFullyCorrected() {
 				tokens[len(tokens)-1].COR = w.Cor()
@@ -389,6 +391,29 @@ func eachWord(line db.Chars, f func(db.Chars) error) error {
 		}
 	}
 	return nil
+}
+
+func trim(chars db.Chars) db.Chars {
+	i, j := 0, len(chars)
+	for ; i < j; i++ {
+		c := chars[i].Cor
+		if c == 0 {
+			c = chars[i].OCR
+		}
+		if !unicode.IsPunct(c) {
+			break
+		}
+	}
+	for ; j > i; j-- {
+		c := chars[j-1].Cor
+		if c == 0 {
+			c = chars[j-1].OCR
+		}
+		if !unicode.IsPunct(c) {
+			break
+		}
+	}
+	return chars[i:j]
 }
 
 type logger struct{}
