@@ -21,7 +21,6 @@ static std::vector<Xml::Node> get_glyph_nodes(const Xml::Node &node);
 static std::vector<Xml::Node> get_word_nodes(const Xml::Node &node);
 static Box get_coords_points(const Xml::Node &node);
 static double get_text_equiv_conf(const Xml::Node &node);
-std::wstring get_text_equiv_unicode(const Xml::Node &node, int index);
 static std::vector<std::string> fields(const std::string &str);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -129,7 +128,7 @@ LinePtr PageXmlParserLine::line(int id) const {
   auto lbox = get_coords_points(node_);
   builder.set_id(id);
   builder.set_box(lbox);
-  if (words_.empty()) {
+  if (words_.empty() or not checkWordBoxes()) {
     const auto conf = get_text_equiv_conf(get_last_text_equiv(node_));
     return builder.append(string_, lbox.right(), conf).build();
   }
@@ -159,6 +158,31 @@ LinePtr PageXmlParserLine::line(int id) const {
     }
   }
   return builder.build();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<class T> bool checkBoxes(const std::vector<T>& ts) {
+  Box beforebb;
+  for (size_t i = 0; i < ts.size(); i++) {
+	auto curbb = get_coords_points(ts[i].node());
+	if (i > 0) {
+	  if (beforebb.right() > curbb.left()) {
+		return false;
+	  }
+	}
+	beforebb = curbb; 
+  }
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool PageXmlParserLine::checkWordBoxes() const {
+  return checkBoxes(words_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool PageXmlParserLine::checkGlyphBoxes(const word& w) const {
+  return checkBoxes(w.glyphs);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -213,11 +237,17 @@ Xml::Node get_last_text_equiv(const Xml::Node &node) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-std::wstring get_text_equiv_unicode(const Xml::Node &node, int i) {
+std::wstring PageXmlParserLine::get_text_equiv_unicode(const Xml::Node &node,
+                                                       int i) const {
   auto unicodes = node.select_nodes("./*[local-name()='Unicode']");
   if (unicodes.size() != 1) {
-    throw std::runtime_error("invalid pagexml: invalid unicode index: " +
-                             std::to_string(i));
+    return L"";
+    // std::string id = node_.attribute("id").value();
+    // std::string line;
+    // utf8::utf32to8(string_.begin(), string_.end(), std::back_inserter(line));
+    // throw std::runtime_error(
+    //     "invalid pagexml: invalid unicode index: " + std::to_string(i) +
+    //     " at line: " + line + " id: " + id);
   }
   const auto res = child_wstring(unicodes[i].node());
   return res;
