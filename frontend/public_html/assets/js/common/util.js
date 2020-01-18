@@ -136,13 +136,13 @@ addAlignedLine : function(line){
               return;
               }
 
-              let addDiv = function(text, width, box, offset, klass) {
+              let addDiv = function(text, width, box, offset, klass, conf) {
                   let textdiv = $('<div>' + text + "</div>");
  				      let boxstr = "(" + box.left + "," + box.top + "," +
 				      box.right + "," + box.bottom + ")";
                   textdiv.css('width', width * scalefactor);
                   textdiv.attr('boundingbox', boxstr);
-                  textdiv.attr('title', 'token ' + offset + ', ' + text);
+                  textdiv.attr('title', 'token ' + offset + ', ' + text + ', conf=' + conf.toFixed(3));
                   let div = $('<div class="tokendiv noselect"></div>').append(textdiv);
                   if (klass !== "") {
                     div.addClass(klass);
@@ -162,7 +162,7 @@ addAlignedLine : function(line){
                       bottom: token.box.bottom
                   };
                   let offset = prev.offset + prev.cor.trim().length + 1;
-                  addDiv("", width, box, offset,"");
+                  addDiv("", width, box, offset,"", token.averageConfidence);
                 }
                 let corrected = "";
                 if (!line.isManuallyCorrected) {
@@ -173,7 +173,7 @@ addAlignedLine : function(line){
                     corrected = "automatically_corrected token-text";
                   }
                 }
-                addDiv(token.cor.trim(), token.box.width, token.box, token.offset,corrected);
+                addDiv(token.cor.trim(), token.box.width, token.box, token.offset,corrected, token.averageConfidence);
                }
 },
   copyStringToClipboard :function(str) {
@@ -206,9 +206,9 @@ addAlignedLine : function(line){
 
              App.logout(); // automatically logout user when 401?
              var headerRegion = App.mainLayout.getRegion('headerRegion');
-             headerRegion.currentView.getRegion('navbarRegion').currentView.options.user={id:-1}; 
-             headerRegion.currentView.getRegion('navbarRegion').currentView.render(); 
-             
+             headerRegion.currentView.getRegion('navbarRegion').currentView.options.user={id:-1};
+             headerRegion.currentView.getRegion('navbarRegion').currentView.render();
+
              // display login screen
              App.trigger("nav:login",false);
          }
