@@ -37,7 +37,7 @@ void BookConstructor::add(const Path &file) {
     ocr_[file.parent_path()] = type;
     break;
   case FileType::Other:
-    // do nothing
+    CROW_LOG_WARNING << "file " << file << " unknown file type";
     break;
   default:
     ocr_[file] = type;

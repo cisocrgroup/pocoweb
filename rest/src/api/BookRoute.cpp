@@ -113,6 +113,13 @@ Route::Response BookRoute::impl(HttpPost, const Request &req) const {
   }
   update_book_data(book->data, req.url_params);
   book->set_owner(uid.value());
+  const auto npages = book->size();
+  size_t nlines = 0;
+  for (const auto &page : *book) {
+    nlines += page->size();
+  }
+  CROW_LOG_INFO << "(BookRoute) New book: " << npages << " pages, " << nlines
+                << " lines";
   // insert book into database
   CROW_LOG_INFO << "(BookRoute) Inserting a new book into the database";
   MysqlCommitter committer(conn);
