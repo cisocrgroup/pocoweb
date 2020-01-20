@@ -286,6 +286,15 @@ func (p *profileInserter) insertCandidates(dtb db.DB) error {
 	// p.types must contain all interp.OCR, cand.Suggestion and cand.Modern
 	for _, interp := range p.profile {
 		tid := p.types[interp.OCR]
+		// insert dummy candidate to handle suspicious words with no candidates
+		if len(interp.Candidates) == 0 {
+			interp.Candidates = append(interp.Candidates, gofiler.Candidate{
+				Suggestion: "__NONE__",
+				Modern: "__NONE__",
+				Dict: "__NONE__",
+				Weight: 1.0, // make shure that the synthetic candidate is not cut off
+			})
+		}
 		for i, cand := range interp.Candidates {
 			// skip if weight is too low
 			if float64(cand.Weight) <= cutoff {

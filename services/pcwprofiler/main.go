@@ -314,6 +314,11 @@ func queryPatterns(ctx context.Context, w http.ResponseWriter, qs []string, ocr 
 					"cannot query pattern %q: %v", q, err)
 				return
 			}
+			if s.Suggestion == "__NONE__" {
+				if _, ok := res.Patterns[p]; !ok {
+					res.Patterns[p] = []api.Suggestion{} // avoid null
+				}
+			}
 			s.HistPatterns = strings.Split(h, ",")
 			s.OCRPatterns = strings.Split(o, ",")
 			res.Patterns[p] = append(res.Patterns[p], s)
