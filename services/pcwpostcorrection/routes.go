@@ -12,6 +12,7 @@ import (
 	"github.com/finkf/pcwgo/db"
 	"github.com/finkf/pcwgo/jobs"
 	"github.com/finkf/pcwgo/service"
+	log "github.com/sirupsen/logrus"
 )
 
 type key int
@@ -77,7 +78,9 @@ func writeEmptyExtendedLexicon(w http.ResponseWriter, p *db.Project) {
 func (s *server) handleGetExtendedLexicon() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := service.ProjectFromCtx(ctx)
-		path := filepath.Join(s.baseDir, p.Directory, "postcorrection", "le-protocol.json")
+		path := filepath.Join(s.baseDir, p.Directory, "le_protocol.json")
+		// path := filepath.Join(s.baseDir, p.Directory, "postcorrection", "le_protocol.json")
+		log.Debugf("reading protocol from %q", path)
 		in, err := os.Open(path)
 		if os.IsNotExist(err) { // just send an empty answer
 			writeEmptyExtendedLexicon(w, p)
@@ -107,7 +110,8 @@ func (s *server) handlePutExtendedLexicon() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := service.ProjectFromCtx(ctx)
 		put := ctx.Value(extendedLexiconKey).(api.ExtendedLexicon)
-		path := filepath.Join(s.baseDir, p.Directory, "postcorrection", "le-protocol.json")
+		// path := filepath.Join(s.baseDir, p.Directory, "postcorrection", "le-protocol.json")
+		path := filepath.Join(s.baseDir, p.Directory, "le_protocol.json")
 		in, err := os.Open(path)
 		if os.IsNotExist(err) {
 			service.ErrorResponse(w, http.StatusNotFound, "cannot find protocol: %s", path)
@@ -152,7 +156,7 @@ func (s *server) handlePutExtendedLexicon() service.HandlerFunc {
 func (s *server) handleRunExtendedLexicon() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := service.ProjectFromCtx(ctx)
-		jobID, err := jobs.Start(context.Background(), leRunner{project: p})
+		jobID, err := jobs.Start(context.Background(), leRunner{baseRunner{project: p, pool: s.pool}})
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot run job: %v", err)
@@ -174,7 +178,7 @@ func writeEmptyPostCorrection(w http.ResponseWriter, p *db.Project) {
 func (s *server) handleRunPostCorrection() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := service.ProjectFromCtx(ctx)
-		jobID, err := jobs.Start(context.Background(), pcRunner{pool: s.pool, project: p})
+		jobID, err := jobs.Start(context.Background(), pcRunner{baseRunner{pool: s.pool, project: p}})
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot run job: %v", err)
@@ -187,7 +191,8 @@ func (s *server) handleRunPostCorrection() service.HandlerFunc {
 func (s *server) handleGetPostCorrection() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := service.ProjectFromCtx(ctx)
-		protocol := filepath.Join(s.baseDir, p.Directory, "postcorrection", "dm-protocol-pcw.json")
+		//protocol := filepath.Join(s.baseDir, p.Directory, "postcorrection", "dm-protocol-pcw.json")
+		protocol := filepath.Join(s.baseDir, p.Directory, "dm_protocol.json")
 		if _, err := os.Stat(protocol); os.IsNotExist(err) {
 			writeEmptyPostCorrection(w, p)
 			return
