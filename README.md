@@ -202,6 +202,13 @@ CMD ["nginx-debug", "-g", "daemon off;"]
 The basic usage and API Documentation is part of Pocoweb.  It can be
 found [here](frontend/public_html/doc.md).
 
+### Custom language directories
+It is possible to add custom language configurations to the profiler.
+Just put the custom language configuration into the
+`$PCW_BASE_DIR/language-data` directory. Refer to the
+[profiler-manual](https://github.com/cisocrgroup/Resources/blob/master/manuals/profiler-manual.pdf)
+for more information about language configurations.
+
 ## Development
 ### Internal dependencies
 The back-end of Pocoweb is written in c++ and depends on the following

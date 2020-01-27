@@ -12,6 +12,7 @@ digraph ov {
  pcwpool
  wwwd [label="www-data" shape=folder fillcolor=gray style=filled]
  projectd [label="project-data" shape=folder fillcolor=gray style=filled]
+ languaged [label="language-data" shape=folder fillcolor=gray style=filled]
  ocrd [label="ocr-data" shape=folder fillcolor=gray style=filled]
  dbd [label="db-data" shape=folder fillcolor=gray style=filled]
 
@@ -29,8 +30,9 @@ digraph ov {
  pcwauth -> pcwpool [label="/pool/*"]
  pcwauth -> mysql [style=dotted]
  pcwprofiler -> projectd
+ pcwprofiler -> languaged
  pcwprofiler -> mysql [style=dotted]
- pcwpostcorrection -> projectd
+  pcwpostcorrection -> projectd
  pcwpostcorrection -> pocoweb
  pcwpostcorrection -> mysql [style=dotted]
  pcwusers -> mysql [style=dotted]
