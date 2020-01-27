@@ -21,6 +21,6 @@ COPY --from=build /go/bin/pcwprofiler /bin/pcwprofiler
 CMD pcwprofiler \
 	-dsn "${MYSQL_USER}:${MYSQL_PASSWORD}@(db)/${MYSQL_DATABASE}" \
 	-profiler /apps/profiler \
-	-language-dir /language-data \
+	-ldirs "/language-data,/language-data/custom" \
 	-base / \
     -debug

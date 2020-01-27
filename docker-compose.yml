@@ -69,6 +69,7 @@ services:
       - env.sh
     volumes:
       - ${PCW_BASE_DIR}/project-data:/project-data:rw
+      - ${PCW_BASE_DIR}/language-data:/language-data/custom:rw
   # pocoweb user management
   pcwusers:
     build: services/pcwusers

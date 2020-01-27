@@ -25,7 +25,7 @@ type key int
 var (
 	listen                   = ":80"
 	baseDir                  = "/"
-	languageDir              = "/language-data"
+	ldirs              = dirs([]string{"/language-data"})
 	profbin                  = "/apps/profiler"
 	dsn                      = ""
 	debug                    = false
@@ -37,8 +37,7 @@ func init() {
 	flag.StringVar(&listen, "listen", listen, "set host")
 	flag.StringVar(&baseDir, "base",
 		baseDir, "set project base dir")
-	flag.StringVar(&languageDir, "language-dir",
-		languageDir, "set profiler's language backend")
+	flag.Var(&ldirs, "ldirs", "comma separated list of profiler language backend dirs")
 	flag.StringVar(&profbin, "profiler",
 		profbin, "path to profiler executable")
 	flag.StringVar(&dsn, "dsn", dsn,
@@ -81,11 +80,15 @@ func main() {
 
 func getLanguages() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		configs, err := gofiler.ListLanguages(languageDir)
-		if err != nil {
-			service.ErrorResponse(w, http.StatusInternalServerError,
-				"cannot list languages: %v", err)
-			return
+		var configs []gofiler.LanguageConfiguration
+		for _, ldir := range ldirs {
+			cs, err := gofiler.ListLanguages(ldir)
+			if err != nil {
+				service.ErrorResponse(w, http.StatusInternalServerError,
+					"cannot list languages for dir %q: %v", ldir, err)
+				return
+			}
+			configs = append(configs, cs...)
 		}
 		ls := api.Languages{Languages: make([]string, len(configs))}
 		for i := range configs {
@@ -486,4 +489,15 @@ func getAdaptiveTokens() service.HandlerFunc {
 		})
 		service.JSONResponse(w, at)
 	}
+}
+
+type dirs []string
+
+func (d *dirs) String() string {
+	return strings.Join(*d, ",")
+}
+
+func (d *dirs) Set(val string) error {
+	*d = strings.Split(val, ",")
+	return nil
 }
