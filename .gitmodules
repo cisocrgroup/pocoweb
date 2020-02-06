@@ -22,3 +22,6 @@
 [submodule "modules/rapidjson"]
 	path = modules/rapidjson
 	url = https://github.com/Tencent/rapidjson
+[submodule "modules/calamari"]
+	path = modules/calamari
+	url = https://github.com/calamari-OCR/calamari
