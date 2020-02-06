@@ -14,6 +14,7 @@ CXXFLAGS += -MP -MD -std=gnu++14 -Wall -Werror -fpic
 CXXFLAGS += -g
 CXXFLAGS += -Irest/src
 CXXFLAGS += -Wundef
+CXXFLAGS += -DPROTOBUF_INLINE_NOT_IN_HEADERS=0
 # CXXFLAGS += -Wnoexcept
 # CXXFLAGS += -Wno-aggressive-loop-optimizations
 # CXXFLAGS += -Wsuggest-override

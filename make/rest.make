@@ -50,11 +50,22 @@ PARSER_OBJS += rest/src/parser/Xml.o
 PARSER_OBJS += rest/src/parser/XmlParserPage.o
 PARSER_OBJS += rest/src/parser/hocr.o
 PARSER_OBJS += rest/src/parser/llocs.o
+PARSER_OBJS += rest/src/parser/calamari.o
 
 LIBS += lib/libpcw.a
 MAINS += pcwd
 
-lib/libpcw.a: $(CORE_OBJS) $(API_OBJS) $(PARSER_OBJS) | $(MODS) mkdir-lib
+rest/src/parser/calamari.proto: modules/calamari/calamari_ocr/proto/calamari.proto
+	$(call ECHO,$@)
+	$V cp $< $@
+rest/src/parser/calamari.pb.h rest/src/parser/calamari.pb.cc: rest/src/parser/calamari.proto
+	$(call ECHO,$@)
+	$V protoc -I=rest/src/parser --cpp_out=rest/src/parser $<
+rest/src/parser/calamari.o: rest/src/parser/calamari.pb.cc rest/src/parser/calamari.pb.h
+	$(call ECHO,$@)
+	$V $(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ -c $<
+
+lib/libpcw.a: $(CORE_OBJS) $(API_OBJS) $(PARSER_OBJS) $(PARSER_PROTO)| $(MODS) mkdir-lib
 	$(call ECHO,$@)
 	$V $(AR) rcs $@ $^
 pcwd: rest/src/pcwd.o $(LIBS)
