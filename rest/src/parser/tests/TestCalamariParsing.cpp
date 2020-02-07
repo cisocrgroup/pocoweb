@@ -2,13 +2,14 @@
 #define BOOST_TEST_MODULE CalamariTest
 
 #include "core/Line.hpp"
+#include "core/WagnerFischer.hpp"
 #include "parser/CalamariParserLine.hpp"
 #include <boost/test/unit_test.hpp>
 
 using namespace pcw;
 
-const Path proto = "misc/data/test/00123.pred";
-const Path img = "misc/data/test/00123.nrm.png";
+const Path proto = "misc/data/test/calamari/00123.pred";
+const Path img = "misc/data/test/calamari/00123.nrm.png";
 
 struct LineFixture {
   LineFixture() : line(proto, img) {}
@@ -40,6 +41,45 @@ BOOST_AUTO_TEST_CASE(CheckBuildLineString) {
   BOOST_REQUIRE(line.line(123) != nullptr);
   BOOST_CHECK_EQUAL(line.line(123)->cor(),
                     "Bahn des Ruhms, die dem Helden und dem Staats—");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(CheckBuildLineBox) {
+  BOOST_REQUIRE(line.line(123) != nullptr);
+  BOOST_CHECK_EQUAL(line.line(123)->box, (Box{0, 0, 952, 43}));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(CheckBuildSetChar) {
+  WagnerFischer wf;
+  std::string gt("bahn des ruhms, die dem helden und dem staats—");
+  wf.set_gt(gt);
+  const auto lev = line.correct(wf);
+  BOOST_CHECK_EQUAL(lev, 4);
+  BOOST_CHECK_EQUAL(line.string(), gt);
+  BOOST_CHECK_EQUAL(line.line(123)->cor(), gt);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(CheckBuildEraseChar) {
+  WagnerFischer wf;
+  std::string gt("BahndesRuhms,diedemHeldenunddemStaats—");
+  wf.set_gt(gt);
+  const auto lev = line.correct(wf);
+  BOOST_CHECK_EQUAL(lev, 8);
+  BOOST_CHECK_EQUAL(line.string(), gt);
+  BOOST_CHECK_EQUAL(line.line(123)->cor(), gt);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(CheckBuildInsertChar) {
+  WagnerFischer wf;
+  std::string gt("X Bahn X des X Ruhms, X die X dem X Helden und dem Staats—");
+  wf.set_gt(gt);
+  const auto lev = line.correct(wf);
+  BOOST_CHECK_EQUAL(lev, 12);
+  BOOST_CHECK_EQUAL(line.string(), gt);
+  BOOST_CHECK_EQUAL(line.line(123)->cor(), gt);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
