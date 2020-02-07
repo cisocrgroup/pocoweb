@@ -28,6 +28,7 @@ DATABASE_TESTS += rest/src/database/tests/TestDatabaseGuard.test
 PARSER_TESTS += rest/src/parser/tests/TestAbbyyXmlParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestAltoXmlParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestBookDirectoryBuilder.test
+PARSER_TESTS += rest/src/parser/tests/TestCalamariParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestHocrParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestOcropusLlocsParsing.test
 PARSER_TESTS += rest/src/parser/tests/TestPageXmlParsing.test
