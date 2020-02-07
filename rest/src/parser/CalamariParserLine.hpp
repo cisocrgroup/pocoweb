@@ -17,8 +17,10 @@ public:
   virtual std::wstring wstring() const override;
   virtual std::string string() const override;
   virtual LinePtr line(int id) const override;
+  void write(Path dir) const;
 
 private:
+  Predictions read_pred() const;
   const Path proto_, img_;
   Prediction prediction_;
 };

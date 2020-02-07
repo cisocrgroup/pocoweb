@@ -3,9 +3,16 @@
 #include "utils/Error.hpp"
 #include <boost/filesystem/operations.hpp>
 #include <boost/foreach.hpp>
+#include <fstream>
 
 namespace fs = boost::filesystem;
 using namespace pcw;
+
+class CalamariParserPage : public BasicParserPage {
+public:
+  virtual ~CalamariParserPage() noexcept override = default;
+  virtual void write(const Path &path) const override;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 CalamariPageParser::CalamariPageParser(Path dir)
@@ -51,4 +58,9 @@ CalamariPageParser::get_path_pair(const Path &file) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void CalamariParserPage::write(const Path &path) const {}
+void CalamariParserPage::write(const Path &dir) const {
+  for (const auto& line: lines()) {
+	const auto calamari = std::dynamic_pointer_cast<CalamariParserLine>(line);
+	calamari->write(dir);
+  }
+}

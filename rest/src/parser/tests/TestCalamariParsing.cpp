@@ -3,10 +3,13 @@
 
 #include "core/Line.hpp"
 #include "core/WagnerFischer.hpp"
+#include "utils/TmpDir.hpp"
 #include "parser/CalamariPage.hpp"
 #include "parser/CalamariParserLine.hpp"
 #include <boost/test/unit_test.hpp>
+#include <boost/filesystem/operations.hpp>
 
+namespace fs = boost::filesystem;
 using namespace pcw;
 
 const Path dir = "misc/data/test/calamari/0013";
@@ -97,6 +100,14 @@ BOOST_FIXTURE_TEST_SUITE(CalamariPageTest, PageFixture)
 BOOST_AUTO_TEST_CASE(CheckParseDirSize) {
   BOOST_REQUIRE(page.parse() != nullptr);
   BOOST_CHECK_EQUAL(page.parse()->size(), 1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(CheckWritePage) {
+  TmpDir tmp;
+  BOOST_REQUIRE(page.parse() != nullptr);
+  page.parse()->write(tmp);
+  BOOST_CHECK_EQUAL(fs::is_regular_file(tmp / proto.filename()), true);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

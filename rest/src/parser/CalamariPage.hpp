@@ -32,12 +32,6 @@ private:
   const Path dir_;
   int id_;
 };
-
-class CalamariParserPage : public BasicParserPage {
-public:
-  virtual ~CalamariParserPage() noexcept override = default;
-  virtual void write(const Path &path) const override;
-};
 } // namespace pcw
 
 #endif // pcw_CalamariPage_hpp__

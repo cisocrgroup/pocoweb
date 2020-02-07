@@ -5,6 +5,7 @@
 #include "utils/Error.hpp"
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 
 using namespace pcw;
 
@@ -12,18 +13,7 @@ using namespace pcw;
 CalamariParserLine::CalamariParserLine(Path proto, Path img)
     : proto_(proto), img_(img), prediction_() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
-  std::fstream is(proto_.string(), std::ios::in | std::ios::binary);
-  if (not is.good()) {
-    throw std::runtime_error(
-        "cannot parse predictions from protobuf: cannot open: " +
-        proto_.string());
-  }
-  Predictions predictions;
-  if (not predictions.ParseFromIstream(&is)) {
-    throw std::runtime_error(
-        "cannot parse predictions from protobuf: error parsing " +
-        proto_.string() + ": error");
-  }
+  const auto predictions = read_pred();
   if (predictions.predictions_size() == 0) {
     throw std::runtime_error(
         "cannot parse predictions from protobuf: error parsing " +
@@ -117,4 +107,32 @@ LinePtr CalamariParserLine::line(int id) const {
     builder.append(c.char_(), pos.global_end(), c.probability());
   }
   return builder.build();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+Predictions CalamariParserLine::read_pred() const {
+  std::fstream is(proto_.string(), std::ios::in | std::ios::binary);
+  if (not is.good()) {
+		throw std::system_error(errno, std::system_category(), proto_.string());
+  }
+  Predictions predictions;
+  if (not predictions.ParseFromIstream(&is)) {
+    throw std::runtime_error(
+        "cannot parse predictions from protobuf: error parsing " +
+        proto_.string() + ": error");
+  }
+  return predictions;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void CalamariParserLine::write(Path dir) const {
+  auto predictions = read_pred();
+  const auto file = dir / proto_.filename();
+  std::fstream out(file.string(), std::ios::out | std::ios::binary);
+  assert(predictions.predictions_size() > 0);
+  *predictions.mutable_predictions(0) = prediction_;
+  if (not predictions.SerializeToOstream(&out)) {
+    throw std::runtime_error("cannot write predictions to " + file.string() +
+							 ": error");
+  }
 }
