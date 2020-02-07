@@ -7,7 +7,6 @@
 #include "core/Page.hpp"
 #include "core/util.hpp"
 #include "llocs.hpp"
-#include "pugixml.hpp"
 #include "utils/Error.hpp"
 #include <boost/filesystem/operations.hpp>
 #include <boost/foreach.hpp>
