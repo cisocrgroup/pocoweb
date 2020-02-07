@@ -39,6 +39,7 @@ PARSER_OBJS += rest/src/parser/AbbyyXmlParserLine.o
 PARSER_OBJS += rest/src/parser/AltoXmlPageParser.o
 PARSER_OBJS += rest/src/parser/AltoXmlParserLine.o
 PARSER_OBJS += rest/src/parser/CalamariParserLine.o
+PARSER_OBJS += rest/src/parser/CalamariPage.o
 PARSER_OBJS += rest/src/parser/HocrPageParser.o
 PARSER_OBJS += rest/src/parser/HocrParserLine.o
 PARSER_OBJS += rest/src/parser/OcropusLlocsPageParser.o

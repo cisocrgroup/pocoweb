@@ -3,20 +3,22 @@
 
 #include "core/Line.hpp"
 #include "core/WagnerFischer.hpp"
+#include "parser/CalamariPage.hpp"
 #include "parser/CalamariParserLine.hpp"
 #include <boost/test/unit_test.hpp>
 
 using namespace pcw;
 
-const Path proto = "misc/data/test/calamari/00123.pred";
-const Path img = "misc/data/test/calamari/00123.nrm.png";
+const Path dir = "misc/data/test/calamari/0013";
+const Path proto = dir / "00123.pred";
+const Path img = dir / "00123.nrm.png";
 
 struct LineFixture {
   LineFixture() : line(proto, img) {}
   CalamariParserLine line;
 };
 
-BOOST_FIXTURE_TEST_SUITE(CalamariTest, LineFixture)
+BOOST_FIXTURE_TEST_SUITE(CalamariLineTest, LineFixture)
 
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(CheckReadLineString) {
@@ -80,6 +82,21 @@ BOOST_AUTO_TEST_CASE(CheckBuildInsertChar) {
   BOOST_CHECK_EQUAL(lev, 12);
   BOOST_CHECK_EQUAL(line.string(), gt);
   BOOST_CHECK_EQUAL(line.line(123)->cor(), gt);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+struct PageFixture {
+  PageFixture() : page(dir) {}
+  CalamariPageParser page;
+};
+
+BOOST_FIXTURE_TEST_SUITE(CalamariPageTest, PageFixture)
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(CheckParseDirSize) {
+  BOOST_REQUIRE(page.parse() != nullptr);
+  BOOST_CHECK_EQUAL(page.parse()->size(), 1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
