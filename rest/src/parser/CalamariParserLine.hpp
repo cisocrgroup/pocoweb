@@ -7,7 +7,7 @@
 namespace pcw {
 class CalamariParserLine : public ParserLine {
 public:
-  CalamariParserLine(Path path);
+  CalamariParserLine(Path proto, Path img);
 
   virtual ~CalamariParserLine() noexcept override = default;
   virtual void insert(size_t i, wchar_t c) override;
@@ -18,7 +18,7 @@ public:
   virtual LinePtr line(int id) const override;
 
 private:
-  const Path path_;
+  const Path proto_, img_;
   Prediction prediction_;
 };
 } // namespace pcw

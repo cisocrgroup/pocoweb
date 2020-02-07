@@ -1,4 +1,5 @@
 #include "CalamariParserLine.hpp"
+#include "core/LineBuilder.hpp"
 #include "core/util.hpp"
 #include <fstream>
 #include <iostream>
@@ -6,30 +7,27 @@
 using namespace pcw;
 
 ////////////////////////////////////////////////////////////////////////////////
-CalamariParserLine::CalamariParserLine(Path path) : path_(path), prediction_() {
+CalamariParserLine::CalamariParserLine(Path proto, Path img)
+    : proto_(proto), img_(img), prediction_() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
-  std::fstream is(path.string(), std::ios::in | std::ios::binary);
+  std::fstream is(proto_.string(), std::ios::in | std::ios::binary);
   if (not is.good()) {
     throw std::runtime_error(
         "cannot parse predictions from protobuf: cannot open: " +
-        path.string());
+        proto_.string());
   }
   Predictions predictions;
   if (not predictions.ParseFromIstream(&is)) {
     throw std::runtime_error(
         "cannot parse predictions from protobuf: error parsing " +
-        path.string() + ": error");
+        proto_.string() + ": error");
   }
-  if (predictions.predictions_size() < 1) {
+  if (predictions.predictions_size() == 0) {
     throw std::runtime_error(
         "cannot parse predictions from protobuf: error parsing " +
-        path.string() + ": empty predictions");
+        proto_.string() + ": empty predictions");
   }
   prediction_ = predictions.predictions(0);
-  for (int i = 0; i < predictions.predictions_size(); i++) {
-    std::cout << i << ": " << predictions.predictions(i).id() << "\n";
-    std::cout << i << ": " << predictions.predictions(i).sentence() << "\n";
-  }
 }
 
 void CalamariParserLine::insert(size_t i, wchar_t c) {}
@@ -45,4 +43,19 @@ std::string CalamariParserLine::string() const {
   return prediction_.sentence();
 }
 
-LinePtr CalamariParserLine::line(int id) const { return nullptr; }
+////////////////////////////////////////////////////////////////////////////////
+LinePtr CalamariParserLine::line(int id) const {
+  LineBuilder builder;
+  builder.set_image_path(img_);
+  builder.set_id(id);
+  builder.set_box(Box{});
+  for (int i = 0; i < prediction_.positions_size(); i++) {
+    const auto pos = prediction_.positions(i);
+    if (pos.chars_size() == 0) {
+      continue;
+    }
+    const auto c = pos.chars(0);
+    builder.append(c.char_(), pos.global_end(), c.probability());
+  }
+  return builder.build();
+}
