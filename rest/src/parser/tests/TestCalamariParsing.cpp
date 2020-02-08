@@ -103,11 +103,28 @@ BOOST_AUTO_TEST_CASE(CheckParseDirSize) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(CheckParsedLineString) {
+  BOOST_REQUIRE(page.parse() != nullptr);
+  BOOST_CHECK_EQUAL(page.parse()->get(0).string(),
+                    "Bahn des Ruhms, die dem Helden und dem Staats—");
+}
+
+////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(CheckWritePage) {
   TmpDir tmp;
   BOOST_REQUIRE(page.parse() != nullptr);
   page.parse()->write(tmp);
   BOOST_CHECK_EQUAL(fs::is_regular_file(tmp / proto.filename()), true);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE(CheckWritePageLine) {
+  TmpDir tmp;
+  BOOST_REQUIRE(page.parse() != nullptr);
+  page.parse()->write(tmp);
+  CalamariParserLine line(tmp / proto.filename(), "");
+  BOOST_CHECK_EQUAL(line.string(),
+                    "Bahn des Ruhms, die dem Helden und dem Staats—");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
