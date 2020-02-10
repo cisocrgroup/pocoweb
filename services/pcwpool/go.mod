@@ -3,7 +3,7 @@ module github.com/cisocrgroup/pocoweb/services/pcwpool
 go 1.12
 
 require (
-	github.com/finkf/pcwgo v0.7.0
+	github.com/finkf/pcwgo v0.8.9
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/sirupsen/logrus v1.4.2
