@@ -670,23 +670,20 @@ included. The file has the following layout:
 
 ```json
 {
-	"Author":"author's name",
-	"Title":"book's title",
-	"Description":"book's description",
-	"OwnerEmail":"owner's email",
+	"Author": "author's name",
+	"Title": "book's title",
+	"Description": "book's description",
+	"OwnerEmail": "owner's email",
 	"Language": "book's profiler language",
-	"ID":3,
-	"Year":1900,
-	"OCRTXTFiles": [
-		"..."
-	],
-	"GTIMGFiles": [
-		"..."
-	],
-	"GTTXTFiles": [
-		"..."
-	],
-	"Pooled":true
+	"ID": 3,
+	"Year": 1900,
+	"Files": [
+		{
+			"GTFile": "path to GT text file",
+			"IMGFile": "path to image file",
+			"OCRFile": "path to OCR text file"
+		}
+	]
 }
 ```
 

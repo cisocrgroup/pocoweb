@@ -112,7 +112,7 @@ func (s *server) writePool(out io.Writer, rows *sql.Rows) (err error) {
 		if err := s.writeBookToPool(w, &book); err != nil {
 			return fmt.Errorf("cannot pool book %s: %v", book.String(), err)
 		}
-		if len(book.GTTXTFiles) == 0 { // skip books with no corrected lines
+		if len(book.Files) == 0 { // skip empty books
 			continue
 		}
 		if err := book.write(w); err != nil {
@@ -187,30 +187,35 @@ func (line *lineInfo) write(out *zip.Writer) error {
 	if len(line.line) == 0 || !line.line.IsManuallyCorrected() {
 		return nil
 	}
-	if err := line.writeGT(out); err != nil {
+	var finfo fileInfo
+	if err := line.writeGT(out, &finfo); err != nil {
 		return err
 	}
-	if err := line.writeOCR(out); err != nil {
+	if err := line.writeOCR(out, &finfo); err != nil {
 		return err
 	}
-	return line.copyImage(out)
+	if err := line.copyImage(out, &finfo); err != nil {
+		return err
+	}
+	line.book.Files = append(line.book.Files, finfo)
+	return nil
 }
 
-func (line *lineInfo) writeGT(out *zip.Writer) error {
+func (line *lineInfo) writeGT(out *zip.Writer, finfo *fileInfo) error {
 	header := line.gtZIPHeader()
 	if err := line.writeText(out, header, line.line.Cor()); err != nil {
 		return fmt.Errorf("cannot write gt file: %v", err)
 	}
-	line.book.GTTXTFiles = append(line.book.GTTXTFiles, header.Name)
+	finfo.GTFile = header.Name
 	return nil
 }
 
-func (line *lineInfo) writeOCR(out *zip.Writer) error {
+func (line *lineInfo) writeOCR(out *zip.Writer, finfo *fileInfo) error {
 	header := line.ocrZIPHeader()
 	if err := line.writeText(out, header, line.line.OCR()); err != nil {
 		return fmt.Errorf("cannot write ocr file: %v", err)
 	}
-	line.book.OCRTXTFiles = append(line.book.OCRTXTFiles, header.Name)
+	finfo.OCRFile = header.Name
 	return nil
 }
 
@@ -228,7 +233,7 @@ func (line *lineInfo) writeText(out *zip.Writer, header *zip.FileHeader, text st
 	return nil
 }
 
-func (line *lineInfo) copyImage(out *zip.Writer) error {
+func (line *lineInfo) copyImage(out *zip.Writer, finfo *fileInfo) error {
 	header := line.pngZIPHeader()
 	dest, err := out.CreateHeader(header)
 	if err != nil {
@@ -243,7 +248,7 @@ func (line *lineInfo) copyImage(out *zip.Writer) error {
 	if _, err := io.Copy(dest, src); err != nil {
 		return fmt.Errorf("cannot copy image file: %v", err)
 	}
-	line.book.GTIMGFiles = append(line.book.GTIMGFiles, header.Name)
+	finfo.IMGFile = header.Name
 	return nil
 }
 
@@ -277,7 +282,7 @@ func (line *lineInfo) pngZIPHeader() *zip.FileHeader {
 type bookInfo struct {
 	Author, Title, Description, Language, OwnerEmail string
 	ID, Year                                         int
-	GTTXTFiles, GTIMGFiles, OCRTXTFiles              []string
+	Files                                            []fileInfo
 	Pooled                                           bool
 }
 
@@ -308,9 +313,11 @@ func (book *bookInfo) zipHeader() *zip.FileHeader {
 }
 
 func (book *bookInfo) String() string {
-	return fmt.Sprintf("%04d-%s_%s",
-		book.Year,
-		strings.ToLower(strings.ReplaceAll(book.Author, " ", "_")),
-		strings.ToLower(strings.ReplaceAll(book.Title, " ", "_")),
-	)
+	author := strings.ReplaceAll(book.Author, " ", "_")
+	title := strings.ReplaceAll(book.Title, " ", "_")
+	return fmt.Sprintf("%04d-%s_%s", book.Year, author, title)
+}
+
+type fileInfo struct {
+	GTFile, IMGFile, OCRFile string
 }

@@ -622,23 +622,20 @@ project, page ids and line ids:</p>
 <p>For each project directory, a small JSON-formatted info file is
 included. The file has the following layout:</p>
 <div class="highlight highlight-source-json"><pre>{
-	<span class="pl-s"><span class="pl-pds">"</span>Author<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>author's name<span class="pl-pds">"</span></span>,
-	<span class="pl-s"><span class="pl-pds">"</span>Title<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>book's title<span class="pl-pds">"</span></span>,
-	<span class="pl-s"><span class="pl-pds">"</span>Description<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>book's description<span class="pl-pds">"</span></span>,
-	<span class="pl-s"><span class="pl-pds">"</span>OwnerEmail<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>owner's email<span class="pl-pds">"</span></span>,
+	<span class="pl-s"><span class="pl-pds">"</span>Author<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>author's name<span class="pl-pds">"</span></span>,
+	<span class="pl-s"><span class="pl-pds">"</span>Title<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book's title<span class="pl-pds">"</span></span>,
+	<span class="pl-s"><span class="pl-pds">"</span>Description<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book's description<span class="pl-pds">"</span></span>,
+	<span class="pl-s"><span class="pl-pds">"</span>OwnerEmail<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>owner's email<span class="pl-pds">"</span></span>,
 	<span class="pl-s"><span class="pl-pds">"</span>Language<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book's profiler language<span class="pl-pds">"</span></span>,
-	<span class="pl-s"><span class="pl-pds">"</span>ID<span class="pl-pds">"</span></span>:<span class="pl-c1">3</span>,
-	<span class="pl-s"><span class="pl-pds">"</span>Year<span class="pl-pds">"</span></span>:<span class="pl-c1">1900</span>,
-	<span class="pl-s"><span class="pl-pds">"</span>OCRTXTFiles<span class="pl-pds">"</span></span>: [
-		<span class="pl-s"><span class="pl-pds">"</span>...<span class="pl-pds">"</span></span>
-	],
-	<span class="pl-s"><span class="pl-pds">"</span>GTIMGFiles<span class="pl-pds">"</span></span>: [
-		<span class="pl-s"><span class="pl-pds">"</span>...<span class="pl-pds">"</span></span>
-	],
-	<span class="pl-s"><span class="pl-pds">"</span>GTTXTFiles<span class="pl-pds">"</span></span>: [
-		<span class="pl-s"><span class="pl-pds">"</span>...<span class="pl-pds">"</span></span>
-	],
-	<span class="pl-s"><span class="pl-pds">"</span>Pooled<span class="pl-pds">"</span></span>:<span class="pl-bl">true</span>
+	<span class="pl-s"><span class="pl-pds">"</span>ID<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>Year<span class="pl-pds">"</span></span>: <span class="pl-c1">1900</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>Files<span class="pl-pds">"</span></span>: [
+		{
+			<span class="pl-s"><span class="pl-pds">"</span>GTFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path to GT text file<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>IMGFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path to image file<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>OCRFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path to OCR text file<span class="pl-pds">"</span></span>
+		}
+	]
 }</pre></div>
 <hr>
 <p><a id="user-content-overview-services"></a></p>
