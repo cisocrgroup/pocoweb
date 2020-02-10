@@ -12,7 +12,8 @@ digraph ov {
  pcwpool
  wwwd [label="www-data" shape=folder fillcolor=gray style=filled]
  projectd [label="project-data" shape=folder fillcolor=gray style=filled]
- ocrd [label="ocr-data" shape=folder fillcolor=gray style=filled]
+ languaged [label="language-data" shape=folder fillcolor=gray style=filled]
+ /*ocrd [label="ocr-data" shape=folder fillcolor=gray style=filled]*/
  dbd [label="db-data" shape=folder fillcolor=gray style=filled]
 
  www -> nginx [label="http://pocoweb...."]
@@ -28,6 +29,7 @@ digraph ov {
  pcwauth -> pcwpkg [label="/pkg/*"]
  pcwauth -> pcwpool [label="/pool/*"]
  pcwauth -> mysql [style=dotted]
+ pcwprofiler -> languaged
  pcwprofiler -> projectd
  pcwprofiler -> mysql [style=dotted]
  pcwpostcorrection -> projectd
