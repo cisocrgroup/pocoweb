@@ -154,7 +154,7 @@ ORDER BY c.pageid,c.lineid,c.seq
 			})
 			continue
 		}
-		// write old line
+		// write old line (empty lines are skipped)
 		if err := line.write(out); err != nil {
 			return fmt.Errorf("cannot write line %d: %v", line.lineID, err)
 		}
