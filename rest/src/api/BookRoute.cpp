@@ -25,6 +25,7 @@ template <class D> void update_book_data(DbPackage &package, const D &data);
 template <class D> void update_book_data(BookData &bdata, const D &data);
 template <class Row> Json &set_book(Json &json, const Row &row);
 static BookData as_book_data(const DbPackage &package);
+static bool has_prefix(const std::string& str, const std::string& p);
 
 ////////////////////////////////////////////////////////////////////////////////
 const char *BookRoute::route_ = BOOK_ROUTE_ROUTE_1 "," BOOK_ROUTE_ROUTE_2;
@@ -96,8 +97,7 @@ Route::Response BookRoute::impl(HttpPost, const Request &req) const {
   if (not uid) {
     THROW(BadRequest, "(BookRoute) missing userid");
   }
-  if (crow::get_header_value(req.headers, "Content-Type") !=
-      "application/zip") {
+  if (!has_prefix(crow::get_header_value(req.headers, "Content-Type"), "application/zip")) {
     THROW(BadRequest, "(BookRoute) invalid Content-Type: ",
           crow::get_header_value(req.headers, "Content-Type"));
   }
@@ -291,4 +291,13 @@ BookData as_book_data(const DbPackage &package) {
   ret.extendedLexicon = package.extendedLexicon;
   ret.postCorrected = package.postCorrected;
   return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool has_prefix(const std::string& str, const std::string& p) {
+  if (p.size() > str.size()) {
+    return false;
+  }
+  auto res = std::mismatch(p.begin(), p.end(), str.begin());
+  return res.first == p.end();
 }
