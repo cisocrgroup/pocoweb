@@ -178,7 +178,9 @@ create table if not exists autocorrections (
    primary key (bookid, pageid, lineid, tokenid)
 );
 
+drop table if exists jobs;
 drop table if exists status;
+
 create table if not exists status (
 	id int not null unique primary key,
 	text varchar(15) not null
@@ -195,7 +197,6 @@ values
 	(6,'extended-lexicon'),
 	(7,'profiled-with-el');
 
-drop table if exists jobs;
 create table if not exists jobs (
 	   id INT NOT NULL UNIQUE PRIMARY KEY REFERENCES books(bookid),
 	   statusid INT NOT NULL REFERENCES status(id),
