@@ -27,6 +27,14 @@ create table if not exists sessions (
 );
 alter table sessions convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
+create table if not exists projects (
+	id int not null unique primary key auto_increment,
+	origin int,
+	owner int references users(id),
+	pages int
+);
+alter table projects convert to character set utf8mb4 collate utf8mb4_unicode_ci;
+
 create table if not exists books (
 	bookid int not null unique references projects(id),
 	year int,
@@ -50,23 +58,6 @@ alter table books change description description varchar(255) character set utf8
 alter table books change directory directory varchar(255) character set utf8mb4 collate utf8mb4_unicode_ci;
 alter table books change lang lang varchar(255) character set utf8mb4 collate utf8mb4_unicode_ci;
 
-create table if not exists projects (
-	id int not null unique primary key auto_increment,
-	origin int,
-	owner int references users(id),
-	pages int
-);
-alter table projects convert to character set utf8mb4 collate utf8mb4_unicode_ci;
-
-create table if not exists project_pages (
-	projectid int not null references projects(id),
-	pageid int not null references pages(pageid),
-	nextpageid int not null references pages(pageid),
-	prevpageid int not null references pages(pageid),
-	primary key (projectid, pageid)
-);
-alter table project_pages convert to character set utf8mb4 collate utf8mb4_unicode_ci;
-
 create table if not exists pages (
 	bookid int references books(bookid),
 	pageid int,
@@ -85,7 +76,7 @@ alter table pages change ocrpath ocrpath varchar(255) character set utf8mb4 coll
 
 create table if not exists textlines (
 	bookid int references books(bookid),
-	pageid int references pages(pageid),
+	pageid int not null,
 	lineid int,
 	imagepath varchar(255),
 	lleft int,
@@ -99,8 +90,8 @@ alter table textlines change imagepath imagepath varchar(255) character set utf8
 
 create table if not exists contents (
 	bookid int references books(bookid),
-	pageid int references pages(pageid),
-	lineid int references textlines(lineid),
+	pageid int not null,
+	lineid int not null,
 	seq int not null,
 	ocr int not null,
 	cor int not null,
@@ -111,6 +102,15 @@ create table if not exists contents (
 	primary key (bookid, pageid, lineid, seq)
 );
 alter table contents convert to character set utf8mb4 collate utf8mb4_unicode_ci;
+
+create table if not exists project_pages (
+	projectid int not null references projects(id),
+	pageid int not null,
+	nextpageid int not null,
+	prevpageid int not null,
+	primary key (projectid, pageid)
+);
+alter table project_pages convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
 create table if not exists types (
 	id int not null unique primary key auto_increment,
@@ -169,8 +169,8 @@ alter table adaptivetokens convert to character set utf8mb4 collate utf8mb4_unic
 
 create table if not exists autocorrections (
    bookid int references books(bookid),
-   pageid int references pages(pageid),
-   lineid int references pages(lineid),
+   pageid int not null,
+   lineid int not null,
    tokenid int not null,
    ocrtypid int references types(id),
    cortypid int references types(id),
@@ -178,7 +178,9 @@ create table if not exists autocorrections (
    primary key (bookid, pageid, lineid, tokenid)
 );
 
+drop table if exists jobs;
 drop table if exists status;
+
 create table if not exists status (
 	id int not null unique primary key,
 	text varchar(15) not null
@@ -195,7 +197,6 @@ values
 	(6,'extended-lexicon'),
 	(7,'profiled-with-el');
 
-drop table if exists jobs;
 create table if not exists jobs (
 	   id INT NOT NULL UNIQUE PRIMARY KEY REFERENCES books(bookid),
 	   statusid INT NOT NULL REFERENCES status(id),
