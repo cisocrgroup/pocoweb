@@ -549,9 +549,7 @@ template <class Db> void delete_project(Db &db, int pid) {
   tables::Adaptivetokens a;
   tables::Textlines l;
   tables::Contents c;
-  db(remove_from(b).where(b.bookid == pid));
   db(remove_from(pp).where(pp.projectid == pid));
-  db(remove_from(p).where(p.id == pid));
   db(remove_from(ppp).where(ppp.bookid == pid));
   db(remove_from(pages).where(pages.bookid == pid));
   db(remove_from(a).where(a.bookid == pid));
@@ -559,7 +557,8 @@ template <class Db> void delete_project(Db &db, int pid) {
   db(remove_from(c).where(c.bookid == pid));
   db(remove_from(s).where(s.bookid == pid));
   db(remove_from(e).where(e.bookid == pid));
-  db(remove_from(p).where(p.origin == pid));
+  db(remove_from(b).where(b.bookid == pid));
+  db(remove_from(p).where(p.id == pid));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -228,24 +228,28 @@ Route::Response SearchRoute::impl(HttpGet, const Request &req, int bid) const {
   CROW_LOG_INFO << "(SearchRoute) type: " << search_type(t);
   switch (search_type(t)) {
   case stToken:
-    return search_token(conn, tq{.bid = bid,
+    return search_token(conn, tq{.qs = qs.value(),
+				 .bid = bid,
+				 .skip = pskip,
                                  .max = pmax,
-                                 .skip = pskip,
                                  .ic = pi,
-                                 .qs = qs.value(),
                                  .escape = true});
   case stRE:
-    return search_token(conn, tq{.bid = bid,
-                                 .max = pmax,
+    return search_token(conn, tq{.qs = qs.value(),
+				 .bid = bid,
                                  .skip = pskip,
-                                 .qs = qs.value(),
+                                 .max = pmax,
                                  .escape = false});
   case stPattern:
-    return search_pattern(
-        conn, pq{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
+    return search_pattern(conn, pq{.qs = qs.value(),
+			           .bid = bid,
+				   .skip = pskip,
+				   .max = pmax});
   case stAC:
-    return search_ac(
-        conn, ac{.bid = bid, .max = pmax, .skip = pskip, .qs = qs.value()});
+    return search_ac(conn, ac{.qs = qs.value(),
+			      .bid = bid,
+			      .skip = pskip,
+			      .max = pmax});
   default:
     THROW(BadRequest, "(SearchRoute) invalid search type: ", t);
   }
