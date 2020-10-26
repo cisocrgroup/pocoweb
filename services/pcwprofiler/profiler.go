@@ -75,7 +75,7 @@ func (p *profiler) runProfiler(ctx context.Context) error {
 	}
 	err := eachLine(p.project.BookID, func(line db.Chars) error {
 		for w, r := line.NextWord(); len(w) > 0; w, r = r.NextWord() {
-			w = trim(w);
+			w = trim(w)
 			tokens = append(tokens, gofiler.Token{OCR: w.OCR()})
 			if w.IsFullyCorrected() {
 				tokens[len(tokens)-1].COR = w.Cor()
@@ -290,9 +290,9 @@ func (p *profileInserter) insertCandidates(dtb db.DB) error {
 		if len(interp.Candidates) == 0 {
 			interp.Candidates = append(interp.Candidates, gofiler.Candidate{
 				Suggestion: "__NONE__",
-				Modern: "__NONE__",
-				Dict: "__NONE__",
-				Weight: 1.0, // make shure that the synthetic candidate is not cut off
+				Modern:     "__NONE__",
+				Dict:       "__NONE__",
+				Weight:     1.0, // make shure that the synthetic candidate is not cut off
 			})
 		}
 		for i, cand := range interp.Candidates {
