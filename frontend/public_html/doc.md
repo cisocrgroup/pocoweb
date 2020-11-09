@@ -108,6 +108,7 @@ PoCoWeb offers:
   * [POST rest/postcorrect/le/books/`pid`](#user-content-api-post-el)
   * [GET rest/postcorrect/books/`pid`](#user-content-api-get-rrdm)
   * [POST rest/postcorrect/books/`pid`](#user-content-api-post-rrdm)
+  * [POST rest/postcorrect/train/books/`pid`](#user-content-api-post-retrain)
   * [GET rest/pool/global](#user-content-api-get-global-pool)
   * [GET rest/pool/user](#user-content-api-get-user-pool)
   * [GET rest/jobs/`jobid`](#user-content-api-get-jobs)
@@ -2087,6 +2088,21 @@ according [post request](#user-content-api-post-rrdm) has finished.
 ### POST rest/postcorrect/books/`pid`
 Start the [job](#user-content-api-get-jobs) to generate the post
 correction.
+* [Authorization](#user-content-authorization) is required.
+* Only the owner of a project or package can start the job.
+
+#### Response data
+```json
+{
+	"id": 31
+}
+```
+
+---
+<a id='api-post-retrain'></a>
+### POST rest/postcorrect/train/books/`pid`
+Start the [job](#user-content-api-get-jobs) to retrain the 
+post-correction model.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can start the job.
 
