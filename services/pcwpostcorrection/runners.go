@@ -499,3 +499,25 @@ func applyCasing(template, str string) string {
 	}
 	return string(wstr)
 }
+
+type retrainer struct {
+	project int
+}
+
+func (r retrainer) BookID() int {
+	return r.project
+}
+
+func (r retrainer) Name() string {
+	return "retrainer"
+}
+
+func (r retrainer) Run(ctx context.Context) error {
+	duration := time.Duration(rand.Intn(30)+1) * time.Second
+	select {
+	case <-time.After(duration):
+		return nil
+	case <-ctx.Done():
+		return nil
+	}
+}

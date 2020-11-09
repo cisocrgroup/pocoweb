@@ -41,6 +41,9 @@ func (s *server) routes() {
 		service.WithLog(service.WithMethods(
 			http.MethodGet, service.WithProject(s.handleGetPostCorrection()),
 			http.MethodPost, service.WithProject(withProfiledProject(s.handleRunPostCorrection())))))
+	s.router.HandleFunc("/postcorrect/train/books/",
+		service.WithLog(service.WithMethods(
+			http.MethodGet, service.WithProject(s.handleTrain()))))
 }
 
 func withProfiledProject(f service.HandlerFunc) service.HandlerFunc {
@@ -199,6 +202,19 @@ func (s *server) handleGetPostCorrection() service.HandlerFunc {
 		}
 		w.Header().Add("Content-Type", "application/json")
 		http.ServeFile(w, r, protocol)
+	}
+}
+
+func (s *server) handleTrain() service.HandlerFunc {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		p := service.ProjectFromCtx(ctx)
+		jobID, err := jobs.Start(context.Background(), retrainer{project: p.ProjectID})
+		if err != nil {
+			service.ErrorResponse(w, http.StatusInternalServerError,
+				"cannot run job: %v", err)
+			return
+		}
+		service.JSONResponse(w, api.Job{ID: jobID})
 	}
 }
 
