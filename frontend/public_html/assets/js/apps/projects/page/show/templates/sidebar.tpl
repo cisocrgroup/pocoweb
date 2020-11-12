@@ -162,7 +162,7 @@
    <div class="form-group options_row"
   	   title="Highlight all words by setting a confidence threshold">
   <label for="confidence_slider"> Highlight by confidence: <span id="confidence_value"><%-confidence_threshold%></span></label>
-   <input  type="range" min="0" max="10" value="0" class="slider form-control" id="confidence_slider">
+   <input  type="range" min="0" max="10" value="10" class="slider form-control" id="confidence_slider">
   </div>
   <hr>
   <div class="form-group options_row" title="Display line numbers">

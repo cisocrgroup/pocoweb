@@ -532,7 +532,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                          }
 
                     }
-                   else if(token.averageConfidence&&token.averageConfidence<=confidenceThreshold){
+                   else if(token.averageConfidence&&token.averageConfidence>confidenceThreshold){
                       tokendiv = $('<div class="tokendiv token-text confidence_threshold"></div>').append(cordiv);
                    }
                     else{

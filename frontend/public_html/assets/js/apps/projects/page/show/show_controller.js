@@ -377,14 +377,12 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                   $.when(correctingtoken).done(function(result){
 
                       done();
-                      console.log(page)
 
                        // update lines in background with corrections
 
                        var gettingLine = ProjectEntities.API.getLine(data);
                       $.when(gettingLine).done(function(line_result){
 
-                        console.log(line_result);
 
                         var lineanchor = $('#line-'+anchor);
                             if(lineanchor.length>0) {
@@ -396,8 +394,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
                              page.attributes.lines[line_result.lineId-1] = line_result; // update line array in page.lines
-                             console.log(page);
-                            console.log(lineanchor);
+                          
                              lineanchor.find('.line').empty().text(line_result['cor']);
                              lineanchor.find('.line-tokens').empty();
                              Util.addAlignedLine(line_result);
