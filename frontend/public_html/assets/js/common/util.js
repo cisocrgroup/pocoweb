@@ -172,8 +172,7 @@ addAlignedLine : function(line,confidenceThreshold){
                   } else if (token.isAutomaticallyCorrected) {
                     corrected = "automatically_corrected token-text";
                   }
-                  else if(token.averageConfidence<=confidenceThreshold){
-                    console.log(token.confidenceThreshold)
+                  else if(token.averageConfidence&&token.averageConfidence<=confidenceThreshold){
                     corrected = "confidence_threshold token-text"
                   }
                 }

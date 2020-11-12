@@ -227,7 +227,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         // confidence slider
         var confidence_threshold = Backbone.Marionette.getOption(this, 'confidence_threshold');
         var confslider = document.getElementById("confidence_slider");
-
+        console.log(confidence_threshold)
         $('#confidence_slider').val(confidence_threshold);
           $('#confidence_value').text(confidence_threshold/10);
 
@@ -302,7 +302,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
                       var line = that.model.get('lines')[index];
                       if(line!=undefined){
-                        Util.addAlignedLine(line,confidence_threshold);
+                        Util.addAlignedLine(line,confidence_threshold/10);
                       }
 
                });
@@ -667,7 +667,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 	       	 var img = $(this);
                 var line = that.model.get('lines')[index];
                 if(line!=undefined){
-                  Util.addAlignedLine(line,confidence_threshold);
+                  Util.addAlignedLine(line,confidence_threshold/10);
                 }
             });
            that.trigger('page:lines_appended');
