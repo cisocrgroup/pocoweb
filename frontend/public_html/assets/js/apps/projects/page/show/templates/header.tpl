@@ -2,7 +2,7 @@
 <div class="col col-sm-3">
 <div  style="font-size: 2em;">
    <div style="text-align: center;">
-   <i class="fas fa-book-open card_main_icon green"></i>
+   <i class="fas fa-file-signature card_main_icon green"></i>
 	<%-title%> : <%-pageId%> 
 	</div>
 
