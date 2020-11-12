@@ -367,7 +367,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
           var lineheight = App.getLineHeight(id);
           var linenumbers = App.getLineNumbers(id);
 
-           var projectConcView = new Show.Concordance({searchType:searchType,selection:selection,tokendata:tokens,lineheight:lineheight,linenumbers:linenumbers,asModal:true});
+           var projectConcView = new Show.Concordance({searchType:searchType,selection:selection,tokendata:tokens,lineheight:lineheight,linenumbers:linenumbers,confidence_threshold:App.getConfidenceThreshold(id)/10,asModal:true});
            $('.custom-popover').remove();
 
             projectConcView.on("concordance:correct_token",function(data,anchor,done){

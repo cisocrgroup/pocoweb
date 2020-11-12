@@ -472,8 +472,8 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           var suggestions =  Marionette.getOption(that,"suggestions");
           var selection =  Marionette.getOption(that,"selection");
           var le =  Marionette.getOption(that,"le");
+          var confidenceThreshold =  Marionette.getOption(that,"confidence_threshold");
 
-          console.log(tokendata);
 
            for (key in tokendata['matches']) {
 
@@ -532,7 +532,9 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                          }
 
                     }
-
+                   else if(token.averageConfidence&&token.averageConfidence<=confidenceThreshold){
+                      tokendiv = $('<div class="tokendiv token-text confidence_threshold"></div>').append(cordiv);
+                   }
                     else{
                       tokendiv = $('<div class="tokendiv"></div>').append(cordiv);
                     }

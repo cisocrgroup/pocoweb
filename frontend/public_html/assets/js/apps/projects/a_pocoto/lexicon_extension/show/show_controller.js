@@ -101,7 +101,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                         $.when(searchingToken).done(function(tokens){
                         var lineheight = App.getLineHeight(id);
                         var linenumbers = App.getLineNumbers(id);
-
+                        var confidence_threshold = App.getConfidenceThreshold(id)/10;
                             if(tokens.total==0){
                                 var confirmModal = new Show.OkDialog({
                                       asModal: true,
@@ -113,7 +113,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                                   return;
                             }
 
-                        var projectConcView = new Show.Concordance({selection:word,tokendata:tokens,asModal:true,le:true,lineheight:lineheight,linenumbers:linenumbers});
+                        var projectConcView = new Show.Concordance({selection:word,tokendata:tokens,asModal:true,le:true,lineheight:lineheight,linenumbers:linenumbers,confidence_threshold:confidence_threshold});
 
                          projectConcView.on("concordance:pagination",function(page_nr){
                                  var max = 9;
