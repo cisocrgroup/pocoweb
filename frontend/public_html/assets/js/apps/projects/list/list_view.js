@@ -60,7 +60,7 @@ define(["marionette","app","common/views","apps/projects/common/views",
 	}
     });
 
-  List.FooterPanel = CommonViews.FooterPanel.extend({manual:true
+  List.FooterPanel = CommonViews.FooterPanel.extend({manual:true,title: "Back to Home <i class='fas fa-home'></i>"
     });
 
 

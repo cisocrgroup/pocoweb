@@ -35,7 +35,7 @@ define(["app","common/util","common/views","apps/docs/show/show_view"], function
 
 			  docsShowHeader = new Show.Header({});
 			  docsShowInfo = new Show.Info({data:data});
-  			  docsPanel = new Show.FooterPanel({color:"blue"});
+  			  docsPanel = new Show.FooterPanel({color:"blue",title: "Back to Home <i class='fas fa-home'></i>",manual:true});
 
   			  docsShowInfo.on("doc:append",function(){
 	         		loadingCircleView.destroy();
@@ -47,10 +47,10 @@ define(["app","common/util","common/views","apps/docs/show/show_view"], function
 
 
 	  		
-				
+		
 
 			   docsPanel.on("go:back",function(){
-			  	 App.trigger("docs:list");
+			  	 App.trigger("home:portal");
 			  });
 
 

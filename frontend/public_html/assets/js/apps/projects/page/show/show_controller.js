@@ -123,7 +123,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 			  projectShowHeader = new Show.Header({title:project.get('title'),pageId:page.get('pageId')});
         projectShowPage = new Show.Page({model:page,lineheight:lineheight,linenumbers:linenumbers,hidecorrections:hidecorrections});
 	      projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,hidecorrections:hidecorrections,lineheight:lineheight,linenumbers:linenumbers,ignore_case:ignore_case});
-      	projectShowFooterPanel = new Show.FooterPanel();
+      	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to Overview <i class='fas fa-book-open'></i>"});
 
         projectShowHeader.on("header:show-image-clicked",function(){
 

@@ -25,7 +25,7 @@ define(["marionette","app","spin","spin.jquery","common/util","datatables",
 "tpl!common/templates/msgtemplate.tpl",
 "tpl!common/templates/singlestep.tpl"
 
-	], function(Marionette,IPS_App,Spinner,SpinnerJQuery,Util,dtb,listTpl,loadingTpl,loadingOpcTpl,loadingTpl2,headerTpl,cardHeadTpl,cardhubTpl,layoutTpl,errorTpl,emptyTpl,areYouTpl,okTpl,infoPanelTpl,bgInfoTpl,footerPanelTpl,confirmTpl,msgTpl,singleTpl){
+	], function(Marionette,App,Spinner,SpinnerJQuery,Util,dtb,listTpl,loadingTpl,loadingOpcTpl,loadingTpl2,headerTpl,cardHeadTpl,cardhubTpl,layoutTpl,errorTpl,emptyTpl,areYouTpl,okTpl,infoPanelTpl,bgInfoTpl,footerPanelTpl,confirmTpl,msgTpl,singleTpl){
 
     var Views={};
 
@@ -745,7 +745,9 @@ Views.FooterPanel = Marionette.View.extend({
      },
      serializeData: function(){
       return {
-	    manual: Marionette.getOption(this,"manual")
+	    manual: Marionette.getOption(this,"manual"),
+  	    title: Marionette.getOption(this,"title")
+
      }
 
   },

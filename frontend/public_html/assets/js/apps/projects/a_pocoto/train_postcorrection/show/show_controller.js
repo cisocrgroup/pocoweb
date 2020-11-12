@@ -114,8 +114,14 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/train_postcor
                    });
              });
 
-			  projectShowHeader = new Show.Header({title:"Re Train Post correction",icon:"fas fa-server",color:"blue"});
-      	projectShowFooterPanel = new Show.FooterPanel();
+			  projectShowHeader = new Show.Header({title:"Re-train post correction model",icon:"fas fa-server",color:"blue"});
+      	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to A-PoCoTo <i class='fas fa-cogs'></i>"});
+
+               projectShowFooterPanel.on('go:back',function(){
+                App.trigger("projects:a_pocoto",id);
+               });
+
+
 
 	           projectShowLayout.showChildView('headerRegion',projectShowHeader);
 	          projectShowLayout.showChildView('panelRegion',projectShowFooterPanel);

@@ -74,7 +74,11 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 
 			});
 
-			var usersFooterPanel = new List.FooterPanel();
+			 var usersFooterPanel = new List.FooterPanel({title: "Back to User Management <i class='fas fa-users'></i>",manual:true});
+
+		        usersFooterPanel.on("go:back",function(){
+		         App.trigger("users:home");
+		        });
 
 			    usersListLayout.showChildView('headerRegion',usersListHeader);
                 usersListLayout.showChildView('panelRegion',usersListPanel);	

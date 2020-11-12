@@ -34,8 +34,11 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
 
 			  projectShowHeader = new Show.Header({title:"Postcorrection",icon:"fas fa-play",color:"red"});
-      	projectShowFooterPanel = new Show.FooterPanel();
+      	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to A-PoCoTo <i class='fas fa-cogs'></i>"});
 
+          projectShowFooterPanel.on('go:back',function(){
+                App.trigger("projects:a_pocoto",id);
+               });
 
       var status = project.get('status');
       if(job.statusName=="running"){

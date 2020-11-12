@@ -39,7 +39,12 @@ define(["app","common/util","apps/users/new/new_view"], function(App,Util,New){
 
 		
 
-			var usersFooterPanel = new New.FooterPanel();
+			 var usersFooterPanel = new New.FooterPanel({title: "Back to User Management <i class='fas fa-users'></i>",manual:true});
+
+		        usersFooterPanel.on("go:back",function(){
+		         App.trigger("users:home");
+		        });
+
 
 			    usersNewLayout.showChildView('headerRegion',usersNewHeader);
                 usersNewLayout.showChildView('contentRegion',userForm);	

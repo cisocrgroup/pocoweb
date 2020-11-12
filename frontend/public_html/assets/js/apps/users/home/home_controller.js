@@ -37,7 +37,12 @@ define(["app","common/util","apps/users/home/home_view","apps/header/show/show_v
 
 
 		var usersHomeHub = new Home.Hub({cards:cards,currentRoute:"users"});
-        var usersFooterPanel = new Home.FooterPanel();
+        var usersFooterPanel = new Home.FooterPanel({title: "Back to Home <i class='fas fa-home'></i>",manual:true});
+
+
+        usersFooterPanel.on("go:back",function(){
+         App.trigger("home:portal");
+        });
 
         usersHomeHub.on("cardHub:clicked",function(data){
             App.trigger(data.url);

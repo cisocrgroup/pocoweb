@@ -289,10 +289,16 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
              });
 
 			  projectShowHeader = new Show.Header({title:"Lexicon Extension",icon:"far fa-edit",color:"blue"});
-      	projectShowFooterPanel = new Show.FooterPanel();
+      	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to A-PoCoTo <i class='fas fa-cogs'></i>"});
 
 	           projectShowLayout.showChildView('headerRegion',projectShowHeader);
-	          projectShowLayout.showChildView('panelRegion',projectShowFooterPanel);
+	           projectShowLayout.showChildView('panelRegion',projectShowFooterPanel);
+
+                projectShowFooterPanel.on('go:back',function(){
+                App.trigger("projects:a_pocoto",id);
+               });
+
+
 
     		}); // on.attach()
 

@@ -211,7 +211,9 @@ define([
     }
   });
 
-  Show.FooterPanel = Views.FooterPanel.extend({});
+  Show.FooterPanel = Views.FooterPanel.extend({
+   manual:true,title:"Back to Projects <i class='fas fa-list card_main_icon' aria-hidden='true'></i>"
+  });
 
   Show.Missingprojects = Views.Error.extend({
     errortext: "Error 404: projects not found"

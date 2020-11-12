@@ -54,7 +54,6 @@ define(["marionette","app","common/views",
 
 
 
-	Show.Missingindexstructure = Views.Error.extend({errortext:"Error 404: indexstructure not found"});
 
 
 return Show;

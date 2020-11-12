@@ -81,9 +81,12 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
         var status = project.get('status');
 
 			  projectShowHeader = new Show.Header({title:"Automatic Postcorrection",icon:"fas fa-cogs",color:"blue"});
-      	projectShowFooterPanel = new Show.FooterPanel();
+      	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to Overview <i class='fas fa-book-open'></i>"
+    });
 
-
+         projectShowFooterPanel.on('go:back',function(){
+                App.trigger("projects:show",id);
+          })
 
 
   			// projectPanel = new Show.FooterPanel();
