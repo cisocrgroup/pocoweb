@@ -52,6 +52,7 @@ App.newPcw = function() {
       lineNumbers: {}, // id: lineNumber
       ignoreCase: {},  // id: ignore case
       hideCorrections: {},  // id: hide corrections
+      confidenceThreshold : {}, //id: confidence threshold
       charMapFilter: "abcdefghijklmnopqrstuvwxyz" +
 	    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 	    "0123456789" +
@@ -139,6 +140,18 @@ App.getLineNumbers = function(id){
   }
   return true;
 };
+
+App.getConfidenceThreshold = function(id) {
+  let confidenceThreshold = App.getPcw().options.confidenceThreshold[id] || 0;
+  return confidenceThreshold;
+};
+
+App.setConfidenceThreshold = function(id, val){
+  let pcw = App.getPcw();
+  pcw.options.confidenceThreshold[id] = val;
+  App.setPcw(pcw);
+};
+
 
 App.getIgnoreCase = function(id) {
   let ignoreCase = App.getPcw().options.ignoreCase[id] || true;

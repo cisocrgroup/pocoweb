@@ -25,6 +25,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
            var linenumbers = App.getLineNumbers(id);
            var hidecorrections = App.getHideCorrections(id);
            var ignore_case = App.getIgnoreCase(id);
+           var confidence_threshold = App.getConfidenceThreshold(id);
 
 			var projectShowLayout = new Show.Layout();
 			var projectShowHeader;
@@ -121,8 +122,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
 			  projectShowHeader = new Show.Header({title:project.get('title'),pageId:page.get('pageId')});
-        projectShowPage = new Show.Page({model:page,lineheight:lineheight,linenumbers:linenumbers,hidecorrections:hidecorrections});
-	      projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,hidecorrections:hidecorrections,lineheight:lineheight,linenumbers:linenumbers,ignore_case:ignore_case});
+        projectShowPage = new Show.Page({model:page,lineheight:lineheight,linenumbers:linenumbers,hidecorrections:hidecorrections,confidence_threshold:confidence_threshold});
+	      projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,hidecorrections:hidecorrections,lineheight:lineheight,linenumbers:linenumbers,ignore_case:ignore_case,confidence_threshold:confidence_threshold});
       	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to Overview <i class='fas fa-book-open'></i>"});
 
         projectShowHeader.on("header:show-image-clicked",function(){
@@ -193,6 +194,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
        });
        projectShowSidebar.on("sidebar:update_page_hits", function(value) {
          App.setPageHits(id, value);
+       });
+        projectShowSidebar.on("sidebar:update_confidence_highlighting", function(value) {
+         App.setConfidenceThreshold(id, value);
        });
         projectShowSidebar.on("sidebar:update_line_height",function(value){
           App.setLineHeight(id,value);

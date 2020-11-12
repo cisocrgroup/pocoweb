@@ -101,6 +101,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
           data.lineheight = Marionette.getOption(this,'lineheight');
           data.pagehits = Marionette.getOption(this, 'pagehits');
           data.project = Marionette.getOption(this,"project");
+          data.confidence_threshold = Marionette.getOption(this,"confidence_threshold");
 
         return data;
       },
@@ -221,8 +222,61 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
             })
 
-          })
+          });
 
+        // confidence slider
+        var confidence_threshold = Backbone.Marionette.getOption(this, 'confidence_threshold');
+        var confslider = document.getElementById("confidence_slider");
+
+        $('#confidence_slider').val(confidence_threshold);
+          $('#confidence_value').text(confidence_threshold/10);
+
+        confslider.oninput = function() {
+          var actual_value = this.value/10;
+          that.trigger("sidebar:update_confidence_highlighting",this.value);
+          $('#confidence_value').text(actual_value);
+                $('.line-tokens').empty();
+                $('.line-img').each(function(index){
+                  var img = $(this);
+
+                      var line = that.model.get('lines')[index];
+                      if(line!=undefined){
+                        Util.addAlignedLine(line,actual_value);
+                      }
+
+               });
+            // $('.line-tokens').each(function(index){
+            //     var tokens = $(this).find(".tokendiv");
+            //     var line = that.model.get('lines')[index];
+            //     if(line!=undefined){
+             
+            //       var token_cnt = 0;
+            //       $(tokens).each(function(index2){
+            //         var first_child =$($(this).children()[0]);
+            //         if(first_child.text()!=""){
+
+            //           if(!($(this).hasClass('manually_corrected')||$(this).hasClass('automatically_corrected'))){
+
+            //             if(line.tokens[token_cnt].averageConfidence<=actual_value){
+            //               $(this).addClass("token-text").addClass("confidence_threshold");
+            //             }
+            //             else{
+            //               $(this).removeClass("token-text").removeClass("confidence_threshold");
+            //             }
+
+            //           }
+
+            //           token_cnt++;
+
+            //         }
+            //       });
+            //     }
+            // });
+           that.trigger('page:lines_appended');
+
+        };
+
+        // page hits slider
         var pagehits = Backbone.Marionette.getOption(this, 'pagehits');
         var phslider = document.getElementById("page_hits_slider");
 
@@ -233,6 +287,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
           $('#page_hits_value').text(this.value);
         };
 
+        // line height slider
         var lineheight = Backbone.Marionette.getOption(this,'lineheight');
          var slider = document.getElementById("line_size_slider");
 
@@ -247,7 +302,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
                       var line = that.model.get('lines')[index];
                       if(line!=undefined){
-                        Util.addAlignedLine(line);
+                        Util.addAlignedLine(line,confidence_threshold);
                       }
 
                });
@@ -257,6 +312,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
                 that.trigger("sidebar:update_line_height",this.value);
 
             }
+
+            // linenumbers
              var linenumbers = Backbone.Marionette.getOption(this,'linenumbers');
 
               if(linenumbers){
@@ -600,6 +657,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       onDomRefresh:function(e){
 
         var linenumbers = Marionette.getOption(this,'linenumbers');
+        var confidence_threshold = Marionette.getOption(this,'confidence_threshold');
 
 
            var that = this;
@@ -609,7 +667,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 	       	 var img = $(this);
                 var line = that.model.get('lines')[index];
                 if(line!=undefined){
-                  Util.addAlignedLine(line);
+                  Util.addAlignedLine(line,confidence_threshold);
                 }
             });
            that.trigger('page:lines_appended');

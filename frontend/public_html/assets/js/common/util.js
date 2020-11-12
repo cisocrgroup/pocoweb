@@ -115,7 +115,7 @@ getIds : function(anchor) {
   return ids;
 },
 
-addAlignedLine : function(line){
+addAlignedLine : function(line,confidenceThreshold){
 
 
      var linetokens = line.tokens;
@@ -126,7 +126,7 @@ addAlignedLine : function(line){
             var img_id = "line-img-"+anchor;
             var line_img = document.getElementById(img_id);
             var line_text =  $('#line-'+anchor);
-			line_text.find('.line-tokens').css('width', (Number(line_img.width)+50).toString() +'px');
+	       		// line_text.find('.line-tokens').css('width', (Number(line_img.width)+50).toString() +'px'); ?? not needed to determine max length??
             var scalefactor = line_img.width / line.box.width;
 
              if(linetokens==undefined){
@@ -171,6 +171,10 @@ addAlignedLine : function(line){
                     corrected = "manually_corrected token-text";
                   } else if (token.isAutomaticallyCorrected) {
                     corrected = "automatically_corrected token-text";
+                  }
+                  else if(token.averageConfidence<=confidenceThreshold){
+                    console.log(token.confidenceThreshold)
+                    corrected = "confidence_threshold token-text"
                   }
                 }
                 addDiv(token.cor.trim(), token.box.width, token.box, token.offset,corrected);

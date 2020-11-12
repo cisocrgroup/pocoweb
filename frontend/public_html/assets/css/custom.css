@@ -601,6 +601,11 @@ border-bottom-right-radius: .25rem;
   border-right: 1px solid transparent;
 }
 
+.confidence_threshold{
+  background-color: #edd4d4;
+  border-color: #ba0d0d3d !important;
+}
+
 .line-text:focus {
 outline: 0;
 }
@@ -608,6 +613,7 @@ outline: 0;
 .line-text-parent{
   display: inline-flex;
   position: relative;
+  width: 100%;
 }
 
 .line-text-parent p {

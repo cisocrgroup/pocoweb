@@ -159,6 +159,12 @@
    <input  type="range" min="20" max="60" value="30" class="slider form-control" id="line_size_slider">
   </div>
   <hr>
+   <div class="form-group options_row"
+  	   title="Highlight all words by setting a confidence threshold">
+  <label for="confidence_slider"> Highlight by confidence: <span id="confidence_value"><%-confidence_threshold%></span></label>
+   <input  type="range" min="0" max="10" value="0" class="slider form-control" id="confidence_slider">
+  </div>
+  <hr>
   <div class="form-group options_row" title="Display line numbers">
   <span><input type="checkbox" id="line_nr_toggle" name="line_nr_toggle" checked></span>
   <span for="line_nr_toggle"> Line numbers </span>
@@ -176,6 +182,7 @@
    <input  type="range" min="1" max="100" value="8" class="slider form-control" id="page_hits_slider">
   </div>
   <hr>
+
   <div class="form-group options_row"
   	   title="Ignore case for search results">
 	   <span><input type="checkbox" id="ignore_case_toggle" name="ignore_case_toggle"></span>
