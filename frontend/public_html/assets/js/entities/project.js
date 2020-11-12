@@ -572,6 +572,31 @@ startPostcorrection: function(data){
 
 },
 
+
+startTrainPostcorrection: function(data){
+  var defer = jQuery.Deferred();
+      $.ajax({
+     headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      url: "rest/postcorrect/train/books/"+data.pid+"?auth=" + App.getAuthToken(),
+      type: "POST",
+      data:data,
+      success: function(data) {
+        defer.resolve(data);
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+
+},
+
 getJobs: function(data){
 
   var defer = jQuery.Deferred();

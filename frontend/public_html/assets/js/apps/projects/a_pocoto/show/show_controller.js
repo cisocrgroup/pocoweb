@@ -12,11 +12,8 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
      		require(["entities/project","entities/util","entities/users"], function(ProjectEntities,UtilEntities,UserEntities){
 
 	   	    var loadingCircleView = new  Views.LoadingBackdropOpc();
-            App.mainLayout.showChildView('backdropRegion',loadingCircleView);
-     		var fetchingproject = ProjectEntities.API.getProject({pid:id});
-
-
-
+          App.mainLayout.showChildView('backdropRegion',loadingCircleView);
+     		  var fetchingproject = ProjectEntities.API.getProject({pid:id});
 
       $.when(fetchingproject).done(function(project){
 
@@ -54,6 +51,15 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
                 "seq": 2,
                 "text": "Run the automated post correction process.",
                 "url": "postcorrection"
+            },
+            {
+                "color": "blue",
+                "icon": "fa-server",
+                "id": "post_train_btn",
+                "name": "Train model",
+                "seq": 2,
+                "text": "Re-train the post correction model.",
+                "url": "train_postcorrection"
             }
             ]
 
@@ -67,6 +73,9 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
           }
           if(data.url=="lexicon_extension"){
              App.trigger("projects:lexicon_extension",id);
+          }
+          if(data.url=="train_postcorrection"){
+             App.trigger("projects:train_postcorrection",id);
           }
         });
         var status = project.get('status');

@@ -13,7 +13,8 @@ define(["marionette","app"], function(Marionette,App){
   		   "projects/:id/page/:page_id(/line/:line_id)"    :"showPage",
   		   "projects/:id/a_pocoto"    :"showAPoCoTo",
   		   "projects/:id/a_pocoto/lexicon_extension"    :"showLexiconExtension",
-  		   "projects/:id/a_pocoto/postcorrection"    :"showPostcorrection"
+  		   "projects/:id/a_pocoto/postcorrection"    :"showPostcorrection",
+  		   "projects/:id/a_pocoto/train_postcorrection"    :"showTrainPostcorrection"
 
 		}
 	});
@@ -51,6 +52,11 @@ define(["marionette","app"], function(Marionette,App){
 		require(["apps/projects/a_pocoto/protocol/show/show_controller"], function(ShowController){
    				ShowController.showProtocol(id);
 			});
+		},
+		showTrainPostcorrection: function(id){
+		require(["apps/projects/a_pocoto/train_postcorrection/show/show_controller"], function(ShowController){
+   				ShowController.showTrainPostcorrection(id);
+			});
 		}
 	
 	};
@@ -74,6 +80,11 @@ define(["marionette","app"], function(Marionette,App){
 	App.on("projects:postcorrection",function(id){
 		App.navigate("projects/"+id+"/a_pocoto/postcorrection");
 		API.showPostcorrection(id);
+	});
+
+	App.on("projects:train_postcorrection",function(id){
+		App.navigate("projects/"+id+"/a_pocoto/train_postcorrection");
+		API.showTrainPostcorrection(id);
 	});
 
 	App.on("projects:show_page",function(id,page_id,line_id){
