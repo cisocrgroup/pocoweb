@@ -968,8 +968,10 @@ div.doc-note {
 
 
 .options_row{
+  padding: .5rem;
   padding-left: 1rem;
-  padding-top: 1rem;
+
+  border-bottom:1px solid #dee2e6;
 }
 
 .back_btn{

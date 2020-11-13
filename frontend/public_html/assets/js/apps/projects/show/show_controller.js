@@ -50,6 +50,7 @@ define([
 
             // only show packages of this project
             console.log(projects);
+            console.log(jobs);
 
            if(jobs.statusName=="running"){ // start job tracking if job is running
             projectShowLayout.trackJobStatus();
