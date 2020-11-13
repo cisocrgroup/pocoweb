@@ -122,8 +122,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
 			  projectShowHeader = new Show.Header({title:project.get('title'),pageId:page.get('pageId')});
-        projectShowPage = new Show.Page({model:page,lineheight:lineheight,linenumbers:linenumbers,hidecorrections:hidecorrections,confidence_threshold:confidence_threshold});
-	      projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,hidecorrections:hidecorrections,lineheight:lineheight,linenumbers:linenumbers,ignore_case:ignore_case,confidence_threshold:confidence_threshold});
+        projectShowPage = new Show.Page({model:page,lineheight:lineheight,linenumbers:linenumbers,hidecorrections:hidecorrections,confidence_threshold:confidence_threshold,pid:id});
+	      projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,hidecorrections:hidecorrections,lineheight:lineheight,linenumbers:linenumbers,ignore_case:ignore_case,confidence_threshold:confidence_threshold,pid:id});
       	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to Overview <i class='fas fa-book-open'></i>"});
 
         projectShowHeader.on("header:show-image-clicked",function(){
@@ -393,11 +393,12 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                               }
 
 
+
                              page.attributes.lines[line_result.lineId-1] = line_result; // update line array in page.lines
                           
                              lineanchor.find('.line').empty().text(line_result['cor']);
                              lineanchor.find('.line-tokens').empty();
-                             Util.addAlignedLine(line_result);
+                             Util.addAlignedLine(line_result,App.getConfidenceThreshold(id)/10);
 
                             lineanchor.find('.line').hide();
                             lineanchor.find('.line-tokens').show();

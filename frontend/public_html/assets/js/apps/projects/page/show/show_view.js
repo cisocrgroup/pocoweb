@@ -225,6 +225,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
           });
 
         // confidence slider
+       var pid = Backbone.Marionette.getOption(this, 'pid');
+
         var confidence_threshold = Backbone.Marionette.getOption(this, 'confidence_threshold');
         var confslider = document.getElementById("confidence_slider");
         console.log(confidence_threshold)
@@ -302,7 +304,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
                       var line = that.model.get('lines')[index];
                       if(line!=undefined){
-                        Util.addAlignedLine(line,confidence_threshold/10);
+                        console.log(App.getConfidenceThreshold(pid)/10);
+                        Util.addAlignedLine(line,App.getConfidenceThreshold(pid)/10);
                       }
 
                });
