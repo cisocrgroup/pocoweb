@@ -172,10 +172,10 @@ type profileInserter struct {
 
 func (p *profileInserter) insert(dtb db.DB) error {
 	if err := p.insertTypes(dtb); err != nil {
-		return fmt.Errorf("cannot insert: %v", err)
+		return err
 	}
 	if err := p.insertCandidates(dtb); err != nil {
-		return fmt.Errorf("cannot insert: %v", err)
+		return err
 	}
 	return nil
 }
@@ -273,14 +273,14 @@ func (p *profileInserter) insertCandidates(dtb db.DB) error {
 		db.SuggestionsTableOCRPatterns)
 	ic, err := dtb.Prepare(stmt)
 	if err != nil {
-		return fmt.Errorf("cannot insert candidates: %v", err)
+		return err
 	}
 	defer ic.Close()
 	ip, err := dtb.Prepare("INSERT INTO errorpatterns " +
 		"(suggestionID,bookID,pattern,ocr) " +
 		"VALUES (?,?,?,?)")
 	if err != nil {
-		return fmt.Errorf("cannot insert candidates: %v", err)
+		return err
 	}
 	defer ip.Close()
 	// p.types must contain all interp.OCR, cand.Suggestion and cand.Modern
@@ -301,7 +301,7 @@ func (p *profileInserter) insertCandidates(dtb db.DB) error {
 				continue
 			}
 			if err := p.insertCandidate(ic, ip, cand, tid, i == 0); err != nil {
-				return fmt.Errorf("cannot insert candidates: %v", err)
+				return err
 			}
 		}
 	}
