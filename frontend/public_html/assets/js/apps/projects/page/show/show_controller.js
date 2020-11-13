@@ -27,7 +27,15 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
            var ignore_case = App.getIgnoreCase(id);
            var confidence_threshold = App.getConfidenceThreshold(id);
 
-			var projectShowLayout = new Show.Layout();
+           var breadcrumbs = [
+                 {title:"<i class='fas fa-home'></i>",url:"/"},
+                 {title:"Projects",url:"#projects"},
+                 {title:project.get("title"),url:"#projects/"+id},
+                 {title:"Manual Postcorrection",url:""},
+
+          ];
+
+			var projectShowLayout = new Show.Layout({breadcrumbs:breadcrumbs});
 			var projectShowHeader;
 			var projectShowPage;
       var projectShowSidebar;
@@ -120,8 +128,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
            });
 
 
-
-			  projectShowHeader = new Show.Header({title:project.get('title'),pageId:page.get('pageId')});
+			  projectShowHeader = new Show.Header({title:project.get('title'),pageId:page.get('pageId'),});
         projectShowPage = new Show.Page({model:page,lineheight:lineheight,linenumbers:linenumbers,hidecorrections:hidecorrections,confidence_threshold:confidence_threshold,pid:id});
 	      projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,hidecorrections:hidecorrections,lineheight:lineheight,linenumbers:linenumbers,ignore_case:ignore_case,confidence_threshold:confidence_threshold,pid:id});
       	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to Overview <i class='fas fa-book-open'></i>"});

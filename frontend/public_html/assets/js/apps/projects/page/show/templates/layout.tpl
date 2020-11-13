@@ -1,3 +1,5 @@
+<div class="breadcrumbs"></div>
+
 <div class="container-fluid">
 
 	<div class="row">

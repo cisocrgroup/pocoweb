@@ -33,6 +33,8 @@ require(["backbone"], function (Backbone) {
 
 });
 
+App.Navbar = "";
+
 App.navigate = function(route, options){
  options || (options = {});
 Backbone.history.navigate(route, options);

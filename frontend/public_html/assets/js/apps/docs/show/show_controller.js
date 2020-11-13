@@ -33,7 +33,12 @@ define(["app","common/util","common/views","apps/docs/show/show_view"], function
 			docsShowLayout.on("attach",function(){
 			  
 
-			  docsShowHeader = new Show.Header({});
+			 var breadcrumbs = [
+             {title:"<i class='fas fa-home'></i>",url:"/"},
+             {title:"Documentation",url:""}
+       		 ];
+
+			  docsShowHeader = new Show.Header({breadcrumbs:breadcrumbs,color:"purple",icon:"fas fa-book"});
 			  docsShowInfo = new Show.Info({data:data});
   			  docsPanel = new Show.FooterPanel({color:"blue",title: "Back to Home <i class='fas fa-home'></i>",manual:true});
 
@@ -41,7 +46,7 @@ define(["app","common/util","common/views","apps/docs/show/show_view"], function
 	         		loadingCircleView.destroy();
 	         });
 
-	          // docsShowLayout.showChildView('headerRegion',docsShowHeader);
+	          docsShowLayout.showChildView('headerRegion',docsShowHeader);
 	          docsShowLayout.showChildView('infoRegion',docsShowInfo);
 	          docsShowLayout.showChildView('panelRegion',docsPanel);
 

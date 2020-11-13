@@ -46,7 +46,13 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
     	   projectsListLayout.on("attach",function(){
 
-      var projectsListHeader = new List.Header();
+         var breadcrumbs = [
+          {title:"<i class='fas fa-home'></i>",url:"/"},
+          {title:"Projects",url:""},
+
+        ];
+
+      var projectsListHeader = new List.Header({breadcrumbs:breadcrumbs});
 			var projectsListView = new List.ProjectsList({collection: projects.books,hover:true});
       var projectsListPanel = new List.Panel({user: App.getCurrentUser(),auth:App.getAuthToken()});
       var projectsListFooterPanel = new List.FooterPanel();

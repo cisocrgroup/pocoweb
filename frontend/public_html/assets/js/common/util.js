@@ -311,5 +311,25 @@ addPostCorrectionClassification: function(data) {
     data[klass][key] = types[key];
   }
   return data;
+},
+
+getBreadcrumbs(breadcrumbs){
+  var result = "";
+  var d = "";
+  for (var i=0;i<breadcrumbs.length;i++){
+    result+= d
+    if(breadcrumbs[i]['url']!=""){
+      result += "<a href='"+breadcrumbs[i]['url']+"'>";
+    }
+
+    result+="<span>"+breadcrumbs[i]['title']+"</span>";
+
+     if(breadcrumbs[i]['url']!=""){
+         result += "</a>";
+     }
+
+    d = " / ";
+  }
+  return result;
 }
 });

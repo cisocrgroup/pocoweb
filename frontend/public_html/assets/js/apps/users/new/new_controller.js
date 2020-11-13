@@ -16,7 +16,13 @@ define(["app","common/util","apps/users/new/new_view"], function(App,Util,New){
     	 $.when(fetchingUsers).done(function(users){
 		usersNewLayout.on("attach",function(){
 
- 			var usersNewHeader = new New.Header();
+			  var breadcrumbs = [
+             {title:"<i class='fas fa-home'></i>",url:"/"},
+             {title:"User Management",url:"#users"},
+             {title:"Create New User",url:""},
+       		 ];
+
+ 			var usersNewHeader = new New.Header({breadcrumbs:breadcrumbs});
 			var userForm = new New.Form({model:new UserEntities.User(),asModal:false,admincheck:true,create:true})
 
 				 userForm.on('form:submit',function(data){

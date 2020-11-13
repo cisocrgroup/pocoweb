@@ -27,7 +27,7 @@ define(["marionette","app","common/views",
 
   Show.Header = Views.Header.extend({
     initialize: function(){
-        this.title = "Api documentation"
+        this.title = "Documentation"
 
       }
   });

@@ -260,11 +260,20 @@ define([
                   this.trigger("show:profile");
                 }
               });
+
+                 var breadcrumbs = [
+                 {title:"<i class='fas fa-home'></i>",url:"/"},
+                 {title:"Projects",url:"#projects"},
+                 {title:project.get("title"),url:""},
+                ];
+
+
               let icon = isProject ? 'fas fa-book-open' : 'fas fa-box-open';
               projectShowHeader = new Show.Header({
                 title: project.get("title"),
                 icon: icon,
-                color: "green"
+                color: "green",
+                breadcrumbs:breadcrumbs
               });
               projectShowInfo = new Show.Info({ model: project, jobs:jobs });
               projectShowFooterPanel = new Show.FooterPanel({manual:true});

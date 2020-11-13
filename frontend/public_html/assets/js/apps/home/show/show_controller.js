@@ -67,6 +67,7 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
 
  		}); // on:show
 
+      
 
          App.mainLayout.showChildView('mainRegion',homeHomeLayout);
 

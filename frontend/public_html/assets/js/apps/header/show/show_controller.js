@@ -71,6 +71,9 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
       else {
         headerShowLayout.showChildView('msgRegion',App.mainmsg)
       }
+
+    
+
     });
     headerShowTopbar.on("nav:exit",function(){
      App.trigger("home:portal");

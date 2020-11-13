@@ -422,10 +422,6 @@ color: #1857e6;
 border-color: #1857e6;
 }
 
-.blue:hover{
-color: white;
-background-color: #1857e6;
-}
 
 .blue-bg{
   background-color: #1857e6;
@@ -893,7 +889,7 @@ display: inline-block;
 
 #msg-region{
    min-height: 50px;
-  margin-top: 15px;
+  margin-top: 30px;
 }
 
 #mainmsg{
@@ -987,4 +983,10 @@ div.doc-note {
   color: white !important;
     background-color: #1857e6 !important;
     border-color: #1857e6 !important;
+}
+
+.breadcrumbs{
+  position: absolute;
+   top: 82px;
+   padding-left: 5px;
 }

@@ -287,8 +287,16 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                          App.mainmsg.updateContent(response.responseText,'danger');
                    });
              });
+         var breadcrumbs = [
+                 {title:"<i class='fas fa-home'></i>",url:"/"},
+                 {title:"Projects",url:"#projects"},
+                 {title:project.get("title"),url:"#projects/"+id},
+                 {title:"Automatic Postcorrection",url:"#projects/"+id+"/a_pocoto"},
+                 {title:"Lexicon Extension",url:""}
 
-			  projectShowHeader = new Show.Header({title:"Lexicon Extension",icon:"far fa-edit",color:"blue"});
+
+          ];
+			  projectShowHeader = new Show.Header({title:"Lexicon Extension",icon:"far fa-edit",color:"blue",breadcrumbs:breadcrumbs});
       	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to A-PoCoTo <i class='fas fa-cogs'></i>"});
 
 	           projectShowLayout.showChildView('headerRegion',projectShowHeader);

@@ -12,8 +12,13 @@ define(["app","common/util","apps/users/home/home_view","apps/header/show/show_v
 
        require(["entities/users"], function(UserEntities){
 
+        var breadcrumbs = [
+             {title:"<i class='fas fa-home'></i>",url:"/"},
+             {title:"User Management",url:""}
+         ];
+
 		var usersHomeLayout = new Home.Layout();
-		var usersHomeHeader = new Home.Header();
+		var usersHomeHeader = new Home.Header({breadcrumbs:breadcrumbs});
 
         var cards = [
         {

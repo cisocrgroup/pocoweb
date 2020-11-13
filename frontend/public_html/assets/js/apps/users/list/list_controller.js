@@ -16,7 +16,15 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
     	 $.when(fetchingUsers).done(function(users){
 		usersListLayout.on("attach",function(){
 
- 			var usersListHeader = new List.Header();
+			  var breadcrumbs = [
+             {title:"<i class='fas fa-home'></i>",url:"/"},
+             {title:"User Management",url:"#users"},
+              {title:"List",url:""},
+
+       		  ];
+
+
+ 			var usersListHeader = new List.Header({breadcrumbs:breadcrumbs});
 			var usersListView = new List.UsersList({collection: users.users});
 			var usersListPanel = new List.Panel();
 

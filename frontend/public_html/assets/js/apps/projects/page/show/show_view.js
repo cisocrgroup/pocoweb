@@ -21,6 +21,14 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       ,sidebarRegion: "#sidebar-region"
       ,pageRegion: "#page-region"
       ,footerRegion: "#footer-region"
+    },
+     onAttach:function(){
+
+        var crumbs = Marionette.getOption(this,"breadcrumbs");
+        console.log(crumbs);
+          var breadcrumbs = Util.getBreadcrumbs(crumbs);
+          $('.breadcrumbs').append(breadcrumbs);
+
     }
 
   });
@@ -52,6 +60,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         e.preventDefault();
         this.trigger("header:search-clicked");
       }
+
+
   });
 
   Show.Search = Marionette.View.extend({

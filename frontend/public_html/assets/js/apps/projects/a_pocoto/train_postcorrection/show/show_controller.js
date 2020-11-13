@@ -113,8 +113,16 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/train_postcor
                          App.mainmsg.updateContent(response.responseText,'danger');
                    });
              });
+       var breadcrumbs = [
+                 {title:"<i class='fas fa-home'></i>",url:"/"},
+                 {title:"Projects",url:"#projects"},
+                 {title:project.get("title"),url:"#projects/"+id},
+                 {title:"Automatic Postcorrection",url:"#projects/"+id+"/a_pocoto"},
+                 {title:"Re-train Model",url:""}
 
-			  projectShowHeader = new Show.Header({title:"Re-train post correction model",icon:"fas fa-server",color:"blue"});
+
+          ];
+			  projectShowHeader = new Show.Header({title:"Re-train post correction model",icon:"fas fa-server",color:"blue",breadcrumbs:breadcrumbs});
       	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to A-PoCoTo <i class='fas fa-cogs'></i>"});
 
                projectShowFooterPanel.on('go:back',function(){

@@ -155,6 +155,14 @@ onAttach: function(){
     			isDefault: Marionette.getOption(this,"isDefault"),
     			h2: Marionette.getOption(this,"h2")
 			}
+		},
+		onAttach:function(){
+
+			  var crumbs = Marionette.getOption(this,"breadcrumbs");
+			  console.log(crumbs);
+		      var breadcrumbs = Util.getBreadcrumbs(crumbs);
+		      $('.breadcrumbs').append(breadcrumbs);
+
 		}
 
 
