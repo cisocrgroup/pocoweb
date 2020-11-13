@@ -1,4 +1,4 @@
-PCW_SRV_DIR ?= /srv/pocoweb
+PCW_BASE_DIR ?= /srv/pocoweb
 TAG ?= flobar/pocoweb
 ifeq (, ${shell which git})
 TAGS := latest
@@ -24,19 +24,19 @@ services-build:
 
 .PHONY: docker-compose-build
 docker-compose-build: env.sh services/nginx/cert.pem
-	PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose build
+	PCW_BASE_DIR=${PCW_BASE_DIR} docker-compose build
 
 .PHONY: docker-start
 docker-start: install-frontend docker-compose-build
-	PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose up -d
+	PCW_BASE_DIR=${PCW_BASE_DIR} docker-compose up -d
 
 .PHONY: install-frontend
 install-frontend:
-	$(MAKE) -C frontend INSTALL_DIR=${PCW_SRV_DIR}/www-data install
+	$(MAKE) -C frontend INSTALL_DIR=${PCW_BASE_DIR}/www-data install
 
 .PHONY: docker-stop
 docker-stop: env.sh
-	PCW_BASE_DIR=${PCW_SRV_DIR} docker-compose stop
+	PCW_BASE_DIR=${PCW_BASE_DIR} docker-compose stop
 
 env.sh: misc/config/env.sh
 	cp $< $@
