@@ -178,6 +178,31 @@ func (p *profileInserter) typ(str string) (int, error) {
 	return id, nil
 }
 
+func (p *profileInserter) insertType(qt, it *sql.Stmt, typ string) error {
+	if _, ok := p.types[typ]; ok {
+		return nil
+	}
+	var id int
+	err := qt.QueryRow(typ).Scan(&id)
+	if err != nil && err != sql.ErrNoRows {
+		return fmt.Errorf("cannot insert type %s: %v", typ, err)
+	}
+	if err == nil {
+		p.types[typ] = id
+		return nil
+	}
+	res, err := it.Exec(typ)
+	if err != nil {
+		return fmt.Errorf("cannot insert type %s: %v", typ, err)
+	}
+	tid, err := res.LastInsertId()
+	if err != nil {
+		return fmt.Errorf("cannot insert type %s: %v", typ, err)
+	}
+	p.types[typ] = int(tid)
+	return nil
+}
+
 func (p *profileInserter) insert(dtb db.DB) error {
 	if err := p.insertTypes(dtb); err != nil {
 		return err
@@ -187,6 +212,8 @@ func (p *profileInserter) insert(dtb db.DB) error {
 	}
 	return nil
 }
+
+const none = "__NONE__"
 
 func (p *profileInserter) insertTypes(dtb db.DB) error {
 	// prepare insert statements
@@ -207,6 +234,10 @@ func (p *profileInserter) insertTypes(dtb db.DB) error {
 		return fmt.Errorf("cannot insert types: %v", err)
 	}
 	defer tc.Close()
+	// Insert "none" string into the types database.
+	if err := p.insertType(qt, it, none); err != nil {
+		return fmt.Errorf("cannot insert types: %v", err)
+	}
 	for _, interp := range p.profile {
 		// insert interp.OCR p.type[interp.OCR] gives the token id
 		if err := p.insertType(qt, it, interp.OCR); err != nil {
@@ -240,31 +271,6 @@ func (p *profileInserter) insertTypes(dtb db.DB) error {
 			}
 		}
 	}
-	return nil
-}
-
-func (p *profileInserter) insertType(qt, it *sql.Stmt, typ string) error {
-	if _, ok := p.types[typ]; ok {
-		return nil
-	}
-	var id int
-	err := qt.QueryRow(typ).Scan(&id)
-	if err != nil && err != sql.ErrNoRows {
-		return fmt.Errorf("cannot insert type %s: %v", typ, err)
-	}
-	if err == nil {
-		p.types[typ] = id
-		return nil
-	}
-	res, err := it.Exec(typ)
-	if err != nil {
-		return fmt.Errorf("cannot insert type %s: %v", typ, err)
-	}
-	tid, err := res.LastInsertId()
-	if err != nil {
-		return fmt.Errorf("cannot insert type %s: %v", typ, err)
-	}
-	p.types[typ] = int(tid)
 	return nil
 }
 
@@ -304,9 +310,9 @@ func (p *profileInserter) insertCandidates(dtb db.DB) error {
 		// insert dummy candidate to handle suspicious words with no candidates
 		if len(interp.Candidates) == 0 {
 			interp.Candidates = append(interp.Candidates, gofiler.Candidate{
-				Suggestion: "__NONE__",
-				Modern:     "__NONE__",
-				Dict:       "__NONE__",
+				Suggestion: none,
+				Modern:     none,
+				Dict:       none,
 				Weight:     1.0, // make shure that the synthetic candidate is not cut off
 			})
 		}
