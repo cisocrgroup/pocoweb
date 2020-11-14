@@ -170,15 +170,50 @@ type profileInserter struct {
 	bid     int
 }
 
+func (p *profileInserter) typ(str string) (int, error) {
+	id, ok := p.types[str]
+	if !ok {
+		return 0, fmt.Errorf("missing typeid for %s", str)
+	}
+	return id, nil
+}
+
+func (p *profileInserter) insertType(qt, it *sql.Stmt, typ string) error {
+	if _, ok := p.types[typ]; ok {
+		return nil
+	}
+	var id int
+	err := qt.QueryRow(typ).Scan(&id)
+	if err != nil && err != sql.ErrNoRows {
+		return fmt.Errorf("cannot insert type %s: %v", typ, err)
+	}
+	if err == nil {
+		p.types[typ] = id
+		return nil
+	}
+	res, err := it.Exec(typ)
+	if err != nil {
+		return fmt.Errorf("cannot insert type %s: %v", typ, err)
+	}
+	tid, err := res.LastInsertId()
+	if err != nil {
+		return fmt.Errorf("cannot insert type %s: %v", typ, err)
+	}
+	p.types[typ] = int(tid)
+	return nil
+}
+
 func (p *profileInserter) insert(dtb db.DB) error {
 	if err := p.insertTypes(dtb); err != nil {
-		return fmt.Errorf("cannot insert: %v", err)
+		return err
 	}
 	if err := p.insertCandidates(dtb); err != nil {
-		return fmt.Errorf("cannot insert: %v", err)
+		return err
 	}
 	return nil
 }
+
+const none = "__NONE__"
 
 func (p *profileInserter) insertTypes(dtb db.DB) error {
 	// prepare insert statements
@@ -199,18 +234,26 @@ func (p *profileInserter) insertTypes(dtb db.DB) error {
 		return fmt.Errorf("cannot insert types: %v", err)
 	}
 	defer tc.Close()
+	// Insert "none" string into the types database.
+	if err := p.insertType(qt, it, none); err != nil {
+		return fmt.Errorf("cannot insert types: %v", err)
+	}
 	for _, interp := range p.profile {
-		// skip if no candidates
-		if len(interp.Candidates) == 0 {
-			continue
-		}
 		// insert interp.OCR p.type[interp.OCR] gives the token id
 		if err := p.insertType(qt, it, interp.OCR); err != nil {
 			return fmt.Errorf("cannot insert types: %v", err)
 		}
+		// skip if no candidates
+		if len(interp.Candidates) == 0 {
+			continue
+		}
 		// update counts (p.types must contain id of interp.OCR)
 		n := interp.N
-		if _, err := tc.Exec(p.types[interp.OCR], p.bid, n, n); err != nil {
+		id, err := p.typ(interp.OCR)
+		if err != nil {
+			return fmt.Errorf("cannot insert types: %v", err)
+		}
+		if _, err := tc.Exec(id, p.bid, n, n); err != nil {
 			return fmt.Errorf("cannot insert types: %v", err)
 		}
 		// update candidate Suggestion and modern types
@@ -231,31 +274,6 @@ func (p *profileInserter) insertTypes(dtb db.DB) error {
 	return nil
 }
 
-func (p *profileInserter) insertType(qt, it *sql.Stmt, typ string) error {
-	if _, ok := p.types[typ]; ok {
-		return nil
-	}
-	var id int
-	err := qt.QueryRow(typ).Scan(&id)
-	if err != nil && err != sql.ErrNoRows {
-		return fmt.Errorf("cannot insert type %q: %v", typ, err)
-	}
-	if err == nil {
-		p.types[typ] = id
-		return nil
-	}
-	res, err := it.Exec(typ)
-	if err != nil {
-		return fmt.Errorf("cannot insert type %q: %v", typ, err)
-	}
-	tid, err := res.LastInsertId()
-	if err != nil {
-		return fmt.Errorf("cannot insert type %q: %v", typ, err)
-	}
-	p.types[typ] = int(tid)
-	return nil
-}
-
 func (p *profileInserter) insertCandidates(dtb db.DB) error {
 	// prepare insert statements
 	stmt := fmt.Sprintf("INSERT INTO %s (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "+
@@ -273,25 +291,28 @@ func (p *profileInserter) insertCandidates(dtb db.DB) error {
 		db.SuggestionsTableOCRPatterns)
 	ic, err := dtb.Prepare(stmt)
 	if err != nil {
-		return fmt.Errorf("cannot insert candidates: %v", err)
+		return err
 	}
 	defer ic.Close()
 	ip, err := dtb.Prepare("INSERT INTO errorpatterns " +
 		"(suggestionID,bookID,pattern,ocr) " +
 		"VALUES (?,?,?,?)")
 	if err != nil {
-		return fmt.Errorf("cannot insert candidates: %v", err)
+		return err
 	}
 	defer ip.Close()
 	// p.types must contain all interp.OCR, cand.Suggestion and cand.Modern
 	for _, interp := range p.profile {
-		tid := p.types[interp.OCR]
+		tid, err := p.typ(interp.OCR)
+		if err != nil {
+			return err
+		}
 		// insert dummy candidate to handle suspicious words with no candidates
 		if len(interp.Candidates) == 0 {
 			interp.Candidates = append(interp.Candidates, gofiler.Candidate{
-				Suggestion: "__NONE__",
-				Modern:     "__NONE__",
-				Dict:       "__NONE__",
+				Suggestion: none,
+				Modern:     none,
+				Dict:       none,
 				Weight:     1.0, // make shure that the synthetic candidate is not cut off
 			})
 		}
@@ -301,7 +322,7 @@ func (p *profileInserter) insertCandidates(dtb db.DB) error {
 				continue
 			}
 			if err := p.insertCandidate(ic, ip, cand, tid, i == 0); err != nil {
-				return fmt.Errorf("cannot insert candidates: %v", err)
+				return err
 			}
 		}
 	}
@@ -311,8 +332,14 @@ func (p *profileInserter) insertCandidates(dtb db.DB) error {
 func (p *profileInserter) insertCandidate(
 	ic, ip *sql.Stmt, cand gofiler.Candidate, tid int, top bool) error {
 
-	sid := p.types[cand.Suggestion]
-	mid := p.types[cand.Modern]
+	sid, err := p.typ(cand.Suggestion)
+	if err != nil {
+		return fmt.Errorf("cannot insert candidate: %v", err)
+	}
+	mid, err := p.typ(cand.Modern)
+	if err != nil {
+		return fmt.Errorf("cannot insert candidate: %v", err)
+	}
 	hp := patternString(cand.HistPatterns)
 	op := patternString(cand.OCRPatterns)
 
