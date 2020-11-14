@@ -101,7 +101,8 @@ exit the log).
 
 If you did no use the default base directory `/srv/pocoweb` you have
 to set the according path in the call to make: `make
-PCW_BASE_DIR=/my/custom/path docker-start`.
+PCW_BASE_DIR=/my/custom/path docker-start` (note: you have to use an
+absolute path).
 
 If you encouter any issues deploying Pocoweb feel free to open an
 issue on [github](https://github.com/issues).
