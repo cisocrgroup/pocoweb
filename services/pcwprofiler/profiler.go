@@ -343,23 +343,18 @@ func (p *profileInserter) insertCandidate(
 	hp := patternString(cand.HistPatterns)
 	op := patternString(cand.OCRPatterns)
 
-	log.Infof("ic.Exec(%d,%d,%d,%d,%s,%f,%d,%t,%s,%s)",
-		p.bid, tid, sid, mid, cand.Dict, cand.Weight, cand.Distance, top, hp, op)
 	res, err := ic.Exec(p.bid, tid, sid, mid, cand.Dict,
 		cand.Weight, cand.Distance, top, hp, op)
 	if err != nil {
 		return fmt.Errorf("cannot insert candidate: %v", err)
 	}
-	log.Infof("last insert id")
 	cid, err := res.LastInsertId()
 	if err != nil {
 		return fmt.Errorf("cannot insert candidate: %v", err)
 	}
-	log.Infof("insert hist patterns: %v", cand.HistPatterns)
 	if err := p.insertPatterns(ip, cand.HistPatterns, int(cid), false); err != nil {
 		return fmt.Errorf("cannot insert candidate: %v", err)
 	}
-	log.Infof("insert ocr patterns: %v", cand.OCRPatterns)
 	if err := p.insertPatterns(ip, cand.OCRPatterns, int(cid), true); err != nil {
 		return fmt.Errorf("cannot insert candidate: %v", err)
 	}
