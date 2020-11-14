@@ -43,7 +43,7 @@ func (s *server) routes() {
 			http.MethodPost, service.WithProject(withProfiledProject(s.handleRunPostCorrection())))))
 	s.router.HandleFunc("/postcorrect/train/books/",
 		service.WithLog(service.WithMethods(
-			http.MethodGet, service.WithProject(s.handleTrain()))))
+			http.MethodPost, service.WithProject(s.handleTrain()))))
 }
 
 func withProfiledProject(f service.HandlerFunc) service.HandlerFunc {
