@@ -301,9 +301,7 @@ App.on("start", function(){
 
 
        if(App.getCurrentRoute() === ""){
-
           App.trigger("home:portal");
-
        }
 
      });
