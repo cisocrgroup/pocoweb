@@ -28,20 +28,27 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
 
 			userShowLayout.on("attach",function(){
 
+			  var breadcrumbs = [
+             {title:"<i class='fas fa-home'></i>",url:"/"},
+             {title:"User Management",url:"#users"},
+             {title:"My Account",url:""},
+       		  ];
 
-			  userShowHeader = new Show.Header({model:userModel});
+			  userShowHeader = new Show.Header({breadcrumbs: breadcrumbs,model:userModel});
 			  userShowPanel = new Show.Panel({model:user});
 			  userShowForm = new Show.Form({model:userModel});
-			  userShowFooter = new Show.FooterPanel();
+			  userShowFooter = new Show.FooterPanel({title: "Back to User Management <i class='fas fa-users-cog'></i>",manual:true});
 
+
+     
 		       userShowLayout.showChildView('headerRegion',userShowHeader);
    		       userShowLayout.showChildView('panelRegion',userShowPanel);
 			   userShowLayout.showChildView('infoRegion',userShowForm);
 			   userShowLayout.showChildView('footerRegion',userShowFooter);
 
 
-			   userShowPanel.on("show:back",function(){
-			  	 App.trigger("users:list");
+			   userShowFooter.on("go:back",function(){
+			  	 App.trigger("users:home");
 			  });
 
 			  userShowPanel.on("show:update",function(data){

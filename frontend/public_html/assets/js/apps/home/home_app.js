@@ -7,6 +7,7 @@ define(["marionette","app"], function(Marionette,App){
 	HomeApp.Router = Marionette.AppRouter.extend({
 		appRoutes: {
 			"home":"homePortal",
+    		"":"startsite"
 		}
 	});
 
@@ -14,6 +15,12 @@ define(["marionette","app"], function(Marionette,App){
 	API = {
 		homePortal: function(){
 			require(["apps/home/show/show_controller"], function(HomeController){
+       				HomeController.showHome();
+				});
+		},
+		startsite: function(){
+			require(["apps/home/show/show_controller"], function(HomeController){
+    				App.navigate("home");
        				HomeController.showHome();
 				});
 		}
