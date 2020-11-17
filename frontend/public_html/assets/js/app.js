@@ -144,7 +144,7 @@ App.getLineNumbers = function(id){
 };
 
 App.getConfidenceThreshold = function(id) {
-  let confidenceThreshold = App.getPcw().options.confidenceThreshold[id] || 10;
+  let confidenceThreshold = App.getPcw().options.confidenceThreshold[id] || 0;
   return confidenceThreshold;
 };
 
