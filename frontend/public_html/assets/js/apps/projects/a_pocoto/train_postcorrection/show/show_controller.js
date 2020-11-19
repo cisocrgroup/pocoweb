@@ -15,10 +15,6 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/train_postcor
             App.mainLayout.showChildView('backdropRegion',loadingCircleView);
      			  var fetchingproject = ProjectEntities.API.getProject({pid:id});
             var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
-
-
-
-
       $.when(fetchingproject,fetchingjobs).done(function(project,job){
 
 		  loadingCircleView.destroy();

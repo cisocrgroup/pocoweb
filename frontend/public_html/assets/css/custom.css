@@ -253,11 +253,10 @@ color: white;
 
 
 .custom_card{
-min-height: 130px;
-color: black;
-border-radius: 0.0px !important;
-border: 1px solid black;
-z-index:2;
+    min-height: 130px;
+    color: black;
+    border: 1px solid #dedede;
+    z-index: 2;
 }
 
 

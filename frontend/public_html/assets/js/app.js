@@ -40,7 +40,7 @@ App.navigate = function(route, options){
 
  if (options['back']){
  }
- Backbone.history.navigate(route, {trigger:true});
+ Backbone.history.navigate(route);
 };
 
 App.getCurrentRoute = function(){

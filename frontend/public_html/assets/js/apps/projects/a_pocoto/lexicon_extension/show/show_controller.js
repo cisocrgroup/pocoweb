@@ -23,7 +23,6 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
 		  loadingCircleView.destroy();
       console.log(project);
-
 			var projectShowLayout = new Show.Layout();
 			var projectShowHeader;
 			var projectShowLex = new Show.Layout(); // dummy view..
@@ -52,7 +51,6 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
               var fetchingle = ProjectEntities.API.getLexiconExtension({pid:id});
                $.when(fetchingle).done(function(le){
                        projectShowLex = new Show.LexiconExtension({le});
-                       projectShowLayout.showChildView('contentRegion',projectShowLex);
 
                        projectShowLex.on("show:move_token",function(yes,no){
                       
@@ -215,7 +213,8 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                      });
 
                   });
-
+                  console.log(projectShowLex);
+                  projectShowLayout.showChildView('contentRegion',projectShowLex);
 
 
             });

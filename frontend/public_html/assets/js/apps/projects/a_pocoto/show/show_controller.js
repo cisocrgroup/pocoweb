@@ -78,7 +78,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
              App.trigger("projects:train_postcorrection",id);
           }
         });
-        var status = project.get('status');
+          var status = project.get('status');
           var breadcrumbs = [
                  {title:"<i class='fas fa-home'></i>",url:"#home"},
                  {title:"Projects",url:"#projects"},
