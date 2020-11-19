@@ -28,7 +28,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
            var confidence_threshold = App.getConfidenceThreshold(id);
 
            var breadcrumbs = [
-                 {title:"<i class='fas fa-home'></i>",url:"/"},
+                 {title:"<i class='fas fa-home'></i>",url:"#home"},
                  {title:"Projects",url:"#projects"},
                  {title:project.get("title"),url:"#projects/"+id},
                  {title:"Manual Postcorrection",url:""},

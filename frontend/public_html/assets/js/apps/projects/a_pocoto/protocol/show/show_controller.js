@@ -33,7 +33,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 			projectShowLayout.on("attach",function(){
 
          var breadcrumbs = [
-                 {title:"<i class='fas fa-home'></i>",url:"/"},
+                 {title:"<i class='fas fa-home'></i>",url:"#home"},
                  {title:"Projects",url:"#projects"},
                  {title:project.get("title"),url:"#projects/"+id},
                  {title:"Automatic Postcorrection",url:"#projects/"+id+"/a_pocoto"},

@@ -68,13 +68,13 @@ Entities.API = {
     });
     return defer.promise();
   },
-  getDocumentation: function(){
+  getDocumentation: function(doc_type){
     var defer = jQuery.Deferred();
        $.ajax({
          headers: {
            'Accept': 'text/html'
          },
-         url: "doc.html",
+         url: doc_type+".html",
          type: "GET",
          success: function(data) {
               defer.resolve(data);

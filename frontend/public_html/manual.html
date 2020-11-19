@@ -1,0 +1,612 @@
+<p>PoCoWeb is a web based post-correction system for OCRed historical
+documents.  It is based on
+<a href="https://github.com/cisocrgroup/PoCoTo">PoCoTo</a>.  PoCoWeb consists of
+a backend that offers a REST API for the post-correction and a
+frontend that facilitates the post-correction of historical documents
+using a web-browser.</p>
+<p>Users can upload their OCRed documents and correct them in the web
+front end.  The corrected documents can then be downloaded and further
+processed.  PoCoWeb understands various OCR formats that can be used.
+Any corrections are written back into the original format of the
+documents.  This makes it possible to integrate the manual
+post-correction of OCRed documents into other digitalisation
+work flows.</p>
+<p>As PoCoTo, PoCoWeb is connected with a language
+<a href="https://github.com/cisocrgroup/Profiler">profiler</a> that enables
+semi-automatic correction of historical documents.  The profiler is
+able to differentiate between historical spelling variation and real
+OCR errors in the documents and generates correction suggestions for
+suspicious words.</p>
+<p><a href="assets/images/doc/welcome.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/welcome.png" alt="Main page" style="max-width:100%;"></a></p>
+<p>PoCoWeb offers:</p>
+<ul>
+<li>Simple user management to enable parallel correction of documents
+packages.</li>
+<li>The possibility to split documents into packages to parallel the
+manual post-correction.</li>
+<li>A connection to the language profiler that:
+<ul>
+<li>generates correction suggestions.</li>
+<li>lists suspicious words and error patterns.</li>
+<li>adapts to the manual correction on the document.</li>
+</ul>
+</li>
+<li>An interface to an automatic correction system that:
+<ul>
+<li>uses the language profiler.</li>
+<li>automatically generates lexicon extensions for the profiler.</li>
+<li>corrects the document</li>
+<li>allows for interactive manual inspection of the correction.</li>
+</ul>
+</li>
+<li>The possibility to download a global pool of corrected lines in the
+whole corpus to be used for OCR-training etc.</li>
+<li>An extensive REST API to enable the automation of different aspects
+of the post-correction.</li>
+</ul>
+<hr>
+<h2>
+<a id="user-content-table-of-contents" class="anchor" href="#table-of-contents" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Table of contents</h2>
+<ul>
+<li><a href="#user-content-login">Login</a></li>
+<li>
+<a href="#user-content-users">Users</a>
+<ul>
+<li><a href="#user-content-account-settings">Account settings</a></li>
+<li><a href="#user-content-user-management">User management</a></li>
+</ul>
+</li>
+<li>
+<a href="#user-content-projects">Projects</a>
+<ul>
+<li><a href="#user-content-upload-new-project">Creating new projects</a></li>
+<li><a href="#user-content-project-archives">Project archives</a></li>
+<li><a href="#user-content-project-table">Project overview</a></li>
+<li><a href="#user-content-delete-projects">Deleting of projects and packages</a></li>
+<li><a href="#user-content-split-projects">Splitting and reclaiming of projects and packages</a></li>
+<li><a href="#user-content-download-project">Downloading projects</a></li>
+<li><a href="#user-content-profile-project">Profiling projects</a></li>
+</ul>
+</li>
+<li>
+<a href="#user-content-post-correction">Post correction</a>
+<ul>
+<li><a href="#user-content-page-correction">Page correction</a></li>
+<li><a href="#user-content-navigation-bar">Navigation bar</a></li>
+<li><a href="#user-content-concordance-view">Concordance view</a></li>
+</ul>
+</li>
+<li><a href="#user-content-installation">Installation</a></li>
+<li><a href="#user-content-pool">Grond-truth pool</a></li>
+<li><a href="#user-content-overview-services">Services</a></li>
+</ul>
+<p><a id="user-content-login"></a></p>
+<h2>
+<a id="user-content-login" class="anchor" href="#login" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Login</h2>
+<p>In order to use PoCoWeb, each user has to login with an appropriate
+user account using the login link at the right top of the page.  Users
+can logout again using the logout link at the same position.</p>
+<p><a href="assets/images/doc/login.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/login.png" alt="PoCoWeb login" style="max-width:100%;"></a></p>
+<hr>
+<p><a id="user-content-users"></a></p>
+<h2>
+<a id="user-content-users" class="anchor" href="#users" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Users</h2>
+<p>In general there are two kinds of user accounts in PoCoWeb.  The two
+types have differen permissings in the system:</p>
+<ol>
+<li>Administrator accounts
+<ul>
+<li>Create new administrator and normal users accounts</li>
+<li>Delete user accounts</li>
+<li>Upload new documents and create new
+<a href="#user-content-projects">projects</a>
+</li>
+<li>Split projects into <a href="#user-content-projects">packages</a>
+</li>
+<li>
+<a href="#user-content-split-projects">Assign</a> packages to different user
+accounts</li>
+<li>
+<a href="#user-content-profile-project">Profile</a> projects.</li>
+<li>
+<a href="#user-content-post-correction">Post correct</a> projects and
+packages.</li>
+<li>
+<a href="#user-content-delete-projects">Delete</a> documents and packages.</li>
+<li>
+<a href="#user-content-download-project">Download</a> corrected projects.</li>
+<li>Download a <a href="#user-content-pool">pool</a> of corrected projects.</li>
+</ul>
+</li>
+<li>Normal user accounts
+<ul>
+<li>Post correct <a href="#user-content-projects">packages</a> that
+where assigned to them</li>
+<li>
+<a href="#user-content-profile-project">Profile</a> projects.</li>
+<li>
+<a href="#user-content-split-projects">Reassign</a> packages back to their
+original owner.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p><a id="user-content-account-settings"></a></p>
+<h3>
+<a id="user-content-account-settings" class="anchor" href="#account-settings" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Account settings</h3>
+<p>Users can manage their account settings using the Account tab on the page.
+Each user can only manage their own user's settings.  It is not possible to change
+the settings of another user account even if you are logged in with an
+administrator account.</p>
+<p><a href="assets/images/doc/user_account.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/user_account.png" alt="Account settings" style="max-width:100%;"></a></p>
+<p>In order to update user settings or to change the user's password,
+fill in or change the appropriate fields and click on the <a href="assets/images/doc/button-update-account-settings.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-update-account-settings.png" alt="update account settings" style="max-width:100%;"></a>
+button.</p>
+<p>If you want to delete your account click on the <a href="assets/images/doc/button-delete-account.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-delete-account.png" alt="delete account" style="max-width:100%;"></a> button.  This
+will delete the user and all its projects and packages.  Use with
+caution.</p>
+<p>Note: Using the account settings is the only way to delete an
+administrator account (see <a href="#user-content-user-management">User
+management</a> below).  So in order to
+delete an administrator account one has to login with the account and
+delete it using the account settings page.</p>
+<hr>
+<p><a id="user-content-user-management"></a></p>
+<h3>
+<a id="user-content-user-management" class="anchor" href="#user-management" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>User management</h3>
+<p>User management is done via the User tab.  You have to be logged in
+with an administrator account in order to access and use the user
+management page.</p>
+<p><a href="assets/images/doc/users_list.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/users_list.png" alt="User management" style="max-width:100%;"></a></p>
+<p>The user management page consist of an overview list of all users in
+the system.  In order to remove a user account (the user cannot be an
+administrator), click on the
+<a href="assets/images/doc/glyphicon-remove.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/glyphicon-remove.png" alt="remove" style="max-width:100%;"></a> button in the
+according user entry in the user table.</p>
+<p>To delete an administrator account log in with this account, go to the
+<a href="#user-content-account-settings">Account tab</a> and click to the <a href="assets/images/doc/button-delete-account.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-delete-account.png" alt="delete account" style="max-width:100%;"></a> button.</p>
+<p>To create new user accounts Click to the <a href="assets/images/doc/button-create-new-user.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-create-new-user.png" alt="create user" style="max-width:100%;"></a> button and fill
+out the input fields accordingly.  If the account should be an
+administrator account, do not forget to check the <a href="assets/images/doc/checkbox-admin.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/checkbox-admin.png" alt="administrator check box" style="max-width:100%;"></a> check box.</p>
+<p><a href="assets/images/doc/user_new_modal.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/user_new_modal.png" alt="Create a user" style="max-width:100%;"></a></p>
+<hr>
+<p><a id="user-content-projects"></a></p>
+<h2>
+<a id="user-content-projects" class="anchor" href="#projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Projects</h2>
+<p>Project management is done via the project tile or the project tab.
+This page lists all available projects and packages (see below) that
+your user owns.  On this page you can upload new project archives (see
+below). In order to process a project or package simply select the
+appropriate entry in the project table.</p>
+<p><a href="assets/images/doc/project_list.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/project_list.png" alt="Project list" style="max-width:100%;"></a></p>
+<p>In the list you can see some basic information about the available
+projects and packages.  Projects and packages are marked with either
+the project symbol <a href="assets/images/doc/project_image.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/project_image.png" alt="project symbol" style="max-width:100%;"></a> or the package symbol
+<a href="assets/images/doc/package_image.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/package_image.png" alt="package symbol" style="max-width:100%;"></a>.</p>
+<p>From this page you can also <a href="#user-content-upload-new-project">create new
+projects</a> and download a
+<a href="#user-content-pool">pool</a> of all you user's projects or all globally
+pooled projects.</p>
+<p>PoCoWeb uses two different kinds of correctable documents.  <em>Projects</em>
+on the one hand represent whole documents or books that should be
+corrected.  <em>Packages</em> on the other hand are smaller subsets of
+projects that contain a subset of the pages of their parent project.
+Two packages with the same parent never contain overlapping pages.
+This makes it possible for two different users to correct different
+packages of the same project in parallel.</p>
+<p>Only administrators can upload new projects, split them into a number
+of packages and assign those packages to different users.  It is not
+possible to assign an existing project to a different user.</p>
+<div> Note: Since it is possible to correct a whole
+project as well, one should never correct a project while other users
+could be correcting an associated package.  This could lead to cases
+where one user accidentally overrides an other users work. </div>
+<div> Note: For historical reasons the api uses the
+term «books» to refer to projects and the term «projects» to refer to
+packages.  So for example in the REST API `projectId` refers to the id
+of a package and `bookId` refers to the id of a project.  Hopefully
+this issue can be solved soon. </div>
+<p><a id="user-content-upload-new-project"></a></p>
+<h3>
+<a id="user-content-creating-new-projects" class="anchor" href="#creating-new-projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Creating new projects</h3>
+<p>If you are logged in with an administrator account, you can create a
+new project.  Fill in the meta data fields in the mask, select the
+according <a href="#user-content-project-archives">project archive</a> on your
+computer and click on the
+<a href="assets/images/doc/button-upload.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-upload.png" alt="upload" style="max-width:100%;"></a> button.  Depending on
+the size of the project archive, the uploading of the project can take
+a while.</p>
+<p>Do not forget to set the right language for the new project if you are
+planning to use the profiler.  The language field lists all available
+languages for the chosen profiler.</p>
+<p><a href="assets/images/doc/create_new_project.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/create_new_project.png" alt="Project list" style="max-width:100%;"></a></p>
+<p>The <a href="#user-content-PoCoWeb-backend">PoCoWeb back-end</a> analyzes the
+project archive, processes its OCR and image files and publishes the
+project.  If the uploading was successfully, you should see the new
+project in the project table.</p>
+<p>The project's author, title and year can be filled out as it seems
+fit.  Theses values are not used internally and are there for an easy
+reference.</p>
+<p>A project's profiler and its language are settings specific for the
+language profiler.  If you plan to use a profiler for the post
+correction of your project, you have to set them accordingly.  The
+normal installation of PoCoWeb comes with a local configured profiler,
+you can use <code>default</code> or <code>local</code> as value for your profiler.  If not
+or if you want to use another profiler, you have to specify its URL.</p>
+<p><a id="user-content-project-archives"></a></p>
+<h3>
+<a id="user-content-project-archives" class="anchor" href="#project-archives" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Project archives</h3>
+<p>A project archive is a zipped directory structure that contains the
+OCR and image files for the pages of a document.  Image files should
+be encoded as PNG files if possible, but specify or TIFF encoded
+images are fine, too.  The OCR files should be either <a href="">ABBYY-XML</a>,
+<a href="">ALTO-XML</a>, <a href="">PAGE-XML</a> or <a href="">hOCR</a> encoded files.</p>
+<p>The back-end tries its best to automatically search and order the
+pages in project archives.  Therefore the matching OCR and image files
+should have the same name (without the extension).  It does not matter
+in which directory structure the different image and OCR files reside.
+If the matching OCR and image files do have the same filenames for any
+reason, you can add a <a href="">METS/MOTS</a> meta data file to the archive, in
+which the page ordering and the association between image and OCR
+files is specified.</p>
+<p>Example structure of a project archive:</p>
+<pre><code>archive
+├── img
+│   ├── page-0001.png
+│   ├── page-0002.png
+│   └── page-0003.png
+└── ocr
+    ├── page-0001.xml
+    ├── page-0002.xml
+    └── page-0003.xml
+</code></pre>
+<p>There is no need to separate the image and OCR files with different directories.
+You can also use a flat directory structure:</p>
+<pre><code>archive
+├── page-0001.png
+├── page-0001.xml
+├── page-0002.png
+├── page-0002.xml
+├── page-0003.png
+└── page-0003.xml
+</code></pre>
+<p>It is also possible to have the files in a page directory structure like this:</p>
+<pre><code>archive
+├── page-0001
+│   ├── page.xml
+│   └── page.png
+├── page-0003
+│   ├── page.xml
+│   └── page.png
+└── page-0002
+    ├── page.xml
+    └── page.png
+</code></pre>
+<p>If you use <a href="https://github.com/tmbdev/ocropy">ocropy</a>,
+you can also use its project structure directly to upload a project archive:</p>
+<pre><code>archive
+└── book
+    ├── 0001.png
+    ├── 0001
+    │   ├── 010001.bin.png
+    │   ├── 010001.txt
+    │   └─ ...
+    ├── 0002.png
+    ├── 0002
+    │   ├── 010001.bin.png
+    │   ├── 010001.txt
+    │   └─ ...
+    ├── 0003.png
+    └── 0003
+        ├── 010001.bin.png
+        ├── 010001.txt
+        └─ ...
+</code></pre>
+<p><a id="user-content-project-table"></a></p>
+<h3>
+<a id="user-content-project-overview" class="anchor" href="#project-overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Project overview</h3>
+<p>If you select a project or package the system opens the project
+overview.  Depending if you are handling a project or package and if
+you are logged as normal user or as administrator you will see a
+different page with different edit options.</p>
+<p><a href="assets/images/doc/project_overview.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/project_overview.png" alt="Project overview" style="max-width:100%;"></a></p>
+<p>On the top the system presents you some basic information about the
+project.  Below you see the correction status of the project, listing
+the percentage of corrected lines and tokens and the (estimated) word
+error rate of the project.</p>
+<div> Note: The word error rate is based only on the
+manually corrected tokens.  As long as not all tokens are manually
+corrected, the number is only a rough estimate.</div>
+<p>Below is a list of tiles that offer access to different edit options
+(the actual list may be missing some of the tiles):</p>
+<ol>
+<li>Click on the <strong>Order Profile</strong> tile to
+<a href="#user-content-profile-project">profile</a> the project.</li>
+<li>Click on the <strong>Automatic Postcorrection</strong> tile to start the
+automatic post-correction.</li>
+<li>Click on the <strong>Manual Postcorrection</strong> tile to start to <a href="#user-content-post-correction">manually
+correct</a> the document.</li>
+<li>Click on the <strong>Adaptive tokens</strong> tile to get a list of the
+adaptive tokens (manually corrected tokens) in the project.</li>
+<li>Click on the <strong>Split</strong> tile to
+<a href="#user-content-split-projects">split</a> a project into packages.</li>
+<li>Click on the <strong>Edit</strong> tile to edit the meta information about
+the project.</li>
+<li>Click on the <strong>Download</strong> tile to
+<a href="#user-content-download-project">download</a> the project.</li>
+<li>Click on the <strong>Delete</strong> tile to
+<a href="#user-content-delete-projects">delete</a> this project.</li>
+<li>Click on the <strong>Reclaim package</strong> tile to
+<a href="#user-content-split-projects">reclaim</a> all packages for the
+project.</li>
+</ol>
+<p><a id="user-content-delete-projects"></a></p>
+<h3>
+<a id="user-content-deleting-projects-and-packages" class="anchor" href="#deleting-projects-and-packages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Deleting projects and packages</h3>
+<p>Both projects and packages can be deleted.  If you delete a package
+only the according package is deleted.  No content of the parent
+project is touched.  On the other hand, if you delete a project all
+content is deleted and is irretrievable lost.</p>
+<p>You cannot no delete a project that contains packages.  So in order to
+delete a project one has to <a href="#user-content-split-projects">reclaim</a>
+all packages and delete them beforehand.</p>
+<p><a id="user-content-split-projects"></a></p>
+<h3>
+<a id="user-content-splitting-and-reclaiming-of-projects-and-packages" class="anchor" href="#splitting-and-reclaiming-of-projects-and-packages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Splitting and reclaiming of projects and packages</h3>
+<p>You can split a project into different packages and assign each
+package to a different user (both normal and administrators).
+Packages are generated by distributing the pages of the project as
+evenly as possible among the packages.  You can select to randomly
+distribute the pages instead of sequentially assigning them.</p>
+<p><a href="assets/images/doc/split_project_modal.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/split_project_modal.png" alt="Split project" style="max-width:100%;"></a></p>
+<p>If you are the owner of a project, you can forcefully reclaim all
+packages.  If you are assigned a package you can reassign it to the
+project's owner.</p>
+<p><a id="user-content-download-project"></a></p>
+<h3>
+<a id="user-content-downloading-projects" class="anchor" href="#downloading-projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Downloading projects</h3>
+<p>You can download an archive of a project.  It is not possible to
+download archives of packages.  The PoCoWeb back-end will then
+generate a project archive and you will be asked a location to store
+the archive.</p>
+<p>The project archive will retain the same structure as the project archive,
+that was used to create the project. All corrections are written back into
+the original OCR files.</p>
+<p>Additionally the archive contains a list of all adaptive tokens of the last
+profiler run over the document and a page an line segmented directory structure,
+that can directly be used with ocropy.</p>
+<p><a id="user-content-profile-project"></a></p>
+<h3>
+<a id="user-content-profiling-projects" class="anchor" href="#profiling-projects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Profiling projects</h3>
+<p>You can order a document profile for packages and projects.  If you
+order a profile for a sub package, the profiler will be run over the
+package's parent project.  There can always be only on profiling
+process for a document.  More generally there can always be only one
+background job (profiling, lexicon extension or automatic post
+correction) for any project.</p>
+<p>The profiling is done in the background. If the profiling is done,
+various helpers are available for the post correction of the profiled project
+and its associated packages:</p>
+<ul>
+<li>You will see a list of suspicious words in the manual correction.</li>
+<li>You will see a list of frequent error patterns in the manual correction.</li>
+<li>You will be able to inspect the list of adaptive tokens.</li>
+</ul>
+<p>After the profiling is done, you can inspect the list of <em>adaptive
+tokens</em>.  Adaptive tokens are generated by the profiler.  Whenever a
+manually corrected token is found during the profiling, the profiler
+tries to match the correction to a known dictionary entry.  If no such
+match can be generated, a new adaptive token is generated and inserted
+into a temporary dictionary for this document. For this reason
+Adaptive tokens are possible candidates for new dictionary entries.</p>
+<p>For more information about the profiling and adaptive tokens
+see the <a href="">profiler paper</a> and <a href="">profiler paper 2</a></p>
+<hr>
+<p><a id="user-content-post-correction"></a></p>
+<h2>
+<a id="user-content-post-correction" class="anchor" href="#post-correction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post correction</h2>
+<p>After clicking on the <strong>Manual Postcorrection</strong> tile you will be
+directed to the project's or package's first page and you can start to
+manually post-correct the first page.  In generally the post
+correction is the same for projects an packages.  Every statement
+about the correction of projects also applies to the correction of
+packages.</p>
+<p><a href="assets/images/doc/post_correct_project.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/post_correct_project.png" alt="Page view" style="max-width:100%;"></a></p>
+<p>Other than PoCoTo the post correction with PoCoWeb is line based.
+Generally you correct whole lines of the document and not single tokens.
+The page correction view presents the lines of the document and lets
+you correct each line individually.</p>
+<p><a id="user-content-page-correction"></a></p>
+<h3>
+<a id="user-content-page-correction" class="anchor" href="#page-correction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Page correction</h3>
+<p>The page correction view shows the lines of a page of the project.
+You can use the forward and backward buttons of the navigation bar to
+go to the next, previous first and last pages of the project.  It is
+also possible to directly select specific pages of the project.</p>
+<p><a href="assets/images/doc/page_navigation.png" target="_blank" rel="noopener noreferrer"><img width="25%" src="assets/images/doc/page_navigation.png" alt="Page navigation" style="max-width:100%;"></a></p>
+<p>For each line the image of the line and the according OCR text are
+shown.  Lines and tokens are marked with green if they have been
+manually corrected or in orange if the according lines or tokens have
+been automatically corrected (either by a script or by the automatic
+post-correction system).</p>
+<p>If you click in the text you can edit the whole line.  After you have
+corrected a line you can click on the
+<a href="assets/images/doc/button-correct.png" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/button-correct.png" alt="correct" style="max-width:100%;"></a> button to correct the
+line and send the correction to the back-end After the whole line has
+been corrected, the line it is shown with a green background to mark
+it as manually corrected.</p>
+<p><a href="assets/images/doc/select_token.png" target="_blank" rel="noopener noreferrer"><img width="75%" src="assets/images/doc/select_token.png" alt="Token selection" style="max-width:100%;"></a></p>
+<p>In general you can insert every character into the text field.  There
+are no special characters or escape sequences that get by the input
+field interpreted.  The only exception are the special escape
+sequences of the form <code>\\u017f</code> or <code>\\u{10FFFF}</code> that can be used to
+enter arbitrary Unicode points into the text field. E.g
+<code>Wa\\u017f\\u017fer</code> gets interpreted as <code>Waſſer</code>.  In the unlikely
+case that you have to literally insert something like <code>\\u017f</code>, you
+can use an additional leading <code>\\</code> to escape the special
+interpretation of the sequence: <code>\\\\u017f</code>.</p>
+<p>If you are editing a line, you can hit the <em>Enter</em> key to correct the
+current line.  You can use the <em>Up</em> and <em>Down</em> arrow keys to navigate
+to the previous or next line.</p>
+<p>You can click on the <strong>Show line image</strong> button to see an overview
+over the whole line's page image.  On the bottom of the view there is
+a button <strong>Set whole page as corrected</strong> to correct all lines on the
+page in on go.</p>
+<p>It is also possible to select single tokens in a line, by marking them
+with the mouse. If a token is selected, you can choose a correction
+candidate for it or list all occurrences of the token in the
+<a href="#user-content-concordance-view">concordance view</a>.</p>
+<p><a id="user-content-navigation-bar"></a></p>
+<h3>
+<a id="user-content-navigation-bar" class="anchor" href="#navigation-bar" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Navigation bar</h3>
+<p>The navigation bar lets you navigate the pages of you project.  It
+stays on the left side of your browser's screen even while you
+navigate down the browser page.</p>
+<p>Besides the navigation buttons, the navigation bar shows a tab to list
+the assumed error patterns (<em>OCR error patterns</em>) and error tokens
+(<em>Suspicious words</em>) of the project.  If the project was profiled
+these list assumed errors in the document by the number of their
+occurrence or by their common error patterns.  Click one of the
+entries to open the <a href="#user-content-concordance-view">concordance view</a>
+of the according token or error patterns.</p>
+<p><a href="assets/images/doc/navigation_bar.png" target="_blank" rel="noopener noreferrer"><img width="25%" src="assets/images/doc/navigation_bar.png" alt="Navigation bar" style="max-width:100%;"></a></p>
+<p>There is also a list of <em>special characters</em> available.  If you click
+on one of the special characters the according Unicode point is
+inserted into your clip board (you can use CTRL+v to paste the
+character into a text field).  Special characters are all non ASCII
+characters encountered in the document.</p>
+<p>In the <em>display settings</em> tab you can set options for the displaying
+of pages.  These settings are user specific and are only saved in your
+browser's local storage and not in the back end.</p>
+<p><a id="user-content-concordance-view"></a></p>
+<h3>
+<a id="user-content-concordance-view" class="anchor" href="#concordance-view" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Concordance view</h3>
+<p>The concordance view lists tokens in their line context.  These tokens
+can be corrected individually or all at once.  The concordance view
+never shows manual corrected tokens, since its purpose is the manual
+correction of tokens in the project.  If a token gets manually
+corrected, it can never be found in the concordance view.</p>
+<p>Depending on how you opened the concordance view, you will see a list
+of similar words (using suspicious words or the concordance button for
+a selected token) or words where the profiler assumes a similar OCR
+error pattern for its best interpretation.</p>
+<p><a href="assets/images/doc/concordance_view.png" target="_blank" rel="noopener noreferrer"><img width="50%" src="assets/images/doc/concordance_view.png" alt="Concordance view" style="max-width:100%;"></a></p>
+<p>Each matching token is shown in a blue outline. All matched tokens can
+be individually corrected using profiler suggestions or manual
+editing.  It is also possible to globally batch-correct the shown
+tokens using the correction bar at the top of the concordance
+view. All inputs allow the insertion of Unicode escape codes.</p>
+<p>After one or more tokens have been corrected, a new batch of tokens is
+shown (if there are more to show).  It is possible to set the number
+of tokens per page in the <em>display settings</em> tab of the <a href="#user-content-page-correction">page
+correction</a>.</p>
+<hr>
+<p><a id="user-content-installation"></a></p>
+<h2>
+<a id="user-content-installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+<p>PoCoWeb is open source software and is distributed under the
+<a href="LICENSE">Apache 2.0</a> license.
+You can download the source code from its
+<a href="http://github.com/cisocrgroup/pocoweb">github repository</a>.
+Installation instructions can be found in the project's
+<a href="https://github.com/cisocrgroup/pocoweb/blob/master/README.md">README</a>
+file.</p>
+<p>PoCoWeb can be deployed using
+<a href="https://docs.docker.com/compose/" rel="nofollow">docker-compose</a>.  The according
+Docker files can be found in the projects's source directory.</p>
+<hr>
+<p><a id="user-content-pool"></a></p>
+<h2>
+<a id="user-content-ground-truth-pool" class="anchor" href="#ground-truth-pool" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Ground-truth pool</h2>
+<p>It is possible to download an archive of all corrected lines with
+their respective image files.  This pool contains line segmented
+ground-truth data and is suitable to be used as training material for
+OCR.</p>
+<p>Adminstrators can download a pool containing all their <a href="#user-content-api-get-user-pool">owned
+projects</a> or a <a href="#user-content-api-get-global-pool">global
+pool</a> containing data of all
+projects in PoCoWeb.  If for some reason a project should not be part
+of this global pool it is possible to set the variable <code>pooled</code> to
+<code>false</code> in the projects's settings.</p>
+<p>The pool is a zipped archive that contains the line segmented
+correction data in a directory structure that is ordered by
+project, page ids and line ids:</p>
+<pre><code>corpus
+├── year-author_name1_book_title1.json
+├── year-author_name1_book_title1
+│   ├── pageid1
+│   │   ├── lineid1.gt.txt
+│   │   ├── lineid1.txt
+│   │   ├── lineid1.png
+│   │   ├── lineid2.gt.txt
+│   │   ├── lineid2.txt
+│   │   └── lineid2.png
+│   └── pageid2
+│       ├── lineid1.gt.txt
+│       ├── lineid1.txt
+│       ├── lineid1.png
+│       ├── lineid2.gt.txt
+│       ├── lineid2.txt
+│       └── lineid2.png
+├── year-author_name2_book_title2.json
+└── year-author_name2_book_title2
+    ├── pageid1
+    │   ├── lineid1.gt.txt
+    │   ├── lineid1.txt
+    │   ├── lineid1.png
+    │   ├── lineid2.gt.txt
+    │   ├── lineid2.txt
+    │   └── lineid2.png
+    └── pageid2
+        ├── lineid1.gt.txt
+        ├── lineid1.txt
+        ├── lineid1.png
+        ├── lineid2.gt.txt
+        ├── lineid2.txt
+        └── lineid2.png
+</code></pre>
+<p>For each project directory, a small JSON-formatted info file is
+included. The file has the following layout:</p>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>Author<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>author's name<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>Title<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>book's title<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>Description<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>book's description<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>OwnerEmail<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>owner's email<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>Language<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book's profiler language<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>ID<span class="pl-pds">"</span></span>:<span class="pl-c1">3</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>Year<span class="pl-pds">"</span></span>:<span class="pl-c1">1900</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>OCRTXTFiles<span class="pl-pds">"</span></span>: [
+    <span class="pl-s"><span class="pl-pds">"</span>...<span class="pl-pds">"</span></span>
+  ],
+  <span class="pl-s"><span class="pl-pds">"</span>GTIMGFiles<span class="pl-pds">"</span></span>: [
+    <span class="pl-s"><span class="pl-pds">"</span>...<span class="pl-pds">"</span></span>
+  ],
+  <span class="pl-s"><span class="pl-pds">"</span>GTTXTFiles<span class="pl-pds">"</span></span>: [
+    <span class="pl-s"><span class="pl-pds">"</span>...<span class="pl-pds">"</span></span>
+  ],
+  <span class="pl-s"><span class="pl-pds">"</span>Pooled<span class="pl-pds">"</span></span>:<span class="pl-c1">true</span>
+}</pre></div>
+<hr>
+<p><a id="user-content-overview-services"></a></p>
+<h2>
+<a id="user-content-services" class="anchor" href="#services" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Services</h2>
+<p>PoCoWeb is composed from a number of interdependend services:</p>
+<ul>
+<li>nginx serves images, web-content and redirectes API calls</li>
+<li>pcwauth authentificates API requests and forwards them to the various other services</li>
+<li>mysql holds all database tables</li>
+<li>PoCoWeb manages project, packages and the up- and download</li>
+<li>www-data is a directory (volume) that holds the frontend</li>
+<li>project-data is a directory (volume) that holds the project files</li>
+<li>db-data is a directory (volume) that holds the database files</li>
+<li>ocr-data is a direcotry (volume) that holds the global ocr models</li>
+<li>pcwuser handles user management</li>
+<li>pcwprofiler handles profiling of projects</li>
+<li>pcwpostcorrection handles the automatic postcorrection</li>
+<li>pcwpkg handles splitting and assignment of packages</li>
+<li>pcwpool handles download of <a href="#user-content-pool">pool</a> data
+<a href="assets/images/doc/overview.svg" target="_blank" rel="noopener noreferrer"><img src="assets/images/doc/overview.svg" alt="Service Overview" title="PoCoWeb service overview" style="max-width:100%;"></a>
+</li>
+</ul>
+<hr>
+
