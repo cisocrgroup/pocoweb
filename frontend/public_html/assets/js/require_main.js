@@ -105,6 +105,5 @@ requirejs.config({
 });
 
 
-require(["app"], function(IPS_App){
-   // IPS_App.start();
+require(["app"], function(App){
 });

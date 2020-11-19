@@ -29,7 +29,7 @@ App = new App();
 
 require(["backbone"], function (Backbone) {
 
-// console.log(Backbone.VERSION)
+ // console.log(Backbone.VERSION)
 
 });
 
@@ -37,7 +37,10 @@ App.Navbar = "";
 
 App.navigate = function(route, options){
  options || (options = {});
-Backbone.history.navigate(route, options);
+
+ if (options['back']){
+ }
+ Backbone.history.navigate(route, {trigger:true});
 };
 
 App.getCurrentRoute = function(){
@@ -197,7 +200,7 @@ App.on("start", function(){
                ,"apps/users/users_app"
 
         ], function (HeaderApp,HomeApp,FooterApp,ProjectsApp,DocsApp,UsersApp) {
-
+ Backbone.history.start();
           console.log(App)
 
     var app_region = App.getRegion();
@@ -293,7 +296,7 @@ App.on("start", function(){
 
      HeaderApp.API.showHeader(function(){
        FooterApp.API.showFooter();
-       Backbone.history.start();
+      
 
        if(App.getCurrentRoute().startsWith("user-content")){
           App.trigger("docs:show");

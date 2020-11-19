@@ -28,8 +28,9 @@ define(["marionette","app"], function(Marionette,App){
 	};
 
 	App.on("home:portal",function(){
-		App.navigate("home");
+		App.navigate("home",{trigger: true});
 		API.homePortal();
+
 	});
 
 

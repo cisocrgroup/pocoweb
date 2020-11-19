@@ -47,7 +47,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
     	   projectsListLayout.on("attach",function(){
 
          var breadcrumbs = [
-          {title:"<i class='fas fa-home'></i>",url:"/"},
+          {title:"<i class='fas fa-home'></i>",url:"#home"},
           {title:"Projects",url:""},
 
         ];

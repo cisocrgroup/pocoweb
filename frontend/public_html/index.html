@@ -27,10 +27,12 @@
     <script src="assets/js/require_main.built.js"></script> 
 
     <script>
-      
+        
+        $(document).ready(function () {
+              require(["app"], function(App){
+              App.start();
+            });
 
-          require(["app"], function(App){
-          App.start();
         });
 
     </script>
