@@ -29,6 +29,12 @@ define(["app","common/util","common/views","apps/docs/show/show_view"], function
 			 	icon = "fas fa-book-open"
 
 			  }
+			   else if(doc_type=="legal_notice"){
+			 	title = "Legal Notice";
+    	     	fetchingDocs = UtilEntitites.API.getDocumentation(doc_type);
+			 	icon = "fas fa-balance-scale"
+
+			  }
 		 	//currentdocs.set({"url_id":id}); // pass url_id to view..
 
 

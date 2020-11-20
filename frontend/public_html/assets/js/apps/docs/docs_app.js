@@ -10,7 +10,8 @@ define(["marionette","app"], function(Marionette,App){
 		appRoutes: {
 			"documentation"                          :"docsPortal",
 			"documentation/api"                          :"docsAPI",
-			"documentation/manual"                          :"docsManual"
+			"documentation/manual"                          :"docsManual",
+			"documentation/legalnotice"                          :"docsLegal"
 
 		},
 		
@@ -32,6 +33,11 @@ define(["marionette","app"], function(Marionette,App){
    				ShowController.showDocs("manual");
 			});
 		},
+		docsLegal: function(){
+			require(["apps/docs/show/show_controller"], function(ShowController){
+   				ShowController.showDocs("legal_notice");
+			});
+		},
 	};
 
 	App.on("docs:home",function(){
@@ -47,6 +53,11 @@ define(["marionette","app"], function(Marionette,App){
 	App.on("docs:manual",function(){
 		App.navigate("documentation/manual");
 		API.docsManual();
+	});
+
+	App.on("docs:legal",function(){
+		App.navigate("documentation/legalnotice");
+		API.docsLegal();
 	});
 
 	var router = new DocsApp.Router({

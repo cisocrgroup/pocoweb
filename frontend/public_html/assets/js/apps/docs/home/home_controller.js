@@ -26,7 +26,6 @@ define(["app","common/util","apps/docs/home/home_view","apps/header/show/show_vi
         {
                 "color": "purple",
                 "icon": "fas fa-book-open",
-                "id": "show_user_btn",
                 "name": "User Manual",
                 "seq": 1,
                 "text": "Hints on usage and installation.",
@@ -35,11 +34,18 @@ define(["app","common/util","apps/docs/home/home_view","apps/header/show/show_vi
           {
                 "color": "purple",
                 "icon": "fa-route",
-                "id": "show_user_btn",
                 "name": "Rest Api Documentation",
                 "seq": 2,
                 "text": "Specification of backend API routes.",
                 "url": "docs:api"
+            },
+               {
+                "color": "purple",
+                "icon": "fa-balance-scale",
+                "name": "Legal Notice",
+                "seq": 3,
+                "text": "Information on legal guidelines.",
+                "url": "docs:legal"
             }
         ]
 
