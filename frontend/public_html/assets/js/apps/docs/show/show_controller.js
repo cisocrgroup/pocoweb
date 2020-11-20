@@ -47,7 +47,7 @@ define(["app","common/util","common/views","apps/docs/show/show_view"], function
 		
 
 			 var breadcrumbs = [
-	             {title:"<i class='fas fa-home'></i>",url:"/"},
+	             {title:"<i class='fas fa-home'></i>",url:"#home"},
 	             {title:"Documentation",url:"/#documentation"},
 	             {title:title,url:""}
        		 ];
