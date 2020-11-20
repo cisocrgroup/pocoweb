@@ -36,9 +36,9 @@ define(["app","common/util","apps/docs/home/home_view","apps/header/show/show_vi
                 "color": "purple",
                 "icon": "fa-route",
                 "id": "show_user_btn",
-                "name": "Api Specification",
+                "name": "Rest Api Documentation",
                 "seq": 2,
-                "text": "Description of backend API routes.",
+                "text": "Specification of backend API routes.",
                 "url": "docs:api"
             }
         ]

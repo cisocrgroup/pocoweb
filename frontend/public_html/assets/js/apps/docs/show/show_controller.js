@@ -19,7 +19,7 @@ define(["app","common/util","common/views","apps/docs/show/show_view"], function
               var fetchingDocs = "";
               var icon = "";
 	  		  if(doc_type=="api_doc"){
-			 	title = "API - Documentation";
+			 	title = "REST API - Documentation";
 			 	icon = "fas fa-route"
     	     	fetchingDocs = UtilEntitites.API.getDocumentation(doc_type);
 			  }

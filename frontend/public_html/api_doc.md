@@ -1,4 +1,32 @@
+The REST API documentation lists the available URLs of PoCoWeb's REST
+API.  This API is used by the front-end to implement the
+post-correction.  It can also be used to automate some aspects of
+PoCoWeb (creation of users, splitting of packages etc).
 
+Each entry gives the request method (GET, POST or DELETE) in square
+brackets, the request path and the layout of the response data is
+listed.  Additionally for POST requests the expected layout of the
+POST data is listed.  You have to replace the parameters in the
+request path by valid ids (otherwise the API returns `404 Not Found`):
+ * `uid` references a valid user id.
+ * `pid` references a valid project or package id.
+ * `pageid` references a valid page id in a project or package.
+ * `lid` references a valid line id on a page.
+ * `tid` references a valid token id on a line.
+
+You have to be logged in with a valid user account
+(see [Authorization](#user-content-authorization) below).
+
+All URLs in the API documentation reference a relative path starting
+with `rest/...`.  If you want to use external tools such as `curl` to
+access the API, you have to use the according absolute URL.  So for
+example if PoCoWeb runs on your local host you can access the API
+using `http://localhost/rest/...`.  E.g. to get the API's version (see
+[Version](#user-content-api-get-version) below) using `curl` you have
+to execute the following command: `curl
+http://localhost/rest/api-version`.
+
+---
 ## Table of contents
   * [Authentification](#user-content-authorization)
   * [GET rest/api-version](#user-content-api-get-version)
@@ -48,38 +76,7 @@
   * [GET rest/jobs/`jobid`](#user-content-api-get-jobs)
 
 - - -
-<a id='rest-api'></a>
-## REST API
 
-The REST API documentation lists the available URLs of PoCoWeb's REST
-API.  This API is used by the front-end to implement the
-post-correction.  It can also be used to automate some aspects of
-PoCoWeb (creation of users, splitting of packages etc).
-
-Each entry gives the request method (GET, POST or DELETE) in square
-brackets, the request path and the layout of the response data is
-listed.  Additionally for POST requests the expected layout of the
-POST data is listed.  You have to replace the parameters in the
-request path by valid ids (otherwise the API returns `404 Not Found`):
- * `uid` references a valid user id.
- * `pid` references a valid project or package id.
- * `pageid` references a valid page id in a project or package.
- * `lid` references a valid line id on a page.
- * `tid` references a valid token id on a line.
-
-You have to be logged in with a valid user account
-(see [Authorization](#user-content-authorization) below).
-
-All URLs in the API documentation reference a relative path starting
-with `rest/...`.  If you want to use external tools such as `curl` to
-access the API, you have to use the according absolute URL.  So for
-example if PoCoWeb runs on your local host you can access the API
-using `http://localhost/rest/...`.  E.g. to get the API's version (see
-[Version](#user-content-api-get-version) below) using `curl` you have
-to execute the following command: `curl
-http://localhost/rest/api-version`.
-
----
 <a id='authorization'></a>
 ### Authentification
 
