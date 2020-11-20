@@ -14,7 +14,7 @@ define(["app","common/util","apps/docs/home/home_view","apps/header/show/show_vi
 
         var breadcrumbs = [
              {title:"<i class='fas fa-home'></i>",url:"/#home"},
-             {title:"Docmentation",url:""}
+             {title:"Documentation",url:""}
          ];
 
 		var docsHomeLayout = new Home.Layout();
