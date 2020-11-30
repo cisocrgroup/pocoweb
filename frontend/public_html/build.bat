@@ -19,6 +19,8 @@ pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/js/require_main.bui
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/css/custom.css tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/assets/css/
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/index.html tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/images/pocoweb_logo.png tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/assets/images/
+pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/images/bg_page.jpg tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/assets/images/
+pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/images/bg_repeat.png tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/assets/images/
 
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/api_doc.html tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/manual.html tobias@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/

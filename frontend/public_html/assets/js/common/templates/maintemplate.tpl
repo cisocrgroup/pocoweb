@@ -1,5 +1,6 @@
 <div id="backdrop-region"> </div>
-<div id="header-region"> </div>
+<div id="header-region"></div>
+
 <div id="main-region"> </div>
 
 <div id="footer-region"> </div>
