@@ -27,8 +27,16 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         var crumbs = Marionette.getOption(this,"breadcrumbs");
         console.log(crumbs);
           var breadcrumbs = Util.getBreadcrumbs(crumbs);
-          $('.breadcrumbs').append(breadcrumbs);
+          $('.breadcrumbs').append(breadcrumbs).css('right','10px').css('z-index',"1");
+          $('#msg-region').hide();
 
+          setTimeout(function() {
+             $('#msg-region').hide();
+          }, 50);
+
+    },
+    onDestroy:function(){
+            $('#msg-region').show();
     }
 
   });
@@ -103,8 +111,10 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       'click .suspicious-words tr' : 'error_tokens_clicked',
       'click .error-patterns tr' : 'error_patterns_clicked',
 	    'click .special-characters tr' : 'special_characters_clicked',
-      'mouseover .special-characters tr' : 'special_characters_hover'
-
+      'mouseover .special-characters tr' : 'special_characters_hover',
+      'click .js-show-image': 'show_image_clicked',
+      'click .js-search' : 'search_clicked',
+      'click .js-correctPage' : 'correct_page_clicked'
       },
          serializeData: function(){
           var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
@@ -112,8 +122,32 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
           data.pagehits = Marionette.getOption(this, 'pagehits');
           data.project = Marionette.getOption(this,"project");
           data.confidence_threshold = Marionette.getOption(this,"confidence_threshold");
+          data.title = Marionette.getOption(this,"title");
+          data.pid = Marionette.getOption(this,"pid");
 
         return data;
+      },
+      
+       correct_page_clicked:function(){
+        var that = this;
+
+        $('.line-text').each(function(){
+
+        var anchor = $(this).attr('anchor');
+        var ids = Util.getIds(anchor);
+        var text = $('#line-'+anchor).find('.line').text().replace(/\s\s+/g, ' ').trim();
+
+        that.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor);
+
+       });
+      },
+      show_image_clicked : function(e){
+          e.preventDefault();
+          this.trigger("header:show-image-clicked");
+      },
+      search_clicked : function(e){
+        e.preventDefault();
+        this.trigger("header:search-clicked");
       },
 
       backward_clicked:function(e){
@@ -216,6 +250,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         var that = this;
 
           $('#pageDP').dropdown();
+          $('#sidebar-container').height(window.innerHeight-64);
 
         // $('#pageId').click(function(){
         // });
@@ -419,6 +454,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         return data;
       },
 
+ 
 
       correct_clicked:function(e){
       e.stopPropagation();
@@ -538,20 +574,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       }
       },
 
-      correct_page_clicked:function(){
-        var that = this;
-       $('.line-text').each(function(){
-
-
-        var anchor = $(this).attr('anchor');
-        var ids = Util.getIds(anchor);
-        var text = $('#line-'+anchor).find('.line').text().replace(/\s\s+/g, ' ').trim();
-
-         that.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor);
-
-
-       });
-      },
+  
       display_selected_line:function(line){
 
         $('.line').hide();
@@ -634,7 +657,6 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         var that = this;
 
         // remove when clicked somewhere else
-
 
 
           $(document).click(function(e)

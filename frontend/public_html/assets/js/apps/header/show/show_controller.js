@@ -34,6 +34,9 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
   		headerShowLayout.on("attach",function(){
   		headerShowLayout.showChildView('navbarRegion',headerShowTopbar);
+
+
+      
  		}); // on:show
 
   headerShowTopbar.on("nav:logout",function(data){

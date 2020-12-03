@@ -310,11 +310,9 @@ App.on("start", function(){
      });
 
 
-     // App.on('page_changed',function(){
-     //  console.log(App.getCurrentRoute())
-     //  console.log("Page page_changed")
-     //  $('#mainmsg').empty();
-     // });
+     App.on('page_changed',function(){
+      // $('#mainmsg').empty();
+     });
 
 
        });

@@ -6,8 +6,7 @@ html, body
 {
     width:100%;
     height: 100%;
-    font-family: 'Montserrat', sans-serif;   
-    /*background-color: #fcfbf8;*/
+    font-family: 'Raleway', sans-serif;   
     z-index: -3;
 }
 
@@ -15,6 +14,7 @@ html, body
 body{
      overflow-x: hidden;
     /* background-size: 86%;*/
+     background: #fcfbf8;
 }
 
 h4{
@@ -183,6 +183,7 @@ opacity: 0.6;
     /* color: #e00000; */
     border-bottom: 1px solid #177efd;
     z-index: 20;
+    background: white;
 
 }
 
@@ -811,21 +812,33 @@ display: inline-block;
 
 .sticky{
   position: fixed;
-  top:0;
+  top:64px;
   z-index: 1020;
 }
 
 
 
 #sidebar-container{
-    height: 770px;
+    /*height: 770px;*/
     /* max-height: 770px; */
     overflow-x: hidden;
     overflow-y: hidden;
+    z-index: 10;
+    -webkit-box-shadow: 6px 2px 14px -8px rgba(0,0,0,0.75);
+-moz-box-shadow: 6px 2px 14px -8px rgba(0,0,0,0.75);
+box-shadow: 6px 2px 14px -8px rgba(0,0,0,0.75);
+border-right: 1px solid #177efd;
+border-top: 0;
+}
+
+.sidebar-table-container td,th:first-child{
+  padding-left: 15px;
 }
 
 #page-container{
-    height: 770px;
+    /*height: 770px;*/
+    height: 100%;
+    min-height: 100%;
     overflow-y: auto;
     padding: 15px;
     z-index: 1020;
@@ -899,7 +912,6 @@ display: inline-block;
     padding-left: 2px;
   }
 
-
   .sidebar-filter-container input {
       padding: 0.428571429rem;
     min-width: 100%;
@@ -913,11 +925,15 @@ display: inline-block;
     background-size: 15px 15px;
     background-color: white;
     color: black;
-    /* padding-left: 35px; */
+    padding-left: 15px; 
     margin-top: -10px;
     margin-left: 0px !important;
     /* border-bottom: 1px solid rgba(128, 128, 128, 0.55); */
     border-radius: 0 !important
+  }
+
+  .sidebar-col{
+    background: white;
   }
 
    .dropdown-toggle::after {
@@ -1040,8 +1056,21 @@ div.doc-note {
     top: 64px;
     padding-left: 5px;
     padding-right: 5px;
-    border-bottom: 1px solid #177efd;
+   /* border-bottom: 1px solid #177efd;
     border-right: 1px solid #177efd;
-  
-    background: white;
+  */
+    /*background: white;*/
+}
+
+
+@media only screen and (min-width : 576px) {
+    .sidebar-col{
+      padding-right: 0;
+      padding-left: 0;
+
+    }
+    .page-col{
+         padding-left: 0;
+         padding-right: 0;
+    }
 }

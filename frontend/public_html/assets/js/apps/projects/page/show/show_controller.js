@@ -19,7 +19,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         	 $.when(fetchingpage,fetchingproject).done(function(page,project){
 
 		     	loadingCircleView.destroy();
-            console.log(page);
+           console.log(page);
            var lineheight = App.getLineHeight(id);
            var pagehits = App.getPageHits(id);
            var linenumbers = App.getLineNumbers(id);
@@ -32,17 +32,18 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                  {title:"Projects",url:"#projects"},
                  {title:project.get("title"),url:"#projects/"+id},
                  {title:"Manual Postcorrection",url:""},
+                 {title: page.get('pageId'),url:""},
 
           ];
 
 			var projectShowLayout = new Show.Layout({breadcrumbs:breadcrumbs});
-			var projectShowHeader;
 			var projectShowPage;
       var projectShowSidebar;
 			var projectShowFooterPanel;
 
 			projectShowLayout.on("attach",function(){
 
+        var sidebar_height = window.innerHeight-350;
 
         var fetchingsuspiciouswords = ProjectEntities.API.getSuspiciousWords({pid:id});
         var fetchingerrorpatterns = ProjectEntities.API.getErrorPatterns({pid:id});
@@ -54,7 +55,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                suspicious_words_array.push([word,suspicious_words['counts'][word]]);
             }
             var sp_table = $('.suspicious-words').DataTable({
-                 "scrollY": '556px',
+                 "scrollY": sidebar_height,
                   "data":suspicious_words_array,
                   "info":false,
                   "paging": false,
@@ -79,7 +80,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
               }
 
              var ep_table = $('.error-patterns').DataTable({
-                  "scrollY": '556px',
+                  "scrollY": sidebar_height,
                   "data":error_patterns_array,
                   "info":false,
                   "paging": false,
@@ -104,7 +105,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 				   data.push([key, charmap.charMap[key]]);
 			   }
              var char_table = $('.special-characters').DataTable({
-                  "scrollY": '556px',
+                  "scrollY": sidebar_height,
                   "data": data,//[],//[["a",10],["b",10],["c",10]],
                   "info":false,
                   "paging": false,
@@ -128,12 +129,11 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
            });
 
 
-			  projectShowHeader = new Show.Header({title:project.get('title'),pageId:page.get('pageId'),});
-        projectShowPage = new Show.Page({model:page,lineheight:lineheight,linenumbers:linenumbers,hidecorrections:hidecorrections,confidence_threshold:confidence_threshold,pid:id});
+        projectShowPage = new Show.Page({model:page,title:project.get('title'),lineheight:lineheight,linenumbers:linenumbers,hidecorrections:hidecorrections,confidence_threshold:confidence_threshold,pid:id});
 	      projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,hidecorrections:hidecorrections,lineheight:lineheight,linenumbers:linenumbers,ignore_case:ignore_case,confidence_threshold:confidence_threshold,pid:id});
       	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to Overview <i class='fas fa-book-open'></i>"});
 
-        projectShowHeader.on("header:show-image-clicked",function(){
+        projectShowSidebar.on("header:show-image-clicked",function(){
 
 
                 var getUrl = window.location;
@@ -170,7 +170,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
         });
 
-        projectShowHeader.on("header:search-clicked",function(){
+        projectShowSidebar.on("header:search-clicked",function(){
 
             let projectShowSearch = new Show.Search();
                     App.mainLayout.showChildView("dialogRegion",projectShowSearch);
@@ -252,9 +252,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                       App.navigate("projects/"+id+"/page/"+new_page.get('pageId'));
 
-                      projectShowHeader.options.pageId=new_page.get('pageId');
-                      projectShowHeader.render();
+                      $(".breadcrumbs span").last().text(new_page.get('pageId'));
 
+                  
 
                   }).fail(function(response){
                         Util.defaultErrorHandling(response,'danger');
@@ -278,7 +278,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         }
        });
 
-       projectShowPage.on("page:correct_line",function(data,anchor){
+       projectShowSidebar.on("page:correct_line",function(data,anchor){
          data.text = Util.escapeAsJSON(data.text);
                     var correctingline = ProjectEntities.API.correctLine(data);
                   $.when(correctingline).done(function(result){
@@ -529,7 +529,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
 
 
-	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
 	          projectShowLayout.showChildView('pageRegion',projectShowPage);
             projectShowLayout.showChildView('sidebarRegion',projectShowSidebar);
 

@@ -7,11 +7,11 @@
 			<div id="header-region"></div>
 		</div>
     </div>
-	<div class="row" style="padding-bottom: 25px;">
-		<div class="col col-sm-3">
+	<div class="row">
+		<div class="col col-md-3 sidebar-col">
 			<div id="sidebar-region"></div>
 		</div>
-        <div class="col col-sm-9">
+        <div class="col col-md-9 page-col">
 			<div id="page-region"></div>
 		</div>
 	</div>

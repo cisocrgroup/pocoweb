@@ -1,5 +1,12 @@
 
-    <div class="card" id="sidebar-container">
+    <div class="card rounded-0 " id="sidebar-container">
+		    <span class="btn-group float-right">
+				<button title="Show page image" class="btn btn-sm btn-primary blue-bg rounded-0 js-show-image"> 
+				<i class="far fa-file-image"></i></button>
+				<button title="Search the project" class="btn btn-sm btn-primary blue-bg rounded-0 js-search"> 
+				<i class="fas fa-search"></i></button>
+				 <button title="Set whole page as corrected" id="correctPage" type="button" class="js-correctPage btn btn-primary blue-bg right rounded-0"><i class="fas fa-tasks"></i> </button>
+			</span>
 
 
 
