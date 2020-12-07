@@ -130,9 +130,9 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         return data;
       },
       hide_sidebar_clicked:function(){
-       $('.sidebar-col').hide("slide", { direction: "left" }, 500, function(){
+       $('.sidebar-col').hide() 
         $('.show-side-bar').show();
-       });
+      
       },
       correct_page_clicked:function(){
         var that = this;
@@ -247,8 +247,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         var that = this;
 
           $('#pageDP').dropdown();
-          $('#sidebar-container').height(window.innerHeight-64);
-
+          // $('#sidebar-container').height(window.innerHeight-64);
+        
         // $('#pageId').click(function(){
         // });
 
@@ -690,8 +690,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
         $('.show-side-bar').click(function () {
              $(this).hide();
-             $('.sidebar-col').show("slide", { direction: "left" }, 500, function(){
-             });
+             $('.sidebar-col').show();
         });
 
         var linenumbers = Marionette.getOption(this,'linenumbers');

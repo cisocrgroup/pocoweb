@@ -20,6 +20,7 @@ requirejs.config({
     spin: "vendor/spin",
     "spin.jquery": "vendor/spin.jquery",
 
+    "sticky.jquery" : "vendor/jquery.sticky",
     json2: "vendor/json2",
 
 
@@ -68,6 +69,7 @@ requirejs.config({
       exports: "Marionette"
     },
    "jquery-ui": ["jquery"],
+   "sticky.jquery" : ["jquery"],
    bootstrap:{
     deps:["jquery"]
    },

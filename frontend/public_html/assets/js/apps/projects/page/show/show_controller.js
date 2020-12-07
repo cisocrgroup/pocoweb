@@ -125,6 +125,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
               rows[0].remove();
              $('#special-characters-container > .loading_background2').fadeOut();
 
+            $('#sidebar-container').sticky({zIndex:10});
+            $('#sidebar-container').on('sticky-bottom-reached', function() { console.log("Bottom reached"); });
 
            });
 
@@ -265,7 +267,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
        projectShowPage.on("page:lines_appended",function(){
                 if(page_id=="first") page_id = project.get('pageIds')[0];
                 if(page_id=="last") page_id = project.get('pageIds')[project.get('pageIds').length-1];
-                 if(line_id!=null){
+                if(line_id!=null){
                       var container = $('#page-container');
                       var scrollTo = $('#line-anchor-'+id+"-"+page_id+"-"+line_id);
 
@@ -275,7 +277,10 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                       scrollTo.parent().fadeOut(500).fadeIn(500);
                     });
 
-        }
+                }
+
+              
+
        });
 
        projectShowSidebar.on("page:correct_line_clicked",function(data,anchor){
@@ -551,7 +556,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 	          projectShowLayout.showChildView('pageRegion',projectShowPage);
             projectShowLayout.showChildView('sidebarRegion',projectShowSidebar);
 
-	          projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
+	          // projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
 
 
     		}); // on.attach()

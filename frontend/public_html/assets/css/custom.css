@@ -192,12 +192,15 @@ opacity: 0.6;
 }
 
 .footer{
-    text-align: center;
-    background: rgba(255, 255, 255, 0.66);
+      text-align: center;
+    background: white;
     padding-bottom: 15px;
     padding-top: 15px;
     border-top: 1px solid #177efd;
-     box-shadow: 0 0.5rem 1rem rgba(0,0,0,.4), inset 0 -1px 0 rgba(0,0,0,.1);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.4), inset 0 -1px 0 rgba(0,0,0,.1);
+    z-index: 20;
+    position: absolute;
+    width: 100%;
   }
 
 .footercontainer{
@@ -840,6 +843,8 @@ display: inline-block;
 -moz-box-shadow: 6px 2px 14px -8px rgba(0,0,0,0.75);
 box-shadow: 6px 2px 14px -8px rgba(0,0,0,0.75);
 border-right: 1px solid #177efd;
+border-bottom: 1px solid #177efd;
+padding-bottom: 100px;
 border-top: 0;
 }
 
@@ -854,7 +859,7 @@ border-top: 0;
     overflow-y: auto;
     padding: 15px;
     z-index: 1020;
-    background: white;
+    /*background: white;*/
 }
 
 .loading_background2 {
@@ -1051,6 +1056,7 @@ div.doc-note {
   margin-top: 15px;
   margin-bottom: 15px;
   background: white;
+    z-index: 200;
 }
 
 .page-link {

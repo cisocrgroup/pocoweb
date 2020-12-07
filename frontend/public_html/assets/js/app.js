@@ -2,8 +2,8 @@
 // app.js
 // ======
 
-define(["bootstrap","datepicker","jquery-ui","marionette","datatables.net-responsive","datatables.net-bs4","datatables_scroller","moment","common/util","common/views","tpl!common/templates/maintemplate.tpl",
-], function(Bootstrap,Datepicker,jqueryui,Marionette,db_resp,bs_resp,data_scroller,moment,Util,Views,mainTpl){
+define(["bootstrap","datepicker","jquery-ui","sticky.jquery","marionette","datatables.net-responsive","datatables.net-bs4","datatables_scroller","moment","common/util","common/views","tpl!common/templates/maintemplate.tpl",
+], function(Bootstrap,Datepicker,jqueryui,stickyjquery,Marionette,db_resp,bs_resp,data_scroller,moment,Util,Views,mainTpl){
 
 var App = Marionette.Application.extend({
     region: "#app-region",
