@@ -114,7 +114,9 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       'mouseover .special-characters tr' : 'special_characters_hover',
       'click .js-show-image': 'show_image_clicked',
       'click .js-search' : 'search_clicked',
-      'click .js-correctPage' : 'correct_page_clicked'
+      'click .js-correctPage' : 'correct_page_clicked',
+      'click .js-hide-sidebar' : 'hide_sidebar_clicked'
+
       },
          serializeData: function(){
           var data = Backbone.Marionette.View.prototype.serializeData.apply(this, arguments);
@@ -127,8 +129,12 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
         return data;
       },
-      
-       correct_page_clicked:function(){
+      hide_sidebar_clicked:function(){
+       $('.sidebar-col').hide("slide", { direction: "left" }, 500, function(){
+        $('.show-side-bar').show();
+       });
+      },
+      correct_page_clicked:function(){
         var that = this;
        that.trigger("page:correct_line_clicked");
       },
@@ -448,7 +454,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
  
 
       correct_clicked:function(e){
-      e.stopPropagation();
+      e.stopPropagation();  
 
         var anchor = $(e.currentTarget).attr('anchor');
         var ids = Util.getIds(anchor);
@@ -681,6 +687,12 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       },
 
       onDomRefresh:function(e){
+
+        $('.show-side-bar').click(function () {
+             $(this).hide();
+             $('.sidebar-col').show("slide", { direction: "left" }, 500, function(){
+             });
+        });
 
         var linenumbers = Marionette.getOption(this,'linenumbers');
         var confidence_threshold = Marionette.getOption(this,'confidence_threshold');

@@ -630,6 +630,9 @@ border-bottom-right-radius: .25rem;
   margin-right: 10px;
   position: relative;
 }
+.line:focus{
+  outline: none;
+}
 
 .line-tokens{
   margin-right: 10px;
@@ -816,7 +819,16 @@ display: inline-block;
   z-index: 1020;
 }
 
+.show-side-bar{
+  font-size: 20px;
+  color:#177efd;
+  display: none;
+  cursor: pointer;
+}
+.show-side-bar:hover{
+  color:#0056b3;
 
+}
 
 #sidebar-container{
     /*height: 770px;*/
@@ -1061,6 +1073,7 @@ div.doc-note {
   */    /*background: white;*/
 
 }
+
 
 
 @media only screen and (min-width : 576px) {

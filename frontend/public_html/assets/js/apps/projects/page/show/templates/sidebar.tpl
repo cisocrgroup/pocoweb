@@ -1,6 +1,7 @@
 
     <div class="card rounded-0 " id="sidebar-container">
 		    <span class="btn-group float-right">
+		    	 <button title="Collapse Sidebar" id="collapseSidebar" type="button" class="js-hide-sidebar blue-bg btn btn-primary right rounded-0"><i class="fas fa-chevron-left"></i> </button>
 				<button title="Show page image" class="btn btn-sm btn-primary blue-bg rounded-0 js-show-image"> 
 				<i class="far fa-file-image"></i></button>
 				<button title="Search the project" class="btn btn-sm btn-primary blue-bg rounded-0 js-search"> 

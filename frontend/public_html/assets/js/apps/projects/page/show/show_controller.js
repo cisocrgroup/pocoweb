@@ -297,7 +297,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
           
        });
 
-       projectShowSidebar.on("page:correct_line",function(data,anchor){
+       projectShowPage.on("page:correct_line",function(data,anchor){
          data.text = Util.escapeAsJSON(data.text);
                     var correctingline = ProjectEntities.API.correctLine(data);
                   $.when(correctingline).done(function(result){
