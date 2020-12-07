@@ -188,7 +188,6 @@ App.on("start", function(){
   // init pcw local storage configuration
   let pcw = App.getPcw();
   App.setPcw(pcw);
-  console.log(pcw);
 
     if(Backbone.history){
        require([
@@ -200,8 +199,7 @@ App.on("start", function(){
                ,"apps/users/users_app"
 
         ], function (HeaderApp,HomeApp,FooterApp,ProjectsApp,DocsApp,UsersApp) {
- Backbone.history.start();
-          console.log(App)
+    Backbone.history.start();
 
     var app_region = App.getRegion();
 

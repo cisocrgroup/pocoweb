@@ -159,7 +159,6 @@ onAttach: function(){
 		onAttach:function(){
 
 			  var crumbs = Marionette.getOption(this,"breadcrumbs");
-			  console.log(crumbs);
 		      var breadcrumbs = Util.getBreadcrumbs(crumbs);
 		      $('.breadcrumbs').append(breadcrumbs);
 

@@ -277,9 +277,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                       scrollTo.parent().fadeOut(500).fadeIn(500);
                     });
 
-                }
-
-              
+                }              
 
        });
 

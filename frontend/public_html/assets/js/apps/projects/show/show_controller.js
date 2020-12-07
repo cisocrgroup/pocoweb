@@ -41,7 +41,6 @@ define([
           let isAdmin = user.admin;
 
             loadingCircleView.destroy();
-            console.log(project);
             var projectShowLayout = new Show.Layout();
             var projectShowHeader;
             var projectShowInfo;
@@ -55,6 +54,8 @@ define([
            if(jobs.statusName=="running"){ // start job tracking if job is running
             projectShowLayout.trackJobStatus();
             }
+
+       
 
             var packages = [];
             for (var i = 0; i < projects.books.length; i++) {
@@ -183,15 +184,6 @@ define([
                   }
               var cards2 = [
                 {
-                  color: "green",
-                  icon: "fas fa-history",
-                  id: "test_btn",
-                  name: "Order Profile",
-                  seq: 1,
-                  text: "Start profiling the project.",
-                  url: "profile"
-                },
-                {
                   color: "blue",
                   icon: "fas fa-cogs",
                   id: "test_btn",
@@ -217,7 +209,7 @@ define([
                 currentRoute: "home"
               });
               var projectShowHub2 = new Show.Hub({
-                columns: 3,
+                columns: 2,
                 cards: cards2,
                 currentRoute: "home"
               });
@@ -261,6 +253,33 @@ define([
                 }
               });
 
+                 //automatically profile if not profiled
+                console.log(project)
+
+                 if(!project.get('status')['profiled']){ // start job tracking if job is running
+                        var profilingproject = ProjectEntities.API.profileProject({
+                          pid: id,
+                          tokens: []
+                        });
+
+                        $.when(profilingproject)
+                          .done(function(result) {
+                               App.mainmsg.updateContent("Profiling of '" + project.get("title") + "' started.", 'info');
+
+                               var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+                              $.when(fetchingjobs).done(function(jobs) {
+                                projectShowLayout.trackJobStatus();
+                                 projectShowInfo.setJobSymbol(jobs);
+
+                              });
+
+                          })
+                          .fail(function(response) {
+                            Util.defaultErrorHandling(response, "danger");
+                          });
+                  }
+           
+
                  var breadcrumbs = [
                  {title:"<i class='fas fa-home'></i>",url:"#home"},
                  {title:"Projects",url:"#projects"},
@@ -286,36 +305,8 @@ define([
                 packages: packages
               });
 
-              projectShowHub2.on("show:profile", function() {
-                var profilingproject = ProjectEntities.API.profileProject({
-                  pid: id,
-                  tokens: []
-                });
 
-                $.when(profilingproject)
-                  .done(function(result) {
-                    console.log(result)
-                    var confirmModal = new Show.OkDialog({
-                      asModal: true,
-                      title: "Profiling started",
-                      text: "Profile for " + project.get("title") + " ordered.",
-                      id: "profileModal"
-                    });
-                    App.mainLayout.showChildView("dialogRegion", confirmModal);
-
-                       var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
-                      $.when(fetchingjobs).done(function(jobs) {
-                        projectShowInfo.setJobSymbol(jobs);
-                        projectShowLayout.trackJobStatus();
-
-                      });
-
-                  })
-                  .fail(function(response) {
-                    Util.defaultErrorHandling(response, "danger");
-                  });
-              });
-
+          
               projectShowHub.on("show:adaptive", function() {
                 let fetchingAdaptiveTokens = ProjectEntities.API.getAdaptiveTokens(
                   { pid: id }
@@ -570,7 +561,6 @@ define([
                        $.when(fetchingjobs).done(function(jobs){
 
                             projectShowInfo.setJobSymbol(jobs);
-                            console.log(jobs);
                            if(jobs.statusName!="running"){ // stop job tracking if job is not running
                             projectShowLayout.stopJobTracking();
                             }

@@ -894,7 +894,6 @@ border-top: 0;
     width: 100%;
     left: 0px;
     height: 200px;
-    background: white;
     z-index: 10005;
     display: flex;
     align-items: center;
@@ -969,12 +968,11 @@ border-top: 0;
 }
 
 #msg-region{
-   min-height: 50px;
   margin-top: 30px;
 }
 
 #mainmsg{
-  margin-bottom: 0!important;
+   margin-bottom: 0!important;
    z-index: 20;
 }
 
