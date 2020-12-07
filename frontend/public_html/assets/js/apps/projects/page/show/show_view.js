@@ -130,16 +130,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       
        correct_page_clicked:function(){
         var that = this;
-
-        $('.line-text').each(function(){
-
-        var anchor = $(this).attr('anchor');
-        var ids = Util.getIds(anchor);
-        var text = $('#line-'+anchor).find('.line').text().replace(/\s\s+/g, ' ').trim();
-
-        that.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor);
-
-       });
+       that.trigger("page:correct_line_clicked");
       },
       show_image_clicked : function(e){
           e.preventDefault();

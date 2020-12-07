@@ -617,9 +617,9 @@ Views.Layout = Marionette.View.extend({
 
 	Views.AreYouSure = Marionette.View.extend({
     template: areYouTpl,
-    events:{
-     "click #js-yes":"yesClicked",
-      "click #js-no":"noClicked"
+    triggers:{
+     "click .js-yes":"yesClicked",
+      "click .js-no":"noClicked"
     },
 	serializeData: function(){
 			return {

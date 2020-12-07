@@ -7,7 +7,7 @@
 <!-- </div> -->
 
 
-<h1><img style="width: 80%;" class="pocoweb-logo" src="assets/images/pocoweb_logo.png">  </h1>
+<h1><img style="width: 50%; margin-bottom: 30px;" class="pocoweb-logo" src="assets/images/pocoweb_logo.png">  </h1>
 <!-- <h2>Post Correction Web</h2> -->
 </div>
 

@@ -278,6 +278,25 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         }
        });
 
+       projectShowSidebar.on("page:correct_line_clicked",function(data,anchor){
+              var that = this;
+              var projectShowAreYouSure = new Views.AreYouSure({title:"Correct whole page",text:"Mark every line on this page as corrected ?",id:"correct_page_modal"})
+              projectShowAreYouSure.on("yesClicked",function(){
+                  $('#correct_page_modal').modal('hide');
+                  $('.line-text').each(function(){
+
+                    var anchor = $(this).attr('anchor');
+                    var ids = Util.getIds(anchor);
+                    var text = $('#line-'+anchor).find('.line').text().replace(/\s\s+/g, ' ').trim();
+                    that.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor);
+
+                 });
+              });
+              App.mainLayout.showChildView("dialogRegion", projectShowAreYouSure);
+
+          
+       });
+
        projectShowSidebar.on("page:correct_line",function(data,anchor){
          data.text = Util.escapeAsJSON(data.text);
                     var correctingline = ProjectEntities.API.correctLine(data);
