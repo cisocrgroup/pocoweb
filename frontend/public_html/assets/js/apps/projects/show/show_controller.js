@@ -23,6 +23,7 @@ define([
         var fetchingprojects = ProjectEntities.API.getProjects();
         var fetchinguser = UserEntities.API.loginCheck();
         var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+        var fetchingmodels = ProjectEntities.API.getPostcorrectionModels({pid:id});
 
         $.when(
           fetchingproject,
@@ -30,9 +31,10 @@ define([
           fetchinglanguages,
           fetchingprojects,
           fetchinguser,
-          fetchingjobs
+          fetchingjobs,
+          fetchingmodels
         )
-        .done(function(project, stats, languages, projects, user,jobs) {
+        .done(function(project, stats, languages, projects, user, jobs, models) {
           // separate loaded statistics in the project entity
           project.attributes.statistics = stats;
 
@@ -45,11 +47,11 @@ define([
             var projectShowHeader;
             var projectShowInfo;
             var projectShowFooterPanel;
-            // console.log(reviews);
+            
+            console.log(models);
 
             // only show packages of this project
-            console.log(projects);
-            console.log(jobs);
+           
 
            if(jobs.statusName=="running"){ // start job tracking if job is running
             projectShowLayout.trackJobStatus();

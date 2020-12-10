@@ -597,6 +597,55 @@ startTrainPostcorrection: function(data){
 
 },
 
+
+getPostcorrectionModels: function(data){
+  var defer = jQuery.Deferred();
+      $.ajax({
+     headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      url: "rest/postcorrect/models/book/"+data.pid,
+      type: "GET",
+      success: function(data) {
+        defer.resolve(data);
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+
+},
+
+setPostcorrectionModel: function(data){
+  var defer = jQuery.Deferred();
+      $.ajax({
+     headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      url: "rest/postcorrect/models/book/"+data.pid+"?auth=" + App.getAuthToken(),
+      type: "POST",
+      data:data,
+      success: function(data) {
+        defer.resolve(data);
+
+          },
+          error: function(data){
+            defer.reject(data);
+          }
+  });
+
+
+  return defer.promise();
+
+},
+
+
 getJobs: function(data){
 
   var defer = jQuery.Deferred();
