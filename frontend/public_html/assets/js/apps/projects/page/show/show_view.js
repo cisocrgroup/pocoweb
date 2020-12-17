@@ -294,6 +294,11 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
                       }
 
                });
+
+            if(manualadjustment){
+                $('.tokendiv').css('margin-right',tokendistance+"px");
+           }
+
         
            that.trigger('page:lines_appended');
 
@@ -380,14 +385,20 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
                       var line = that.model.get('lines')[index];
                       if(line!=undefined){
-                        console.log(App.getConfidenceThreshold(pid)/10);
-                        Util.addAlignedLine(line,App.getConfidenceThreshold(pid)/10);
+                         if(manualadjustment){
+                            Util.addLine(line,App.getConfidenceThreshold(pid)/10);
+                          }
+                          else{
+                           Util.addAlignedLine(line,App.getConfidenceThreshold(pid)/10);
+                          }
                       }
 
                });
                 $('#lineheight_value').text(this.value+"px");
                   // $('.line-tokens').css('font-size',(this.value/2)+"px"); // to scale line tokens 
-
+                    if(manualadjustment){
+                      $('.tokendiv').css('margin-right',tokendistance+"px");
+                    }
                 that.trigger("sidebar:update_line_height",this.value);
 
             }

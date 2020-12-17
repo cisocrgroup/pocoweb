@@ -546,9 +546,9 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                 .attr('offset', token.offset);
                  $('#img_'+line['pageId']+"_"+line['lineId']+"_parent").parent().find('.concLine').append(tokendiv);
 
-                 if(!token.match){ // skip absolute width if match
+                 // if(!token.match){ // skip absolute width if match 
                  tokendiv.css('width',token.box.width * scalefactor);
-                 }
+                 // }
 
                }
       }

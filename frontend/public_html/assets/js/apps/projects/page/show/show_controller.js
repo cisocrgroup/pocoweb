@@ -333,7 +333,14 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                           lineanchor.fadeOut(200,function(){
                           lineanchor.fadeIn(200,function(){
                           lineanchor.find('.line-tokens').empty();
-                          Util.addAlignedLine(result);
+
+                          if(projectShowPage.options.manualadjustment){
+                            Util.addLine(result);
+                            $('.tokendiv').css('margin-right',this.value+"px");
+                          }
+                          else {
+                            Util.addAlignedLine(result);
+                          }
                           lineanchor.find('.line').hide();
                           lineanchor.find('.line-tokens').show();
                       });

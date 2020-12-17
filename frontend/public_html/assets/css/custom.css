@@ -614,7 +614,6 @@ border-bottom-right-radius: .25rem;
   /*display: inline-block;*/
   flex-grow: 1;
   min-height: 30px;
-  padding: 2px;
   border-top: 1px solid transparent;
   border-left: 1px solid transparent;
   border-bottom: 1px solid transparent;
@@ -702,7 +701,7 @@ outline: 0;
   display: inline-block;
   text-align: center;
   min-height: 1px;
-
+  border: 1px solid transparent;
 }
 
 
@@ -770,6 +769,7 @@ outline: 0;
 
 .cordiv{
 display: inline-block;
+ border: 1px solid transparent;
 }
 .cordiv:focus{
   outline: none;
