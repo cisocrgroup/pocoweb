@@ -161,11 +161,19 @@
 
 <div class="tab-pane fade" id="options" role="tabpanel" aria-labelledby="options-tab">
 
-  <div class="options_row"
-  	   title="Adjust the height of the line images">
+  <div class="options_row" title="Adjust the height of the line images">
   <label for="line_size_slider"> Line height: <span id="lineheight_value"><%-lineheight%>px</span></label>
    <input  type="range" min="20" max="60" value="30" class="slider form-control" id="line_size_slider">
   </div>
+
+<div class="options_row" title="Manually adjust token distance">
+	<div><input type="checkbox" id="manually_adjust_toggle" name="manually_adjust_toggle" checked>
+  <span for="manually_adjust_toggle"> Adjust token distance manually </span></div>
+
+  <label for="token_distance_slider"> Token Distance: <span id="token_distance_value"><%-tokendistance%>px</span></label>
+   <input  type="range" min="0" max="150" value="15" class="slider form-control" id="token_distance_slider">
+  </div>
+
    <div class="options_row"
   	   title="Highlight all words by setting a confidence threshold">
   <label for="confidence_slider"> Highlight by confidence: <span id="confidence_value"><%-confidence_threshold%></span></label>

@@ -26,6 +26,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
            var hidecorrections = App.getHideCorrections(id);
            var ignore_case = App.getIgnoreCase(id);
            var confidence_threshold = App.getConfidenceThreshold(id);
+           var tokendistance = App.getTokenDistance(id);
+           var manualadjustment = App.getManualAdjustment(id);
 
            var breadcrumbs = [
                  {title:"<i class='fas fa-home'></i>",url:"#home"},
@@ -131,8 +133,8 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
            });
 
 
-        projectShowPage = new Show.Page({model:page,title:project.get('title'),lineheight:lineheight,linenumbers:linenumbers,hidecorrections:hidecorrections,confidence_threshold:confidence_threshold,pid:id});
-	      projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,hidecorrections:hidecorrections,lineheight:lineheight,linenumbers:linenumbers,ignore_case:ignore_case,confidence_threshold:confidence_threshold,pid:id});
+        projectShowPage = new Show.Page({model:page,title:project.get('title'),lineheight:lineheight,linenumbers:linenumbers,hidecorrections:hidecorrections,confidence_threshold:confidence_threshold,tokendistance:tokendistance,manualadjustment:manualadjustment,pid:id});
+	      projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,hidecorrections:hidecorrections,lineheight:lineheight,linenumbers:linenumbers,ignore_case:ignore_case,confidence_threshold:confidence_threshold,pid:id,tokendistance:tokendistance,manualadjustment:manualadjustment});
       	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to Overview <i class='fas fa-book-open'></i>"});
 
         projectShowSidebar.on("header:show-image-clicked",function(){
@@ -220,6 +222,13 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         projectShowSidebar.on("sidebar:update_hide_corrections", function(value) {
           App.setHideCorrections(id, value);
         });
+        projectShowSidebar.on("sidebar:update_token_distance", function(value) {
+          App.setTokenDistance(id, value);
+        });
+        projectShowSidebar.on("sidebar:update_manual_adjustment", function(value,page_id) {
+          App.setManualAdjustment(id, value);
+          this.trigger("page:new",page_id);
+        });
        projectShowSidebar.on("page:new",function(page_id){
                     line_id=null;
 
@@ -229,10 +238,14 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     var fetchinglineheight = App.getLineHeight(id);
                     var fetchinglinenumbers = App.getLineNumbers(id);
                     var fetchinghidecorrections = App.getHideCorrections(id);
+                     var ignore_case = App.getIgnoreCase(id);
+                     var confidence_threshold = App.getConfidenceThreshold(id);
+                     var tokendistance = App.getTokenDistance(id);
+                     var manualadjustment = App.getManualAdjustment(id);
 
                     var fetchingnewpage = ProjectEntities.API.getPage({pid:id, page:page_id});
 
-                     $.when(fetchingnewpage,fetchinglineheight,fetchinglinenumbers,fetchinghidecorrections).done(function(new_page,lineheight,linenumbers,hidecorrections){
+                     $.when(fetchingnewpage,fetchinglineheight,fetchinglinenumbers,fetchinghidecorrections,ignore_case,confidence_threshold,tokendistance,manualadjustment).done(function(new_page,lineheight,linenumbers,hidecorrections,ignore_case,confidence_threshold,tokendistance,manualadjustment){
                       loadingCircleView.destroy();
                       new_page.attributes.title = project.get('title');
                       projectShowPage.model.set(new_page.toJSON());
@@ -242,13 +255,19 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                       projectShowPage.options.lineheight=lineheight;
                       projectShowPage.options.linenumbers=linenumbers;
+                      projectShowPage.options.ignore_case=ignore_case;
+                      projectShowPage.options.confidence_threshold=confidence_threshold;
                       projectShowPage.options.hidecorrections=hidecorrections;
+                      projectShowPage.options.tokendistance=tokendistance;
+                      projectShowPage.options.manualadjustment=manualadjustment;
 
                       projectShowPage.render();
                          projectShowLayout.showChildView('pageRegion',projectShowPage);
 
                       projectShowSidebar.model = new_page;
-                      $('#pageId').text('Page '+new_page.get('pageId'))
+
+
+                      $('#pageId').text('Page '+new_page.get('pageId')).attr('page_id',new_page.get('pageId'));
                       $('.js-stepforward > a').attr('title','go to previous page #'+new_page.get('nextPageId'));
                       $('.js-stepbackward > a').attr('title','go to next page #'+new_page.get('prevPageId'));
 
@@ -546,10 +565,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
           projectShowFooterPanel.on("go:back",function(){
             App.trigger("projects:show",id);
           });
-
-
-
-
 
 	          projectShowLayout.showChildView('pageRegion',projectShowPage);
             projectShowLayout.showChildView('sidebarRegion',projectShowSidebar);

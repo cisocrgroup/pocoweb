@@ -498,7 +498,8 @@ define([
                   text: "Edit Project",
                   edit_project: true,
                   loading_text: "Update in progress",
-                  languages: languages.languages
+                  languages: languages.languages,
+                  p_models : models
                 });
 
                 projectsShowEditProject.on("project:update", function(data) {
@@ -509,9 +510,14 @@ define([
                     pid: id,
                     projectdata: data
                   });
+                   var updatingModel = ProjectEntities.API.setPostcorrectionModel({
+                   id:parseInt(data['p_model'])},id);
 
-                  $.when(puttingProject).done(function(result) {
+                  $.when(puttingProject,updatingModel).done(function(result) {
                     $(".loading_background").fadeOut();
+                    models['modelId'] = data['p_model'];
+
+                    projectShowLayout.trigger("show:checkJobStatus");
 
                     $("#projects-modal").modal("toggle");
                     projectShowHeader.options.title = data.title;

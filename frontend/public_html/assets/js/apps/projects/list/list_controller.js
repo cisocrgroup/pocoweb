@@ -90,13 +90,17 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
                model: new ProjectEntities.Project,
                languages:languages.languages,
                asModal:true,
+               p_models : {models:[]},
                text:"Create a new project",
                loading_text:"Upload in progress"});
 
            projectsListAddProject.on("project:submit_clicked",function(data,formdata){
              var uploadingProjectData = ProjectEntities.API.uploadProjectData(formdata);
+              
+
                  $.when(uploadingProjectData).done(function(result){
                    console.log(result);
+
                    $('.loading_background').fadeOut();
                    $('#projects-modal').modal('toggle');
                    $('#selected_file').text("");
@@ -105,6 +109,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
                        result.pages + " pages).",
                      "success"
                    );
+
                    App.trigger("projects:list");
                 }).fail(function(response){
                    $('#projects-modal').modal('hide');

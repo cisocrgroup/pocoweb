@@ -179,6 +179,72 @@ addAlignedLine : function(line,confidenceThreshold){
                 addDiv(token.cor.trim(), token.box.width, token.box, token.offset,corrected);
                }
 },
+
+addLine : function(line,confidenceThreshold){
+
+
+     var linetokens = line.tokens;
+
+
+            var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
+
+            var img_id = "line-img-"+anchor;
+            var line_img = document.getElementById(img_id);
+            var line_text =  $('#line-'+anchor);
+            // line_text.find('.line-tokens').css('width', (Number(line_img.width)+50).toString() +'px'); ?? not needed to determine max length??
+            var scalefactor = line_img.width / line.box.width;
+
+             if(linetokens==undefined){
+              var line_parent =  $('#line-anchor-'+anchor).parent();
+              line_parent.empty();
+              line_parent.append('<div class="alert alert-danger" role="alert"> Line ' +line['lineId']+' could not be displayed </div>');
+              return;
+              }
+
+              let addDiv = function(text, width, box, offset, klass) {
+                  let textdiv = $('<div>' + text + "</div>");
+              let boxstr = "(" + box.left + "," + box.top + "," +
+              box.right + "," + box.bottom + ")";
+                  // textdiv.css('width', width * scalefactor);
+                  textdiv.attr('boundingbox', boxstr);
+                  textdiv.attr('title', 'token ' + offset + ', ' + text);
+                  let div = $('<div class="tokendiv noselect"></div>').append(textdiv);
+                  if (klass !== "") {
+                    div.addClass(klass);
+                  }
+                  line_text.find('.line-tokens').append(div);
+              };
+              for(var i=0;i<linetokens.length;i++) {
+                let token = linetokens[i];
+                // add whitespace between tokens
+                if (i > 0) {
+                  let prev = linetokens[i-1];
+                  let width = token.box.left - prev.box.right;
+                  let box = {
+                      left: prev.box.right+1,
+                      right: token.box.left-1,
+                      top: token.box.top,
+                      bottom: token.box.bottom
+                  };
+                  let offset = prev.offset + prev.cor.trim().length + 1;
+                  addDiv("", width, box, offset,"");
+                }
+                let corrected = "";
+                if (!line.isManuallyCorrected) {
+                  corrected = token.isManuallyCorrected;
+                  if (token.isManuallyCorrected) {
+                    corrected = "manually_corrected token-text";
+                  } else if (token.isAutomaticallyCorrected) {
+                    corrected = "automatically_corrected token-text";
+                  }
+                  else if(token.averageConfidence&&token.averageConfidence<confidenceThreshold){
+                    corrected = "confidence_threshold token-text"
+                  }
+                }
+                addDiv(token.cor.trim(), token.box.width, token.box, token.offset,corrected);
+               }
+},
+
   copyStringToClipboard :function(str) {
        // Create new element
        var el = document.createElement('textarea');
@@ -208,9 +274,16 @@ addAlignedLine : function(line,confidenceThreshold){
              // re-render navbar on every 401
 
              App.logout(); // automatically logout user when 401?
+
+             setTimeout(function() {
+
              var headerRegion = App.mainLayout.getRegion('headerRegion');
              headerRegion.currentView.getRegion('navbarRegion').currentView.options.user={id:-1}; 
              headerRegion.currentView.getRegion('navbarRegion').currentView.render(); 
+
+             }, 50);
+
+         
              
              // display login screen
              App.trigger("nav:login",false);

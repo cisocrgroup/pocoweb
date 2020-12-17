@@ -24,6 +24,7 @@ Entities.Project = Backbone.Model.extend({
   author:null,
   books:null,
   language:null,
+  p_model:null,
   profilerUrl:"default",
   projectId:null,
   title:"",
@@ -582,7 +583,6 @@ startTrainPostcorrection: function(data){
       },
       url: "rest/postcorrect/train/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "POST",
-      data:data,
       success: function(data) {
         defer.resolve(data);
 
@@ -605,7 +605,7 @@ getPostcorrectionModels: function(data){
           'Accept': 'application/json',
           'Content-Type': 'application/json'
       },
-      url: "rest/postcorrect/models/book/"+data.pid,
+      url: "rest/postcorrect/models/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "GET",
       success: function(data) {
         defer.resolve(data);
@@ -621,16 +621,16 @@ getPostcorrectionModels: function(data){
 
 },
 
-setPostcorrectionModel: function(data){
+setPostcorrectionModel: function(data,pid){
   var defer = jQuery.Deferred();
       $.ajax({
      headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
       },
-      url: "rest/postcorrect/models/book/"+data.pid+"?auth=" + App.getAuthToken(),
+      url: "rest/postcorrect/models/books/"+pid+"?auth=" + App.getAuthToken(),
       type: "POST",
-      data:data,
+      data:JSON.stringify(data),
       success: function(data) {
         defer.resolve(data);
 

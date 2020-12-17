@@ -53,6 +53,8 @@ App.newPcw = function() {
     auth: -1,
     options: {
       lineHeights: {}, // id: lineHeight
+      manualAdjustments: {}, // id: manualAdjustment
+      tokenDistances: {}, // id: tokenDistance
       pageHits: {},    // id: pageHits
       lineNumbers: {}, // id: lineNumber
       ignoreCase: {},  // id: ignore case
@@ -121,6 +123,17 @@ App.getLineHeight = function(id){
   return height;
 };
 
+App.setTokenDistance = function(id,val){
+  let pcw = App.getPcw();
+  pcw.options.tokenDistances[id] = val;
+  App.setPcw(pcw);
+}
+
+App.getTokenDistance = function(id){
+  let distance = App.getPcw().options.tokenDistances[id] || 15;
+  return distance;
+};
+
 App.getPageHits = function(id) {
   let pageHits = App.getPcw().options.pageHits[id] || 8;
   return pageHits;
@@ -141,10 +154,26 @@ App.setLineNumbers = function(id,val){
 App.getLineNumbers = function(id){
   let lineNumbers = App.getPcw().options.lineNumbers[id];
   if(lineNumbers!=undefined){
-    return lineNumbers
+    return lineNumbers;
   }
   return true;
 };
+
+App.setManualAdjustment = function(id,val){
+  let pcw = App.getPcw();
+  pcw.options.manualAdjustments[id] = val;
+  App.setPcw(pcw);
+};
+
+App.getManualAdjustment = function(id){
+  let manualAdjustment = App.getPcw().options.manualAdjustments[id];
+
+  if(manualAdjustment!=undefined){
+    return manualAdjustment;
+  }
+  return false;
+};
+
 
 App.getConfidenceThreshold = function(id) {
   let confidenceThreshold = App.getPcw().options.confidenceThreshold[id] || 0;
