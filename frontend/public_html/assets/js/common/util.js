@@ -136,13 +136,13 @@ addAlignedLine : function(line,confidenceThreshold){
               return;
               }
 
-              let addDiv = function(text, width, box, offset, klass) {
+              let addDiv = function(text, title, width, box, offset, klass) {
                   let textdiv = $('<div>' + text + "</div>");
  				      let boxstr = "(" + box.left + "," + box.top + "," +
 				      box.right + "," + box.bottom + ")";
                   textdiv.css('width', width * scalefactor);
                   textdiv.attr('boundingbox', boxstr);
-                  textdiv.attr('title', 'token ' + offset + ', ' + text);
+                  textdiv.attr('title', title);
                   let div = $('<div class="tokendiv noselect"></div>').append(textdiv);
                   if (klass !== "") {
                     div.addClass(klass);
@@ -162,7 +162,7 @@ addAlignedLine : function(line,confidenceThreshold){
                       bottom: token.box.bottom
                   };
                   let offset = prev.offset + prev.cor.trim().length + 1;
-                  addDiv("", width, box, offset,"");
+                  addDiv("","", width, box, offset,"");
                 }
                 let corrected = "";
                 if (!line.isManuallyCorrected) {
@@ -172,11 +172,11 @@ addAlignedLine : function(line,confidenceThreshold){
                   } else if (token.isAutomaticallyCorrected) {
                     corrected = "automatically_corrected token-text";
                   }
-                  else if(token.averageConfidence&&token.averageConfidence<confidenceThreshold){
+                  else if(token.averageConfidence.toFixed(2)&&token.averageConfidence.toFixed(2)<=confidenceThreshold){
                     corrected = "confidence_threshold token-text"
                   }
                 }
-                addDiv(token.cor.trim(), token.box.width, token.box, token.offset,corrected);
+                addDiv(token.cor.trim(),"average confidence: "+token.averageConfidence.toFixed(2), token.box.width, token.box, token.offset,corrected);
                }
 },
 
@@ -201,13 +201,13 @@ addLine : function(line,confidenceThreshold){
               return;
               }
 
-              let addDiv = function(text, width, box, offset, klass) {
+              let addDiv = function(text,title, width, box, offset, klass) {
                   let textdiv = $('<div>' + text + "</div>");
               let boxstr = "(" + box.left + "," + box.top + "," +
               box.right + "," + box.bottom + ")";
                   // textdiv.css('width', width * scalefactor);
                   textdiv.attr('boundingbox', boxstr);
-                  textdiv.attr('title', 'token ' + offset + ', ' + text);
+                  textdiv.attr('title', title);
                   let div = $('<div class="tokendiv noselect"></div>').append(textdiv);
                   if (klass !== "") {
                     div.addClass(klass);
@@ -237,11 +237,11 @@ addLine : function(line,confidenceThreshold){
                   } else if (token.isAutomaticallyCorrected) {
                     corrected = "automatically_corrected token-text";
                   }
-                  else if(token.averageConfidence&&token.averageConfidence<confidenceThreshold){
+                  else if(token.averageConfidence.toFixed(2)&&token.averageConfidence.toFixed(2)<=confidenceThreshold){
                     corrected = "confidence_threshold token-text"
                   }
                 }
-                addDiv(token.cor.trim(), token.box.width, token.box, token.offset,corrected);
+                addDiv(token.cor.trim(),"average confidence: "+token.averageConfidence.toFixed(2), token.box.width, token.box, token.offset,corrected);
                }
 },
 
