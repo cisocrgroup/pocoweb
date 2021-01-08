@@ -2,7 +2,7 @@
 // apps/header/show/show_controller.js
 // ===================================
 
-define(["app","common/util","apps/header/show/show_view","apps/users/login/login_view"], function(App,Util,Show,Login){
+define(["app","common/util","apps/header/show/show_view","apps/users/login/login_view","apps/users/logs/logs_view"], function(App,Util,Show,Login,Logs){
 
 
   var Controller = {
@@ -17,9 +17,8 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
     var fetchingLoginCheck = UserEntities.API.loginCheck();
 
       $.when(fetchingVersion,fetchingLoginCheck).done(function(api_version,login_check){
-        console.log(login_check)
         var headerShowLayout = new Show.Layout();
-         var headerLogin ;
+        var headerLogin ;
 
 
       var headerShowTopbar = new Show.Topbar({
@@ -45,8 +44,8 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
 
                  $.when(loggingOutUser).done(function(result){
-                   App.logout();
                    App.mainmsg.updateContent("Logout successful",'success');
+                   App.logout();
                    headerShowTopbar.options.user = App.getCurrentUser();
                    headerShowTopbar.render();
 
@@ -68,7 +67,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
        if(login_check.id!=-1){
              var user = login_check;
 
-      App.mainmsg.updateContent("Welcome back to PoCoWeb: "+user.name+"!",'success');
+      App.mainmsg.updateContent("Welcome back to PoCoWeb: '"+user.name+"'",'success',false);
         headerShowLayout.showChildView('msgRegion',App.mainmsg)
       }
       else {
@@ -80,8 +79,17 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
     });
     headerShowTopbar.on("nav:exit",function(){
      App.trigger("home:portal");
+
     });
 
+    headerShowTopbar.on("nav:logs",function(){
+          var logs = App.getLastMessages(App.getCurrentUser()['id']);
+          var userLogs = new Logs.List({collection: logs,asModal:true});
+          App.mainLayout.showChildView('dialogRegion',userLogs);
+
+
+
+    });
 
 
 

@@ -260,18 +260,22 @@ onAttach: function(){
 
 
    		 },
-   		  updateContent: function(message,type){
+   		  updateContent: function(message,type,save=true){
 
    			this.options.message = message;
    			this.options.type = type
    			this.render();
         	$("#"+this.id).css('display','block');
 
-        	if(type=="danger"||type=="success"){
+        	// if(type=="danger"||type=="success"){
         	  setTimeout(function() {
    		  		 $('#mainmsg').fadeOut();
    			  }, 5000);
+        	// }
+        	if(!(App.getCurrentUser()['id']==-1)&&save){
+        	 App.addMessage(App.getCurrentUser()['id'],{msg:message,type:type,date:Date.now()});
         	}
+
 
    		  },
    		  hide: function(){

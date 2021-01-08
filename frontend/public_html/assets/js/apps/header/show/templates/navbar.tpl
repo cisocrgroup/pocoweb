@@ -42,5 +42,10 @@
         <p class="navbar-text" style="margin:0;"> Api-Version: <%-version%></p>
       </li>
     </ul>
+      <ul class="navbar-nav my-2 my-lg-0 logs-nav">
+       <li class="nav-item">
+      <div class="mini-btn js-logs" style="margin-left: 5px;" title="Show Logs"><i class="fas fa-clipboard-list"></i></div>
+      </li>
+    </ul>
   </div>
 </nav>

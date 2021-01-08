@@ -2,8 +2,8 @@
 // app.js
 // ======
 
-define(["bootstrap","datepicker","jquery-ui","sticky.jquery","marionette","datatables.net-responsive","datatables.net-bs4","datatables_scroller","moment","common/util","common/views","tpl!common/templates/maintemplate.tpl",
-], function(Bootstrap,Datepicker,jqueryui,stickyjquery,Marionette,db_resp,bs_resp,data_scroller,moment,Util,Views,mainTpl){
+define(["bootstrap","datepicker","jquery-ui","sticky.jquery","marionette","datatables.net-responsive","datatables.net-bs4","datatables_scroller","moment","common/util","tpl!common/templates/maintemplate.tpl",
+], function(Bootstrap,Datepicker,jqueryui,stickyjquery,Marionette,db_resp,bs_resp,data_scroller,moment,Util,mainTpl){
 
 var App = Marionette.Application.extend({
     region: "#app-region",
@@ -59,7 +59,8 @@ App.newPcw = function() {
       lineNumbers: {}, // id: lineNumber
       ignoreCase: {},  // id: ignore case
       hideCorrections: {},  // id: hide corrections
-      confidenceThreshold : {}, //id: confidence threshold
+      confidenceThreshold : {}, //id: confidence threshold,
+      lastMessages : {}, //id: lastMessages
       charMapFilter: "abcdefghijklmnopqrstuvwxyz" +
 	    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 	    "0123456789" +
@@ -203,15 +204,34 @@ App.getHideCorrections = function(id) {
   return hideCorrections;
 };
 
-App.setHideCorrections = function(id, ic) {
+App.setHideCorrections = function(id, hc) {
   let pcw = App.getPcw();
-  pcw.options.hideCorrections[id] = ic;
+  pcw.options.hideCorrections[id] = hc;
   App.setPcw(pcw);
 };
 
 App.getCharmapFilter = function() {
   return App.getPcw().options.charMapFilter;
 };
+
+App.addMessage = function(user_id,msg) {
+  let pcw = App.getPcw();
+  console.log(pcw)
+  if(!(user_id in pcw.options.lastMessages)){
+     pcw.options.lastMessages[user_id] = [];
+  }
+
+  pcw.options.lastMessages[user_id].unshift(msg);
+  if (pcw.options.lastMessages[user_id].length > 25) {
+    pcw.options.lastMessages[user_id].pop();
+  }
+  App.setPcw(pcw);
+};
+
+App.getLastMessages = function(id) {
+  return App.getPcw().options.lastMessages[id];
+};
+
 
 App.on("start", function(){
   // init pcw local storage configuration
@@ -226,8 +246,9 @@ App.on("start", function(){
                ,"apps/projects/projects_app"
                ,"apps/docs/docs_app"
                ,"apps/users/users_app"
+               ,"common/views"
 
-        ], function (HeaderApp,HomeApp,FooterApp,ProjectsApp,DocsApp,UsersApp) {
+        ], function (HeaderApp,HomeApp,FooterApp,ProjectsApp,DocsApp,UsersApp,Views) {
     Backbone.history.start();
 
     var app_region = App.getRegion();
@@ -258,7 +279,7 @@ App.on("start", function(){
                  $.when(loggingInUser).done(function(result){
                    App.setCurrentUser(result.user);
                    App.setAuthToken(result.auth);
-                        App.mainmsg.updateContent("Login successful!",'success');
+                        App.mainmsg.updateContent("Login successful",'success');
 
                          App.Navbar.options.user = App.getCurrentUser();
                          App.Navbar.render();

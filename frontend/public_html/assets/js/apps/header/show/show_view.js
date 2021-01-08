@@ -28,14 +28,14 @@ define(["marionette","app","common/views","common/util",
    triggers:{
       "click .js-logout":"nav:logout",
       "click .js-exit":"nav:exit",
-      "click #help_button":"nav:help"
+      "click #help_button":"nav:help",
+      "click .js-logs":"nav:logs"
      },
 
     events:{
       "click .js-login":"login_clicked",
       'click .nav_item.active' : 'nav_item_clicked',
       'click .logo_area_left' : 'nav_item_clicked'
-
     },
    
 

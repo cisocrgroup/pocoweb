@@ -822,15 +822,18 @@ display: inline-block;
   z-index: 1020;
 }
 
-.show-side-bar{
-  font-size: 20px;
+.mini-btn{
   color:#177efd;
-  display: none;
   cursor: pointer;
 }
-.show-side-bar:hover{
+.mini-btn:hover{
   color:#0056b3;
 
+}
+
+.show-side-bar{
+    display: none;
+    font-size: 20px;
 }
 
 #sidebar-container{

@@ -100,16 +100,17 @@ define([
     },
     onAttach: function() {
       var table = $("#book_table").DataTable();
-      console.log(this)
       let status = this.model.attributes.status;
 
       if(status['profiled']){
         Util.removeStatusClasses($('.profile_icon'));
         $('.profile_icon').addClass("green").attr('title','Profiling successful');
+
       }
       if(status['post-corrected']){
         Util.removeStatusClasses($('.post_cor_icon'));
         $('.post_cor_icon').addClass("green").attr('title','Post Correction successful');
+
       }
       if(status['extended-lexicon']){
         Util.removeStatusClasses($('.le_icon'));
@@ -124,21 +125,27 @@ define([
   
     setJobSymbol:function(jobs){
        if(jobs.statusName=="running"){
+        
         if(jobs.jobName=="profiling"){
            Util.removeStatusClasses($('.profile_icon'));
            $('.profile_icon').addClass("yellow").attr('title','Profiling in progress');
+
         }
         if(jobs.jobName=="calculating extended lexicon"){
            Util.removeStatusClasses($('.le_icon'));
            $('.le_icon').addClass("yellow").attr('title','Lexcion Extension in progress');
+
+
         }
         if(jobs.jobName=="calculating post-correction"){
            Util.removeStatusClasses($('.post_cor_icon'));
            $('.post_cor_icon').addClass("yellow").attr('title','Post Correction in progress');
+
         }
         if(jobs.jobName=="retrainer"){
            Util.removeStatusClasses($('.retrainer_icon'));
            $('.retrainer_icon').addClass("yellow").attr('title','Re-Training in progress');
+
         }
       }
 
@@ -158,6 +165,7 @@ define([
          if(jobs.jobName=="retrainer"){
            Util.removeStatusClasses($('.retrainer_icon'));
            $('.retrainer_icon').addClass("red").attr('title','Re-Training in failed');
+
         }
       }
 
@@ -168,15 +176,18 @@ define([
         }
         if(jobs.jobName=="calculating extended lexicon"){
            Util.removeStatusClasses($('.le_icon'));
-           $('.le_icon').addClass("green").attr('title','Post Correction successful');
+           $('.le_icon').addClass("green").attr('title','Lexicon Extension successful');
+
         }
         if(jobs.jobName=="calculating post-correction"){
            Util.removeStatusClasses($('.post_cor_icon'));
-           $('.post_cor_icon').addClass("green").attr('title','Lexicon Extension successful');
+           $('.post_cor_icon').addClass("green").attr('title','Post Correction successful');
+
         }
         if(jobs.jobName=="retrainer"){
           Util.removeStatusClasses($('.retrainer_icon'));
          $('.retrainer_icon').addClass("green").attr('title','Re-Training in successful');
+
         }
       }
    

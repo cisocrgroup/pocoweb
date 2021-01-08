@@ -1,4 +1,4 @@
-<div title="Show side bar" class="show-side-bar"><i class="fas fa-chevron-circle-right"></i></div>
+<div title="Show side bar" class="mini-btn show-side-bar"><i class="fas fa-chevron-circle-right"></i></div>
 
 
     <div id="page-container">

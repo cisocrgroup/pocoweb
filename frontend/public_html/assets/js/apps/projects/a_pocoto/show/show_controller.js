@@ -142,6 +142,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
                       id: "profileModal"
                     });
                     App.mainLayout.showChildView("dialogRegion", confirmModal);
+                    App.mainmsg.updateContent("Profiling started",'info');
 
                        var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
                       $.when(fetchingjobs).done(function(jobs) {

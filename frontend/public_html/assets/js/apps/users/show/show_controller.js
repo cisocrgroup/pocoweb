@@ -1,5 +1,5 @@
 
-define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show){
+define(["app","common/util","apps/users/show/show_view","apps/users/logs/logs_view"], function(App,Util,Show,Logs){
 
 
  var Controller = {
@@ -13,9 +13,12 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
 
 
 			var fetchingUser = UserEntities.API.getUser(id);
+			var fetchingLogs = App.getLastMessages(App.getCurrentUser()['id']);
 
-			$.when(fetchingUser).done(function(user){
+			$.when(fetchingUser,fetchingLogs).done(function(user,logs){
 			// backdropView.destroy();
+			console.log(logs);
+
 
 			var userModel = new UserEntities.User(user);
 			console.log(userModel)
@@ -25,6 +28,7 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
 			var userShowHeader;
      		var userShowPanel;
 			var userShowForm;
+			var userLogs;
 
 			userShowLayout.on("attach",function(){
 
@@ -37,6 +41,8 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
 			  userShowHeader = new Show.Header({breadcrumbs: breadcrumbs,model:userModel});
 			  userShowPanel = new Show.Panel({model:user});
 			  userShowForm = new Show.Form({model:userModel});
+			  userLogs = new Logs.List({collection: logs});
+
 			  userShowFooter = new Show.FooterPanel({title: "Back to User Management <i class='fas fa-users-cog'></i>",manual:true});
 
 
@@ -44,6 +50,8 @@ define(["app","common/util","apps/users/show/show_view"], function(App,Util,Show
 		       userShowLayout.showChildView('headerRegion',userShowHeader);
    		       userShowLayout.showChildView('panelRegion',userShowPanel);
 			   userShowLayout.showChildView('infoRegion',userShowForm);
+			   userShowLayout.showChildView('logsRegion',userLogs);
+
 			   userShowLayout.showChildView('footerRegion',userShowFooter);
 
 

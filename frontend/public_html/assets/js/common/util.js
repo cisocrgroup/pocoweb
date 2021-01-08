@@ -48,6 +48,10 @@ escapeAsJSON: function(text) {
    };
 },
 
+capitalizeFirstLetter:function(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+},
+
 replaceSelectedText:function(replacementText) {
     var sel, range;
     if (window.getSelection) {

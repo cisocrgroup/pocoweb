@@ -571,6 +571,17 @@ define([
                             projectShowInfo.setJobSymbol(jobs);
                            if(jobs.statusName!="running"){ // stop job tracking if job is not running
                             projectShowLayout.stopJobTracking();
+                            console.log(jobs)
+                            var status = "";
+                              if (jobs.statusName=="done"){
+                                status = "success";
+                              }
+                              else{
+                                status = "danger"
+                              }
+                                 App.mainmsg.updateContent(Util.capitalizeFirstLetter(jobs.jobName)+" "+jobs.statusName,status);
+                              
+                
                             }
 
                        }).fail(function(response){
