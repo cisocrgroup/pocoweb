@@ -54,11 +54,24 @@ var Logs = {}
         var table = $('#logs-table').DataTable({
 
            "columnDefs": [
+                       {
+                         "targets": [0],
+                          "orderable": false
+                      },
+                        {
+                         "targets": [1],
+                          "orderable": false
+                      },
                       {
-                          "targets": [ 2 ],
+                          "targets": [2],
                           "visible": false,
-                          "searchable": false
-                      }
+                          "searchable": false,
+                          "orderable": false
+                      },
+                        {
+                         "targets": [3],
+                          "orderable": false
+                      },
                     
                   ]
 
