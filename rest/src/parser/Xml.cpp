@@ -13,12 +13,12 @@ struct xml_writer: pugi::xml_writer {
 
 ////////////////////////////////////////////////////////////////////////////////
 Xml::Xml(DocPtr doc)
-	: doc_(std::move(doc))
+  : doc_(std::move(doc))
 {}
 
 ////////////////////////////////////////////////////////////////////////////////
 Xml::Xml(const Path& path)
-	: doc_()
+  : doc_()
 {
 	read(path);
 }
@@ -47,14 +47,13 @@ Xml::write(const Path& path) const
 	doc_->print(w, " ", format);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// We need to do this to fix pugixml's (broken?) handling of whitespace       //
-// character nodes in ABBYY-XML files.                                        //
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+// We need to do this to fix pugixml's handling of whitespace //
+// whitespace character nodes in ABBYY-XML files.             //
+////////////////////////////////////////////////////////////////
 void
 xml_writer::write(const void* data, size_t n)
 {
-	std::cout << "writing n = " << n << "\n";
 	auto chars = (const char*) data;
 	void *pos;
 	while ((pos = memmem(chars, n, "></charParams", 13)) != NULL) {

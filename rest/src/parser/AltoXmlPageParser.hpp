@@ -14,17 +14,8 @@ using XmlParserPagePtr = std::shared_ptr<XmlParserPage>;
 class AltoXmlPageParser : public PageParser
 {
 public:
-  explicit AltoXmlPageParser(const Path& path)
-    : path_(path)
-    , xml_(path)
-    , done_(false)
-    , explicit_spaces_()
-  {}
-  explicit AltoXmlPageParser(Xml xml)
-    : xml_(xml)
-    , done_(false)
-    , explicit_spaces_()
-  {}
+  explicit AltoXmlPageParser(const Path& path);
+  explicit AltoXmlPageParser(Xml xml);
   virtual ~AltoXmlPageParser() noexcept override = default;
   virtual bool has_next() const noexcept override { return not done_; }
   virtual ParserPagePtr parse() override;

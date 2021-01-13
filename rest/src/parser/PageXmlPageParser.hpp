@@ -14,7 +14,7 @@ using XmlParserPagePtr = std::shared_ptr<XmlParserPage>;
 class PageXmlPageParser : public PageParser {
 public:
   explicit PageXmlPageParser(const Path &path)
-      : path_(path), xml_(path), done_(false) {}
+    : path_(path), xml_(path), done_(false) {}
   explicit PageXmlPageParser(Xml xml) : xml_(xml), done_(false) {}
   virtual ~PageXmlPageParser() noexcept override = default;
   virtual bool has_next() const noexcept override { return not done_; }
