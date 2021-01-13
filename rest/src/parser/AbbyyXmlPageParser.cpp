@@ -15,7 +15,7 @@ AbbyyXmlPageParser::AbbyyXmlPageParser(Xml xml) : path_(), xml_(xml), page_() {
 
 ////////////////////////////////////////////////////////////////////////////////
 AbbyyXmlPageParser::AbbyyXmlPageParser(const Path &path)
-    : path_(path), xml_(path), page_() {
+  : path_(path), xml_(path), page_() {
   page_ = xml_.doc().select_node("/document/page").node();
 }
 
