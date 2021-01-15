@@ -3,6 +3,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/finkf/gofiler v0.2.0 h1:RHdHeTgoHkBa9JVp5l5P+3UMbHvwXXHw3bYont9UTwg=
 github.com/finkf/gofiler v0.2.0/go.mod h1:mn58Ujgxq/pYa2j6btgXzkY2dFjg8FNDe8rwOqV8Pts=
+github.com/finkf/gofiler v0.4.0 h1:wVO7xci1YsKuMKAxyQ61XsGsKE1KZemJWf7Q3b5Usqs=
+github.com/finkf/gofiler v0.4.0/go.mod h1:mn58Ujgxq/pYa2j6btgXzkY2dFjg8FNDe8rwOqV8Pts=
 github.com/finkf/pcwgo v0.4.5 h1:4VOJ+gDRcmIOqML+sCbb60p2qSviaoyZpKTDs9BZyIE=
 github.com/finkf/pcwgo v0.4.5/go.mod h1:D/yxPCyM34ZKcbw+M0I0fyNvOsrtMLu3Tl1WhMxO150=
 github.com/go-sql-driver/mysql v1.4.1 h1:g24URVg0OFbNUTx9qqY1IRZ9D9z3iPyi5zKhQZpNwpA=

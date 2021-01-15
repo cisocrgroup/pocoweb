@@ -3,7 +3,7 @@ module github.com/finkf/pcwprofiler
 go 1.12
 
 require (
-	github.com/finkf/gofiler v0.2.0
+	github.com/finkf/gofiler v0.4.0
 	github.com/finkf/pcwgo v0.4.5
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
