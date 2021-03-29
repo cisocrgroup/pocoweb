@@ -266,7 +266,7 @@ define([
 
                         $.when(profilingproject)
                           .done(function(result) {
-                               App.mainmsg.updateContent("Profiling of '" + project.get("title") + "' started.", 'info');
+                               App.mainmsg.updateContent("Profiling of '" + project.get("title") + "' started.", 'info',true,result.request_url);
 
                                var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
                               $.when(fetchingjobs).done(function(jobs) {
@@ -350,7 +350,7 @@ define([
                 .done(function(ignore) {
                   App.trigger('projects:list');
                   App.mainmsg.updateContent(
-                    "Successfully reassigned package " + id, 'success');
+                    "Successfully reassigned package " + id, 'success',true,ignore.request_url);
                 })
                 .fail(function(response) {
                   Util.defaultErrorHandling(response, "danger");
@@ -363,7 +363,7 @@ define([
                 .done(function(ignore) {
                   App.trigger('projects:show', id);
                   App.mainmsg.updateContent(
-                    "Successfully reclaimed all packages", 'success');
+                    "Successfully reclaimed all packages", 'success',true,ignore.request_url);
                 })
                 .fail(function(response) {
                   Util.defaultErrorHandling(response, "danger");
@@ -431,7 +431,6 @@ define([
                       $.when(splitingproject)
                         .done(function(result) {
                           $("#splitModal").modal("hide");
-                          //   App.mainmsg.updateContent(result,'success');
                           var assign_data = { pairs: [] };
                           _.each(result.books, function(book, index) {
                             assign_data["pairs"].push({
@@ -524,7 +523,7 @@ define([
                     projectShowHeader.render();
                     projectShowInfo.render();
                     App.mainmsg.updateContent(
-                      "Successfully updated project " + id, 'success');
+                      "Successfully updated project " + id, 'success',true,result.request_url);
                   });
                 });
 
@@ -554,7 +553,7 @@ define([
                   $.when(deletingProject)
                     .done(function(result) {
                       App.mainmsg.updateContent(
-                        "Successfully deleted project " + id, 'success');
+                        "Successfully deleted project " + id, 'success',true,result.request_url);
                       App.trigger("projects:list");
                     })
                     .fail(function(response) {
@@ -579,13 +578,13 @@ define([
                               else{
                                 status = "danger"
                               }
-                                 App.mainmsg.updateContent(Util.capitalizeFirstLetter(jobs.jobName)+" "+jobs.statusName,status);
+                                 App.mainmsg.updateContent(Util.capitalizeFirstLetter(jobs.jobName)+" "+jobs.statusName,status,true,jobs.request_url);
                               
                 
                             }
 
                        }).fail(function(response){
-                             App.mainmsg.updateContent(response.responseText,'danger');
+                             App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url);
                        });
                  });
 

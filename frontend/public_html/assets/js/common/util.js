@@ -267,8 +267,7 @@ addLine : function(line,confidenceThreshold){
     },
 
     defaultErrorHandling: function(response,mode) {
-      console.log(response);
-
+      
       require(["app"],function(App){
         if(response.responseJSON!=undefined){
            if(response.status==401){
@@ -292,17 +291,19 @@ addLine : function(line,confidenceThreshold){
              // display login screen
              App.trigger("nav:login",false);
          }
-         App.mainmsg.updateContent("Error "+ response.responseJSON.code +" ("+response.responseJSON.status+") "+response.responseJSON.message,mode);
+                 console.log(response.request_url);
+
+         App.mainmsg.updateContent("Error "+ response.responseJSON.code +" ("+response.responseJSON.status+") "+response.responseJSON.message,mode,true,response.request_url);
          }
          else if(response.responseText!=undefined){
-         App.mainmsg.updateContent("Error "+ response.status+" ("+response.statusText+") ",mode);
+         App.mainmsg.updateContent("Error "+ response.status+" ("+response.statusText+") ",mode,true,response.request_url);
 
          }
          else if(response.message!=undefined){
-         App.mainmsg.updateContent("Error "+ response.code+" ("+response.message+") ",mode);
+         App.mainmsg.updateContent("Error "+ response.code+" ("+response.message+") ",mode,true,response.request_url);
          }
          else{
-            App.mainmsg.updateContent(response,mode);
+            App.mainmsg.updateContent(response,mode,true,response.request_url);
         }
       });
 

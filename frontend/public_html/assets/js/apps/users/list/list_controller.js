@@ -37,10 +37,10 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
  					   	var deletingUser = UserEntities.API.deleteUser({id:id});
     		    	 	$('#deleteModal').modal("hide");
 			    	 $.when(deletingUser).done(function(result){
-			    	 	 App.mainmsg.updateContent("User account "+id+" successfully deleted.",'success');              
+			    	 	 App.mainmsg.updateContent("User account "+id+" successfully deleted.",'success',true,result.request_url);              
 			    	 	delete_row.remove();
 			    	 }).fail(function(response){ 
-				        App.mainmsg.updateContent(response.responseText,'danger');
+     			         App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url)
 				      });    
  				})
 
@@ -58,7 +58,7 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 				 	 var creatingUser = UserEntities.API.createUser(data);
 			   	 	$.when(creatingUser).done(function(result){
 			   	 		$('#userModal').modal('hide');
-				         App.mainmsg.updateContent("Successfully created new user.",'success');
+				         App.mainmsg.updateContent("Successfully created new user.",'success',true,result.request_url);
 
 				         	var fetchingUsers = UserEntities.API.getUsers();
 
@@ -74,7 +74,7 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 
 				       }).fail(function(response){
    			   	 		$('#userModal').modal('hide');
-     			         App.mainmsg.updateContent(response.responseText,'danger')
+     			         App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url)
 				 		});    
  				 });
 

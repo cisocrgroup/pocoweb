@@ -18,7 +18,8 @@ var Logs = {}
         columns: Marionette.getOption(this,"columns"),
         items: Marionette.getOption(this,"collection"),
         title: Marionette.getOption(this,"title"),
-        asModal: Marionette.getOption(this,"asModal")
+        asModal: Marionette.getOption(this,"asModal"),
+        table_id: Marionette.getOption(this,"table_id")
 
       }
     },
@@ -31,14 +32,16 @@ var Logs = {}
           {name: "Message"},
           {name: "Date"},
           {name: "TimeStamp"},
-          {name: "Type"}
+          {name: "Type"},
+          {name: "Url"}
 
         ]
 
         this.columns = [
         {name:"msg",id:"id",clickrow :false},
         {name:"date",id:"id",clickrow :false},
-        {name:"type",id:"id",clickrow :false}
+        {name:"type",id:"id",clickrow :false},
+        {name:"url",id:"id",clickrow :false}
 
 
         ]
@@ -49,9 +52,10 @@ var Logs = {}
 
       onDomRefresh: function(){
 
-      
+       var table_id = Marionette.getOption(this,"table_id");
+
         var that = this;
-        var table = $('#logs-table').DataTable({
+        var table = $("#"+table_id).DataTable({
 
            "columnDefs": [
                        {

@@ -33,11 +33,12 @@ Entities.API = {
         type: "GET",
         dataType:"json",
         success: function(data) {
-          console.log(data)
+          data['request_url'] = this.url;
           defer.resolve(data);
 
             },
             error: function(data){
+              data['request_url'] = this.url;
               defer.resolve(undefined);
             }
     });
@@ -58,9 +59,11 @@ Entities.API = {
          type: "POST",
          data: JSON.stringify(data),
          success: function(data) {
+           data['request_url'] = this.url;
            defer.resolve(data);
          },
          error: function(data){
+           data['request_url'] = this.url;
            defer.reject(data);
          }
     });
@@ -82,11 +85,14 @@ Entities.API = {
          success: function(data) {
           console.log(data);
            let user = App.getPcw().user;
-           defer.resolve(user);
+             user['request_url'] = this.url;
+             defer.resolve(user);
          },
          error: function(data){
            App.logout();
-           defer.resolve(App.getPcw().user);
+           let user = App.getPcw().user;
+           user['request_url'] = this.url;
+           defer.resolve(user);
          }
     });
     return defer.promise();
@@ -101,10 +107,14 @@ Entities.API = {
          url: "rest/logout?auth=" + App.getAuthToken(),
          type: "GET",
          success: function(data) {
-           defer.resolve(data);
+           var resp_data = {}
+           resp_data['request_url'] = this.url;
+           defer.resolve(resp_data);
          },
          error: function(data){
-           defer.reject(data);
+           var resp_data = {}
+           resp_data['request_url'] = this.url;
+           defer.reject(resp_data);
          }
     });
     return defer.promise();
@@ -119,9 +129,11 @@ Entities.API = {
          url: "rest/users?auth=" + App.getAuthToken(),
          type: "GET",
          success: function(data) {
+              data['request_url'] = this.url;
               defer.resolve(data);
             },
             error: function(data){
+              data['request_url'] = this.url;
               defer.reject(data);
             }
     });
@@ -136,9 +148,11 @@ Entities.API = {
          url: "rest/users/" + App.getCurrentUser().id + "?auth=" + App.getAuthToken(),
          type: "GET",
          success: function(data) {
+           data['request_url'] = this.url;
            defer.resolve(data);
          },
          error: function(data){
+           data['request_url'] = this.url;
            defer.reject(data);
          }
     });
@@ -164,9 +178,11 @@ Entities.API = {
            password: data['new_password']
          }),
          success: function(data) {
+           data['request_url'] = this.url;
            defer.resolve(data);
          },
          error: function(data){
+           data['request_url'] = this.url;
            defer.reject(data);
          }
     });
@@ -182,10 +198,14 @@ Entities.API = {
         url: "rest/users/" + data.id + "?auth=" + App.getAuthToken(),
         type: "DELETE",
         success: function(data) {
-              defer.resolve(data);
+              var resp_data = {}
+              resp_data['request_url'] = this.url;
+              defer.resolve(resp_data);
             },
             error: function(data){
-              defer.reject(data);
+              var resp_data = {}
+              resp_data['request_url'] = this.url;
+              defer.reject(resp_data);
             }
     });
     return defer.promise();
@@ -209,9 +229,11 @@ Entities.API = {
           password: data.password
           }),
         success: function(data) {
+              data['request_url'] = this.url;
               defer.resolve(data);
             },
             error: function(data){
+              data['request_url'] = this.url;
               defer.reject(data);
             }
     });

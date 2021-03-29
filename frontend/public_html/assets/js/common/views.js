@@ -260,8 +260,8 @@ onAttach: function(){
 
 
    		 },
-   		  updateContent: function(message,type,save=true){
-
+   		  updateContent: function(message,type,save=true,url="/"){
+   		  	console.log(url)
    			this.options.message = message;
    			this.options.type = type
    			this.render();
@@ -273,7 +273,10 @@ onAttach: function(){
    			  }, 5000);
         	// }
         	if(!(App.getCurrentUser()['id']==-1)&&save){
-        	 App.addMessage(App.getCurrentUser()['id'],{msg:message,type:type,date:Date.now()});
+        		if(url!="/"){
+        			url = url.split('?')[0];
+        		}
+        	 App.addMessage(App.getCurrentUser()['id'],{msg:message,type:type,date:Date.now(),url:url});
         	}
 
 

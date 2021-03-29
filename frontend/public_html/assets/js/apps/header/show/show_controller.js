@@ -44,7 +44,8 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
 
                  $.when(loggingOutUser).done(function(result){
-                   App.mainmsg.updateContent("Logout successful",'success');
+                  console.log(result)
+                   App.mainmsg.updateContent("Logout successful",'success',true,result.request_url);
                    App.logout();
                    headerShowTopbar.options.user = App.getCurrentUser();
                    headerShowTopbar.render();
@@ -55,7 +56,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
                    App.logout();
                    headerShowTopbar.options.user = App.getCurrentUser();
                    headerShowTopbar.render();
-                   Util.defaultErrorHandling(response,'danger');
+                   Util.defaultErrorHandling(response,'danger',true,response.request_url);
           }); //  $.when(loggingOutUser).done
 
 
@@ -84,7 +85,7 @@ define(["app","common/util","apps/header/show/show_view","apps/users/login/login
 
     headerShowTopbar.on("nav:logs",function(){
           var logs = App.getLastMessages(App.getCurrentUser()['id']);
-          var userLogs = new Logs.List({collection: logs,asModal:true});
+          var userLogs = new Logs.List({collection: logs,asModal:true,table_id:"log_list_header"});
           App.mainLayout.showChildView('dialogRegion',userLogs);
 
 

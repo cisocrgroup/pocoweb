@@ -17,7 +17,6 @@ define(["app","common/util","apps/users/show/show_view","apps/users/logs/logs_vi
 
 			$.when(fetchingUser,fetchingLogs).done(function(user,logs){
 			// backdropView.destroy();
-			console.log(logs);
 
 
 			var userModel = new UserEntities.User(user);
@@ -41,7 +40,7 @@ define(["app","common/util","apps/users/show/show_view","apps/users/logs/logs_vi
 			  userShowHeader = new Show.Header({breadcrumbs: breadcrumbs,model:userModel});
 			  userShowPanel = new Show.Panel({model:user});
 			  userShowForm = new Show.Form({model:userModel});
-			  userLogs = new Logs.List({collection: logs});
+			  userLogs = new Logs.List({collection: logs,table_id:"log_list_user"});
 
 			  userShowFooter = new Show.FooterPanel({title: "Back to User Management <i class='fas fa-users-cog'></i>",manual:true});
 
@@ -63,12 +62,12 @@ define(["app","common/util","apps/users/show/show_view","apps/users/logs/logs_vi
 			  		data['id'] = user['id'];
 			  		var updatingUser = UserEntities.API.updateUser(data);
 						$.when(updatingUser).done(function(user){
-						  App.mainmsg.updateContent("Account updated successfully.",'success');
+						  App.mainmsg.updateContent("Account updated successfully.",'success',true,user.request_url);
                           console.log(user);
                           App.setCurrentUser(user);
 						  $('.loginname').text(user.name);
 						}).fail(function(response){
-			            App.mainmsg.updateContent(response.responseText,'warning');
+			            App.mainmsg.updateContent(response.responseText,'warning',true,response.request_url);
 			          });
 			  });
  			userShowPanel.on("show:delete",function(){

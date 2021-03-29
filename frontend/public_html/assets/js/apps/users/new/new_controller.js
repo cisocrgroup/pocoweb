@@ -31,13 +31,14 @@ define(["app","common/util","apps/users/new/new_view"], function(App,Util,New){
 			   	 	$.when(creatingUser).done(function(result){
 			   	 		$('#userModal').modal('hide');
 			   	 		console.log(result)
-				         App.mainmsg.updateContent("Successfully created new user.",'success');
+						  App.mainmsg.updateContent("Successfully created new user.",'success',true,result.request_url);
 
 				         App.trigger('users:list');
 
 				       }).fail(function(response){
    			   	 		$('#userModal').modal('hide');
-     			         App.mainmsg.updateContent(response.responseText,'danger')
+     			         App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url)
+
 				 		});    
  				 });
 

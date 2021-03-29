@@ -279,7 +279,7 @@ App.on("start", function(){
                  $.when(loggingInUser).done(function(result){
                    App.setCurrentUser(result.user);
                    App.setAuthToken(result.auth);
-                        App.mainmsg.updateContent("Login successful",'success');
+                        App.mainmsg.updateContent("Login successful",'success',true,result.request_url);
 
                          App.Navbar.options.user = App.getCurrentUser();
                          App.Navbar.render();

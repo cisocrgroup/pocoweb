@@ -45,9 +45,11 @@ Entities.API = {
          url: "rest/books?auth=" + App.getAuthToken(),
          type: "GET",
          success: function(data) {
+           data['request_url'] = this.url;
            defer.resolve(data);
          },
          error: function(data){
+           data['request_url'] = this.url;
            defer.reject(data);
          }
     });
@@ -63,9 +65,11 @@ Entities.API = {
       url: "rest/books/" + data.pid + "/pages/" + data.page + "?auth=" + App.getAuthToken(),
       type: "GET",
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(new Entities.Page(data));
       },
       error: function(data){
+        data['request_url'] = this.url;
         defer.reject(data);
       }
     });
@@ -81,9 +85,11 @@ getProject: function(data){
         url: "rest/books/" + data.pid + "?auth=" + App.getAuthToken(),
         type: "GET",
         success: function(data) {
+          data['request_url'] = this.url;
           defer.resolve(new Entities.Project(data));
         },
         error: function(data){
+          data['request_url'] = this.url;
           defer.reject(data);
         }
   });
@@ -99,9 +105,11 @@ getProjectStatistics: function(data){
         url: "rest/books/" + data.pid + "/statistics?auth=" + App.getAuthToken(),
         type: "GET",
         success: function(data) {
+          data['request_url'] = this.url;
           defer.resolve(data);
         },
         error: function(data){
+          data['request_url'] = this.url;
           defer.reject(data);
         }
   });
@@ -133,10 +141,12 @@ getProjectStatistics: function(data){
 			processData: false,
 			contentType: false,
 			success: function(data) {
+        data['request_url'] = this.url;
 				defer.resolve(data);
             },
             error: function(data){
-				defer.reject(data);
+            data['request_url'] = this.url;
+				    defer.reject(data);
             }
 		});
 		return defer.promise();
@@ -155,10 +165,12 @@ getProjectStatistics: function(data){
 			processData:false,
 			contentType: false,
 			success: function(data) {
+        data['request_url'] = this.url;
 				defer.resolve(data);
             },
-            error: function(data){
-				defer.reject(data);
+           error: function(data){
+           data['request_url'] = this.url;
+   				 defer.reject(data);
             }
 		});
 		return defer.promise();
@@ -170,9 +182,11 @@ downloadProject: function(data){
        url: "rest/books/"+ data.pid + "/download" + "?auth=" + App.getAuthToken(),
        type: "GET",
        success: function(data) {
+         data['request_url'] = this.url;
          defer.resolve(data);
        },
        error: function(data){
+         data['request_url'] = this.url;
          defer.reject(data);
        }
   });
@@ -187,9 +201,11 @@ downloadProject: function(data){
       type: "DELETE",
       data: data,
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
       },
       error: function(data){
+        data['request_url'] = this.url;
         defer.reject(data);
       }
     });
@@ -210,9 +226,11 @@ downloadProject: function(data){
       type: "PUT",
       data: JSON.stringify(data['projectdata']),
       success: function(data) {
-        defer.resolve(data);
+       data['request_url'] = this.url;
+       defer.resolve(data);
       },
       error: function(data){
+        data['request_url'] = this.url;
         defer.reject(data);
       }
     });
@@ -231,9 +249,11 @@ downloadProject: function(data){
         type: "POST",
         data: JSON.stringify(data),
         success: function(data) {
+              data['request_url'] = this.url;
               defer.resolve();
         },
          error: function(data){
+           data['request_url'] = this.url;
            defer.reject(data);
          }
     });
@@ -248,9 +268,11 @@ assignPackageTo: function(data){
          "?auth=" + App.getAuthToken() + "&assignto="+data.uid,
       type: "GET",
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
       },
        error: function(data){
+         data['request_url'] = this.url;
          defer.reject(data);
        }
   });
@@ -265,9 +287,11 @@ assignPackageBack: function(data){
          "?auth=" + App.getAuthToken(),
       type: "GET",
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
       },
        error: function(data){
+         data['request_url'] = this.url;
          defer.reject(data);
        }
   });
@@ -282,9 +306,11 @@ takeBackPackages: function(data){
          "?auth=" + App.getAuthToken(),
       type: "GET",
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
       },
        error: function(data){
+         data['request_url'] = this.url;
          defer.reject(data);
        }
   });
@@ -301,9 +327,11 @@ takeBackPackages: function(data){
         url: "rest/books/"+data.pid+"/pages/"+data.page_id+"/lines/"+data.line_id+"?auth=" + App.getAuthToken(),
         type: "GET",
         success: function(data) {
+              data['request_url'] = this.url;
               defer.resolve(data);
             },
             error: function(data){
+              data['request_url'] = this.url;
               defer.reject(data);
             }
     });
@@ -322,9 +350,11 @@ takeBackPackages: function(data){
         type: "PUT",
         data:JSON.stringify({correction:data.text}),
         success: function(data) {
+              data['request_url'] = this.url;
               defer.resolve(data);
             },
             error: function(data){
+              data['request_url'] = this.url;
               defer.reject(data);
             }
     });
@@ -343,9 +373,11 @@ takeBackPackages: function(data){
         type: "PUT",
         data:JSON.stringify({correction:data.token}),
         success: function(data) {
+              data['request_url'] = this.url;
               defer.resolve(data);
             },
             error: function(data){
+              data['request_url'] = this.url;
               defer.reject(data);
             }
     });
@@ -364,10 +396,12 @@ profileProject: function(data){
       type: "POST",
        data: JSON.stringify(data),
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
 
           },
           error: function(data){
+            data['request_url'] = this.url;
             defer.reject(data);
           }
   });
@@ -387,9 +421,11 @@ search: function(data){
         url: "rest/books/" + data.pid + "/search?auth=" + App.getAuthToken()+"&q="+data.q+"&t="+data.searchType+"&skip="+data.skip+"&max="+data.max+"&i="+App.getIgnoreCase(data.pid),
         type: "GET",
        success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
         },
           error: function(data){
+            data['request_url'] = this.url;
             defer.reject(data);
           }
   });
@@ -408,10 +444,12 @@ getCorrectionSuggestions: function(data){
         url: "rest/profile/books/" + data.pid + "?auth=" + App.getAuthToken()+"&q="+data.q,
         type: "GET",
         success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
 
           },
           error: function(data){
+            data['request_url'] = this.url;
             defer.reject(data);
           }
   });
@@ -432,9 +470,11 @@ getSuspiciousWords: function(data){
       url: "rest/profile/suspicious/books/" + data.pid + "?auth=" + App.getAuthToken(),
       type: "GET",
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
        },
       error: function(data){
+        data['request_url'] = this.url;
         defer.reject(data);
       }
   });
@@ -453,9 +493,11 @@ getErrorPatterns: function(data){
       url: "rest/profile/patterns/books/" + data.pid + "?auth=" + App.getAuthToken()+"&ocr=1",
       type: "GET",
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
         },
           error: function(data){
+            data['request_url'] = this.url;
             defer.reject(data);
           }
   });
@@ -475,9 +517,11 @@ getLexiconExtension: function(data){
       url: "rest/postcorrect/le/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "GET",
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
           },
           error: function(data){
+            data['request_url'] = this.url;
             defer.reject(data);
           }
   });
@@ -498,9 +542,11 @@ putLexiconExtension: function(data){
       type: "PUT",
       data: JSON.stringify(data),
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
       },
         error: function(data){
+          data['request_url'] = this.url;
           defer.reject(data);
         }
   });
@@ -518,9 +564,11 @@ startLexiconExtension: function(data){
       type: "POST",
        data:data,
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
           },
           error: function(data){
+            data['request_url'] = this.url;
             defer.reject(data);
           }
   });
@@ -540,9 +588,11 @@ getPostcorrection: function(data){
       url: "rest/postcorrect/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "GET",
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
       },
           error: function(data){
+            data['request_url'] = this.url;
             defer.reject(data);
           }
   });
@@ -560,10 +610,12 @@ startPostcorrection: function(data){
       type: "POST",
       data:data,
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
 
           },
           error: function(data){
+            data['request_url'] = this.url;
             defer.reject(data);
           }
   });
@@ -584,10 +636,12 @@ startTrainPostcorrection: function(data){
       url: "rest/postcorrect/train/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "POST",
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
 
           },
           error: function(data){
+            data['request_url'] = this.url;
             defer.reject(data);
           }
   });
@@ -608,10 +662,12 @@ getPostcorrectionModels: function(data){
       url: "rest/postcorrect/models/books/"+data.pid+"?auth=" + App.getAuthToken(),
       type: "GET",
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
 
           },
           error: function(data){
+           data['request_url'] = this.url;
             defer.reject(data);
           }
   });
@@ -632,10 +688,12 @@ setPostcorrectionModel: function(data,pid){
       type: "POST",
       data:JSON.stringify(data),
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
 
           },
           error: function(data){
+            data['request_url'] = this.url;
             defer.reject(data);
           }
   });
@@ -657,9 +715,11 @@ getJobs: function(data){
       url: "rest/jobs/"+data.pid+"?auth=" + App.getAuthToken(),
       type:"GET",
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
           },
           error: function(data){
+            data['request_url'] = this.url;
             defer.reject(data);
           }
   });
@@ -680,9 +740,11 @@ getJobs: function(data){
       url: url,
       type: "GET",
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
       },
       error: function(data){
+        data['request_url'] = this.url;
         defer.reject(data);
       }
     });
@@ -699,9 +761,11 @@ getGlobalPool: function(data){
       url: url,
       type: "GET",
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
       },
       error: function(data){
+        data['request_url'] = this.url;
         defer.reject(data);
       }
     });
@@ -718,9 +782,11 @@ getGlobalPool: function(data){
       url: url,
       type: "GET",
       success: function(data) {
+        data['request_url'] = this.url;
         defer.resolve(data);
       },
       error: function(data){
+        data['request_url'] = this.url;
         defer.reject(data);
       }
     });

@@ -20,11 +20,12 @@ Entities.API = {
         type: "GET",
         dataType:"json",
         success: function(data) {
-          console.log(data)
+          data['request_url'] = this.url;
           defer.resolve(data);
 
             },
             error: function(data){
+              data['request_url'] = this.url;
               defer.resolve(undefined);
             }
     });

@@ -106,7 +106,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/train_postcor
 
 
                    }).fail(function(response){
-                         App.mainmsg.updateContent(response.responseText,'danger');
+                         App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url);
                    });
              });
        var breadcrumbs = [

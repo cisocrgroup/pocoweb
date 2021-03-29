@@ -34,7 +34,7 @@ if(!asModal) {
     <h2 style="margin-bottom: 15px;"> Logs: </h2>
   <% } %>
    <table class="table table-bordered table-striped hover" 
- id="logs-table" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >
+ id="<%-table_id%>" cellspacing="0" width="100%"  style="margin-top: 20px !important; margin-bottom: 30px !important;" >
 
 
      <thead>

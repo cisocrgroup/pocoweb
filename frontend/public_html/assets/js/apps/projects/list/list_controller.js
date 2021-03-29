@@ -68,12 +68,10 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
                var profilingproject = ProjectEntities.API.profileProject({pid:id});
 
                        $.when(profilingproject).done(function(result){
-                            App.mainmsg.updateContent(result,'success');
+                            App.mainmsg.updateContent(result,'success',true,result.request_url);
 
                        }).fail(function(response){
-
-                             App.mainmsg.updateContent(response.responseText,'danger');
-
+                             App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url);
                             });
              });
 
@@ -107,13 +105,13 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
                    App.mainmsg.updateContent(
                      "Project " + result.projectId + " successfully created (" +
                        result.pages + " pages).",
-                     "success"
+                     "success",true,result.request_url
                    );
 
                    App.trigger("projects:list");
                 }).fail(function(response){
                    $('#projects-modal').modal('hide');
-                   App.mainmsg.updateContent(response.responseText,'danger');
+                   App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url);
 
                 }); // $when uploadingProject
 
