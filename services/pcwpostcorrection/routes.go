@@ -41,6 +41,8 @@ func (s *server) routes() {
 		service.WithLog(service.WithMethods(
 			http.MethodGet, service.WithProject(s.handleGetPostCorrection()),
 			http.MethodPost, service.WithProject(withProfiledProject(s.handleRunPostCorrection())))))
+	s.router.HandleFunc("/postcorrect/models/books/",
+		service.WithLog(service.WithMethods(http.MethodGet, service.WithProject(s.handleGetModel()))))
 	s.router.HandleFunc("/postcorrect/train/books/",
 		service.WithLog(service.WithMethods(
 			http.MethodPost, service.WithProject(s.handleTrain()))))
@@ -259,3 +261,18 @@ func (p *leProtocol) updateFromAPI(api *api.ExtendedLexicon) {
 		}
 	}
 }
+
+func (s *server) handleGetModel() service.HandlerFunc {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		p := service.ProjectFromCtx(ctx)
+		answer := struct {
+			BookID int `json:"bookID"`
+			ProjectID int `json:"projectID"`
+		} {
+			BookID: p.BookID,
+			ProjectID: p.ProjectID,
+		}
+		service.JSONResponse(w, answer)
+	}
+}
+
