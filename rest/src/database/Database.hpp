@@ -555,8 +555,8 @@ template <class Db> void delete_project(Db &db, int pid) {
   db(remove_from(a).where(a.bookid == pid));
   db(remove_from(l).where(l.bookid == pid));
   db(remove_from(c).where(c.bookid == pid));
-  db(remove_from(s).where(s.bookid == pid));
   db(remove_from(e).where(e.bookid == pid));
+  db(remove_from(s).where(s.bookid == pid));
   db(remove_from(b).where(b.bookid == pid));
   db(remove_from(p).where(p.id == pid));
 }
