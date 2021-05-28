@@ -167,21 +167,17 @@ void BookDirectoryBuilder::setup_img_and_ocr_files(Page &page) const {
 void BookDirectoryBuilder::make_line_img_files(const Path &pagedir,
                                                Page &page) const {
   PixPtr pix;
+  // Handle cases where the image dimensions of the xml file
+  // differ from the actual size of the image files.
   double xscale = 1.0;
   double yscale = 1.0;
   if (page.has_img_path()) {
     pix.reset(pixRead((base_dir_ / page.img).string().data()));
-    CROW_LOG_WARNING << "(BookDirectoryBuilder) page box: "
-		     << page.box.width() << "x" << page.box.height();
     if (not pix) {
       THROW(Error, "(BookDirectoryBuilder) Cannot read img ", page.img);
     }
-    CROW_LOG_WARNING << "(BookDirectoryBuilder) pix: "
-		     << pix->w << "x" << pix->h;
     xscale = calc_scaling_factor(pix->w, page.box.width());
     yscale = calc_scaling_factor(pix->h, page.box.height());
-    CROW_LOG_WARNING << "(BookDirectoryBuilder) xscale = "
-		     << xscale << " yscale = " << yscale;
   }
   for (auto &line : page) {
     if (not line->has_img_path() and not pix) {
@@ -239,13 +235,15 @@ void BookDirectoryBuilder::write_line_img_file(void *vpix,
 					       double yscale) const {
   auto pix = (PIX *)vpix;
   assert(pix);
-  // auto format = pixGetInputFormat(pix);
+
+  // Scale the line boxes according to the given x- and y scale factors.
   BOX box;
   box.x = scale(line.box.left(), xscale);
   box.y = scale(line.box.top(), yscale);
   box.w = scale(line.box.width(), xscale);
   box.h = scale(line.box.height(), yscale);
   clip(box, *pix);
+  // Write the line image snippets.
   if (box.x + box.w <= (int)pix->w and box.y + box.h <= (int)pix->h) {
     PixPtr tmp{pixClipRectangle(pix, &box, nullptr)};
     if (not tmp or
