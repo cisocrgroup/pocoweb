@@ -551,7 +551,7 @@ template <class Db> void delete_project(Db &db, int pid) {
   tables::Contents c;
   tables::Autocorrections ac;
   tables::Typcounts tc;
-  tables::Jobs j
+  tables::Jobs j;
   db(remove_from(pp).where(pp.projectid == pid));
   db(remove_from(ppp).where(ppp.bookid == pid));
   db(remove_from(pages).where(pages.bookid == pid));
