@@ -22,6 +22,7 @@ namespace fs = boost::filesystem;
 using namespace pcw;
 
 static double calc_scaling_factor(int, int);
+static int scale(int, double);
 
 ////////////////////////////////////////////////////////////////////////////////
 static BookDirectoryBuilder::Path
@@ -166,6 +167,8 @@ void BookDirectoryBuilder::setup_img_and_ocr_files(Page &page) const {
 void BookDirectoryBuilder::make_line_img_files(const Path &pagedir,
                                                Page &page) const {
   PixPtr pix;
+  double xscale = 1.0;
+  double yscale = 1.0;
   if (page.has_img_path()) {
     pix.reset(pixRead((base_dir_ / page.img).string().data()));
     CROW_LOG_WARNING << "(BookDirectoryBuilder) page box: "
@@ -175,8 +178,8 @@ void BookDirectoryBuilder::make_line_img_files(const Path &pagedir,
     }
     CROW_LOG_WARNING << "(BookDirectoryBuilder) pix: "
 		     << pix->w << "x" << pix->h;
-    double xscale = calc_scaling_factor(pix->w, page.box.width());
-    double yscale = calc_scaling_factor(pix->h, page.box.height());
+    xscale = calc_scaling_factor(pix->w, page.box.width());
+    yscale = calc_scaling_factor(pix->h, page.box.height());
     CROW_LOG_WARNING << "(BookDirectoryBuilder) xscale = "
 		     << xscale << " yscale = " << yscale;
   }
@@ -193,7 +196,7 @@ void BookDirectoryBuilder::make_line_img_files(const Path &pagedir,
       // ocoropus supports.
       line->img.replace_extension(".png");
       fs::create_directories(pagedir);
-      write_line_img_file(pix.get(), *line);
+      write_line_img_file(pix.get(), *line, xscale, yscale);
     } else if (line->has_img_path()) {
       const auto to =
           base_dir_ / dir_ / remove_common_base_path(line->img, tmp_dir());
@@ -231,15 +234,17 @@ static void clip(BOX &box, const PIX &pix) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void BookDirectoryBuilder::write_line_img_file(void *vpix,
-                                               const Line &line) const {
+                                               const Line &line,
+					       double xscale,
+					       double yscale) const {
   auto pix = (PIX *)vpix;
   assert(pix);
   // auto format = pixGetInputFormat(pix);
   BOX box;
-  box.x = line.box.left();
-  box.y = line.box.top();
-  box.w = line.box.width();
-  box.h = line.box.height();
+  box.x = scale(line.box.left(), xscale);
+  box.y = scale(line.box.top(), yscale);
+  box.w = scale(line.box.width(), xscale);
+  box.h = scale(line.box.height(), yscale);
   clip(box, *pix);
   if (box.x + box.w <= (int)pix->w and box.y + box.h <= (int)pix->h) {
     PixPtr tmp{pixClipRectangle(pix, &box, nullptr)};
@@ -288,4 +293,9 @@ Path BookDirectoryBuilder::remove_common_base_path(const Path &p,
 ////////////////////////////////////////////////////////////////////////////////
 double calc_scaling_factor(int a, int b) {
   return static_cast<double>(a) / static_cast<double>(b);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int scale(int x, double fac) {
+  return static_cast<int>(static_cast<double>(x) * fac);
 }
