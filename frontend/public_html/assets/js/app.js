@@ -188,7 +188,6 @@ App.setConfidenceThreshold = function(id, val){
 };
 
 
->>>>>>> origin/devel
 App.getIgnoreCase = function(id) {
   let ignoreCase = App.getPcw().options.ignoreCase[id] || true;
   return ignoreCase;
