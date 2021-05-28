@@ -72,6 +72,22 @@ if(asModal) {
   </div>
   </div>
 
+  <% if(edit_project) { %>
+
+    <div class="form-group row">
+    <div class="col-12">
+      <label for="p_model">Post correction models</label>
+      <select class="form-control" type="text" value="<%-p_models['modelId']%>"
+            id="p_model" name="p_model">
+       <%
+       _.each(p_models['models'], function(p_model) { %>
+          <option value="<%-p_model.id%>"><%-p_model.name%> : <%-p_model.description%></option>
+       <% }); %>
+      </select>
+    </div>
+    </div>
+
+  <% } %>
 <% } %>
 
 

@@ -1,37 +1,33 @@
-// ================================
-// apps/proposals/home/home_view.js
-// ================================
+// ===========================
+// apps/docs/home/home_view.js
+// ===========================
 
-define(["app","common/views"], function(IPS_App,Views){
+define(["marionette","app","common/views","common/util"
+], function(Marionette,App,Views,Util){
 
-  var Home={};
+
+  var Home = {};
 
   Home.Layout = Views.Layout.extend({
   });
 
-    Home.Header = Views.CardHeader.extend({
+
+ Home.Header = Views.Header.extend({
     initialize: function(){
-        this.title = "Proposal Portal",
-        this.icon = "fa fa-calendar",
-        this.color ="red",
-        this.stroke = "#d30014"
+        this.title = "PocoWeb Documentation"
+        this.icon ="fas fa-book"
+        this.color ="purple"
       }
   });
 
+ Home.Hub = Views.CardHub.extend({
 
+ })
 
-
-Home.Hub = Views.CardHub.extend({
-  initialize: function(){
-
-        this.maxrowlength = 3;
-        
-      }
- });
-
-
-
+  Home.FooterPanel = Views.FooterPanel.extend({
+    });
 
 return Home;
+
 
 });

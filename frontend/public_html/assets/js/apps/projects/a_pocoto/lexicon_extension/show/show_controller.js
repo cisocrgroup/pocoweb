@@ -23,7 +23,6 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
 		  loadingCircleView.destroy();
       console.log(project);
-
 			var projectShowLayout = new Show.Layout();
 			var projectShowHeader;
 			var projectShowLex = new Show.Layout(); // dummy view..
@@ -52,7 +51,6 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
               var fetchingle = ProjectEntities.API.getLexiconExtension({pid:id});
                $.when(fetchingle).done(function(le){
                        projectShowLex = new Show.LexiconExtension({le});
-                       projectShowLayout.showChildView('contentRegion',projectShowLex);
 
                        projectShowLex.on("show:move_token",function(yes,no){
                       
@@ -101,7 +99,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                         $.when(searchingToken).done(function(tokens){
                         var lineheight = App.getLineHeight(id);
                         var linenumbers = App.getLineNumbers(id);
-
+                        var confidence_threshold = App.getConfidenceThreshold(id)/10;
                             if(tokens.total==0){
                                 var confirmModal = new Show.OkDialog({
                                       asModal: true,
@@ -113,7 +111,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                                   return;
                             }
 
-                        var projectConcView = new Show.Concordance({selection:word,tokendata:tokens,asModal:true,le:true,lineheight:lineheight,linenumbers:linenumbers});
+                        var projectConcView = new Show.Concordance({selection:word,tokendata:tokens,asModal:true,le:true,lineheight:lineheight,linenumbers:linenumbers,confidence_threshold:confidence_threshold});
 
                          projectConcView.on("concordance:pagination",function(page_nr){
                                  var max = 9;
@@ -215,7 +213,8 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
                      });
 
                   });
-
+                  console.log(projectShowLex);
+                  projectShowLayout.showChildView('contentRegion',projectShowLex);
 
 
             });
@@ -284,15 +283,29 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
 
                    }).fail(function(response){
-                         App.mainmsg.updateContent(response.responseText,'danger');
+                         App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url);
                    });
              });
+         var breadcrumbs = [
+                 {title:"<i class='fas fa-home'></i>",url:"#home"},
+                 {title:"Projects",url:"#projects"},
+                 {title:project.get("title"),url:"#projects/"+id},
+                 {title:"Automatic Postcorrection",url:"#projects/"+id+"/a_pocoto"},
+                 {title:"Lexicon Extension",url:""}
 
-			  projectShowHeader = new Show.Header({title:"Lexicon Extension",icon:"far fa-edit",color:"blue"});
-      	projectShowFooterPanel = new Show.FooterPanel();
+
+          ];
+			  projectShowHeader = new Show.Header({title:"Lexicon Extension",icon:"far fa-edit",color:"blue",breadcrumbs:breadcrumbs});
+      	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to A-PoCoTo <i class='fas fa-cogs'></i>"});
 
 	           projectShowLayout.showChildView('headerRegion',projectShowHeader);
-	          projectShowLayout.showChildView('panelRegion',projectShowFooterPanel);
+	           projectShowLayout.showChildView('panelRegion',projectShowFooterPanel);
+
+                projectShowFooterPanel.on('go:back',function(){
+                App.trigger("projects:a_pocoto",id);
+               });
+
+
 
     		}); // on.attach()
 

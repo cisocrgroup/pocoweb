@@ -27,7 +27,7 @@ define(["marionette","app","common/views",
 
   Show.Header = Views.Header.extend({
     initialize: function(){
-        this.title = "Api documentation"
+        this.title = ""
 
       }
   });
@@ -54,7 +54,6 @@ define(["marionette","app","common/views",
 
 
 
-	Show.Missingindexstructure = Views.Error.extend({errortext:"Error 404: indexstructure not found"});
 
 
 return Show;

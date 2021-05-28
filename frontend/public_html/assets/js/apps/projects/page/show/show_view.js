@@ -21,6 +21,21 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       ,sidebarRegion: "#sidebar-region"
       ,pageRegion: "#page-region"
       ,footerRegion: "#footer-region"
+    },
+     onAttach:function(){
+
+        var crumbs = Marionette.getOption(this,"breadcrumbs");
+          var breadcrumbs = Util.getBreadcrumbs(crumbs);
+          $('.breadcrumbs').append(breadcrumbs).css('right','10px').css('z-index',"1");
+          $('#msg-region').hide();
+
+          setTimeout(function() {
+             $('#msg-region').hide();
+          }, 50);
+
+    },
+    onDestroy:function(){
+            $('#msg-region').show();
     }
 
   });
@@ -52,6 +67,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         e.preventDefault();
         this.trigger("header:search-clicked");
       }
+
+
   });
 
   Show.Search = Marionette.View.extend({
@@ -93,7 +110,11 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       'click .suspicious-words tr' : 'error_tokens_clicked',
       'click .error-patterns tr' : 'error_patterns_clicked',
 	    'click .special-characters tr' : 'special_characters_clicked',
-      'mouseover .special-characters tr' : 'special_characters_hover'
+      'mouseover .special-characters tr' : 'special_characters_hover',
+      'click .js-show-image': 'show_image_clicked',
+      'click .js-search' : 'search_clicked',
+      'click .js-correctPage' : 'correct_page_clicked',
+      'click .js-hide-sidebar' : 'hide_sidebar_clicked'
 
       },
          serializeData: function(){
@@ -101,8 +122,28 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
           data.lineheight = Marionette.getOption(this,'lineheight');
           data.pagehits = Marionette.getOption(this, 'pagehits');
           data.project = Marionette.getOption(this,"project");
-
+          data.confidence_threshold = Marionette.getOption(this,"confidence_threshold");
+          data.title = Marionette.getOption(this,"title");
+          data.pid = Marionette.getOption(this,"pid");
+          data.tokendistance = Marionette.getOption(this,'tokendistance');
         return data;
+      },
+      hide_sidebar_clicked:function(){
+       $('.sidebar-col').hide() 
+        $('.show-side-bar').show();
+      
+      },
+      correct_page_clicked:function(){
+        var that = this;
+       that.trigger("page:correct_line_clicked");
+      },
+      show_image_clicked : function(e){
+          e.preventDefault();
+          this.trigger("header:show-image-clicked");
+      },
+      search_clicked : function(e){
+        e.preventDefault();
+        this.trigger("header:search-clicked");
       },
 
       backward_clicked:function(e){
@@ -205,7 +246,8 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         var that = this;
 
           $('#pageDP').dropdown();
-
+          // $('#sidebar-container').height(window.innerHeight-64);
+        
         // $('#pageId').click(function(){
         // });
 
@@ -221,8 +263,103 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
             })
 
-          })
+          });
 
+        // confidence slider
+       var pid = Backbone.Marionette.getOption(this, 'pid');
+
+        var confidence_threshold = Backbone.Marionette.getOption(this, 'confidence_threshold');
+        var confslider = document.getElementById("confidence_slider");
+        $('#confidence_slider').val(confidence_threshold);
+          $('#confidence_value').text(confidence_threshold/10);
+
+        confslider.oninput = function() {
+          var actual_value = this.value/10;
+          that.trigger("sidebar:update_confidence_highlighting",this.value);
+          $('#confidence_value').text(actual_value);
+                $('.line-tokens').empty();
+                $('.line-img').each(function(index){
+                  var img = $(this);
+
+                      var line = that.model.get('lines')[index];
+                      if(line!=undefined){                        
+                          if(manualadjustment){
+                             Util.addLine(line,actual_value);
+                          }
+                          else{
+                            Util.addAlignedLine(line,actual_value);
+                          }
+
+
+                      }
+
+               });
+
+            if(manualadjustment){
+                $('.tokendiv').css('margin-right',tokendistance+"px");
+           }
+
+        
+           that.trigger('page:lines_appended');
+
+        };
+
+
+           // manual adjustment
+             var manualadjustment = Backbone.Marionette.getOption(this,'manualadjustment');
+             var tokendistance = Backbone.Marionette.getOption(this, 'tokendistance');
+
+              if(manualadjustment){
+                $('#manually_adjust_toggle').prop( "checked", true );
+                $('#token_distance_slider').prop( "disabled", false );
+
+              }
+              else{
+                $('#manually_adjust_toggle').prop( "checked", false );
+                $('#token_distance_slider').prop( "disabled", true );
+
+              }
+
+             $('#manually_adjust_toggle').change(function() {
+
+                   if(this.checked) {
+                    manualadjustment=true;
+                    $('#token_distance_slider').prop( "disabled", false );
+
+                  }
+                  else {
+                    manualadjustment=false;
+                    $('#token_distance_slider').prop( "disabled", true );
+
+                  }
+
+
+                  that.trigger("sidebar:update_manual_adjustment",manualadjustment,that.model.get('pageId'));
+
+            });
+
+
+      // token distance slider
+       var pid = Backbone.Marionette.getOption(this, 'pid');
+
+        var distslider = document.getElementById("token_distance_slider");
+        $('#token_distance_slider').val(tokendistance);
+          $('#token_distance_value').text(tokendistance+"px");
+
+        distslider.oninput = function() {
+
+           $('#token_distance_value').text(this.value+"px");
+           $('.tokendiv').css('margin-right',this.value+"px");
+          that.trigger("sidebar:update_token_distance",this.value);
+        
+        
+           // that.trigger('page:lines_appended');
+
+        };
+
+
+
+        // page hits slider
         var pagehits = Backbone.Marionette.getOption(this, 'pagehits');
         var phslider = document.getElementById("page_hits_slider");
 
@@ -233,6 +370,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
           $('#page_hits_value').text(this.value);
         };
 
+        // line height slider
         var lineheight = Backbone.Marionette.getOption(this,'lineheight');
          var slider = document.getElementById("line_size_slider");
 
@@ -247,16 +385,25 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
                       var line = that.model.get('lines')[index];
                       if(line!=undefined){
-                        Util.addAlignedLine(line);
+                         if(manualadjustment){
+                            Util.addLine(line,App.getConfidenceThreshold(pid)/10);
+                          }
+                          else{
+                           Util.addAlignedLine(line,App.getConfidenceThreshold(pid)/10);
+                          }
                       }
 
                });
                 $('#lineheight_value').text(this.value+"px");
                   // $('.line-tokens').css('font-size',(this.value/2)+"px"); // to scale line tokens 
-
+                    if(manualadjustment){
+                      $('.tokendiv').css('margin-right',tokendistance+"px");
+                    }
                 that.trigger("sidebar:update_line_height",this.value);
 
             }
+
+            // linenumbers
              var linenumbers = Backbone.Marionette.getOption(this,'linenumbers');
 
               if(linenumbers){
@@ -349,9 +496,10 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         return data;
       },
 
+ 
 
       correct_clicked:function(e){
-      e.stopPropagation();
+      e.stopPropagation();  
 
         var anchor = $(e.currentTarget).attr('anchor');
         var ids = Util.getIds(anchor);
@@ -468,20 +616,7 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
       }
       },
 
-      correct_page_clicked:function(){
-        var that = this;
-       $('.line-text').each(function(){
-
-
-        var anchor = $(this).attr('anchor');
-        var ids = Util.getIds(anchor);
-        var text = $('#line-'+anchor).find('.line').text().replace(/\s\s+/g, ' ').trim();
-
-         that.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor);
-
-
-       });
-      },
+  
       display_selected_line:function(line){
 
         $('.line').hide();
@@ -566,7 +701,6 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         // remove when clicked somewhere else
 
 
-
           $(document).click(function(e)
           {
 
@@ -599,8 +733,18 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
       onDomRefresh:function(e){
 
-        var linenumbers = Marionette.getOption(this,'linenumbers');
+        $('.show-side-bar').click(function () {
+             $(this).hide();
+             $('.sidebar-col').show();
+        });
 
+        var linenumbers = Marionette.getOption(this,'linenumbers');
+        var confidence_threshold = Marionette.getOption(this,'confidence_threshold');
+
+         // manual adjustment
+         var manualadjustment = Backbone.Marionette.getOption(this,'manualadjustment');
+         var tokendistance = Backbone.Marionette.getOption(this, 'tokendistance');
+         
 
            var that = this;
            $('#page-container').imagesLoaded( function() {
@@ -609,9 +753,19 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 	       	 var img = $(this);
                 var line = that.model.get('lines')[index];
                 if(line!=undefined){
-                  Util.addAlignedLine(line);
+                  if(manualadjustment){
+                     Util.addLine(line,confidence_threshold/10);
+                  }
+                  else{
+                    Util.addAlignedLine(line,confidence_threshold/10);
+                  }
                 }
             });
+
+           if(manualadjustment){
+                $('.tokendiv').css('margin-right',tokendistance+"px");
+           }
+
            that.trigger('page:lines_appended');
 
          });

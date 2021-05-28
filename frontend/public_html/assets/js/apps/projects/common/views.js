@@ -77,10 +77,15 @@ Views.ProjectForm = Marionette.View.extend({
 
   },
   updateClicked:function(){
+     console.log( Backbone.Syphon.serialize(this));
      this.trigger("project:update", Backbone.Syphon.serialize(this));
 
   },
   onAttach : function(){
+
+      var p_models = Marionette.getOption(this,"p_models");
+
+      $("#p_model").val(p_models['modelId']);
 
      if(this.options.asModal){
 
@@ -185,6 +190,7 @@ Views.ProjectForm = Marionette.View.extend({
           data.edit_project = Marionette.getOption(this,"edit_project");
           data.loading_text = Marionette.getOption(this,"loading_text");
           data.languages = Marionette.getOption(this,"languages");
+          data.p_models = Marionette.getOption(this,"p_models");
 
         return data;
     }

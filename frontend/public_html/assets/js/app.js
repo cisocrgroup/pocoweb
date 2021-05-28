@@ -2,8 +2,8 @@
 // app.js
 // ======
 
-define(["bootstrap","datepicker","marionette","datatables.net-responsive","datatables.net-bs4","datatables_scroller","moment","common/util","common/views","tpl!common/templates/maintemplate.tpl",
-], function(Bootstrap,Datepicker,Marionette,db_resp,bs_resp,data_scroller,moment,Util,Views,mainTpl){
+define(["bootstrap","datepicker","jquery-ui","sticky.jquery","marionette","datatables.net-responsive","datatables.net-bs4","datatables_scroller","moment","common/util","tpl!common/templates/maintemplate.tpl",
+], function(Bootstrap,Datepicker,jqueryui,stickyjquery,Marionette,db_resp,bs_resp,data_scroller,moment,Util,mainTpl){
 
 var App = Marionette.Application.extend({
     region: "#app-region",
@@ -29,13 +29,18 @@ App = new App();
 
 require(["backbone"], function (Backbone) {
 
-// console.log(Backbone.VERSION)
+ // console.log(Backbone.VERSION)
 
 });
 
+App.Navbar = "";
+
 App.navigate = function(route, options){
  options || (options = {});
-Backbone.history.navigate(route, options);
+
+ if (options['back']){
+ }
+ Backbone.history.navigate(route);
 };
 
 App.getCurrentRoute = function(){
@@ -48,10 +53,14 @@ App.newPcw = function() {
     auth: -1,
     options: {
       lineHeights: {}, // id: lineHeight
+      manualAdjustments: {}, // id: manualAdjustment
+      tokenDistances: {}, // id: tokenDistance
       pageHits: {},    // id: pageHits
       lineNumbers: {}, // id: lineNumber
       ignoreCase: {},  // id: ignore case
       hideCorrections: {},  // id: hide corrections
+      confidenceThreshold : {}, //id: confidence threshold,
+      lastMessages : {}, //id: lastMessages
       charMapFilter: "abcdefghijklmnopqrstuvwxyz" +
 	    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 	    "0123456789" +
@@ -115,6 +124,17 @@ App.getLineHeight = function(id){
   return height;
 };
 
+App.setTokenDistance = function(id,val){
+  let pcw = App.getPcw();
+  pcw.options.tokenDistances[id] = val;
+  App.setPcw(pcw);
+}
+
+App.getTokenDistance = function(id){
+  let distance = App.getPcw().options.tokenDistances[id] || 15;
+  return distance;
+};
+
 App.getPageHits = function(id) {
   let pageHits = App.getPcw().options.pageHits[id] || 8;
   return pageHits;
@@ -135,11 +155,40 @@ App.setLineNumbers = function(id,val){
 App.getLineNumbers = function(id){
   let lineNumbers = App.getPcw().options.lineNumbers[id];
   if(lineNumbers!=undefined){
-    return lineNumbers
+    return lineNumbers;
   }
   return true;
 };
 
+App.setManualAdjustment = function(id,val){
+  let pcw = App.getPcw();
+  pcw.options.manualAdjustments[id] = val;
+  App.setPcw(pcw);
+};
+
+App.getManualAdjustment = function(id){
+  let manualAdjustment = App.getPcw().options.manualAdjustments[id];
+
+  if(manualAdjustment!=undefined){
+    return manualAdjustment;
+  }
+  return false;
+};
+
+
+App.getConfidenceThreshold = function(id) {
+  let confidenceThreshold = App.getPcw().options.confidenceThreshold[id] || 0;
+  return confidenceThreshold;
+};
+
+App.setConfidenceThreshold = function(id, val){
+  let pcw = App.getPcw();
+  pcw.options.confidenceThreshold[id] = val;
+  App.setPcw(pcw);
+};
+
+
+>>>>>>> origin/devel
 App.getIgnoreCase = function(id) {
   let ignoreCase = App.getPcw().options.ignoreCase[id] || true;
   return ignoreCase;
@@ -156,9 +205,9 @@ App.getHideCorrections = function(id) {
   return hideCorrections;
 };
 
-App.setHideCorrections = function(id, ic) {
+App.setHideCorrections = function(id, hc) {
   let pcw = App.getPcw();
-  pcw.options.hideCorrections[id] = ic;
+  pcw.options.hideCorrections[id] = hc;
   App.setPcw(pcw);
 };
 
@@ -166,12 +215,29 @@ App.getCharmapFilter = function() {
   return App.getPcw().options.charMapFilter;
 };
 
+App.addMessage = function(user_id,msg) {
+  let pcw = App.getPcw();
+  console.log(pcw)
+  if(!(user_id in pcw.options.lastMessages)){
+     pcw.options.lastMessages[user_id] = [];
+  }
+
+  pcw.options.lastMessages[user_id].unshift(msg);
+  if (pcw.options.lastMessages[user_id].length > 25) {
+    pcw.options.lastMessages[user_id].pop();
+  }
+  App.setPcw(pcw);
+};
+
+App.getLastMessages = function(id) {
+  return App.getPcw().options.lastMessages[id];
+};
+
+
 App.on("start", function(){
   // init pcw local storage configuration
   let pcw = App.getPcw();
   App.setPcw(pcw);
-  console.log(pcw);
-
     if(Backbone.history){
        require([
                "apps/header/header_app"
@@ -180,10 +246,10 @@ App.on("start", function(){
                ,"apps/projects/projects_app"
                ,"apps/docs/docs_app"
                ,"apps/users/users_app"
+               ,"common/views"
 
-        ], function (HeaderApp,HomeApp,FooterApp,ProjectsApp,DocsApp,UsersApp) {
-
-          console.log(App)
+        ], function (HeaderApp,HomeApp,FooterApp,ProjectsApp,DocsApp,UsersApp,Views) {
+    Backbone.history.start();
 
     var app_region = App.getRegion();
 
@@ -213,7 +279,7 @@ App.on("start", function(){
                  $.when(loggingInUser).done(function(result){
                    App.setCurrentUser(result.user);
                    App.setAuthToken(result.auth);
-                        App.mainmsg.updateContent("Login successful!",'success');
+                        App.mainmsg.updateContent("Login successful",'success',true,result.request_url);
 
                          App.Navbar.options.user = App.getCurrentUser();
                          App.Navbar.render();
@@ -278,7 +344,6 @@ App.on("start", function(){
 
      HeaderApp.API.showHeader(function(){
        FooterApp.API.showFooter();
-       Backbone.history.start();
 
        if(App.getCurrentRoute().startsWith("user-content")){
           App.trigger("docs:show");
@@ -286,20 +351,15 @@ App.on("start", function(){
 
 
        if(App.getCurrentRoute() === ""){
-
           App.trigger("home:portal");
-
        }
 
      });
 
 
-     // App.on('page_changed',function(){
-     //  console.log(App.getCurrentRoute())
-     //  console.log("Page page_changed")
-     //  $('#mainmsg').empty();
-     // });
-
+     App.on('page_changed',function(){
+      // $('#mainmsg').empty();
+     });
 
        });
     }

@@ -21,12 +21,13 @@ Entities.API = {
         type: "POST",
         data:JSON.stringify(data),
         success: function(data) {
-
+             data['request_url'] = this.url;
              defer.resolve(data);
 
             },
             error: function(data){
-              defer.resolve(undefined);
+              data['request_url'] = this.url;
+              defer.resolve(data);
             }
     });
 
@@ -42,9 +43,11 @@ Entities.API = {
          url: "rest/api-version",
          type: "GET",
          success: function(data) {
+           data['request_url'] = this.url;
            defer.resolve(data);
          },
          error: function(data){
+           data['request_url'] = this.url;
            defer.reject(data);
          }
     });
@@ -60,26 +63,30 @@ Entities.API = {
          url: "rest/profile/languages?auth="+App.getAuthToken(),
          type: "GET",
          success: function(data) {
+          data['request_url'] = this.url;
           defer.resolve(data);
          },
          error: function(data){
+           data['request_url'] = this.url;
            defer.reject(data);
          }
     });
     return defer.promise();
   },
-  getDocumentation: function(){
+  getDocumentation: function(doc_type){
     var defer = jQuery.Deferred();
        $.ajax({
          headers: {
            'Accept': 'text/html'
          },
-         url: "doc.html",
+         url: doc_type+".html",
          type: "GET",
          success: function(data) {
+              data['request_url'] = this.url;
               defer.resolve(data);
          },
          error: function(data){
+           data['request_url'] = this.url;
            defer.reject(data);
          }
     });

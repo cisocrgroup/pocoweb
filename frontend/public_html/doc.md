@@ -671,20 +671,23 @@ included. The file has the following layout:
 
 ```json
 {
-	"Author": "author's name",
-	"Title": "book's title",
-	"Description": "book's description",
-	"OwnerEmail": "owner's email",
+	"Author":"author's name",
+	"Title":"book's title",
+	"Description":"book's description",
+	"OwnerEmail":"owner's email",
 	"Language": "book's profiler language",
-	"ID": 3,
-	"Year": 1900,
-	"Files": [
-		{
-			"GTFile": "path to GT text file",
-			"IMGFile": "path to image file",
-			"OCRFile": "path to OCR text file"
-		}
-	]
+	"ID":3,
+	"Year":1900,
+	"OCRTXTFiles": [
+		"..."
+	],
+	"GTIMGFiles": [
+		"..."
+	],
+	"GTTXTFiles": [
+		"..."
+	],
+	"Pooled":true
 }
 ```
 
@@ -2101,7 +2104,7 @@ correction.
 ---
 <a id='api-post-retrain'></a>
 ### POST rest/postcorrect/train/books/`pid`
-Start the [job](#user-content-api-get-jobs) to retrain the 
+Start the [job](#user-content-api-get-jobs) to retrain the
 post-correction model.
 * [Authorization](#user-content-authorization) is required.
 * Only the owner of a project or package can start the job.

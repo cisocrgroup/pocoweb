@@ -5,10 +5,10 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
  var Controller = {
 
  	listUsers: function(){
-		
+
    		require(["entities/users"], function(UserEntities){
 
- 
+
        	var fetchingUsers = UserEntities.API.getUsers();
 
 		usersListLayout = new List.Layout();
@@ -16,7 +16,15 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
     	 $.when(fetchingUsers).done(function(users){
 		usersListLayout.on("attach",function(){
 
- 			var usersListHeader = new List.Header();
+			  var breadcrumbs = [
+             {title:"<i class='fas fa-home'></i>",url:"/"},
+             {title:"User Management",url:"#users"},
+              {title:"List",url:""},
+
+       		  ];
+
+
+ 			var usersListHeader = new List.Header({breadcrumbs:breadcrumbs});
 			var usersListView = new List.UsersList({collection: users.users});
 			var usersListPanel = new List.Panel();
 
@@ -29,14 +37,14 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
  					   	var deletingUser = UserEntities.API.deleteUser({id:id});
     		    	 	$('#deleteModal').modal("hide");
 			    	 $.when(deletingUser).done(function(result){
-			    	 	 App.mainmsg.updateContent("User account "+id+" successfully deleted.",'success');              
+			    	 	 App.mainmsg.updateContent("User account "+id+" successfully deleted.",'success',true,result.request_url);
 			    	 	delete_row.remove();
-			    	 }).fail(function(response){ 
-				        App.mainmsg.updateContent(response.responseText,'danger');
-				      });    
+			    	 }).fail(function(response){
+     			         App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url)
+				      });
  				})
 
-			    
+
 
 			});
 
@@ -50,7 +58,7 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 				 	 var creatingUser = UserEntities.API.createUser(data);
 			   	 	$.when(creatingUser).done(function(result){
 			   	 		$('#userModal').modal('hide');
-				         App.mainmsg.updateContent("Successfully created new user.",'success');
+				         App.mainmsg.updateContent("Successfully created new user.",'success',true,result.request_url);
 
 				         	var fetchingUsers = UserEntities.API.getUsers();
 
@@ -61,25 +69,29 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 					    	 	   usersListView.trigger("onAttach");
   					    	 	   usersListView.render();
 
-                         	
+
 					    	 });
 
 				       }).fail(function(response){
    			   	 		$('#userModal').modal('hide');
-     			         App.mainmsg.updateContent(response.responseText,'danger')
-				 		});    
+     			         App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url)
+				 		});
  				 });
 
-			    
+
 
 			});
 
-			var usersFooterPanel = new List.FooterPanel();
+			 var usersFooterPanel = new List.FooterPanel({title: "Back to User Management <i class='fas fa-users'></i>",manual:true});
+
+		        usersFooterPanel.on("go:back",function(){
+		         App.trigger("users:home");
+		        });
 
 			    usersListLayout.showChildView('headerRegion',usersListHeader);
-                usersListLayout.showChildView('panelRegion',usersListPanel);	
-                usersListLayout.showChildView('infoRegion',usersListView);	
-                usersListLayout.showChildView('footerRegion',usersFooterPanel);	
+                usersListLayout.showChildView('panelRegion',usersListPanel);
+                usersListLayout.showChildView('infoRegion',usersListView);
+                usersListLayout.showChildView('footerRegion',usersFooterPanel);
 
  		}); // on:attach
 
@@ -87,11 +99,11 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 
          App.mainLayout.showChildView('mainRegion',usersListLayout);
 
-		}).fail(function(response){ 
+		}).fail(function(response){
 
-		      Util.defaultErrorHandling(response,'danger');                        
-                         
-                                        
+		      Util.defaultErrorHandling(response,'danger');
+
+
           }); //  $.when(fetchingAuth).done // $when fetchingUsers
 
 		}); // require

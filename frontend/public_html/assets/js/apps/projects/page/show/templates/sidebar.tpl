@@ -1,5 +1,13 @@
 
-    <div class="card" id="sidebar-container">
+    <div class="card rounded-0 " id="sidebar-container">
+		    <span class="btn-group float-right">
+		    	 <button title="Collapse Sidebar" id="collapseSidebar" type="button" class="js-hide-sidebar blue-bg btn btn-primary right rounded-0"><i class="fas fa-chevron-left"></i> </button>
+				<button title="Show page image" class="btn btn-sm btn-primary blue-bg rounded-0 js-show-image"> 
+				<i class="far fa-file-image"></i></button>
+				<button title="Search the project" class="btn btn-sm btn-primary blue-bg rounded-0 js-search"> 
+				<i class="fas fa-search"></i></button>
+				 <button title="Set whole page as corrected" id="correctPage" type="button" class="js-correctPage btn btn-primary blue-bg right rounded-0"><i class="fas fa-tasks"></i> </button>
+			</span>
 
 
 
@@ -153,35 +161,44 @@
 
 <div class="tab-pane fade" id="options" role="tabpanel" aria-labelledby="options-tab">
 
-  <div class="form-group options_row"
-  	   title="Adjust the height of the line images">
+  <div class="options_row" title="Adjust the height of the line images">
   <label for="line_size_slider"> Line height: <span id="lineheight_value"><%-lineheight%>px</span></label>
    <input  type="range" min="20" max="60" value="30" class="slider form-control" id="line_size_slider">
   </div>
-  <hr>
-  <div class="form-group options_row" title="Display line numbers">
+
+<div class="options_row" title="Manually adjust token distance">
+	<div><input type="checkbox" id="manually_adjust_toggle" name="manually_adjust_toggle" checked>
+  <span for="manually_adjust_toggle"> Adjust token distance manually </span></div>
+
+  <label for="token_distance_slider"> Token Distance: <span id="token_distance_value"><%-tokendistance%>px</span></label>
+   <input  type="range" min="0" max="150" value="15" class="slider form-control" id="token_distance_slider">
+  </div>
+
+   <div class="options_row"
+  	   title="Highlight all words by setting a confidence threshold">
+  <label for="confidence_slider"> Highlight by confidence: <span id="confidence_value"><%-confidence_threshold%></span></label>
+   <input  type="range" min="0" max="10" value="10" class="slider form-control" id="confidence_slider">
+  </div>
+  <div class="options_row" title="Display line numbers">
   <span><input type="checkbox" id="line_nr_toggle" name="line_nr_toggle" checked></span>
   <span for="line_nr_toggle"> Line numbers </span>
   </div>
-    <hr>
- <div class="form-group options_row"
+   <div class="options_row"
  	  title="Hide correction text lines">
   <span><input type="checkbox" id="cor_toggle" name="cor_toggle"></span>
   <span for="cor_toggle"> Hide corrections </span>
   </div>
-  <hr>
-  <div class="form-group options_row"
+  <div class="options_row"
   	   title="Set the maximum number of search results in concordance view">
   <label for="page_hits_slider"> Search hits per page: <span id="page_hits_value"><%-pagehits%></span></label>
    <input  type="range" min="1" max="100" value="8" class="slider form-control" id="page_hits_slider">
   </div>
-  <hr>
-  <div class="form-group options_row"
+
+  <div class="options_row"
   	   title="Ignore case for search results">
 	   <span><input type="checkbox" id="ignore_case_toggle" name="ignore_case_toggle"></span>
 	   <span for="ignore_case_toggle"> Ignore case </span>
   </div>
-  <hr>
 </div>
 
 

@@ -14,6 +14,7 @@ var Show = {};
       headerRegion: "#hl-region",
       panelRegion: "#panel-region",
       infoRegion: "#info-region",
+      logsRegion: "#logs-region",
       footerRegion: "#footer-region"
 
     }

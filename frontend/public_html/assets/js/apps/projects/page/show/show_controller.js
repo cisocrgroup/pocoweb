@@ -19,21 +19,33 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         	 $.when(fetchingpage,fetchingproject).done(function(page,project){
 
 		     	loadingCircleView.destroy();
-            console.log(page);
+           console.log(page);
            var lineheight = App.getLineHeight(id);
            var pagehits = App.getPageHits(id);
            var linenumbers = App.getLineNumbers(id);
            var hidecorrections = App.getHideCorrections(id);
            var ignore_case = App.getIgnoreCase(id);
+           var confidence_threshold = App.getConfidenceThreshold(id);
+           var tokendistance = App.getTokenDistance(id);
+           var manualadjustment = App.getManualAdjustment(id);
 
-			var projectShowLayout = new Show.Layout();
-			var projectShowHeader;
+           var breadcrumbs = [
+                 {title:"<i class='fas fa-home'></i>",url:"#home"},
+                 {title:"Projects",url:"#projects"},
+                 {title:project.get("title"),url:"#projects/"+id},
+                 {title:"Manual Postcorrection",url:""},
+                 {title: page.get('pageId'),url:""},
+
+          ];
+
+			var projectShowLayout = new Show.Layout({breadcrumbs:breadcrumbs});
 			var projectShowPage;
       var projectShowSidebar;
 			var projectShowFooterPanel;
 
 			projectShowLayout.on("attach",function(){
 
+        var sidebar_height = window.innerHeight-350;
 
         var fetchingsuspiciouswords = ProjectEntities.API.getSuspiciousWords({pid:id});
         var fetchingerrorpatterns = ProjectEntities.API.getErrorPatterns({pid:id});
@@ -45,7 +57,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                suspicious_words_array.push([word,suspicious_words['counts'][word]]);
             }
             var sp_table = $('.suspicious-words').DataTable({
-                 "scrollY": '556px',
+                 "scrollY": sidebar_height,
                   "data":suspicious_words_array,
                   "info":false,
                   "paging": false,
@@ -70,7 +82,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
               }
 
              var ep_table = $('.error-patterns').DataTable({
-                  "scrollY": '556px',
+                  "scrollY": sidebar_height,
                   "data":error_patterns_array,
                   "info":false,
                   "paging": false,
@@ -95,7 +107,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 				   data.push([key, charmap.charMap[key]]);
 			   }
              var char_table = $('.special-characters').DataTable({
-                  "scrollY": '556px',
+                  "scrollY": sidebar_height,
                   "data": data,//[],//[["a",10],["b",10],["c",10]],
                   "info":false,
                   "paging": false,
@@ -115,17 +127,17 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
               rows[0].remove();
              $('#special-characters-container > .loading_background2').fadeOut();
 
+            $('#sidebar-container').sticky({zIndex:10});
+            $('#sidebar-container').on('sticky-bottom-reached', function() { console.log("Bottom reached"); });
 
            });
 
 
+        projectShowPage = new Show.Page({model:page,title:project.get('title'),lineheight:lineheight,linenumbers:linenumbers,hidecorrections:hidecorrections,confidence_threshold:confidence_threshold,tokendistance:tokendistance,manualadjustment:manualadjustment,pid:id});
+	      projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,hidecorrections:hidecorrections,lineheight:lineheight,linenumbers:linenumbers,ignore_case:ignore_case,confidence_threshold:confidence_threshold,pid:id,tokendistance:tokendistance,manualadjustment:manualadjustment});
+      	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to Overview <i class='fas fa-book-open'></i>"});
 
-			  projectShowHeader = new Show.Header({title:project.get('title'),pageId:page.get('pageId')});
-        projectShowPage = new Show.Page({model:page,lineheight:lineheight,linenumbers:linenumbers,hidecorrections:hidecorrections});
-	      projectShowSidebar = new Show.Sidebar({model:page,project:project,pagehits:pagehits,hidecorrections:hidecorrections,lineheight:lineheight,linenumbers:linenumbers,ignore_case:ignore_case});
-      	projectShowFooterPanel = new Show.FooterPanel();
-
-        projectShowHeader.on("header:show-image-clicked",function(){
+        projectShowSidebar.on("header:show-image-clicked",function(){
 
 
                 var getUrl = window.location;
@@ -162,7 +174,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
         });
 
-        projectShowHeader.on("header:search-clicked",function(){
+        projectShowSidebar.on("header:search-clicked",function(){
 
             let projectShowSearch = new Show.Search();
                     App.mainLayout.showChildView("dialogRegion",projectShowSearch);
@@ -194,6 +206,9 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
        projectShowSidebar.on("sidebar:update_page_hits", function(value) {
          App.setPageHits(id, value);
        });
+        projectShowSidebar.on("sidebar:update_confidence_highlighting", function(value) {
+         App.setConfidenceThreshold(id, value);
+       });
         projectShowSidebar.on("sidebar:update_line_height",function(value){
           App.setLineHeight(id,value);
         });
@@ -207,6 +222,13 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
         projectShowSidebar.on("sidebar:update_hide_corrections", function(value) {
           App.setHideCorrections(id, value);
         });
+        projectShowSidebar.on("sidebar:update_token_distance", function(value) {
+          App.setTokenDistance(id, value);
+        });
+        projectShowSidebar.on("sidebar:update_manual_adjustment", function(value,page_id) {
+          App.setManualAdjustment(id, value);
+          this.trigger("page:new",page_id);
+        });
        projectShowSidebar.on("page:new",function(page_id){
                     line_id=null;
 
@@ -216,10 +238,14 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                     var fetchinglineheight = App.getLineHeight(id);
                     var fetchinglinenumbers = App.getLineNumbers(id);
                     var fetchinghidecorrections = App.getHideCorrections(id);
+                     var ignore_case = App.getIgnoreCase(id);
+                     var confidence_threshold = App.getConfidenceThreshold(id);
+                     var tokendistance = App.getTokenDistance(id);
+                     var manualadjustment = App.getManualAdjustment(id);
 
                     var fetchingnewpage = ProjectEntities.API.getPage({pid:id, page:page_id});
 
-                     $.when(fetchingnewpage,fetchinglineheight,fetchinglinenumbers,fetchinghidecorrections).done(function(new_page,lineheight,linenumbers,hidecorrections){
+                     $.when(fetchingnewpage,fetchinglineheight,fetchinglinenumbers,fetchinghidecorrections,ignore_case,confidence_threshold,tokendistance,manualadjustment).done(function(new_page,lineheight,linenumbers,hidecorrections,ignore_case,confidence_threshold,tokendistance,manualadjustment){
                       loadingCircleView.destroy();
                       new_page.attributes.title = project.get('title');
                       projectShowPage.model.set(new_page.toJSON());
@@ -229,21 +255,27 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
 
                       projectShowPage.options.lineheight=lineheight;
                       projectShowPage.options.linenumbers=linenumbers;
+                      projectShowPage.options.ignore_case=ignore_case;
+                      projectShowPage.options.confidence_threshold=confidence_threshold;
                       projectShowPage.options.hidecorrections=hidecorrections;
+                      projectShowPage.options.tokendistance=tokendistance;
+                      projectShowPage.options.manualadjustment=manualadjustment;
 
                       projectShowPage.render();
                          projectShowLayout.showChildView('pageRegion',projectShowPage);
 
                       projectShowSidebar.model = new_page;
-                      $('#pageId').text('Page '+new_page.get('pageId'))
+
+
+                      $('#pageId').text('Page '+new_page.get('pageId')).attr('page_id',new_page.get('pageId'));
                       $('.js-stepforward > a').attr('title','go to previous page #'+new_page.get('nextPageId'));
                       $('.js-stepbackward > a').attr('title','go to next page #'+new_page.get('prevPageId'));
 
                       App.navigate("projects/"+id+"/page/"+new_page.get('pageId'));
 
-                      projectShowHeader.options.pageId=new_page.get('pageId');
-                      projectShowHeader.render();
+                      $(".breadcrumbs span").last().text(new_page.get('pageId'));
 
+                  
 
                   }).fail(function(response){
                         Util.defaultErrorHandling(response,'danger');
@@ -254,7 +286,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
        projectShowPage.on("page:lines_appended",function(){
                 if(page_id=="first") page_id = project.get('pageIds')[0];
                 if(page_id=="last") page_id = project.get('pageIds')[project.get('pageIds').length-1];
-                 if(line_id!=null){
+                if(line_id!=null){
                       var container = $('#page-container');
                       var scrollTo = $('#line-anchor-'+id+"-"+page_id+"-"+line_id);
 
@@ -264,7 +296,27 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                       scrollTo.parent().fadeOut(500).fadeIn(500);
                     });
 
-        }
+                }              
+
+       });
+
+       projectShowSidebar.on("page:correct_line_clicked",function(data,anchor){
+              var that = this;
+              var projectShowAreYouSure = new Views.AreYouSure({title:"Correct whole page",text:"Mark every line on this page as corrected ?",id:"correct_page_modal"})
+              projectShowAreYouSure.on("yesClicked",function(){
+                  $('#correct_page_modal').modal('hide');
+                  $('.line-text').each(function(){
+
+                    var anchor = $(this).attr('anchor');
+                    var ids = Util.getIds(anchor);
+                    var text = $('#line-'+anchor).find('.line').text().replace(/\s\s+/g, ' ').trim();
+                    that.trigger("page:correct_line",{pid:ids[0],page_id:ids[1],line_id:ids[2],text:text},anchor);
+
+                 });
+              });
+              App.mainLayout.showChildView("dialogRegion", projectShowAreYouSure);
+
+          
        });
 
        projectShowPage.on("page:correct_line",function(data,anchor){
@@ -281,7 +333,14 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                           lineanchor.fadeOut(200,function(){
                           lineanchor.fadeIn(200,function(){
                           lineanchor.find('.line-tokens').empty();
-                          Util.addAlignedLine(result);
+
+                          if(projectShowPage.options.manualadjustment){
+                            Util.addLine(result);
+                            $('.tokendiv').css('margin-right',this.value+"px");
+                          }
+                          else {
+                            Util.addAlignedLine(result);
+                          }
                           lineanchor.find('.line').hide();
                           lineanchor.find('.line-tokens').show();
                       });
@@ -363,7 +422,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
           var lineheight = App.getLineHeight(id);
           var linenumbers = App.getLineNumbers(id);
 
-           var projectConcView = new Show.Concordance({searchType:searchType,selection:selection,tokendata:tokens,lineheight:lineheight,linenumbers:linenumbers,asModal:true});
+           var projectConcView = new Show.Concordance({searchType:searchType,selection:selection,tokendata:tokens,lineheight:lineheight,linenumbers:linenumbers,confidence_threshold:App.getConfidenceThreshold(id)/10,asModal:true});
            $('.custom-popover').remove();
 
             projectConcView.on("concordance:correct_token",function(data,anchor,done){
@@ -373,14 +432,12 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                   $.when(correctingtoken).done(function(result){
 
                       done();
-                      console.log(page)
 
                        // update lines in background with corrections
 
                        var gettingLine = ProjectEntities.API.getLine(data);
                       $.when(gettingLine).done(function(line_result){
 
-                        console.log(line_result);
 
                         var lineanchor = $('#line-'+anchor);
                             if(lineanchor.length>0) {
@@ -391,12 +448,12 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                               }
 
 
+
                              page.attributes.lines[line_result.lineId-1] = line_result; // update line array in page.lines
-                             console.log(page);
-                            console.log(lineanchor);
+                          
                              lineanchor.find('.line').empty().text(line_result['cor']);
                              lineanchor.find('.line-tokens').empty();
-                             Util.addAlignedLine(line_result);
+                             Util.addAlignedLine(line_result,App.getConfidenceThreshold(id)/10);
 
                             lineanchor.find('.line').hide();
                             lineanchor.find('.line-tokens').show();
@@ -516,15 +573,10 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
             App.trigger("projects:show",id);
           });
 
-
-
-
-
-	          projectShowLayout.showChildView('headerRegion',projectShowHeader);
 	          projectShowLayout.showChildView('pageRegion',projectShowPage);
             projectShowLayout.showChildView('sidebarRegion',projectShowSidebar);
 
-	          projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
+	          // projectShowLayout.showChildView('footerRegion',projectShowFooterPanel);
 
 
     		}); // on.attach()

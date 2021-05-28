@@ -1,6 +1,6 @@
 
 
-<div class="container" style="background: white;">
+<div class="container">
 <div class="row">
 
    <div class="col col-12-md">

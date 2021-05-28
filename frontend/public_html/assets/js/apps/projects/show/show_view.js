@@ -100,16 +100,17 @@ define([
     },
     onAttach: function() {
       var table = $("#book_table").DataTable();
-      console.log(this)
       let status = this.model.attributes.status;
 
       if(status['profiled']){
         Util.removeStatusClasses($('.profile_icon'));
-        $('.profile_icon').addClass("green").attr('title','Profiling successful');;
+        $('.profile_icon').addClass("green").attr('title','Profiling successful');
+
       }
       if(status['post-corrected']){
         Util.removeStatusClasses($('.post_cor_icon'));
         $('.post_cor_icon').addClass("green").attr('title','Post Correction successful');
+
       }
       if(status['extended-lexicon']){
         Util.removeStatusClasses($('.le_icon'));
@@ -124,49 +125,72 @@ define([
   
     setJobSymbol:function(jobs){
        if(jobs.statusName=="running"){
+        
         if(jobs.jobName=="profiling"){
            Util.removeStatusClasses($('.profile_icon'));
-           $('.profile_icon').addClass("yellow").attr('title','Profiling in progress');;
+           $('.profile_icon').addClass("yellow").attr('title','Profiling in progress');
+
         }
         if(jobs.jobName=="calculating extended lexicon"){
            Util.removeStatusClasses($('.le_icon'));
-           $('.le_icon').addClass("yellow").attr('title','Lexcion Extension in progress');;
+           $('.le_icon').addClass("yellow").attr('title','Lexcion Extension in progress');
+
+
         }
         if(jobs.jobName=="calculating post-correction"){
            Util.removeStatusClasses($('.post_cor_icon'));
-           $('.post_cor_icon').addClass("yellow").attr('title','Post Correction in progress');;
+           $('.post_cor_icon').addClass("yellow").attr('title','Post Correction in progress');
+
+        }
+        if(jobs.jobName=="retrainer"){
+           Util.removeStatusClasses($('.retrainer_icon'));
+           $('.retrainer_icon').addClass("yellow").attr('title','Re-Training in progress');
+
         }
       }
 
        if(jobs.statusName=="failed"){
         if(jobs.jobName=="profiling"){
            Util.removeStatusClasses($('.profile_icon'));
-           $('.profile_icon').addClass("red").attr('title','Profiling failed');;
+           $('.profile_icon').addClass("red").attr('title','Profiling failed');
         }
         if(jobs.jobName=="calculating extended lexicon"){
            Util.removeStatusClasses($('.le_icon'));
-           $('.le_icon').addClass("red").attr('title','Lexcion Extension failed');;
+           $('.le_icon').addClass("red").attr('title','Lexcion Extension failed');
         }
         if(jobs.jobName=="calculating post-correction"){
            Util.removeStatusClasses($('.post_cor_icon'));
-           $('.post_cor_icon').addClass("red").attr('title','Post Correction failed');;
+           $('.post_cor_icon').addClass("red").attr('title','Post Correction failed');
+        }
+         if(jobs.jobName=="retrainer"){
+           Util.removeStatusClasses($('.retrainer_icon'));
+           $('.retrainer_icon').addClass("red").attr('title','Re-Training in failed');
+
         }
       }
 
     if(jobs.statusName=="done"){
         if(jobs.jobName=="profiling"){
            Util.removeStatusClasses($('.profile_icon'));
-           $('.profile_icon').addClass("green").attr('title','Profiling successful');;
+           $('.profile_icon').addClass("green").attr('title','Profiling successful');
         }
         if(jobs.jobName=="calculating extended lexicon"){
            Util.removeStatusClasses($('.le_icon'));
-           $('.le_icon').addClass("green").attr('title','Post Correction successful');;
+           $('.le_icon').addClass("green").attr('title','Lexicon Extension successful');
+
         }
         if(jobs.jobName=="calculating post-correction"){
            Util.removeStatusClasses($('.post_cor_icon'));
-           $('.post_cor_icon').addClass("green").attr('title','Lexicon Extension successful');;
+           $('.post_cor_icon').addClass("green").attr('title','Post Correction successful');
+
+        }
+        if(jobs.jobName=="retrainer"){
+          Util.removeStatusClasses($('.retrainer_icon'));
+         $('.retrainer_icon').addClass("green").attr('title','Re-Training in successful');
+
         }
       }
+   
     }
 
   });
@@ -211,7 +235,9 @@ define([
     }
   });
 
-  Show.FooterPanel = Views.FooterPanel.extend({});
+  Show.FooterPanel = Views.FooterPanel.extend({
+   manual:true,title:"Back to Projects <i class='fas fa-list card_main_icon' aria-hidden='true'></i>"
+  });
 
   Show.Missingprojects = Views.Error.extend({
     errortext: "Error 404: projects not found"

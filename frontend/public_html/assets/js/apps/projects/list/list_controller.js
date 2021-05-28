@@ -46,7 +46,13 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
     	   projectsListLayout.on("attach",function(){
 
-      var projectsListHeader = new List.Header();
+         var breadcrumbs = [
+          {title:"<i class='fas fa-home'></i>",url:"#home"},
+          {title:"Projects",url:""},
+
+        ];
+
+      var projectsListHeader = new List.Header({breadcrumbs:breadcrumbs});
 			var projectsListView = new List.ProjectsList({collection: projects.books,hover:true});
       var projectsListPanel = new List.Panel({user: App.getCurrentUser(),auth:App.getAuthToken()});
       var projectsListFooterPanel = new List.FooterPanel();
@@ -62,12 +68,10 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
                var profilingproject = ProjectEntities.API.profileProject({pid:id});
 
                        $.when(profilingproject).done(function(result){
-                            App.mainmsg.updateContent(result,'success');
+                            App.mainmsg.updateContent(result,'success',true,result.request_url);
 
                        }).fail(function(response){
-
-                             App.mainmsg.updateContent(response.responseText,'danger');
-
+                             App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url);
                             });
              });
 
@@ -84,25 +88,30 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
                model: new ProjectEntities.Project,
                languages:languages.languages,
                asModal:true,
+               p_models : {models:[]},
                text:"Create a new project",
                loading_text:"Upload in progress"});
 
            projectsListAddProject.on("project:submit_clicked",function(data,formdata){
              var uploadingProjectData = ProjectEntities.API.uploadProjectData(formdata);
+              
+
                  $.when(uploadingProjectData).done(function(result){
                    console.log(result);
+
                    $('.loading_background').fadeOut();
                    $('#projects-modal').modal('toggle');
                    $('#selected_file').text("");
                    App.mainmsg.updateContent(
                      "Project " + result.projectId + " successfully created (" +
                        result.pages + " pages).",
-                     "success"
+                     "success",true,result.request_url
                    );
+
                    App.trigger("projects:list");
                 }).fail(function(response){
                    $('#projects-modal').modal('hide');
-                   App.mainmsg.updateContent(response.responseText,'danger');
+                   App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url);
 
                 }); // $when uploadingProject
 

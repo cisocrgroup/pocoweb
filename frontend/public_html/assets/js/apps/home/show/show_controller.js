@@ -31,16 +31,18 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
                 "name": "Documentation",
                 "seq": 5,
                 "text": "Documentation of PoCoWeb.",
-                "url": "docs:show"
-            }, {
-                "color": "blue",
-                "icon": "far fa-question-circle",
-                "id": "about_btn",
-                "name": "About",
-                "seq": 4,
-                "text": "About this project.",
-                "url": "about:home"
-        }];
+                "url": "docs:home"
+            },
+        // {
+        //         "color": "blue",
+        //         "icon": "far fa-question-circle",
+        //         "id": "about_btn",
+        //         "name": "About",
+        //         "seq": 4,
+        //         "text": "About this project.",
+        //         "url": "about:home"
+        // }
+        ];
          let user = App.getCurrentUser();
          if (user != null && user.admin) {
            cards.push({
@@ -67,6 +69,7 @@ define(["app","common/util","apps/home/show/show_view","apps/header/show/show_vi
 
  		}); // on:show
 
+      
 
          App.mainLayout.showChildView('mainRegion',homeHomeLayout);
 

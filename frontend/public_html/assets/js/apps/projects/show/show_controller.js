@@ -23,6 +23,7 @@ define([
         var fetchingprojects = ProjectEntities.API.getProjects();
         var fetchinguser = UserEntities.API.loginCheck();
         var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+        var fetchingmodels = ProjectEntities.API.getPostcorrectionModels({pid:id});
 
         $.when(
           fetchingproject,
@@ -30,9 +31,10 @@ define([
           fetchinglanguages,
           fetchingprojects,
           fetchinguser,
-          fetchingjobs
+          fetchingjobs,
+          fetchingmodels
         )
-        .done(function(project, stats, languages, projects, user,jobs) {
+        .done(function(project, stats, languages, projects, user, jobs, models) {
           // separate loaded statistics in the project entity
           project.attributes.statistics = stats;
 
@@ -41,19 +43,21 @@ define([
           let isAdmin = user.admin;
 
             loadingCircleView.destroy();
-            console.log(project);
             var projectShowLayout = new Show.Layout();
             var projectShowHeader;
             var projectShowInfo;
             var projectShowFooterPanel;
-            // console.log(reviews);
+            
+            console.log(models);
 
             // only show packages of this project
-            console.log(projects);
+           
 
            if(jobs.statusName=="running"){ // start job tracking if job is running
             projectShowLayout.trackJobStatus();
             }
+
+       
 
             var packages = [];
             for (var i = 0; i < projects.books.length; i++) {
@@ -182,15 +186,6 @@ define([
                   }
               var cards2 = [
                 {
-                  color: "green",
-                  icon: "fas fa-history",
-                  id: "test_btn",
-                  name: "Order Profile",
-                  seq: 1,
-                  text: "Start profiling the project.",
-                  url: "profile"
-                },
-                {
                   color: "blue",
                   icon: "fas fa-cogs",
                   id: "test_btn",
@@ -216,7 +211,7 @@ define([
                 currentRoute: "home"
               });
               var projectShowHub2 = new Show.Hub({
-                columns: 3,
+                columns: 2,
                 cards: cards2,
                 currentRoute: "home"
               });
@@ -259,11 +254,47 @@ define([
                   this.trigger("show:profile");
                 }
               });
+
+                 //automatically profile if not profiled
+                console.log(project)
+
+                 if(!project.get('status')['profiled']){ // start job tracking if job is running
+                        var profilingproject = ProjectEntities.API.profileProject({
+                          pid: id,
+                          tokens: []
+                        });
+
+                        $.when(profilingproject)
+                          .done(function(result) {
+                               App.mainmsg.updateContent("Profiling of '" + project.get("title") + "' started.", 'info',true,result.request_url);
+
+                               var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
+                              $.when(fetchingjobs).done(function(jobs) {
+                                projectShowLayout.trackJobStatus();
+                                 projectShowInfo.setJobSymbol(jobs);
+
+                              });
+
+                          })
+                          .fail(function(response) {
+                            Util.defaultErrorHandling(response, "danger");
+                          });
+                  }
+           
+
+                 var breadcrumbs = [
+                 {title:"<i class='fas fa-home'></i>",url:"#home"},
+                 {title:"Projects",url:"#projects"},
+                 {title:project.get("title"),url:""},
+                ];
+
+
               let icon = isProject ? 'fas fa-book-open' : 'fas fa-box-open';
               projectShowHeader = new Show.Header({
                 title: project.get("title"),
                 icon: icon,
-                color: "green"
+                color: "green",
+                breadcrumbs:breadcrumbs
               });
               projectShowInfo = new Show.Info({ model: project, jobs:jobs });
               projectShowFooterPanel = new Show.FooterPanel({manual:true});
@@ -276,36 +307,8 @@ define([
                 packages: packages
               });
 
-              projectShowHub2.on("show:profile", function() {
-                var profilingproject = ProjectEntities.API.profileProject({
-                  pid: id,
-                  tokens: []
-                });
 
-                $.when(profilingproject)
-                  .done(function(result) {
-                    console.log(result)
-                    var confirmModal = new Show.OkDialog({
-                      asModal: true,
-                      title: "Profiling started",
-                      text: "Profile for " + project.get("title") + " ordered.",
-                      id: "profileModal"
-                    });
-                    App.mainLayout.showChildView("dialogRegion", confirmModal);
-
-                       var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
-                      $.when(fetchingjobs).done(function(jobs) {
-                        projectShowInfo.setJobSymbol(jobs);
-                        projectShowLayout.trackJobStatus();
-
-                      });
-
-                  })
-                  .fail(function(response) {
-                    Util.defaultErrorHandling(response, "danger");
-                  });
-              });
-
+          
               projectShowHub.on("show:adaptive", function() {
                 let fetchingAdaptiveTokens = ProjectEntities.API.getAdaptiveTokens(
                   { pid: id }
@@ -347,7 +350,7 @@ define([
                 .done(function(ignore) {
                   App.trigger('projects:list');
                   App.mainmsg.updateContent(
-                    "Successfully reassigned package " + id, 'success');
+                    "Successfully reassigned package " + id, 'success',true,ignore.request_url);
                 })
                 .fail(function(response) {
                   Util.defaultErrorHandling(response, "danger");
@@ -360,7 +363,7 @@ define([
                 .done(function(ignore) {
                   App.trigger('projects:show', id);
                   App.mainmsg.updateContent(
-                    "Successfully reclaimed all packages", 'success');
+                    "Successfully reclaimed all packages", 'success',true,ignore.request_url);
                 })
                 .fail(function(response) {
                   Util.defaultErrorHandling(response, "danger");
@@ -428,7 +431,6 @@ define([
                       $.when(splitingproject)
                         .done(function(result) {
                           $("#splitModal").modal("hide");
-                          //   App.mainmsg.updateContent(result,'success');
                           var assign_data = { pairs: [] };
                           _.each(result.books, function(book, index) {
                             assign_data["pairs"].push({
@@ -495,7 +497,8 @@ define([
                   text: "Edit Project",
                   edit_project: true,
                   loading_text: "Update in progress",
-                  languages: languages.languages
+                  languages: languages.languages,
+                  p_models : models
                 });
 
                 projectsShowEditProject.on("project:update", function(data) {
@@ -506,16 +509,21 @@ define([
                     pid: id,
                     projectdata: data
                   });
+                   var updatingModel = ProjectEntities.API.setPostcorrectionModel({
+                   id:parseInt(data['p_model'])},id);
 
-                  $.when(puttingProject).done(function(result) {
+                  $.when(puttingProject,updatingModel).done(function(result) {
                     $(".loading_background").fadeOut();
+                    models['modelId'] = data['p_model'];
+
+                    projectShowLayout.trigger("show:checkJobStatus");
 
                     $("#projects-modal").modal("toggle");
                     projectShowHeader.options.title = data.title;
                     projectShowHeader.render();
                     projectShowInfo.render();
                     App.mainmsg.updateContent(
-                      "Successfully updated project " + id, 'success');
+                      "Successfully updated project " + id, 'success',true,result.request_url);
                   });
                 });
 
@@ -545,7 +553,7 @@ define([
                   $.when(deletingProject)
                     .done(function(result) {
                       App.mainmsg.updateContent(
-                        "Successfully deleted project " + id, 'success');
+                        "Successfully deleted project " + id, 'success',true,result.request_url);
                       App.trigger("projects:list");
                     })
                     .fail(function(response) {
@@ -560,13 +568,23 @@ define([
                        $.when(fetchingjobs).done(function(jobs){
 
                             projectShowInfo.setJobSymbol(jobs);
-                            console.log(jobs);
                            if(jobs.statusName!="running"){ // stop job tracking if job is not running
                             projectShowLayout.stopJobTracking();
+                            console.log(jobs)
+                            var status = "";
+                              if (jobs.statusName=="done"){
+                                status = "success";
+                              }
+                              else{
+                                status = "danger"
+                              }
+                                 App.mainmsg.updateContent(Util.capitalizeFirstLetter(jobs.jobName)+" "+jobs.statusName,status,true,jobs.request_url);
+                              
+                
                             }
 
                        }).fail(function(response){
-                             App.mainmsg.updateContent(response.responseText,'danger');
+                             App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url);
                        });
                  });
 

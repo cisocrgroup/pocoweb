@@ -32,10 +32,21 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
 			projectShowLayout.on("attach",function(){
 
+         var breadcrumbs = [
+                 {title:"<i class='fas fa-home'></i>",url:"#home"},
+                 {title:"Projects",url:"#projects"},
+                 {title:project.get("title"),url:"#projects/"+id},
+                 {title:"Automatic Postcorrection",url:"#projects/"+id+"/a_pocoto"},
+                 {title:"Protocol",url:""}
 
-			  projectShowHeader = new Show.Header({title:"Postcorrection",icon:"fas fa-play",color:"red"});
-      	projectShowFooterPanel = new Show.FooterPanel();
 
+          ];
+			  projectShowHeader = new Show.Header({title:"Postcorrection",icon:"fas fa-play",color:"red",breadcrumbs:breadcrumbs});
+      	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to A-PoCoTo <i class='fas fa-cogs'></i>"});
+
+          projectShowFooterPanel.on('go:back',function(){
+                App.trigger("projects:a_pocoto",id);
+               });
 
       var status = project.get('status');
       if(job.statusName=="running"){

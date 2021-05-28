@@ -1,7 +1,7 @@
+<div title="Show side bar" class="mini-btn show-side-bar"><i class="fas fa-chevron-circle-right"></i></div>
 
 
-
-    <div id="page-container" class="border">
+    <div id="page-container">
 
 
 	   <%
@@ -54,9 +54,4 @@
 
 	</div>
 
-   <div class="row" style="margin-top: 15px;">
-    <div class="col col-md-12">
-
-    <button style="float: right;" id="correctPage" type="button" class="js-correctPage btn btn-primary blue-bg right"><i class="fas fa-tasks"></i> Set whole page as corrected</button>
-    </div>
-    </div>
+   

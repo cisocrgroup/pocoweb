@@ -25,7 +25,7 @@ define(["marionette","app","spin","spin.jquery","common/util","datatables",
 "tpl!common/templates/msgtemplate.tpl",
 "tpl!common/templates/singlestep.tpl"
 
-	], function(Marionette,IPS_App,Spinner,SpinnerJQuery,Util,dtb,listTpl,loadingTpl,loadingOpcTpl,loadingTpl2,headerTpl,cardHeadTpl,cardhubTpl,layoutTpl,errorTpl,emptyTpl,areYouTpl,okTpl,infoPanelTpl,bgInfoTpl,footerPanelTpl,confirmTpl,msgTpl,singleTpl){
+	], function(Marionette,App,Spinner,SpinnerJQuery,Util,dtb,listTpl,loadingTpl,loadingOpcTpl,loadingTpl2,headerTpl,cardHeadTpl,cardhubTpl,layoutTpl,errorTpl,emptyTpl,areYouTpl,okTpl,infoPanelTpl,bgInfoTpl,footerPanelTpl,confirmTpl,msgTpl,singleTpl){
 
     var Views={};
 
@@ -155,6 +155,13 @@ onAttach: function(){
     			isDefault: Marionette.getOption(this,"isDefault"),
     			h2: Marionette.getOption(this,"h2")
 			}
+		},
+		onAttach:function(){
+
+			  var crumbs = Marionette.getOption(this,"breadcrumbs");
+		      var breadcrumbs = Util.getBreadcrumbs(crumbs);
+		      $('.breadcrumbs').append(breadcrumbs);
+
 		}
 
 
@@ -253,18 +260,25 @@ onAttach: function(){
 
 
    		 },
-   		  updateContent: function(message,type){
-
+   		  updateContent: function(message,type,save=true,url="/"){
+   		  	console.log(url)
    			this.options.message = message;
    			this.options.type = type
    			this.render();
         	$("#"+this.id).css('display','block');
 
-        	if(type=="danger"||type=="success"){
+        	// if(type=="danger"||type=="success"){
         	  setTimeout(function() {
    		  		 $('#mainmsg').fadeOut();
    			  }, 5000);
+        	// }
+        	if(!(App.getCurrentUser()['id']==-1)&&save){
+        		if(url!="/"){
+        			url = url.split('?')[0];
+        		}
+        	 App.addMessage(App.getCurrentUser()['id'],{msg:message,type:type,date:Date.now(),url:url});
         	}
+
 
    		  },
    		  hide: function(){
@@ -609,9 +623,9 @@ Views.Layout = Marionette.View.extend({
 
 	Views.AreYouSure = Marionette.View.extend({
     template: areYouTpl,
-    events:{
-     "click #js-yes":"yesClicked",
-      "click #js-no":"noClicked"
+    triggers:{
+     "click .js-yes":"yesClicked",
+      "click .js-no":"noClicked"
     },
 	serializeData: function(){
 			return {
@@ -745,7 +759,9 @@ Views.FooterPanel = Marionette.View.extend({
      },
      serializeData: function(){
       return {
-	    manual: Marionette.getOption(this,"manual")
+	    manual: Marionette.getOption(this,"manual"),
+  	    title: Marionette.getOption(this,"title")
+
      }
 
   },

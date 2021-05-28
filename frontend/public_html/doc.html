@@ -127,6 +127,7 @@ of the post-correction.</li>
 <li><a href="#user-content-api-post-el">POST rest/postcorrect/le/books/<code>pid</code></a></li>
 <li><a href="#user-content-api-get-rrdm">GET rest/postcorrect/books/<code>pid</code></a></li>
 <li><a href="#user-content-api-post-rrdm">POST rest/postcorrect/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-post-retrain">POST rest/postcorrect/train/books/<code>pid</code></a></li>
 <li><a href="#user-content-api-get-global-pool">GET rest/pool/global</a></li>
 <li><a href="#user-content-api-get-user-pool">GET rest/pool/user</a></li>
 <li><a href="#user-content-api-get-jobs">GET rest/jobs/<code>jobid</code></a></li>
@@ -622,20 +623,23 @@ project, page ids and line ids:</p>
 <p>For each project directory, a small JSON-formatted info file is
 included. The file has the following layout:</p>
 <div class="highlight highlight-source-json"><pre>{
-	<span class="pl-s"><span class="pl-pds">"</span>Author<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>author's name<span class="pl-pds">"</span></span>,
-	<span class="pl-s"><span class="pl-pds">"</span>Title<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book's title<span class="pl-pds">"</span></span>,
-	<span class="pl-s"><span class="pl-pds">"</span>Description<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book's description<span class="pl-pds">"</span></span>,
-	<span class="pl-s"><span class="pl-pds">"</span>OwnerEmail<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>owner's email<span class="pl-pds">"</span></span>,
+	<span class="pl-s"><span class="pl-pds">"</span>Author<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>author's name<span class="pl-pds">"</span></span>,
+	<span class="pl-s"><span class="pl-pds">"</span>Title<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>book's title<span class="pl-pds">"</span></span>,
+	<span class="pl-s"><span class="pl-pds">"</span>Description<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>book's description<span class="pl-pds">"</span></span>,
+	<span class="pl-s"><span class="pl-pds">"</span>OwnerEmail<span class="pl-pds">"</span></span>:<span class="pl-s"><span class="pl-pds">"</span>owner's email<span class="pl-pds">"</span></span>,
 	<span class="pl-s"><span class="pl-pds">"</span>Language<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>book's profiler language<span class="pl-pds">"</span></span>,
-	<span class="pl-s"><span class="pl-pds">"</span>ID<span class="pl-pds">"</span></span>: <span class="pl-c1">3</span>,
-	<span class="pl-s"><span class="pl-pds">"</span>Year<span class="pl-pds">"</span></span>: <span class="pl-c1">1900</span>,
-	<span class="pl-s"><span class="pl-pds">"</span>Files<span class="pl-pds">"</span></span>: [
-		{
-			<span class="pl-s"><span class="pl-pds">"</span>GTFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path to GT text file<span class="pl-pds">"</span></span>,
-			<span class="pl-s"><span class="pl-pds">"</span>IMGFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path to image file<span class="pl-pds">"</span></span>,
-			<span class="pl-s"><span class="pl-pds">"</span>OCRFile<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>path to OCR text file<span class="pl-pds">"</span></span>
-		}
-	]
+	<span class="pl-s"><span class="pl-pds">"</span>ID<span class="pl-pds">"</span></span>:<span class="pl-c1">3</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>Year<span class="pl-pds">"</span></span>:<span class="pl-c1">1900</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>OCRTXTFiles<span class="pl-pds">"</span></span>: [
+		<span class="pl-s"><span class="pl-pds">"</span>...<span class="pl-pds">"</span></span>
+	],
+	<span class="pl-s"><span class="pl-pds">"</span>GTIMGFiles<span class="pl-pds">"</span></span>: [
+		<span class="pl-s"><span class="pl-pds">"</span>...<span class="pl-pds">"</span></span>
+	],
+	<span class="pl-s"><span class="pl-pds">"</span>GTTXTFiles<span class="pl-pds">"</span></span>: [
+		<span class="pl-s"><span class="pl-pds">"</span>...<span class="pl-pds">"</span></span>
+	],
+	<span class="pl-s"><span class="pl-pds">"</span>Pooled<span class="pl-pds">"</span></span>:<span class="pl-bl">true</span>
 }</pre></div>
 <hr>
 <p><a id="user-content-overview-services"></a></p>
@@ -2108,6 +2112,23 @@ correction.</p>
 	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">31</span>
 }</pre></div>
 <hr>
+<p><a id="user-content-api-post-retrain"></a></p>
+<h3>
+<a id="user-content-post-restpostcorrecttrainbookspid" class="anchor" href="#post-restpostcorrecttrainbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST rest/postcorrect/train/books/<code>pid</code>
+</h3>
+<p>Start the <a href="#user-content-api-get-jobs">job</a> to retrain the
+post-correction model.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+<li>Only the owner of a project or package can start the job.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-33" class="anchor" href="#response-data-33" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">31</span>
+}</pre></div>
+<hr>
 <p><a id="user-content-api-get-global-pool"></a></p>
 <h3>
 <a id="user-content-get-restpoolglobal" class="anchor" href="#get-restpoolglobal" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GET rest/pool/global</h3>
@@ -2149,7 +2170,7 @@ the <code>pooled</code> setting in the projects is ignored.</li>
 of a specific running job (such as predict, train, profiler,
 postcorrection) with the according id.</p>
 <h4>
-<a id="user-content-response-data-33" class="anchor" href="#response-data-33" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-34" class="anchor" href="#response-data-34" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>jobId<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,

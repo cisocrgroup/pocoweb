@@ -48,6 +48,10 @@ escapeAsJSON: function(text) {
    };
 },
 
+capitalizeFirstLetter:function(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+},
+
 replaceSelectedText:function(replacementText) {
     var sel, range;
     if (window.getSelection) {
@@ -115,7 +119,7 @@ getIds : function(anchor) {
   return ids;
 },
 
-addAlignedLine : function(line){
+addAlignedLine : function(line,confidenceThreshold){
 
 
      var linetokens = line.tokens;
@@ -126,7 +130,7 @@ addAlignedLine : function(line){
             var img_id = "line-img-"+anchor;
             var line_img = document.getElementById(img_id);
             var line_text =  $('#line-'+anchor);
-			line_text.find('.line-tokens').css('width', (Number(line_img.width)+50).toString() +'px');
+	       		// line_text.find('.line-tokens').css('width', (Number(line_img.width)+50).toString() +'px'); ?? not needed to determine max length??
             var scalefactor = line_img.width / line.box.width;
 
              if(linetokens==undefined){
@@ -136,13 +140,13 @@ addAlignedLine : function(line){
               return;
               }
 
-              let addDiv = function(text, width, box, offset, klass, conf) {
+              let addDiv = function(text, title, width, box, offset, klass) {
                   let textdiv = $('<div>' + text + "</div>");
  				      let boxstr = "(" + box.left + "," + box.top + "," +
 				      box.right + "," + box.bottom + ")";
                   textdiv.css('width', width * scalefactor);
                   textdiv.attr('boundingbox', boxstr);
-                  textdiv.attr('title', 'token ' + offset + ', ' + text + ', conf=' + conf.toFixed(3));
+                  textdiv.attr('title', title);
                   let div = $('<div class="tokendiv noselect"></div>').append(textdiv);
                   if (klass !== "") {
                     div.addClass(klass);
@@ -162,7 +166,7 @@ addAlignedLine : function(line){
                       bottom: token.box.bottom
                   };
                   let offset = prev.offset + prev.cor.trim().length + 1;
-                  addDiv("", width, box, offset,"", token.averageConfidence);
+                  addDiv("","", width, box, offset,"");
                 }
                 let corrected = "";
                 if (!line.isManuallyCorrected) {
@@ -172,10 +176,79 @@ addAlignedLine : function(line){
                   } else if (token.isAutomaticallyCorrected) {
                     corrected = "automatically_corrected token-text";
                   }
+                  else if(token.averageConfidence.toFixed(2)&&token.averageConfidence.toFixed(2)<=confidenceThreshold){
+                    corrected = "confidence_threshold token-text"
+                  }
                 }
-                addDiv(token.cor.trim(), token.box.width, token.box, token.offset,corrected, token.averageConfidence);
+                addDiv(token.cor.trim(),"average confidence: "+token.averageConfidence.toFixed(2), token.box.width, token.box, token.offset,corrected);
                }
 },
+
+addLine : function(line,confidenceThreshold){
+
+
+     var linetokens = line.tokens;
+
+
+            var anchor = line["projectId"]+"-"+line["pageId"]+"-"+line['lineId'];
+
+            var img_id = "line-img-"+anchor;
+            var line_img = document.getElementById(img_id);
+            var line_text =  $('#line-'+anchor);
+            // line_text.find('.line-tokens').css('width', (Number(line_img.width)+50).toString() +'px'); ?? not needed to determine max length??
+            var scalefactor = line_img.width / line.box.width;
+
+             if(linetokens==undefined){
+              var line_parent =  $('#line-anchor-'+anchor).parent();
+              line_parent.empty();
+              line_parent.append('<div class="alert alert-danger" role="alert"> Line ' +line['lineId']+' could not be displayed </div>');
+              return;
+              }
+
+              let addDiv = function(text,title, width, box, offset, klass) {
+                  let textdiv = $('<div>' + text + "</div>");
+              let boxstr = "(" + box.left + "," + box.top + "," +
+              box.right + "," + box.bottom + ")";
+                  // textdiv.css('width', width * scalefactor);
+                  textdiv.attr('boundingbox', boxstr);
+                  textdiv.attr('title', title);
+                  let div = $('<div class="tokendiv noselect"></div>').append(textdiv);
+                  if (klass !== "") {
+                    div.addClass(klass);
+                  }
+                  line_text.find('.line-tokens').append(div);
+              };
+              for(var i=0;i<linetokens.length;i++) {
+                let token = linetokens[i];
+                // add whitespace between tokens
+                if (i > 0) {
+                  let prev = linetokens[i-1];
+                  let width = token.box.left - prev.box.right;
+                  let box = {
+                      left: prev.box.right+1,
+                      right: token.box.left-1,
+                      top: token.box.top,
+                      bottom: token.box.bottom
+                  };
+                  let offset = prev.offset + prev.cor.trim().length + 1;
+                  addDiv("", width, box, offset,"");
+                }
+                let corrected = "";
+                if (!line.isManuallyCorrected) {
+                  corrected = token.isManuallyCorrected;
+                  if (token.isManuallyCorrected) {
+                    corrected = "manually_corrected token-text";
+                  } else if (token.isAutomaticallyCorrected) {
+                    corrected = "automatically_corrected token-text";
+                  }
+                  else if(token.averageConfidence.toFixed(2)&&token.averageConfidence.toFixed(2)<=confidenceThreshold){
+                    corrected = "confidence_threshold token-text"
+                  }
+                }
+                addDiv(token.cor.trim(),"average confidence: "+token.averageConfidence.toFixed(2), token.box.width, token.box, token.offset,corrected);
+               }
+},
+
   copyStringToClipboard :function(str) {
        // Create new element
        var el = document.createElement('textarea');
@@ -194,8 +267,7 @@ addAlignedLine : function(line){
     },
 
     defaultErrorHandling: function(response,mode) {
-      console.log(response);
-
+      
       require(["app"],function(App){
         if(response.responseJSON!=undefined){
            if(response.status==401){
@@ -205,24 +277,33 @@ addAlignedLine : function(line){
              // re-render navbar on every 401
 
              App.logout(); // automatically logout user when 401?
-             var headerRegion = App.mainLayout.getRegion('headerRegion');
-             headerRegion.currentView.getRegion('navbarRegion').currentView.options.user={id:-1};
-             headerRegion.currentView.getRegion('navbarRegion').currentView.render();
 
+             setTimeout(function() {
+
+             var headerRegion = App.mainLayout.getRegion('headerRegion');
+             headerRegion.currentView.getRegion('navbarRegion').currentView.options.user={id:-1}; 
+             headerRegion.currentView.getRegion('navbarRegion').currentView.render(); 
+
+             }, 50);
+
+         
+             
              // display login screen
              App.trigger("nav:login",false);
          }
-         App.mainmsg.updateContent("Error "+ response.responseJSON.code +" ("+response.responseJSON.status+") "+response.responseJSON.message,mode);
+                 console.log(response.request_url);
+
+         App.mainmsg.updateContent("Error "+ response.responseJSON.code +" ("+response.responseJSON.status+") "+response.responseJSON.message,mode,true,response.request_url);
          }
          else if(response.responseText!=undefined){
-         App.mainmsg.updateContent("Error "+ response.status+" ("+response.statusText+") ",mode);
+         App.mainmsg.updateContent("Error "+ response.status+" ("+response.statusText+") ",mode,true,response.request_url);
 
          }
          else if(response.message!=undefined){
-         App.mainmsg.updateContent("Error "+ response.code+" ("+response.message+") ",mode);
+         App.mainmsg.updateContent("Error "+ response.code+" ("+response.message+") ",mode,true,response.request_url);
          }
          else{
-            App.mainmsg.updateContent(response,mode);
+            App.mainmsg.updateContent(response,mode,true,response.request_url);
         }
       });
 
@@ -308,5 +389,25 @@ addPostCorrectionClassification: function(data) {
     data[klass][key] = types[key];
   }
   return data;
+},
+
+getBreadcrumbs(breadcrumbs){
+  var result = "";
+  var d = "";
+  for (var i=0;i<breadcrumbs.length;i++){
+    result+= d
+    if(breadcrumbs[i]['url']!=""){
+      result += "<a href='"+breadcrumbs[i]['url']+"'>";
+    }
+
+    result+="<span>"+breadcrumbs[i]['title']+"</span>";
+
+     if(breadcrumbs[i]['url']!=""){
+         result += "</a>";
+     }
+
+    d = " / ";
+  }
+  return result;
 }
 });

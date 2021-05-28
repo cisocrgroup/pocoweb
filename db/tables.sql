@@ -178,6 +178,7 @@ create table if not exists autocorrections (
    primary key (bookid, pageid, lineid, tokenid)
 );
 
+
 drop table if exists jobs;
 drop table if exists status;
 
