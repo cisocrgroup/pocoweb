@@ -21,6 +21,8 @@
 namespace fs = boost::filesystem;
 using namespace pcw;
 
+static double calc_scaling_factor(int, int);
+
 ////////////////////////////////////////////////////////////////////////////////
 static BookDirectoryBuilder::Path
 create_unique_bookdir_path(const Config &config) {
@@ -166,8 +168,17 @@ void BookDirectoryBuilder::make_line_img_files(const Path &pagedir,
   PixPtr pix;
   if (page.has_img_path()) {
     pix.reset(pixRead((base_dir_ / page.img).string().data()));
-    if (not pix)
+    CROW_LOG_WARNING << "(BookDirectoryBuilder) page box: "
+		     << page.box.width() << "x" << page.box.height();
+    if (not pix) {
       THROW(Error, "(BookDirectoryBuilder) Cannot read img ", page.img);
+    }
+    CROW_LOG_WARNING << "(BookDirectoryBuilder) pix: "
+		     << pix->w << "x" << pix->h;
+    double xscale = calc_scaling_factor(pix->w, page.box.width());
+    double yscale = calc_scaling_factor(pix->h, page.box.height());
+    CROW_LOG_WARNING << "(BookDirectoryBuilder) xscale = "
+		     << xscale << " yscale = " << yscale;
   }
   for (auto &line : page) {
     if (not line->has_img_path() and not pix) {
@@ -176,7 +187,7 @@ void BookDirectoryBuilder::make_line_img_files(const Path &pagedir,
     } else if (not line->has_img_path() and pix) {
       line->img = remove_common_base_path(pagedir / path_from_id(line->id()),
                                           base_dir_);
-      // we use png as single output format,
+      // We use png as single output format,
       // since it is supported by most web browsers
       // and is also the main image format that
       // ocoropus supports.
@@ -272,4 +283,9 @@ Path BookDirectoryBuilder::remove_common_base_path(const Path &p,
     return res;
   }
   return p;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+double calc_scaling_factor(int a, int b) {
+  return static_cast<double>(a) / static_cast<double>(b);
 }

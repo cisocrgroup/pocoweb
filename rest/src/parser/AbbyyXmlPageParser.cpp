@@ -28,7 +28,7 @@ ParserPagePtr AbbyyXmlPageParser::parse() {
     page->id = guess_id(path_);
   }
   page->box = {0, 0, page_.attribute("width").as_int(),
-               page_.attribute("heigth").as_int()};
+               page_.attribute("height").as_int()};
   page->file_type = FileType::AbbyyXml;
   auto linenodes = page_.select_nodes(".//line");
   for (const auto &i : linenodes) {
