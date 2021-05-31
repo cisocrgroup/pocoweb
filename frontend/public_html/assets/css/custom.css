@@ -960,11 +960,13 @@ border-top: 0;
 }
 
 .all_lines_parent{
-    /*max-height: calc(100vh - 130px);*/
-    min-height: 650px;
-    max-height: 650px;
+    max-height: calc(100vh - 306px);
+  /*  min-height: 650px;
+    max-height: 650px;*/
     overflow-y: auto;
 }
+
+
 
 #sg-dropdown{
   display: inline-block;
@@ -1081,8 +1083,15 @@ div.doc-note {
 
 }
 
+.modal-xxl {
+    max-width:99%;
+}
 
+#conc-modal{
 
+padding-left: 17px;
+
+}
 @media only screen and (min-width : 576px) {
     .sidebar-col{
       padding-right: 0;
