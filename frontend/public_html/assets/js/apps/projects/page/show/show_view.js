@@ -266,14 +266,24 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
           });
 
         // confidence slider
-       var pid = Backbone.Marionette.getOption(this, 'pid');
 
+    
+
+       var pid = Backbone.Marionette.getOption(this, 'pid');
         var confidence_threshold = Backbone.Marionette.getOption(this, 'confidence_threshold');
+
+
         var confslider = document.getElementById("confidence_slider");
         $('#confidence_slider').val(confidence_threshold);
-          $('#confidence_value').text(confidence_threshold/10);
 
-        confslider.oninput = function() {
+        if(confidence_threshold==-1){
+           $('#confidence_value').text("N/A").parent().prop('title',"No confidence values available");
+        }
+        else {
+           $('#confidence_value').text(confidence_threshold/10);
+        }
+
+        confslider.onchange = function() {
           var actual_value = this.value/10;
           that.trigger("sidebar:update_confidence_highlighting",this.value);
           $('#confidence_value').text(actual_value);
@@ -304,6 +314,13 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
 
         };
 
+
+     if(that.model.get('lines')[0]['averageConfidence']==0){
+
+           that.trigger("sidebar:update_confidence_highlighting","-1");
+           $('#confidence_slider').prop('disabled','true');
+
+         }
 
            // manual adjustment
              var manualadjustment = Backbone.Marionette.getOption(this,'manualadjustment');
