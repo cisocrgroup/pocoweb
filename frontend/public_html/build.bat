@@ -22,6 +22,8 @@ pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/images/pocoweb_logo
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/images/bg_page.jpg englmeier@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/assets/images/
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/images/bg_repeat.png englmeier@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/assets/images/
 
+rem pscp -r -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/assets/images/doc/ englmeier@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/assets/images/doc/
+
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/api_doc.html englmeier@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/manual.html englmeier@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/
 pscp -pw %pocoweb_pw% C:/pocoweb/frontend/public_html/legal_notice.html englmeier@pocoweb.cis.lmu.de:/srv/pocoweb/www-data/public_html/

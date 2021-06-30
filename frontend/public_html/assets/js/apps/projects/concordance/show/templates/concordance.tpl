@@ -3,7 +3,7 @@
 if(asModal) {
 %>
 
-  <div class="modal-dialog modal-xl" role="document">
+  <div class="modal-dialog modal-xxl" role="document">
   <div class="modal-content">
 
 <div class="modal-header">
