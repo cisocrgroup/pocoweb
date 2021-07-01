@@ -42,7 +42,9 @@ func (s *server) routes() {
 			http.MethodGet, service.WithProject(s.handleGetPostCorrection()),
 			http.MethodPost, service.WithProject(withProfiledProject(s.handleRunPostCorrection())))))
 	s.router.HandleFunc("/postcorrect/models/books/",
-		service.WithLog(service.WithMethods(http.MethodGet, service.WithProject(s.handleGetModel()))))
+		service.WithLog(service.WithMethods(
+			http.MethodGet, service.WithProject(s.handleGetModel()),
+			http.MethodPost, service.WithProject(s.handlePostModel()))))
 	s.router.HandleFunc("/postcorrect/train/books/",
 		service.WithLog(service.WithMethods(
 			http.MethodPost, service.WithProject(s.handleTrain()))))
@@ -145,8 +147,7 @@ func (s *server) handlePutExtendedLexicon() service.HandlerFunc {
 			return
 		}
 		if err := out.Close(); err != nil {
-			service.ErrorResponse(w, http.StatusInternalServerError,
-				"cannot close protocol: %v", err)
+			service.ErrorResponse(w, http.StatusInternalServerError, "cannot close protocol: %v", err)
 		}
 		// Reload updated protocol and rewrite it into the api.
 		put.ProjectID = p.ProjectID
@@ -265,13 +266,28 @@ func (p *leProtocol) updateFromAPI(api *api.ExtendedLexicon) {
 func (s *server) handleGetModel() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := service.ProjectFromCtx(ctx)
-		answer := struct {
-			BookID    int `json:"bookID"`
-			ProjectID int `json:"projectID"`
-		}{
-			BookID:    p.BookID,
-			ProjectID: p.ProjectID,
+		answer := map[string]interface{}{
+			"bookID":    p.BookID,
+			"projectID": p.ProjectID,
+			"models": []map[string]interface{}{
+				0: map[string]interface{}{
+					"id":          1,
+					"name":        "pre19th",
+					"description": "Model build from files previous to 19th century",
+				},
+				1: map[string]interface{}{
+					"id":          2,
+					"name":        "19th",
+					"description": "Model build from 19th century files",
+				},
+			},
 		}
 		service.JSONResponse(w, answer)
+	}
+}
+
+func (s *server) handlePostModel() service.HandlerFunc {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+
 	}
 }

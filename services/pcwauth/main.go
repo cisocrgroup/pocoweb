@@ -104,8 +104,8 @@ func main() {
 		http.MethodGet, service.WithAuth(
 			service.WithProject(projectOwner(proxy(pcProxy)))))))
 	http.HandleFunc("/postcorrect/models/", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithAuth(
-			service.WithProject(projectOwner(proxy(pcProxy)))))))
+		http.MethodGet, service.WithAuth(service.WithProject(projectOwner(proxy(pcProxy)))),
+		http.MethodPost, service.WithAuth(service.WithProject(projectOwner(proxy(pcProxy)))))))
 	// pkg
 	http.HandleFunc("/pkg/", service.WithLog(service.WithMethods(
 		http.MethodPost, service.WithAuth(
