@@ -153,7 +153,7 @@ func (p *profiler) insertProfileIntoDB() error {
 }
 
 func (p *profiler) deleteProfile(dtb db.DB) error {
-	tables := []string{"suggestions", "errorpatterns", "typcounts"}
+	tables := []string{"errorpatterns", "suggestions", "typcounts"}
 	for _, table := range tables {
 		stmt := "DELETE FROM " + table + " WHERE bookid=?"
 		_, err := db.Exec(dtb, stmt, p.project.BookID)
