@@ -75,6 +75,8 @@ to execute the following command: <code>curl http://localhost/rest/api-version</
 <li><a href="#user-content-api-post-el">POST rest/postcorrect/le/books/<code>pid</code></a></li>
 <li><a href="#user-content-api-get-rrdm">GET rest/postcorrect/books/<code>pid</code></a></li>
 <li><a href="#user-content-api-post-rrdm">POST rest/postcorrect/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-get-pcmodel">GET rest/postcorrect/model/books/<code>pid</code></a></li>
+<li><a href="#user-content-api-post-pcmodel">POST rest/postcorrect/model/books/<code>pid</code></a></li>
 <li><a href="#user-content-api-get-global-pool">GET rest/pool/global</a></li>
 <li><a href="#user-content-api-get-user-pool">GET rest/pool/user</a></li>
 <li><a href="#user-content-api-get-jobs">GET rest/jobs/<code>jobid</code></a></li>
@@ -143,7 +145,7 @@ No <a href="#user-content-authorization">authorization</a> is required.</p>
 	<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-name<span class="pl-pds">"</span></span>,
 	<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-email<span class="pl-pds">"</span></span>,
 	<span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-institute<span class="pl-pds">"</span></span>,
-	<span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>
+	<span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
   }
 }</pre></div>
 <hr>
@@ -162,7 +164,7 @@ No <a href="#user-content-authorization">authorization</a> is required.</p>
   <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-name<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-email<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-institute<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>
+  <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
 }</pre></div>
 <hr>
 <p><a id="user-content-api-post-users"></a></p>
@@ -184,7 +186,7 @@ No <a href="#user-content-authorization">authorization</a> is required.</p>
 		<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-name<span class="pl-pds">"</span></span>,
 		<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user's unique email<span class="pl-pds">"</span></span>,
 		<span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-institute<span class="pl-pds">"</span></span>,
-		<span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>
+		<span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
 	},
 	<span class="pl-s"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>new user's password<span class="pl-pds">"</span></span>
 }</pre></div>
@@ -195,7 +197,7 @@ No <a href="#user-content-authorization">authorization</a> is required.</p>
   <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-name<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-email<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-institute<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>
+  <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
 }</pre></div>
 <hr>
 <p><a id="user-content-api-get-users"></a></p>
@@ -216,14 +218,14 @@ No <a href="#user-content-authorization">authorization</a> is required.</p>
       <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-name-1<span class="pl-pds">"</span></span>,
       <span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-email-1<span class="pl-pds">"</span></span>,
       <span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-institute-1<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>
+      <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
     },
     {
       <span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">42</span>,
       <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-name-2<span class="pl-pds">"</span></span>,
       <span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-email-2<span class="pl-pds">"</span></span>,
       <span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-institute-2<span class="pl-pds">"</span></span>,
-      <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>
+      <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
     },
 	<span class="pl-ii">...</span>
   ]
@@ -263,7 +265,7 @@ not possible to change a user's id.</p>
   <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>updated-user-name<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>updated-user-email<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>updated-user-institute<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>
+  <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
 }</pre></div>
 <hr>
 <p><a id="user-content-api-get-users-uid"></a></p>
@@ -284,7 +286,7 @@ not possible to change a user's id.</p>
   <span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-name<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-email<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>insitute<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>user-institute<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>
+  <span class="pl-s"><span class="pl-pds">"</span>admin<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
 }</pre></div>
 <hr>
 <p><a id="user-content-api-delete-users-uid"></a></p>
@@ -328,13 +330,13 @@ packages are deleted as well.</p>
       <span class="pl-s"><span class="pl-pds">"</span>pages<span class="pl-pds">"</span></span>: <span class="pl-c1">100</span>,
       <span class="pl-s"><span class="pl-pds">"</span>pageIds<span class="pl-pds">"</span></span>: [<span class="pl-c1">15</span>,<span class="pl-c1">18</span>,<span class="pl-c1">20</span>,<span class="pl-c1">27</span>,<span class="pl-ii">...</span>],
 	  <span class="pl-s"><span class="pl-pds">"</span>histPatterns<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>t:th,ei:ey<span class="pl-pds">"</span></span>,
-	  <span class="pl-s"><span class="pl-pds">"</span>pooled<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span>,
+	  <span class="pl-s"><span class="pl-pds">"</span>pooled<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>,
 	  <span class="pl-s"><span class="pl-pds">"</span>status<span class="pl-pds">"</span></span>: {
-		<span class="pl-s"><span class="pl-pds">"</span>profile<span class="pl-pds">"</span></span>: <span class="pl-c1">false</span>,
-		<span class="pl-s"><span class="pl-pds">"</span>extended-lexicon<span class="pl-pds">"</span></span>: <span class="pl-c1">false</span>,
-		<span class="pl-s"><span class="pl-pds">"</span>post-corrected<span class="pl-pds">"</span></span>: <span class="pl-c1">false</span>
+		<span class="pl-s"><span class="pl-pds">"</span>profile<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>,
+		<span class="pl-s"><span class="pl-pds">"</span>extended-lexicon<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>,
+		<span class="pl-s"><span class="pl-pds">"</span>post-corrected<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>
 	  },
-      <span class="pl-s"><span class="pl-pds">"</span>isBook<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>
+      <span class="pl-s"><span class="pl-pds">"</span>isBook<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
     },
     <span class="pl-ii">...</span>
   ]
@@ -383,13 +385,13 @@ empty string <code>""</code>, <code>0</code> or <code>false</code> respectively.
   <span class="pl-s"><span class="pl-pds">"</span>pages<span class="pl-pds">"</span></span>: <span class="pl-c1">100</span>,
   <span class="pl-s"><span class="pl-pds">"</span>pageIds<span class="pl-pds">"</span></span>: [<span class="pl-c1">15</span>,<span class="pl-c1">18</span>,<span class="pl-c1">20</span>,<span class="pl-c1">27</span>,<span class="pl-ii">...</span>],
   <span class="pl-s"><span class="pl-pds">"</span>histPatterns<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>t:th,ei:ey<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>pooled<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>pooled<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>,
   <span class="pl-s"><span class="pl-pds">"</span>status<span class="pl-pds">"</span></span>: {
-	<span class="pl-s"><span class="pl-pds">"</span>profile<span class="pl-pds">"</span></span>: <span class="pl-c1">false</span>,
-	<span class="pl-s"><span class="pl-pds">"</span>extended-lexicon<span class="pl-pds">"</span></span>: <span class="pl-c1">false</span>,
-	<span class="pl-s"><span class="pl-pds">"</span>post-corrected<span class="pl-pds">"</span></span>: <span class="pl-c1">false</span>
+	<span class="pl-s"><span class="pl-pds">"</span>profile<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>extended-lexicon<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>post-corrected<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>
   },
-  <span class="pl-s"><span class="pl-pds">"</span>isBook<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span>
+  <span class="pl-s"><span class="pl-pds">"</span>isBook<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>
 }</pre></div>
 <hr>
 <p><a id="user-content-api-get-books-pid"></a></p>
@@ -417,13 +419,13 @@ package's data.</li>
   <span class="pl-s"><span class="pl-pds">"</span>pages<span class="pl-pds">"</span></span>: <span class="pl-c1">100</span>,
   <span class="pl-s"><span class="pl-pds">"</span>pageIds<span class="pl-pds">"</span></span>: [<span class="pl-c1">15</span>,<span class="pl-c1">18</span>,<span class="pl-c1">20</span>,<span class="pl-c1">27</span>,<span class="pl-ii">...</span>],
   <span class="pl-s"><span class="pl-pds">"</span>status<span class="pl-pds">"</span></span>: {
-	<span class="pl-s"><span class="pl-pds">"</span>profile<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span>,
-	<span class="pl-s"><span class="pl-pds">"</span>extended-lexicon<span class="pl-pds">"</span></span>: <span class="pl-c1">false</span>,
-	<span class="pl-s"><span class="pl-pds">"</span>post-corrected<span class="pl-pds">"</span></span>: <span class="pl-c1">false</span>
+	<span class="pl-s"><span class="pl-pds">"</span>profile<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>extended-lexicon<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>post-corrected<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>
   },
   <span class="pl-s"><span class="pl-pds">"</span>histPatterns<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>t:th,ei:ey<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>pooled<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span>,
-  <span class="pl-s"><span class="pl-pds">"</span>isBook<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>
+  <span class="pl-s"><span class="pl-pds">"</span>pooled<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isBook<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
 }</pre></div>
 <hr>
 <p><a id="user-content-api-put-books-pid"></a></p>
@@ -449,7 +451,7 @@ administrator can change a project's metadata.</li>
   <span class="pl-s"><span class="pl-pds">"</span>histPatterns<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>[m1:h1[,m2:h2]...]<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>profilerUrl<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>profiler-url|local<span class="pl-pds">"</span></span>,
   <span class="pl-s"><span class="pl-pds">"</span>histPatterns<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>t:th,ei:ey<span class="pl-pds">"</span></span>,
-  <span class="pl-s"><span class="pl-pds">"</span>pooled<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span>
+  <span class="pl-s"><span class="pl-pds">"</span>pooled<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>
 }</pre></div>
 <hr>
 <p><a id="user-content-api-delete-books-pid"></a></p>
@@ -506,7 +508,7 @@ package's statistics.</li>
 <a id="user-content-post-data-5" class="anchor" href="#post-data-5" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
 <div class="highlight highlight-source-json"><pre>{
   <span class="pl-s"><span class="pl-pds">"</span>userIds<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">2</span>, <span class="pl-c1">3</span>],
-  <span class="pl-s"><span class="pl-pds">"</span>random<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>
+  <span class="pl-s"><span class="pl-pds">"</span>random<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>
 }</pre></div>
 <ul>
 <li>The mandatory argument <code>ids</code> specifies an not empty array of user
@@ -650,8 +652,8 @@ hits (default: <code>max=50</code>).</li>
           <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
           <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
           <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
-          <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
-          <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
           <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
             <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
             <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
@@ -668,12 +670,12 @@ hits (default: <code>max=50</code>).</li>
           <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
           <span class="pl-s"><span class="pl-pds">"</span>tokenId<span class="pl-pds">"</span></span>: <span class="pl-c1">17</span>,
           <span class="pl-s"><span class="pl-pds">"</span>offset<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>,
-          <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
-          <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
           <span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected content of token<span class="pl-pds">"</span></span>,
           <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr content of token<span class="pl-pds">"</span></span>,
           <span class="pl-s"><span class="pl-pds">"</span>averageConf<span class="pl-pds">"</span></span>: <span class="pl-c1">0.3</span>,
-          <span class="pl-s"><span class="pl-pds">"</span>isNormal<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isNormal<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
           <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
             <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
             <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
@@ -723,8 +725,8 @@ with id <code>pid</code>.</p>
       <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
       <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
       <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
-      <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
-      <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
       <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
         <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
         <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
@@ -740,12 +742,12 @@ with id <code>pid</code>.</p>
           <span class="pl-s"><span class="pl-pds">"</span>lineId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
           <span class="pl-s"><span class="pl-pds">"</span>tokenId<span class="pl-pds">"</span></span>: <span class="pl-c1">17</span>,
           <span class="pl-s"><span class="pl-pds">"</span>offset<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>,
-          <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
-          <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
           <span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>corrected content of token<span class="pl-pds">"</span></span>,
           <span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>ocr content of token<span class="pl-pds">"</span></span>,
           <span class="pl-s"><span class="pl-pds">"</span>averageConf<span class="pl-pds">"</span></span>: <span class="pl-c1">0.3</span>,
-          <span class="pl-s"><span class="pl-pds">"</span>isNormal<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
+          <span class="pl-s"><span class="pl-pds">"</span>isNormal<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
           <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
             <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
             <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
@@ -809,8 +811,8 @@ from packages.</li>
       <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
       <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
       <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
-      <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
-      <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
       <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
         <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
         <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
@@ -859,8 +861,8 @@ from packages.</li>
       <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
       <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
       <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
-      <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
-      <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
       <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
         <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
         <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
@@ -910,8 +912,8 @@ from packages.</li>
       <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
       <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
       <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
-      <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
-      <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
       <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
         <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
         <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
@@ -962,8 +964,8 @@ or package with id <code>pid</code>.</p>
       <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
       <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
       <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
-      <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
-      <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+      <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
       <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
         <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
         <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
@@ -1000,8 +1002,8 @@ or package with id <code>pid</code>.</p>
   <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
   <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
   <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
-  <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
-  <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
   <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
     <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
     <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
@@ -1083,8 +1085,8 @@ the same as the number of unicode points in <code>ocr</code>.  Otherwise a <code
   <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
   <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
   <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
-  <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
-  <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
   <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
     <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
     <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
@@ -1141,8 +1143,8 @@ after <code>tid</code> or the end of the line) is returned.</p>
   <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
   <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
   <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
-  <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
-  <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
   <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
     <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
     <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
@@ -1200,8 +1202,8 @@ is corrected.</p>
   <span class="pl-s"><span class="pl-pds">"</span>cuts<span class="pl-pds">"</span></span>: [<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>, <span class="pl-c1">7</span>, <span class="pl-c1">9</span>, <span class="pl-c1">11</span>, <span class="pl-ii">...</span>],
   <span class="pl-s"><span class="pl-pds">"</span>confidences<span class="pl-pds">"</span></span>: [<span class="pl-c1">0.1</span>, <span class="pl-c1">0.1</span>, <span class="pl-c1">0.9</span>, <span class="pl-c1">1.0</span>, <span class="pl-ii">...</span>],
   <span class="pl-s"><span class="pl-pds">"</span>averageConfidence<span class="pl-pds">"</span></span>: <span class="pl-c1">0.5</span>,
-  <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
-  <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span><span class="pl-ii">|</span><span class="pl-c1">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isManuallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
+  <span class="pl-s"><span class="pl-pds">"</span>isAutomaticallyCorrected<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span><span class="pl-ii">|</span><span class="pl-bl">false</span>,
   <span class="pl-s"><span class="pl-pds">"</span>box<span class="pl-pds">"</span></span>: {
     <span class="pl-s"><span class="pl-pds">"</span>left<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
     <span class="pl-s"><span class="pl-pds">"</span>right<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
@@ -1244,7 +1246,7 @@ whole profile for each type in the document is returned.</p>
 			<span class="pl-s"><span class="pl-pds">"</span>distance<span class="pl-pds">"</span></span>: <span class="pl-c1">2</span>,
 			<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">13446</span>,
 			<span class="pl-s"><span class="pl-pds">"</span>weight<span class="pl-pds">"</span></span>: <span class="pl-c1">0.3</span>,
-			<span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>,
 			<span class="pl-s"><span class="pl-pds">"</span>ocrPatterns<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>pat1:pat2:pos2<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>pat3:pat4:pos2<span class="pl-pds">"</span></span>],
 			<span class="pl-s"><span class="pl-pds">"</span>histPatterns<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>pat5:pat6:pos3<span class="pl-pds">"</span></span>]
 		},
@@ -1256,7 +1258,7 @@ whole profile for each type in the document is returned.</p>
 			<span class="pl-s"><span class="pl-pds">"</span>distance<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
 			<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">13446</span>,
 			<span class="pl-s"><span class="pl-pds">"</span>weight<span class="pl-pds">"</span></span>: <span class="pl-c1">0.01</span>,
-			<span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-c1">false</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>top<span class="pl-pds">"</span></span>: <span class="pl-bl">false</span>,
 			<span class="pl-s"><span class="pl-pds">"</span>ocrPatterns<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>pat1:pat2:pos2<span class="pl-pds">"</span></span>],
 			<span class="pl-s"><span class="pl-pds">"</span>histPatterns<span class="pl-pds">"</span></span>: [<span class="pl-s"><span class="pl-pds">"</span>pat3:pat4:pos2<span class="pl-pds">"</span></span>,<span class="pl-s"><span class="pl-pds">"</span>pat5:pat6:pos3<span class="pl-pds">"</span></span>]
 		},
@@ -1472,7 +1474,7 @@ post-correction information.</li>
 			<span class="pl-s"><span class="pl-pds">"</span>normalized<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>normalized token<span class="pl-pds">"</span></span>,
 			<span class="pl-s"><span class="pl-pds">"</span>cor<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>correction (unnormalized)<span class="pl-pds">"</span></span>,
 			<span class="pl-s"><span class="pl-pds">"</span>ocr<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>original (unnormalized) ocr<span class="pl-pds">"</span></span>,
-			<span class="pl-s"><span class="pl-pds">"</span>taken<span class="pl-pds">"</span></span>: <span class="pl-c1">true</span>
+			<span class="pl-s"><span class="pl-pds">"</span>taken<span class="pl-pds">"</span></span>: <span class="pl-bl">true</span>
 		}
 	}
 }</pre></div>
@@ -1492,6 +1494,46 @@ correction.</p>
 <a id="user-content-response-data-32" class="anchor" href="#response-data-32" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">31</span>
+}</pre></div>
+<hr>
+<p><a id="user-content-api-get-pcmodel"></a></p>
+<h3>
+<a id="user-content-get-restpostcorrectmodelbookspid" class="anchor" href="#get-restpostcorrectmodelbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GET rest/postcorrect/model/books/<code>pid</code>
+</h3>
+<p>Get the post-correction models available for the given
+book <code>pid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+</ul>
+<h4>
+<a id="user-content-response-data-33" class="anchor" href="#response-data-33" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>projectId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">11</span>,
+	<span class="pl-s"><span class="pl-pds">"</span>models<span class="pl-pds">"</span></span>: [
+		{
+			<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>,
+			<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>19th<span class="pl-pds">"</span></span>,
+			<span class="pl-s"><span class="pl-pds">"</span>description<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>model trained on 19th century documents<span class="pl-pds">"</span></span>
+		},
+		<span class="pl-s"><span class="pl-pds">"</span>...<span class="pl-pds">"</span></span>
+	]
+}</pre></div>
+<hr>
+<p><a id="user-content-api-post-pcmodel"></a></p>
+<h3>
+<a id="user-content-post-restpostcorrectmodelbookspid" class="anchor" href="#post-restpostcorrectmodelbookspid" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>POST rest/postcorrect/model/books/<code>pid</code>
+</h3>
+<p>Set the post-correction model used for the given book <code>pid</code>.</p>
+<ul>
+<li>
+<a href="#user-content-authorization">Authorization</a> is required.</li>
+</ul>
+<h4>
+<a id="user-content-post-data-10" class="anchor" href="#post-data-10" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post data</h4>
+<div class="highlight highlight-source-json"><pre>{
+	<span class="pl-s"><span class="pl-pds">"</span>modelId<span class="pl-pds">"</span></span>: <span class="pl-c1">1</span>
 }</pre></div>
 <hr>
 <p><a id="user-content-api-get-global-pool"></a></p>
@@ -1535,7 +1577,7 @@ the <code>pooled</code> setting in the projects is ignored.</li>
 of a specific running job (such as predict, train, profiler,
 postcorrection) with the according id.</p>
 <h4>
-<a id="user-content-response-data-33" class="anchor" href="#response-data-33" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
+<a id="user-content-response-data-34" class="anchor" href="#response-data-34" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response data</h4>
 <div class="highlight highlight-source-json"><pre>{
 	<span class="pl-s"><span class="pl-pds">"</span>jobId<span class="pl-pds">"</span></span>: <span class="pl-c1">8</span>,
 	<span class="pl-s"><span class="pl-pds">"</span>bookId<span class="pl-pds">"</span></span>: <span class="pl-c1">13</span>,

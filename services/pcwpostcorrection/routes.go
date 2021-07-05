@@ -267,8 +267,8 @@ func (s *server) handleGetModel() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := service.ProjectFromCtx(ctx)
 		answer := map[string]interface{}{
-			"bookID":    p.BookID,
-			"projectID": p.ProjectID,
+			"bookId":    p.BookID,
+			"projectId": p.ProjectID,
 			"models": []map[string]interface{}{
 				0: map[string]interface{}{
 					"id":          1,

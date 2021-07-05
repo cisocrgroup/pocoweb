@@ -71,6 +71,8 @@ http://localhost/rest/api-version`.
   * [POST rest/postcorrect/le/books/`pid`](#user-content-api-post-el)
   * [GET rest/postcorrect/books/`pid`](#user-content-api-get-rrdm)
   * [POST rest/postcorrect/books/`pid`](#user-content-api-post-rrdm)
+  * [GET rest/postcorrect/model/books/`pid`](#user-content-api-get-pcmodel)
+  * [POST rest/postcorrect/model/books/`pid`](#user-content-api-post-pcmodel)
   * [GET rest/pool/global](#user-content-api-get-global-pool)
   * [GET rest/pool/user](#user-content-api-get-user-pool)
   * [GET rest/jobs/`jobid`](#user-content-api-get-jobs)
@@ -1432,6 +1434,42 @@ correction.
 ```json
 {
 	"id": 31
+}
+```
+
+---
+<a id='api-get-pcmodel'></a>
+### GET rest/postcorrect/model/books/`pid`
+Get the post-correction models available for the given
+book `pid`.
+* [Authorization](#user-content-authorization) is required.
+
+#### Response data
+```json
+{
+	"projectId": 13,
+	"bookId": 11,
+	"models": [
+		{
+			"id": 1,
+			"name": "19th",
+			"description": "model trained on 19th century documents"
+		},
+		"..."
+	]
+}
+```
+
+---
+<a id='api-post-pcmodel'></a>
+### POST rest/postcorrect/model/books/`pid`
+Set the post-correction model used for the given book `pid`.
+* [Authorization](#user-content-authorization) is required.
+
+#### Post data
+```json
+{
+	"modelId": 1
 }
 ```
 
