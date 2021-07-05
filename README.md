@@ -287,6 +287,9 @@ INSTALL_DIR=my/custom/path/to/www-data install`.
     according ip address `mysql -h 172.18.0.2 -u pocoweb -p pocoweb`
   * get info about mariadb container: `sudo docker inspect $(sudo
     docker ps | awk -e '/mariadb/{print $1}')`
+  * Connect to a running docker container:
+    * Get container ID: `docker ps`
+    * Connect to running container: `docker exec -it <Container-ID> bash`
 
 ## License
 
