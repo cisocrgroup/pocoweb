@@ -436,7 +436,7 @@ func trim(chars db.Chars) db.Chars {
 		if c == 0 {
 			c = chars[i].OCR
 		}
-		if !unicode.IsPunct(c) {
+		if !unicode.IsPunct(c) && !unicode.IsSymbol(c) {
 			break
 		}
 	}
@@ -445,7 +445,7 @@ func trim(chars db.Chars) db.Chars {
 		if c == 0 {
 			c = chars[j-1].OCR
 		}
-		if !unicode.IsPunct(c) {
+		if !unicode.IsPunct(c) && !unicode.IsSymbol(c) {
 			break
 		}
 	}
