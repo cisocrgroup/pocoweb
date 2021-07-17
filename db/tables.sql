@@ -133,8 +133,8 @@ create table if not exists suggestions (
 	suggestiontypid int references types(id),
 	moderntypid int references types(id),
 	dict varchar(50) not null,
-	histpatterns varchar(50) not null,
-	ocrpatterns varchar(50) not null,
+	histpatterns varchar(75) not null,
+	ocrpatterns varchar(75) not null,
 	weight double not null,
 	distance int not null,
 	topsuggestion boolean not null
