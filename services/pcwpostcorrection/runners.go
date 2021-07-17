@@ -5,10 +5,8 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"math/rand"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -76,7 +74,7 @@ func (r leRunner) runEL(ctx context.Context) error {
 }
 
 func (r leRunner) simpleRun() error {
-	profile, err := readProfile(r.project.Directory)
+	profile, err := readProfileDir(r.project.Directory)
 	if err != nil {
 		return fmt.Errorf("cannot create lexicon extension: %v", err)
 	}
@@ -258,35 +256,38 @@ func (r pcRunner) writeProtocol(pc *api.PostCorrection, path string) (err error)
 }
 
 func (r pcRunner) correctInBackend(corrections *api.PostCorrection) error {
-	// We should be communicating within docker compose - so skip verify is ok.
-	client := api.NewClient(pocowebURL, true)
-	for k, v := range corrections.Corrections {
-		log.Debugf("correction: %s %v", k, v)
-		if !v.Taken { // only correct corrections that should be taken
-			continue
-		}
-		token := api.Token{
-			BookID:    v.BookID,
-			ProjectID: v.ProjectID,
-			PageID:    v.PageID,
-			LineID:    v.LineID,
-			TokenID:   v.TokenID,
-		}
-		err := client.PutTokenX(&token, api.CorAutomatic, v.Cor)
-		if err != nil {
-			var ex api.ErrInvalidResponseCode
-			if !errors.As(err, &ex) {
-				return fmt.Errorf("cannot post correct %s: %v", v.Normalized, err)
-			}
-			if ex.Code != http.StatusConflict {
-				return fmt.Errorf("cannot post correct %s: %v", v.Normalized, err)
-			}
-			log.Debugf("cannot autocorrect: already manually corrected: %s", k)
-			v.Taken = false
-			corrections.Corrections[k] = v
-		}
-	}
 	return nil
+	/*
+		// We should be communicating within docker compose - so skip verify is ok.
+		client := api.NewClient(pocowebURL, true)
+		for k, v := range corrections.Corrections {
+			log.Debugf("correction: %s %v", k, v)
+			if !v.Taken { // only correct corrections that should be taken
+				continue
+			}
+			token := api.Token{
+				BookID:    v.BookID,
+				ProjectID: v.ProjectID,
+				PageID:    v.PageID,
+				LineID:    v.LineID,
+				TokenID:   v.TokenID,
+			}
+			err := client.PutTokenX(&token, api.CorAutomatic, v.Cor)
+			if err != nil {
+				var ex api.ErrInvalidResponseCode
+				if !errors.As(err, &ex) {
+					return fmt.Errorf("cannot post correct %s: %v", v.Normalized, err)
+				}
+				if ex.Code != http.StatusConflict {
+					return fmt.Errorf("cannot post correct %s: %v", v.Normalized, err)
+				}
+				log.Debugf("cannot autocorrect: already manually corrected: %s", k)
+				v.Taken = false
+				corrections.Corrections[k] = v
+			}
+		}
+		return nil
+	*/
 }
 
 func (r pcRunner) correctInDatabase(corrections *api.PostCorrection) error {
@@ -325,7 +326,7 @@ func (r pcRunner) correctInDatabase(corrections *api.PostCorrection) error {
 }
 
 func (r pcRunner) simpleRun() error {
-	profile, err := readProfile(r.project.Directory)
+	profile, err := readProfileDir(r.project.Directory)
 	if err != nil {
 		return fmt.Errorf("cannot post correct: %v", err)
 	}
@@ -440,21 +441,24 @@ func eachTrimmedWord(line db.Chars, f func(db.Chars) error) error {
 	return nil
 }
 
-func readProfile(dir string) (gofiler.Profile, error) {
-	path := filepath.Join(baseDir, dir, "profile.json.gz")
+func readProfileDir(dir string) (gofiler.Profile, error) {
+	return readProfile(filepath.Join(baseDir, dir, "profile.json.gz"))
+}
+
+func readProfile(path string) (gofiler.Profile, error) {
 	fin, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("cannot open profile: %v", err)
+		return nil, fmt.Errorf("cannot open profile %s: %v", path, err)
 	}
 	defer fin.Close()
 	in, err := gzip.NewReader(fin)
 	if err != nil {
-		return nil, fmt.Errorf("cannot open profile: %v", err)
+		return nil, fmt.Errorf("cannot open profile %s: %v", path, err)
 	}
 	defer in.Close()
 	var profile gofiler.Profile
 	if err := json.NewDecoder(in).Decode(&profile); err != nil {
-		return nil, fmt.Errorf("cannot decode profile: %v", err)
+		return nil, fmt.Errorf("cannot decode profile %s: %v", path, err)
 	}
 	return profile, nil
 }
@@ -463,7 +467,7 @@ func writeProtocol(dir, file string, protocol interface{}) (eout error) {
 	path := filepath.Join(baseDir, dir, file)
 	out, err := os.Create(path)
 	if err != nil {
-		return fmt.Errorf("cannot write protocol: %v", err)
+		return fmt.Errorf("cannot write protocol %s: %v", path, err)
 	}
 	defer func() {
 		etmp := out.Close()
@@ -472,7 +476,7 @@ func writeProtocol(dir, file string, protocol interface{}) (eout error) {
 		}
 	}()
 	if err := json.NewEncoder(out).Encode(protocol); err != nil {
-		return fmt.Errorf("cannot encode protocol: %v", err)
+		return fmt.Errorf("cannot encode protocol %s: %v", path, err)
 	}
 	return nil
 }

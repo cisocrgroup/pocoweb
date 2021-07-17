@@ -1,28 +1,23 @@
-FROM golang:1.13-alpine AS build_base
-RUN apk add git
+FROM golang:1.13-alpine
+ENV BUILD_DEPS 'git gcc tesseract-ocr-dev musl-dev'
+ENV DEPS 'tesseract-ocr-data-deu'
+RUN apk update && apk add ${BUILD_DEPS} ${DEPS}
+RUN mkdir -p /model \
+	&& wget -O /model/pre19th.bin http://cis.lmu.de/~finkf/pre19th \
+	&& wget -O /model/19th.bin http://cis.lmu.de/~finkf/19th.bin
 WORKDIR /build
-COPY go.mod .
-COPY go.sum .
+COPY go.mod go.sum ./
 RUN go mod download
-
-FROM build_base AS build
-COPY testdata/run.bash /apps/
-COPY testdata/pcwpostcorrection.json /etc/skel/
-WORKDIR /build
 COPY . .
-RUN CGO_ENABLED=0 go install .
+RUN go install .
+RUN apk del ${BUILD_DEPS}
 
-FROM flobar/ocrd_cis:latest
-MAINTAINER Florian Fink
-ENV VERSION 'Fri 14 Jun 2019 04:57:21 PM CEST'
 VOLUME "/project-data"
-COPY --from=build /go/bin/pcwpostcorrection /usr/bin/
-COPY --from=build /apps/run.bash /apps/
-COPY --from=build /etc/skel/pcwpostcorrection.json /etc/skel/
-
 WORKDIR /
-ENTRYPOINT /usr/bin/pcwpostcorrection \
+ENTRYPOINT /go/bin/pcwpostcorrection \
 	-debug \
 	-dsn "${MYSQL_USER}:${MYSQL_PASSWORD}@(db)/${MYSQL_DATABASE}" \
     -pocoweb "http://pocoweb" \
-	-base /
+	-base / \
+	-model /model \
+	-tess /usr/share/tessdata 

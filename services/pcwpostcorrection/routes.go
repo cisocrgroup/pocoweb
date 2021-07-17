@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -172,22 +173,20 @@ func (s *server) handleRunExtendedLexicon() service.HandlerFunc {
 	}
 }
 
-func writeEmptyPostCorrection(w http.ResponseWriter, p *db.Project) {
-	ret := api.PostCorrection{
-		ProjectID:   p.ProjectID,
-		BookID:      p.BookID,
-		Corrections: map[string]api.PostCorrectionToken{},
-	}
-	service.JSONResponse(w, ret)
-}
-
 func (s *server) handleRunPostCorrection() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := service.ProjectFromCtx(ctx)
-		jobID, err := jobs.Start(context.Background(), pcRunner{baseRunner{pool: s.pool, project: p}})
+		runner := aipoco{
+			baseDir:    baseDir,
+			tessDir:    tessDir,
+			pool:       s.pool,
+			project:    p,
+			modelDir:   modelDir,
+			pocowebURL: s.pocowebURL,
+		}
+		jobID, err := jobs.Start(ctx, &runner)
 		if err != nil {
-			service.ErrorResponse(w, http.StatusInternalServerError,
-				"cannot run job: %v", err)
+			service.ErrorResponse(w, http.StatusInternalServerError, "cannot run job: %v", err)
 			return
 		}
 		service.JSONResponse(w, api.Job{ID: jobID})
@@ -195,16 +194,49 @@ func (s *server) handleRunPostCorrection() service.HandlerFunc {
 }
 
 func (s *server) handleGetPostCorrection() service.HandlerFunc {
+	const stmt = `
+SELECT a.pageid,a.lineid,a.tokenid,o.typ,c.typ,a.taken
+FROM autocorrections a
+JOIN types o ON ocrtypid=o.id
+JOIN types c ON cortypid=c.id
+WHERE a.bookid=?`
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		p := service.ProjectFromCtx(ctx)
-		//protocol := filepath.Join(s.baseDir, p.Directory, "postcorrection", "dm-protocol-pcw.json")
-		protocol := filepath.Join(s.baseDir, p.Directory, "dm_protocol.json")
-		if _, err := os.Stat(protocol); os.IsNotExist(err) {
-			writeEmptyPostCorrection(w, p)
+		rows, err := db.QueryContext(ctx, s.pool, stmt, p.BookID)
+		if err != nil {
+			log.Printf("error %v", err)
+			service.ErrorResponse(w, http.StatusInternalServerError, "get protocol: %v", err)
 			return
 		}
-		w.Header().Add("Content-Type", "application/json")
-		http.ServeFile(w, r, protocol)
+		defer rows.Close()
+		ret := api.PostCorrection{
+			ProjectID:   p.ProjectID,
+			BookID:      p.BookID,
+			Corrections: map[string]api.PostCorrectionToken{},
+		}
+		for rows.Next() {
+			var pid, lid, tid int
+			var ocr, cor string
+			var taken bool
+			if err := rows.Scan(&pid, &lid, &tid, &ocr, &cor, &taken); err != nil {
+				service.ErrorResponse(w, http.StatusInternalServerError, "get protocol: %v", err)
+				return
+			}
+			id := fmt.Sprintf("%d:%d:%d:%d", p.BookID, pid, lid, tid)
+			ret.Corrections[id] = api.PostCorrectionToken{
+				BookID:     p.BookID,
+				ProjectID:  p.ProjectID,
+				PageID:     pid,
+				LineID:     lid,
+				TokenID:    tid,
+				Normalized: cor,
+				OCR:        cor,
+				Cor:        cor,
+				Confidence: 0.5, // TODO: fix this
+				Taken:      taken,
+			}
+		}
+		service.JSONResponse(w, ret)
 	}
 }
 
@@ -270,12 +302,12 @@ func (s *server) handleGetModel() service.HandlerFunc {
 			"bookId":    p.BookID,
 			"projectId": p.ProjectID,
 			"models": []map[string]interface{}{
-				0: map[string]interface{}{
+				0: {
 					"id":          1,
 					"name":        "pre19th",
 					"description": "Model build from files previous to 19th century",
 				},
-				1: map[string]interface{}{
+				1: {
 					"id":          2,
 					"name":        "19th",
 					"description": "Model build from 19th century files",
