@@ -86,12 +86,6 @@ github.com/envoyproxy/go-control-plane v0.6.9/go.mod h1:SBwIajubJHhxtWwsL9s8ss4s
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
-github.com/finkf/gocrd/boundingbox v0.1.2 h1:CMuSdsUi8VZnPSXRAWt1gRybVUOpOSm/jA8WIfkuLxU=
-github.com/finkf/gocrd/boundingbox v0.1.2/go.mod h1:nXrXaCTgiTr9T3ZSoAZNd+38XDy06MKaT1oD9DR7moM=
-github.com/finkf/gocrd/xml/hocr v0.1.1 h1:lCz2EAYBIlc6kJFn7iXIHNmaFB2c/OU2Lcy4unUctRI=
-github.com/finkf/gocrd/xml/hocr v0.1.1/go.mod h1:/O/Bd/P++3h7QwdPgU/QAaMzqJl9CvrJUUOYtAuEbi0=
-github.com/finkf/gocrd/xml/page v0.1.2 h1:tI1QfJEus6WRtEfH7kd/EVH0RdOiFE5wyYvz06OrwLU=
-github.com/finkf/gocrd/xml/page v0.1.2/go.mod h1:MSu8rDiTqKuR7GRVdfeyuzvDIKcrOdsZXs/LlszTbD8=
 github.com/finkf/gofiler v0.6.0 h1:Vv+DcSy6cU0qi0LZrsIF/zfbmqFoL0ofoAp/EfzBX6w=
 github.com/finkf/gofiler v0.6.0/go.mod h1:mn58Ujgxq/pYa2j6btgXzkY2dFjg8FNDe8rwOqV8Pts=
 github.com/finkf/pcwgo v0.11.0 h1:5Mm5phnLK2QOOGXXZveKjAd0+yAeJywN56tRzFQibrg=

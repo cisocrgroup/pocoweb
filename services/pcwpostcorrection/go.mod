@@ -6,7 +6,6 @@ require (
 	git.sr.ht/~flobar/apoco v0.0.51
 	git.sr.ht/~flobar/gotess v0.3.0
 	git.sr.ht/~flobar/lev v1.4.0
-	github.com/finkf/gocrd/xml/page v0.1.2
 	github.com/finkf/gofiler v0.6.0
 	github.com/finkf/pcwgo v0.11.0
 	github.com/goccy/go-json v0.7.4 // indirect
