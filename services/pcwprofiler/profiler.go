@@ -38,29 +38,27 @@ func (p profiler) Name() string {
 }
 
 func (p *profiler) Run(ctx context.Context) error {
-	log.Debug("profiler: run()")
 	if err := p.findLanguage(); err != nil {
-		return fmt.Errorf("cannot profile: %v", err)
+		return fmt.Errorf("profile: %v", err)
 	}
 	if err := p.runProfiler(ctx); err != nil {
-		return fmt.Errorf("cannot profile: %v", err)
+		return fmt.Errorf("profile: %v", err)
 	}
 	if err := p.writeProfile(); err != nil {
-		return fmt.Errorf("cannot profile: %v", err)
+		return fmt.Errorf("profile: %v", err)
 	}
 	if err := p.insertProfileIntoDB(); err != nil {
-		return fmt.Errorf("cannot profile: %v", err)
+		return fmt.Errorf("profile: %v", err)
 	}
 	return nil
 }
 
 func (p *profiler) findLanguage() error {
-	log.Debug("profiler: findLanguage()")
 	config, err := gofiler.FindLanguage(languageDir, p.project.Lang)
 	if err != nil {
 		// if err == gofiler.ErrorLanguageNotFound could be handled
 		// like http.StatusNotFound but we ignore this for now.
-		return fmt.Errorf("cannot find language %s: %v", p.project.Lang, err)
+		return fmt.Errorf("find language %s: %v", p.project.Lang, err)
 	}
 	log.Debugf("profiler: found language: %s: %s", config.Language, config.Path)
 	p.config = config
@@ -68,7 +66,6 @@ func (p *profiler) findLanguage() error {
 }
 
 func (p *profiler) runProfiler(ctx context.Context) error {
-	log.Debug("profiler: runProfiler()")
 	var tokens []gofiler.Token
 	for _, token := range p.alex.Tokens {
 		tokens = append(tokens, gofiler.Token{LE: token})
@@ -77,14 +74,14 @@ func (p *profiler) runProfiler(ctx context.Context) error {
 		for w, r := line.NextWord(); len(w) > 0; w, r = r.NextWord() {
 			w = trim(w)
 			tokens = append(tokens, gofiler.Token{OCR: w.OCR()})
-			if w.IsFullyCorrected() {
+			if w.IsManuallyCorrected() {
 				tokens[len(tokens)-1].COR = w.Cor()
 			}
 		}
 		return nil
 	})
 	if err != nil {
-		return fmt.Errorf("cannot run profiler: %v", err)
+		return fmt.Errorf("run profiler: %v", err)
 	}
 	log.Debugf("profiler: profiling %d tokens", len(tokens))
 	x := gofiler.Profiler{
@@ -95,7 +92,7 @@ func (p *profiler) runProfiler(ctx context.Context) error {
 	}
 	profile, err := x.Run(ctx, p.config.Path, tokens)
 	if err != nil {
-		return fmt.Errorf("cannot run profiler: %v", err)
+		return fmt.Errorf("run profiler: %v", err)
 	}
 	log.Debugf("profiler: got %d profile entries", len(profile))
 	p.profile = profile
@@ -103,36 +100,34 @@ func (p *profiler) runProfiler(ctx context.Context) error {
 }
 
 func (p *profiler) writeProfile() (err error) {
-	log.Debug("profiler: writeProfile()")
 	dest := filepath.Join(baseDir, p.project.Directory, "profile.json.gz")
 	out, err := os.Create(dest)
 	if err != nil {
-		return fmt.Errorf("cannot write profile %s: %v", dest, err)
+		return fmt.Errorf("write profile %s: %v", dest, err)
 	}
 	defer func() {
 		if xerr := out.Close(); xerr != nil && err == nil {
-			err = fmt.Errorf("cannot write profile %s: %v", dest, xerr)
+			err = fmt.Errorf("write profile %s: %v", dest, xerr)
 		}
 	}()
 	gzip := gzip.NewWriter(out)
 	defer func() {
 		if xerr := gzip.Close(); xerr != nil && err == nil {
-			err = fmt.Errorf("cannot write profile %s: %v", dest, xerr)
+			err = fmt.Errorf("write profile %s: %v", dest, xerr)
 		}
 	}()
 	if err := json.NewEncoder(gzip).Encode(p.profile); err != nil {
-		return fmt.Errorf("cannot write profile %s: %v", dest, err)
+		return fmt.Errorf("write profile %s: %v", dest, err)
 	}
 	return nil
 }
 
 func (p *profiler) insertProfileIntoDB() error {
-	log.Debug("profiler: insertProfileIntoDB()")
 	t := db.NewTransaction(service.Pool().Begin())
 	p.types = make(map[string]int)
 	t.Do(func(dtb db.DB) error {
 		if err := p.deleteProfile(dtb); err != nil {
-			return fmt.Errorf("cannot insert profile: %v", err)
+			return fmt.Errorf("insert profile: %v", err)
 		}
 		inserter := profileInserter{
 			profile: p.profile,
@@ -141,11 +136,11 @@ func (p *profiler) insertProfileIntoDB() error {
 		}
 
 		if err := inserter.insert(dtb); err != nil {
-			return fmt.Errorf("cannot insert profile: %v", err)
+			return fmt.Errorf("insert profile: %v", err)
 		}
 		stmnt := "UPDATE books SET profiled=? WHERE bookid=?"
 		if _, err := db.Exec(dtb, stmnt, true, p.project.BookID); err != nil {
-			return fmt.Errorf("cannot insert profile: %v", err)
+			return fmt.Errorf("insert profile: %v", err)
 		}
 		return nil
 	})
@@ -158,7 +153,7 @@ func (p *profiler) deleteProfile(dtb db.DB) error {
 		stmt := "DELETE FROM " + table + " WHERE bookid=?"
 		_, err := db.Exec(dtb, stmt, p.project.BookID)
 		if err != nil {
-			return fmt.Errorf("cannot delete profile: %v", err)
+			return fmt.Errorf("delete profile: %v", err)
 		}
 	}
 	return nil
@@ -185,7 +180,7 @@ func (p *profileInserter) insertType(qt, it *sql.Stmt, typ string) error {
 	var id int
 	err := qt.QueryRow(typ).Scan(&id)
 	if err != nil && err != sql.ErrNoRows {
-		return fmt.Errorf("cannot insert type %s: %v", typ, err)
+		return fmt.Errorf("insert type %s: %v", typ, err)
 	}
 	if err == nil {
 		p.types[typ] = id
@@ -193,11 +188,11 @@ func (p *profileInserter) insertType(qt, it *sql.Stmt, typ string) error {
 	}
 	res, err := it.Exec(typ)
 	if err != nil {
-		return fmt.Errorf("cannot insert type %s: %v", typ, err)
+		return fmt.Errorf("insert type %s: %v", typ, err)
 	}
 	tid, err := res.LastInsertId()
 	if err != nil {
-		return fmt.Errorf("cannot insert type %s: %v", typ, err)
+		return fmt.Errorf("insert type %s: %v", typ, err)
 	}
 	p.types[typ] = int(tid)
 	return nil
@@ -219,29 +214,29 @@ func (p *profileInserter) insertTypes(dtb db.DB) error {
 	// prepare insert statements
 	qt, err := dtb.Prepare("SELECT id FROM types WHERE typ=?")
 	if err != nil {
-		return fmt.Errorf("cannot insert types: %v", err)
+		return fmt.Errorf("insert types: %v", err)
 	}
 	defer qt.Close()
 	it, err := dtb.Prepare("INSERT into types (typ) VALUES (?)")
 	if err != nil {
-		return fmt.Errorf("cannot insert types: %v", err)
+		return fmt.Errorf("insert types: %v", err)
 	}
 	defer it.Close()
 	tc, err := dtb.Prepare("INSERT INTO typcounts (typid,bookid,counts) " +
 		"VALUES (?,?,?) " +
 		"ON DUPLICATE KEY UPDATE counts = counts + ?")
 	if err != nil {
-		return fmt.Errorf("cannot insert types: %v", err)
+		return fmt.Errorf("insert types: %v", err)
 	}
 	defer tc.Close()
 	// Insert "none" string into the types database.
 	if err := p.insertType(qt, it, none); err != nil {
-		return fmt.Errorf("cannot insert types: %v", err)
+		return fmt.Errorf("insert types: %v", err)
 	}
 	for _, interp := range p.profile {
 		// insert interp.OCR p.type[interp.OCR] gives the token id
 		if err := p.insertType(qt, it, interp.OCR); err != nil {
-			return fmt.Errorf("cannot insert types: %v", err)
+			return fmt.Errorf("insert types: %v", err)
 		}
 		// skip if no candidates
 		if len(interp.Candidates) == 0 {
@@ -251,10 +246,10 @@ func (p *profileInserter) insertTypes(dtb db.DB) error {
 		n := interp.N
 		id, err := p.typ(interp.OCR)
 		if err != nil {
-			return fmt.Errorf("cannot insert types: %v", err)
+			return fmt.Errorf("insert types: %v", err)
 		}
 		if _, err := tc.Exec(id, p.bid, n, n); err != nil {
-			return fmt.Errorf("cannot insert types: %v", err)
+			return fmt.Errorf("insert types: %v", err)
 		}
 		// update candidate Suggestion and modern types
 		// if they are not too unlikely
@@ -264,10 +259,10 @@ func (p *profileInserter) insertTypes(dtb db.DB) error {
 				continue
 			}
 			if err := p.insertType(qt, it, cand.Suggestion); err != nil {
-				return fmt.Errorf("cannot insert types: %v", err)
+				return fmt.Errorf("insert types: %v", err)
 			}
 			if err := p.insertType(qt, it, cand.Modern); err != nil {
-				return fmt.Errorf("cannot insert types: %v", err)
+				return fmt.Errorf("insert types: %v", err)
 			}
 		}
 	}
@@ -313,7 +308,7 @@ func (p *profileInserter) insertCandidates(dtb db.DB) error {
 				Suggestion: none,
 				Modern:     none,
 				Dict:       none,
-				Weight:     1.0, // make shure that the synthetic candidate is not cut off
+				Weight:     1.0, // Make sure that the synthetic candidate is not cut off.
 			})
 		}
 		for i, cand := range interp.Candidates {
@@ -334,29 +329,28 @@ func (p *profileInserter) insertCandidate(
 
 	sid, err := p.typ(cand.Suggestion)
 	if err != nil {
-		return fmt.Errorf("cannot insert candidate: %v", err)
+		return fmt.Errorf("insert candidate: %v", err)
 	}
 	mid, err := p.typ(cand.Modern)
 	if err != nil {
-		return fmt.Errorf("cannot insert candidate: %v", err)
+		return fmt.Errorf("insert candidate: %v", err)
 	}
 	hp := patternString(cand.HistPatterns)
 	op := patternString(cand.OCRPatterns)
-
 	res, err := ic.Exec(p.bid, tid, sid, mid, cand.Dict,
 		cand.Weight, cand.Distance, top, hp, op)
 	if err != nil {
-		return fmt.Errorf("cannot insert candidate: %v", err)
+		return fmt.Errorf("insert candidate: %v", err)
 	}
 	cid, err := res.LastInsertId()
 	if err != nil {
-		return fmt.Errorf("cannot insert candidate: %v", err)
+		return fmt.Errorf("insert candidate: %v", err)
 	}
 	if err := p.insertPatterns(ip, cand.HistPatterns, int(cid), false); err != nil {
-		return fmt.Errorf("cannot insert candidate: %v", err)
+		return fmt.Errorf("insert candidate: %v", err)
 	}
 	if err := p.insertPatterns(ip, cand.OCRPatterns, int(cid), true); err != nil {
-		return fmt.Errorf("cannot insert candidate: %v", err)
+		return fmt.Errorf("insert candidate: %v", err)
 	}
 	return nil
 }
@@ -365,7 +359,7 @@ func (p *profileInserter) insertPatterns(
 	ip *sql.Stmt, pats []gofiler.Pattern, cid int, ocr bool) error {
 	for _, pat := range pats {
 		if _, err := ip.Exec(cid, p.bid, pat.Left+":"+pat.Right, ocr); err != nil {
-			return fmt.Errorf("cannot insert pattern: %v", err)
+			return fmt.Errorf("insert pattern: %v", err)
 		}
 	}
 	return nil
@@ -376,7 +370,14 @@ func patternString(ps []gofiler.Pattern) string {
 	for _, p := range ps {
 		strs = append(strs, fmt.Sprintf("%s:%s:%d", p.Left, p.Right, p.Pos))
 	}
-	return strings.Join(strs, ",")
+	ret := strings.Join(strs, ",")
+	/* 	if len(ret) >= 50 {
+	   		epos := strings.LastIndex(ret, ",")
+	   		if epos != -1 {
+	   			ret = ret[0:epos]
+	   		}
+	   	}
+	*/return ret
 }
 
 func selectBookLines(bookID int) ([]db.Chars, error) {
@@ -384,7 +385,7 @@ func selectBookLines(bookID int) ([]db.Chars, error) {
 		" WHERE BookID=? ORDER BY PageID, LineID, Seq"
 	rows, err := db.Query(service.Pool(), stmt, bookID)
 	if err != nil {
-		return nil, fmt.Errorf("cannot select lines for book ID %d: %v",
+		return nil, fmt.Errorf("select lines for book ID %d: %v",
 			bookID, err)
 	}
 	defer rows.Close()
@@ -394,7 +395,7 @@ func selectBookLines(bookID int) ([]db.Chars, error) {
 		var tmp int
 		var char db.Char
 		if err := rows.Scan(&char.Cor, &char.OCR, &tmp); err != nil {
-			return nil, fmt.Errorf("cannot select lines for book ID %d: %v",
+			return nil, fmt.Errorf("select lines for book ID %d: %v",
 				bookID, err)
 		}
 		if tmp != lineID {
@@ -409,7 +410,7 @@ func selectBookLines(bookID int) ([]db.Chars, error) {
 func eachLine(bookID int, f func(db.Chars) error) error {
 	lines, err := selectBookLines(bookID)
 	if err != nil {
-		return fmt.Errorf("cannot load lines for book ID %d: %v",
+		return fmt.Errorf("load lines for book ID %d: %v",
 			bookID, err)
 	}
 	for _, line := range lines {

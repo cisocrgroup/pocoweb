@@ -378,7 +378,7 @@ func eachOCRToken(p *db.Project, f func(db.Chars)) error {
 		return fmt.Errorf("cannot load page ids: %v", err)
 	}
 	stmnt, err := service.Pool().Prepare(`
-SELECT c.lineid,c.cor,c.ocr,c.cut,c.conf,c.seq
+SELECT c.lineid,c.cor,c.ocr,c.cut,c.conf,c.seq,c.manually
 FROM contents c
 WHERE c.bookid=? and c.pageid=?
 ORDER BY c.lineid,c.seq`)
@@ -405,7 +405,7 @@ func eachOCRTokenInRows(rows *sql.Rows, f func(db.Chars)) error {
 	for rows.Next() {
 		old := lineid
 		var c db.Char
-		if err := rows.Scan(&lineid, &c.Cor, &c.OCR, &c.Cut, &c.Conf, &c.Seq); err != nil {
+		if err := rows.Scan(&lineid, &c.Cor, &c.OCR, &c.Cut, &c.Conf, &c.Seq, &c.Manually); err != nil {
 			return fmt.Errorf("cannot scan character: %v", err)
 		}
 		// no new line; append and continue
@@ -414,7 +414,7 @@ func eachOCRTokenInRows(rows *sql.Rows, f func(db.Chars)) error {
 			continue
 		}
 		// clear line and skip
-		if line.IsFullyCorrected() {
+		if line.IsManuallyCorrected() {
 			line = line[:0]
 			continue
 		}
@@ -422,7 +422,7 @@ func eachOCRTokenInRows(rows *sql.Rows, f func(db.Chars)) error {
 		line = append(line[:0], c)
 	}
 	// last line
-	if len(line) > 0 && !line.IsFullyCorrected() {
+	if len(line) > 0 && !line.IsManuallyCorrected() {
 		eachOCRTokenOnLine(line, f)
 	}
 	return nil
@@ -437,7 +437,7 @@ func eachOCRTokenOnLine(line db.Chars, f func(db.Chars)) {
 			}
 			return r == -1 || unicode.IsPunct(r)
 		})
-		if len(t) == 0 || t.IsFullyCorrected() {
+		if len(t) == 0 || t.IsManuallyCorrected() {
 			continue
 		}
 		f(t)
@@ -473,7 +473,7 @@ func getAdaptiveTokens() service.HandlerFunc {
 		seen := make(map[string]bool)
 		eachLine(p.BookID, func(line db.Chars) error {
 			eachWord(line, func(word db.Chars) error {
-				if word.IsFullyCorrected() {
+				if word.IsManuallyCorrected() {
 					str := strings.ToLower(trim(word).Cor())
 					if !seen[str] {
 						at.AdaptiveTokens = append(at.AdaptiveTokens, str)
