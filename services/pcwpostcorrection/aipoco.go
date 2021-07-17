@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"git.sr.ht/~flobar/apoco/pkg/apoco"
 	"git.sr.ht/~flobar/apoco/pkg/apoco/align"
@@ -105,7 +106,7 @@ func (ai *aipoco) correct() apoco.StreamFunc {
 				TokenID:    tid,
 				Normalized: t.Tokens[0],
 				OCR:        t.Tokens[0],
-				Cor:        t.Tokens[0],
+				Cor:        correction.Candidate.Suggestion,
 				Confidence: correction.Conf,
 				Taken:      taken,
 			}
@@ -131,8 +132,8 @@ func (ai *aipoco) correctInBackend(ctx context.Context, corrections *api.PostCor
 		if !t.Taken {
 			continue
 		}
-		url := client.URL("books/%d/pages/%d/lines/%d/tokens/%d?t=%s",
-			t.BookID, t.PageID, t.LineID, t.TokenID, "automatic")
+		url := client.URL("books/%d/pages/%d/lines/%d/tokens/%d?t=%s&len=%d",
+			t.BookID, t.PageID, t.LineID, t.TokenID, "automatic", utf8.RuneCountInString(t.Cor))
 		url = strings.Replace(url, "rest/", "", 1)
 		err := client.Put(url, struct {
 			Cor string `json:"correction"`
@@ -145,41 +146,44 @@ func (ai *aipoco) correctInBackend(ctx context.Context, corrections *api.PostCor
 }
 
 func (ai *aipoco) correctInDatabase(ctx context.Context, corrections *api.PostCorrection) error {
-	log.Printf("correcting in database len = %d", len(corrections.Corrections))
-	const del = "DELETE FROM autocorrections WHERE bookid = ?"
-	if _, err := db.ExecContext(ctx, ai.pool, del, ai.project.BookID); err != nil {
-		return fmt.Errorf("insert protocol: delete protocol: %v", err)
-	}
-	ins, err := ai.pool.Prepare("INSERT INTO autocorrections" +
-		"(bookid,pageid,lineid,tokenid,ocrtypid,cortypid,taken) " +
-		"VALUES(?,?,?,?,?,?,?)")
-	if err != nil {
-		return fmt.Errorf("insert protocol: %v", err)
-	}
-	defer ins.Close()
-	t, err := db.NewTypeInserter(ai.pool)
-	if err != nil {
-		return fmt.Errorf("insert protocol: %v", err)
-	}
-	defer t.Close()
-
-	// insert corrections
-	for _, v := range corrections.Corrections {
-		log.Printf("insert correction: %s/%s", v.OCR, v.Cor)
-		ocrtypid, err := t.ID(v.Normalized)
-		if err != nil {
-			return fmt.Errorf("insert protocol: insert ocr type: %v", err)
+	transaction := db.NewTransaction(ai.pool.Begin())
+	transaction.Do(func(dtb db.DB) error {
+		log.Printf("correcting in database len = %d", len(corrections.Corrections))
+		const del = "DELETE FROM autocorrections WHERE bookid = ?"
+		if _, err := db.ExecContext(ctx, ai.pool, del, ai.project.BookID); err != nil {
+			return fmt.Errorf("insert protocol: delete protocol: %v", err)
 		}
-		cortypid, err := t.ID(v.Cor)
+		ins, err := ai.pool.Prepare("INSERT INTO autocorrections" +
+			"(bookid,pageid,lineid,tokenid,ocrtypid,cortypid,taken) " +
+			"VALUES(?,?,?,?,?,?,?)")
 		if err != nil {
-			return fmt.Errorf("insert protocol: insert cor type: %v", err)
-		}
-		if _, err := ins.ExecContext(ctx, v.BookID, v.PageID, v.LineID, v.TokenID,
-			ocrtypid, cortypid, v.Taken); err != nil {
 			return fmt.Errorf("insert protocol: %v", err)
 		}
-	}
-	return nil
+		defer ins.Close()
+		t, err := db.NewTypeInserter(ai.pool)
+		if err != nil {
+			return fmt.Errorf("insert protocol: %v", err)
+		}
+		defer t.Close()
+
+		for _, v := range corrections.Corrections {
+			log.Printf("insert correction: %s/%s", v.OCR, v.Cor)
+			ocrtypid, err := t.ID(v.Normalized)
+			if err != nil {
+				return fmt.Errorf("insert protocol: insert ocr type: %v", err)
+			}
+			cortypid, err := t.ID(v.Cor)
+			if err != nil {
+				return fmt.Errorf("insert protocol: insert cor type: %v", err)
+			}
+			if _, err := ins.ExecContext(ctx, v.BookID, v.PageID, v.LineID, v.TokenID,
+				ocrtypid, cortypid, v.Taken); err != nil {
+				return fmt.Errorf("insert protocol: %v", err)
+			}
+		}
+		return nil
+	})
+	return transaction.Done()
 }
 
 func (ai *aipoco) tokens(alev bool) apoco.StreamFunc {
