@@ -127,7 +127,6 @@ func (ai *aipoco) correct() apoco.StreamFunc {
 
 func (ai *aipoco) correctInBackend(ctx context.Context, corrections *api.PostCorrection) error {
 	client := api.NewClient(ai.pocowebURL, true)
-	log.Printf("correcting in backend len = %d", len(corrections.Corrections))
 	for _, t := range corrections.Corrections {
 		if !t.Taken {
 			continue
@@ -148,7 +147,6 @@ func (ai *aipoco) correctInBackend(ctx context.Context, corrections *api.PostCor
 func (ai *aipoco) correctInDatabase(ctx context.Context, corrections *api.PostCorrection) error {
 	transaction := db.NewTransaction(ai.pool.Begin())
 	transaction.Do(func(dtb db.DB) error {
-		log.Printf("correcting in database len = %d", len(corrections.Corrections))
 		const del = "DELETE FROM autocorrections WHERE bookid = ?"
 		if _, err := db.ExecContext(ctx, ai.pool, del, ai.project.BookID); err != nil {
 			return fmt.Errorf("insert protocol: delete protocol: %v", err)
@@ -167,7 +165,6 @@ func (ai *aipoco) correctInDatabase(ctx context.Context, corrections *api.PostCo
 		defer t.Close()
 
 		for _, v := range corrections.Corrections {
-			log.Printf("insert correction: %s/%s", v.OCR, v.Cor)
 			ocrtypid, err := t.ID(v.Normalized)
 			if err != nil {
 				return fmt.Errorf("insert protocol: insert ocr type: %v", err)
