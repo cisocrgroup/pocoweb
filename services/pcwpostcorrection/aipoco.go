@@ -7,7 +7,7 @@ import (
 	"log"
 	"path/filepath"
 	"strconv"
-	"strings"
+	"unicode"
 	"unicode/utf8"
 
 	"git.sr.ht/~flobar/apoco/pkg/apoco"
@@ -105,7 +105,7 @@ func (ai *aipoco) correct() apoco.StreamFunc {
 				LineID:     lid,
 				TokenID:    tid,
 				Normalized: t.Tokens[0],
-				OCR:        t.Tokens[0],
+				OCR:        t.Tokens[2], // Unnormalized original primary OCR token.
 				Cor:        correction.Candidate.Suggestion,
 				Confidence: correction.Conf,
 				Taken:      taken,
@@ -133,7 +133,6 @@ func (ai *aipoco) correctInBackend(ctx context.Context, corrections *api.PostCor
 		}
 		url := client.URL("books/%d/pages/%d/lines/%d/tokens/%d?t=%s&len=%d",
 			t.BookID, t.PageID, t.LineID, t.TokenID, "automatic", utf8.RuneCountInString(t.Cor))
-		url = strings.Replace(url, "rest/", "", 1)
 		err := client.Put(url, struct {
 			Cor string `json:"correction"`
 		}{t.Cor}, nil)
@@ -200,12 +199,22 @@ func (ai *aipoco) tokens(alev bool) apoco.StreamFunc {
 					ID:       line.ID + ":" + strconv.Itoa(i+1),
 				}
 				for j, p := range alignments[i] {
+					// Handle leading punctuation (and symbols) to
+					// use the correct token ID for the primary OCR token.
 					if j == 0 {
+						var k int
+						slice := p.Slice()
+						for k < len(slice) && (unicode.IsPunct(slice[k]) || unicode.IsSymbol(slice[k])) {
+							k++
+						}
 						t.Chars = line.Chars[p.B:p.E]
-						t.ID = line.ID + ":" + strconv.Itoa(p.B)
+						t.ID = line.ID + ":" + strconv.Itoa(p.B+k)
 					}
 					t.Tokens = append(t.Tokens, string(p.Slice()))
 				}
+				// Hack: append primary OCR again to have access
+				// to the original OCR token later in the process.
+				t.Tokens = append(t.Tokens, t.Tokens[0])
 				log.Printf("token %s: %s/%s", t.ID, t.Tokens[0], t.Tokens[1])
 				ts = append(ts, t)
 			}

@@ -7,7 +7,7 @@ require (
 	git.sr.ht/~flobar/gotess v0.3.0
 	git.sr.ht/~flobar/lev v1.4.0
 	github.com/finkf/gofiler v0.6.0
-	github.com/finkf/pcwgo v0.11.0
+	github.com/finkf/pcwgo v0.12.0
 	github.com/goccy/go-json v0.7.4 // indirect
 	github.com/sirupsen/logrus v1.8.1
 	golang.org/x/exp v0.0.0-20210714144626-1041f73d31d8 // indirect
