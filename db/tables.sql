@@ -167,6 +167,8 @@ create table if not exists adaptivetokens (
 );
 alter table adaptivetokens convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 
+--alter table autocorrections add (
+drop table if exists autocorrections;
 create table if not exists autocorrections (
    bookid int references books(bookid),
    pageid int not null,
@@ -174,10 +176,10 @@ create table if not exists autocorrections (
    tokenid int not null,
    ocrtypid int references types(id),
    cortypid int references types(id),
+   conf double not null default '0.0',
    taken boolean not null,
    primary key (bookid, pageid, lineid, tokenid)
 );
-
 
 drop table if exists jobs;
 drop table if exists status;

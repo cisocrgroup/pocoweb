@@ -89,7 +89,7 @@ func (ai *aipoco) correct() apoco.StreamFunc {
 		}
 		err := apoco.EachToken(ctx, in, func(t apoco.T) error {
 			correction := t.Payload.(apoco.Correction)
-			log.Printf("correct: token %s: %s/%s [%s]", t.ID, t.Tokens[0], t.Tokens[1], correction.Candidate.Suggestion)
+			// log.Printf("correct: token %s: %s/%s [%s] (%t)", t.ID, t.Tokens[0], t.Tokens[1], correction.Candidate.Suggestion, correction.Conf > 0.5)
 			var taken bool
 			if correction.Conf > 0.5 {
 				taken = true
@@ -151,8 +151,8 @@ func (ai *aipoco) correctInDatabase(ctx context.Context, corrections *api.PostCo
 			return fmt.Errorf("insert protocol: delete protocol: %v", err)
 		}
 		ins, err := ai.pool.Prepare("INSERT INTO autocorrections" +
-			"(bookid,pageid,lineid,tokenid,ocrtypid,cortypid,taken) " +
-			"VALUES(?,?,?,?,?,?,?)")
+			"(bookid,pageid,lineid,tokenid,ocrtypid,cortypid,conf,taken) " +
+			"VALUES(?,?,?,?,?,?,?,?)")
 		if err != nil {
 			return fmt.Errorf("insert protocol: %v", err)
 		}
@@ -172,8 +172,7 @@ func (ai *aipoco) correctInDatabase(ctx context.Context, corrections *api.PostCo
 			if err != nil {
 				return fmt.Errorf("insert protocol: insert cor type: %v", err)
 			}
-			if _, err := ins.ExecContext(ctx, v.BookID, v.PageID, v.LineID, v.TokenID,
-				ocrtypid, cortypid, v.Taken); err != nil {
+			if _, err := ins.ExecContext(ctx, v.BookID, v.PageID, v.LineID, v.TokenID, ocrtypid, cortypid, v.Confidence, v.Taken); err != nil {
 				return fmt.Errorf("insert protocol: %v", err)
 			}
 		}
@@ -215,7 +214,7 @@ func (ai *aipoco) tokens(alev bool) apoco.StreamFunc {
 				// Hack: append primary OCR again to have access
 				// to the original OCR token later in the process.
 				t.Tokens = append(t.Tokens, t.Tokens[0])
-				log.Printf("token %s: %s/%s", t.ID, t.Tokens[0], t.Tokens[1])
+				// log.Printf("token %s: %s/%s", t.ID, t.Tokens[0], t.Tokens[1])
 				ts = append(ts, t)
 			}
 			if len(ts) > 0 { // Mark last token in the line.
@@ -255,8 +254,6 @@ func (ai *aipoco) lines() apoco.StreamFunc {
 				Chars:    line,
 				ID:       fmt.Sprintf("%d:%d:%d", ai.project.BookID, pid, lid),
 			}
-			log.Printf("primary line:   %s", t.Tokens[0])
-			log.Printf("secondary line: %s", t.Tokens[1])
 			return apoco.SendTokens(ctx, out, t)
 		})
 	}
@@ -361,7 +358,6 @@ WHERE bookid=? AND pageid=? AND lineid=?`
 		return "", fmt.Errorf("secondary OCR: select lines for book ID %d: %v", ai.project.BookID, err)
 	}
 	imagepath = filepath.Join(ai.baseDir, imagepath)
-	log.Printf("imagepath: %s", imagepath)
 	if err := ai.tessAPI.SetImagePNG(imagepath); err != nil {
 		return "", fmt.Errorf("secondary OCR: set image %s: %v", imagepath, err)
 	}

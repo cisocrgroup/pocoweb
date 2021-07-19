@@ -195,7 +195,7 @@ func (s *server) handleRunPostCorrection() service.HandlerFunc {
 
 func (s *server) handleGetPostCorrection() service.HandlerFunc {
 	const stmt = `
-SELECT a.pageid,a.lineid,a.tokenid,o.typ,c.typ,a.taken
+SELECT a.pageid,a.lineid,a.tokenid,o.typ,c.typ,a.conf,a.taken
 FROM autocorrections a
 JOIN types o ON ocrtypid=o.id
 JOIN types c ON cortypid=c.id
@@ -217,8 +217,9 @@ WHERE a.bookid=?`
 		for rows.Next() {
 			var pid, lid, tid int
 			var ocr, cor string
+			var conf float64
 			var taken bool
-			if err := rows.Scan(&pid, &lid, &tid, &ocr, &cor, &taken); err != nil {
+			if err := rows.Scan(&pid, &lid, &tid, &ocr, &cor, &conf, &taken); err != nil {
 				service.ErrorResponse(w, http.StatusInternalServerError, "get protocol: %v", err)
 				return
 			}
@@ -229,10 +230,10 @@ WHERE a.bookid=?`
 				PageID:     pid,
 				LineID:     lid,
 				TokenID:    tid,
-				Normalized: cor,
-				OCR:        cor,
+				Normalized: ocr,
+				OCR:        ocr,
 				Cor:        cor,
-				Confidence: 0.5, // TODO: fix this
+				Confidence: conf,
 				Taken:      taken,
 			}
 		}
