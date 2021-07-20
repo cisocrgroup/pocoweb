@@ -84,11 +84,13 @@ file](misc/config/env.sh). If no certificate is provided the build
 process will automatically generate one.  You will be prompted some
 initial configuration in this case.
 
-To build and start Pocoweb the following tools have to be installed:
+To build and start Pocoweb the following dependencies have to be 
+installed:
 * `docker`
 * `docker-compose`
 * `make`
 * `openssl` (if no certificate is provided)
+* `nodejs`
 
 To deploy Pocoweb just execute `make docker-start`.  This command will
 build all required docker images and start up the docker service.
