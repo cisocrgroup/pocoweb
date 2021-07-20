@@ -38,6 +38,9 @@ func (p profiler) Name() string {
 }
 
 func (p *profiler) Run(ctx context.Context) error {
+	if p.project.Lang == "" {
+		return p.runEmptyLanguage(ctx)
+	}
 	if err := p.findLanguage(); err != nil {
 		return fmt.Errorf("profile: %v", err)
 	}
@@ -51,6 +54,16 @@ func (p *profiler) Run(ctx context.Context) error {
 		return fmt.Errorf("profile: %v", err)
 	}
 	return nil
+}
+
+func (p *profiler) runEmptyLanguage(ctx context.Context) error {
+	const stmnt = "UPDATE books SET profiled=? WHERE bookid=?"
+	t := db.NewTransaction(service.Pool().Begin())
+	t.Do(func(dtb db.DB) error {
+		_, err := db.ExecContext(ctx, dtb, stmnt, true, p.project.BookID)
+		return err
+	})
+	return t.Done()
 }
 
 func (p *profiler) findLanguage() error {

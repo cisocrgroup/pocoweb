@@ -87,9 +87,10 @@ func getLanguages() service.HandlerFunc {
 				"cannot list languages: %v", err)
 			return
 		}
-		ls := api.Languages{Languages: make([]string, len(configs))}
+		ls := api.Languages{Languages: make([]string, len(configs)+1)}
+		ls.Languages[0] = "" // Add leading empty language.
 		for i := range configs {
-			ls.Languages[i] = configs[i].Language
+			ls.Languages[i+1] = configs[i].Language
 		}
 		service.JSONResponse(w, ls)
 	}
@@ -99,6 +100,10 @@ func getProfile() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()["q"]
 		p := service.ProjectFromCtx(ctx)
+		if p.Lang == "" {
+			service.JSONResponse(w, make(gofiler.Profile))
+			return
+		}
 		if len(q) == 0 { // return the whole profile
 			getWholeProfile(w, r, p)
 			return
