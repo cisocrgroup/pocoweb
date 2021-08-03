@@ -144,6 +144,7 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                 var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
                 var url = baseUrl + "/" + page.get('imgFile');
 
+
                 var fullbg = $('<div class="modal fullscreen_modal fade"></div>');
                 var cont = $('  <div class="modal-dialog" role="document"></div>');
 
