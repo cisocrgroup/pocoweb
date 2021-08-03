@@ -176,7 +176,7 @@ addAlignedLine : function(line,confidenceThreshold){
                   } else if (token.isAutomaticallyCorrected) {
                     corrected = "automatically_corrected token-text";
                   }
-                  else if(token.averageConfidence.toFixed(2)&&token.averageConfidence.toFixed(2)<=confidenceThreshold){
+                  else if(token.averageConfidence.toFixed(2)&&token.averageConfidence.toFixed(2)<confidenceThreshold){
                     corrected = "confidence_threshold token-text"
                   }
                 }
@@ -241,7 +241,7 @@ addLine : function(line,confidenceThreshold){
                   } else if (token.isAutomaticallyCorrected) {
                     corrected = "automatically_corrected token-text";
                   }
-                  else if(token.averageConfidence.toFixed(2)&&token.averageConfidence.toFixed(2)<=confidenceThreshold){
+                  else if(token.averageConfidence.toFixed(2)&&token.averageConfidence.toFixed(2)<confidenceThreshold){
                     corrected = "confidence_threshold token-text"
                   }
                 }

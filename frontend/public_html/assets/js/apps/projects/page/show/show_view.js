@@ -315,12 +315,21 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
         };
 
 
-     if(that.model.get('lines')[0]['averageConfidence']==0){
 
-           that.trigger("sidebar:update_confidence_highlighting","-1");
-           $('#confidence_slider').prop('disabled','true');
+      if(that.model.get('lines').length>0){
 
-         }
+       if(that.model.get('lines')[0]['averageConfidence']==0){
+
+             that.trigger("sidebar:update_confidence_highlighting","-1");
+             $('#confidence_slider').prop('disabled','true');
+
+           }
+
+      }
+      else{
+            that.trigger("sidebar:update_confidence_highlighting","-1");
+            $('#confidence_slider').prop('disabled','true');
+      }
 
            // manual adjustment
              var manualadjustment = Backbone.Marionette.getOption(this,'manualadjustment');
