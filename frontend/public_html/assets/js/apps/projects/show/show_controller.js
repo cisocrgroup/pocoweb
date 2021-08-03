@@ -518,6 +518,7 @@ define([
 
                     projectShowLayout.trigger("show:checkJobStatus");
 
+                   
                     $("#projects-modal").modal("toggle");
                     projectShowHeader.options.title = data.title;
                     projectShowHeader.render();
@@ -566,6 +567,10 @@ define([
             projectShowLayout.on("show:checkJobStatus",function(){
                       var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
                        $.when(fetchingjobs).done(function(jobs){
+
+                        if(jobs.statusName=="empty"){
+                          return;
+                        }
 
                             projectShowInfo.setJobSymbol(jobs);
                            if(jobs.statusName!="running"){ // stop job tracking if job is not running
