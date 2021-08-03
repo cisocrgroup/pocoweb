@@ -9,9 +9,8 @@ ETCDIR := $(DESTDIR)/etc
 
 CXX ?= g++
 
-CXXFLAGS ?= ""
-CXXFLAGS += -MP -MD -std=gnu++14 -Wall -Werror -fpic
-CXXFLAGS += -g
+CXXFLAGS ?= -Wall -Werror
+CXXFLAGS += -g -MP -MD -std=gnu++14 -fpic
 CXXFLAGS += -Irest/src
 CXXFLAGS += -Wundef
 # CXXFLAGS += -Wnoexcept
