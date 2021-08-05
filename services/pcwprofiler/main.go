@@ -59,6 +59,13 @@ func main() {
 	// start jobs
 	jobs.Init(service.Pool())
 	defer jobs.Close()
+	// Remove all running profiler jobs before starting.
+	// It can happen that the profiling fails with a panic.
+	// In this case there could be lingering running
+	// profiling jobs in the database.
+	if err := removeRunningProfilngJobs(service.Pool()); err != nil {
+		log.Fatalf("cannot remove running jobs: %v", err)
+	}
 	// start server
 	http.HandleFunc("/profile/languages",
 		service.WithLog(service.WithMethods(http.MethodGet, getLanguages())))
@@ -205,16 +212,19 @@ func withAdditionalLexicon(f service.HandlerFunc) service.HandlerFunc {
 
 func run() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		log.Debugf("run")
 		p := profiler{
 			project: service.ProjectFromCtx(ctx),
 			alex:    ctx.Value(additionalLexiconKey).(api.AdditionalLexicon),
 		}
+		log.Debugf("start")
 		jobID, err := jobs.Start(context.Background(), &p)
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot run profiler: %v", err)
 			return
 		}
+		log.Debugf("jobID: %d", jobID)
 		service.JSONResponse(w, api.Job{ID: jobID})
 	}
 }
@@ -476,7 +486,7 @@ func getAdaptiveTokens() service.HandlerFunc {
 			AdaptiveTokens: []string{}, // set explicitly to return an empty list
 		}
 		seen := make(map[string]bool)
-		eachLine(p.BookID, func(line db.Chars) error {
+		eachLine(ctx, p.BookID, func(line db.Chars) error {
 			eachWord(line, func(word db.Chars) error {
 				if word.IsManuallyCorrected() {
 					str := strings.ToLower(trim(word).Cor())
@@ -491,4 +501,10 @@ func getAdaptiveTokens() service.HandlerFunc {
 		})
 		service.JSONResponse(w, at)
 	}
+}
+
+func removeRunningProfilngJobs(dtb db.DB) error {
+	const stmt = `DELETE FROM jobs WHERE statusid=1 AND text LIKE '` + namePrefix + `%';`
+	_, err := db.Exec(dtb, stmt)
+	return err
 }

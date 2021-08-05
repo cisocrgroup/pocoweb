@@ -30,11 +30,13 @@ func (p profiler) BookID() int {
 	return p.project.BookID
 }
 
+const namePrefix = "profiling"
+
 func (p profiler) Name() string {
 	if len(p.alex.Tokens) == 0 {
-		return "profiling"
+		return namePrefix
 	}
-	return "profiling with extended lexicon"
+	return namePrefix + " with extended lexicon"
 }
 
 func (p *profiler) Run(ctx context.Context) error {
@@ -73,7 +75,7 @@ func (p *profiler) findLanguage() error {
 		// like http.StatusNotFound but we ignore this for now.
 		return fmt.Errorf("find language %s: %v", p.project.Lang, err)
 	}
-	log.Debugf("profiler: found language: %s: %s", config.Language, config.Path)
+	log.Printf("profiler: found language: %s: %s", config.Language, config.Path)
 	p.config = config
 	return nil
 }
@@ -83,7 +85,7 @@ func (p *profiler) runProfiler(ctx context.Context) error {
 	for _, token := range p.alex.Tokens {
 		tokens = append(tokens, gofiler.Token{LE: token})
 	}
-	err := eachLine(p.project.BookID, func(line db.Chars) error {
+	err := eachLine(ctx, p.project.BookID, func(line db.Chars) error {
 		for w, r := line.NextWord(); len(w) > 0; w, r = r.NextWord() {
 			w = trim(w)
 			tokens = append(tokens, gofiler.Token{OCR: w.OCR()})
@@ -96,18 +98,29 @@ func (p *profiler) runProfiler(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("run profiler: %v", err)
 	}
-	log.Debugf("profiler: profiling %d tokens", len(tokens))
+	log.Printf("profiler: profiling %d tokens", len(tokens))
 	x := gofiler.Profiler{
 		Exe:      profbin,
 		Log:      logger{},
 		Adaptive: true,
 		Types:    true,
 	}
+	// var profile gofiler.Profile
+	// err = x.RunFunc(ctx, p.config.Path, tokens, func(ocr string, cand gofiler.Candidate) error {
+	// 	log.Printf("candidate: %s@%s", ocr, cand)
+	// 	if _, ok := profile[ocr]; !ok {
+	// 		profile[ocr] = gofiler.Interpretation{OCR: ocr, N: 1}
+	// 	}
+	// 	interp := profile[ocr]
+	// 	interp.Candidates = append(interp.Candidates, cand)
+	// 	profile[ocr] = interp
+	// 	return nil
+	// })
 	profile, err := x.Run(ctx, p.config.Path, tokens)
 	if err != nil {
 		return fmt.Errorf("run profiler: %v", err)
 	}
-	log.Debugf("profiler: got %d profile entries", len(profile))
+	log.Printf("profiler: got %d profile entries", len(profile))
 	p.profile = profile
 	return nil
 }
@@ -420,15 +433,36 @@ func selectBookLines(bookID int) ([]db.Chars, error) {
 	return lines, nil
 }
 
-func eachLine(bookID int, f func(db.Chars) error) error {
-	lines, err := selectBookLines(bookID)
+func eachLine(ctx context.Context, bid int, f func(db.Chars) error) error {
+	const stmt = "SELECT Cor,OCR,LineID FROM " + db.ContentsTableName +
+		" WHERE BookID=? ORDER BY PageID, LineID, Seq"
+	rows, err := db.QueryContext(ctx, service.Pool(), stmt, bid)
 	if err != nil {
-		return fmt.Errorf("load lines for book ID %d: %v",
-			bookID, err)
+		return fmt.Errorf("load lines for book ID %d: %v", bid, err)
 	}
-	for _, line := range lines {
+	defer rows.Close()
+	lineID := -1
+	var line db.Chars
+	for rows.Next() {
+		var tmp int
+		var char db.Char
+		if err := rows.Scan(&char.Cor, &char.OCR, &tmp); err != nil {
+			return fmt.Errorf("load line for book ID %d: %v", bid, err)
+		}
+		if tmp != lineID {
+			if len(line) > 0 {
+				if err := f(line); err != nil {
+					return fmt.Errorf("load line for book ID %d: %v", bid, err)
+				}
+			}
+			lineID = tmp
+			line = line[0:0]
+		}
+		line = append(line, char)
+	}
+	if len(line) > 0 {
 		if err := f(line); err != nil {
-			return err
+			return fmt.Errorf("load line for book ID %d: %v", bid, err)
 		}
 	}
 	return nil
@@ -469,5 +503,7 @@ func trim(chars db.Chars) db.Chars {
 type logger struct{}
 
 func (logger) Log(msg string) {
-	log.Debug(msg)
+	if len(msg) > 0 {
+		log.Printf(msg)
+	}
 }
