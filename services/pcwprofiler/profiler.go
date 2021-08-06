@@ -88,6 +88,9 @@ func (p *profiler) runProfiler(ctx context.Context) error {
 	err := eachLine(ctx, p.project.BookID, func(line db.Chars) error {
 		for w, r := line.NextWord(); len(w) > 0; w, r = r.NextWord() {
 			w = trim(w)
+			if len(w) < 4 {
+				continue
+			}
 			tokens = append(tokens, gofiler.Token{OCR: w.OCR()})
 			if w.IsManuallyCorrected() {
 				tokens[len(tokens)-1].COR = w.Cor()
@@ -98,35 +101,75 @@ func (p *profiler) runProfiler(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("run profiler: %v", err)
 	}
-	log.Printf("profiler: profiling %d tokens", len(tokens))
+	tmptoks := filepath.Join(baseDir, p.project.Directory, "tokens.txt.gz")
+	if err := writeGzippedTMPTokens(tmptoks, tokens); err != nil {
+		return fmt.Errorf("run profiler: %v", err)
+	}
+	log.Printf("wrote %d tokens", len(tokens))
 	x := gofiler.Profiler{
 		Exe:      profbin,
 		Log:      logger{},
 		Adaptive: true,
 		Types:    true,
 	}
-	// var profile gofiler.Profile
-	// err = x.RunFunc(ctx, p.config.Path, tokens, func(ocr string, cand gofiler.Candidate) error {
-	// 	log.Printf("candidate: %s@%s", ocr, cand)
-	// 	if _, ok := profile[ocr]; !ok {
-	// 		profile[ocr] = gofiler.Interpretation{OCR: ocr, N: 1}
-	// 	}
-	// 	interp := profile[ocr]
-	// 	interp.Candidates = append(interp.Candidates, cand)
-	// 	profile[ocr] = interp
-	// 	return nil
-	// })
-	profile, err := x.Run(ctx, p.config.Path, tokens)
-	if err != nil {
-		return fmt.Errorf("run profiler: %v", err)
+
+	for ts := tokens; len(ts) != 0; {
+		var rest []gofiler.Token
+		if len(ts) > 80000 {
+			tmp := ts
+			ts = tmp[:80000]
+			rest = tmp[80000:]
+		}
+		log.Printf("profiler: profiling %d tokens", len(ts))
+		profile, err := x.Run(ctx, p.config.Path, ts)
+		if err != nil {
+			return fmt.Errorf("run profiler: %v", err)
+		}
+		log.Printf("profiler: got %d profile entries", len(profile))
+		p.addProfile(profile)
+		ts = rest
 	}
-	log.Printf("profiler: got %d profile entries", len(profile))
-	p.profile = profile
+	log.Printf("got total %d profile entries", len(p.profile))
+	return nil
+}
+
+func (p *profiler) addProfile(profile gofiler.Profile) {
+	if p.profile == nil {
+		p.profile = profile
+		return
+	}
+	for ocr, i := range profile {
+		if _, ok := p.profile[ocr]; !ok {
+			p.profile[ocr] = i
+			continue
+		}
+		// Just update the count of the interpretation.
+		val := profile[ocr]
+		val.N += i.N
+		p.profile[ocr] = val
+	}
+}
+
+func writeGzippedTMPTokens(name string, ts []gofiler.Token) error {
+	out, err := os.Create(name)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	w := gzip.NewWriter(out)
+	defer w.Close()
+	for _, t := range ts {
+		_, err := fmt.Fprintf(w, "%s:%s\n", t.OCR, t.COR)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func (p *profiler) writeProfile() (err error) {
 	dest := filepath.Join(baseDir, p.project.Directory, "profile.json.gz")
+	log.Printf("writing profile to %s", dest)
 	out, err := os.Create(dest)
 	if err != nil {
 		return fmt.Errorf("write profile %s: %v", dest, err)
