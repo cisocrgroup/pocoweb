@@ -953,10 +953,24 @@ border-top: 0;
 
   .sidebar-col{
     background: white;
+   
+  }
+
+  #sidebar-container{
+     height: calc(100vh - 65px) !important;
   }
 
    .dropdown-toggle::after {
     display:none;
+}
+
+#sidebar-container-sticky-wrapper{
+       transition: all 0.2s ease;
+
+}
+
+.is-sticky #sidebar-container{
+       height: calc(100vh - 1px)!important;
 }
 
 .all_lines_parent{

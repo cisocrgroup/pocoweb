@@ -242,10 +242,27 @@ define(["marionette","app","backbone.syphon","common/views","common/util","apps/
             this.trigger("sidebar:special-characters-clicked",data.projectId,pat);
         }
       },
+
+      handleResizeSidebar :function(){
+ 
+          var datatable_sidebar_height = window.innerHeight-$('.controls-container').outerHeight()-$('.sidebar-filter-container').outerHeight()-42;
+          if(!$('#sidebar-container-sticky-wrapper').hasClass("is-sticky")) datatable_sidebar_height -=$('.navbar ').outerHeight();
+           $('.sidebar-table-container .dataTables_scrollBody').height(datatable_sidebar_height+"px"); // Datatable Bugfix
+          
+          return datatable_sidebar_height;
+
+      },
+
+
       onAttach:function(){
         var that = this;
 
-          $('#pageDP').dropdown();
+        $( window ).resize(function() {
+          that.handleResizeSidebar();
+        });
+
+                  $('#pageDP').dropdown();
+
           // $('#sidebar-container').height(window.innerHeight-64);
         
         // $('#pageId').click(function(){
