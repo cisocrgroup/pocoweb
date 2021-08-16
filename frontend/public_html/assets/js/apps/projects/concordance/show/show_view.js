@@ -198,25 +198,12 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
       },
       cor_suggestions:function(e){
          e.stopPropagation();
+            console.log("click")
 
-          if($(e.currentTarget).find('#dropdown-content-conc').length>0){
-            $('#dropdown-content-conc').toggle();
+          if($(e.currentTarget).parent().find('.dropdown-menu').length>0){
+            $(e.currentTarget).dropdown('toggle');
           }
-          else{
-
-          $('.js-suggestions-cor').find('.dropdown').remove();
-            var concLine = $(e.currentTarget).parent().parent();
-            var tokendiv = $(e.currentTarget).parent();
-            var pid = tokendiv.attr('projectId');
-            var lineid =  tokendiv.attr('lineId');
-            var pageid =  tokendiv.attr('pageId');
-            var tokenid =  tokendiv.attr('tokenId');
-            var token  = tokendiv.text();
-            var anchor = concLine.attr('anchor');
-
-         
-            this.trigger("concordance:show_suggestions",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token,dropdowndiv:$(e.currentTarget)});
-          }
+        
 
       },
       cordiv_clicked:function(e){
@@ -226,7 +213,6 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
           return;
         }
 
-      // $('#dropdown-content-conc').remove();
 
       $("#conc-modal").find('.cordiv_left').hide();
       $("#conc-modal").find('.cordiv_right').hide();
@@ -238,6 +224,28 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
       $(e.currentTarget).css('width','auto');
       $(e.currentTarget).addClass('cor_active');
+
+
+
+      // get content for sugggestion dropdown
+
+
+  var concLine = $(e.currentTarget).parent();
+            var tokendiv = $(e.currentTarget);
+            var pid = tokendiv.attr('projectId');
+            var lineid =  tokendiv.attr('lineId');
+            var pageid =  tokendiv.attr('pageId');
+            var tokenid =  tokendiv.attr('tokenId');
+            var token  = tokendiv.text();
+            var anchor = concLine.attr('anchor');
+
+
+
+          if($(e.currentTarget).find('.dropdown-menu').length==0){
+          this.trigger("concordance:show_suggestions",{pid:pid,page_id:pageid,line_id:lineid,token_id:tokenid,token:token,dropdowndiv:$(e.currentTarget).find('.js-suggestions-cor')});
+          }
+      
+         
 
 
       },
@@ -344,32 +352,33 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
      setSuggestionsDropdown : function(div,suggestions){
 
-                var dropdown = $('<span class="dropdown"></span>');
-                 div.append(dropdown);
+                $('.dropdown-menu').removeClass('show');
+                $('.dropdown').removeClass('show');
 
-                var suggestions_btn = $('<span class="dropdown-toggle" id="dropdownMenuConc" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>');
-                dropdown.append(suggestions_btn);
-                suggestions_btn.attr('aria-haspopup','true');
-                suggestions_btn.attr('aria-expanded','false');
-                suggestions_btn.attr('id','dropdownMenuConc');
-                suggestions_btn.attr('data-flip','true');
-                suggestions_btn.attr('data-target','dropdown-content-conc');
+                div.attr('aria-expanded','false');
+
+                div.attr('aria-haspopup','true');
+                div.attr('aria-expanded','false');
+                div.attr('id','dropdownMenuConc');
+                div.attr('data-flip','true');
+                div.addClass('dropdown-toggle');
+                // suggestions_b tn.attr('data-target','dropdown-content-conc');
 
                  var dropdown_content = $('<div></div>');
                  dropdown_content.addClass('dropdown-menu');
-                 dropdown_content.attr('id','dropdown-content-conc');
                  dropdown_content.attr('aria-labelledby','dropdownMenuConc');
-                 suggestions_btn.parent().append(dropdown_content);
+                 div.parent().append(dropdown_content);
 
-                    
+             
+
                       if(_.isEmpty(suggestions)){
-                         $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">No suggestions available</a>"'));
+                        dropdown_content.append($('<a class="dropdown-item noselect">No suggestions available</a>"'));
                       }
 
                      for(i=0;i<suggestions.length;i++){
         						 var s = suggestions[i];
         						 var content = Util.formatSuggestion(s);
-                     $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
+                    dropdown_content.append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
 
 
@@ -379,21 +388,26 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
                      var s = suggestions[key][i];
 						         var content = Util.formatSuggestion(s);
-                     $('#dropdown-content-conc').append($('<a class="dropdown-item noselect">'+content+"</a>"));
+                    dropdown_content.append($('<a class="dropdown-item noselect">'+content+"</a>"));
                      }
                    }
 
-                   dropdown_content.show();
+                   // dropdown_content.show();
 
                     if(!_.isEmpty(suggestions)){
 
-                       $('#dropdown-content-conc .dropdown-item').on('click',function(e){
+                      dropdown_content.find('.dropdown-item').on('click',function(e){
                         // e.stopPropagation();
                         var split = $(this).text().split(" ");
-                        $(this).parent().parent().parent().prev().text(split[0]);
+                        $(this).parent().parent().prev().text(split[0]);
                         // $(this).parent().hide();
                        })
                 }
+
+
+
+           
+
      },
 
   setImages : function(max){
@@ -525,7 +539,7 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                     cordiv = $("<div class='cordiv' contenteditable='"+contenteditable+"'>"+token.cor.trim()+"</div>");
                     tokendiv = $('<div class="tokendiv cordiv_container token-text"></div>')
                     tokendiv.append($("<span title='mark token' class='cordiv_left js-select-cor'><i class='cor_item far fa-square'></i></span>")).append(cordiv);;
-                    tokendiv.append($("<span title='show suggestions' class='cordiv_right js-suggestions-cor'><i class='far fa-caret-square-down cor_item'></i></span><span title='correct token' class='cordiv_right js-correct-cor'><i class='cor_item far fa-arrow-alt-circle-up'></i></span>"));
+                    tokendiv.append($("<span class='dropdown'><span title='show suggestions' class='cordiv_right js-suggestions-cor'><i class='far fa-caret-square-down cor_item'></i></span></span><span title='correct token' class='cordiv_right js-correct-cor'><i class='cor_item far fa-arrow-alt-circle-up'></i></span>"));
 
                         if(token.isAutomaticallyCorrected){
                           cordiv.addClass('automatically_corrected').css('border','1px solid #fdd380').css('border-radius','.25rem');
@@ -590,6 +604,9 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
 
              $('#conc-modal').on('shown.bs.modal', function () {
 
+           
+          
+
 
                    // $(".cordiv")
                    //  .on("click", function() {
@@ -638,6 +655,8 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
                     $('.cor_active').css('width',o_width);
                     $('.cor_active').removeClass('cor_active');
                     $('.cor_active').removeAttr('original_width');
+                    $('.dropdown').removeClass('show');
+                    $('.dropdown-menu').removeClass('show');
 
                 }
           });
@@ -647,7 +666,14 @@ define(["marionette","app","imagesLoaded","backbone.syphon","common/views","comm
          that = this;
            $(this).imagesLoaded( function() {
              that.setContent(true); // insert Concordance Content
+
+
+
            });
+
+
+
+
        }
 
   }

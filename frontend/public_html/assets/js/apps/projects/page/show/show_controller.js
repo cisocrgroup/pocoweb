@@ -294,10 +294,14 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                       var container = $('#page-container');
                       var scrollTo = $('#line-anchor-'+id+"-"+page_id+"-"+line_id);
 
-                    container.animate({
+
+
+                    $('html, body').animate({
                         scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
                     },2000, function() {
-                      scrollTo.parent().fadeOut(500).fadeIn(500);
+                      scrollTo.parent().fadeOut(500,function(){
+                        scrollTo.parent().fadeIn(500);
+                      })
                     });
 
                 }              

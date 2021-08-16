@@ -15,6 +15,7 @@ body{
      overflow-x: hidden;
     /* background-size: 86%;*/
      background: #fcfbf8;
+     height: 100%;
 }
 
 h4{
@@ -779,7 +780,7 @@ display: inline-block;
 
  .dropdown-menu{
           max-height:200px;
-          overflow-y:scroll;
+          overflow-y:auto;
   }
 
   .clickable-row{
@@ -978,6 +979,7 @@ border-top: 0;
   /*  min-height: 650px;
     max-height: 650px;*/
     overflow-y: auto;
+    min-height: 200px;
 }
 
 
