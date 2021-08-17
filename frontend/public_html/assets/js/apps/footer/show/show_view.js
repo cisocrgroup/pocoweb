@@ -4,7 +4,7 @@
 
 define(["marionette","app","common/views",
         "tpl!apps/footer/show/templates/footer.tpl"
- ], function(Marionette,IPS_App,views,footerTpl){
+ ], function(Marionette,App,views,footerTpl){
 
  	var Show={};
 
@@ -13,10 +13,22 @@ define(["marionette","app","common/views",
 
 		onAttach: function(){
 
-			$('.js-up').click(function(e){
+			$('.js-top').click(function(e){
 				e.preventDefault();
 				window.scrollTo(0,0);
 			});
+
+		   $(window).scroll(function () {
+	          var scroll = $(window).scrollTop();
+
+	          if (scroll >= 300) {
+	              $(".top-button").addClass("visible");
+	          } else {
+	              $(".top-button").removeClass("visible");
+	          }
+	      });
+  
+
 				
 		}
 	  

@@ -35,7 +35,6 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                  {title:project.get("title"),url:"#projects/"+id},
                  {title:"Manual Postcorrection",url:""},
                  {title: page.get('pageId'),url:""},
-
           ];
 
 			var projectShowLayout = new Show.Layout({breadcrumbs:breadcrumbs});

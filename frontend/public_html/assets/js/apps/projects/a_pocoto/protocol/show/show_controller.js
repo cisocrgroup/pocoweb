@@ -20,7 +20,6 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
       $.when(fetchingproject,fetchingprotocol,fetchingjobs).done(function(project,pr,job){
         pr = Util.addPostCorrectionClassification(pr);
-		  loadingCircleView.destroy();
       console.log(project);
       console.log(pr);
 
@@ -38,8 +37,6 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                  {title:project.get("title"),url:"#projects/"+id},
                  {title:"Automatic Postcorrection",url:"#projects/"+id+"/a_pocoto"},
                  {title:"Protocol",url:""}
-
-
           ];
 			  projectShowHeader = new Show.Header({title:"Postcorrection",icon:"fas fa-play",color:"red",breadcrumbs:breadcrumbs});
       	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to A-PoCoTo <i class='fas fa-cogs'></i>"});
@@ -49,6 +46,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                });
 
       var status = project.get('status');
+
       if(job.statusName=="running"){
           projectShowLoading = new Views.LoadingView({title:"Job running",message:job.jobName+ " , please wait."});
           projectShowLayout.showChildView('contentRegion',projectShowLoading);
@@ -70,6 +68,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                            pr = Util.addPostCorrectionClassification(pr);
                               projectShowProtocol = new Show.Protocol({pr});
                               projectShowLayout.showChildView('contentRegion',projectShowProtocol);
+                             loadingCircleView.destroy();
 
 
                       projectShowProtocol.on("show:word_clicked",function(word){
@@ -96,14 +95,11 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
 
                       projectConcView.on("concordance:correct_token",function(data,anchor,done){
 
-                         console.log(anchor);
-                         console.log(data);
-
+                   
                            var correctingtoken = ProjectEntities.API.correctToken(data);
                             $.when(correctingtoken).done(function(result){
                             done();
 
-                              console.log(result);
 
 
                             }).fail(function(response){

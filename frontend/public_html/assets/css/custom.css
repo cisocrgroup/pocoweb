@@ -76,7 +76,7 @@ tbody,thead{
 }
 
 #main-region{
-  min-height: 75vh;
+  min-height: calc(100vh - 115px);
 }
 
 .topblock{
@@ -193,7 +193,7 @@ opacity: 0.6;
 }
 
 .footer{
-      text-align: center;
+    text-align: center;
     background: white;
     padding-bottom: 15px;
     padding-top: 15px;
@@ -202,6 +202,7 @@ opacity: 0.6;
     z-index: 20;
     position: absolute;
     width: 100%;
+    font-size: 14px;
   }
 
 .footercontainer{
@@ -1108,6 +1109,24 @@ div.doc-note {
 padding-left: 17px;
 
 }
+
+.top-button.visible {
+opacity: 1;
+    transition: opacity 1s;
+}
+.visible {
+    visibility: visible!important;
+}
+
+.top-button {
+    position: fixed;
+    right: 5%;
+    bottom: 30px;
+    opacity: 0;
+    transition: opacity 1s;
+    z-index: 1020;
+}
+
 @media only screen and (min-width : 576px) {
     .sidebar-col{
       padding-right: 0;
