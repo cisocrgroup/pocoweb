@@ -132,9 +132,12 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
               rows[0].remove();
              $('#special-characters-container > .loading_background2').fadeOut();
 
-            $('#sidebar-container').sticky({zIndex:10});
+            $('#sidebar-container').sticky({zIndex:100});
             $('#sidebar-container').on('sticky-start', function() { projectShowSidebar.handleResizeSidebar(); });
             $('#sidebar-container').on('sticky-end', function() { projectShowSidebar.handleResizeSidebar(); });
+            $('#sidebar-container').on('sticky-bottom-reached', function() { console.log("bottom reaced") });
+
+
 
            });
 

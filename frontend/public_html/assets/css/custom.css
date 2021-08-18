@@ -899,7 +899,7 @@ border-top: 0;
     width: 100%;
     left: 0px;
     height: 200px;
-    z-index: 10005;
+    z-index: 1000;
     display: flex;
     align-items: center;
     position: relative;
