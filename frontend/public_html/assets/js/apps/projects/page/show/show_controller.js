@@ -63,7 +63,11 @@ define(["app","common/util","common/views","apps/projects/page/show/show_view"],
                   "info":false,
                   "paging": false,
                   "lengthChange": false,
-                  "order": [[ 1, "desc" ]]
+                  "order": [[ 1, "desc" ]],
+                  "drawCallback": function( settings ) {
+                    projectShowSidebar.handleResizeSidebar();
+                    window.scrollTo(0,window.scrollY+1);
+                }
                 });
 
                projectShowSidebar.sp_table = sp_table;

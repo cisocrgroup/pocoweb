@@ -17,8 +17,6 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/profile/show/
             var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
 
 
-
-
       $.when(fetchingproject,fetchingjobs).done(function(project,job){
 
 		  loadingCircleView.destroy();
@@ -32,7 +30,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/profile/show/
 			projectShowLayout.on("attach",function(){
 
     var status = project.get('status');
-    
+
     if(job.statusName=="running"){
           projectShowLoading = new Views.LoadingView({title:"Job running",message:job.jobName+ " , please wait."});
           projectShowLayout.showChildView('contentRegion',projectShowLoading);
