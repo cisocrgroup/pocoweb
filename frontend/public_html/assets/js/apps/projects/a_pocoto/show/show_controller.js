@@ -35,15 +35,18 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
       //     };
 
              var cards = [
-       {
-                "color": "red",
-                "icon": "fa-play",
-                "id": "post_cor_btn",
-                "name": "Postcorrection",
-                "seq": 3,
-                "text": "Run the automated post correction process.",
-                "url": "postcorrection"
-            },
+
+             {
+                  color: "green",
+                  icon: "fas fa-poll",
+                  id: "test_btn",
+                  name: "Order Profile",
+                  seq: 1,
+                  text: "Re-profile the project.",
+                  url: "profile"
+            },    
+
+    
               {
                 "color": "green",
                 "icon": "fa-list",
@@ -58,14 +61,14 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
 
         var cards2 = [
               {
-                  color: "green",
-                  icon: "fas fa-history",
-                  id: "test_btn",
-                  name: "Order Profile",
-                  seq: 1,
-                  text: "Re-profile the project.",
-                  url: "profile"
-            },    
+                "color": "red",
+                "icon": "fa-play",
+                "id": "post_cor_btn",
+                "name": "Postcorrection",
+                "seq": 3,
+                "text": "Run the automated post correction process.",
+                "url": "postcorrection"
+            },
      
              {
                 "color": "blue",
@@ -90,10 +93,10 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
 
     projectsShowHub2.on('cardHub:clicked',function(data){
 
-          if(data.url=="profile"){
-             this.trigger("projects:profile",id);
+       
+       if(data.url=="postcorrection"){
+           App.trigger("projects:postcorrection",id);
           }
-
           if(data.url=="train_postcorrection"){
              App.trigger("projects:train_postcorrection",id);
           }
@@ -101,9 +104,9 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
 
    
      projectsShowHub.on('cardHub:clicked',function(data){
-
-          if(data.url=="postcorrection"){
-           App.trigger("projects:postcorrection",id);
+          
+             if(data.url=="profile"){
+             App.trigger("projects:profile",id);
           }
          if(data.url=="lexicon_extension"){
              App.trigger("projects:lexicon_extension",id);
@@ -126,35 +129,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/show/show_vie
                 App.trigger("projects:show",id);
           })
 
-             projectsShowHub2.on("projects:profile", function(id) {
-                var profilingproject = ProjectEntities.API.profileProject({
-                  pid: id,
-                  tokens: []
-                });
-
-                $.when(profilingproject)
-                  .done(function(result) {
-                    console.log(result)
-                    var confirmModal = new Show.OkDialog({
-                      asModal: true,
-                      title: "Profiling started",
-                      text: "Profile for project '" + project.get("title") + "' ordered.",
-                      id: "profileModal"
-                    });
-                    App.mainLayout.showChildView("dialogRegion", confirmModal);
-                    App.mainmsg.updateContent("Profiling started",'info',true,result.request_url);
-
-                       var fetchingjobs = ProjectEntities.API.getJobs({pid:id});
-                      $.when(fetchingjobs).done(function(jobs) {
-                        projectShowLayout.trackJobStatus();
-
-                      });
-
-                  })
-                  .fail(function(response) {
-                    Util.defaultErrorHandling(response, "danger");
-                  });
-              });
+          
 
 
   			// projectPanel = new Show.FooterPanel();

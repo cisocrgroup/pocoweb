@@ -51,13 +51,16 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
           projectShowLoading = new Views.LoadingView({title:"Job running",message:job.jobName+ " , please wait."});
           projectShowLayout.showChildView('contentRegion',projectShowLoading);
           projectShowLayout.trackJobStatus();
+          loadingCircleView.destroy();
+
         }
 
         else {
 
           if (!status['post-corrected']){
-          projectShowProtocol = new Show.SingleStep({url:"pr",color:"red",step:"Postcorrection",icon:"fas fa-play",id:"js-start-pc",text:"Start automated postcorrection"});
+          projectShowProtocol = new Show.SingleStep({url:"pr",color:"red",step:"Postcorrection",icon:"fas fa-history",id:"js-start-pc",text:"Start automated postcorrection"});
           projectShowLayout.showChildView('contentRegion',projectShowProtocol);
+          loadingCircleView.destroy();
 
           }
           else {
@@ -68,7 +71,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/protocol/show
                            pr = Util.addPostCorrectionClassification(pr);
                               projectShowProtocol = new Show.Protocol({pr});
                               projectShowLayout.showChildView('contentRegion',projectShowProtocol);
-                             loadingCircleView.destroy();
+                              loadingCircleView.destroy();
 
 
                       projectShowProtocol.on("show:word_clicked",function(word){
