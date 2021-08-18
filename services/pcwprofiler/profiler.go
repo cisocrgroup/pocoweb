@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/finkf/gofiler"
@@ -40,6 +41,7 @@ func (p profiler) Name() string {
 }
 
 func (p *profiler) Run(ctx context.Context) error {
+	start := time.Now()
 	if p.project.Lang == "" {
 		return p.runEmptyLanguage(ctx)
 	}
@@ -55,6 +57,7 @@ func (p *profiler) Run(ctx context.Context) error {
 	if err := p.insertProfileIntoDB(); err != nil {
 		return fmt.Errorf("profile: %v", err)
 	}
+	log.Printf("done profiling after %v", time.Since(start))
 	return nil
 }
 
@@ -81,9 +84,9 @@ func (p *profiler) findLanguage() error {
 }
 
 func (p *profiler) runProfiler(ctx context.Context) error {
-	var tokens []gofiler.Token
-	for _, token := range p.alex.Tokens {
-		tokens = append(tokens, gofiler.Token{LE: token})
+	var ts []gofiler.Token
+	for _, t := range p.alex.Tokens {
+		ts = append(ts, gofiler.Token{LE: t})
 	}
 	err := eachLine(ctx, p.project.BookID, func(line db.Chars) error {
 		for w, r := line.NextWord(); len(w) > 0; w, r = r.NextWord() {
@@ -91,9 +94,9 @@ func (p *profiler) runProfiler(ctx context.Context) error {
 			if len(w) < 4 {
 				continue
 			}
-			tokens = append(tokens, gofiler.Token{OCR: w.OCR()})
+			ts = append(ts, gofiler.Token{OCR: w.OCR()})
 			if w.IsManuallyCorrected() {
-				tokens[len(tokens)-1].COR = w.Cor()
+				ts[len(ts)-1].COR = w.Cor()
 			}
 		}
 		return nil
@@ -101,69 +104,20 @@ func (p *profiler) runProfiler(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("run profiler: %v", err)
 	}
-	tmptoks := filepath.Join(baseDir, p.project.Directory, "tokens.txt.gz")
-	if err := writeGzippedTMPTokens(tmptoks, tokens); err != nil {
-		return fmt.Errorf("run profiler: %v", err)
-	}
-	log.Printf("wrote %d tokens", len(tokens))
 	x := gofiler.Profiler{
 		Exe:      profbin,
+		Config:   p.config.Path,
 		Log:      logger{},
 		Adaptive: true,
 		Types:    true,
 	}
-
-	for ts := tokens; len(ts) != 0; {
-		var rest []gofiler.Token
-		if len(ts) > 80000 {
-			tmp := ts
-			ts = tmp[:80000]
-			rest = tmp[80000:]
-		}
-		log.Printf("profiler: profiling %d tokens", len(ts))
-		profile, err := x.Run(ctx, p.config.Path, ts)
-		if err != nil {
-			return fmt.Errorf("run profiler: %v", err)
-		}
-		log.Printf("profiler: got %d profile entries", len(profile))
-		p.addProfile(profile)
-		ts = rest
-	}
-	log.Printf("got total %d profile entries", len(p.profile))
-	return nil
-}
-
-func (p *profiler) addProfile(profile gofiler.Profile) {
-	if p.profile == nil {
-		p.profile = profile
-		return
-	}
-	for ocr, i := range profile {
-		if _, ok := p.profile[ocr]; !ok {
-			p.profile[ocr] = i
-			continue
-		}
-		// Just update the count of the interpretation.
-		val := profile[ocr]
-		val.N += i.N
-		p.profile[ocr] = val
-	}
-}
-
-func writeGzippedTMPTokens(name string, ts []gofiler.Token) error {
-	out, err := os.Create(name)
+	log.Printf("profiler: profiling %d tokens", len(ts))
+	profile, err := x.Run(ctx, ts)
 	if err != nil {
-		return err
+		return fmt.Errorf("run profiler: %v", err)
 	}
-	defer out.Close()
-	w := gzip.NewWriter(out)
-	defer w.Close()
-	for _, t := range ts {
-		_, err := fmt.Fprintf(w, "%s:%s\n", t.OCR, t.COR)
-		if err != nil {
-			return err
-		}
-	}
+	p.profile = profile
+	log.Printf("got total %d profile entries", len(p.profile))
 	return nil
 }
 
