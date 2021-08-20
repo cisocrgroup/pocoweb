@@ -1,13 +1,13 @@
-FROM alpine:3.10 AS deps
+FROM alpine:3.13 AS deps
 MAINTAINER Florian Fink <finkf@cis.lmu.de>
 ENV DATE='Tue 04 Jun 2019 02:06:35 PM CEST'
-ENV DEPS='boost-dev=1.69.0-r4 mariadb-dev leptonica-dev icu-dev mariadb-client bash zip'
+ENV DEPS='boost-dev mariadb-dev leptonica-dev icu-dev mariadb-client bash zip'
 ENV BUILD_DEPS='clang make build-base cmake'
 ENV LANG="C.UTF-8"
 ENV LANGUAGE="${LANG}"
 ENV LC_ALL="${LANG}"
 
-RUN apk add ${DEPS} ${BUILD_DEPS}
+RUN apk --update add ${DEPS} ${BUILD_DEPS}
 
 FROM deps AS libs
 COPY modules /build/modules

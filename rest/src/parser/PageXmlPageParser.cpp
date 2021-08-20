@@ -20,6 +20,9 @@ ParserPagePtr PageXmlPageParser::parse() {
           .doc()
           .select_node("/*[local-name()='PcGts']/*[local-name()='Page']")
           .node();
+  if (not pagenode) {
+    throw std::runtime_error("invalid page xml: missing Page node");
+  }
   page->ocr = path_;
   parse(pagenode, *page);
   done_ = true; // page documents contain just one page
@@ -40,10 +43,6 @@ void PageXmlPageParser::parse(const Xml::Node &pagenode,
       add_line(line.node(), page);
     }
   });
-  // page.id = pagenode.attribute("PHYSICAL_IMG_NR").as_int();
-  // for (const auto& l : textlines) {
-  //   add_line(l.node(), page);
-  // }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -85,13 +84,15 @@ template <class F> void each_text_region(const Xml::Node &pagenode, F f) {
   const auto text_regions = get_ordered_text_regions(pagenode);
   if (not text_regions.empty()) {
     for (const auto &region_id : text_regions) {
-      const auto region_ref = "./TextRegion[@id='" + region_id + "']";
+      const auto region_ref =
+          "./*[local-name()='TextRegion'][@id='" + region_id + "']";
       for (const auto &region : pagenode.select_nodes(region_ref.data())) {
         f(region.node());
       }
     }
   } else {
-    for (const auto &region : pagenode.select_nodes("./TextRegion")) {
+    for (const auto &region :
+         pagenode.select_nodes("./*[local-name()='TextRegion']")) {
       f(region.node());
     }
   }

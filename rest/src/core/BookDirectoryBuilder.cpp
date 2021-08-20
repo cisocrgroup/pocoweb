@@ -21,6 +21,9 @@
 namespace fs = boost::filesystem;
 using namespace pcw;
 
+static double calc_scaling_factor(int, int);
+static int scale(int, double);
+
 ////////////////////////////////////////////////////////////////////////////////
 static BookDirectoryBuilder::Path
 create_unique_bookdir_path(const Config &config) {
@@ -164,10 +167,17 @@ void BookDirectoryBuilder::setup_img_and_ocr_files(Page &page) const {
 void BookDirectoryBuilder::make_line_img_files(const Path &pagedir,
                                                Page &page) const {
   PixPtr pix;
+  // Handle cases where the image dimensions of the xml file
+  // differ from the actual size of the image files.
+  double xscale = 1.0;
+  double yscale = 1.0;
   if (page.has_img_path()) {
     pix.reset(pixRead((base_dir_ / page.img).string().data()));
-    if (not pix)
+    if (not pix) {
       THROW(Error, "(BookDirectoryBuilder) Cannot read img ", page.img);
+    }
+    xscale = calc_scaling_factor(pix->w, page.box.width());
+    yscale = calc_scaling_factor(pix->h, page.box.height());
   }
   for (auto &line : page) {
     if (not line->has_img_path() and not pix) {
@@ -176,13 +186,13 @@ void BookDirectoryBuilder::make_line_img_files(const Path &pagedir,
     } else if (not line->has_img_path() and pix) {
       line->img = remove_common_base_path(pagedir / path_from_id(line->id()),
                                           base_dir_);
-      // we use png as single output format,
+      // We use png as single output format,
       // since it is supported by most web browsers
       // and is also the main image format that
       // ocoropus supports.
       line->img.replace_extension(".png");
       fs::create_directories(pagedir);
-      write_line_img_file(pix.get(), *line);
+      write_line_img_file(pix.get(), *line, xscale, yscale);
     } else if (line->has_img_path()) {
       const auto to =
           base_dir_ / dir_ / remove_common_base_path(line->img, tmp_dir());
@@ -220,16 +230,20 @@ static void clip(BOX &box, const PIX &pix) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void BookDirectoryBuilder::write_line_img_file(void *vpix,
-                                               const Line &line) const {
+                                               const Line &line,
+					       double xscale,
+					       double yscale) const {
   auto pix = (PIX *)vpix;
   assert(pix);
-  // auto format = pixGetInputFormat(pix);
+
+  // Scale the line boxes according to the given x- and y scale factors.
   BOX box;
-  box.x = line.box.left();
-  box.y = line.box.top();
-  box.w = line.box.width();
-  box.h = line.box.height();
+  box.x = scale(line.box.left(), xscale);
+  box.y = scale(line.box.top(), yscale);
+  box.w = scale(line.box.width(), xscale);
+  box.h = scale(line.box.height(), yscale);
   clip(box, *pix);
+  // Write the line image snippets.
   if (box.x + box.w <= (int)pix->w and box.y + box.h <= (int)pix->h) {
     PixPtr tmp{pixClipRectangle(pix, &box, nullptr)};
     if (not tmp or
@@ -272,4 +286,14 @@ Path BookDirectoryBuilder::remove_common_base_path(const Path &p,
     return res;
   }
   return p;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+double calc_scaling_factor(int a, int b) {
+  return static_cast<double>(a) / static_cast<double>(b);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int scale(int x, double fac) {
+  return static_cast<int>(static_cast<double>(x) * fac);
 }

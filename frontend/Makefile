@@ -1,5 +1,6 @@
 INSTALL_DIR ?= /srv/pocoweb/www-data
-JS_FILES += public_html/doc.html
+JS_FILES += public_html/api_doc.html
+JS_FILES += public_html/manual.html
 JS_FILES += public_html/index.html
 JS_FILES += public_html/assets/js/vendor/rangy-core.js
 JS_FILES += public_html/assets/js/require_main.built.js

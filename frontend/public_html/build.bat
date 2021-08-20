@@ -34,4 +34,3 @@ rem scp -r . tobiasenglmeier@t-macbook-pro.fritz.box:/Users/tobiasenglmeier/poco
 rem xcopy /s /Y C:\pocoweb\frontend\public_html C:\pocoweb_data\www-data\public_html > nul
 
 @echo on
-

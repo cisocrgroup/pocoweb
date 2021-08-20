@@ -17,7 +17,8 @@ static DbLine mline(const std::wstring &str) {
   int i = 0;
   for (const auto c : str) {
     ret.line.push_back(
-        DbChar{.ocr = c, .cor = 0, .cut = i++ * 10 + 10, .conf = 0.5});
+        DbChar{.ocr = c, .cor = 0, .cut = i * 10 + 10, .conf = 0.5, .id = i});
+    i++;
   }
   ret.box.set_left(0);
   ret.box.set_right(int(str.size()) * 10);
@@ -59,9 +60,9 @@ BOOST_AUTO_TEST_CASE(TestDbLineTokenBoxes) {
 ////////////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(TestDbLineTokenSlices) {
   auto line = mline(L"one two three");
-  BOOST_CHECK_EQUAL(line.slice(0, line.tokenLength(0)).cor(), "one");
-  BOOST_CHECK_EQUAL(line.slice(4, line.tokenLength(4)).cor(), "two");
-  BOOST_CHECK_EQUAL(line.slice(8, line.tokenLength(8)).cor(), "three");
+  BOOST_CHECK_EQUAL(line.slice(0, 3).cor(), "one");
+  BOOST_CHECK_EQUAL(line.slice(4, -1).cor(), "two");
+  BOOST_CHECK_EQUAL(line.slice(8, -1).cor(), "three");
   BOOST_CHECK_EQUAL(line.slice(3, 5).cor(), " two ");
 }
 

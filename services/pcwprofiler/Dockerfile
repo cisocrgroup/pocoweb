@@ -10,12 +10,11 @@ WORKDIR /build
 COPY . .
 RUN CGO_ENABLED=0 go install .
 
-FROM flobar/profiler:latest
-MAINTAINER Florian Fink
-ENV VERSION='Fri 07 Jun 2019 01:56:35 PM CEST'
+FROM flobar/profiler:debian
+LABEL MAINTAINER Florian Fink
+ENV VERSION='Wed 18 Aug 2021 12:01:27 PM CEST'
 ENV GITURL="https://github.com/cisocrgroup"
 ENV PATH="${PATH}:/go/bin"
-ENV LC_ALL=C
 
 COPY --from=build /go/bin/pcwprofiler /bin/pcwprofiler
 CMD pcwprofiler \
@@ -23,4 +22,4 @@ CMD pcwprofiler \
 	-profiler /apps/profiler \
 	-language-dir /language-data \
 	-base / \
-    -debug
+    	-debug

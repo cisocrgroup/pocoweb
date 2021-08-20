@@ -5,10 +5,10 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
  var Controller = {
 
  	listUsers: function(){
-		
+
    		require(["entities/users"], function(UserEntities){
 
- 
+
        	var fetchingUsers = UserEntities.API.getUsers();
 
 		usersListLayout = new List.Layout();
@@ -37,14 +37,14 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
  					   	var deletingUser = UserEntities.API.deleteUser({id:id});
     		    	 	$('#deleteModal').modal("hide");
 			    	 $.when(deletingUser).done(function(result){
-			    	 	 App.mainmsg.updateContent("User account "+id+" successfully deleted.",'success',true,result.request_url);              
+			    	 	 App.mainmsg.updateContent("User account "+id+" successfully deleted.",'success',true,result.request_url);
 			    	 	delete_row.remove();
-			    	 }).fail(function(response){ 
+			    	 }).fail(function(response){
      			         App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url)
-				      });    
+				      });
  				})
 
-			    
+
 
 			});
 
@@ -69,16 +69,16 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 					    	 	   usersListView.trigger("onAttach");
   					    	 	   usersListView.render();
 
-                         	
+
 					    	 });
 
 				       }).fail(function(response){
    			   	 		$('#userModal').modal('hide');
      			         App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url)
-				 		});    
+				 		});
  				 });
 
-			    
+
 
 			});
 
@@ -89,9 +89,9 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 		        });
 
 			    usersListLayout.showChildView('headerRegion',usersListHeader);
-                usersListLayout.showChildView('panelRegion',usersListPanel);	
-                usersListLayout.showChildView('infoRegion',usersListView);	
-                usersListLayout.showChildView('footerRegion',usersFooterPanel);	
+                usersListLayout.showChildView('panelRegion',usersListPanel);
+                usersListLayout.showChildView('infoRegion',usersListView);
+                usersListLayout.showChildView('footerRegion',usersFooterPanel);
 
  		}); // on:attach
 
@@ -99,11 +99,11 @@ define(["app","common/util","apps/users/list/list_view"], function(App,Util,List
 
          App.mainLayout.showChildView('mainRegion',usersListLayout);
 
-		}).fail(function(response){ 
+		}).fail(function(response){
 
-		      Util.defaultErrorHandling(response,'danger');                        
-                         
-                                        
+		      Util.defaultErrorHandling(response,'danger');
+
+
           }); //  $.when(fetchingAuth).done // $when fetchingUsers
 
 		}); // require

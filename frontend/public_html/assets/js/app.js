@@ -237,7 +237,6 @@ App.on("start", function(){
   // init pcw local storage configuration
   let pcw = App.getPcw();
   App.setPcw(pcw);
-
     if(Backbone.history){
        require([
                "apps/header/header_app"
@@ -344,7 +343,6 @@ App.on("start", function(){
 
      HeaderApp.API.showHeader(function(){
        FooterApp.API.showFooter();
-      
 
        if(App.getCurrentRoute().startsWith("user-content")){
           App.trigger("docs:show");
@@ -361,7 +359,6 @@ App.on("start", function(){
      App.on('page_changed',function(){
       // $('#mainmsg').empty();
      });
-
 
        });
     }

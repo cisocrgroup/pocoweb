@@ -1,6 +1,7 @@
 package main
 
 import (
+	"compress/gzip"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -12,7 +13,9 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"unicode"
 
+	"github.com/finkf/gofiler"
 	"github.com/finkf/pcwgo/api"
 	"github.com/finkf/pcwgo/db"
 	"github.com/finkf/pcwgo/jobs"
@@ -21,28 +24,24 @@ import (
 )
 
 type leRunner struct {
-	project *db.Project
+	baseRunner
 }
 
 func (r leRunner) Name() string {
 	return "calculating extended lexicon"
 }
 
-func (r leRunner) BookID() int {
-	return r.project.BookID
-}
-
 func (r leRunner) Run(ctx context.Context) error {
-	if err := r.setupWorkspace(); err != nil {
-		return fmt.Errorf(
-			"cannot calculate extended lexicon: %v", err)
-	}
-	if err := r.runEL(ctx); err != nil {
-		return fmt.Errorf(
-			"cannot calculate extended lexicon: %v", err)
-	}
-	return nil
-
+	return r.simpleRun()
+	// if err := r.setupWorkspace(); err != nil {
+	// 	return fmt.Errorf(
+	// 		"cannot calculate extended lexicon: %v", err)
+	// }
+	// if err := r.runEL(ctx); err != nil {
+	// 	return fmt.Errorf(
+	// 		"cannot calculate extended lexicon: %v", err)
+	// }
+	// return nil
 }
 
 func (r leRunner) setupWorkspace() error {
@@ -71,45 +70,94 @@ func (r leRunner) runEL(ctx context.Context) error {
 	const stmnt = "UPDATE " + db.BooksTableName + " SET extendedlexicon=? WHERE bookid=?"
 	_, err = db.Exec(service.Pool(), stmnt, true, r.project.BookID)
 	if err != nil {
-		return fmt.Errorf("cannot run %s: %v", script, err)
+		return fmt.Errorf("cannot update database: %v", err)
+	}
+	return nil
+}
+
+func (r leRunner) simpleRun() error {
+	profile, err := readProfile(r.project.Directory)
+	if err != nil {
+		return fmt.Errorf("cannot create lexicon extension: %v", err)
+	}
+	protocol := leProtocol{
+		Yes: make(map[string]leProtocolValue),
+		No:  make(map[string]leProtocolValue),
+	}
+	r.eachLine(func(_, _ int, line db.Chars) error {
+		return eachTrimmedWord(line, func(word db.Chars) error {
+			ocr := strings.ToLower(word.Cor())
+			if _, ok := profile[ocr]; !ok {
+				return nil
+			}
+			interp := profile[ocr]
+			if len(interp.Candidates) == 0 {
+				return nil
+			}
+			topCand := interp.Candidates[0]
+			if topCand.Distance == 0 && len(topCand.HistPatterns) == 0 {
+				return nil
+			}
+			if topCand.Distance > 0 {
+				return nil
+			}
+			weight := float64(topCand.Weight) * word.AverageConfidence()
+			if weight > .90 {
+				delete(protocol.No, ocr)
+				protocol.Yes[ocr] = leProtocolValue{
+					Count:      interp.N,
+					Confidence: weight,
+				}
+			} else if _, ok := protocol.Yes[ocr]; !ok {
+				protocol.No[ocr] = leProtocolValue{
+					Count:      interp.N,
+					Confidence: weight,
+				}
+			}
+			return nil
+		})
+	})
+	if err := writeProtocol(r.project.Directory, "le_protocol.json", protocol); err != nil {
+		return fmt.Errorf("cannot create lexicon extension: %v", err)
+	}
+	const stmnt = "UPDATE books SET extendedlexicon=? WHERE bookid=?"
+	_, err = db.Exec(service.Pool(), stmnt, true, r.project.BookID)
+	if err != nil {
+		return fmt.Errorf("cannot update database: %v", err)
 	}
 	return nil
 }
 
 type pcRunner struct {
-	pool    *sql.DB
-	project *db.Project
+	baseRunner
 }
 
 func (r pcRunner) Name() string {
 	return "calculating post-correction"
 }
 
-func (r pcRunner) BookID() int {
-	return r.project.BookID
-}
-
 func (r pcRunner) Run(ctx context.Context) error {
-	if err := r.setupWorkspace(); err != nil {
-		return fmt.Errorf(
-			"cannot calculate post correction: %v", err)
-	}
-	dir := filepath.Join(baseDir, r.project.Directory, "postcorrection")
-	protocol := filepath.Join(dir, "dm-protocol.json")
-	err := jobs.Run(
-		ctx,
-		"/apps/run.bash",
-		"dm",
-		dir,
-		filepath.Join(baseDir, r.project.Directory, "profile.json.gz"),
-	)
-	if err != nil {
-		return fmt.Errorf("cannot run /apps/run_rrdm.bash: %v", err)
-	}
-	if err := r.correct(protocol); err != nil {
-		return fmt.Errorf("cannot correct: %v", err)
-	}
-	return nil
+	return r.simpleRun()
+	// if err := r.setupWorkspace(); err != nil {
+	// 	return fmt.Errorf(
+	// 		"cannot calculate post correction: %v", err)
+	// }
+	// dir := filepath.Join(baseDir, r.project.Directory, "postcorrection")
+	// protocol := filepath.Join(dir, "dm-protocol.json")
+	// err := jobs.Run(
+	// 	ctx,
+	// 	"/apps/run.bash",
+	// 	"dm",
+	// 	dir,
+	// 	filepath.Join(baseDir, r.project.Directory, "profile.json.gz"),
+	// )
+	// if err != nil {
+	// 	return fmt.Errorf("cannot run /apps/run.bash: %v", err)
+	// }
+	// if err := r.correct(protocol); err != nil {
+	// 	return fmt.Errorf("cannot correct: %v", err)
+	// }
+	// return nil
 }
 
 func (r pcRunner) setupWorkspace() error {
@@ -192,7 +240,7 @@ func (r pcRunner) readProtocol(pc *api.PostCorrection, path string) error {
 }
 
 func (r pcRunner) writeProtocol(pc *api.PostCorrection, path string) (err error) {
-	path = strings.Replace(path, ".json", "-pcw.json", 1)
+	// path = strings.Replace(path, ".json", "-pcw.json", 1)
 	out, err := os.Create(path)
 	if err != nil {
 		return fmt.Errorf("cannot open post correction: %v", err)
@@ -274,4 +322,202 @@ func (r pcRunner) correctInDatabase(corrections *api.PostCorrection) error {
 		}
 	}
 	return nil
+}
+
+func (r pcRunner) simpleRun() error {
+	profile, err := readProfile(r.project.Directory)
+	if err != nil {
+		return fmt.Errorf("cannot post correct: %v", err)
+	}
+	for ocr, interp := range profile {
+		if len(interp.Candidates) == 0 || interp.Candidates[0].Distance == 0 {
+			delete(profile, ocr)
+		}
+	}
+	corrections := api.PostCorrection{
+		BookID:      r.project.BookID,
+		ProjectID:   r.project.ProjectID,
+		Corrections: make(map[string]api.PostCorrectionToken),
+	}
+	err = r.eachLine(func(pid, lid int, line db.Chars) error {
+		return eachTrimmedWord(line, func(word db.Chars) error {
+			str := strings.ToLower(word.Cor())
+			if str == "" {
+				return nil
+			}
+			if _, ok := profile[str]; !ok {
+				return nil
+			}
+			id := fmt.Sprintf("%d:%d:%d:%d", r.project.BookID, pid, lid, word.ID())
+			topCand := profile[str].Candidates[0]
+			take := topCand.Weight > .98
+			log.Debugf("correcting %s %s/%s", id, word.Cor(), str)
+			corrections.Corrections[id] = api.PostCorrectionToken{
+				BookID:     r.project.BookID,
+				ProjectID:  r.project.ProjectID,
+				PageID:     pid,
+				LineID:     lid,
+				TokenID:    word.ID(),
+				Normalized: str,
+				OCR:        word.Cor(), // this is OK!
+				Cor:        applyCasing(word.Cor(), topCand.Suggestion),
+				Confidence: float64(topCand.Weight),
+				Taken:      take,
+			}
+			return nil
+		})
+	})
+	if err != nil {
+		return fmt.Errorf("cannot post correct: %v", err)
+	}
+	if err := r.correctInBackend(&corrections); err != nil {
+		return fmt.Errorf("cannot correct in backend: %v", err)
+	}
+	if err := r.correctInDatabase(&corrections); err != nil {
+		return fmt.Errorf("cannot correct in database: %v", err)
+	}
+	if err := r.updateStatus(); err != nil {
+		return fmt.Errorf("cannot update project status: %v", err)
+	}
+	path := filepath.Join(baseDir, r.project.Directory, "dm_protocol.json")
+	if err := r.writeProtocol(&corrections, path); err != nil {
+		return fmt.Errorf("cannot write protocol: %v", err)
+	}
+	return nil
+}
+
+type baseRunner struct {
+	pool    *sql.DB
+	project *db.Project
+}
+
+func (r baseRunner) BookID() int {
+	return r.project.BookID
+}
+
+func (r baseRunner) eachLine(f func(int, int, db.Chars) error) error {
+	const stmt = "SELECT PageID,LineID,OCR,Cor,Cut,Conf,Seq,CID,Manually FROM " +
+		db.ContentsTableName +
+		" WHERE BookID=? ORDER BY PageID, LineID, Seq"
+	rows, err := db.Query(r.pool, stmt, r.project.BookID)
+	if err != nil {
+		return fmt.Errorf("cannot select lines for book ID %d: %v",
+			r.project.BookID, err)
+	}
+	defer rows.Close()
+	lineID, pageID := -1, -1
+	var line db.Chars
+	for rows.Next() {
+		var pid, lid int
+		var c db.Char
+		if err := rows.Scan(&pid, &lid, &c.OCR, &c.Cor, &c.Cut, &c.Conf, &c.Seq, &c.ID, &c.Manually); err != nil {
+			return fmt.Errorf("cannot select lines for book ID %d: %v",
+				r.project.BookID, err)
+		}
+		if lid == lineID && pid == pageID {
+			line = append(line, c)
+			continue
+		}
+		if len(line) > 0 {
+			if err := f(pageID, lineID, line); err != nil {
+				return err
+			}
+		}
+		line = line[0:0]
+		line = append(line, c)
+		lineID = lid
+		pageID = pid
+	}
+	return nil
+}
+
+func eachTrimmedWord(line db.Chars, f func(db.Chars) error) error {
+	for t, r := line.NextWord(); len(t) > 0; t, r = r.NextWord() {
+		if err := f(trim(t)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func readProfile(dir string) (gofiler.Profile, error) {
+	path := filepath.Join(baseDir, dir, "profile.json.gz")
+	fin, err := os.Open(path)
+	if err != nil {
+		return nil, fmt.Errorf("cannot open profile: %v", err)
+	}
+	defer fin.Close()
+	in, err := gzip.NewReader(fin)
+	if err != nil {
+		return nil, fmt.Errorf("cannot open profile: %v", err)
+	}
+	defer in.Close()
+	var profile gofiler.Profile
+	if err := json.NewDecoder(in).Decode(&profile); err != nil {
+		return nil, fmt.Errorf("cannot decode profile: %v", err)
+	}
+	return profile, nil
+}
+
+func writeProtocol(dir, file string, protocol interface{}) (eout error) {
+	path := filepath.Join(baseDir, dir, file)
+	out, err := os.Create(path)
+	if err != nil {
+		return fmt.Errorf("cannot write protocol: %v", err)
+	}
+	defer func() {
+		etmp := out.Close()
+		if eout == nil {
+			eout = etmp
+		}
+	}()
+	if err := json.NewEncoder(out).Encode(protocol); err != nil {
+		return fmt.Errorf("cannot encode protocol: %v", err)
+	}
+	return nil
+}
+
+func trim(chars db.Chars) db.Chars {
+	return chars.Trim(func(c db.Char) bool {
+		x := c.Cor
+		if x == 0 {
+			x = c.OCR
+		}
+		return unicode.IsPunct(x)
+	})
+}
+
+func applyCasing(template, str string) string {
+	wtmpl := []rune(template)
+	wstr := []rune(str)
+	for i := 0; i < len(wtmpl) && i < len(wstr); i++ {
+		if unicode.IsUpper(wtmpl[i]) {
+			wstr[i] = unicode.ToUpper(wstr[i])
+		} else if unicode.IsLower(wtmpl[i]) {
+			wstr[i] = unicode.ToLower(wstr[i])
+		}
+	}
+	return string(wstr)
+}
+
+type retrainer struct {
+	project int
+}
+
+func (r retrainer) BookID() int {
+	return r.project
+}
+
+func (r retrainer) Name() string {
+	return "retrainer"
+}
+
+func (r retrainer) Run(ctx context.Context) error {
+	duration := time.Duration(rand.Intn(30)+1) * time.Second
+	select {
+	case <-time.After(duration):
+		return nil
+	case <-ctx.Done():
+		return nil
+	}
 }

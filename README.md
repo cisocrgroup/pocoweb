@@ -9,7 +9,7 @@
 ..............................................
 ```
 
-[![Build Status](https://travis-ci.org/cisocrgroup/pocoweb.svg?branch=devel)](https://travis-ci.org/cisocrgroup/pocoweb)
+[![Build Status](https://travis-ci.org/cisocrgroup/pocoweb.svg?branch=master)](https://travis-ci.org/cisocrgroup/pocoweb)
 
 # Pocoweb
 Pocoweb is a postcorrection tool for (historical) OCR data for the web.
@@ -40,7 +40,7 @@ location of the base directory.  In this case change all instances of
 `/srv/pocoweb` to the desired location for Pocoweb's base directory.
 
 Create all required directories using `mkdir -p
-/srv/pocoweb{ww,project,db,tmp,language}-data`.
+/srv/pocoweb{www,project,db,tmp,language}-data`.
 
 #### Configuration file
 Copy the default configuration file to the source directory using `cp
@@ -84,11 +84,13 @@ file](misc/config/env.sh). If no certificate is provided the build
 process will automatically generate one.  You will be prompted some
 initial configuration in this case.
 
-To build and start Pocoweb the following tools have to be installed:
+To build and start Pocoweb the following dependencies have to be 
+installed:
 * `docker`
 * `docker-compose`
 * `make`
 * `openssl` (if no certificate is provided)
+* `nodejs`
 
 To deploy Pocoweb just execute `make docker-start`.  This command will
 build all required docker images and start up the docker service.
@@ -101,7 +103,8 @@ exit the log).
 
 If you did no use the default base directory `/srv/pocoweb` you have
 to set the according path in the call to make: `make
-PCW_BASE_DIR=/my/custom/path docker-start`.
+PCW_BASE_DIR=/my/custom/path docker-start` (note: you have to use an
+absolute path).
 
 If you encouter any issues deploying Pocoweb feel free to open an
 issue on [github](https://github.com/issues).
@@ -286,6 +289,9 @@ INSTALL_DIR=my/custom/path/to/www-data install`.
     according ip address `mysql -h 172.18.0.2 -u pocoweb -p pocoweb`
   * get info about mariadb container: `sudo docker inspect $(sudo
     docker ps | awk -e '/mariadb/{print $1}')`
+  * Connect to a running docker container:
+    * Get container ID: `docker ps`
+    * Connect to running container: `docker exec -it <Container-ID> bash`
 
 ## License
 

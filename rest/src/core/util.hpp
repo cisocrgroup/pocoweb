@@ -28,12 +28,16 @@ enum class FileType {
   PageXml,
   End,
 };
+
 std::string file_type_to_string(FileType type);
 FileType file_type_from_string(const std::string &type);
 FileType get_file_type(const Path &path);
 FileType get_xml_file_type(const Path &path);
 PageParserPtr make_page_parser(const Path &path);
 PageParserPtr make_page_parser(FileType type, const Path &path);
+template <class Os> Os &operator<<(Os &os, FileType filetype) {
+  return os << file_type_to_string(filetype);
+}
 
 std::string utf8(const std::wstring &str);
 std::wstring utf8(const std::string &str);

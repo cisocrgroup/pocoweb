@@ -214,7 +214,7 @@ template <class OS> void DbLine::serialize(rapidjson::Writer<OS> &w) {
 }
 
 inline bool operator==(const DbLine &lhs, const DbLine &rhs) {
-  return lhs.bookid == rhs.bookid and lhs.projectid == lhs.projectid and
+  return lhs.bookid == rhs.bookid and lhs.projectid == rhs.projectid and
          lhs.pageid == rhs.pageid and lhs.lineid == rhs.lineid;
 }
 

@@ -8,7 +8,6 @@
 #include "Xml.hpp"
 
 namespace pcw {
-	class Box;
 	class ParserPage;
 	using ParserPagePtr = std::shared_ptr<ParserPage>;
 

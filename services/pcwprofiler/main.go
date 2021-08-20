@@ -59,6 +59,13 @@ func main() {
 	// start jobs
 	jobs.Init(service.Pool())
 	defer jobs.Close()
+	// Remove all running profiler jobs before starting.
+	// It can happen that the profiling fails with a panic.
+	// In this case there could be lingering running
+	// profiling jobs in the database.
+	if err := removeRunningProfilngJobs(service.Pool()); err != nil {
+		log.Fatalf("cannot remove running jobs: %v", err)
+	}
 	// start server
 	http.HandleFunc("/profile/languages",
 		service.WithLog(service.WithMethods(http.MethodGet, getLanguages())))
@@ -87,9 +94,10 @@ func getLanguages() service.HandlerFunc {
 				"cannot list languages: %v", err)
 			return
 		}
-		ls := api.Languages{Languages: make([]string, len(configs))}
+		ls := api.Languages{Languages: make([]string, len(configs)+1)}
+		ls.Languages[0] = "" // Add leading empty language.
 		for i := range configs {
-			ls.Languages[i] = configs[i].Language
+			ls.Languages[i+1] = configs[i].Language
 		}
 		service.JSONResponse(w, ls)
 	}
@@ -99,6 +107,10 @@ func getProfile() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()["q"]
 		p := service.ProjectFromCtx(ctx)
+		if p.Lang == "" {
+			service.JSONResponse(w, make(gofiler.Profile))
+			return
+		}
 		if len(q) == 0 { // return the whole profile
 			getWholeProfile(w, r, p)
 			return
@@ -200,16 +212,19 @@ func withAdditionalLexicon(f service.HandlerFunc) service.HandlerFunc {
 
 func run() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		log.Debugf("run")
 		p := profiler{
 			project: service.ProjectFromCtx(ctx),
 			alex:    ctx.Value(additionalLexiconKey).(api.AdditionalLexicon),
 		}
+		log.Debugf("start")
 		jobID, err := jobs.Start(context.Background(), &p)
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot run profiler: %v", err)
 			return
 		}
+		log.Debugf("jobID: %d", jobID)
 		service.JSONResponse(w, api.Job{ID: jobID})
 	}
 }
@@ -314,6 +329,11 @@ func queryPatterns(ctx context.Context, w http.ResponseWriter, qs []string, ocr 
 					"cannot query pattern %q: %v", q, err)
 				return
 			}
+			if s.Suggestion == "__NONE__" {
+				if _, ok := res.Patterns[p]; !ok {
+					res.Patterns[p] = []api.Suggestion{} // avoid null
+				}
+			}
 			s.HistPatterns = strings.Split(h, ",")
 			s.OCRPatterns = strings.Split(o, ",")
 			res.Patterns[p] = append(res.Patterns[p], s)
@@ -373,7 +393,7 @@ func eachOCRToken(p *db.Project, f func(db.Chars)) error {
 		return fmt.Errorf("cannot load page ids: %v", err)
 	}
 	stmnt, err := service.Pool().Prepare(`
-SELECT c.lineid,c.cor,c.ocr,c.cut,c.conf,c.seq
+SELECT c.lineid,c.cor,c.ocr,c.cut,c.conf,c.seq,c.manually
 FROM contents c
 WHERE c.bookid=? and c.pageid=?
 ORDER BY c.lineid,c.seq`)
@@ -400,7 +420,7 @@ func eachOCRTokenInRows(rows *sql.Rows, f func(db.Chars)) error {
 	for rows.Next() {
 		old := lineid
 		var c db.Char
-		if err := rows.Scan(&lineid, &c.Cor, &c.OCR, &c.Cut, &c.Conf, &c.Seq); err != nil {
+		if err := rows.Scan(&lineid, &c.Cor, &c.OCR, &c.Cut, &c.Conf, &c.Seq, &c.Manually); err != nil {
 			return fmt.Errorf("cannot scan character: %v", err)
 		}
 		// no new line; append and continue
@@ -409,7 +429,7 @@ func eachOCRTokenInRows(rows *sql.Rows, f func(db.Chars)) error {
 			continue
 		}
 		// clear line and skip
-		if line.IsFullyCorrected() {
+		if line.IsManuallyCorrected() {
 			line = line[:0]
 			continue
 		}
@@ -417,7 +437,7 @@ func eachOCRTokenInRows(rows *sql.Rows, f func(db.Chars)) error {
 		line = append(line[:0], c)
 	}
 	// last line
-	if len(line) > 0 && !line.IsFullyCorrected() {
+	if len(line) > 0 && !line.IsManuallyCorrected() {
 		eachOCRTokenOnLine(line, f)
 	}
 	return nil
@@ -432,7 +452,7 @@ func eachOCRTokenOnLine(line db.Chars, f func(db.Chars)) {
 			}
 			return r == -1 || unicode.IsPunct(r)
 		})
-		if len(t) == 0 || t.IsFullyCorrected() {
+		if len(t) == 0 || t.IsManuallyCorrected() {
 			continue
 		}
 		f(t)
@@ -466,9 +486,9 @@ func getAdaptiveTokens() service.HandlerFunc {
 			AdaptiveTokens: []string{}, // set explicitly to return an empty list
 		}
 		seen := make(map[string]bool)
-		eachLine(p.BookID, func(line db.Chars) error {
+		eachLine(ctx, p.BookID, func(line db.Chars) error {
 			eachWord(line, func(word db.Chars) error {
-				if word.IsFullyCorrected() {
+				if word.IsManuallyCorrected() {
 					str := strings.ToLower(trim(word).Cor())
 					if !seen[str] {
 						at.AdaptiveTokens = append(at.AdaptiveTokens, str)
@@ -483,25 +503,8 @@ func getAdaptiveTokens() service.HandlerFunc {
 	}
 }
 
-func trim(chars db.Chars) db.Chars {
-	i, j := 0, len(chars)
-	for ; i < j; i++ {
-		c := chars[i].Cor
-		if c == 0 {
-			c = chars[i].OCR
-		}
-		if !unicode.IsPunct(c) {
-			break
-		}
-	}
-	for ; j > i; j-- {
-		c := chars[j-1].Cor
-		if c == 0 {
-			c = chars[j-1].OCR
-		}
-		if !unicode.IsPunct(c) {
-			break
-		}
-	}
-	return chars[i:j]
+func removeRunningProfilngJobs(dtb db.DB) error {
+	const stmt = `DELETE FROM jobs WHERE statusid=1 AND text LIKE '` + namePrefix + `%';`
+	_, err := db.Exec(dtb, stmt)
+	return err
 }

@@ -9,7 +9,7 @@
     </ReadingOrder>
     <TextRegion type="page-number" id="region_2" custom="custom">
       <Coords points="1,2 3,4 5,6 7,8"/>
-      <TextLine id="line_2_1" custom="cutsom">
+      <pc:TextLine id="line_2_1" custom="cutsom">
         <Coords points="1,2 3,4 5,6 7,8 9,10 11,12"/>
         <Baseline points="1382,500 1763,500"/>
         <Word id="word_2_1_1" custom="readingOrder {index:0;}">
@@ -27,7 +27,7 @@
         <TextEquiv>
           <Unicode>ab cd</Unicode>
         </TextEquiv>
-      </TextLine>
+      </pc:TextLine>
       <TextEquiv>
         <Unicode>ab cd</Unicode>
       </TextEquiv>

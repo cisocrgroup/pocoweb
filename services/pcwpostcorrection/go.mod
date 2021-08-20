@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/creack/pty v1.1.9 // indirect
 	github.com/finkf/gocrd/xml/page v0.1.2
+	github.com/finkf/gofiler v0.2.0
 	github.com/finkf/pcwgo v0.8.5
 	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
