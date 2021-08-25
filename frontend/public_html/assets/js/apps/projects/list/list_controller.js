@@ -108,7 +108,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
                      "success",true,result.request_url
                    );
 
-                   App.trigger("projects:list");
+                   App.trigger("projects:show",result.projectId);
                 }).fail(function(response){
                    $('#projects-modal').modal('hide');
                    App.mainmsg.updateContent(response.responseText,'danger',true,response.request_url);
@@ -125,7 +125,6 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
           });
 
           projectsListPanel.on("list:pool_clicked",function(){
-            console.log("pool_clicked")
             window.open("https://pocoweb.cis.lmu.de/rest/pool/global?auth=XqrhVtKmyr");
      // var fetchingpool = ProjectEntities.API.getGlobalPool();
    

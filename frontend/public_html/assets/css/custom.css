@@ -13,6 +13,7 @@ body{
      overflow-x: hidden;
     /* background-size: 86%;*/
      background: #fcfbf8;
+     height: 100%;
 }
 
 h4{
@@ -73,7 +74,7 @@ tbody,thead{
 }
 
 #main-region{
-  min-height: 75vh;
+  min-height: calc(100vh - 115px);
 }
 
 .topblock{
@@ -197,6 +198,7 @@ opacity: 0.6;
     z-index: 20;
     position: absolute;
     width: 100%;
+    font-size: 14px;
   }
 
 .footercontainer{
@@ -775,7 +777,7 @@ display: inline-block;
 
  .dropdown-menu{
           max-height:200px;
-          overflow-y:scroll;
+          overflow-y:auto;
   }
 
   .clickable-row{
@@ -893,7 +895,7 @@ border-top: 0;
     width: 100%;
     left: 0px;
     height: 200px;
-    z-index: 10005;
+    z-index: 1000;
     display: flex;
     align-items: center;
     position: relative;
@@ -949,10 +951,24 @@ border-top: 0;
 
   .sidebar-col{
     background: white;
+   
+  }
+
+  #sidebar-container{
+     height: calc(100vh - 65px) !important;
   }
 
    .dropdown-toggle::after {
     display:none;
+}
+
+#sidebar-container-sticky-wrapper{
+       transition: all 0.2s ease;
+
+}
+
+.is-sticky #sidebar-container{
+       height: calc(100vh - 1px)!important;
 }
 
 .all_lines_parent{
@@ -960,6 +976,7 @@ border-top: 0;
   /*  min-height: 650px;
     max-height: 650px;*/
     overflow-y: auto;
+    min-height: 200px;
 }
 
 
@@ -1088,6 +1105,24 @@ div.doc-note {
 padding-left: 17px;
 
 }
+
+.top-button.visible {
+opacity: 1;
+    transition: opacity 1s;
+}
+.visible {
+    visibility: visible!important;
+}
+
+.top-button {
+    position: fixed;
+    right: 5%;
+    bottom: 30px;
+    opacity: 0;
+    transition: opacity 1s;
+    z-index: 1020;
+}
+
 @media only screen and (min-width : 576px) {
     .sidebar-col{
       padding-right: 0;

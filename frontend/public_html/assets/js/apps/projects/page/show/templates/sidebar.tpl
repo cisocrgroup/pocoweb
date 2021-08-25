@@ -1,13 +1,16 @@
 
     <div class="card rounded-0 " id="sidebar-container">
-		    <span class="btn-group float-right">
+
+    	<div class="controls-container">
+
+		    <div style="width:100%" class="btn-group">
 		    	 <button title="Collapse Sidebar" id="collapseSidebar" type="button" class="js-hide-sidebar blue-bg btn btn-primary right rounded-0"><i class="fas fa-chevron-left"></i> </button>
 				<button title="Show page image" class="btn btn-sm btn-primary blue-bg rounded-0 js-show-image"> 
 				<i class="far fa-file-image"></i></button>
 				<button title="Search the project" class="btn btn-sm btn-primary blue-bg rounded-0 js-search"> 
 				<i class="fas fa-search"></i></button>
 				 <button title="Set whole page as corrected" id="correctPage" type="button" class="js-correctPage btn btn-primary blue-bg right rounded-0"><i class="fas fa-tasks"></i> </button>
-			</span>
+			</div>
 
 
 
@@ -77,6 +80,8 @@
         <a class="nav-link" id="options-tab" data-toggle="tab" href="#options" role="tab" aria-controls="chars" aria-selected="true">Display </br> settings</a>
   </li>
 </ul>
+
+</div>
 
 <div class="tab-content">
 

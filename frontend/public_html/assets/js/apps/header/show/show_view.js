@@ -53,7 +53,6 @@ define(["marionette","app","common/views","common/util",
         // data.currentRoute = Marionette.getOption(this,"currentRoute");
         return data;
     }
-  
 
   });
 

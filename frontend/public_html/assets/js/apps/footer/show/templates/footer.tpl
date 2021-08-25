@@ -1,10 +1,6 @@
 <footer class="footer">
 
 	<div class="text-muted footer-line text-center">
-		<a href="#">Back to top <i class="fas fa-angle-up fa-lg"></i></a>
-		<a href="#" class="js-up">Back to top <i class="fas fa-angle-up fa-lg"></i></a>
-	</div>
-	<div class="text-muted footer-line text-center">
 		Designed and built by the
 		<a target="_blank" href="http://cis.uni-muenchen.de">
 		Centrum für Informations- und Sprachverarbeitung (CIS)</a>.
@@ -21,4 +17,9 @@
 	</div>
 	<!-- <img class="rounded" src="assets/images/logo.png" style="margin: 15px;" /> -->
 
+
 </footer>
+
+<div class="top-button">
+	    <div class="btn btn-primary js-top shadow"><i class="fas fa-chevron-up"></i></div>
+	</div>

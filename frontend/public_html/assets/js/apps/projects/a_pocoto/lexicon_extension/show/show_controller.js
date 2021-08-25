@@ -42,7 +42,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
         else {
 
           if (!status['extended-lexicon']){
-          projectShowLex = new Show.SingleStep({url:"le",color:"blue",step:"Lexicon Extension",icon:"fas fa-history",id:"js-start-le",text:"Generate the extended lexicon."});
+          projectShowLex = new Show.SingleStep({url:"le",color:"green",step:"Lexicon Extension",icon:"fas fa-history",id:"js-start-le",text:"Generate the extended lexicon."});
           projectShowLayout.showChildView('contentRegion',projectShowLex);
 
           }
@@ -295,7 +295,7 @@ define(["app","common/util","common/views","apps/projects/a_pocoto/lexicon_exten
 
 
           ];
-			  projectShowHeader = new Show.Header({title:"Lexicon Extension",icon:"far fa-edit",color:"blue",breadcrumbs:breadcrumbs});
+			  projectShowHeader = new Show.Header({title:"Lexicon Extension",icon:"fas fa-list",color:"green",breadcrumbs:breadcrumbs});
       	projectShowFooterPanel = new Show.FooterPanel({manual:true,title: "Back to A-PoCoTo <i class='fas fa-cogs'></i>"});
 
 	           projectShowLayout.showChildView('headerRegion',projectShowHeader);

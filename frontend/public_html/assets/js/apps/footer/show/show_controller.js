@@ -1,5 +1,5 @@
 
-define(["marionette","app","apps/footer/show/show_view"], function(Marionette,IPS_App,Show){
+define(["marionette","app","apps/footer/show/show_view"], function(Marionette,App,Show){
 
 
 
@@ -7,7 +7,7 @@ define(["marionette","app","apps/footer/show/show_view"], function(Marionette,IP
 
 		showFooter: function(){
 			var footerView = new Show.Footer();
-     		IPS_App.mainLayout.showChildView('footerRegion',footerView);
+     		App.mainLayout.showChildView('footerRegion',footerView);
 		}
 
 	}
