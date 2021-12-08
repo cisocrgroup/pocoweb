@@ -290,6 +290,7 @@ BookData as_book_data(const DbPackage &package) {
   ret.profiled = package.profiled;
   ret.extendedLexicon = package.extendedLexicon;
   ret.postCorrected = package.postCorrected;
+  ret.pooled = package.pooled;
   return ret;
 }
 
