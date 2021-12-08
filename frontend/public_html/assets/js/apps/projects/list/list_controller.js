@@ -42,7 +42,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
          }
        }
 
-      
+
 
     	   projectsListLayout.on("attach",function(){
 
@@ -94,7 +94,7 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
 
            projectsListAddProject.on("project:submit_clicked",function(data,formdata){
              var uploadingProjectData = ProjectEntities.API.uploadProjectData(formdata);
-              
+
 
                  $.when(uploadingProjectData).done(function(result){
                    console.log(result);
@@ -125,9 +125,9 @@ define(["app","common/util","common/views","apps/projects/list/list_view"], func
           });
 
           projectsListPanel.on("list:pool_clicked",function(){
-            window.open("https://pocoweb.cis.lmu.de/rest/pool/global?auth=XqrhVtKmyr");
+            window.open("rest/pool/global?auth=XqrhVtKmyr");
      // var fetchingpool = ProjectEntities.API.getGlobalPool();
-   
+
      // var projectsListLayout = new List.Layout();
 
      //   $.when(fetchingpool).done(function(pool){
