@@ -263,8 +263,8 @@ func (ai *aipoco) eachLine(ctx context.Context, f func(int, int, apoco.Chars) er
 	log.Printf("eachLine")
 	const stmt = `
 SELECT PageID,LineID,OCR,Cor,Conf
-FROM contents 
-WHERE BookID=? 
+FROM contents
+WHERE BookID=?
 ORDER BY PageID,LineID,Seq`
 	rows, err := db.QueryContext(ctx, ai.pool, stmt, ai.project.BookID)
 	if err != nil {
@@ -380,18 +380,21 @@ func mapLang(lang string) string {
 
 func (ai *aipoco) openModels(nOCR int) (rr, dm *ml.LR, rrFS, dmFS apoco.FeatureSet, err error) {
 	path := filepath.Join(ai.modelDir, "19th.bin")
-	var fs apoco.FeatureSet // Dummy variable for error returns.
-	m, err := apoco.ReadModel(path, "")
+	fail := func(err error) (*ml.LR, *ml.LR, apoco.FeatureSet, apoco.FeatureSet, error) {
+		return nil, nil, apoco.FeatureSet{}, apoco.FeatureSet{}, fmt.Errorf("open model %s: %v", path, err)
+	}
+
+	m, err := apoco.ReadModel(path, nil, false)
 	if err != nil {
-		return nil, nil, fs, fs, fmt.Errorf("open model %s: %v", path, err)
+		return fail(err)
 	}
 	rr, rrFS, err = m.Get("rr", nOCR)
 	if err != nil {
-		return nil, nil, fs, fs, fmt.Errorf("open model %s: %v", path, err)
+		return fail(err)
 	}
 	dm, dmFS, err = m.Get("rr", nOCR)
 	if err != nil {
-		return nil, nil, fs, fs, fmt.Errorf("open model %s: %v", path, err)
+		return fail(err)
 	}
 	return rr, dm, rrFS, dmFS, nil
 }
