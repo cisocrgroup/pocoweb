@@ -52,10 +52,10 @@ func (ai *aipoco) Run(ctx context.Context) error {
 	// Set up tesseract api, open the model,
 	// create the secondary OCR and then orrect the tokens.
 	if err := ai.setupTess(ctx); err != nil {
-		return fmt.Errorf("aipoc run: %v", err)
+		return fmt.Errorf("aipoco run: %v", err)
 	}
 	defer ai.tessAPI.Close()
-	rr, dm, rrFS, dmFS, err := ai.openModels(2)
+	m, err := ai.openModels(2)
 	if err != nil {
 		return fmt.Errorf("aipoco run: %v", err)
 	}
@@ -66,12 +66,12 @@ func (ai *aipoco) Run(ctx context.Context) error {
 		apoco.FilterBad(2),
 		apoco.Normalize(),
 		apoco.FilterShort(4),
-		apoco.ConnectLanguageModel(nil),
+		apoco.ConnectLanguageModel(m.lms),
 		apoco.ConnectUnigrams(),
 		apoco.ConnectProfile(profile),
 		apoco.ConnectCandidates(),
-		apoco.ConnectRankings(rr, rrFS, 2),
-		apoco.ConnectCorrections(dm, dmFS, 2),
+		apoco.ConnectRankings(m.lr.rr, m.fs.rr, 2),
+		apoco.ConnectCorrections(m.lr.dm, m.fs.dm, 2),
 		ai.correct(),
 	)
 	if err != nil {
@@ -89,7 +89,8 @@ func (ai *aipoco) correct() apoco.StreamFunc {
 		}
 		err := apoco.EachToken(ctx, in, func(t apoco.T) error {
 			correction := t.Payload.(apoco.Correction)
-			// log.Printf("correct: token %s: %s/%s [%s] (%t)", t.ID, t.Tokens[0], t.Tokens[1], correction.Candidate.Suggestion, correction.Conf > 0.5)
+			// log.Printf("correct: token %s: %s/%s [%s] (%t)",
+			// t.ID, t.Tokens[0], t.Tokens[1], correction.Candidate.Suggestion, correction.Conf > 0.5)
 			var taken bool
 			if correction.Conf > 0.5 {
 				taken = true
@@ -189,7 +190,7 @@ func (ai *aipoco) tokens(alev bool) apoco.StreamFunc {
 			mat = nil
 		}
 		return apoco.EachToken(ctx, in, func(line apoco.T) error {
-			alignments := alignLines(mat, line.Tokens...)
+			alignments := alignLines(mat, line.Tokens)
 			var ts []apoco.T
 			for i := range alignments {
 				t := apoco.T{
@@ -228,7 +229,7 @@ func (ai *aipoco) tokens(alev bool) apoco.StreamFunc {
 	}
 }
 
-func alignLines(mat *lev.Mat, lines ...string) [][]align.Pos {
+func alignLines(mat *lev.Mat, lines []string) [][]align.Pos {
 	rs := make([][]rune, len(lines))
 	for i := range lines {
 		rs[i] = []rune(lines[i])
@@ -378,23 +379,41 @@ func mapLang(lang string) string {
 	return lang
 }
 
-func (ai *aipoco) openModels(nOCR int) (rr, dm *ml.LR, rrFS, dmFS apoco.FeatureSet, err error) {
+type lr struct {
+	rr, dm *ml.LR
+}
+
+type fs struct {
+	rr, dm apoco.FeatureSet
+}
+
+type modelData struct {
+	lr  lr
+	fs  fs
+	lms map[string]*apoco.FreqList
+}
+
+func (ai *aipoco) openModels(nOCR int) (*modelData, error) {
 	path := filepath.Join(ai.modelDir, "19th.bin")
-	fail := func(err error) (*ml.LR, *ml.LR, apoco.FeatureSet, apoco.FeatureSet, error) {
-		return nil, nil, apoco.FeatureSet{}, apoco.FeatureSet{}, fmt.Errorf("open model %s: %v", path, err)
+	fail := func(err error) (*modelData, error) {
+		return nil, fmt.Errorf("open model %s: %v", path, err)
 	}
 
 	m, err := apoco.ReadModel(path, nil, false)
 	if err != nil {
 		return fail(err)
 	}
-	rr, rrFS, err = m.Get("rr", nOCR)
+	rr, rrFS, err := m.Get("rr", nOCR)
 	if err != nil {
 		return fail(err)
 	}
-	dm, dmFS, err = m.Get("rr", nOCR)
+	dm, dmFS, err := m.Get("rr", nOCR)
 	if err != nil {
 		return fail(err)
 	}
-	return rr, dm, rrFS, dmFS, nil
+	return &modelData{
+		lr:  lr{rr, dm},
+		fs:  fs{rrFS, dmFS},
+		lms: m.LM,
+	}, nil
 }
