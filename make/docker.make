@@ -41,4 +41,4 @@ docker-stop: env.sh
 env.sh: misc/config/env.sh
 	cp $< $@
 services/nginx/cert.pem:
-	sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout services/nginx/key.pem -out $@
+	openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout services/nginx/key.pem -out $@
