@@ -176,6 +176,11 @@ func (ai *aipoco) correctInDatabase(ctx context.Context, corrections *api.PostCo
 				return fmt.Errorf("insert protocol: %v", err)
 			}
 		}
+		// Update postcorrected field in books.
+		const status = "UPDATE books SET postcorrected = true WHERE bookid = ?"
+		if _, err := db.ExecContext(ctx, ai.pool, status, ai.project.BookID); err != nil {
+			return fmt.Errorf("update status: %v", err)
+		}
 		return nil
 	})
 	return transaction.Done()
