@@ -6,7 +6,7 @@ require (
 	git.sr.ht/~flobar/apoco v0.0.62
 	git.sr.ht/~flobar/gotess v0.3.0
 	git.sr.ht/~flobar/lev v1.5.0
-	github.com/UNO-SOFT/ulog v1.3.1 // indirect
+	github.com/UNO-SOFT/ulog v1.3.1
 	github.com/finkf/gofiler v0.10.0
 	github.com/finkf/pcwgo v0.12.0
 	github.com/goccy/go-json v0.8.1 // indirect

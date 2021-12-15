@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/UNO-SOFT/ulog"
 	"github.com/finkf/pcwgo/api"
 	"github.com/finkf/pcwgo/db"
 	"github.com/finkf/pcwgo/jobs"
@@ -204,7 +205,7 @@ WHERE a.bookid=?`
 		p := service.ProjectFromCtx(ctx)
 		rows, err := db.QueryContext(ctx, s.pool, stmt, p.BookID)
 		if err != nil {
-			log.Printf("error %v", err)
+			ulog.Write("handle get post-correction", "error", err.Error())
 			service.ErrorResponse(w, http.StatusInternalServerError, "get protocol: %v", err)
 			return
 		}

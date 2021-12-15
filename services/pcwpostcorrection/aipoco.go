@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"path/filepath"
 	"strconv"
 	"unicode"
@@ -15,6 +14,7 @@ import (
 	"git.sr.ht/~flobar/apoco/pkg/apoco/ml"
 	"git.sr.ht/~flobar/gotess"
 	"git.sr.ht/~flobar/lev"
+	"github.com/UNO-SOFT/ulog"
 	"github.com/finkf/pcwgo/api"
 	"github.com/finkf/pcwgo/db"
 	"github.com/finkf/pcwgo/jobs"
@@ -89,7 +89,6 @@ func (ai *aipoco) correct() apoco.StreamFunc {
 		}
 		err := apoco.EachToken(ctx, in, func(t apoco.T) error {
 			correction := t.Payload.(apoco.Correction)
-			// log.Printf("correct: token %s: %s/%s [%s] (%t)",
 			// t.ID, t.Tokens[0], t.Tokens[1], correction.Candidate.Suggestion, correction.Conf > 0.5)
 			var taken bool
 			if correction.Conf > 0.5 {
@@ -215,7 +214,6 @@ func (ai *aipoco) tokens(alev bool) apoco.StreamFunc {
 				// Hack: append primary OCR again to have access
 				// to the original OCR token later in the process.
 				t.Tokens = append(t.Tokens, t.Tokens[0])
-				// log.Printf("token %s: %s/%s", t.ID, t.Tokens[0], t.Tokens[1])
 				ts = append(ts, t)
 			}
 			if len(ts) > 0 { // Mark last token in the line.
@@ -244,11 +242,15 @@ func (ai *aipoco) lines() apoco.StreamFunc {
 	return func(ctx context.Context, _ <-chan apoco.T, out chan<- apoco.T) error {
 		var document apoco.Document
 		return ai.eachLine(ctx, func(pid, lid int, line apoco.Chars) error {
-			log.Printf("got a line: %q", line.Chars())
 			sec, err := ai.secondaryOCR(ctx, pid, lid)
 			if err != nil {
 				return err
 			}
+			ulog.Write(
+				fmt.Sprintf("secondary OCR for line %d:%d:%d", ai.project.BookID, pid, lid),
+				"primaryOCR", line.Chars(),
+				"secondaryOCR", sec,
+			)
 			t := apoco.T{
 				Document: &document,
 				Tokens:   []string{line.Chars(), sec},
@@ -261,7 +263,6 @@ func (ai *aipoco) lines() apoco.StreamFunc {
 }
 
 func (ai *aipoco) eachLine(ctx context.Context, f func(int, int, apoco.Chars) error) error {
-	log.Printf("eachLine")
 	const stmt = `
 SELECT PageID,LineID,OCR,Cor,Conf
 FROM contents
@@ -285,7 +286,6 @@ ORDER BY PageID,LineID,Seq`
 			continue
 		}
 		if len(line) > 0 {
-			log.Printf("line: %s", line.Cor())
 			if err := f(pageID, lineID, db2apoco(line)); err != nil {
 				return err
 			}
@@ -346,24 +346,28 @@ func (ai *aipoco) secondaryOCR(ctx context.Context, pid, lid int) (string, error
 SELECT imagepath
 FROM textlines
 WHERE bookid=? AND pageid=? AND lineid=?`
+	fail := func(err error) (string, error) {
+		return "", fmt.Errorf("secondary OCR: %v", err)
+	}
+
 	rows, err := db.QueryContext(ctx, ai.pool, stmt, ai.project.BookID, pid, lid)
 	if err != nil {
-		return "", fmt.Errorf("secondary OCR: select lines for book ID %d: %v", ai.project.BookID, err)
+		return fail(fmt.Errorf("select lines for book ID %d: %v", ai.project.BookID, err))
 	}
 	defer rows.Close()
 	if !rows.Next() {
-		return "", fmt.Errorf("secondary OCR: select lines for book ID %d: no result", ai.project.BookID)
+		return fail(fmt.Errorf("select lines for book ID %d: no result", ai.project.BookID))
 	}
 	var imagepath string
 	if err := rows.Scan(&imagepath); err != nil {
-		return "", fmt.Errorf("secondary OCR: select lines for book ID %d: %v", ai.project.BookID, err)
+		return fail(fmt.Errorf("select lines for book ID %d: %v", ai.project.BookID, err))
 	}
 	imagepath = filepath.Join(ai.baseDir, imagepath)
 	if err := ai.tessAPI.SetImagePNG(imagepath); err != nil {
-		return "", fmt.Errorf("secondary OCR: set image %s: %v", imagepath, err)
+		return fail(fmt.Errorf("set image %s: %v", imagepath, err))
 	}
 	if err := ai.tessAPI.Recognize(); err != nil {
-		return "", fmt.Errorf("secondary OCR: recognize %s: %v", imagepath, err)
+		return fail(fmt.Errorf("recognize %s: %v", imagepath, err))
 	}
 	return ai.tessAPI.Line(), nil
 }
