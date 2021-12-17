@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/UNO-SOFT/ulog"
 	"github.com/finkf/pcwgo/api"
 	"github.com/finkf/pcwgo/db"
 	"github.com/finkf/pcwgo/service"
-	log "github.com/sirupsen/logrus"
 )
 
 type key int
@@ -45,7 +45,7 @@ func (s *server) withPostUser(f service.HandlerFunc) service.HandlerFunc {
 				"cannot read user: invalid data: %v", err)
 			return
 		}
-		log.Debugf("withPostUser: %s", data.User)
+		ulog.Write("with post user", "user", data.User)
 		f(context.WithValue(ctx, userKey, data), w, r)
 	}
 }
@@ -73,7 +73,6 @@ func (s *server) handlePostUser() service.HandlerFunc {
 
 func (s *server) handleGetAllUsers() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		log.Debugf("get all users")
 		users, err := db.FindAllUsers(s.pool)
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
@@ -97,7 +96,7 @@ func (s *server) handleGetUser() service.HandlerFunc {
 				"cannot get user: not found")
 			return
 		}
-		log.Printf("get user: %s", u)
+		ulog.Write("get user", "user", u)
 		service.JSONResponse(w, u)
 	}
 }
@@ -168,7 +167,7 @@ func (s *server) ownsBooks(uid int) bool {
 	sel := "SELECT * FROM projects where owner=? and id=origin"
 	rows, err := db.Query(s.pool, sel, uid)
 	if err != nil {
-		log.Infof("cannot query for projects: %v", err)
+		ulog.Write("cannot query for projects", "error", err)
 		// we don't know if the user owns projects;
 		// we assume that he might.
 		return true
