@@ -12,7 +12,7 @@
 <thead class="thead-light">
       <tr>
         <th>Word</th>
-        <th>Frequency</th>
+        <th>Substitutions</th>
       </tr>
  </thead>
  <tbody>
@@ -47,7 +47,7 @@
 <thead class="thead-light">
       <tr>
         <th>Word</th>
-        <th>Frequency</th>
+        <th>Substitutions</th>
       </tr>
  </thead>
  <tbody>
@@ -85,7 +85,7 @@
 <thead class="thead-light">
       <tr>
         <th>Word</th>
-        <th>Frequency</th>
+        <th>Substitutions</th>
       </tr>
  </thead>
  <tbody>
