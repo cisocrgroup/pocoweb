@@ -71,22 +71,22 @@ void Archiver::zip(const Path &xdir, const Path &archive) const {
 void Archiver::copy_files(const Path &xdir, const DbPackage &package) const {
   const auto base = basedir_.parent_path();
   const auto dir = base / xdir;
-  CROW_LOG_INFO << "(Archiver) dir:        " << dir;
+  CROW_LOG_DEBUG << "(Archiver) dir:        " << dir;
   WagnerFischer wf;
   for (const auto pageid : package.pageids) {
     DbPage page(pid_, pageid);
     if (not page.load(conn_)) {
       THROW(Error, "cannot load page: ", pid_, ":", pageid);
     }
-    CROW_LOG_INFO << "(Archiver) ocr path:  " << page.ocrpath;
-    CROW_LOG_INFO << "(Archiver) base dir:  " << base;
+    CROW_LOG_DEBUG << "(Archiver) ocr path:  " << page.ocrpath;
+    CROW_LOG_DEBUG << "(Archiver) base dir:  " << base;
     if (page.ocrpath.empty()) {
       CROW_LOG_WARNING << "(Archiver) page: " << pid_ << ":" << pageid
                        << " has no associated ocr path";
       continue;
     }
     const auto path = base / page.ocrpath;
-    CROW_LOG_INFO << "(Archiver) file path: " << path;
+    CROW_LOG_DEBUG << "(Archiver) file path: " << path;
     const auto pp =
         make_page_parser(FileType(page.filetype), base / page.ocrpath)->parse();
     for (auto &line : page.lines) {
@@ -104,13 +104,13 @@ void Archiver::copy_files(const Path &xdir, const DbPackage &package) const {
       const auto cor =
           img.parent_path() / img.stem().replace_extension(".gt.txt");
       const auto ocr = img.parent_path() / img.stem().replace_extension(".txt");
-      CROW_LOG_INFO << "(Archiver) paths: " << cor << " " << ocr;
+      CROW_LOG_DEBUG << "(Archiver) paths: " << cor << " " << ocr;
       write_line_text_snippets(line, cor, ocr);
     }
     pp->write(get_tmp_file(page.ocrpath, dir));
     if (not page.imagepath.empty()) {
-      CROW_LOG_INFO << "(Archiver) img path:  " << base / page.imagepath;
-      CROW_LOG_INFO << "(Archiver) copy to:   " << dir;
+      CROW_LOG_DEBUG << "(Archiver) img path:  " << base / page.imagepath;
+      CROW_LOG_DEBUG << "(Archiver) copy to:   " << dir;
       copy_to_tmp_dir(base / page.imagepath, dir);
     }
   }
