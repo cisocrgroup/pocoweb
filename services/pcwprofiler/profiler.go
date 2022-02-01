@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -12,11 +13,11 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/UNO-SOFT/ulog"
 	"github.com/finkf/gofiler"
 	"github.com/finkf/pcwgo/api"
 	"github.com/finkf/pcwgo/db"
 	"github.com/finkf/pcwgo/service"
-	log "github.com/sirupsen/logrus"
 )
 
 type profiler struct {
@@ -57,7 +58,7 @@ func (p *profiler) Run(ctx context.Context) error {
 	if err := p.insertProfileIntoDB(); err != nil {
 		return fmt.Errorf("profile: %v", err)
 	}
-	log.Printf("done profiling after %v", time.Since(start))
+	ulog.Write("done profiling", "time", time.Since(start))
 	return nil
 }
 
@@ -78,7 +79,7 @@ func (p *profiler) findLanguage() error {
 		// like http.StatusNotFound but we ignore this for now.
 		return fmt.Errorf("find language %s: %v", p.project.Lang, err)
 	}
-	log.Printf("profiler: found language: %s: %s", config.Language, config.Path)
+	ulog.Write("found language", "language", config.Language, "path", config.Path)
 	p.config = config
 	return nil
 }
@@ -111,19 +112,19 @@ func (p *profiler) runProfiler(ctx context.Context) error {
 		Adaptive: true,
 		Types:    true,
 	}
-	log.Printf("profiler: profiling %d tokens", len(ts))
+	ulog.Write("profiling tokens", "total", len(ts))
 	profile, err := x.Run(ctx, ts)
 	if err != nil {
 		return fmt.Errorf("run profiler: %v", err)
 	}
 	p.profile = profile
-	log.Printf("got total %d profile entries", len(p.profile))
+	ulog.Write("profiler entries", "total", len(p.profile))
 	return nil
 }
 
 func (p *profiler) writeProfile() (err error) {
 	dest := filepath.Join(baseDir, p.project.Directory, "profile.json.gz")
-	log.Printf("writing profile to %s", dest)
+	ulog.Write("writing profile", "dest", dest)
 	out, err := os.Create(dest)
 	if err != nil {
 		return fmt.Errorf("write profile %s: %v", dest, err)
@@ -202,7 +203,7 @@ func (p *profileInserter) insertType(qt, it *sql.Stmt, typ string) error {
 	}
 	var id int
 	err := qt.QueryRow(typ).Scan(&id)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return fmt.Errorf("insert type %s: %v", typ, err)
 	}
 	if err == nil {
@@ -501,6 +502,6 @@ type logger struct{}
 
 func (logger) Log(msg string) {
 	if len(msg) > 0 {
-		log.Printf(msg)
+		ulog.Write("profiler", "profiler-message", msg)
 	}
 }

@@ -6,18 +6,19 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"unicode"
 
+	"github.com/UNO-SOFT/ulog"
 	"github.com/finkf/gofiler"
 	"github.com/finkf/pcwgo/api"
 	"github.com/finkf/pcwgo/db"
 	"github.com/finkf/pcwgo/jobs"
 	"github.com/finkf/pcwgo/service"
-	log "github.com/sirupsen/logrus"
 )
 
 type key int
@@ -82,7 +83,7 @@ func main() {
 	http.HandleFunc("/profile/adaptive/books/",
 		service.WithLog(service.WithMethods(
 			http.MethodGet, service.WithProject(getAdaptiveTokens()))))
-	log.Infof("listening on %s", listen)
+	ulog.Write("listening", "host", listen)
 	log.Fatal(http.ListenAndServe(listen, nil))
 }
 
@@ -212,19 +213,17 @@ func withAdditionalLexicon(f service.HandlerFunc) service.HandlerFunc {
 
 func run() service.HandlerFunc {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		log.Debugf("run")
 		p := profiler{
 			project: service.ProjectFromCtx(ctx),
 			alex:    ctx.Value(additionalLexiconKey).(api.AdditionalLexicon),
 		}
-		log.Debugf("start")
 		jobID, err := jobs.Start(context.Background(), &p)
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot run profiler: %v", err)
 			return
 		}
-		log.Debugf("jobID: %d", jobID)
+		ulog.Write("started job", "id", jobID)
 		service.JSONResponse(w, api.Job{ID: jobID})
 	}
 }
