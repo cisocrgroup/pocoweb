@@ -8,7 +8,7 @@ require (
 	git.sr.ht/~flobar/lev v1.5.0
 	github.com/UNO-SOFT/ulog v1.3.1
 	github.com/finkf/gofiler v0.10.0
-	github.com/finkf/pcwgo v0.12.0
+	github.com/finkf/pcwgo v0.12.1
 	github.com/goccy/go-json v0.8.1 // indirect
 	github.com/sirupsen/logrus v1.8.1
 	golang.org/x/crypto v0.0.0-20211202192323-5770296d904e // indirect

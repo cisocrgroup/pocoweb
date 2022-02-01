@@ -118,6 +118,7 @@ create table if not exists types (
 );
 alter table types convert to character set utf8mb4 collate utf8mb4_unicode_ci;
 alter table types change typ typ varchar(50) character set utf8mb4 collate utf8mb4_unicode_ci;
+alter table types change typ typ varchar(50) character set utf8mb4 collate utf8mb4_bin;
 
 create table if not exists profiles (
 	bookid int references books(bookid),

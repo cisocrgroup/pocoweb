@@ -64,7 +64,9 @@ func (ai *aipoco) Run(ctx context.Context) error {
 		ai.lines(),
 		ai.tokens(true),
 		apoco.FilterBad(2),
+		ai.beforeNormalization(),
 		apoco.Normalize(),
+		ai.afterNormalization(),
 		apoco.FilterShort(4),
 		apoco.ConnectLanguageModel(m.lms),
 		apoco.ConnectUnigrams(),
@@ -87,6 +89,7 @@ func (ai *aipoco) correct() apoco.StreamFunc {
 			ProjectID:   ai.project.ProjectID,
 			Corrections: map[string]api.PostCorrectionToken{},
 		}
+		ulog.Write("correcting")
 		err := apoco.EachToken(ctx, in, func(t apoco.T) error {
 			correction := t.Payload.(apoco.Correction)
 			// t.ID, t.Tokens[0], t.Tokens[1], correction.Candidate.Suggestion, correction.Conf > 0.5)
@@ -105,7 +108,7 @@ func (ai *aipoco) correct() apoco.StreamFunc {
 				LineID:     lid,
 				TokenID:    tid,
 				Normalized: t.Tokens[0],
-				OCR:        t.Tokens[2], // Unnormalized original primary OCR token.
+				OCR:        t.Tokens[len(t.Tokens)-1], // Unnormalized original primary OCR token.
 				Cor:        correction.Candidate.Suggestion,
 				Confidence: correction.Conf,
 				Taken:      taken,
@@ -115,12 +118,15 @@ func (ai *aipoco) correct() apoco.StreamFunc {
 		if err != nil {
 			return fmt.Errorf("correct: %v", err)
 		}
+		ulog.Write("correcting in backend")
 		if err := ai.correctInBackend(ctx, &corrections); err != nil {
 			return fmt.Errorf("correct: %v", err)
 		}
+		ulog.Write("correcting in database")
 		if err := ai.correctInDatabase(ctx, &corrections); err != nil {
 			return fmt.Errorf("correct: %v", err)
 		}
+		ulog.Write("correcting done")
 		return nil
 	}
 }
@@ -131,11 +137,13 @@ func (ai *aipoco) correctInBackend(ctx context.Context, corrections *api.PostCor
 		if !t.Taken {
 			continue
 		}
+		cor := apoco.ApplyOCRToCorrection(t.OCR, t.Cor)
+		ulog.Write("correcting token in backend", "normalized", t.Normalized, "OCR", t.OCR, "Cor", cor)
 		url := client.URL("books/%d/pages/%d/lines/%d/tokens/%d?t=%s&len=%d",
-			t.BookID, t.PageID, t.LineID, t.TokenID, "automatic", utf8.RuneCountInString(t.Cor))
+			t.BookID, t.PageID, t.LineID, t.TokenID, "automatic", utf8.RuneCountInString(t.OCR))
 		err := client.Put(url, struct {
 			Cor string `json:"correction"`
-		}{t.Cor}, nil)
+		}{cor}, nil)
 		if err != nil { // TODO: handle StatusConflict errors
 			return fmt.Errorf("correct in backend: %v", err)
 		}
@@ -143,6 +151,7 @@ func (ai *aipoco) correctInBackend(ctx context.Context, corrections *api.PostCor
 	return nil
 }
 
+// func ApplyOCRToCorrection(ocr, sug string) string {
 func (ai *aipoco) correctInDatabase(ctx context.Context, corrections *api.PostCorrection) error {
 	transaction := db.NewTransaction(ai.pool.Begin())
 	transaction.Do(func(dtb db.DB) error {
@@ -216,9 +225,6 @@ func (ai *aipoco) tokens(alev bool) apoco.StreamFunc {
 					}
 					t.Tokens = append(t.Tokens, string(p.Slice()))
 				}
-				// Hack: append primary OCR again to have access
-				// to the original OCR token later in the process.
-				t.Tokens = append(t.Tokens, t.Tokens[0])
 				ts = append(ts, t)
 			}
 			if len(ts) > 0 { // Mark last token in the line.
@@ -228,6 +234,31 @@ func (ai *aipoco) tokens(alev bool) apoco.StreamFunc {
 				return fmt.Errorf("token: %v", err)
 			}
 			return nil
+		})
+	}
+}
+
+func (ai *aipoco) beforeNormalization() apoco.StreamFunc {
+	return func(ctx context.Context, in <-chan apoco.T, out chan<- apoco.T) error {
+		return apoco.EachToken(ctx, in, func(t apoco.T) error {
+			// Hack: put the primary unnormalized OCR
+			// (t.Tokens[0]) into each token's payload to
+			// keep the unnormalized ocr token.
+			t.Payload = t.Tokens[0]
+			return apoco.SendTokens(ctx, out, t)
+		})
+
+	}
+}
+
+func (ai *aipoco) afterNormalization() apoco.StreamFunc {
+	return func(ctx context.Context, in <-chan apoco.T, out chan<- apoco.T) error {
+		return apoco.EachToken(ctx, in, func(t apoco.T) error {
+			// Hack: take the unnormalized OCR from
+			// payload and append it to the end of
+			// t.Tokens.
+			t.Tokens = append(t.Tokens, t.Payload.(string))
+			return apoco.SendTokens(ctx, out, t)
 		})
 	}
 }
@@ -251,11 +282,6 @@ func (ai *aipoco) lines() apoco.StreamFunc {
 			if err != nil {
 				return err
 			}
-			ulog.Write(
-				fmt.Sprintf("secondary OCR for line %d:%d:%d", ai.project.BookID, pid, lid),
-				"primaryOCR", line.Chars(),
-				"secondaryOCR", sec,
-			)
 			t := apoco.T{
 				Document: &document,
 				Tokens:   []string{line.Chars(), sec},
