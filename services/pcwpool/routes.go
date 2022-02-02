@@ -269,12 +269,14 @@ func (line *lineInfo) copyImage(out *zip.Writer, finfo *fileInfo) error {
 	return nil
 }
 
+const offset = 0x10000
+
 func (line *lineInfo) gtZIPHeader() *zip.FileHeader {
 	return &zip.FileHeader{
 		Method:   zip.Store, // most likely very small
 		Modified: time.Now(),
 		Name: filepath.Join("corpus", line.book.String(),
-			fmt.Sprintf("%04d/%04d.gt.txt", line.pageID, line.lineID)),
+			fmt.Sprintf("%06d/%06x.gt.txt", line.pageID, line.lineID+offset)),
 	}
 }
 
@@ -283,7 +285,7 @@ func (line *lineInfo) ocrZIPHeader() *zip.FileHeader {
 		Method:   zip.Store, // most likely very small
 		Modified: time.Now(),
 		Name: filepath.Join("corpus", line.book.String(),
-			fmt.Sprintf("%04d/%04d.txt", line.pageID, line.lineID)),
+			fmt.Sprintf("%06d/%06x.txt", line.pageID, line.lineID+offset)),
 	}
 }
 
@@ -292,7 +294,7 @@ func (line *lineInfo) pngZIPHeader() *zip.FileHeader {
 		Method:   zip.Store, // most likely very small
 		Modified: time.Now(),
 		Name: filepath.Join("corpus", line.book.String(),
-			fmt.Sprintf("%04d/%04d.png", line.pageID, line.lineID)),
+			fmt.Sprintf("%06d/%06x.png", line.pageID, line.lineID+offset)),
 	}
 }
 
@@ -317,7 +319,7 @@ func (book *bookInfo) scan(rows *sql.Rows) error {
 func (book *bookInfo) String() string {
 	author := strings.ReplaceAll(book.Author, " ", "_")
 	title := strings.ReplaceAll(book.Title, " ", "_")
-	return fmt.Sprintf("%04d-%s_%s", book.Year, author, title)
+	return fmt.Sprintf("%04d-%s-%s-%d", book.Year, author, title, book.ID)
 }
 
 type fileInfo struct {
