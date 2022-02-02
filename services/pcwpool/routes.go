@@ -49,8 +49,7 @@ SELECT b.author,b.title,b.description,u.email,b.lang,b.bookid,b.year,b.pooled
 FROM books b
 JOIN projects p ON p.origin=b.bookid
 JOIN users u on p.owner=u.id
-WHERE p.origin=p.id and p.owner=?
-`
+WHERE p.origin=p.id and p.owner=?`
 		userid := ctx.Value(userid).(int)
 		rows, err := s.pool.Query(stmnt, userid)
 		if err != nil {
@@ -63,7 +62,7 @@ WHERE p.origin=p.id and p.owner=?
 		// if _, err := io.Copy(w, &buf); err != nil {
 		// 	return fmt.Errorf("cannot send archive: %v", err)
 		// }
-		if err := s.writePool(w, rows); err != nil {
+		if err := s.writePool(w, rows, false); err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot write pool for user id %d: %v", userid, err)
 			return
@@ -78,8 +77,7 @@ SELECT b.author,b.title,b.description,u.email,b.lang,b.bookid,b.year,b.pooled
 FROM books b
 JOIN projects p ON p.origin=b.bookid
 JOIN users u on p.owner=u.id
-WHERE b.pooled=true and p.origin=p.id
-`
+WHERE b.pooled=true and p.origin=p.id`
 		rows, err := s.pool.Query(stmnt)
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
@@ -88,7 +86,7 @@ WHERE b.pooled=true and p.origin=p.id
 		}
 		defer rows.Close()
 		var buf bytes.Buffer
-		if err := s.writePool(&buf, rows); err != nil {
+		if err := s.writePool(&buf, rows, true); err != nil {
 			log.Infof("cannot write pool: %v", err)
 			service.ErrorResponse(w, http.StatusInternalServerError,
 				"cannot write pool: %v", err)
@@ -114,7 +112,7 @@ func withUserid(f service.HandlerFunc) service.HandlerFunc {
 	}
 }
 
-func (s *server) writePool(out io.Writer, rows *sql.Rows) (err error) {
+func (s *server) writePool(out io.Writer, rows *sql.Rows, global bool) (err error) {
 	w := zip.NewWriter(out)
 	defer func() {
 		e := w.Close()
@@ -122,6 +120,7 @@ func (s *server) writePool(out io.Writer, rows *sql.Rows) (err error) {
 			err = e
 		}
 	}()
+	info := poolInfo{Global: global}
 	for rows.Next() {
 		var book bookInfo
 		if err := book.scan(rows); err != nil {
@@ -133,9 +132,10 @@ func (s *server) writePool(out io.Writer, rows *sql.Rows) (err error) {
 		if len(book.Files) == 0 { // skip empty books
 			continue
 		}
-		if err := book.write(w); err != nil {
-			return fmt.Errorf("cannot write info for book %s: %v", book.String(), err)
-		}
+		info.Books = append(info.Books, book)
+	}
+	if err := info.write(w); err != nil {
+		fmt.Errorf("cannot write info for pool: %v", err)
 	}
 	return nil
 }
@@ -146,8 +146,7 @@ SELECT c.pageid,c.lineid,c.cor,c.ocr,c.manually,l.imagepath
 FROM contents c
 JOIN textlines l ON c.bookid=l.bookid AND c.pageid=l.pageid AND c.lineid=l.lineid
 WHERE c.bookid=?
-ORDER BY c.pageid,c.lineid,c.seq
-`
+ORDER BY c.pageid,c.lineid,c.seq`
 	rows, err := s.pool.Query(stmnt, book.ID)
 	if err != nil {
 		return fmt.Errorf("cannot query text content for book %s: %v",
@@ -163,7 +162,6 @@ ORDER BY c.pageid,c.lineid,c.seq
 			return fmt.Errorf("cannot scan content for book %s: %v",
 				book.String(), err)
 		}
-		log.Printf("book %d %d %s", pid, lid, path)
 		// Same line on same page -> append char.
 		if pid == line.pageID && lid == line.lineID {
 			line.line = append(line.line, db.Char{
@@ -299,36 +297,21 @@ func (line *lineInfo) pngZIPHeader() *zip.FileHeader {
 }
 
 type bookInfo struct {
-	Author, Title, Description, Language, OwnerEmail string
-	ID, Year                                         int
-	Files                                            []fileInfo
-	Pooled                                           bool
+	Author, Title, Description, Language, OwnerEmail, Dir string
+	ID, Year                                              int
+	Files                                                 []fileInfo
+	Pooled                                                bool
 }
 
 func (book *bookInfo) scan(rows *sql.Rows) error {
-	return rows.Scan(&book.Author, &book.Title, &book.Description,
+	err := rows.Scan(&book.Author, &book.Title, &book.Description,
 		&book.OwnerEmail, &book.Language,
 		&book.ID, &book.Year, &book.Pooled)
-}
-
-func (book *bookInfo) write(out *zip.Writer) error {
-	w, err := out.CreateHeader(book.zipHeader())
 	if err != nil {
-		return fmt.Errorf("cannot create file info file: %v", err)
+		return err
 	}
-	// Note: w is a writer not a WriteCloser
-	if err := json.NewEncoder(w).Encode(book); err != nil {
-		return fmt.Errorf("cannot encode file info file: %v", err)
-	}
+	book.Dir = filepath.Join("corpus", book.String())
 	return nil
-}
-
-func (book *bookInfo) zipHeader() *zip.FileHeader {
-	return &zip.FileHeader{
-		Method:   zip.Deflate,
-		Modified: time.Now(),
-		Name:     filepath.Join("corpus", book.String()+".json"),
-	}
 }
 
 func (book *bookInfo) String() string {
@@ -339,4 +322,27 @@ func (book *bookInfo) String() string {
 
 type fileInfo struct {
 	GTFile, IMGFile, OCRFile string
+}
+
+type poolInfo struct {
+	Created time.Time
+	Books   []bookInfo
+	Global  bool
+}
+
+func (info *poolInfo) write(out *zip.Writer) error {
+	info.Created = time.Now()
+	w, err := out.CreateHeader(&zip.FileHeader{
+		Method:   zip.Deflate,
+		Modified: info.Created,
+		Name:     "info.json",
+	})
+	if err != nil {
+		return fmt.Errorf("cannot create file info file: %v", err)
+	}
+	// Note: w is a writer not a WriteCloser
+	if err := json.NewEncoder(w).Encode(info); err != nil {
+		return fmt.Errorf("cannot encode pool info file: %v", err)
+	}
+	return nil
 }
