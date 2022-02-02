@@ -273,7 +273,7 @@ const offset = 0x10000
 
 func (line *lineInfo) gtZIPHeader() *zip.FileHeader {
 	return &zip.FileHeader{
-		Method:   zip.Store, // most likely very small
+		Method:   zip.Store, // Most likely very small.
 		Modified: time.Now(),
 		Name: filepath.Join("corpus", line.book.String(),
 			fmt.Sprintf("%06d/%06x.gt.txt", line.pageID, line.lineID+offset)),
@@ -282,7 +282,7 @@ func (line *lineInfo) gtZIPHeader() *zip.FileHeader {
 
 func (line *lineInfo) ocrZIPHeader() *zip.FileHeader {
 	return &zip.FileHeader{
-		Method:   zip.Store, // most likely very small
+		Method:   zip.Store, // Most likely very small.
 		Modified: time.Now(),
 		Name: filepath.Join("corpus", line.book.String(),
 			fmt.Sprintf("%06d/%06x.txt", line.pageID, line.lineID+offset)),
@@ -291,7 +291,7 @@ func (line *lineInfo) ocrZIPHeader() *zip.FileHeader {
 
 func (line *lineInfo) pngZIPHeader() *zip.FileHeader {
 	return &zip.FileHeader{
-		Method:   zip.Store, // most likely very small
+		Method:   zip.Store, // Most likely very small.
 		Modified: time.Now(),
 		Name: filepath.Join("corpus", line.book.String(),
 			fmt.Sprintf("%06d/%06x.png", line.pageID, line.lineID+offset)),
