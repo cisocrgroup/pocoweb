@@ -114,7 +114,7 @@ func main() {
 			service.WithProject(projectOwner(proxy(pkgProxy)))))))
 	// pool
 	http.HandleFunc("/pool/", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithAuth(root(proxy(poolProxy))))))
+		http.MethodGet, service.WithAuth(root(withUserid(proxy(poolProxy)))))))
 	// user management
 	http.HandleFunc("/users", service.WithLog(service.WithMethods(
 		http.MethodPost, service.WithAuth(root(proxy(usersProxy))),

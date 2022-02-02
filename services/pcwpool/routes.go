@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -18,6 +19,10 @@ import (
 	"github.com/finkf/pcwgo/service"
 	log "github.com/sirupsen/logrus"
 )
+
+type useridType int
+
+const userid useridType = 0
 
 type server struct {
 	base   string
@@ -34,7 +39,7 @@ func (s *server) routes() {
 	s.router.HandleFunc("/pool/global", service.WithLog(service.WithMethods(
 		http.MethodGet, s.handleGetGlobalPool())))
 	s.router.HandleFunc("/pool/user", service.WithLog(service.WithMethods(
-		http.MethodGet, service.WithAuth(s.handleGetUserPool()))))
+		http.MethodGet, withUserid(s.handleGetUserPool()))))
 }
 
 func (s *server) handleGetUserPool() service.HandlerFunc {
@@ -46,7 +51,7 @@ JOIN projects p ON p.origin=b.bookid
 JOIN users u on p.owner=u.id
 WHERE p.origin=p.id and p.owner=?
 `
-		userid := service.AuthFromCtx(ctx).User.ID
+		userid := ctx.Value(userid).(int)
 		rows, err := s.pool.Query(stmnt, userid)
 		if err != nil {
 			service.ErrorResponse(w, http.StatusInternalServerError,
@@ -93,6 +98,19 @@ WHERE b.pooled=true and p.origin=p.id
 		if _, err := io.Copy(w, &buf); err != nil {
 			log.Errorf("cannot write pool: %v", err)
 		}
+	}
+}
+
+func withUserid(f service.HandlerFunc) service.HandlerFunc {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		uidstr := r.URL.Query().Get("userid")
+		uid, err := strconv.Atoi(uidstr)
+		if err != nil {
+			service.ErrorResponse(w, http.StatusUnauthorized, "invalid userid %s", uidstr)
+			return
+		}
+		ctx = context.WithValue(ctx, userid, uid)
+		f(ctx, w, r)
 	}
 }
 
@@ -145,7 +163,8 @@ ORDER BY c.pageid,c.lineid,c.seq
 			return fmt.Errorf("cannot scan content for book %s: %v",
 				book.String(), err)
 		}
-		// same line on same page -> append char
+		log.Printf("book %d %d %s", pid, lid, path)
+		// Same line on same page -> append char.
 		if pid == line.pageID && lid == line.lineID {
 			line.line = append(line.line, db.Char{
 				Cor:      rune(cor),
@@ -154,7 +173,7 @@ ORDER BY c.pageid,c.lineid,c.seq
 			})
 			continue
 		}
-		// write old line (empty lines are skipped)
+		// Write old line (empty lines are skipped).
 		if err := line.write(out); err != nil {
 			return fmt.Errorf("cannot write line %d: %v", line.lineID, err)
 		}
