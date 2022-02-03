@@ -48,8 +48,7 @@ void PageXmlPageParser::parse(const Xml::Node &pagenode,
 ////////////////////////////////////////////////////////////////////////////////
 void PageXmlPageParser::add_line(const Xml::Node &linenode,
                                  XmlParserPage &page) const {
-  page.lines().push_back(
-      std::make_shared<PageXmlParserLine>(linenode, page.lines().empty()));
+  page.lines().push_back(std::make_shared<PageXmlParserLine>(linenode));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

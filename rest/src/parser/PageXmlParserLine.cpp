@@ -24,10 +24,10 @@ static double get_text_equiv_conf(const Xml::Node &node);
 static std::vector<std::string> fields(const std::string &str);
 
 ////////////////////////////////////////////////////////////////////////////////
-PageXmlParserLine::PageXmlParserLine(const Xml::Node &line_node, bool first)
-    : node_(line_node),
-      string_(get_text_equiv_unicode(get_last_text_equiv(line_node), 0)),
-      words_(), first_(first) {
+PageXmlParserLine::PageXmlParserLine(const Xml::Node &line_node):
+  node_(line_node),
+  string_(get_text_equiv_unicode(get_last_text_equiv(line_node), 0)),
+  words_() {
   parse();
 }
 
@@ -41,38 +41,43 @@ void PageXmlParserLine::end_wagner_fischer() {
 
 ////////////////////////////////////////////////////////////////////////////////
 void PageXmlParserLine::add_corrections_to_line(const std::string &cor) {
-  node_.append_child(TEXT_EQUIV)
-      .append_child(UNICODE)
-      .append_child(pugi::node_pcdata)
-      .set_value(cor.data());
+  const auto te = mkname(TEXT_EQUIV);
+  const auto un = mkname(UNICODE);
+  node_.append_child(te.data())
+    .append_child(un.data())
+    .append_child(pugi::node_pcdata)
+    .set_value(cor.data());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void PageXmlParserLine::add_corrections_to_words(const std::string &cor) {
+  const auto te = mkname(TEXT_EQUIV);
+  const auto un = mkname(UNICODE);
+  const auto wo = mkname(WORD);
   const auto words = fields(cor);
   size_t i = 0;
-  for (auto &word : node_.children(WORD)) {
+  for (auto &word : node_.children(wo.data())) {
     if (i >= words.size()) {
-      word.append_child(TEXT_EQUIV)
-          .append_child(UNICODE)
+      word.append_child(te.data())
+	  .append_child(un.data())
           .append_child(pugi::node_pcdata)
           .set_value("");
       continue;
     }
-    word.append_child(TEXT_EQUIV)
-        .append_child(UNICODE)
+    word.append_child(te.data())
+        .append_child(un.data())
         .append_child(pugi::node_pcdata)
         .set_value(words[i].data());
     i++;
   }
   for (; i < words.size(); i++) { // add additional words
-    auto w = node_.append_child(WORD);
-    w.append_child(TEXT_EQUIV)
-        .append_child(UNICODE)
+    auto w = node_.append_child(wo.data());
+    w.append_child(te.data())
+        .append_child(un.data())
         .append_child(pugi::node_pcdata)
         .set_value("");
-    w.append_child(TEXT_EQUIV)
-        .append_child(UNICODE)
+    w.append_child(te.data())
+      .append_child(un.data())
         .append_child(pugi::node_pcdata)
         .set_value(words[i].data());
   }
@@ -80,27 +85,40 @@ void PageXmlParserLine::add_corrections_to_words(const std::string &cor) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void PageXmlParserLine::add_corrections_to_regions(const std::string &cor) {
-  if (first_) {
-    for (auto p = node_.parent(); p and strcmp(p.name(), TEXT_REGION) == 0;
-         p = p.parent()) {
-      p.append_child(TEXT_EQUIV)
-          .append_child(UNICODE)
+  const auto te = mkname(TEXT_EQUIV);
+  const auto un = mkname(UNICODE);
+  const auto tr = mkname(TEXT_REGION);
+  if (first_line_in_region()) {
+    for (auto p = node_.parent(); p and strcmp(p.name(), tr.data()) == 0; p = p.parent()) {
+      p.append_child(te.data())
+	  .append_child(un.data())
           .append_child(pugi::node_pcdata)
           .set_value(cor.data());
     }
     return;
   }
-  for (auto p = node_.parent(); p and strcmp(p.name(), TEXT_REGION) == 0;
-       p = p.parent()) {
-    for (auto child : p.children(TEXT_EQUIV)) {
-      if (child.next_sibling(TEXT_EQUIV)) { // not the last text equiv
+  for (auto p = node_.parent(); p and strcmp(p.name(), tr.data()) == 0; p = p.parent()) {
+    for (auto child : p.children(te.data())) {
+      if (child.next_sibling(te.data())) { // not the last text equiv
         continue;
       }
-      std::string region = child.child(UNICODE).text().get();
+      std::string region = child.child(un.data()).text().get();
       region = region + "\n" + cor;
-      child.child(UNICODE).text().set(region.data());
+      child.child(un.data()).text().set(region.data());
     }
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool PageXmlParserLine::first_line_in_region() const {
+  const auto tr = mkname(TEXT_REGION);
+  std::vector<Xml::Node> lines;
+  for (auto p = node_.parent(); p and strcmp(p.name(), tr.data()) == 0; p = p.parent()) {
+    for (auto child : p.children(node_.name())) {
+      lines.push_back(child);
+    }
+  }
+  return not lines.empty() and lines[0] == node_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -170,7 +188,7 @@ template<class T> bool checkBoxes(const std::vector<T>& ts) {
 		return false;
 	  }
 	}
-	beforebb = curbb; 
+	beforebb = curbb;
   }
   return true;
 }
@@ -251,6 +269,16 @@ std::wstring PageXmlParserLine::get_text_equiv_unicode(const Xml::Node &node,
   }
   const auto res = child_wstring(unicodes[i].node());
   return res;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+std::string PageXmlParserLine::mkname(const char* basename) const {
+  const char *nodename = node_.name();
+  const char *end = strchr(nodename, ':');
+  if (end == nullptr) {
+    return basename;
+  }
+  return std::string(nodename, end+1) + basename;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
