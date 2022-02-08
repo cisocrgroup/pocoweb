@@ -241,26 +241,26 @@ void LineRoute::correct(const Request &req, DbSlice &slice, bool manual) {
   }
   wf.set_ocr(slice.wocr());
   const auto lev = wf();
-  CROW_LOG_INFO << "(LineRoute::correct) correction: " << cor.value();
-  CROW_LOG_INFO << "(LineRoute::correct) line.ocr(): " << slice.ocr();
-  CROW_LOG_INFO << "(LineRoute::correct) line.cor(): " << slice.cor();
+  CROW_LOG_DEBUG << "(LineRoute::correct) correction: " << cor.value();
+  CROW_LOG_DEBUG << "(LineRoute::correct) line.ocr(): " << slice.ocr();
+  CROW_LOG_DEBUG << "(LineRoute::correct) line.cor(): " << slice.cor();
 
   // correct
   wf.correct(slice);
   slice.set_correction_type(manual);
 
-  CROW_LOG_INFO << "(LineRoute::correct) line.ocr(): " << slice.ocr();
-  CROW_LOG_INFO << "(LineRoute::correct) line.cor(): " << slice.cor();
-  CROW_LOG_INFO << "(LineRoute::correct)        lev: " << lev;
+  CROW_LOG_DEBUG << "(LineRoute::correct) line.ocr(): " << slice.ocr();
+  CROW_LOG_DEBUG << "(LineRoute::correct) line.cor(): " << slice.cor();
+  CROW_LOG_DEBUG << "(LineRoute::correct)        lev: " << lev;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void LineRoute::reset(const Request &req, DbSlice &slice) {
-  CROW_LOG_INFO << "(LineRoute::reset) cor: " << slice.cor();
-  CROW_LOG_INFO << "(LineRoute::reset) ocr: " << slice.ocr();
+  CROW_LOG_DEBUG << "(LineRoute::reset) cor: " << slice.cor();
+  CROW_LOG_DEBUG << "(LineRoute::reset) ocr: " << slice.ocr();
   slice.reset();
   slice.set_correction_type(false);
-  CROW_LOG_INFO << "(LineRoute::reset) cor: " << slice.cor();
+  CROW_LOG_DEBUG << "(LineRoute::reset) cor: " << slice.cor();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
