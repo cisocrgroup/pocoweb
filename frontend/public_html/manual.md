@@ -254,7 +254,7 @@ or if you want to use another profiler, you have to specify its URL.
 
 A project archive is a zipped directory structure that contains the
 OCR and image files for the pages of a document.  Image files should
-be encoded as PNG files if possible, but specify or TIFF encoded
+be encoded as PNG files if possible, but JPEG or TIFF encoded
 images are fine, too.  The OCR files should be either [ABBYY-XML](),
 [ALTO-XML](), [PAGE-XML]() or [hOCR]() encoded files.
 
