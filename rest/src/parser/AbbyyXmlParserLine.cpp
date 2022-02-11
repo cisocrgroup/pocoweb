@@ -44,8 +44,14 @@ std::string AbbyyXmlParserLine::string() const {
 void AbbyyXmlParserLine::insert(size_t pos, wchar_t c) {
   // std::cerr << "(AbbyyXmlParserLine) insert pos: " << pos << " " << c <<
   // "\n";
-  assert(pos < chars_.size());
-  chars_.insert(begin(chars_) + pos, char_before(chars_[pos], c));
+  assert(pos <= chars_.size());
+  if (pos < chars_.size()) {
+    chars_.insert(begin(chars_) + pos, char_before(chars_[pos], c));
+  } else if (pos > 0) { // pos > 0 && pos == chars_.size()
+    chars_.push_back(append_char(chars_[pos-1], c));
+  } else {
+    chars_.push_back(first_char(node_, c));
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -135,4 +141,30 @@ AbbyyXmlParserLine::Char AbbyyXmlParserLine::char_before(Char &c, wchar_t cc) {
   set_char(copy.c, copy.node);
   set_box(c.box, c.node);
   return copy;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+AbbyyXmlParserLine::Char AbbyyXmlParserLine::append_char(Char& last, wchar_t cc) {
+  auto split = last.box.split(2);
+  auto copy = last;
+  copy.c = cc;
+  assert(last.node);
+  copy.node = last.node.parent().insert_copy_after(last.node, last.node);
+  assert(copy.node);
+  last.box = split[0];
+  copy.box = split[1];
+  set_box(copy.box, copy.node);
+  set_char(copy.c, copy.node);
+  set_box(last.box, last.node);
+  return copy;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+AbbyyXmlParserLine::Char AbbyyXmlParserLine::first_char(Node& line, wchar_t cc) {
+  const auto box = get_box(line);
+  const auto cnode = line.append_child("charParams");
+  auto c = AbbyyXmlParserLine::Char(cc, cnode, 1.0, box);
+  set_box(c.box, c.node);
+  set_char(c.c, c.node);
+  return c;
 }

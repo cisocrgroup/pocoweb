@@ -35,6 +35,8 @@ namespace pcw {
 		static wchar_t get_char(const Node& node);
 		static void set_char(wchar_t c, Node& node);
 		static Char char_before(Char& c, wchar_t cc);
+		static Char append_char(Char& c, wchar_t cc);
+	        static Char first_char(Node& line, wchar_t cc);
 
 		std::vector<Char> chars_;
 		Node node_;
