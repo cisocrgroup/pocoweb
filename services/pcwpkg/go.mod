@@ -9,6 +9,6 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/sirupsen/logrus v1.8.1
 	golang.org/x/crypto v0.0.0-20220208050332-20e1d8d225ab // indirect
-	golang.org/x/sys v0.0.0-20220207234003-57398862261d // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 )
